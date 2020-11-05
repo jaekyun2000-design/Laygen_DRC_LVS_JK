@@ -7,7 +7,7 @@ from PyQt5.QtGui import QColor,QPen,QBrush,QTransform
 from PyQt5.QtCore import Qt
 import copy
 
-from PyCodes import QTInterface
+# from PyCodes import QTInterface
 
 from PyQTInterface import LayerInfo
 from PyQTInterface.layermap import LayerReader

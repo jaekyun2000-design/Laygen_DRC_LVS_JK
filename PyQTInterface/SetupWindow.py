@@ -17,7 +17,7 @@ from PyCodes import ASTmodule
 import logging
 from PyCodes import userDefineExceptions
 from PyCodes import EnvForClientSetUp
-from PyCodes import QTInterface
+from PyCodes import QTInterfaceWithAST
 
 
 import re, ast, time
@@ -1588,11 +1588,11 @@ class _SelectedDesignListWidget(QListWidget):
 class _ConstraintTreeViewWidgetAST(QTreeView):
 
     send_UpdateDesignConstraint_signal = pyqtSignal(dict)
-    send_SendDesignConstraint_signal = pyqtSignal(QTInterface.QtDesinConstraint)
+    send_SendDesignConstraint_signal = pyqtSignal(QTInterfaceWithAST.QtDesinConstraint)
     send_SendASTDict_signal = pyqtSignal(list)
     send_SendSTMT_signal = pyqtSignal(dict)
     send_SendID_signal = pyqtSignal(str)
-    send_SendCopyConstraint_signal = pyqtSignal(QTInterface.QtDesinConstraint)
+    send_SendCopyConstraint_signal = pyqtSignal(QTInterfaceWithAST.QtDesinConstraint)
     send_RootDesignConstraint_signal = pyqtSignal(str)
     send_RecieveDone_signal = pyqtSignal()
     send_RequesteDesignConstraint_signal = pyqtSignal()

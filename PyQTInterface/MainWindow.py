@@ -11,10 +11,9 @@ from PyQt5.QtCore import *
 from PyQTInterface import userDefineExceptions
 from PyQTInterface import SetupWindow
 from PyQTInterface import template
-from PyQTInterface import ThreaderForProgress
 from PyCodes import QTInterfaceWithAST
 from PyCodes import ASTmodule
-from PyQTInterface.VariableManager import FilterPractice
+from DesignManager.VariableManager import FilterPractice
 
 
 import threading
@@ -24,7 +23,6 @@ from PyQTInterface import VisualizationItem
 
 ##for easy debug##
 import json
-from PyCodes import ParseTree
 
 
 import astunparse
@@ -269,7 +267,7 @@ class _MainWindow(QMainWindow):
         self.saveConstraintAsPickleButton = QPushButton("SaveAs...(pickle)")
         self.loadConstraintFromPickleButton = QPushButton("Load...")
         self.ConstraintTemplateButton = QPushButton("Template")
-        self.parsetreeEasyRun = QPushButton("easyRun")
+        # self.parsetreeEasyRun = QPushButton("easyRun")
         self.variableCallButton = QPushButton("variableCall")
 
         VBoxForPeriButton.addStretch(3)
@@ -281,7 +279,7 @@ class _MainWindow(QMainWindow):
         VBoxForPeriButton.addWidget(self.saveConstraintAsPickleButton)
         VBoxForPeriButton.addWidget(self.loadConstraintFromPickleButton)
         VBoxForPeriButton.addWidget(self.ConstraintTemplateButton)
-        VBoxForPeriButton.addWidget(self.parsetreeEasyRun)
+        # VBoxForPeriButton.addWidget(self.parsetreeEasyRun)
         VBoxForPeriButton.addWidget(self.variableCallButton)
         VBoxForPeriButton.addStretch(3)
 
@@ -305,7 +303,7 @@ class _MainWindow(QMainWindow):
         self.saveConstraintAsPickleButton.clicked.connect(self.saveConstraintP)
         self.loadConstraintFromPickleButton.clicked.connect(self.loadConstraintP)
         self.ConstraintTemplateButton.clicked.connect(self.makeTemplateWindow)
-        self.parsetreeEasyRun.clicked.connect(self.easyRun)
+        # self.parsetreeEasyRun.clicked.connect(self.easyRun)
         self.variableCallButton.clicked.connect(self.variableListUpdate)
 
 
@@ -1147,24 +1145,24 @@ class _MainWindow(QMainWindow):
         self._QTObj._createProject("ProjectForEasyDebug")
         self.updateModule("EasyDebugModule")
 
-    def easyRun(self):
-        try:
-            file = './PyQTInterface/json/' + EasyDebugFileName + '.json'
-            #with open('./PyQTInterface/json/INV_IITP.json') as js:
-            with open(file) as js:
-                jsonData = json.load(js)
-                constraint = jsonData
-
-                testObj0 = ParseTree.pyCodeParseTree()
-                testObj0.BuildParseTree(_Constraints=constraint)
-                testObj0.CompilepyCode()
-                # testObj0.PyCodeScriptGeneration( fileName= 'default.py', mode = 'wt', text = None)
-                testObj0.PyCodeScriptGeneration(fileName= 'INV1.py')
-                print(testObj0._ParseTree._lineCodes)
-        except:
-            self.error = QMessageBox()
-            self.error.setText("Easy Run Fail")
-            self.error.show()
+    # def easyRun(self):
+    #     try:
+    #         file = './PyQTInterface/json/' + EasyDebugFileName + '.json'
+    #         #with open('./PyQTInterface/json/INV_IITP.json') as js:
+    #         with open(file) as js:
+    #             jsonData = json.load(js)
+    #             constraint = jsonData
+    #
+    #             testObj0 = ParseTree.pyCodeParseTree()
+    #             testObj0.BuildParseTree(_Constraints=constraint)
+    #             testObj0.CompilepyCode()
+    #             # testObj0.PyCodeScriptGeneration( fileName= 'default.py', mode = 'wt', text = None)
+    #             testObj0.PyCodeScriptGeneration(fileName= 'INV1.py')
+    #             print(testObj0._ParseTree._lineCodes)
+    #     except:
+    #         self.error = QMessageBox()
+    #         self.error.setText("Easy Run Fail")
+    #         self.error.show()
 
 
 class _CustomView(QGraphicsView):
