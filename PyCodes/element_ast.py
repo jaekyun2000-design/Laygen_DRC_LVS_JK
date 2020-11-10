@@ -2,13 +2,16 @@ import ast
 import astunparse
 
 # listTypeData = ['Lib','tb','PlaceDef','RouteDef','DRCDef','Iteration','P_R']
-
+custom_ast_list = ['Sref','Boundary','Path']
 #--start constants--
 
 
 class ElementNode(ast.AST):
     def __init__(self, *args, **kwargs):
         pass
+
+    _fields = (
+    )
 
 class Sref(ElementNode):
     def __init__(self, *args, **kwargs):
