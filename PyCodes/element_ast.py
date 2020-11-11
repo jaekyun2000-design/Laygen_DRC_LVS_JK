@@ -186,8 +186,7 @@ class ElementTransformer(ast.NodeTransformer):
 
 
     def visit_Sref(self,node):
-        return [
-            ast.Assign(
+        return ast.Assign(
                 targets=[ast.Name(
                     id=node.name
                 )],
@@ -226,11 +225,10 @@ class ElementTransformer(ast.NodeTransformer):
                     ]
                 )
             )
-        ]
+
 
     def visit_Path(self,node):
-        return [
-            ast.Assign(
+        return ast.Assign(
                 targets=[ast.Name(
                     id=node.name
                 )],
@@ -269,7 +267,6 @@ class ElementTransformer(ast.NodeTransformer):
                     ]
                 )
             )
-        ]
 
 
 class MacroTransformer1(ast.NodeTransformer):
