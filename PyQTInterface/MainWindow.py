@@ -13,6 +13,7 @@ from PyQTInterface import SetupWindow
 from PyQTInterface import template
 from PyCodes import QTInterfaceWithAST
 from PyCodes import ASTmodule
+from PyCodes import element_ast
 from DesignManager.VariableManager import FilterPractice
 
 
@@ -335,6 +336,9 @@ class _MainWindow(QMainWindow):
         try:
             module = self._CurrentModuleName
             topAST = self._QTObj._qtProject._ParseTreeForDesignConstrain[module]._ast
+            topAST = element_ast.ElementTransformer().visit(topAST)
+            topAST = element_ast.MacroTransformer1().visit(topAST)
+            topAST = element_ast.MacroTransformer2().visit(topAST)
             code = astunparse.unparse(topAST)
             print(code)
         except:

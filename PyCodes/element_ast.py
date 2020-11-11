@@ -144,8 +144,7 @@ class GeneratorTransformer(ast.NodeTransformer):
 
 class ElementTransformer(ast.NodeTransformer):
     def visit_Boundary(self,node):
-        return [
-            ast.Assign(
+        return ast.Assign(
                 targets=[ast.Name(
                     id=node.name
                 )],
@@ -184,7 +183,7 @@ class ElementTransformer(ast.NodeTransformer):
                     ]
                 )
             )
-        ]
+
 
     def visit_Sref(self,node):
         return [
