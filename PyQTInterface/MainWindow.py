@@ -259,10 +259,11 @@ class _MainWindow(QMainWindow):
         vboxLayout.addStretch(4)
 
         VBoxForPeriButton = QVBoxLayout()
-        self.createConstraintButton = QPushButton("Create")
+        # self.createConstraintButton = QPushButton("Create")
         self.createConstraintWithPyCodeButton = QPushButton("PyCode")
-        self.createConstraintButtonASTLegacy = QPushButton("CreateAST(Legacy)")
+        # self.createConstraintButtonASTLegacy = QPushButton("CreateAST(Legacy)")
         self.createConstraintButtonAST = QPushButton("CreateAST")
+        self.createConstraintButtonCUSTOM = QPushButton("Create(Custom)")
         self.saveConstraintAsJSONButton = QPushButton("SaveAs...(JSON)")
         self.saveConstraintAsPickleButton = QPushButton("SaveAs...(pickle)")
         self.loadConstraintFromPickleButton = QPushButton("Load...")
@@ -271,10 +272,11 @@ class _MainWindow(QMainWindow):
         self.variableCallButton = QPushButton("variableCall")
 
         VBoxForPeriButton.addStretch(3)
-        VBoxForPeriButton.addWidget(self.createConstraintButton)
+        # VBoxForPeriButton.addWidget(self.createConstraintButton)
         VBoxForPeriButton.addWidget(self.createConstraintWithPyCodeButton)
-        VBoxForPeriButton.addWidget(self.createConstraintButtonASTLegacy)
+        # VBoxForPeriButton.addWidget(self.createConstraintButtonASTLegacy)
         VBoxForPeriButton.addWidget(self.createConstraintButtonAST)
+        VBoxForPeriButton.addWidget(self.createConstraintButtonCUSTOM)
         VBoxForPeriButton.addWidget(self.saveConstraintAsJSONButton)
         VBoxForPeriButton.addWidget(self.saveConstraintAsPickleButton)
         VBoxForPeriButton.addWidget(self.loadConstraintFromPickleButton)
@@ -295,10 +297,11 @@ class _MainWindow(QMainWindow):
         dockWidget3.setWidget(layoutWidget)
 
         self.addDockWidget(Qt.BottomDockWidgetArea,dockWidget3)
-        self.createConstraintButton.clicked.connect(self.makeConstraintWindow)
+        # self.createConstraintButton.clicked.connect(self.makeConstraintWindow)
         self.createConstraintWithPyCodeButton.clicked.connect(self.makePyCodeWindow)
-        self.createConstraintButtonASTLegacy.clicked.connect(self.makeConstraintWindowSTMT)
+        # self.createConstraintButtonASTLegacy.clicked.connect(self.makeConstraintWindowSTMT)
         self.createConstraintButtonAST.clicked.connect(self.makeConstraintWindowAST)
+        self.createConstraintButtonCUSTOM.clicked.connect(self.makeConstraintWindowCUSTOM)
         self.saveConstraintAsJSONButton.clicked.connect(self.saveConstraint)
         self.saveConstraintAsPickleButton.clicked.connect(self.saveConstraintP)
         self.loadConstraintFromPickleButton.clicked.connect(self.loadConstraintP)
@@ -421,7 +424,10 @@ class _MainWindow(QMainWindow):
         self.cw.show()
         self.cw.send_AST_signal.connect(self.createNewConstraintAST)
 
-
+    def makeConstraintWindowCUSTOM(self):
+        self.cw = SetupWindow._ConstraintSetupWindowCUSTOM(_ASTapi = self._ASTapi)
+        self.cw.show()
+        self.cw.send_CUSTOM_signal.connect(self.createNewConstraintAST)
 
     def closingPathWidget(self):
         self.scene.itemListClickIgnore(False)
@@ -821,17 +827,17 @@ class _MainWindow(QMainWindow):
             _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(self._CurrentModuleName)
             _newConstraintID = (self._CurrentModuleName + str(_designConstraintID))
             self._QTObj._qtProject._createNewDesignConstraint(_id = _newConstraintID, _type= _ConstraintParameter['Type'], _ParentName= self._CurrentModuleName)
-            print(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID]._ParseTree)
+            print(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID])
             for key in _ConstraintParameter:
                 if key == "Type":
                     continue
                 # print(_ConstraintParameter[key])
                 # self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID]._setDesignConstraintValue(key,_ConstraintParameter[key])
             self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID]._setDesignConstraintValue('_id',_newConstraintID)
-            print(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID]._ParseTree)
+            print(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID])
             print("DesignParameter ids ", self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName].keys())
             DC = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID]
-            self.dockContentWidget3_2.createNewConstraint(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID])
+            # self.dockContentWidget3_2.createNewConstraint(_id=_newConstraintID, _parentName=self._CurrentModuleName, _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
     def createNewConstraintPyCode(self,_PyCode):
 
