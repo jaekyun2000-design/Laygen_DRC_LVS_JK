@@ -2,8 +2,21 @@ import ast
 import astunparse
 
 # listTypeData = ['Lib','tb','PlaceDef','RouteDef','DRCDef','Iteration','P_R']
-custom_ast_list = ['Sref','Boundary','Path']
+custom_ast_list = ['Generator','Sref','Boundary','Path']
 #--start constants--
+
+class Generator(ast.AST):
+    def __init__(self, *args, **kwargs):
+        pass
+
+    _fields = (
+        'name',
+        'init',
+        'place',
+        'routing',
+        'DRC',
+        'main',
+    )
 
 
 class ElementNode(ast.AST):
@@ -67,6 +80,67 @@ class MacroSubscript(ast.AST):
         'id_attr',
         'index',
     )
+
+class GeneratorTransformer(ast.NodeTransformer):
+    def visit_Generator(self,node):
+        return ast.copy_location(
+            ast.ClassDef(
+                name=node.name,
+                bases= [
+                    ast.Name(
+                        id = 'StickDiagram._StickDiagram'
+                    )
+                ],
+                body = [
+                    ast.FunctionDef(
+                        name = '__init__',
+                        args = ast.arguments(
+                            args=[
+                                ast.arg(arg='self',annotation=None),
+                                ast.arg(arg='_DesignParameter=None',annotation=None),
+                                ast.arg(arg=f'_name="{node.name}"',annotation=None)
+                            ],
+                            defaults = [],
+                            decorator_list=[],
+                            vararg=None,
+                            kwonlyargs=[],
+                            kw_defaults=[],
+                            kwarg=None
+
+                        ),
+                        body=[
+
+                        ],
+                        decorator_list=[],
+                        returns = None
+                    ),
+                    ast.FunctionDef(
+                        name='place',
+                        args=ast.arguments(
+                            args=[
+                                ast.arg(arg='self', annotation=None),
+                            ],
+                            defaults=[],
+                            decorator_list=[],
+                            vararg=None,
+                            kwonlyargs=[],
+                            kw_defaults=[],
+                            kwarg=None
+
+                        ),
+                        body=[
+
+                        ],
+                        decorator_list=[],
+                        returns=None
+
+                    )
+                ],
+                keywords = [],
+                decorator_list = []
+            )
+            , node
+        )
 
 class ElementTransformer(ast.NodeTransformer):
     def visit_Boundary(self,node):
@@ -296,6 +370,12 @@ if __name__ == '__main__':
     ab = MacorSubscriptTransformer().visit(ab)
     print(astunparse.unparse(ab))
 
+    k = Generator()
+    k.name = 'FF'
+    asa = GeneratorTransformer()
+    kk = asa.visit(k)
+    astunparse.unparse(kk)
+    print(astunparse.unparse(kk))
     # d = MacroListSubscript(
     #     list_id = 'self',
     #     list_id_attr = '_DesignParameter',
