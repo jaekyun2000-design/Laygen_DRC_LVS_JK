@@ -1,5 +1,5 @@
 import ast
-import astunparse
+from PyCodes import element_ast
 import re
 import copy
 import inspect, sys
@@ -11,7 +11,10 @@ class _Custom_AST_API():
     def __init__(self):
         self.stmtList = []
         self.classList = []
+        self.custom_stmt_list = []
+        self.custom_class_list = []
         self._loadASTclassList()
+        self._load_customASTclassList()
 
     def _loadASTclassList(self):  # This function creates references when python version changes and ASTclass types are changed.
         for name, obj in inspect.getmembers(sys.modules['ast']):
@@ -19,11 +22,23 @@ class _Custom_AST_API():
                 self.stmtList.append(name)
                 self.classList.append(obj)
 
+    def _load_customASTclassList(self):
+        for name, obj in inspect.getmembers(element_ast):
+            if name in element_ast.custom_ast_list:
+                if inspect.isclass(obj):
+                    self.custom_stmt_list.append(name)
+                    self.custom_class_list.append(obj)
+
+
     def _createASTwithName(self,_name):
         _index = self.stmtList.index(_name)
         _tmp = self.classList[_index]
         return _tmp()
 
+    def _create_custom_ast_with_name(self,_name):
+        _index = self.custom_stmt_list.index(_name)
+        _tmp = self.custom_class_list[_index]
+        return _tmp()
 
 def _convertPyCodeToASTDict(_pyCode):
     _AST = ast.parse(_pyCode)
