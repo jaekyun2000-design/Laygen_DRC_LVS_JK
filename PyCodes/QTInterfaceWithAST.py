@@ -8,6 +8,7 @@ from PyQTInterface import VisualizationItem
 from PyCodes import EnvForClientSetUp
 from PyCodes import userDefineExceptions
 from PyCodes import ASTmodule
+from DesignManager.ElementManager import element_manager
 import ast, astunparse
 import pickle
 import gzip
@@ -396,6 +397,7 @@ class  QtProject:
         self._ParseTreeForDesignParameter = dict()
         self._ParseTreeForDesignConstrain = dict()  ####module, runset, argument --> _ParseTree
         self._LogMessageHandler = _LogMessageHandler
+        self._ElementManager = element_manager.ElementManager()
 
 
         # designParameter Definition
@@ -1216,6 +1218,36 @@ class  QtProject:
                 self._DesignParameter[_ParentName][_id]._createDesignParameter()
             except:
                 return userDefineExceptions._UnkownError
+
+    def _createNewDesignParameter_by_dict(self, module_name, _dp_dict):
+        if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
+            print("_createNewDesignParameter Run.")
+        if _dp_dict == None:
+            return userDefineExceptions._InvalidInputError
+        else:
+            try:
+                #create new design parameter
+                id_num = self._getDesignParameterId(module_name)
+                designID = (module_name + str(id_num))
+                self._createNewDesignParameter(_id=designID, _type=_dp_dict['_DesignParametertype'],_ParentName=module_name)
+                for key in _dp_dict:
+                    self._DesignParameter[self._CurrentModuleName][designID]._setDesignParameterValue(_index=key, _value=_dp_dict[key])
+                self._DesignParameter[self._CurrentModuleName][designID]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+
+                #send design parameter info to element manager --> return: ast info or
+                tmp_ast = self._ElementManager.get_dpdict_return_ast(_dp_dict)
+                if tmp_ast:
+                    _, constID = self._createNewDesignConstraintAST(_ASTDtype='ASTsingle', _AST=tmp_ast,_ParentName=module_name)
+
+                ########WIP
+                _designParameter = self._DesignParameter[self._CurrentModuleName][designID]
+                _designConstraint = self._designConstraint[self._CurrentModuleName][constID]
+                return [_designParamter,_designConstraint]
+            except:
+                return userDefineExceptions._UnkownError
+
+
+
     def _deleteDesignParameter(self, _id = None,  _ParentName = None ):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
             print("_deleteDesignParameter Run.")
@@ -1844,6 +1876,7 @@ class  QtProject:
                 return self._DesignConstraint[_ParentName][_id]._findSubHierarchy()
             except:
                 return userDefineExceptions._UnkownError
+
 class  QtInterFace:
     def __init__(self,):
         self._qtProject = None
