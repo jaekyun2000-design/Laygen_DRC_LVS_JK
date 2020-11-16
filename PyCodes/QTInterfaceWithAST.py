@@ -1570,14 +1570,14 @@ class QtProject:
                 self._createNewDesignParameter(_id=designID, _type=_dp_dict['_DesignParametertype'],
                                                _ParentName=module_name)
                 for key in _dp_dict:
-                    self._DesignParameter[self._CurrentModuleName][designID]._setDesignParameterValue(_index=key,
+                    self._DesignParameter[module_name][designID]._setDesignParameterValue(_index=key,
                                                                                                       _value=_dp_dict[
                                                                                                           key])
-                self._DesignParameter[self._CurrentModuleName][designID]._setDesignParameterName(
+                self._DesignParameter[module_name][designID]._setDesignParameterName(
                     _DesignParameterName=_dp_dict['_DesignParameterName'])
 
                 # send design parameter info to element manager --> return: ast info or
-                _designParameter = self._DesignParameter[self._CurrentModuleName][designID]
+                _designParameter = self._DesignParameter[module_name][designID]
                 _designConstraint = None
                 _designConstraint_id = None
                 if element_manger_update == True:
