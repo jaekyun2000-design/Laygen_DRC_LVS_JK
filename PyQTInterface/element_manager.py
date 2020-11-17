@@ -25,6 +25,8 @@ class ElementManager:
         else:
             return None
 
+        self.load_dp_dc(dp=None, dc=tmpAST)
+
         return tmpAST
 
 
@@ -34,8 +36,6 @@ class ElementManager:
             for key in KeyManager._Boundarykey.keys():
                 if key == '_DesignParametertype':
                     tmpDP[key] = 1
-                elif key == '_XYCoordinates':
-                    tmpDP[key] = [[int(ast.__dict__[key][0]),int(ast.__dict__[key][-1])]]
                 elif key == '_Ignore':
                     tmpDP[key] = None
                 else:
@@ -43,21 +43,48 @@ class ElementManager:
 
         elif ASTmodule._getASTtype(_ast) == 'Path':
             tmpDP = dict()
-            for key in KeyManager._Boundarykey.keys():
+            for key in KeyManager._Pathkey.keys():
                 if key == '_DesignParametertype':
-                    tmpDP[key] = 1
-                elif key == '_XYCoordinates':
-                    tmpDP[key] = [[int(ast.__dict__[key][0]),int(ast.__dict__[key][-1])]]
-                elif key == '_Ignore':
+                    tmpDP[key] = 2
+                elif key == '_Height':
+                    tmpDP[key] = None
+                elif key == '_Color':
+                    tmpDP[key] = None
+                elif key == '_ItemRef':
                     tmpDP[key] = None
                 else:
                     tmpDP[key] = ast.__dict__[key]
 
+        # elif ASTmodule._getASTtype(_ast) == 'SRef':
+        #     tmpDP = dict()
+        #     for key in KeyManager._Pathkey.keys():
+        #         if key == '_DesignParametertype':
+        #             tmpDP[key] = 3
+        #         elif key == '_Height':
+        #             tmpDP[key] = None
+        #         elif key == '_Color':
+        #             tmpDP[key] = None
+        #         elif key == '_ItemRef':
+        #             tmpDP[key] = None
+        #         else:
+        #             tmpDP[key] = ast.__dict__[key]
+
+        else:
+            return None
+
+        self.load_dp_dc(dp=tmpDP, dc=None)
+
         return tmpDP
 
-    def load_designpar_dc(self,dp,dc):
-        self.elementParameterDict[dp.name] = dp
-        self.elementConstraintDict[dc.name] = dc
+    def load_dp_dc(self,dp,dc):
+        if dc == None:
+            self.elementParameterDict[dp['_DesignParameterName']] = dp
+        elif dp == None:
+            self.elementConstraintDict[dc.__dict__['_DesignParameterName']] = dc
+
+        print(dp)
+        print(dc)
+        print('---')
 
 class KeyManager():
     _Boundarykey = dict(
@@ -81,12 +108,21 @@ class KeyManager():
         _ItemRef=None
         )
 
+    _SRefkey = dict(
+        _Name=None,
+        _DataType="SRef",
+        _XYCoordinates=[],
+        _ItemRef=None
+        )
+
 if __name__ == '__main__':
     a = ElementManager()
-    # x = {'_Layer': 'PIMP', '_DesignParametertype': 1, '_XYCoordinates': [[0, 0]], '_XWidth': 100.0, '_YWidth': 100.0, '_Ignore': None, '_DesignParameterName': 'qwe'}    # Boundary sample
-    x = {'_DesignParameterName': 'qwe', '_Layer': 'PIMP', '_DesignParametertype': 2, '_XYCoordinates': [[-445, 233], [33, 233], [33, -8]], '_Width': 100.0, '_Height': None, '_Color': None, '_ItemRef':None}  # Path sample
-    _ast = element_ast.Boundary()
-    _ast.__dict__ = dict(_DesignParameterName='qwe', _Layer='PIMP', _XWidth='100.0', _YWidth='100.0', _XYCoordinates='0,0')
+    # x = {'_Layer': 'PIMP', '_DesignParametertype': 1, '_XYCoordinates': [[0, 0]], '_XWidth': 100.0, '_YWidth': 100.0, '_Ignore': None, '_DesignParameterName': 'qwe'}    # DP Boundary sample
+    x = {'_DesignParameterName': 'qwe', '_Layer': 'PIMP', '_DesignParametertype': 2, '_XYCoordinates': [[-445, 233], [33, 233], [33, -8]], '_Width': 100.0, '_Height': None, '_Color': None, '_ItemRef':None}  # DP Path sample
+    # _ast = element_ast.Boundary()
+    # _ast.__dict__ = dict(_DesignParameterName='qwe', _Layer='PIMP', _XWidth=100.0, _YWidth=100.0, _XYCoordinates=[[0,0]]) # DC Boundary sample
+    _ast = element_ast.Path()
+    _ast.__dict__ = dict(_DesignParameterName='qwe',_Layer='PIMP',_XYCoordinates=[[-445, 233], [33, 233], [33, -8]],_Width=100) # DC Path sample
 
-    print(a.get_dpdict_return_ast(x))
-    # print(a.get_ast_return_dpdict(_ast))
+    a.get_dpdict_return_ast(x)
+    a.get_ast_return_dpdict(_ast)
