@@ -719,24 +719,14 @@ class _MainWindow(QMainWindow):
                 self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
             self.updateGraphicItem(visualItem)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Design Parameter Created")
-            #
-            #
-            # _designParameterID = self._QTObj._qtProject._getDesignParameterId(self._CurrentModuleName)
-            # _newDesignID = (self._CurrentModuleName + str(_designParameterID))
-            # self._QTObj._qtProject._createNewDesignParameter(_id = _newDesignID, _type= _DesignParameter['_DesignParametertype'], _ParentName= self._CurrentModuleName)
-            # print(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][_newDesignID]._DesignParameter)
-            # for key in _DesignParameter:
-            #     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][_newDesignID]._setDesignParameterValue(_index = key, _value= _DesignParameter[key])
-            # self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][_newDesignID]._setDesignParameterName(_DesignParameterName=_DesignParameter['_DesignParameterName'])
-            #
-            # print(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][_newDesignID])
-            #
-            # print(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][_newDesignID]._DesignParameter)
-            # # self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][_newDesignID]._updateVisualItem()
-            # # visualItem = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][_newDesignID]._VisualizationItemObj
-            # if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][_newDesignID]._type == 2:
-            #     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][_newDesignID]._XYCoordinatesForDisplay = _DesignParameter['_XYCoordinates']
 
+            try:
+                if design_dict['constraint']:
+                    self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                     _parentName=self._CurrentModuleName,
+                                                                     _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+            except:
+                print("Invalid ast.")
 
 
 
@@ -907,6 +897,17 @@ class _MainWindow(QMainWindow):
             design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= _AST)
             self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
                                                              _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+
+            try:
+                if design_dict['parameter']:
+                    visualItem = self.createVisualItemfromDesignParameter(
+                        self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
+                    self.updateGraphicItem(visualItem)
+                    pass
+            except:
+                print("Invalid design parameter dict")
+
+
             # a, ids = self._QTObj._qtProject._createNewDesignConstraintAST(_ASTDtype='ASTsingle', _AST=_AST,_ParentName=self._CurrentModuleName)
             # id = ids[0]
             # self.dockContentWidget3_2.createNewConstraintAST(_id = id, _parentName= self._CurrentModuleName, _DesignConstraint = self._QTObj._qtProject._DesignConstraint)
