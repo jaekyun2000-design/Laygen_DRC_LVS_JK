@@ -1581,11 +1581,14 @@ class QtProject:
                 _designConstraint = None
                 _designConstraint_id = None
                 if element_manger_update == True:
-                    tmp_ast = self._ElementManager.get_dpdict_return_ast(_dp_dict)
-                    if tmp_ast:
-                        tmp_dict = self._feed_ast(_ast=tmp_ast, module_name=module_name,element_manger_update=False)
-                        _designConstraint = tmp_dict['constraint']
-                        _designConstraint_id = tmp_dict['constraint_id']
+                    try:
+                        tmp_ast = self._ElementManager.get_dpdict_return_ast(_dp_dict)
+                        if tmp_ast:
+                            tmp_dict = self._feed_ast(_ast=tmp_ast, module_name=module_name,element_manager_update=False)
+                            _designConstraint = tmp_dict['constraint']
+                            _designConstraint_id = tmp_dict['constraint_id']
+                    except:
+                        print('Constraint -> Parameter is not implemented')
 
                 output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': designID, 'constraint_id': _designConstraint_id}
                 return output
@@ -1619,7 +1622,7 @@ class QtProject:
                 if _ParentName not in self._DesignConstraint.keys():
                     self._DesignConstraint[_ParentName] = dict()
                 self._DesignConstraint[_ParentName][_id] = QtDesinConstraint(_id=_id, _type=_type, _ast=_ast)
-                self._DesignConstraint[_ParentName][_id]._createDesignConstrain()
+                # self._DesignConstraint[_ParentName][_id]._createDesignConstrain()
             except:
                 print("_createNewDesignConstraint Error")
                 return userDefineExceptions._UnkownError
@@ -1697,12 +1700,16 @@ class QtProject:
                 _designConstraint = self._DesignConstraint[module_name][constraintID]
                 _designParameter = None
                 _designParameter_id = None
-                if element_manger_update == True:
-                    tmp_dp_dict = self._ElementManager.get_ast_return_dpdict(_ast)
-                    if tmp_dp_dict:
-                        tmp_dict = self._feed_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, element_manger_update=False)
-                        _designParameter = tmp_dict['parameter']
-                        _designParameter_id = tmp_dict['parameter_id']
+                if element_manager_update == True:
+                    try:
+                        tmp_dp_dict = self._ElementManager.get_ast_return_dpdict(_ast)
+                        if tmp_dp_dict:
+                            tmp_dict = self._feed_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, element_manger_update=False)
+                            _designParameter = tmp_dict['parameter']
+                            _designParameter_id = tmp_dict['parameter_id']
+                    except:
+                        print("Constraint -> Parameter is not implemented.")
+
 
                 output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': _designParameter_id, 'constraint_id': constraintID}
                 return output
