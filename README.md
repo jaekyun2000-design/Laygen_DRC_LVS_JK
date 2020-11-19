@@ -6,5 +6,7 @@ $ pip install astunparse PyQt5
 ```
   
   
-  # Run file
-  
+# Run file
+```sh
+python ./PyQTInterface/MainWindow.py
+```
