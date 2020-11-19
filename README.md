@@ -1,9 +1,9 @@
 # LayGenGUI
 
 # Required module
-'''sh
+```sh
 $ pip install astunparse PyQt5
-'''
+```
   
   
   # Run file
