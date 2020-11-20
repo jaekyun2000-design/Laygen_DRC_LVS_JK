@@ -15,7 +15,7 @@ elif _Technology =='090nm':
     _UploadDirectory = '/OPUS/tsmc90WorkingSpace/gdsFile'
 elif _Technology =='045nm':
     _UploadDirectory = '/OPUS/tsmc40WorkingSpace/gdsFile'
-_HomeDirectory = os.path.dirname(os.getcwd())
+_HomeDirectory = os.getcwd()
 _LayerMapping=dict()
 
 def _ReadLayerMapFile(_LayerMapFile, CadenceVersion ):

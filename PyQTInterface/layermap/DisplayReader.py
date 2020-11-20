@@ -6,7 +6,7 @@ from PyQt5.QtGui import QColor
 
 print("*********Display information file load Start")
 _Technology='065nm'
-_HomeDirectory = os.path.dirname(os.getcwd())
+_HomeDirectory = os.getcwd()
 _DisplayDict = dict()
 _ColorDict = dict()
 
