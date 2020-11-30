@@ -192,10 +192,16 @@ class _VisualizationItem(QGraphicsItemGroup):
             QtDesignParameter._XYCoordinatesForDisplay = []
         if QtDesignParameter._XYCoordinatesForDisplay == [] or QtDesignParameter._XYCoordinatesForDisplay == None:
             QtDesignParameter._XYCoordinatesForDisplay = [[0,0]]
+
+
+
         if self._type == 1:
             self._XYCoordinatesForDisplay = QtDesignParameter._XYCoordinatesForDisplay
+            QtDesignParameter._DesignParameter["_XYCoordinatesForDisplay"] = QtDesignParameter._XYCoordinatesForDisplay
         elif self._type == 2:
             self._XYCoordinatesForDisplay = QtDesignParameter._XYCoordinatesForDisplay
+            QtDesignParameter._DesignParameter["_XYCoordinatesForDisplay"] = QtDesignParameter._XYCoordinatesForDisplay
+
         if QtDesignParameter._DesignParameterName == None:
             QtDesignParameter._DesignParameterName = QtDesignParameter._id
             self._ItemTraits['_DesignParameterName'] = QtDesignParameter._id
@@ -217,6 +223,9 @@ class _VisualizationItem(QGraphicsItemGroup):
         for key in _ItemTraits.keys():                      #set itemTrait on Object)
             if key == "_XYCoordinates":
                 self._ItemTraits[key] = _ItemTraits[key]
+            if key == "_XYCoordinatesForDisplay":
+                  self._ItemTraits["_XYCoordinates"] = _ItemTraits["_XYCoordinatesForDisplay"]
+
             elif key == "_DesignParameterName":
                 self._DesignParameterName = _ItemTraits[key]
             else:
