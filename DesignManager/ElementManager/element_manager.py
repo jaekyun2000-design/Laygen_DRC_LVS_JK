@@ -52,7 +52,7 @@ class ElementManager:
 
 
     def get_ast_return_dpdict(self, ast):
-        if ASTmodule._getASTtype(_ast) == 'Boundary':
+        if ASTmodule._getASTtype(ast) == 'Boundary':
             tmpDP = dict()
             for key in KeyManager._Boundarykey.keys():
                 if key == '_Layer':
@@ -60,7 +60,8 @@ class ElementManager:
                 elif key == '_DesignParametertype':
                     tmpDP[key] = 1
                 elif key == '_XYCoordinates':
-                    tmpDP[key] = ast.__dict__['XY']
+                    slicing = ast.__dict__['XY'].find(',')
+                    tmpDP[key] = [[float(ast.__dict__['XY'][:slicing]),float(ast.__dict__['XY'][slicing+1:])]]
                 elif key == '_XWidth':
                     tmpDP[key] = ast.__dict__['width']
                 elif key == '_YWidth':
@@ -70,7 +71,7 @@ class ElementManager:
                 elif key == '_DesignParameterName':
                     tmpDP[key] = ast.__dict__['name']
 
-        elif ASTmodule._getASTtype(_ast) == 'Path':
+        elif ASTmodule._getASTtype(ast) == 'Path':
             tmpDP = dict()
             for key in KeyManager._Pathkey.keys():
                 if key == '_DesignParameterName':
@@ -90,7 +91,7 @@ class ElementManager:
                 elif key == '_ItemRef':
                     tmpDP[key] = None
 
-        # elif ASTmodule._getASTtype(_ast) == 'SRef':
+        # elif ASTmodule._getASTtype(ast) == 'SRef':
         #     tmpDP = dict()
         #     for key in KeyManager._Pathkey.keys():
         #         if key == '_DesignParametertype':
@@ -150,14 +151,14 @@ class KeyManager():
         _ItemRef=None
         )
 
-if __name__ == '__main__':
-    a = ElementManager()
-    # x = {'_Layer': 'PIMP', '_DesignParametertype': 1, '_XYCoordinates': [[0, 0]], '_XWidth': 100.0, '_YWidth': 100.0, '_Ignore': None, '_DesignParameterName': 'qwe'}    # DP Boundary sample
-    x = {'_DesignParameterName': 'qwe', '_Layer': 'PIMP', '_DesignParametertype': 2, '_XYCoordinates': [[-445, 233], [33, 233], [33, -8]], '_Width': 100.0, '_Height': None, '_Color': None, '_ItemRef':None}  # DP Path sample
-    # _ast = element_ast.Boundary()
-    # _ast.__dict__ = dict(name='qwe', layer='PIMP', width=100.0, height=100.0, XY=[[0,0]]) # DC Boundary sample
-    _ast = element_ast.Path()
-    _ast.__dict__ = dict(name='qwe',layer='PIMP',XY=[[-445, 233], [33, 233], [33, -8]],width=100) # DC Path sample
-
-    a.get_dpdict_return_ast(x)
-    a.get_ast_return_dpdict(_ast)
+# if __name__ == '__main__':
+#     a = ElementManager()
+#     # x = {'_Layer': 'PIMP', '_DesignParametertype': 1, '_XYCoordinates': [[0, 0]], '_XWidth': 100.0, '_YWidth': 100.0, '_Ignore': None, '_DesignParameterName': 'qwe'}    # DP Boundary sample
+#     x = {'_DesignParameterName': 'qwe', '_Layer': 'PIMP', '_DesignParametertype': 2, '_XYCoordinates': [[-445, 233], [33, 233], [33, -8]], '_Width': 100.0, '_Height': None, '_Color': None, '_ItemRef':None}  # DP Path sample
+#     # _ast = element_ast.Boundary()
+#     # _ast.__dict__ = dict(name='qwe', layer='PIMP', width=100.0, height=100.0, XY=[[0,0]]) # DC Boundary sample
+#     _ast = element_ast.Path()
+#     _ast.__dict__ = dict(name='qwe',layer='PIMP',XY=[[-445, 233], [33, 233], [33, -8]],width=100) # DC Path sample
+#
+#     a.get_dpdict_return_ast(x)
+#     a.get_ast_return_dpdict(_ast)
