@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# to use comment written with korean, use above code
 import sys
 import os
 
@@ -1531,8 +1529,13 @@ class QtProject:
 
         return output
 
-    def _update_design(self, design_type: str, module_name: str=None, id: str=None, _ast: ast.AST=None, dp_dict: dict=None) -> dict:
-        pass
+    def _update_design(self, design_type: str, module_name: str, id: str, _ast: ast.AST=None, dp_dict: dict=None) -> dict:
+        if design_type == 'parameter':
+            output = self._update_design_dictionary(module_name=module_name, id=id, _dp_dict=dp_dict)
+        elif design_type == 'constraint':
+            output = self._update_ast(module_name=module_name, id=id, _ast=_ast)
+
+        return output
 
     def _createNewDesignParameter(self, _id=None, _type=None, _ParentName=None):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
@@ -1573,10 +1576,9 @@ class QtProject:
                     self._DesignParameter[module_name][designID]._setDesignParameterValue(_index=key,
                                                                                                       _value=_dp_dict[
                                                                                                           key])
-
                 self._DesignParameter[module_name][designID]._setDesignParameterName(
                     _DesignParameterName=_dp_dict['_DesignParameterName'])
-                self._UpdateXYCoordinateForDisplay(_id=designID,_ParentName=module_name)
+
                 # send design parameter info to element manager --> return: ast info or
                 _designParameter = self._DesignParameter[module_name][designID]
                 _designConstraint = None
@@ -1588,10 +1590,49 @@ class QtProject:
                             tmp_dict = self._feed_ast(_ast=tmp_ast, module_name=module_name,element_manager_update=False)
                             _designConstraint = tmp_dict['constraint']
                             _designConstraint_id = tmp_dict['constraint_id']
+                            self._ElementManager.load_dp_dc(_designParameter, _designConstraint)
                     except:
                         print('Constraint -> Parameter is not implemented')
 
                 output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': designID, 'constraint_id': _designConstraint_id}
+                return output
+            except:
+                return userDefineExceptions._UnkownError
+
+    def _update_design_dictionary(self, module_name: str, id: str, _dp_dict: dict, element_manger_update: bool = True) -> dict:
+        # _createNewDesignParameter_by_dict(self, module_name, _dp_dict, element_manger_update=True):
+        """
+        :param module_name:  current module name
+        :param _dp_dict: dictionary file which contains design parameter values
+        :param element_manger_update: This argument prevent recursive call btw createNewDesignParameter_by_dict and
+        createNewDesignConstraint.
+        :return:
+        """
+        if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
+            print("_createNewDesignParameter Run.")
+        if _dp_dict == None:
+            return userDefineExceptions._InvalidInputError
+        else:
+            try:
+                for key in _dp_dict:
+                    self._DesignParameter[module_name][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
+                self._DesignParameter[module_name][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+
+                # send design parameter info to element manager --> return: ast info or
+                _designParameter = self._DesignParameter[module_name][id]
+                _designConstraint = None
+                _designConstraint_id = None
+                if element_manger_update == True:
+                    try:
+                        tmp_ast = self._ElementManager.get_dpdict_return_ast(_dp_dict)
+                        if tmp_ast:
+                            tmp_dict = self._update_ast(_ast=tmp_ast, module_name=module_name, id=id, element_manager_update=False)
+                            _designConstraint = tmp_dict['constraint']
+                            _designConstraint_id = tmp_dict['constraint_id']
+                    except:
+                        print('Constraint -> Parameter is not implemented')
+
+                output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': id, 'constraint_id': _designConstraint_id}
                 return output
             except:
                 return userDefineExceptions._UnkownError
@@ -1708,11 +1749,39 @@ class QtProject:
                             tmp_dict = self._feed_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, element_manger_update=False)
                             _designParameter = tmp_dict['parameter']
                             _designParameter_id = tmp_dict['parameter_id']
+                            self._ElementManager.load_dp_dc(_designParameter, _designConstraint)
                     except:
                         print("Constraint -> Parameter is not implemented.")
 
 
                 output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': _designParameter_id, 'constraint_id': constraintID}
+                return output
+            except:
+                return userDefineExceptions._UnkownError
+
+    def _update_ast(self, module_name: str, id: str, _ast: ast.AST, element_manager_update: bool=True) -> list:
+        if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
+            print("_createNewDesignParameter Run.")
+        if _ast == None:
+            return userDefineExceptions._InvalidInputError
+        else:
+            try:
+                # send design parameter info to element manager --> return: ast info or
+                _designConstraint = self._DesignConstraint[module_name][id]
+                _designParameter = None
+                _designParameter_id = None
+                if element_manager_update == True:
+                    try:
+                        tmp_dp_dict = self._ElementManager.get_ast_return_dpdict(_ast)
+                        if tmp_dp_dict:
+                            tmp_dict = self._update_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, id=id, element_manger_update=False)
+                            _designParameter = tmp_dict['parameter']
+                            _designParameter_id = tmp_dict['parameter_id']
+                    except:
+                        print("Constraint -> Parameter is not implemented.")
+
+
+                output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': _designParameter_id, 'constraint_id': id}
                 return output
             except:
                 return userDefineExceptions._UnkownError
