@@ -353,7 +353,7 @@ class _PathSetupWindow(QWidget):
                     X = int(XY.text().split(',')[0])
                     Y = int(XY.text().split(',')[1])
                     self._DesignParameter['_XYCoordinates'].append([X,Y])
-                    self._DesignParameter['_XYCoordinatesForDisplay'].append([X,Y])
+                    # self._DesignParameter['_XYCoordinatesForDisplay'].append([X,Y])
 
                 except:
                     self.warning = QMessageBox()

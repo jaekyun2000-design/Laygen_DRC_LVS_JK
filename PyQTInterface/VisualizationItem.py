@@ -157,7 +157,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         self._id = None
         self._type = None
         self.setFlag(QGraphicsItemGroup.ItemIsSelectable,True)
-        self._XYCoordinatesForDisplay = []
+        # self._XYCoordinatesForDisplay = []
         self._clickFlag = True
         self._isInHierarchy = False
         self._NoShowFlag = False
@@ -191,15 +191,18 @@ class _VisualizationItem(QGraphicsItemGroup):
         except:
             QtDesignParameter._XYCoordinatesForDisplay = []
         if QtDesignParameter._XYCoordinatesForDisplay == [] or QtDesignParameter._XYCoordinatesForDisplay == None:
-            QtDesignParameter._XYCoordinatesForDisplay = [[0,0]]
+            if QtDesignParameter._DesignParameter['_XYCoordinatesForDisplay']:
+                QtDesignParameter._XYCoordinatesForDisplay = QtDesignParameter._DesignParameter['_XYCoordinatesForDisplay']
+            else:
+                QtDesignParameter._XYCoordinatesForDisplay = [[0,0]]
 
 
 
         if self._type == 1:
-            self._XYCoordinatesForDisplay = QtDesignParameter._XYCoordinatesForDisplay
+            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
             QtDesignParameter._DesignParameter["_XYCoordinatesForDisplay"] = QtDesignParameter._XYCoordinatesForDisplay
         elif self._type == 2:
-            self._XYCoordinatesForDisplay = QtDesignParameter._XYCoordinatesForDisplay
+            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
             QtDesignParameter._DesignParameter["_XYCoordinatesForDisplay"] = QtDesignParameter._XYCoordinatesForDisplay
 
         if QtDesignParameter._DesignParameterName == None:
@@ -213,23 +216,23 @@ class _VisualizationItem(QGraphicsItemGroup):
         # self.setPos(tmpX,tmpY)
 
 
-    def updateTraits(self,_ItemTraits):
-        if self._XYCoordinatesForDisplay == None or len(self._XYCoordinatesForDisplay) == 0 :
-            self._XYCoordinatesForDisplay = [[0,0]]
+    def updateTraits(self,_DesignParameter):
+        if self._ItemTraits['_XYCoordinates'] or len(self._ItemTraits['_XYCoordinates']) == 0 :
+            self._ItemTraits['_XYCoordinates'] = [[0,0]]
         else:
             pass
             # self._ItemTraits['_XYCoordinates'] = self._XYCoordinatesForDisplay
 
-        for key in _ItemTraits.keys():                      #set itemTrait on Object)
+        for key in _DesignParameter.keys():                      #set itemTrait on Object)
             if key == "_XYCoordinates":
-                self._ItemTraits[key] = _ItemTraits[key]
+                self._ItemTraits[key] = _DesignParameter[key]
             if key == "_XYCoordinatesForDisplay":
-                  self._ItemTraits["_XYCoordinates"] = _ItemTraits["_XYCoordinatesForDisplay"]
+                  self._ItemTraits["_XYCoordinates"] = _DesignParameter["_XYCoordinatesForDisplay"]
 
             elif key == "_DesignParameterName":
-                self._DesignParameterName = _ItemTraits[key]
+                self._DesignParameterName = _DesignParameter[key]
             else:
-                self._ItemTraits[key] = _ItemTraits[key]
+                self._ItemTraits[key] = _DesignParameter[key]
 
         if self._ItemTraits['_DesignParametertype'] == 1:           # Boundary
             try:
@@ -624,4 +627,4 @@ class _VisualizationItem(QGraphicsItemGroup):
         # y = int(self.pos())
         x = self.pos().x()
         y = self.pos().y()
-        self._XYCoordinatesForDisplay = [[int(x),int(y)]]
+        self._ItemTraits['_XYCoordinates'] = [[int(x),int(y)]]
