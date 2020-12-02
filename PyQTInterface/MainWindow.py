@@ -800,6 +800,11 @@ class _MainWindow(QMainWindow):
         visualItem = self.updateVisualItemFromDesignParameter(self._QTObj._qtProject._DesignParameter[_Module][_ID])
         self.updateGraphicItem(visualItem)
 
+        design_dict = self._QTObj._qtProject._update_design(design_type='parameter', module_name=self._CurrentModuleName,
+                                                          dp_dict=_DesignParameter, id=_ID)
+
+        
+
         # pass
         # id =
         # for key in _DesignParameter:
@@ -903,7 +908,6 @@ class _MainWindow(QMainWindow):
                     visualItem = self.createVisualItemfromDesignParameter(
                         self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
                     self.updateGraphicItem(visualItem)
-                    pass
             except:
                 print("Invalid design parameter dict")
 
