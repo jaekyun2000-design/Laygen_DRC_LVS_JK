@@ -1759,35 +1759,29 @@ class QtProject:
             except:
                 return userDefineExceptions._UnkownError
 
-    def _update_ast(self, module_name: str, _ast: ast.AST, element_manager_update: bool=True) -> list:
+    def _update_ast(self, module_name: str, id: str, _ast: ast.AST, element_manager_update: bool=True) -> list:
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
             print("_createNewDesignParameter Run.")
         if _ast == None:
             return userDefineExceptions._InvalidInputError
         else:
             try:
-                # create new design parameter
-                id_num = self._getDesignConstraintId(module_name)
-                constraintID = (module_name + str(id_num))
-                self._createNewDesignConstraint(_id=constraintID, _type=ASTmodule._getASTtype(_ast),
-                                                _ParentName=module_name, _ast=_ast)
-
                 # send design parameter info to element manager --> return: ast info or
-                _designConstraint = self._DesignConstraint[module_name][constraintID]
+                _designConstraint = self._DesignConstraint[module_name][id]
                 _designParameter = None
                 _designParameter_id = None
                 if element_manager_update == True:
                     try:
                         tmp_dp_dict = self._ElementManager.get_ast_return_dpdict(_ast)
                         if tmp_dp_dict:
-                            tmp_dict = self._feed_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, element_manger_update=False)
+                            tmp_dict = self._update_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, id=id, element_manger_update=False)
                             _designParameter = tmp_dict['parameter']
                             _designParameter_id = tmp_dict['parameter_id']
                     except:
                         print("Constraint -> Parameter is not implemented.")
 
 
-                output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': _designParameter_id, 'constraint_id': constraintID}
+                output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': _designParameter_id, 'constraint_id': id}
                 return output
             except:
                 return userDefineExceptions._UnkownError
