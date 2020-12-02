@@ -641,7 +641,6 @@ class _MainWindow(QMainWindow):
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Load PySource Fail: Unknown")
             pass
 
-    #
     # def loadPy(self):
     #     self.loadWorker = ThreaderForProgress.loadPyWorker()
     #     self.loadWorker.loadPy(contentWidget=self.dockContentWidget3_2,_QTobj=self._QTObj,_CurrentModuleName= self._CurrentModuleName)
