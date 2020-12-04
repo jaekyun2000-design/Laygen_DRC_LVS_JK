@@ -617,6 +617,46 @@ class _MainWindow(QMainWindow):
 
         print("Load GDS Done")
 
+    def loadPy_Legacy_20200410(self):
+        scf = QFileDialog.getOpenFileName(self, 'Load SourceCode', './sourceCode')
+        try:
+            _fileName = scf[0]
+            print("loadFile")
+            self.dockContentWidget4ForLoggingMessage._InfoMessage("Convert Pysource to AST.")
+            _STMTlist, _ids = self._QTObj._qtProject._loadConstraintsFromPySource(_file=_fileName, _topModuleName=self._CurrentModuleName)
+            print("FileLoadEnd")
+            self.dockContentWidget4ForLoggingMessage._InfoMessage("Conversion Done!")
+            self.dockContentWidget4ForLoggingMessage._InfoMessage("Convert AST to STMT list.")
+            #_idToSTMTdict = ASTmodule._searchSTMTlistWithIDList(_STMTlist, _ids)
+            _idToSTMTdict = ASTmodule._returnChildIDandAST(_STMTlist)
+            self.dockContentWidget3_2.createNewConstraintSTMTList(_STMTlist, _idToSTMTdict)
+            self.dockContentWidget4ForLoggingMessage._InfoMessage("Conversion Done!")
+            print("Load Pysource Success!")
+        except:
+            print("Load PySource Failed")
+            self.dockContentWidget4ForLoggingMessage._WarningMessage("Load PySource Fail: Unknown")
+            pass
+
+    # def loadPy(self):
+    #     self.loadWorker = ThreaderForProgress.loadPyWorker()
+    #     self.loadWorker.loadPy(contentWidget=self.dockContentWidget3_2,_QTobj=self._QTObj,_CurrentModuleName= self._CurrentModuleName)
+    #
+    # def aloadPy(self):
+    #     self.qpd = SetupWindow._Progress()
+    #     self.qpd.show()
+    #
+    # def bloadPy(self,_fileName):
+    #
+    #     self.dockContentWidget4ForLoggingMessage._InfoMessage("Convert Pysource to AST.")
+    #     _none, _id = self._QTObj._qtProject._loadConstraintsFromPySource(_file=_fileName, _topModuleName=self._CurrentModuleName)
+    #     self.dockContentWidget4ForLoggingMessage._InfoMessage("Conversion Done!")
+    #
+    #     self.dockContentWidget4ForLoggingMessage._InfoMessage("Convert DC to TreeView")
+    #     self.dockContentWidget3_2.createNewConstraintAST(_id=_id, _parentName=self._CurrentModuleName, _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+    #     self.dockContentWidget4ForLoggingMessage._InfoMessage("Conversion Done!")
+
+
+
 
     def loadPy(self):
         scf = QFileDialog.getOpenFileName(self, 'Load SourceCode', './sourceCode')
@@ -647,6 +687,10 @@ class _MainWindow(QMainWindow):
         print(val)
         self.qpd.setValue(val)
 
+
+    #def launch_ProgressDiag_Thread(self,Name,Cancel,Min,Max):
+    #    t = threading.Thread(target=self.progress_Diag,args=(Name,Cancel,Min,Max))
+    #    t.start()
 
     def run_progress_Diag(self,Name,Cancel,Min,Max):
         self.qpd = QProgressDialog(Name,Cancel,Min,Max, self)
@@ -695,12 +739,30 @@ class _MainWindow(QMainWindow):
     def updateXYCoordinatesForDisplay(self):
         print("debug,updateXYforDisplay")
 
-
+        # _ID = _DesignParameter['_id']
+        # _Module = _ID[:-1]
+        # while (_Module in self._QTObj._qtProject._DesignParameter) == False:
+        #     _Module = _Module[:-1]
+        #
         for module in self._QTObj._qtProject._DesignParameter:
             for id in self._QTObj._qtProject._DesignParameter[module]:
                 if id in self.visualItemDict:
                     self._QTObj._qtProject._DesignParameter[module][id]._XYCoordinatesForDisplay = self.visualItemDict[id]._XYCoordinatesForDisplay
 
+        #
+        #
+        # for visualItemName in self.visualItemDict:
+        #     print(self.visualItemDict[visualItemName]._XYCoordinatesForDisplay)
+        #
+
+
+
+
+    # def createVisualItemfromDesignParameter(self,DesignParameter): #Origin
+    #     visualItem = VisualizationItem._VisualizationItem()
+    #     visualItem.updateTraits(DesignParameter._DesignParameter)
+    #     self.visualItemDict[DesignParameter._id] = visualItem
+    #     return visualItem
 
     def createVisualItemfromDesignParameter(self,DesignParameter):
         visualItem = VisualizationItem._VisualizationItem()
@@ -736,6 +798,12 @@ class _MainWindow(QMainWindow):
         design_dict = self._QTObj._qtProject._update_design(design_type='parameter', module_name=self._CurrentModuleName,
                                                           dp_dict=_DesignParameter, id=_ID)
 
+        
+
+        # pass
+        # id =
+        # for key in _DesignParameter:
+        #     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][_newDesignID]._setDesignParameterValue(_index = key, _value= _DesignParameter[key])
 
     def deliveryDesignParameter(self):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()
@@ -839,6 +907,15 @@ class _MainWindow(QMainWindow):
                 print("Invalid design parameter dict")
 
 
+            # a, ids = self._QTObj._qtProject._createNewDesignConstraintAST(_ASTDtype='ASTsingle', _AST=_AST,_ParentName=self._CurrentModuleName)
+            # id = ids[0]
+            # self.dockContentWidget3_2.createNewConstraintAST(_id = id, _parentName= self._CurrentModuleName, _DesignConstraint = self._QTObj._qtProject._DesignConstraint)
+            # pass
+            # # STMTList , ids = self._QTObj._qtProject._createNewDesignConstraintAST( _ASTDtype = 'STMT', _STMTList = _STMT ,_ParentName=self._CurrentModuleName)
+            # #_idToSTMTdict = ASTmodule._searchSTMTlistWithIDList(STMTList, ids)
+            # _idToSTMTdict = ASTmodule._returnChildIDandAST(STMTList)
+            # self.dockContentWidget3_2.createNewConstraintSTMTList(STMTList,_idToSTMTdict)
+
     def createNewConstraintWithRawAST(self,_AST):
         if self._QTObj._qtProject == None:
             self.warning = QMessageBox()
@@ -910,6 +987,18 @@ class _MainWindow(QMainWindow):
         _STMT = self._QTObj._qtProject._DesignConstraint[_Module][_id]._readConstraintValueAsSTMT()
 
         self.dockContentWidget3_2.receiveConstraintSTMT(_STMT)
+
+        # _id = updateDict['_id']
+        # _Module = re.sub('[0-9]+', '', _id)
+        #
+        # for key in updateDict:
+        #     if key == "_id":
+        #         continue
+        #     else:
+        #         self._QTObj._qtProject._DesignConstraint[_Module][_id]._setDesignConstraintValue(_index=key, _value=updateDict[key])
+        # _STMT = self._QTObj._qtProject._DesignConstraint[_Module][_id]._readConstraintValueAsSTMT()
+        #
+        # self.dockContentWidget3_2.receiveConstraintSTMT(_STMT)
 
 
     def setRootConstraint(self,_id):
