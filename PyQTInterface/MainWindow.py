@@ -29,7 +29,7 @@ import json
 import astunparse
 
 ##################
-
+DEBUG = True
 subnanoMinimumScale =5 # 5 means(default)
 subnanoViewScale = 1  #
                       # 1 means(default): coordinates default unit is 1nm,
@@ -567,7 +567,8 @@ class _MainWindow(QMainWindow):
                     idLength += len(self._QTObj._qtProject._DesignParameter[modules])
 
 
-                print(idLength)
+                if DEBUG:
+                    print(f'idLength= {idLength}')
                 j = 0
                 self.qpd = QProgressDialog("Load GDS...","Cancel",0,idLength,self)
                 self.qpd.setWindowModality(Qt.WindowModal)
@@ -577,15 +578,13 @@ class _MainWindow(QMainWindow):
             for module in addedModuleList:
                 try:
                     for id in self._QTObj._qtProject._DesignParameter[module]:
-                        if self._QTObj._qtProject._DesignParameter[module][id]._type == 1:    #Case Of Boundary
-                            for i in range(0,len(self._QTObj._qtProject._DesignParameter[module][id]._XYCoordinatesForDisplay)):
-                                tmpXYs = self._QTObj._qtProject._DesignParameter[module][id]._XYCoordinatesForDisplay[i]
-                                centerXY,Xwidth,Ywidth = self._QTObj._qtProject._XYCoordinate2CenterCoordinateAndWidth(tmpXYs)
-                                self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_XWidth'] = Xwidth
-                                self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_YWidth'] = Ywidth
-                                self._QTObj._qtProject._DesignParameter[module][id]._XYCoordinatesForDisplay[i] = list(centerXY)
-                                self._QTObj._qtProject._DesignParameter[module][id]._XYCoordinatesForDisplay[i][0] -= self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_XWidth']/2
-                                self._QTObj._qtProject._DesignParameter[module][id]._XYCoordinatesForDisplay[i][1] -= self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_YWidth']/2
+
+                        if self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignParametertype'] == 3:
+                            continue
+                        if self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignParametertype'] == 2:
+                            debug = 1
+
+
                         visualItem = self.createVisualItemfromDesignParameter(self._QTObj._qtProject._DesignParameter[module][id])
                         self.updateGraphicItem(visualItem)
                 except:
@@ -601,18 +600,18 @@ class _MainWindow(QMainWindow):
             self._QTObj._qtProject._resetXYCoordinatesForDisplay()
 
             # After Load All DesignParameter!!!! Now Setting For SRef!!!!
-            for module in addedModuleList:
-                for id in self._QTObj._qtProject._DesignParameter[module]:
-                    if self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignParametertype'] == 3:   #In Case Of SRef!
-
-                        correspondingModule = self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignObj']
-                        for correspondingID in self._QTObj._qtProject._DesignParameter[correspondingModule]:
-                            print(correspondingID)
-                            correspondingVisualItem = self.visualItemDict[correspondingID]
-                            srefVisualItem = self.visualItemDict[id]
-                            srefVisualItem.updateDesignObj(correspondingVisualItem)
-                            # print("ee!")
-                        # print("find!!!")
+            # for module in addedModuleList:
+            #     for id in self._QTObj._qtProject._DesignParameter[module]:
+            #         if self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignParametertype'] == 3:   #In Case Of SRef!
+            #
+            #             correspondingModule = self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignObj']
+            #             for correspondingID in self._QTObj._qtProject._DesignParameter[correspondingModule]:
+            #                 print(correspondingID)
+            #                 correspondingVisualItem = self.visualItemDict[correspondingID]
+            #                 srefVisualItem = self.visualItemDict[id]
+            #                 srefVisualItem.updateDesignObj(correspondingVisualItem)
+            #                 # print("ee!")
+            #             # print("find!!!")
 
         except:
             print("Load GDS Failed")

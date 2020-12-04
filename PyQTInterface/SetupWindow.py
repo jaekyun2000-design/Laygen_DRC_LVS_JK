@@ -163,7 +163,7 @@ class _BoundarySetupWindow(QWidget):
                     X = int(XY.text().split(',')[0])
                     Y = int(XY.text().split(',')[1])
                     self._DesignParameter['_XYCoordinates']=[[X,Y]]
-                    self._DesignParameter['_XYCoordinatesForDisplay'] = [[X,Y]]
+                    # self._DesignParameter['_XYCoordinatesForDisplay'] = [[X,Y]]
                 except:
                     self.warning = QMessageBox()
                     self.warning.setIcon(QMessageBox.Warning)
@@ -334,7 +334,7 @@ class _PathSetupWindow(QWidget):
             self.layer_input.setCurrentIndex(layerIndex)
         for i in range(len(self._DesignParameter['_XYCoordinates'])):
             CurrentEditPointNum = len(self.XYdictForLineEdit)-2
-            displayString= str(self._DesignParameter['_XYCoordinates'][i][0])+','+ str(self._DesignParameter['_XYCoordinates'][i][1])
+            displayString= str(self._DesignParameter['_XYCoordinates'][0][i][0])+','+ str(self._DesignParameter['_XYCoordinates'][0][i][1])
             self.XYdictForLineEdit[CurrentEditPointNum].setText(displayString)
             self.UpdateXYwidget()
 
@@ -344,7 +344,7 @@ class _PathSetupWindow(QWidget):
         self._DesignParameter['_DesignParameterName'] = self.name_input.text()
         self._DesignParameter['_Width'] = self.width_input.text()
         self._DesignParameter['_Layer'] = self.layer_input.currentText()
-        self._DesignParameter['_XYCoordinates'] = []
+        self._DesignParameter['_XYCoordinates'] = [[]]
         for XY in self.XYdictForLineEdit:
             if not XY.text():
                 break
@@ -352,7 +352,7 @@ class _PathSetupWindow(QWidget):
                 try:
                     X = int(XY.text().split(',')[0])
                     Y = int(XY.text().split(',')[1])
-                    self._DesignParameter['_XYCoordinates'].append([X,Y])
+                    self._DesignParameter['_XYCoordinates'][0].append([X,Y])
                     # self._DesignParameter['_XYCoordinatesForDisplay'].append([X,Y])
 
                 except:
@@ -379,26 +379,26 @@ class _PathSetupWindow(QWidget):
 
         ##### When Click the point, adjust x,y locations #####
         if len(self._DesignParameter['_XYCoordinates']) == 0:
-            self._DesignParameter['_XYCoordinates'].append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()])
+            self._DesignParameter['_XYCoordinates'].append([[_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()]])
         else:
-            xdistance = abs(_MouseEvent.scenePos().x() - self._DesignParameter['_XYCoordinates'][-1][0])
-            ydistance = abs(_MouseEvent.scenePos().y() - self._DesignParameter['_XYCoordinates'][-1][1])
+            xdistance = abs(_MouseEvent.scenePos().x() - self._DesignParameter['_XYCoordinates'][0][-1][0])
+            ydistance = abs(_MouseEvent.scenePos().y() - self._DesignParameter['_XYCoordinates'][0][-1][1])
 
             if xdistance < ydistance:
-                self._DesignParameter['_XYCoordinates'].append([self._DesignParameter['_XYCoordinates'][-1][0],_MouseEvent.scenePos().toPoint().y()])
+                self._DesignParameter['_XYCoordinates'][0].append([self._DesignParameter['_XYCoordinates'][0][-1][0],_MouseEvent.scenePos().toPoint().y()])
             else:
-                self._DesignParameter['_XYCoordinates'].append([_MouseEvent.scenePos().toPoint().x(),self._DesignParameter['_XYCoordinates'][-1][1]])
+                self._DesignParameter['_XYCoordinates'][0].append([_MouseEvent.scenePos().toPoint().x(),self._DesignParameter['_XYCoordinates'][0][-1][1]])
 
         # self._DesignParameter['_XYCoordinates'].append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y(),])
 
         CurrentEditPointNum = len(self.XYdictForLineEdit)-2
-        XYstring = str(self._DesignParameter['_XYCoordinates'][-1][0]) + ',' + str(self._DesignParameter['_XYCoordinates'][-1][1])
+        XYstring = str(self._DesignParameter['_XYCoordinates'][0][-1][0]) + ',' + str(self._DesignParameter['_XYCoordinates'][0][-1][1])
         self.XYdictForLineEdit[CurrentEditPointNum].setText(XYstring)
         self.UpdateXYwidget()
 
         self._DesignParameter['_Width'] = self.width_input.text()
         self._DesignParameter['_Layer'] = self.layer_input.currentText()
-        self.visualItem._XYCoordinatesForDisplay = self._DesignParameter['_XYCoordinates']
+        self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
 
         self.visualItem.updateTraits(self._DesignParameter)
         self.send_PathSetup_signal.emit(self.visualItem)

@@ -810,6 +810,7 @@ class QtProject:
                             _tmpResult0.append(_tmpResult1)
                         self._DesignParameter[_ParentName][_tmpId]._XYCoordinatesForDisplay = \
                         self._DesignParameter[_ParentName][_tmpId]._XYCoordinatesForDisplay + _tmpResult0
+                        self._ConvertBoundaryXYExpression(_id=_tmpId,_ParentName=_ParentName)
                     elif self._DesignParameter[_ParentName][_tmpId]._type == 2:
                         # print('monitor for debug in _UpdateXYCoordinatesForDisplay 2')
                         _tmpResult0 = []
@@ -1508,6 +1509,15 @@ class QtProject:
             except:
                 print("_UpdateXYCoordinateForDisplay Error")
                 return userDefineExceptions._UnkownError
+
+    def _ConvertBoundaryXYExpression(self, _id=None, _ParentName=None):
+        if _id == 'M2_M1_CDNS_5727560938500':
+            debug = True
+        for i, five_point_xy in enumerate(self._DesignParameter[_ParentName][_id]._XYCoordinatesForDisplay):
+            if type(five_point_xy) == list and len(five_point_xy) == 5:
+                if type(five_point_xy[0]) == list:
+                        self._DesignParameter[_ParentName][_id]._XYCoordinatesForDisplay[i] = five_point_xy[0]
+
 
     def _SaveDataAsJsonFormat(self, _data=None, _file=None):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
