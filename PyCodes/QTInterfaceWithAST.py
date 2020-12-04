@@ -1587,6 +1587,7 @@ class QtProject:
                 self._DesignParameter[module_name][designID]._setDesignParameterName(
                     _DesignParameterName=_dp_dict['_DesignParameterName'])
                 self._UpdateXYCoordinateForDisplay(_id=designID, _ParentName=module_name)
+                self._ConvertBoundaryXYExpression(_id=designID, _ParentName=module_name)
                 # send design parameter info to element manager --> return: ast info or
                 _designParameter = self._DesignParameter[module_name][designID]
                 _designConstraint = None
