@@ -581,9 +581,6 @@ class _MainWindow(QMainWindow):
 
                         if self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignParametertype'] == 3:
                             continue
-                        if self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignParametertype'] == 2:
-                            debug = 1
-
 
                         visualItem = self.createVisualItemfromDesignParameter(self._QTObj._qtProject._DesignParameter[module][id])
                         self.updateGraphicItem(visualItem)

@@ -1511,8 +1511,6 @@ class QtProject:
                 return userDefineExceptions._UnkownError
 
     def _ConvertBoundaryXYExpression(self, _id=None, _ParentName=None):
-        if _id == 'M2_M1_CDNS_5727560938500':
-            debug = True
         for i, five_point_xy in enumerate(self._DesignParameter[_ParentName][_id]._XYCoordinatesForDisplay):
             if type(five_point_xy) == list and len(five_point_xy) == 5:
                 if type(five_point_xy[0]) == list:
