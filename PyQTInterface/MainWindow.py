@@ -29,8 +29,6 @@ import json
 import astunparse
 
 ##################
-#practicing rebase
-#Additional Text
 DEBUG = True
 subnanoMinimumScale =5 # 5 means(default)
 subnanoViewScale = 1  #
