@@ -29,8 +29,6 @@ import json
 import astunparse
 
 ##################
-#Git Reset "Keep"
-#Additional Commit
 DEBUG = True
 subnanoMinimumScale =5 # 5 means(default)
 subnanoViewScale = 1  #
