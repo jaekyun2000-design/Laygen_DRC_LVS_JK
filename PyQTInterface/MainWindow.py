@@ -29,7 +29,6 @@ import json
 import astunparse
 
 ##################
-#branch extension from main (1)
 DEBUG = True
 subnanoMinimumScale =5 # 5 means(default)
 subnanoViewScale = 1  #
