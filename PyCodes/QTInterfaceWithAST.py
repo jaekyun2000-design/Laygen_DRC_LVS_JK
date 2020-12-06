@@ -39,7 +39,7 @@ class QtDesignParameter:
         # self._XWidthVariable = None
         # self._WidthVariable = None
         # self._DesignModuleLib = None
-        ##self._VisualizationItemObj = VisualizationItem._VisualizationItem(_ItemTraits = _ItemTraits)
+        ###self._VisualizationItemObj = VisualizationItem._VisualizationItem(_ItemTraits = _ItemTraits)
 
     def _createDesignParameter(self):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
