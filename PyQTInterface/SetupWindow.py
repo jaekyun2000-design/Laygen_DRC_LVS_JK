@@ -1751,6 +1751,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.setDropIndicatorShown(True)
         self.itemToDesignConstraintDict = dict()
         self.itemToASTDict = dict()
+        self.item_dict = dict()
         self.removeFlag = False
 
         self.EditMode = False
@@ -1768,12 +1769,6 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.setModel(self.model)
 
         self.debugType = type
-
-    def createNewConstraintSTMTList(self,_STMTList,_idToSTMTdict=None):         #Legacy Fcn
-        if _idToSTMTdict != None:
-            for id in _idToSTMTdict:
-                self.itemToASTDict[id] = _idToSTMTdict[id]
-        self.model.createNewColumn(_STMTList)
 
     def createNewConstraintAST(self,_id , _parentName, _DesignConstraint):
         self._DesignConstraintFromQTobj = _DesignConstraint
@@ -2207,7 +2202,6 @@ class _ConstraintModel(QStandardItemModel):
     def createNewColumn(self,_STMTList,rc=None):
         for stmt in _STMTList:
             _type = stmt['_type']
-            # _type = ASTmodule._getASTtype(stmt)
             tmpConstraintType = QStandardItem(_type)
             constraintName = stmt['_id']
             self._ConstraintItem[constraintName] =tmpConstraintType
@@ -2232,15 +2226,9 @@ class _ConstraintModel(QStandardItemModel):
 
 
         self.insertRow(rc, [tmpConstraintType, QStandardItem(_id), QStandardItem(_type),QStandardItem() ])
-                        # Item Field:  0-> PlaceHolder Type , 1-> _id , 2-> Content Type , 3 -> value
+        # Item Field:  0-> PlaceHolder Type , 1-> _id , 2-> Content Type , 3 -> value
         #self._ConstraintNameList.append(constraintName)
         self.readParseTreeWtihAST(motherItem=tmpConstraintType, _AST= _DesignConstraint[_parentName][_id]._ast)
-
-
-
-
-
-
 
     def updateRowChild(self,_STMTLIst,rc=None,motherIndex=None):
         if motherIndex == None:                                             #When There is no parent  (It Creats a New Row)
@@ -2268,8 +2256,6 @@ class _ConstraintModel(QStandardItemModel):
 
             self.readParseTree(item,_STMTLIst)
 
-
-
     def updateRowChildWithAST(self,_DesignConstraint,rc=None,motherIndex=None):
         if motherIndex == None:                                             #When There is no parent  (It Creats a New Row)
             tmpConstraintType = QStandardItem(_DesignConstraint._type)
@@ -2289,158 +2275,6 @@ class _ConstraintModel(QStandardItemModel):
 
             item = self.itemFromIndex(motherIndex.siblingAtColumn(0))
             self.readParseTreeWtihAST(item,_DesignConstraint._ast)
-
-
-    #No More Use
-    # def updatechildValue2Constraint(self,motherIndex=None):         #Update Written Text into Real DesignConstraint Value   --> Need to fix , because there is no more Constraint in SetupWindows
-    #     if motherIndex == None:         #if Mother is None: update cannot start
-    #         return
-    #
-    #     motherNameItem = self.itemFromIndex(motherIndex.siblingAtColumn(1))
-    #     motherName = motherNameItem.text()
-    #     motherTypeItem = self.itemFromIndex(motherIndex.siblingAtColumn(0))
-    #     motherType = motherTypeItem.text()
-    #
-    #     for row in range(0,motherTypeItem.rowCount()):          #For all mother's item
-    #         childNameItem = motherTypeItem.child(row,1)
-    #         if childNameItem is None:                           #If Child doesn't have any update value, then pass
-    #             continue
-    #
-    #         childTypeItem = motherTypeItem.child(row,0)
-    #         childType = childTypeItem.text()
-    #
-    #         childName = childNameItem.text()
-    #         if childName in self._ConstraintDict:
-    #             continue
-    #         elif childName == "*":
-    #             continue
-    #         elif childName == "":
-    #             continue
-    #         elif childName == "\\None":
-    #             print("sussecc?")
-    #             self._ConstraintDict[motherName]._setDesignConstraintValue(_index=childType,_value=None)
-    #         else:
-    #
-    #
-    #
-    #
-    #             if childName == "reset":
-    #                 print(1)
-    #                 childName = []
-    #
-    #             try:
-    #                 childName = [int(childName)]
-    #             except:
-    #                 pass
-    #
-    #             try:
-    #                 if childType != "_string":
-    #                     childName = childName.split(';')
-    #                 else:
-    #                     childName = [childName]
-    #             except:
-    #                 pass
-    #
-    #
-    #             ###########Depend On Child Type###########  name --> string, value --> string In List
-    #             # if childType == "_value" or childType == "_string":
-    #             #     if type(childName) != list:
-    #             #         childName = [childName]
-    #
-    #             if childType == '_name' and type(childName) == list:
-    #                 childName = childName[0]
-    #
-    #
-    #
-    #             self._ConstraintDict[motherName]._setDesignConstraintValue(_index=childType,_value=childName)
-
-    def returnChildValueForUpdate_Legacy_20200409(self,motherIndex=None):         #Update Written Text into Real DesignConstraint Value   --> Need to fix , because there is no more Constraint in SetupWindows
-        if motherIndex == None:         #if Mother is None: update cannot start
-            print('Invalid Mother Index')
-            return
-
-        motherNameItem = self.itemFromIndex(motherIndex.siblingAtColumn(1))
-        motherName = motherNameItem.text()
-        motherTypeItem = self.itemFromIndex(motherIndex.siblingAtColumn(0))
-        motherType = motherTypeItem.text()
-        updateValueDict = dict()
-        updateValueDict['_id'] = None
-
-        if motherName == "*":
-            #updateValueDict['_type'] = motherType
-            updateList = []
-            for row in range(0,motherTypeItem.rowCount()):
-                #updateKeyValue = []
-                childNameItem = motherTypeItem.child(row, 1)
-                childName = childNameItem.text()
-
-                #try:            #This part reconsider
-                #    childNameItem = float(childName)
-
-
-                childTypeItem = motherTypeItem.child(row, 0)
-                childType = childTypeItem.text()
-
-                #updateValueDict[childType] = childName
-                #updateKeyValue = (childType,childName)
-                updateList.append(childName)
-            updateValueDict[motherType] = updateList
-            grandParentModuleItem = self.itemFromIndex(motherIndex.parent().siblingAtColumn(1))
-            grandParentName = grandParentModuleItem.text()
-            updateValueDict['_id'] = grandParentName
-        else:
-            for row in range(0,motherTypeItem.rowCount()):          #For each child's item
-                childNameItem = motherTypeItem.child(row,1)
-                if childNameItem is None:                           #If Child doesn't have any update value, then pass
-                    continue
-
-                childTypeItem = motherTypeItem.child(row,0)
-                childType = childTypeItem.text()
-
-                childName = childNameItem.text()
-                #if childName in self._ConstraintDict:
-                #    continue
-                if childName == "*":
-                    continue
-                elif childName == "":
-                    continue
-                #elif childName == "@None":
-                #    self._ConstraintDict[motherName]._setDesignConstraintValue(_index=childType,_value=None)
-                else:
-                    if childName == "reset":
-                        childName = None
-                    try:
-                        childName = int(childName)
-                    except:
-                        pass
-
-                    #try:
-                    #    if childType != "_string":
-                    #        childName = childName.split(';')
-                    #    else:
-                    #        childName = childName
-                    #except:
-                    #    pass
-
-
-                    ###########Depend On Child Type###########  name --> string, value --> string In List
-                    # if childType == "_value" or childType == "_string":
-                    #     if type(childName) != list:
-                    #         childName = [childName]
-
-                    #if childType == '_name' and type(childName) == list:
-                    #    childName = childName[0]
-
-                    #Not sure 2020-03-16 ;;;;
-                    #if type(childName) == list:
-                    #    childName = childName[0]
-
-                    updateValueDict[childType] = childName
-                    # self._ConstraintDict[motherName]._setDesignConstraintValue(_index=childType,_value=childName)
-
-
-
-        return updateValueDict
 
     def returnChildValueForUpdate(self,motherIndex=None):         #Update Written Text into Real DesignConstraint Value
         if motherIndex == None:         #if Mother is None: update cannot start
@@ -2564,14 +2398,6 @@ class _ConstraintModel(QStandardItemModel):
         except:
             print("Update fail")
 
-    # def refresh(self,item):
-    #     row = item.index().row()
-    #     column = item.index().column()
-    #     item.removeI
-    #     print("debug",row,column)
-
-
-
     def readHierarchy(self,DesignConstraint,_depth=None):
         hierarchyList = DesignConstraint._findSubHierarchy(_depth)
         print("Read Hierarchy")
@@ -2686,6 +2512,7 @@ class _ConstraintModel(QStandardItemModel):
                 # # tmpA.appendRow([QStandardItem("hi"),QStandardItem("test")])
                 # motherItem.appendRow([tmpA,tmpB])
                 # pass
+
     def readParseTreeWtihAST(self,motherItem,_AST):
             if debugFlag == True:
                 print("Start Reading ParseTree with AST")
@@ -2746,32 +2573,6 @@ class _ConstraintModel(QStandardItemModel):
 
                 # tmpA.appendRow([QStandardItem("hi"),QStandardItem("test")])
                 motherItem.appendRow([tmpA, tmpB, tmpC, tmpD])
-
-
-    def readParseTreeForMultiChildren_Legacy_20200409(self,motherItem=None,_STMTList = None,keys=None):
-        checkChild = self.findChildrenWithText(motherItem,keys,column=0)   #If Constraint has child constraint, then show Constraint Name for Child constraint.
-
-
-        if len(_STMTList[keys]) != 0:
-            nameItem = self.itemFromIndex(motherItem.index().siblingAtColumn(1))
-            nameItem.setText("*")
-
-
-        for childSTMT in _STMTList[keys]:   #### childConstraint is item in list!
-
-            print("childSTMT:",motherItem.text())
-
-            childSTMTName = childSTMT['_id']
-            _type = childSTMT['_type']
-
-            if self.findChildrenWithName(motherItem,childSTMTName) != None:
-                print("duplication Detect!")
-                print("duplication Item text",self.findChildrenWithName(motherItem,childSTMTName).text())
-                continue
-
-            tmpA = QStandardItem(_type)
-            tmpB = QStandardItem(childSTMTName)
-            motherItem.appendRow([tmpA,tmpB])
 
     def readParseTreeForMultiChildren(self,motherItem=None,_AST = None,key=None):
         checkChild = self.findChildrenWithText(motherItem,key,column=0)   #If Constraint has child constraint, then show Constraint Name for Child constraint.

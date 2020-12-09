@@ -300,7 +300,6 @@ class _MainWindow(QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea,dockWidget3)
         # self.createConstraintButton.clicked.connect(self.makeConstraintWindow)
         self.createConstraintWithPyCodeButton.clicked.connect(self.makePyCodeWindow)
-        # self.createConstraintButtonASTLegacy.clicked.connect(self.makeConstraintWindowSTMT)
         self.createConstraintButtonAST.clicked.connect(self.makeConstraintWindowAST)
         self.createConstraintButtonCUSTOM.clicked.connect(self.makeConstraintWindowCUSTOM)
         self.saveConstraintAsJSONButton.clicked.connect(self.saveConstraint)
@@ -418,10 +417,6 @@ class _MainWindow(QMainWindow):
         self.cw.show()
         self.cw.send_PyCode_signal.connect(self.createNewConstraintPyCode)
 
-    def makeConstraintWindowSTMT(self):
-        self.cw = SetupWindow._ConstraintSetupWindowSTMT()
-        self.cw.show()
-        self.cw.send_STMT_signal.connect(self.createNewConstraintSTMT)
 
     def makeConstraintWindowAST(self):
         self.cw = SetupWindow._ConstraintSetupWindowAST(_ASTapi = self._ASTapi)
@@ -617,25 +612,6 @@ class _MainWindow(QMainWindow):
 
         print("Load GDS Done")
 
-    def loadPy_Legacy_20200410(self):
-        scf = QFileDialog.getOpenFileName(self, 'Load SourceCode', './sourceCode')
-        try:
-            _fileName = scf[0]
-            print("loadFile")
-            self.dockContentWidget4ForLoggingMessage._InfoMessage("Convert Pysource to AST.")
-            _STMTlist, _ids = self._QTObj._qtProject._loadConstraintsFromPySource(_file=_fileName, _topModuleName=self._CurrentModuleName)
-            print("FileLoadEnd")
-            self.dockContentWidget4ForLoggingMessage._InfoMessage("Conversion Done!")
-            self.dockContentWidget4ForLoggingMessage._InfoMessage("Convert AST to STMT list.")
-            #_idToSTMTdict = ASTmodule._searchSTMTlistWithIDList(_STMTlist, _ids)
-            _idToSTMTdict = ASTmodule._returnChildIDandAST(_STMTlist)
-            self.dockContentWidget3_2.createNewConstraintSTMTList(_STMTlist, _idToSTMTdict)
-            self.dockContentWidget4ForLoggingMessage._InfoMessage("Conversion Done!")
-            print("Load Pysource Success!")
-        except:
-            print("Load PySource Failed")
-            self.dockContentWidget4ForLoggingMessage._WarningMessage("Load PySource Fail: Unknown")
-            pass
 
     # def loadPy(self):
     #     self.loadWorker = ThreaderForProgress.loadPyWorker()
@@ -861,25 +837,6 @@ class _MainWindow(QMainWindow):
                 self.warning.show()
                 self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: Source Code syntax error")
 
-    def createNewConstraintSTMT(self,_STMT):
-
-        if self._QTObj._qtProject == None:
-            self.warning=QMessageBox()
-            self.warning.setText("There is no Project")
-            self.warning.show()
-            self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: There is no Project")
-        elif self._CurrentModuleName is None:
-            self.warning=QMessageBox()
-            self.warning.setText("There is No Module")
-            self.warning.show()
-            self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: There is no Module")
-        else:
-
-
-            STMTList , ids = self._QTObj._qtProject._createNewDesignConstraintAST( _ASTDtype = 'STMT', _STMTList = _STMT ,_ParentName=self._CurrentModuleName)
-            #_idToSTMTdict = ASTmodule._searchSTMTlistWithIDList(STMTList, ids)
-            _idToSTMTdict = ASTmodule._returnChildIDandAST(STMTList)
-            self.dockContentWidget3_2.createNewConstraintSTMTList(STMTList,_idToSTMTdict)
 
     def createNewConstraintAST(self,_AST):
 
@@ -907,33 +864,6 @@ class _MainWindow(QMainWindow):
                 print("Invalid design parameter dict")
 
 
-            # a, ids = self._QTObj._qtProject._createNewDesignConstraintAST(_ASTDtype='ASTsingle', _AST=_AST,_ParentName=self._CurrentModuleName)
-            # id = ids[0]
-            # self.dockContentWidget3_2.createNewConstraintAST(_id = id, _parentName= self._CurrentModuleName, _DesignConstraint = self._QTObj._qtProject._DesignConstraint)
-            # pass
-            # # STMTList , ids = self._QTObj._qtProject._createNewDesignConstraintAST( _ASTDtype = 'STMT', _STMTList = _STMT ,_ParentName=self._CurrentModuleName)
-            # #_idToSTMTdict = ASTmodule._searchSTMTlistWithIDList(STMTList, ids)
-            # _idToSTMTdict = ASTmodule._returnChildIDandAST(STMTList)
-            # self.dockContentWidget3_2.createNewConstraintSTMTList(STMTList,_idToSTMTdict)
-
-    def createNewConstraintWithRawAST(self,_AST):
-        if self._QTObj._qtProject == None:
-            self.warning = QMessageBox()
-            self.warning.setText("There is no Project")
-            self.warning.show()
-            self.dockContentWidget4ForLoggingMessage._WarningMessage(
-                "Create DesignConstraint Fail: There is no Project")
-        elif self._CurrentModuleName is None:
-            self.warning = QMessageBox()
-            self.warning.setText("There is No Module")
-            self.warning.show()
-            self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: There is no Module")
-        else:
-            STMTList, ids = self._QTObj._qtProject._createNewDesignConstraintAST(_ASTDtype='STMT', _STMTList=_STMT,)
-            # _idToSTMTdict = ASTmodule._searchSTMTlistWithIDList(STMTList, ids)
-            _idToSTMTdict = ASTmodule._returnChildIDandAST(STMTList)
-            self.dockContentWidget3_2.createNewConstraintSTMTList(STMTList, _idToSTMTdict)
-        pass
 
     def constraintConvey(self):
         self.dockContentWidget3._DesignConstraintFromQTobj = self._QTObj._qtProject._DesignConstraint
