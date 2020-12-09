@@ -810,7 +810,6 @@ class QtProject:
                             _tmpResult0.append(_tmpResult1)
                         self._DesignParameter[_ParentName][_tmpId]._XYCoordinatesForDisplay = \
                         self._DesignParameter[_ParentName][_tmpId]._XYCoordinatesForDisplay + _tmpResult0
-                        self._ConvertBoundaryXYExpression(_id=_tmpId,_ParentName=_ParentName)
                     elif self._DesignParameter[_ParentName][_tmpId]._type == 2:
                         # print('monitor for debug in _UpdateXYCoordinatesForDisplay 2')
                         _tmpResult0 = []
@@ -1510,13 +1509,6 @@ class QtProject:
                 print("_UpdateXYCoordinateForDisplay Error")
                 return userDefineExceptions._UnkownError
 
-    def _ConvertBoundaryXYExpression(self, _id=None, _ParentName=None):
-        for i, five_point_xy in enumerate(self._DesignParameter[_ParentName][_id]._XYCoordinatesForDisplay):
-            if type(five_point_xy) == list and len(five_point_xy) == 5:
-                if type(five_point_xy[0]) == list:
-                        self._DesignParameter[_ParentName][_id]._XYCoordinatesForDisplay[i] = five_point_xy[0]
-
-
     def _SaveDataAsJsonFormat(self, _data=None, _file=None):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
             print("_SaveDataAsJsonFormat Run.")
@@ -1586,8 +1578,7 @@ class QtProject:
                                                                                                           key])
                 self._DesignParameter[module_name][designID]._setDesignParameterName(
                     _DesignParameterName=_dp_dict['_DesignParameterName'])
-                self._UpdateXYCoordinateForDisplay(_id=designID, _ParentName=module_name)
-                self._ConvertBoundaryXYExpression(_id=designID, _ParentName=module_name)
+
                 # send design parameter info to element manager --> return: ast info or
                 _designParameter = self._DesignParameter[module_name][designID]
                 _designConstraint = None
