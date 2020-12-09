@@ -1783,56 +1783,6 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             self.cw = _ConstraintSetupWindow(constraint._ParseTree)
             self.cw.show()
 
-
-    def mouseDoubleClickEventLegacy(self, QMouseEvent):
-        try:                                                                                                    #0 : placeholder, #1 : ID, #2: ConstraintRealType, #3: value
-            item = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))     #ID
-            itemName = item.text()
-            try:
-                valueItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(3))    #Constraint
-                value = valueItem.text()
-            except:
-                value = None
-
-            try:
-                #if valueItem != '*' and not (itemName in self.itemToASTDict) and itemName != None:
-                if value == None and itemName != None:
-                    updateDict = dict()
-                    updateDict['_id'] = itemName
-                    self.itemToASTDict[itemName] = None
-                    self.send_UpdateDesignConstraint_signal.emit(updateDict)
-            except:
-                print('debug: value:',value,valueItem)
-
-
-
-            if self.currentIndex().parent().isValid():
-                # self.model.updatechildValue2Constraint(self.currentIndex().parent())
-                updateDict = self.model.returnChildValueForUpdate(self.currentIndex().parent())
-                motherModuleItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
-                motherName = motherModuleItem.text()
-                if updateDict['_id'] == None:
-                    updateDict['_id'] = motherName
-            else:
-                # self.model.updatechildValue2Constraint(self.currentIndex())
-                updateDict = self.model.returnChildValueForUpdate(self.currentIndex())
-                updateDict['_id'] = itemName
-
-            #############AST################
-            #update mouse double click --> send update value to DC
-            # DC update check --> send DC to Model
-            # Model refresh ITEM
-
-
-            self.send_UpdateDesignConstraint_signal.emit(updateDict)
-
-
-            self.refreshItem(self.currentIndex())
-
-
-        except:
-            print("Value Update Fail!")
-
     def mouseDoubleClickEvent(self, QMouseEvent):
 
         ####################double click update flow#######################
@@ -1878,6 +1828,13 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
         except:
             print("Value Update Fail!")
+
+    def update_constraint_by_id(self, id):
+        if id in self.model._ConstraintItem:
+            itemIDitem = self.model._ConstraintItem[id]
+            index= self.model.indexFromItem(itemIDitem)
+            self.refreshItem(index)
+
 
 
     def updateDesginConstraintWithSTR(self,Module,Id,Field,StringValue):
@@ -1996,7 +1953,6 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
         else:
             self.removeItem(selectedItem)
-
 
     def updateConstraintDictFromQTInterface(self,_qtProject):
         # for constraint in _QTInterface.
@@ -2199,27 +2155,11 @@ class _ConstraintModel(QStandardItemModel):
         self.setItem(0,1,QStandardItem(rootName))
         # self.setItem(0,2,rootValue)
 
-    def createNewColumn(self,_STMTList,rc=None):
-        for stmt in _STMTList:
-            _type = stmt['_type']
-            tmpConstraintType = QStandardItem(_type)
-            constraintName = stmt['_id']
-            self._ConstraintItem[constraintName] =tmpConstraintType
-
-            if rc == None:
-                rc= self.rowCount()
-
-            self.insertRow(rc,[tmpConstraintType,QStandardItem(constraintName),tmpConstraintType])
-
-
-            self._ConstraintNameList.append(constraintName)
-            self.readParseTree(tmpConstraintType,_STMTList)
-
     def createNewColumnWithID(self,_id, _parentName, _DesignConstraint, rc = None):
         self._DesignConstraintFromQTobj = _DesignConstraint
         _type = self._DesignConstraintFromQTobj[_parentName][_id]._type
         tmpConstraintType = QStandardItem(_type)
-        # self._ConstraintItem[_id] = tmpConstraintType
+        self._ConstraintItem[_id] = tmpConstraintType
 
         if rc == None:
             rc = self.rowCount()
@@ -2230,36 +2170,11 @@ class _ConstraintModel(QStandardItemModel):
         #self._ConstraintNameList.append(constraintName)
         self.readParseTreeWtihAST(motherItem=tmpConstraintType, _AST= _DesignConstraint[_parentName][_id]._ast)
 
-    def updateRowChild(self,_STMTLIst,rc=None,motherIndex=None):
-        if motherIndex == None:                                             #When There is no parent  (It Creats a New Row)
-            tmpConstraintType = QStandardItem(_STMTLIst['_type'])
-            constraintName = _STMTLIst['_id']
-            self._ConstraintItem[constraintName] = tmpConstraintType
-
-            if rc == None:
-                rc= self.rowCount()
-
-
-            self.insertRow(rc,[tmpConstraintType,QStandardItem(constraintName)])
-
-            self._ConstraintNameList.append(constraintName)
-            self._ConstraintDict[constraintName] = _STMTLIst
-            self.readParseTree(tmpConstraintType,_STMTLIst)
-        else:                                                               #When there is a parent
-            if motherIndex.isValid() == False:
-                self.warning=QMessageBox()
-                self.warning.setText("Mother Index is invalid")
-                self.warning.show()
-                return
-
-            item = self.itemFromIndex(motherIndex.siblingAtColumn(0))
-
-            self.readParseTree(item,_STMTLIst)
-
     def updateRowChildWithAST(self,_DesignConstraint,rc=None,motherIndex=None):
         if motherIndex == None:                                             #When There is no parent  (It Creats a New Row)
             tmpConstraintType = QStandardItem(_DesignConstraint._type)
             constraintName = _DesignConstraint._id
+            self._ConstraintItem[constraintName] = tmpConstraintType
 
             if rc == None:
                 rc= self.rowCount()

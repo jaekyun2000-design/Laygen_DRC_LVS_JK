@@ -774,12 +774,9 @@ class _MainWindow(QMainWindow):
         design_dict = self._QTObj._qtProject._update_design(design_type='parameter', module_name=self._CurrentModuleName,
                                                           dp_dict=_DesignParameter, id=_ID)
 
-        
+        self.dockContentWidget3_2.update_constraint_by_id(design_dict['constraint_id'])
+        self.dockContentWidget3.update_constraint_by_id(design_dict['constraint_id'])
 
-        # pass
-        # id =
-        # for key in _DesignParameter:
-        #     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][_newDesignID]._setDesignParameterValue(_index = key, _value= _DesignParameter[key])
 
     def deliveryDesignParameter(self):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()
