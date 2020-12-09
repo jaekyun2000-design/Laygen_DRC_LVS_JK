@@ -1939,64 +1939,6 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             self.warning.setText("Only Constraint Can be moved!")
             self.warning.show()
 
-    def removeCurrentIndexItem_Legacy_20200416(self):
-        if self.removeFlag == False:
-            return
-
-        selectedItem =self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
-        if self.currentIndex().parent().isValid():
-            motherModuleItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
-            motherName = motherModuleItem.text()
-            motherTypeItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(0))
-            motherType = motherTypeItem.text()
-
-            removeNameItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
-            removeName = removeNameItem.text()
-            removeTypeItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0))
-            removeType = removeTypeItem.text()
-
-            updateDict = dict()
-            #try:                    #Simple stmt case
-            if motherName != '*':
-                updateDict['_id'] = motherName
-                updateDict[removeType] = None
-                self.send_UpdateDesignConstraint_signal.emit(updateDict)
-                #self.itemToDesignConstraintDict[motherName]._setDesignConstraintValue(_index=removeType,_value=[])
-                for i in range(0,removeTypeItem.rowCount()):
-                    removeTypeItem.takeRow(0)
-            else:       #Compound STMT case
-                grandParentModuleItem = self.model.itemFromIndex(self.currentIndex().parent().parent().siblingAtColumn(1))
-                grandParentName = grandParentModuleItem.text()
-                grandParentTypeItem = self.model.itemFromIndex(self.currentIndex().parent().parent().siblingAtColumn(0))
-                #originalDesignValues=self.itemToDesignConstraintDict[grandParentName]._readDesignConstraintValue(_index=motherType)
-                originalDesignValues=self.itemToASTDict[grandParentName][motherType]
-                for i in range(0,len(originalDesignValues)):
-                    if originalDesignValues[i]['_id'] == removeName:
-                        del originalDesignValues[i]
-                        break
-                #self.itemToDesignConstraintDict[grandParentName]._setDesignConstraintValue(_index=motherType,_value=originalDesignValues)
-                updateDict[motherType] = originalDesignValues
-                updateDict['_id'] = grandParentName
-                self.send_UpdateDesignConstraint_signal.emit(updateDict)
-
-
-
-            #I need to make restoreItem #
-            removeID = selectedItem.text()
-            if removeID in self.itemToASTDict:
-                self.refreshItem(self.currentIndex().parent())
-                self.removeItem(selectedItem)
-                # del self.itemToASTDict[removeID]
-            else:
-                print('InValid Remove Request')
-
-            #######################################################################IF THERE IS Hierarchy of Remove Item --> I have to update itemToDesignConstraintDict also!!!!!!!!!!!!!!!!!!!!!!!!!!################################################
-            # I am not sure whether it is necessary or not
-            # self.removeHierarchyConstraintfromDictionary(self.itemToDesignConstraintDict[removeName])
-            # self.model.updateConstraintDictFromView(self.itemToDesignConstraintDict)
-
-        else:
-            self.removeItem(selectedItem)
     def removeCurrentIndexItem(self):
         if self.removeFlag == False:
             return
@@ -2075,89 +2017,6 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             if key[0] in self.itemToDesignConstraintDict:
                 del self.itemToDesignConstraintDict[key[0]]
 
-    def receiveConstraintSTMT_Legacy_20200409(self,_STMT):
-
-            _id = _STMT['_id']
-            if _id in self.itemToASTDict:       #Value Update Or Receive new AST
-                _updateFlag = True
-            else:
-                _updateFlag = False
-
-            self.itemToASTDict[_id] = _STMT   #First I have to save the point of DC to View Dictionary
-            _hierarchyID = ASTmodule._searchSTMT([_STMT])
-            _idToSTMTdict = ASTmodule._searchSTMTlistWithIDList([_STMT], _hierarchyID)
-
-            #self.model.updateConstraintDictFromView(self.itemToDesignConstraintDict)    AST Version develope later
-
-
-            if _updateFlag == True:     #Receive update value
-                #self.refreshItem()
-                pass
-            else:                       #Receive new value (from other side, Floadting --> heirarchy or Heirarchy --> Floation)
-                if self.currentIndex().row() == -1:                 # Not selected any target parent constraint
-                    self.createNewConstraintSTMTList([_STMT],_idToSTMTdict)
-                    self.send_RecieveDone_signal.emit()
-                    self.send_RootDesignConstraint_signal.emit(_STMT)
-                else:
-                    ####### At first check whether it is possible to modify or not ####### (In case of Constraint itself, you cannot modify!! only parsetrees are possible to modify
-                    constraintItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
-                    constraintName = constraintItem.text()
-                    #if (constraintName in self.itemToASTDict) == True:
-                    #    print("It isn't allow to change constraint")
-                    #    self.warning = QMessageBox()
-                    #    self.warning.setText("It isn't allowed to change constraint itself")
-                    #    self.warning.show()
-                    #    return
-
-                    if constraintName == '*':         # Valid Case (compound stmt)
-                        constraintTypeItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0))
-                        constraintType = constraintTypeItem.text()
-
-                        parentItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
-                        parentName = parentItem.text()
-                        #parentConstraint = self.itemToDesignConstraintDict[parentName]
-                        print("receive Type:",constraintType)
-                        print("receive value:",_id)
-
-                        # updateDict = dict()
-                        updateDict = self.model.returnChildValueForUpdate(self.currentIndex())
-                        updateDict[constraintType].append(_id)
-                        updateDict['_id'] = parentName
-                        self.send_UpdateDesignConstraint_signal.emit(updateDict)
-                    elif constraintName == None or constraintName == 'None':  #another valid case                   !@!@!@!@!@!@!@!@!@!@!@
-                        constraintTypeItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0))
-                        constraintType = constraintTypeItem.text()
-
-                        parentItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
-                        parentName = parentItem.text()
-                        print("receive Type:", constraintType)
-                        print("receive value:", _id)
-
-                        updateDict = dict()
-                        updateDict = self.model.returnChildValueForUpdate(self.currentIndex())
-                        try:
-                            updateDict[constraintType].append(_id)
-                        except:
-                            updateDict[constraintType] = _id
-                        updateDict['_id'] = parentName
-                        self.send_UpdateDesignConstraint_signal.emit(updateDict)
-                    else:           #Invalid Case
-                        print("It isn't allow to change constraint")
-                        self.warning = QMessageBox()
-                        self.warning.setText("It isn't allowed to change constraint itself")
-                        self.warning.show()
-                        return
-
-
-                    index = self.currentIndex()
-
-                    try:
-                        self.refreshItem(index)
-                        print("debug:receiveDone")
-                        self.send_RecieveDone_signal.emit()
-                    except:
-                        print("Somehow failed Refresh")
-                        pass
     def receiveConstraintID(self,_id):
             _module = re.sub(r'\d','',_id)
             if _module not in self._DesignConstraintFromQTobj:
@@ -2212,50 +2071,6 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                  #   print("Somehow failed Refresh")
                   #  pass
 
-    def refreshItem_Legacy_20200409(self,itemIndex):  #Refresh Design Constraint
-
-        indexItem = self.model.itemFromIndex(itemIndex.siblingAtColumn(1))
-        indexItemName = indexItem.text()
-
-        if indexItemName in self.itemToASTDict:     #AST VERSION renovation needed
-            stmt = self.itemToASTDict[indexItemName]
-            self.model.updateRowChild([stmt], motherIndex=itemIndex)
-
-        elif indexItemName == "*": #If refresh Item is parsetree and it has at least one child constraint
-            indexTypeItem = self.model.itemFromIndex(itemIndex.siblingAtColumn(0))
-            type = indexTypeItem.text()
-            motherIndex = itemIndex.parent().siblingAtColumn(1)
-            motherItem = self.model.itemFromIndex(motherIndex)
-            motherName = motherItem.text()
-            updateSTMTList = self.itemToASTDict[motherName]
-            self.model.readParseTreeForMultiChildren(motherItem=indexTypeItem,_STMTList=updateSTMTList ,keys=type)
-
-
-            # updateConstraint = self.itemToDesignConstraintDict[indexItemName]
-            #
-            # self.model.updateRowChild(updateConstraint, motherIndex=itemIndex)
-
-
-        elif itemIndex.parent().isValid() == True:                          # If refresh Item is parsetree and it has mother constraint
-
-
-            motherIndex = itemIndex.parent().siblingAtColumn(1)
-            motherItem = self.model.itemFromIndex(motherIndex)
-            originalRow = motherIndex.row()
-            motherName = motherItem.text()
-            #updateConstraint = self.itemToDesignConstraintDict[motherName]
-            updateSTMT = self.itemToASTDict[motherName]
-
-            indexItem.setEditable(True)
-            # self.model.updatechildValue2Constraint(motherIndex)
-            self.model.updateRowChild([updateSTMT],motherIndex=itemIndex.parent())
-
-        else:
-            print("Refresh Else")
-            pass
-
-        # self.model.resizeColumnToContents(0)
-        self.resizeColumnToContents(0)
     def refreshItem(self,itemIndex):  #Refresh Design Constraint
 
         indexIDItem = self.model.itemFromIndex(itemIndex.siblingAtColumn(1))
@@ -2364,43 +2179,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
         print(DeclarationString)
 
-
-
-class _ConstraintModelOriginal(QStandardItemModel):
-
-    def __init__(self):
-        QStandardItemModel.__init__(self)
-
-        self._ConstraintNameList = []
-        self._ConstraintDict = dict()   # Key Is ConstraintName
-        self._Root = None
-        self.setColumnCount(2)
-
-    def addItem(self,constraint,motherItem):
-        tmpStandardItem = QStandardItem(constraint._id)
-        print("Mohter: ", motherItem)
-        if motherItem == None:
-            if self._Root == None:
-                self.setRoot(tmpStandardItem)
-            else:
-                print("Node need mother item!! ERROR")
-                return
-        else:
-            try:
-                motherItem.appendRow(tmpStandardItem)
-            except:
-                print("Mother Node doesn't exist!! ERROR")
-                return
-        self._ConstraintNameList.append(constraint._id)
-        self._ConstraintDict[constraint._id] = constraint
-
-
-    def setRoot(self,item):
-        self.setItem(0,0,item)
+    def update_design_by_module_id(self,_designConstraint,moudle,id):
         pass
 
-    def deleteItem(self,item):
-        pass
 
 class _ConstraintModel(QStandardItemModel):
     def __init__(self):
