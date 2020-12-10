@@ -2477,6 +2477,11 @@ class _ConstraintModel(QStandardItemModel):
 
                 checkChild = self.findChildrenWithText(motherItem, field)
                 if checkChild != None:
+                    child = self.findChildrenWithContainer(motherItem,_placeholder)
+                    if child != None:
+                        value_item_index = child.index().siblingAtColumn(3)
+                        value_item = self.itemFromIndex(value_item_index)
+                        value_item.setText(_constraintValue)
                     checkChild = None
                     continue
 
@@ -2535,7 +2540,13 @@ class _ConstraintModel(QStandardItemModel):
                 return self.itemFromIndex(valueIndex)
         return None
 
-
+    def findChildrenWithContainer(self,parentItem,name):
+        for i in range(0,parentItem.rowCount()):
+            childItem = parentItem.child(i,0)
+            if childItem.text() == name:
+                valueIndex = childItem.index().siblingAtColumn(0)
+                return self.itemFromIndex(valueIndex)
+        return None
 
 
     def updateConstraintDictFromView(self,constraintDict):
