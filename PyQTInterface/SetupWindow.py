@@ -1896,6 +1896,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             return
 
         selectedItem =self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
+        if selectedItem.text() in self.model._ConstraintItem:
+            del self.model._ConstraintItem[selectedItem.text()]
         if self.currentIndex().parent().isValid():
             motherIDleItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
             motherID = motherIDleItem.text()
@@ -1929,27 +1931,6 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 self._DesignConstraintFromQTobj[grandParentModule][grandParentID]._ast.__dict__[motherType].pop(deleteLine)
                 motherTypeItem.takeRow(deleteLine)
                 self.refreshItem(self.currentIndex().parent())
-
-
-                #updateDict[motherType] = originalDesignValues
-                #updateDict['_id'] = grandParentName
-                #self.send_UpdateDesignConstraint_signal.emit(updateDict)
-
-
-
-#            #I need to make restoreItem #
-#            removeID = selectedItem.text()
-#            if removeID in self.itemToASTDict:
-#                self.refreshItem(self.currentIndex().parent())
-#                self.removeItem(selectedItem)
-#                # del self.itemToASTDict[removeID]
-#            else:
-#                print('InValid Remove Request')
-
-            #######################################################################IF THERE IS Hierarchy of Remove Item --> I have to update itemToDesignConstraintDict also!!!!!!!!!!!!!!!!!!!!!!!!!!################################################
-            # I am not sure whether it is necessary or not
-            # self.removeHierarchyConstraintfromDictionary(self.itemToDesignConstraintDict[removeName])
-            # self.model.updateConstraintDictFromView(self.itemToDesignConstraintDict)
 
         else:
             self.removeItem(selectedItem)
