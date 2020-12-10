@@ -1731,6 +1731,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
     send_UpdateDesignConstraint_signal = pyqtSignal(dict)
     send_SendDesignConstraint_signal = pyqtSignal(QTInterfaceWithAST.QtDesinConstraint)
+    send_UpdateDesignConstraintID_signal = pyqtSignal(str,str)
     send_SendASTDict_signal = pyqtSignal(list)
     send_SendSTMT_signal = pyqtSignal(dict)
     send_SendID_signal = pyqtSignal(str)
@@ -1797,6 +1798,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             ###Step 1 update value#####################################
             itemIDitem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))     #ID
             itemID = itemIDitem.text()
+            motherID = None
             moduleName = re.sub(r'\d','',itemID)
             try:
                 valueItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(3))    #ConstraintValue
@@ -1825,6 +1827,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             ###Step 3 sub-hierarchy refresh for placeholder's children #####################################    #To expand unseen contents <value = *, Case>
             if self.currentIndex().parent().isValid():  # Sub-hierarchy case        Do nothing??
                 self.refreshItem(self.currentIndex())
+
+            self.send_UpdateDesignConstraintID_signal.emit(itemID,motherID)
 
         except:
             print("Value Update Fail!")

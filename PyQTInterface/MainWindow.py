@@ -237,6 +237,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_SendID_signal.connect(self.dockContentWidget3.receiveConstraintID)
         self.dockContentWidget3_2.send_RecieveDone_signal.connect(self.dockContentWidget3.removeCurrentIndexItem)
         self.dockContentWidget3_2.send_SendCopyConstraint_signal.connect(self.constraintToTemplateHandler)
+        self.dockContentWidget3_2.send_UpdateDesignConstraintID_signal.connect(self.get_constraint_update_design)
         self.dockContentWidget3_2.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate2)
         self.dockContentWidget3_2.send_RequesteDesignConstraint_signal.connect(self.constraintConvey)
 
@@ -249,6 +250,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3.send_RecieveDone_signal.connect(self.dockContentWidget3_2.removeCurrentIndexItem)
         self.dockContentWidget3.send_RootDesignConstraint_signal.connect(self.setRootConstraint)
         self.dockContentWidget3.send_SendCopyConstraint_signal.connect(self.constraintToTemplateHandler)
+        self.dockContentWidget3.send_UpdateDesignConstraintID_signal.connect(self.get_constraint_update_design)
         self.dockContentWidget3.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate1)
         self.dockContentWidget3.send_RequesteDesignConstraint_signal.connect(self.constraintConvey)
 
@@ -777,6 +779,20 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.update_constraint_by_id(design_dict['constraint_id'])
         self.dockContentWidget3.update_constraint_by_id(design_dict['constraint_id'])
 
+    def get_constraint_update_design(self, id, mother_id):
+        if id:
+            module = self.get_id_return_module(id,'_DesignConstraint')
+            design_dict = self._QTObj._qtProject._update_design(design_type='constraint', module_name=module,
+                                                              _ast=self._QTObj._qtProject._DesignConstraint[module][id]._ast, id=id)
+            visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
+            self.updateGraphicItem(visualItem)
+        if mother_id:
+            module = self.get_id_return_module(mother_id, '_DesignConstraint')
+            design_dict  = self._QTObj._qtProject._update_design(design_type='constraint', module_name=module,
+                                                                _ast=self._QTObj._qtProject._DesignConstraint[module][
+                                                                    mother_id]._ast, id=mother_id)
+            visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
+            self.updateGraphicItem(visualItem)
 
     def deliveryDesignParameter(self):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()
@@ -1088,6 +1104,18 @@ class _MainWindow(QMainWindow):
     def easyDebugMode(self):
         self._QTObj._createProject("ProjectForEasyDebug")
         self.updateModule("EasyDebugModule")
+
+
+    def get_id_return_module(self, id : str, type : str):
+        """
+        :param id:
+        :param type: '_DesignParameter' or '_DesignConstraint'
+        :return:
+        """
+        while 1:
+            module = id[:-1]
+            if module in self._QTObj._qtProject.__dict__[type]:
+                return module
 
     # def easyRun(self):
     #     try:
