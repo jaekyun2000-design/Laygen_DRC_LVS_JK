@@ -1594,7 +1594,7 @@ class QtProject:
                 _designConstraint_id = None
                 if element_manger_update == True:
                     try:
-                        tmp_ast = self._ElementManager.get_dpdict_return_ast(_dp_dict)
+                        tmp_ast, _ = self._ElementManager.get_dpdict_return_ast(_dp_dict)
                         if tmp_ast:
                             tmp_dict = self._feed_ast(_ast=tmp_ast, module_name=module_name,element_manager_update=False)
                             _designConstraint = tmp_dict['constraint']
@@ -1633,9 +1633,9 @@ class QtProject:
                 _designConstraint_id = None
                 if element_manger_update == True:
                     try:
-                        tmp_ast = self._ElementManager.get_dpdict_return_ast(_dp_dict)
+                        tmp_ast, designparameter_id = self._ElementManager.get_dpdict_return_ast(_dp_dict)
                         if tmp_ast:
-                            tmp_dict = self._update_ast(_ast=tmp_ast, module_name=module_name, id=id, element_manager_update=False)
+                            tmp_dict = self._update_ast(_ast=tmp_ast, module_name=module_name, id=designparameter_id, element_manager_update=False)
                             _designConstraint = tmp_dict['constraint']
                             _designConstraint_id = tmp_dict['constraint_id']
                     except:
@@ -1753,7 +1753,7 @@ class QtProject:
                 _designParameter_id = None
                 if element_manager_update == True:
                     try:
-                        tmp_dp_dict = self._ElementManager.get_ast_return_dpdict(_ast)
+                        tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(_ast)
                         if tmp_dp_dict:
                             tmp_dict = self._feed_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, element_manger_update=False)
                             _designParameter = tmp_dict['parameter']
@@ -1776,14 +1776,15 @@ class QtProject:
         else:
             try:
                 # send design parameter info to element manager --> return: ast info or
+                self._DesignConstraint[module_name][id]._ast = _ast
                 _designConstraint = self._DesignConstraint[module_name][id]
                 _designParameter = None
                 _designParameter_id = None
                 if element_manager_update == True:
                     try:
-                        tmp_dp_dict = self._ElementManager.get_ast_return_dpdict(_ast)
+                        tmp_dp_dict, contraint_id = self._ElementManager.get_ast_return_dpdict(_ast)
                         if tmp_dp_dict:
-                            tmp_dict = self._update_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, id=id, element_manger_update=False)
+                            tmp_dict = self._update_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, id=contraint_id, element_manger_update=False)
                             _designParameter = tmp_dict['parameter']
                             _designParameter_id = tmp_dict['parameter_id']
                     except:

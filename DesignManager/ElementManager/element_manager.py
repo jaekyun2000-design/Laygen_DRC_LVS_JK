@@ -46,9 +46,13 @@ class ElementManager:
         else:
             return None
 
-        self.load_dp_dc(dp=None, dc=tmpAST)
+        # self.load_dp_dc(dp=None, dc=tmpAST)
+        if dp_dict['_DesignParameterName'] in self.elementConstraintDict:
+            constraint_id = self.elementConstraintDict[dp_dict['_DesignParameterName']]._id
+        else:
+            constraint_id = None
 
-        return tmpAST
+        return tmpAST , constraint_id
 
 
     def get_ast_return_dpdict(self, ast):
@@ -108,19 +112,22 @@ class ElementManager:
         else:
             return None
 
-        self.load_dp_dc(dp=tmpDP, dc=None)
+        # self.load_dp_dc(dp=tmpDP, dc=None)
 
-        return tmpDP
+        if ast.__dict__['name'] in self.elementParameterDict:
+            parameter_id = self.elementParameterDict[ast.__dict__['name']]._id
+        else:
+            parameter_id = None
+
+
+        return tmpDP, parameter_id
+
 
     def load_dp_dc(self,dp,dc):
-        if dc == None:
-            self.elementParameterDict[dp['_DesignParameterName']] = dp
-        elif dp == None:
-            self.elementConstraintDict[dc.__dict__['name']] = dc
 
-        print(dp)
-        print(dc)
-        print('---')
+        self.elementParameterDict[dp._DesignParameterName] = dp
+        self.elementConstraintDict[dc._ast.name] = dc
+
 
 class KeyManager():
     _Boundarykey = dict(
