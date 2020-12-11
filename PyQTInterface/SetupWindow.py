@@ -2028,8 +2028,10 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             motherIndex = itemIndex.parent().siblingAtColumn(1)
             motherItem = self.model.itemFromIndex(motherIndex)
             motherName = motherItem.text()
-            motherModule = re.sub(r'\d','',motherName)
+            # motherModule = re.sub(r'\d','',motherName)
+            motherModule = get_id_return_module(id=motherName, type='_DesignConstraint', moduleDict=self._DesignConstraintFromQTobj)
             _ast = self._DesignConstraintFromQTobj[motherModule][motherName]._ast
+
             self.model.readParseTreeForMultiChildren(motherItem=indexTypeItem,_AST=_ast ,key=type)
 
 
@@ -2492,17 +2494,34 @@ class _ConstraintModel(QStandardItemModel):
             valueItem.setText("*")
 
         for childAST in _AST.__dict__[key]:   #### childConstraint is item in list!
-            childASTid = childAST._id
-            _type = childAST._type
+            if type(childAST) == list:
+                for row in range(0,motherItem.rowCount()):
+                    motherItem.removeRows(0)
+                if type(childAST[0]) != list:   #Boundary case
+                    print("List case display")
+                    tmpC = QStandardItem(str(type(childAST)))
+                    tmpD = str(childAST[0]) + ',' + str(childAST[1])
+                    tmpD = QStandardItem(tmpD)
+                    motherItem.appendRow([QStandardItem(), QStandardItem(), tmpC, tmpD])
+                else:
+                    for child_child_AST in childAST:
+                        print("Doubled-list case display")
+                        tmpC = QStandardItem(str(type(child_child_AST)))
+                        tmpD = str(child_child_AST[0]) + ',' + str(child_child_AST[1])
+                        tmpD = QStandardItem(tmpD)
+                        motherItem.appendRow([QStandardItem(), QStandardItem(), tmpC, tmpD])
+            else:
+                childASTid = childAST._id
+                _type = childAST._type
 
-            if self.findChildrenWithName(motherItem,childASTid) != None:
-                print("duplication Detect!")
-                print("duplication Item text",self.findChildrenWithName(motherItem,childASTid).text())
-                continue
+                if self.findChildrenWithName(motherItem,childASTid) != None:
+                    print("duplication Detect!")
+                    print("duplication Item text",self.findChildrenWithName(motherItem,childASTid).text())
+                    continue
 
-            tmpA = QStandardItem(_type)
-            tmpB = QStandardItem(childASTid)
-            motherItem.appendRow([tmpA,tmpB,QStandardItem(_type),QStandardItem()])
+                tmpA = QStandardItem(_type)
+                tmpB = QStandardItem(childASTid)
+                motherItem.appendRow([tmpA,tmpB,QStandardItem(_type),QStandardItem()])
 
     def findChildrenWithText(self,parentItem,key,column=None):
         if column == None:
@@ -2774,3 +2793,17 @@ class _Progress(QProgressBar):
 
     def update(self,val):
         self.setValue(val)
+
+
+
+
+def get_id_return_module(id : str, type : str, moduleDict):
+    """
+    :param id:
+    :param type: '_DesignParameter' or '_DesignConstraint'
+    :return:
+    """
+    while 1:
+        module = id[:-1]
+        if module in moduleDict:
+            return module
