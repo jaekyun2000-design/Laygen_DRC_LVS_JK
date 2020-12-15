@@ -175,15 +175,17 @@ class _BoundarySetupWindow(QWidget):
 
         try:
             self._DesignParameter['_DesignParameterName'] = self.name_input.text()
+            if self._DesignParameter['_DesignParameterName'] == '':
+                raise NotImplementedError
             self._DesignParameter['_XWidth'] = float(self.width_input.text())
             self._DesignParameter['_YWidth'] = float(self.height_input.text())
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
             self.send_BoundaryDesign_signal.emit(self._DesignParameter)
             self.destroy()
         except:
-            self.send_Warning_signal.emit("Invalid Design Parameter Input")
+            self.send_Warning_signal.emit("Invalid Design Parameter Input")     #log message
             self.warning = QMessageBox()
-            self.warning.setText("Invalid design parameter input")
+            self.warning.setText("Invalid design parameter or Name")
             self.warning.setIcon(QMessageBox.Warning)
             self.warning.show()
 
