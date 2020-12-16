@@ -61,6 +61,7 @@ class _BoundarySetupWindow(QWidget):
         cancelButton = QPushButton("Cancel",self)
 
         okButton.clicked.connect(self.on_buttonBox_accepted)
+        cancelButton.clicked.connect(self.cancel_button_accepted)
 
         self.XYdictForLineEdit = []
         self.XYdictForLabel = []
@@ -127,6 +128,7 @@ class _BoundarySetupWindow(QWidget):
         self.setGeometry(300,300,500,500)
         self.show()
 
+
     def updateUI(self):
         self.name_input.setText(self._DesignParameter['_DesignParameterName'])
         self.width_input.setText(str(self._DesignParameter['_XWidth']))
@@ -153,7 +155,8 @@ class _BoundarySetupWindow(QWidget):
         #findText
         # self.
 
-
+    def cancel_button_accepted(self):
+        self.destroy()
     def on_buttonBox_accepted(self):
         for XY in self.XYdictForLineEdit:
             if not XY.text():
@@ -172,18 +175,19 @@ class _BoundarySetupWindow(QWidget):
 
         try:
             self._DesignParameter['_DesignParameterName'] = self.name_input.text()
+            if self._DesignParameter['_DesignParameterName'] == '':
+                raise NotImplementedError
             self._DesignParameter['_XWidth'] = float(self.width_input.text())
             self._DesignParameter['_YWidth'] = float(self.height_input.text())
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
             self.send_BoundaryDesign_signal.emit(self._DesignParameter)
             self.destroy()
         except:
-            self.send_Warning_signal.emit("Invalid Design Parameter Input")
+            self.send_Warning_signal.emit("Invalid Design Parameter Input")     #log message
             self.warning = QMessageBox()
-            self.warning.setText("Invalid design parameter input")
+            self.warning.setText("Invalid design parameter or Name")
             self.warning.setIcon(QMessageBox.Warning)
             self.warning.show()
-
 
     def AddBoundaryPointWithMouse(self,_MouseEvent):
         ##### When Click the point, adjust x,y locations #####
@@ -259,6 +263,7 @@ class _PathSetupWindow(QWidget):
         cancelButton = QPushButton("Cancel",self)
 
         okButton.clicked.connect(self.on_buttonBox_accepted)
+        cancelButton.clicked.connect(self.cancel_button_accepted)
 
 
         self.XYdictForLineEdit = []
@@ -339,7 +344,8 @@ class _PathSetupWindow(QWidget):
             self.UpdateXYwidget()
 
 
-
+    def cancel_button_accepted(self):
+        self.destroy()
     def on_buttonBox_accepted(self):
         self._DesignParameter['_DesignParameterName'] = self.name_input.text()
         self._DesignParameter['_Width'] = self.width_input.text()
@@ -526,6 +532,7 @@ class _SRefSetupWindow(QWidget):
         cancelButton = QPushButton("Cancel",self)
 
         okButton.clicked.connect(self.on_buttonBox_accepted)
+        cancelButton.clicked.connect(self.cancel_button_accepted)
 
         name = QLabel("Element Name")
         width = QLabel("Width")
@@ -608,7 +615,8 @@ class _SRefSetupWindow(QWidget):
         #findText
         # self.
 
-
+    def cancel_button_accepted(self):
+        self.destroy()
     def on_buttonBox_accepted(self):
 
         try:
@@ -656,6 +664,7 @@ class _ConstraintSetupWindow(QWidget):
         cancelButton = QPushButton("Cancel",self)
 
         okButton.clicked.connect(self.on_buttonBox_accepted)
+        cancelButton.clicked.connect(self.cancel_button_accepted)
 
 
         self.setupVboxColumn1 = QVBoxLayout()
@@ -820,6 +829,8 @@ class _ConstraintSetupWindow(QWidget):
     def addQLine(self,num):
         for i in range(0,num):
             self.setupVboxColumn2.addWidget(QLineEdit())
+    def cancel_button_accepted(self):
+        self.destroy()
     def on_buttonBox_accepted(self):
         for i in range(0,self.setupVboxColumn1.count()):
             ttmp = self.setupVboxColumn2.itemAt(i).widget()
@@ -887,6 +898,7 @@ class _ConstraintSetupWindowSTMT(QWidget):
         cancelButton = QPushButton("Cancel",self)
 
         okButton.clicked.connect(self.on_buttonBox_accepted)
+        cancelButton.clicked.connect(self.cancel_button_accepted)
 
 
         self.setupVboxColumn1 = QVBoxLayout()
@@ -1055,6 +1067,8 @@ class _ConstraintSetupWindowSTMT(QWidget):
     def addQLine(self,num):
         for i in range(0,num):
             self.setupVboxColumn2.addWidget(QLineEdit())
+    def cancel_button_accepted(self):
+        self.destroy()
     def on_buttonBox_accepted(self):
         stmtType = self.type_input.currentText()
         stmt = dict()
@@ -1136,7 +1150,7 @@ class _ConstraintSetupWindowAST(QWidget):
         cancelButton = QPushButton("Cancel",self)
 
         okButton.clicked.connect(self.on_buttonBox_accepted)
-
+        cancelButton.clicked.connect(self.cancel_button_accepted)
 
         self.setupVboxColumn1 = QVBoxLayout()
         self.setupVboxColumn2 = QVBoxLayout()
@@ -1212,6 +1226,10 @@ class _ConstraintSetupWindowAST(QWidget):
 
         self.send_AST_signal.emit(_ASTobj)
         self.destroy()
+
+    def cancel_button_accepted(self):
+        self.destroy()
+
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
@@ -1274,6 +1292,7 @@ class _ConstraintSetupWindowCUSTOM(QWidget):
         cancelButton = QPushButton("Cancel",self)
 
         okButton.clicked.connect(self.on_buttonBox_accepted)
+        cancelButton.clicked.connect(self.cancel_button_accepted)
 
 
         self.setupVboxColumn1 = QVBoxLayout()
@@ -1334,6 +1353,8 @@ class _ConstraintSetupWindowCUSTOM(QWidget):
     def addQLine(self,num):
         for i in range(0,num):
             self.setupVboxColumn2.addWidget(QLineEdit())
+    def cancel_button_accepted(self):
+        self.destroy()
     def on_buttonBox_accepted(self):
         _ASTtype = self.type_input.currentText()
         _ASTobj = self._ASTapi._create_custom_ast_with_name(_ASTtype)
@@ -1400,6 +1421,7 @@ class _ConstraintSetupWindowPyCode(QWidget):
         cancelButton = QPushButton("Cancel",self)
 
         okButton.clicked.connect(self.on_buttonBox_accepted)
+        cancelButton.clicked.connect(self.cancel_button_accepted)
 
 
         self.setupVboxColumn1 = QVBoxLayout()
@@ -1568,6 +1590,8 @@ class _ConstraintSetupWindowPyCode(QWidget):
     def addQLine(self,num):
         for i in range(0,num):
             self.setupVboxColumn2.addWidget(QLineEdit())
+    def cancel_button_accepted(self):
+        self.destroy()
     def on_buttonBox_accepted(self):
         if self.type_input.currentText() == "pyCode":
             try:
