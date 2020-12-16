@@ -124,6 +124,7 @@ class _BoundarySetupWindow(QWidget):
 
         self.setLayout(vbox)
 
+
         self.setWindowTitle('Boundary Setup Window')
         self.setGeometry(300,300,500,500)
         self.show()
@@ -347,31 +348,38 @@ class _PathSetupWindow(QWidget):
     def cancel_button_accepted(self):
         self.destroy()
     def on_buttonBox_accepted(self):
-        self._DesignParameter['_DesignParameterName'] = self.name_input.text()
-        self._DesignParameter['_Width'] = self.width_input.text()
-        self._DesignParameter['_Layer'] = self.layer_input.currentText()
-        self._DesignParameter['_XYCoordinates'] = [[]]
-        for XY in self.XYdictForLineEdit:
-            if not XY.text():
-                break
-            else:
-                try:
-                    X = int(XY.text().split(',')[0])
-                    Y = int(XY.text().split(',')[1])
-                    self._DesignParameter['_XYCoordinates'][0].append([X,Y])
-                    # self._DesignParameter['_XYCoordinatesForDisplay'].append([X,Y])
+        try:
+            self._DesignParameter['_DesignParameterName'] = self.name_input.text()
+            if self._DesignParameter['_DesignParameterName'] == '':
+                raise NotImplementedError
+            self._DesignParameter['_Width'] = self.width_input.text()
+            self._DesignParameter['_Layer'] = self.layer_input.currentText()
+            self._DesignParameter['_XYCoordinates'] = [[]]
 
-                except:
-                    self.warning = QMessageBox()
-                    self.warning.setIcon(QMessageBox.Warning)
-                    self.warning.setText("Unvalid XY Coordinates")
-        pass
+            for XY in self.XYdictForLineEdit:
+                if not XY.text():
+                    break
+                else:
+                    try:
+                        X = int(XY.text().split(',')[0])
+                        Y = int(XY.text().split(',')[1])
+                        self._DesignParameter['_XYCoordinates'][0].append([X,Y])
+                    except:
+                        self.warning = QMessageBox()
+                        self.warning.setIcon(QMessageBox.Warning)
+                        self.warning.setText("Invalid XYCoordinates")
+                        self.warning.show()
 
-        self.send_DestroyTmpVisual_signal.emit(self.visualItem)
-        self.send_PathDesign_signal.emit(self._DesignParameter)
-        self.send_Destroy_signal.emit()
-        pass
-
+            pass
+            self.send_DestroyTmpVisual_signal.emit(self.visualItem)
+            self.send_PathDesign_signal.emit(self._DesignParameter)
+            self.send_Destroy_signal.emit()
+            pass
+        except:
+            self.warning = QMessageBox()
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.setText("Invalid Name")
+            self.warning.show()
 
 
     def keyPressEvent(self, QKeyEvent):
@@ -384,30 +392,35 @@ class _PathSetupWindow(QWidget):
         # print(self._DesignParameter)
 
         ##### When Click the point, adjust x,y locations #####
-        if len(self._DesignParameter['_XYCoordinates']) == 0:
-            self._DesignParameter['_XYCoordinates'].append([[_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()]])
-        else:
-            xdistance = abs(_MouseEvent.scenePos().x() - self._DesignParameter['_XYCoordinates'][0][-1][0])
-            ydistance = abs(_MouseEvent.scenePos().y() - self._DesignParameter['_XYCoordinates'][0][-1][1])
-
-            if xdistance < ydistance:
-                self._DesignParameter['_XYCoordinates'][0].append([self._DesignParameter['_XYCoordinates'][0][-1][0],_MouseEvent.scenePos().toPoint().y()])
+        try:
+            if len(self._DesignParameter['_XYCoordinates']) == 0:
+                self._DesignParameter['_XYCoordinates'].append([[_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()]])
             else:
-                self._DesignParameter['_XYCoordinates'][0].append([_MouseEvent.scenePos().toPoint().x(),self._DesignParameter['_XYCoordinates'][0][-1][1]])
+                xdistance = abs(_MouseEvent.scenePos().x() - self._DesignParameter['_XYCoordinates'][0][-1][0])
+                ydistance = abs(_MouseEvent.scenePos().y() - self._DesignParameter['_XYCoordinates'][0][-1][1])
 
-        # self._DesignParameter['_XYCoordinates'].append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y(),])
+                if xdistance < ydistance:
+                    self._DesignParameter['_XYCoordinates'][0].append([self._DesignParameter['_XYCoordinates'][0][-1][0],_MouseEvent.scenePos().toPoint().y()])
+                else:
+                    self._DesignParameter['_XYCoordinates'][0].append([_MouseEvent.scenePos().toPoint().x(),self._DesignParameter['_XYCoordinates'][0][-1][1]])
 
-        CurrentEditPointNum = len(self.XYdictForLineEdit)-2
-        XYstring = str(self._DesignParameter['_XYCoordinates'][0][-1][0]) + ',' + str(self._DesignParameter['_XYCoordinates'][0][-1][1])
-        self.XYdictForLineEdit[CurrentEditPointNum].setText(XYstring)
-        self.UpdateXYwidget()
+            # self._DesignParameter['_XYCoordinates'].append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y(),])
 
-        self._DesignParameter['_Width'] = self.width_input.text()
-        self._DesignParameter['_Layer'] = self.layer_input.currentText()
-        self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
-
-        self.visualItem.updateTraits(self._DesignParameter)
-        self.send_PathSetup_signal.emit(self.visualItem)
+            CurrentEditPointNum = len(self.XYdictForLineEdit)-2
+            XYstring = str(self._DesignParameter['_XYCoordinates'][0][-1][0]) + ',' + str(self._DesignParameter['_XYCoordinates'][0][-1][1])
+            self.XYdictForLineEdit[CurrentEditPointNum].setText(XYstring)
+            self.UpdateXYwidget()
+            self._DesignParameter['_Width'] = self.width_input.text()
+            self._DesignParameter['_Layer'] = self.layer_input.currentText()
+            self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
+            self.visualItem.updateTraits(self._DesignParameter)
+            self.send_PathSetup_signal.emit(self.visualItem)
+        except:
+            print('======a============')
+            self.warning = QMessageBox()
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.setText("Invalid Parameter Input")
+            self.warning.show()
 
 
 
