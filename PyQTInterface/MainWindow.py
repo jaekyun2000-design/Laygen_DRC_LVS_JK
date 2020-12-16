@@ -543,7 +543,9 @@ class _MainWindow(QMainWindow):
             originalModuleList = set(self._QTObj._qtProject._DesignParameter)
             # self.dockContentWidget4ForLoggingMessage._InfoMessage("Load GDS File Starts.")
             print("loadFile")
-            self._QTObj._qtProject._loadDesignsFromGDS(_file = _fileName, _topModuleName = _moduleName)
+            aa = self._QTObj._qtProject._loadDesignsFromGDS(_file = _fileName, _topModuleName = _moduleName)
+            for num in range(len(aa)):
+                self.createNewDesignParameter(aa[num])
             print("FileLoadEnd")
 
             if self.progrseeBar_unstable == True:
@@ -676,6 +678,7 @@ class _MainWindow(QMainWindow):
         self.qpd.show()
 
     def createNewDesignParameter(self,_DesignParameter):
+        print(_DesignParameter)
         if self._QTObj._qtProject == None:
             self.warning=QMessageBox()
             self.warning.setText("There is no Project")

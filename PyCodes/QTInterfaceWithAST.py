@@ -7,6 +7,7 @@ from PyQTInterface import VisualizationItem
 from PyCodes import EnvForClientSetUp
 from PyCodes import userDefineExceptions
 from PyCodes import ASTmodule
+from PyQTInterface.layermap import LayerReader
 from DesignManager.ElementManager import element_manager
 import ast, astunparse
 import pickle
@@ -661,6 +662,126 @@ class QtProject:
                 return userDefineExceptions._UnkownError
 
     def _loadDesignsFromGDS(self, _file=None, _topModuleName=None):
+        if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
+            print("_loadDesignsFromGDS Run.")
+        if _file == None or _topModuleName == None:
+            return userDefineExceptions._InvalidInputError
+        else:
+            dp_dict_list = []
+
+            try:
+                _GDSStreamObj = gds_stream.GDS_STREAM()
+                with open("{}".format(_file), 'rb') as f:
+                    _GDSStreamObj.read_binary_gds_stream(gds_file=f)
+                for _tmpStructure in _GDSStreamObj._STRUCTURES:
+                    # _tmpStructureName = _tmpStructure._STRNAME.strname.split('\x00', 1)[0]
+                    _tmpStructureName = _tmpStructure._STRNAME.strname.decode()
+                    if '\x00' in _tmpStructureName:
+                        _tmpStructureName = _tmpStructureName.split('\x00', 1)[0]
+                    # _tmpStructureName = _tmpStructure._STRNAME.strname
+                    # print('monitor for decode in _loadDesignsFromGDS ', _tmpStructureName)
+                    # print('monitor for dubug: ', _tmpStructureName)
+                    layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+
+                    for _tmpElement in _tmpStructure._ELEMENTS:
+                        _tmpId = self._getDesignParameterId(_ParentName=_tmpStructureName)
+                        _tmpId = _tmpStructureName + str(_tmpId)
+                        if "_BOUNDARY" in vars(_tmpElement._ELEMENTS):
+                            dp_dict = dict(
+                                _Layer=None,
+                                _DesignParametertype=1,
+                                _XYCoordinates=[],
+                                _XWidth=None,
+                                _YWidth=None,
+                                _Ignore=None,
+                                _DesignParameterName=None
+                            )
+
+                            _XYCenter, _XWidth, _YWidth = self._XYCoordinate2CenterCoordinateAndWidth(
+                                _tmpElement._ELEMENTS._XY.xy)
+                            tmp_layer_name = layernum2name[str(_tmpElement._ELEMENTS._LAYER.layer)]
+                            dp_dict['_Layer'] = tmp_layer_name
+                            dp_dict['_DesignParametertype'] = 1
+                            dp_dict['_XYCoordinates'].append([_XYCenter[0], _XYCenter[1]])
+                            dp_dict['_XWidth'] = _XWidth
+                            dp_dict['_YWidth'] = _YWidth
+
+                            dp_dict['_DesignParameterName'] = _tmpId
+
+                            dp_dict_list.append(dp_dict)
+                            print(dp_dict)
+                            print(dp_dict_list)
+                        #     self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName)
+                        #     self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                        #         "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
+                        #     self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                        #         "_Datatype"] = _tmpElement._ELEMENTS._DATATYPE.datatype
+                        #     self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_XYCoordinates"].append(
+                        #         [_XYCenter[0], _XYCenter[1]])
+                        #     self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_XWidth"] = _XWidth
+                        #     self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_YWidth"] = _YWidth
+                            # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Ignore"]
+                            # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_ElementName"]
+                        elif "_PATH" in vars(_tmpElement._ELEMENTS):
+                            self._createNewDesignParameter(_id=_tmpId, _type=2, _ParentName=_tmpStructureName)
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                                "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                                "_Datatype"] = _tmpElement._ELEMENTS._DATATYPE.datatype
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_XYCoordinates"].append(
+                                _tmpElement._ELEMENTS._XY.xy)
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                                "_Width"] = _tmpElement._ELEMENTS._WIDTH.width
+                        elif "_SREF" in vars(_tmpElement._ELEMENTS):
+                            self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName)
+                            # print('     monitor for debug: ', _tmpElement._ELEMENTS._SNAME.sname.decode())
+                            # print('     monitor for debug: ', _tmpElement._ELEMENTS._XY)
+                            _tmpSname = _tmpElement._ELEMENTS._SNAME.sname.decode()
+                            if '\x00' in _tmpSname:
+                                _tmpSname = _tmpSname.split('\x00', 1)[0]
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_DesignObj"] = _tmpSname
+                            for _tmpXYCoordinate in _tmpElement._ELEMENTS._XY.xy:
+                                self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                                    "_XYCoordinates"].append(_tmpXYCoordinate)
+                            if _tmpElement._ELEMENTS._STRANS != None:
+                                if _tmpElement._ELEMENTS._STRANS._STRANS != None:
+                                    self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Reflect"] = [
+                                        _tmpElement._ELEMENTS._STRANS._STRANS.reflection,
+                                        _tmpElement._ELEMENTS._STRANS._STRANS.abs_mag,
+                                        _tmpElement._ELEMENTS._STRANS._STRANS.abs_angle]
+                                if _tmpElement._ELEMENTS._STRANS._ANGLE != None:
+                                    self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                                        "_Angle"] = _tmpElement._ELEMENTS._STRANS._ANGLE.angle
+                        elif "_TEXT" in vars(_tmpElement._ELEMENTS):
+                            self._createNewDesignParameter(_id=_tmpId, _type=8, _ParentName=_tmpStructureName)
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                                "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
+                            for _tmpXYCoordinate in _tmpElement._ELEMENTS._TEXTBODY._XY.xy:
+                                self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                                    "_XYCoordinates"].append(_tmpXYCoordinate)
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Presentation"] = [
+                                _tmpElement._ELEMENTS._TEXTBODY._PRESENTATION.font,
+                                _tmpElement._ELEMENTS._TEXTBODY._PRESENTATION.vertical_presentation,
+                                _tmpElement._ELEMENTS._TEXTBODY._PRESENTATION.horizontal_presentation]
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Reflect"] = [
+                                _tmpElement._ELEMENTS._TEXTBODY._STRANS._STRANS.reflection,
+                                _tmpElement._ELEMENTS._TEXTBODY._STRANS._STRANS.abs_mag,
+                                _tmpElement._ELEMENTS._TEXTBODY._STRANS._STRANS.abs_angle]
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                                "_Mag"] = _tmpElement._ELEMENTS._TEXTBODY._STRANS._MAG.mag
+                            # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Angle"] = _tmpElement._ELEMENTS._TEXTBODY._STRANS._ANGLE.angle
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                                "_TEXT"] = _tmpElement._ELEMENTS._TEXTBODY._STRING.string_data
+
+                            # print(vars(_tmpElement._ELEMENTS))
+                # print(self._DesignParameter)
+            except:
+                print(userDefineExceptions._UnkownError)
+                return userDefineExceptions._UnkownError
+
+            return dp_dict_list
+
+    def _loadDesignsFromGDSlegacy(self, _file=None, _topModuleName=None):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
             print("_loadDesignsFromGDS Run.")
         if _file == None or _topModuleName == None:
