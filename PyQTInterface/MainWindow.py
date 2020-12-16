@@ -424,6 +424,7 @@ class _MainWindow(QMainWindow):
         self.cw = SetupWindow._ConstraintSetupWindowAST(_ASTapi = self._ASTapi)
         self.cw.show()
         self.cw.send_AST_signal.connect(self.createNewConstraintAST)
+        self.cw.send_destroy_signal.connect(self.delete_obj)
 
     def makeConstraintWindowCUSTOM(self):
         self.cw = SetupWindow._ConstraintSetupWindowCUSTOM(_ASTapi = self._ASTapi)
@@ -433,6 +434,12 @@ class _MainWindow(QMainWindow):
     def closingPathWidget(self):
         self.scene.itemListClickIgnore(False)
         del self.pw
+
+    def delete_obj(self,obj):
+        if obj == 'cw':
+            del self.cw
+
+
 
     def updateGraphicItem(self,graphicItem):
         for items in self.scene.items():
@@ -543,9 +550,7 @@ class _MainWindow(QMainWindow):
             originalModuleList = set(self._QTObj._qtProject._DesignParameter)
             # self.dockContentWidget4ForLoggingMessage._InfoMessage("Load GDS File Starts.")
             print("loadFile")
-            aa = self._QTObj._qtProject._loadDesignsFromGDS(_file = _fileName, _topModuleName = _moduleName)
-            for num in range(len(aa)):
-                self.createNewDesignParameter(aa[num])
+            self._QTObj._qtProject._loadDesignsFromGDSlegacy(_file = _fileName, _topModuleName = _moduleName)
             print("FileLoadEnd")
 
             if self.progrseeBar_unstable == True:

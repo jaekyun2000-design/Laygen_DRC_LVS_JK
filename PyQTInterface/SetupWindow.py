@@ -385,8 +385,10 @@ class _PathSetupWindow(QWidget):
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
+            self.send_Destroy_signal.emit()
         elif QKeyEvent.key() == Qt.Key_Escape:
             self.destroy()
+            self.send_Destroy_signal.emit()
 
     def AddPathPointWithMouse(self,_MouseEvent):
         # print(self._DesignParameter)
@@ -1128,6 +1130,7 @@ class _ConstraintSetupWindowAST(QWidget):
 
     send_STMT_signal = pyqtSignal(dict)
     send_AST_signal = pyqtSignal("PyQt_PyObject")
+    send_destroy_signal = pyqtSignal(str)
 
     def __init__(self,_AST = None, _STMT = None, _ASTapi = None):
         super().__init__()
@@ -1246,8 +1249,10 @@ class _ConstraintSetupWindowAST(QWidget):
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
+            self.send_destroy_signal.emit('cw')
         elif QKeyEvent.key() == Qt.Key_Escape:
             self.destroy()
+            self.send_destroy_signal.emit('cw')
     def updateUIvalue(self):
         try:
             type = self._ParseTree['_type']
