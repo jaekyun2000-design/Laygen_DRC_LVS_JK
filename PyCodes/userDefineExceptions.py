@@ -11,3 +11,5 @@ class StatusError(Exception):
 _InvalidInputError = "Invalid Input Error"
 _InvalidObjStateError = "Invalid Obj State Error"
 _UnkownError = "UnkownError Error"
+_NoneValueError = "None value is not supported"
+_NotImplementError = "This function is not implemented"

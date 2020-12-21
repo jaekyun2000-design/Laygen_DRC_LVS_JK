@@ -29,7 +29,11 @@ class QtDesignParameter:
         self._id = _id
         self._type = _type  # boundary, path, sref, gdsObj
         self._ParentName = _ParentName
-        self._DesignParameterName = _DesignParameterName
+        if _DesignParameterName == None:
+            self._DesignParameterName = _id
+            print("There is no valid design parameter name")
+        else:
+            self._DesignParameterName = _DesignParameterName
         self._DesignParameter = None
         self._DesignHierarchy = None
         self._XYCoordinatesForDisplay = []
@@ -54,6 +58,8 @@ class QtDesignParameter:
             _tmpDesignParameter["_YWidth"] = None
             _tmpDesignParameter["_Ignore"] = None
             _tmpDesignParameter["_ElementName"] = None
+            _tmpDesignParameter["_DesignParametertype"] = 1
+            _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
         elif self._type == 2:  # path
             _tmpDesignParameter["_Layer"] = None
             _tmpDesignParameter["_Datatype"] = None
@@ -61,6 +67,8 @@ class QtDesignParameter:
             _tmpDesignParameter["_Width"] = None
             _tmpDesignParameter["_Ignore"] = None
             _tmpDesignParameter["_ElementName"] = None
+            _tmpDesignParameter["_DesignParametertype"] = 2
+            _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
         elif self._type == 3:  # sref
             _tmpDesignParameter["_DesignObj"] = None  ####[libName, moduleName] ????
             _tmpDesignParameter["_DesignLibName"] = None  ####[libName, moduleName] ????
@@ -72,10 +80,16 @@ class QtDesignParameter:
             _tmpDesignParameter["_Angle"] = None
             _tmpDesignParameter["_Ignore"] = None
             _tmpDesignParameter["_ElementName"] = None
+            _tmpDesignParameter["_DesignParametertype"] = 3
+            _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
         elif self._type == 4:  # gds
             _tmpDesignParameter["_GDSFile"] = None
+            _tmpDesignParameter["_DesignParametertype"] = 4
+            _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
         elif self._type == 5:  # gds
             _tmpDesignParameter["_Name"] = None
+            _tmpDesignParameter["_DesignParametertype"] = 5
+            _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
         elif self._type == 8:  # text
             _tmpDesignParameter["_Layer"] = None
             # _tmpDesignParameter["_Datatype"] = None
@@ -87,6 +101,8 @@ class QtDesignParameter:
             _tmpDesignParameter["_TEXT"] = None
             _tmpDesignParameter["_Ignore"] = None
             _tmpDesignParameter["_ElementName"] = None
+            _tmpDesignParameter["_DesignParametertype"] = 8
+            _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
 
             # def _TextElementDeclaration(self, _Layer=None, _Datatype=None, _Presentation=None, _Reflect=None,
             #                             _XYCoordinates=[], _Mag=None, _Angle=None, _TEXT=None, _ElementName=None, ):
@@ -1650,11 +1666,11 @@ class QtProject:
             except:
                 return userDefineExceptions._UnkownError
 
-    def _feed_design(self, design_type: str, module_name: str, _ast: ast.AST=None, dp_dict: dict=None) -> dict:
+    def _feed_design(self, design_type: str, module_name: str, _ast: ast.AST=None, dp_dict: dict=None, element_manager_update:bool =True) -> dict:
         if design_type == 'parameter':
-            output = self._feed_design_dictionary(module_name=module_name,_dp_dict=dp_dict)
+            output = self._feed_design_dictionary(module_name=module_name,_dp_dict=dp_dict, element_manager_update=element_manager_update)
         elif design_type == 'constraint':
-            output = self._feed_ast(module_name=module_name,_ast=_ast)
+            output = self._feed_ast(module_name=module_name,_ast=_ast, element_manager_update= element_manager_update)
 
         return output
 

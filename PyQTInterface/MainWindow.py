@@ -582,10 +582,21 @@ class _MainWindow(QMainWindow):
             for module in addedModuleList:
                 try:
                     for id in self._QTObj._qtProject._DesignParameter[module]:
-
+                        # Step 1 : From QtDeisngParameter -> get AST
+                        tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(self._QTObj._qtProject._DesignParameter[module][id])
+                        # Step 2: From ast -> create Constraint
+                        design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=module, _ast=tmpAST, element_manager_update=False)
+                        # Step 3: From QtDesignconstraint -> create Visual_ast item
+                        try:
+                            if design_dict['constraint']:
+                                self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                                 _parentName=module,
+                                                                                 _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+                        except:
+                            print("Invalid ast.")
+                        # Step 4: From QtDesignParameter -> create Visual Element item
                         if self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignParametertype'] == 3:
                             continue
-
                         visualItem = self.createVisualItemfromDesignParameter(self._QTObj._qtProject._DesignParameter[module][id])
                         self.updateGraphicItem(visualItem)
                 except:

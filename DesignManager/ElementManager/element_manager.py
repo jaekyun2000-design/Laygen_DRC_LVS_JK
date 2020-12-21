@@ -1,5 +1,6 @@
 from PyCodes import element_ast
 from PyCodes import ASTmodule
+from PyCodes import userDefineExceptions
 
 class ElementManager:
     def __init__(self):
@@ -33,15 +34,15 @@ class ElementManager:
                 elif key == 'width':
                     tmpAST.__dict__[key] = dp_dict['_Width']
 
-        # elif dp_dict['_DesignParametertype'] == 3:  #Sref
-        #     tmpAST = element_ast.Sref()
-        #     for key in element_ast.Sref._fields:
-        #         if key == '_DesignParameterName':
-        #             tmpAST.__dict__['name'] = dp_dict[key]
-        #         elif key == 'base':
-        #             tmpAST.__dict__['base'] = dp_dict[key]
-        #         elif key == '_XYCoordinates':
-        #             tmpAST.__dict__['XY'] = dp_dict[key]  #Not complete
+        elif dp_dict['_DesignParametertype'] == 3:  #Sref
+            tmpAST = element_ast.Sref()
+            for key in element_ast.Sref._fields:
+                if key == 'name':
+                    tmpAST.__dict__['name'] = dp_dict['_DesignParameterName']
+                elif key == 'base':
+                    tmpAST.__dict__['base'] = dp_dict['_DesignObj']
+                elif key == '_XYCoordinates':
+                    tmpAST.__dict__['XY'] = dp_dict["_XYCoordinates"]  #Not complete
 
         else:
             return None
@@ -54,6 +55,12 @@ class ElementManager:
 
         return tmpAST , constraint_id
 
+    # def get_dp_return_ast(self, _qtdp):
+        # if dp._type == 1:
+        #     dp.
+        # elif dp._type == 2:
+        #
+        # elif dp._type == 3:
 
     def get_ast_return_dpdict(self, ast):
         if ASTmodule._getASTtype(ast) == 'Boundary':
@@ -124,6 +131,43 @@ class ElementManager:
 
         return tmpDP, parameter_id
 
+    def get_dp_return_dpdict(self,_qtdp):
+        """
+        _qtdp._id = _id # string
+        _qtdp._type = _type  # int, boundary-1, path-2, sref-3
+        _qtdp._ParentName = _ParentName # string
+        _qtdp._DesignParameterName = _DesignParameterName #string
+        _qtdp._DesignParameter = None
+        :param _qtdp: input qt_designParameter object
+        :return: design parameter dictionary format
+        """
+        tmpDP = dict()
+        if _qtdp._type == None:
+            return userDefineExceptions._NoneValueError
+
+        for key in _qtdp._DeisngParameter:
+            tmpDP[key] = _qtdp._DesignParameter[key]
+        return tmpDP
+
+    def get_dp_return_ast(self,_qtdp):
+        """
+        _qtdp._id = _id # string
+        _qtdp._type = _type  # int, boundary-1, path-2, sref-3
+        _qtdp._ParentName = _ParentName # string
+        _qtdp._DesignParameterName = _DesignParameterName #string
+        _qtdp._DesignParameter = None
+        :param _qtdp: input qt_designParameter object
+        :return: design constraint ast format
+        """
+        tmpAST , _ = self.get_dpdict_return_ast(_qtdp._DesignParameter)
+        return tmpAST
+
+
+    def get_dc_return_dpdict(self,_qtdc):
+        return userDefineExceptions._NotImplementError
+
+    def get_dc_return_ast(self,_qtdc):
+        return userDefineExceptions._NotImplementError
 
     def load_dp_dc(self,dp,dc):
 
