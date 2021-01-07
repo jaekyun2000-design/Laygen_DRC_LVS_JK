@@ -29,7 +29,7 @@ class _BoundarySetupWindow(QWidget):
 
     send_BoundarySetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
     send_BoundaryDesign_signal = pyqtSignal(dict)
-    send_Destroy_signal = pyqtSignal()
+    send_Destroy_signal = pyqtSignal(str)
     send_Warning_signal = pyqtSignal(str)
     send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
 
@@ -218,8 +218,10 @@ class _BoundarySetupWindow(QWidget):
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
+            self.send_Destroy_signal.emit('bw')
         elif QKeyEvent.key() == Qt.Key_Escape:
             self.destroy()
+            self.send_Destroy_signal.emit('bw')
 
 
 class _PathSetupWindow(QWidget):
@@ -227,7 +229,7 @@ class _PathSetupWindow(QWidget):
     send_PathSetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
     send_PathDesign_signal = pyqtSignal(dict)
     # send_Destroy_signal = pyqtSignal("PyQt_PyObject")
-    send_Destroy_signal = pyqtSignal()
+    send_Destroy_signal = pyqtSignal(str)
     send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
 
     def __init__(self, PathElement = None):
@@ -385,10 +387,10 @@ class _PathSetupWindow(QWidget):
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
-            self.send_Destroy_signal.emit()
+            self.send_Destroy_signal.emit('pw')
         elif QKeyEvent.key() == Qt.Key_Escape:
             self.destroy()
-            self.send_Destroy_signal.emit()
+            self.send_Destroy_signal.emit('pw')
 
     def AddPathPointWithMouse(self,_MouseEvent):
         # print(self._DesignParameter)
@@ -509,14 +511,16 @@ class _SRefSetupWindowOG(QWidget):
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             pass
+        #self.send_Destroy_signal.emit()
         elif QKeyEvent.key() == Qt.Key_Escape:
             self.destroy()
+        #self.send_Destroy_signal.emit()
 
 class _SRefSetupWindow(QWidget):
 
     send_SRefSetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
     send_SRefDesign_signal = pyqtSignal(dict)
-    send_Destroy_signal = pyqtSignal()
+    send_Destroy_signal = pyqtSignal(str)
     send_Warning_signal = pyqtSignal(str)
 
     def __init__(self,SRefElement= None):
@@ -652,8 +656,10 @@ class _SRefSetupWindow(QWidget):
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
+            self.send_Destroy_signal.emit('sw')
         elif QKeyEvent.key() == Qt.Key_Escape:
             self.destroy()
+            self.send_Destroy_signal.emit('sw')
 
 class _ConstraintSetupWindow(QWidget):
 
@@ -1130,7 +1136,7 @@ class _ConstraintSetupWindowAST(QWidget):
 
     send_STMT_signal = pyqtSignal(dict)
     send_AST_signal = pyqtSignal("PyQt_PyObject")
-    send_destroy_signal = pyqtSignal(str)
+    send_Destroy_signal = pyqtSignal(str)
 
     def __init__(self,_AST = None, _STMT = None, _ASTapi = None):
         super().__init__()
@@ -1249,10 +1255,10 @@ class _ConstraintSetupWindowAST(QWidget):
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
-            self.send_destroy_signal.emit('cw')
+            self.send_Destroy_signal.emit('cw')
         elif QKeyEvent.key() == Qt.Key_Escape:
             self.destroy()
-            self.send_destroy_signal.emit('cw')
+            self.send_Destroy_signal.emit('cw')
     def updateUIvalue(self):
         try:
             type = self._ParseTree['_type']
@@ -1275,6 +1281,7 @@ class _ConstraintSetupWindowCUSTOM(QWidget):
 
     send_STMT_signal = pyqtSignal(dict)
     send_CUSTOM_signal = pyqtSignal("PyQt_PyObject")
+    send_Destroy_signal = pyqtSignal(str)
 
     def __init__(self,_AST = None, _STMT = None, _ASTapi = None):
         super().__init__()
@@ -1392,8 +1399,10 @@ class _ConstraintSetupWindowCUSTOM(QWidget):
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
+            self.send_Destroy_signal.emit('cw')
         elif QKeyEvent.key() == Qt.Key_Escape:
             self.destroy()
+            self.send_Destroy_signal.emit('cw')
     def updateUIvalue(self):
         try:
             type = self._ParseTree['_type']
@@ -1415,6 +1424,7 @@ class _ConstraintSetupWindowCUSTOM(QWidget):
 class _ConstraintSetupWindowPyCode(QWidget):
 
     send_PyCode_signal = pyqtSignal(str)
+    send_Destroy_signal = pyqtSignal(str)
 
     def __init__(self,_ParseTree = None):
         super().__init__()
@@ -1623,8 +1633,10 @@ class _ConstraintSetupWindowPyCode(QWidget):
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
+            self.send_Destroy_signal.emit('cw')
         elif QKeyEvent.key() == Qt.Key_Escape:
             self.destroy()
+            self.send_Destroy_signal.emit('cw')
     def updateUIvalue(self):
         try:
             type = self._ParseTree["Type"]

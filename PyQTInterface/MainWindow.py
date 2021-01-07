@@ -364,6 +364,7 @@ class _MainWindow(QMainWindow):
         self.bw.send_BoundaryDesign_signal.connect(self.createNewDesignParameter)
         self.bw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
         self.scene.send_xyCoordinate_signal.connect(self.bw.AddBoundaryPointWithMouse)
+        self.bw.send_Destroy_signal.connect(self.delete_obj)
 
 
     def makePathWindow(self):
@@ -373,7 +374,7 @@ class _MainWindow(QMainWindow):
         self.pw.send_PathSetup_signal.connect(self.updateGraphicItem)
         self.pw.send_PathDesign_signal.connect(self.createNewDesignParameter)
         self.pw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
-        self.pw.send_Destroy_signal.connect(self.closingPathWidget)
+        self.pw.send_Destroy_signal.connect(self.delete_obj)
         self.scene.send_xyCoordinate_signal.connect(self.pw.AddPathPointWithMouse)                          # Mouse Interaction connect
 
     def makeSRefWindow(self):
@@ -431,13 +432,18 @@ class _MainWindow(QMainWindow):
         self.cw.show()
         self.cw.send_CUSTOM_signal.connect(self.createNewConstraintAST)
 
-    def closingPathWidget(self):
-        self.scene.itemListClickIgnore(False)
-        del self.pw
+    # def closingPathWidget(self):
+    #     self.scene.itemListClickIgnore(False)
+    #     del self.pw
 
-    def delete_obj(self,obj):
+    def delete_obj(self, obj):
         if obj == 'cw':
             del self.cw
+        if obj == 'bw':
+            del self.bw
+        if obj == 'pw':
+            del self.pw
+
 
 
 
