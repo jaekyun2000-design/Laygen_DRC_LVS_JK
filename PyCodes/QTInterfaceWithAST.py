@@ -1697,12 +1697,12 @@ class QtProject:
             except:
                 return userDefineExceptions._UnkownError
 
-    def _feed_design_dictionary(self, module_name: str, _dp_dict: dict, element_manger_update: bool = True) -> dict:
-        # _createNewDesignParameter_by_dict(self, module_name, _dp_dict, element_manger_update=True):
+    def _feed_design_dictionary(self, module_name: str, _dp_dict: dict, element_manager_update: bool = True) -> dict:
+        # _createNewDesignParameter_by_dict(self, module_name, _dp_dict, element_manager_update=True):
         """
         :param module_name:  current module name
         :param _dp_dict: dictionary file which contains design parameter values
-        :param element_manger_update: This argument prevent recursive call btw createNewDesignParameter_by_dict and
+        :param element_manager_update: This argument prevent recursive call btw createNewDesignParameter_by_dict and
         createNewDesignConstraint.
         :return:
         """
@@ -1729,7 +1729,7 @@ class QtProject:
                 _designParameter = self._DesignParameter[module_name][designID]
                 _designConstraint = None
                 _designConstraint_id = None
-                if element_manger_update == True:
+                if element_manager_update == True:
                     try:
                         tmp_ast, _ = self._ElementManager.get_dpdict_return_ast(_dp_dict)
                         if tmp_ast:
@@ -1745,12 +1745,12 @@ class QtProject:
             except:
                 return userDefineExceptions._UnkownError
 
-    def _update_design_dictionary(self, module_name: str, id: str, _dp_dict: dict, element_manger_update: bool = True) -> dict:
-        # _createNewDesignParameter_by_dict(self, module_name, _dp_dict, element_manger_update=True):
+    def _update_design_dictionary(self, module_name: str, id: str, _dp_dict: dict, element_manager_update: bool = True) -> dict:
+        # _createNewDesignParameter_by_dict(self, module_name, _dp_dict, element_manager_update=True):
         """
         :param module_name:  current module name
         :param _dp_dict: dictionary file which contains design parameter values
-        :param element_manger_update: This argument prevent recursive call btw createNewDesignParameter_by_dict and
+        :param element_manager_update: This argument prevent recursive call btw createNewDesignParameter_by_dict and
         createNewDesignConstraint.
         :return:
         """
@@ -1768,7 +1768,7 @@ class QtProject:
                 _designParameter = self._DesignParameter[module_name][id]
                 _designConstraint = None
                 _designConstraint_id = None
-                if element_manger_update == True:
+                if element_manager_update == True:
                     try:
                         tmp_ast, designparameter_id = self._ElementManager.get_dpdict_return_ast(_dp_dict)
                         if tmp_ast:
@@ -1892,7 +1892,7 @@ class QtProject:
                     try:
                         tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(_ast)
                         if tmp_dp_dict:
-                            tmp_dict = self._feed_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, element_manger_update=False)
+                            tmp_dict = self._feed_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, element_manager_update=False)
                             _designParameter = tmp_dict['parameter']
                             _designParameter_id = tmp_dict['parameter_id']
                             self._ElementManager.load_dp_dc(_designParameter, _designConstraint)
@@ -1921,7 +1921,7 @@ class QtProject:
                     try:
                         tmp_dp_dict, contraint_id = self._ElementManager.get_ast_return_dpdict(_ast)
                         if tmp_dp_dict:
-                            tmp_dict = self._update_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, id=contraint_id, element_manger_update=False)
+                            tmp_dict = self._update_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, id=contraint_id, element_manager_update=False)
                             _designParameter = tmp_dict['parameter']
                             _designParameter_id = tmp_dict['parameter_id']
                     except:
