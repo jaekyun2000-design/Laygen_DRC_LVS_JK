@@ -11,6 +11,7 @@ from PyQt5.QtCore import *
 from PyQTInterface import userDefineExceptions
 from PyQTInterface import SetupWindow
 from PyQTInterface import template
+from PyQTInterface.layermap import LayerReader
 from PyCodes import QTInterfaceWithAST
 from PyCodes import ASTmodule
 from PyCodes import element_ast
@@ -201,6 +202,7 @@ class _MainWindow(QMainWindow):
         dockContentWidget1.setLayout(vboxOnDock1)
         dockWidget1.setWidget(dockContentWidget1)
         self.addDockWidget(Qt.RightDockWidgetArea,dockWidget1)
+
 
         ################# Left Dock Widget setting ####################
         dockWidget2 = QDockWidget("Design List")
@@ -457,6 +459,29 @@ class _MainWindow(QMainWindow):
         self.scene.addItem(graphicItem)
         self.scene.send_move_signal.connect(graphicItem.move)
         self.scene.send_moveDone_signal.connect(graphicItem.moveUpdate)
+        visual_item_list = self.scene.items()
+        _blockList = list()
+        _layerList = list()
+        layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+
+        for index in range(0,len(visual_item_list)):
+            # print(visual_item_list[index].__class__.__name__)
+            if visual_item_list[index].__class__.__name__ == "_RectBlock":
+                _blockList.append(visual_item_list[index])
+
+        for i in range(0,len(_blockList)):
+            _newLayer = layernum2name[str(_blockList[i].__dict__['_BlockTraits']['_Layer'])]
+            if _newLayer in _layerList:
+                pass
+            else:
+                _layerList.append(_newLayer)
+
+        print(_blockList)
+        print(_layerList)
+
+        # layer 정보 : _RectBlock
+        # layer visual on/off -> _Rectblock on/off  <important>
+        # layer click on/off  -> _VisualizationItem
 
 
 
@@ -1201,6 +1226,8 @@ class _CustomScene(QGraphicsScene):
         self.listIgnoreFlag = False
         self.oldPos = QPointF(0,0)
         # self.
+
+
 
     def mousePressEvent(self, event):
         if self.listIgnoreFlag is True:
