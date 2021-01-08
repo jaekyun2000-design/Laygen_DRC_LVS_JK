@@ -717,7 +717,6 @@ class QtProject:
                                 _tmpElement._ELEMENTS._XY.xy)
                             tmp_layer_name = layernum2name[str(_tmpElement._ELEMENTS._LAYER.layer)]
                             dp_dict['_Layer'] = tmp_layer_name
-                            dp_dict['_DesignParametertype'] = 1
                             dp_dict['_XYCoordinates'].append([_XYCenter[0], _XYCenter[1]])
                             dp_dict['_XWidth'] = _XWidth
                             dp_dict['_YWidth'] = _YWidth
@@ -725,8 +724,7 @@ class QtProject:
                             dp_dict['_DesignParameterName'] = _tmpId
 
                             dp_dict_list.append(dp_dict)
-                            print(dp_dict)
-                            print(dp_dict_list)
+
                         #     self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName)
                         #     self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                         #         "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
@@ -739,15 +737,35 @@ class QtProject:
                             # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Ignore"]
                             # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_ElementName"]
                         elif "_PATH" in vars(_tmpElement._ELEMENTS):
-                            self._createNewDesignParameter(_id=_tmpId, _type=2, _ParentName=_tmpStructureName)
-                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
-                                "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
-                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
-                                "_Datatype"] = _tmpElement._ELEMENTS._DATATYPE.datatype
-                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_XYCoordinates"].append(
-                                _tmpElement._ELEMENTS._XY.xy)
-                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
-                                "_Width"] = _tmpElement._ELEMENTS._WIDTH.width
+                            dp_dict = dict(
+                                _DesignParameterName=None,
+                                _Layer=None,
+                                _DesignParametertype=2,
+                                _XYCoordinates=[],
+                                _Width=None,
+                                _Height=None,
+                                _Color=None,
+                                _ItemRef=None
+                            )
+
+                            tmp_layer_name = layernum2name[str(_tmpElement._ELEMENTS._LAYER.layer)]
+                            dp_dict['_Layer'] = tmp_layer_name
+                            dp_dict['_XYCoordinates'].append(_tmpElement._ELEMENTS._XY.xy)
+                            dp_dict['_Width'] = _tmpElement._ELEMENTS._WIDTH.width
+
+                            dp_dict['_DesignParameterName'] = _tmpId
+
+                            dp_dict_list.append(dp_dict)
+
+                            # self._createNewDesignParameter(_id=_tmpId, _type=2, _ParentName=_tmpStructureName)
+                            # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                            #     "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
+                            # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                            #     "_Datatype"] = _tmpElement._ELEMENTS._DATATYPE.datatype
+                            # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_XYCoordinates"].append(
+                            #     _tmpElement._ELEMENTS._XY.xy)
+                            # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                            #     "_Width"] = _tmpElement._ELEMENTS._WIDTH.width
                         elif "_SREF" in vars(_tmpElement._ELEMENTS):
                             self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName)
                             # print('     monitor for debug: ', _tmpElement._ELEMENTS._SNAME.sname.decode())
