@@ -7,6 +7,9 @@ class ElementManager:
         self.elementParameterDict = dict()
         self.elementConstraintDict = dict()
 
+        self.dp_id_to_dc_id = dict()
+        self.dc_id_to_dp_id = dict()
+
     def get_dpdict_return_ast(self, dp_dict):
         if dp_dict['_DesignParametertype'] == 1:    #Boundary
             tmpAST = element_ast.Boundary()
@@ -173,6 +176,16 @@ class ElementManager:
 
         self.elementParameterDict[dp._DesignParameterName] = dp
         self.elementConstraintDict[dc._ast.name] = dc
+
+    def load_dp_dc_id(self,dp_id, dc_id):
+        self.dc_id_to_dp_id[dc_id] = dp_id
+        self.dp_id_to_dc_id[dp_id] = dc_id
+
+    def get_dc_id_by_dp_id(self,dp_id):
+        return self.dp_id_to_dc_id[dp_id]
+
+    def get_dp_id_by_dc_id(self,dc_id):
+        return self.dc_id_to_dp_id[dc_id]
 
 
 class KeyManager():

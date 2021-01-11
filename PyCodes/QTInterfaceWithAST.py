@@ -1755,6 +1755,7 @@ class QtProject:
                             _designConstraint = tmp_dict['constraint']
                             _designConstraint_id = tmp_dict['constraint_id']
                             self._ElementManager.load_dp_dc(_designParameter, _designConstraint)
+                            self._ElementManager.load_dp_dc_id(dp_id=designID, dc_id=_designConstraint_id)
                     except:
                         print('Constraint -> Parameter is not implemented')
 
@@ -1788,9 +1789,10 @@ class QtProject:
                 _designConstraint_id = None
                 if element_manager_update == True:
                     try:
-                        tmp_ast, designparameter_id = self._ElementManager.get_dpdict_return_ast(_dp_dict)
-                        if tmp_ast:
-                            tmp_dict = self._update_ast(_ast=tmp_ast, module_name=module_name, id=designparameter_id, element_manager_update=False)
+                        tmp_ast, design_constraint_id = self._ElementManager.get_dpdict_return_ast(_dp_dict)
+                        design_constraint_id = self._ElementManager.get_dc_id_by_dp_id(id)
+                        if design_constraint_id:
+                            tmp_dict = self._update_ast(_ast=tmp_ast, module_name=module_name, id=design_constraint_id, element_manager_update=False)
                             _designConstraint = tmp_dict['constraint']
                             _designConstraint_id = tmp_dict['constraint_id']
                     except:
@@ -1914,6 +1916,7 @@ class QtProject:
                             _designParameter = tmp_dict['parameter']
                             _designParameter_id = tmp_dict['parameter_id']
                             self._ElementManager.load_dp_dc(_designParameter, _designConstraint)
+                            self._ElementManager.load_dp_dc_id(dp_id=_designParameter_id, dc_id=constraintID)
                     except:
                         print("Constraint -> Parameter is not implemented.")
 
@@ -1937,9 +1940,10 @@ class QtProject:
                 _designParameter_id = None
                 if element_manager_update == True:
                     try:
-                        tmp_dp_dict, contraint_id = self._ElementManager.get_ast_return_dpdict(_ast)
-                        if tmp_dp_dict:
-                            tmp_dict = self._update_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, id=contraint_id, element_manager_update=False)
+                        tmp_dp_dict, parameter_id = self._ElementManager.get_ast_return_dpdict(_ast)
+                        parameter_id = self._ElementManager.get_dp_id_by_dc_id(id)
+                        if parameter_id:
+                            tmp_dict = self._update_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, id=parameter_id, element_manager_update=False)
                             _designParameter = tmp_dict['parameter']
                             _designParameter_id = tmp_dict['parameter_id']
                     except:
