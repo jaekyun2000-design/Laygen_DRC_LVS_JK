@@ -375,7 +375,8 @@ class _PathSetupWindow(QWidget):
             pass
             self.send_DestroyTmpVisual_signal.emit(self.visualItem)
             self.send_PathDesign_signal.emit(self._DesignParameter)
-            self.send_Destroy_signal.emit()
+            self.destroy()
+            self.send_Destroy_signal.emit('pw')
             pass
         except:
             self.warning = QMessageBox()
