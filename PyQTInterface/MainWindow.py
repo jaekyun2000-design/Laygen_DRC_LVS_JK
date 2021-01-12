@@ -22,6 +22,7 @@ import threading
 import re
 from PyQTInterface import LayerInfo
 from PyQTInterface import VisualizationItem
+from PyQTInterface import list_manager
 
 ##for easy debug##
 import json
@@ -173,7 +174,10 @@ class _MainWindow(QMainWindow):
 
         ################# Right Dock Widget setting ####################
         dockWidget1 = QDockWidget()
+        dockWidget1_1 = QDockWidget("Layer")
+        layoutWidget = QWidget()
         dockContentWidget1 = QWidget()
+        self.dockContentWidget1_2 = list_manager._ManageList()
 
         boundaryButton = QPushButton("Boundary")
         boundaryButton.clicked.connect(self.makeBoundaryWindow)
@@ -200,9 +204,17 @@ class _MainWindow(QMainWindow):
         vboxOnDock1.addStretch(10)
 
         dockContentWidget1.setLayout(vboxOnDock1)
-        dockWidget1.setWidget(dockContentWidget1)
-        self.addDockWidget(Qt.RightDockWidgetArea,dockWidget1)
 
+        gridOnDock1 = QHBoxLayout()
+        # gridOnDock1.addWidget(self.dockContentWidget1_2)
+        gridOnDock1.addWidget(dockContentWidget1)
+
+        layoutWidget.setLayout(gridOnDock1)
+        dockWidget1.setWidget(layoutWidget)
+
+        self.addDockWidget(Qt.RightDockWidgetArea,dockWidget1)
+        dockWidget1_1.setWidget(self.dockContentWidget1_2)
+        self.addDockWidget(Qt.RightDockWidgetArea,dockWidget1_1)
 
         ################# Left Dock Widget setting ####################
         dockWidget2 = QDockWidget("Design List")
@@ -476,14 +488,11 @@ class _MainWindow(QMainWindow):
             else:
                 _layerList.append(_newLayer)
 
-        print(_blockList)
-        print(_layerList)
+        self.dockContentWidget1_2.updateList(_layerList)
 
         # layer 정보 : _RectBlock
         # layer visual on/off -> _Rectblock on/off  <important>
         # layer click on/off  -> _VisualizationItem
-
-
 
     def deleteGraphicItem(self,graphicItem):
         self.scene.removeItem(graphicItem)
