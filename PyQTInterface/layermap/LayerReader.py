@@ -85,7 +85,7 @@ def _LayerNumber2CommonLayerName(_LayerMapping):
     _LayerNum2Name = dict()
 
     for _LayerCommonName in _LayerMapping:
-        if _LayerMapping[_LayerCommonName][1] == 0:
+        if _LayerMapping[_LayerCommonName][1] != None:
             i = str(_LayerMapping[_LayerCommonName][0])
             layerName = _LayerMapping[_LayerCommonName][2]
             _LayerNum2Name[i] = _LayerCommonName

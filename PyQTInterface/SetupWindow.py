@@ -81,7 +81,7 @@ class _BoundarySetupWindow(QWidget):
 
         _Layer = LayerReader._LayerMapping
         for LayerName in _Layer:
-            if _Layer[LayerName][1] == 0:       ## Layer is drawing
+            if _Layer[LayerName][1] != None:       ## Layer is drawing
                 self.layer_input.addItem(LayerName)
         #
         # _Layer = LayerInfo._Layer()
@@ -2366,8 +2366,8 @@ class _ConstraintModel(QStandardItemModel):
         pass
 
     def readParseTree(self,motherItem,_STMTList):
-        print("Start Reading ParseTree")
-        print("Mother Item: ",motherItem.text())
+        # print("Start Reading ParseTree")
+        # print("Mother Item: ",motherItem.text())
 
         for stmt in _STMTList:
             for key in stmt:

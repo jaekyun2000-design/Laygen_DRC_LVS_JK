@@ -159,6 +159,8 @@ class _MainWindow(QMainWindow):
         ################# Graphics View, Scene setting ####################
         graphicView = _CustomView()
         self.scene = _CustomScene()
+        self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
+        self.scene.setMinimumRenderSize(5)
         self.setCentralWidget(graphicView)
         self.scene.setBackgroundBrush(QBrush(Qt.white))
         graphicView.scale(1,-1)
@@ -476,9 +478,6 @@ class _MainWindow(QMainWindow):
             else:
                 _layerList.append(_newLayer)
 
-        print(_blockList)
-        print(_layerList)
-
         # layer 정보 : _RectBlock
         # layer visual on/off -> _Rectblock on/off  <important>
         # layer click on/off  -> _VisualizationItem
@@ -583,6 +582,7 @@ class _MainWindow(QMainWindow):
             print("loadFile")
             self._QTObj._qtProject._loadDesignsFromGDSlegacy(_file = _fileName, _topModuleName = _moduleName)
             print("FileLoadEnd")
+            visual_item_list = []
 
             if self.progrseeBar_unstable == True:
                 updateModuleList = set(self._QTObj._qtProject._DesignParameter)
@@ -605,7 +605,7 @@ class _MainWindow(QMainWindow):
                 if DEBUG:
                     print(f'idLength= {idLength}')
                 j = 0
-                self.qpd = QProgressDialog("Load GDS...","Cancel",0,idLength,self)
+                self.qpd = QProgressDialog("Load GDS... (File Transform)","Cancel",0,idLength,self)
                 self.qpd.setWindowModality(Qt.WindowModal)
                 self.qpd.show()
 
@@ -629,7 +629,8 @@ class _MainWindow(QMainWindow):
                         if self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignParametertype'] == 3:
                             continue
                         visualItem = self.createVisualItemfromDesignParameter(self._QTObj._qtProject._DesignParameter[module][id])
-                        self.updateGraphicItem(visualItem)
+                        visual_item_list.append(visualItem)
+                        # self.updateGraphicItem(visualItem)
                 except:
                     print("module:",module)
                     print("ID:",id)
@@ -640,6 +641,16 @@ class _MainWindow(QMainWindow):
                     self.qpd.setValue(j)
                     if self.qpd.wasCanceled():
                         break
+
+            self.qpd2 = QProgressDialog("Load GDS... (Creating VisualItem)", "Cancel", 0, len(visual_item_list)-1, self)
+            self.qpd2.setWindowModality(Qt.WindowModal)
+            self.qpd2.show()
+            for i, vis in enumerate(visual_item_list):
+                self.updateGraphicItem(vis)
+                self.qpd2.setValue(i)
+                if self.qpd2.wasCanceled():
+                    break
+
             self._QTObj._qtProject._resetXYCoordinatesForDisplay()
 
             # After Load All DesignParameter!!!! Now Setting For SRef!!!!
@@ -834,15 +845,21 @@ class _MainWindow(QMainWindow):
             module = self.get_id_return_module(id,'_DesignConstraint')
             design_dict = self._QTObj._qtProject._update_design(design_type='constraint', module_name=module,
                                                               _ast=self._QTObj._qtProject._DesignConstraint[module][id]._ast, id=id)
-            visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
-            self.updateGraphicItem(visualItem)
+            try:
+                visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
+                self.updateGraphicItem(visualItem)
+            except:
+                pass #exceptional case LATER ( not 1-to-1 matching constraint.... > cannot update visual item)
         if mother_id:
             module = self.get_id_return_module(mother_id, '_DesignConstraint')
             design_dict  = self._QTObj._qtProject._update_design(design_type='constraint', module_name=module,
                                                                 _ast=self._QTObj._qtProject._DesignConstraint[module][
                                                                     mother_id]._ast, id=mother_id)
-            visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
-            self.updateGraphicItem(visualItem)
+            try:
+                visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
+                self.updateGraphicItem(visualItem)
+            except:
+                pass # DEBUG LATER
 
     def deliveryDesignParameter(self):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()
