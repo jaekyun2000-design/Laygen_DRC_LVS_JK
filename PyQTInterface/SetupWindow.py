@@ -1137,7 +1137,7 @@ class _ConstraintSetupWindowAST(QWidget):
 
     send_STMT_signal = pyqtSignal(dict)
     send_AST_signal = pyqtSignal("PyQt_PyObject")
-    send_Destroy_signal = pyqtSignal(str)
+    send_destroy_signal = pyqtSignal(str)
 
     def __init__(self,_AST = None, _STMT = None, _ASTapi = None):
         super().__init__()
