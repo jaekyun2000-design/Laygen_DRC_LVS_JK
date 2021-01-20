@@ -2471,6 +2471,9 @@ class _ConstraintModel(QStandardItemModel):
                 # pass
 
     def readParseTreeWtihAST(self,motherItem,_AST):
+            if motherItem.text() == 'ctx':
+                debugPoint=1
+
             if debugFlag == True:
                 print("Start Reading ParseTree with AST")
                 print("Mother Item: ",motherItem.text())

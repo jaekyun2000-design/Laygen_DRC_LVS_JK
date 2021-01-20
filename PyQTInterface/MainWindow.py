@@ -867,11 +867,9 @@ class _MainWindow(QMainWindow):
             design_dict  = self._QTObj._qtProject._update_design(design_type='constraint', module_name=module,
                                                                 _ast=self._QTObj._qtProject._DesignConstraint[module][
                                                                     mother_id]._ast, id=mother_id)
-            try:
+            if design_dict['parameter']:
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
                 self.updateGraphicItem(visualItem)
-            except:
-                pass # DEBUG LATER
 
     def deliveryDesignParameter(self):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()
@@ -1191,8 +1189,9 @@ class _MainWindow(QMainWindow):
         :param type: '_DesignParameter' or '_DesignConstraint'
         :return:
         """
+        module = id
         while 1:
-            module = id[:-1]
+            module = module[:-1]
             if module in self._QTObj._qtProject.__dict__[type]:
                 return module
 
