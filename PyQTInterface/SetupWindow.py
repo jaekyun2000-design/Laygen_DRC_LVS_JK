@@ -1873,7 +1873,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 self.updateDesginConstraintWithSTR(Module=motherModuleName,Id=motherID,Field =placeHolder ,StringValue=value)
 
             ###Step 2 sub-hierarchy refresh#####################################            #To expand unseen contents <Constraint Case>
-            if moduleName in self._DesignConstraintFromQTobj:
+            if moduleName == '':
+                pass
+            elif moduleName in self._DesignConstraintFromQTobj:
                 if itemID in self._DesignConstraintFromQTobj[moduleName]:
                     self.refreshItem(self.currentIndex())
                 else:
@@ -2471,9 +2473,6 @@ class _ConstraintModel(QStandardItemModel):
                 # pass
 
     def readParseTreeWtihAST(self,motherItem,_AST):
-            if motherItem.text() == 'ctx':
-                debugPoint=1
-
             if debugFlag == True:
                 print("Start Reading ParseTree with AST")
                 print("Mother Item: ",motherItem.text())
@@ -2861,7 +2860,8 @@ def get_id_return_module(id : str, type : str, moduleDict):
     :param type: '_DesignParameter' or '_DesignConstraint'
     :return:
     """
+    module = id
     while 1:
-        module = id[:-1]
+        module = module[:-1]
         if module in moduleDict:
             return module

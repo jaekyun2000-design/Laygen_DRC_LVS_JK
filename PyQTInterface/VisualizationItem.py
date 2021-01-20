@@ -153,7 +153,7 @@ class _RectBlock(QGraphicsRectItem):
 class _VisualizationItem(QGraphicsItemGroup):
     def __init__(self,_ItemTraits=None):
         super().__init__()
-
+        self.setBoundingRegionGranularity(1)
         self._id = None
         self._type = None
         self.setFlag(QGraphicsItemGroup.ItemIsSelectable,True)
@@ -267,6 +267,7 @@ class _VisualizationItem(QGraphicsItemGroup):
             self.block = []
             self.blockGeneration()
             self.setPos(0,0)
+
         # self.setPos(self._XYCoordinatesForDisplay[0],self._XYCoordinatesForDisplay[1])
         # print("last:",self.pos())
         # self.updatePos()
