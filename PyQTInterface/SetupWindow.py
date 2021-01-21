@@ -1796,6 +1796,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_RootDesignConstraint_signal = pyqtSignal(str)
     send_RecieveDone_signal = pyqtSignal()
     send_RequesteDesignConstraint_signal = pyqtSignal()
+    send_deleteID_signal = pyqtSignal(str)
 
 
 
@@ -1863,7 +1864,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             except:
                 value = None
 
-            if moduleName in self._DesignConstraintFromQTobj:
+            if moduleName in self.model._ContraintDict:
                 pass
             else:
                 motherIDItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
@@ -1920,15 +1921,29 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             self._DesignConstraintFromQTobj[Module][Id]._setDesignConstraintValue(_index=Field,_value=_value)
             return
 
+    def removeItem_by_ID(self, ID):
 
-    def removeItem(self,item):
+        _items = self.model.findItems(ID,column=1)
+        for item in _items:
+            self.removeItem(item)
+
+    def removeItem(self,item):  # removes item and sends deletion signal of DesignParameterID
+        ID_by_Item_index = self.model.indexFromItem(item).siblingAtColumn(1)
+        ID_by_Item = self.model.itemFromIndex(ID_by_Item_index).text()  # Constraint ID of corresponding item
+
         if self.model.indexFromItem(item).parent().isValid():
             parentIndex = self.model.indexFromItem(item).parent()
             self.model.removeRow(item.row(),parentIndex)
         else:
             self.model.removeRow(item.row())
 
+        if ID_by_Item == None or ID_by_Item == '':
+            pass
+        else:
+            self.send_deleteID_signal.emit(ID_by_Item)
+
         self.removeFlag = False
+
 
     def checkSend(self):
         print("check Evaluation")
