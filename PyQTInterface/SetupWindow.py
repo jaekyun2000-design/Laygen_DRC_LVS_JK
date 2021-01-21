@@ -1864,7 +1864,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             except:
                 value = None
 
-            if moduleName in self.model._ContraintDict:
+            if moduleName in self._DesignConstraintFromQTobj:
                 pass
             else:
                 motherIDItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
