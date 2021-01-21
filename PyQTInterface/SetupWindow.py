@@ -1689,6 +1689,8 @@ class _SelectedDesignListWidget(QListWidget):
         for item in _items:
             if type(item) == VisualizationItem._RectBlock:
                 continue
+            elif type(item) == QGraphicsPathItem:
+                continue
             elif item._clickFlag == False:
                 continue
 

@@ -171,7 +171,25 @@ class _MainWindow(QMainWindow):
         self.scene.setSceneRect(-1000000000,-1000000000,2000000000,2000000000)
         self.scene.send_parameterIDList_signal.connect(self.parameterToTemplateHandler)
         self.scene.send_deleteItem_signal.connect(self.deleteDesignParameter)
+        # self.scene.send_debug_signal.connect(self.sceneDebug)
 
+        # if DEBUG:
+        #     a,b,c= QPointF(0, 0) ,QPointF(100, 0) ,QPointF(100, 500)
+        #     points = [a,b,c]
+        #     aa,bb,cc= QPointF(0, 0) ,QPointF(0, 100) ,QPointF(500, 100)
+        #     pointss = [aa,bb,cc]
+        #     poly = QPolygonF(points)
+        #     poly2 = QPolygonF(pointss)
+        #     path = QPainterPath()
+        #     path.moveTo(0,0)
+        #     path.addPolygon(poly)
+        #     path.closeSubpath()
+        #     path.addPolygon(poly2)
+        #     path.closeSubpath()
+        #     painter = QPainter()
+        #     brush = QBrush(QColor(50,50,50))
+        #     painter.fillPath(path,brush)
+        #     self.scene.addPath(path)
 
 
         ################# Right Dock Widget setting ####################
@@ -339,6 +357,31 @@ class _MainWindow(QMainWindow):
         dockWidget4ForLoggingMessage.setWidget(self.dockContentWidget4ForLoggingMessage)
         self.addDockWidget(Qt.BottomDockWidgetArea, dockWidget4ForLoggingMessage)
 
+    # def sceneDebug(self):
+    #     for key in self.visualItemDict:
+    #         tmp = self.visualItemDict[key]
+    #         path = tmp.shape()
+    #         brush = QBrush(QColor(50,50,50))
+    #         painter = QPainter()
+    #         painter.fillPath(path,brush)
+    #         self.scene.addPath(path)
+    #         # if DEBUG:
+    #         #     a,b,c= QPointF(0, 0) ,QPointF(100, 0) ,QPointF(100, 500)
+    #         #     points = [a,b,c]
+    #         #     aa,bb,cc= QPointF(0, 0) ,QPointF(0, 100) ,QPointF(500, 100)
+    #         #     pointss = [aa,bb,cc]
+    #         #     poly = QPolygonF(points)
+    #         #     poly2 = QPolygonF(pointss)
+    #         #     path = QPainterPath()
+    #         #     path.moveTo(0,0)
+    #         #     path.addPolygon(poly)
+    #         #     path.closeSubpath()
+    #         #     path.addPolygon(poly2)
+    #         #     path.closeSubpath()
+    #         #     painter = QPainter()
+    #         #     brush = QBrush(QColor(50,50,50))
+    #         #     painter.fillPath(path,brush)
+    #         #     self.scene.addPath(path)
 
     def debugConstraint(self):
         try:
@@ -819,6 +862,7 @@ class _MainWindow(QMainWindow):
         visualItem = VisualizationItem._VisualizationItem()
         # if visualItem._XYCoordinatesForDisplay
         visualItem.updateDesignParameter(DesignParameter)
+        visualItem.setBoundingRegionGranularity(1)
         self.visualItemDict[DesignParameter._id] = visualItem
         return visualItem
 
@@ -1242,6 +1286,7 @@ class _CustomView(QGraphicsView):
 
 
 class _CustomScene(QGraphicsScene):
+    send_debug_signal = pyqtSignal()
     send_xyCoordinate_signal = pyqtSignal(QGraphicsSceneMouseEvent)
     send_itemList_signal = pyqtSignal(list)
     send_parameterIDList_signal = pyqtSignal(list,int)
@@ -1258,10 +1303,15 @@ class _CustomScene(QGraphicsScene):
 
 
     def mousePressEvent(self, event):
+        # self.send_debug_signal.emit()
         if self.listIgnoreFlag is True:
             pass
         else:
-            itemList = self.items(event.scenePos())
+            # itemList = self.items(event.scenePos())
+            itemList = self.items(event.scenePos(),Qt.IntersectsItemShape)
+            # if DEBUG:
+            #     print("MousePressDebug")
+            #     print(itemList)
             self.send_itemList_signal.emit(itemList)                  #Temporary stop, Unstable (I need to find DesignParameterWith Id, without Module Name
         self.send_xyCoordinate_signal.emit(event);
         if self.moveFlag is True:
@@ -1270,7 +1320,9 @@ class _CustomScene(QGraphicsScene):
             print("moveDone emmit")
         else:
             self.oldPos = event.scenePos()
-            print(1)
+
+
+
 
     # def eventFilter(self, obj, event):
     #     if obj ==  and event.type() == QEvent.HoverEnter:
