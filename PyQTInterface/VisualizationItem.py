@@ -21,6 +21,7 @@ scaleValue = 1
 class _RectBlock(QGraphicsRectItem):
     def __init__(self,_BlockTraits=None):
         super().__init__()
+        self.setFlag(QGraphicsItem.ItemIsSelectable, False)
         # self.setFlag(QGraphicsItem.ItemIsSelectable,False)
         if _BlockTraits is None:
             self._BlockTraits = dict(
@@ -182,6 +183,10 @@ class _VisualizationItem(QGraphicsItemGroup):
             self._ItemTraits = _ItemTraits
             self.block = []
             self.blockGeneration()
+
+    def paint(self, painter, option, widget) -> None:
+        pass
+
 
     def shape(self):
         if self._type == 1:
