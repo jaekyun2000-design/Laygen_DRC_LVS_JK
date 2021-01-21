@@ -845,7 +845,7 @@ class _MainWindow(QMainWindow):
         try:
             dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)  # get DesignParameterID
         except:
-            del self._QTObj._qtProject._DesignConstraint[dc_module][dc_id]
+            # del self._QTObj._qtProject._DesignConstraint[dc_module][dc_id]
             return None
         dp_module = dp_id[:-1]
         while not dp_module in self._QTObj._qtProject._DesignParameter:
@@ -853,8 +853,8 @@ class _MainWindow(QMainWindow):
 
         self.visualItemDict[dp_id]
         self.scene.removeItem(self.visualItemDict[dp_id])
-        del self._QTObj._qtProject._DesignParameter[dp_module][dp_id]
-        del self._QTObj._qtProject._DesignConstraint[dc_module][dc_id]
+        # del self._QTObj._qtProject._DesignParameter[dp_module][dp_id]
+        # del self._QTObj._qtProject._DesignConstraint[dc_module][dc_id]
 
 
 
