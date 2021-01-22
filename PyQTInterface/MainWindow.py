@@ -158,19 +158,24 @@ class _MainWindow(QMainWindow):
 
 
         ################# Graphics View, Scene setting ####################
-        graphicView = _CustomView()
         self.scene = _CustomScene()
+        graphicView = _CustomView()
+        graphicView.setScene(self.scene)
+        graphicView.setRubberBandSelectionMode(Qt.ContainsItemShape)
+        graphicView.setDragMode(QGraphicsView.RubberBandDrag)
+        graphicView.setAcceptDrops(True)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
         self.scene.setMinimumRenderSize(5)
         self.setCentralWidget(graphicView)
         self.scene.setBackgroundBrush(QBrush(Qt.white))
         graphicView.scale(1,-1)
         graphicView.setInteractive(True)
-        graphicView.setScene(self.scene)
+        # graphicView.setScene(self.scene)
 
         self.scene.setSceneRect(-1000000000,-1000000000,2000000000,2000000000)
         self.scene.send_parameterIDList_signal.connect(self.parameterToTemplateHandler)
         self.scene.send_deleteItem_signal.connect(self.deleteDesignParameter)
+        self.scene.selectionChanged.connect(self.scene.send_item_list)
         # self.scene.send_debug_signal.connect(self.sceneDebug)
 
         # if DEBUG:
@@ -1312,6 +1317,17 @@ class _CustomView(QGraphicsView):
         delta = newPosition - oldPosition
         self.translate(delta.x(),delta.y())
 
+    # def dropEvent(self, event) -> None:
+    #     super
+    def dragEnterEvent(self, event) -> None:
+        print('ed')
+        event.accept()
+        event.proposedAction()
+        super(self).dragEnterEvent(event)
+    def dropEvent(self, event) -> None:
+        event.accept()
+        event.proposedAction()
+        super(self).dropEvent(event)
 
 class _CustomScene(QGraphicsScene):
     send_debug_signal = pyqtSignal()
@@ -1331,16 +1347,21 @@ class _CustomScene(QGraphicsScene):
 
 
     def mousePressEvent(self, event):
+        # super(self).mousePressEvent(event)
+        # itemList = self.items(event.scenePos(),Qt.IntersectsItemShape)
+        # for item in itemList:
+        #     print(f'click{item}item')
+        #     item.setSelected(True)
         # self.send_debug_signal.emit()
-        if self.listIgnoreFlag is True:
-            pass
-        else:
-            # itemList = self.items(event.scenePos())
-            itemList = self.items(event.scenePos(),Qt.IntersectsItemShape)
-            # if DEBUG:
-            #     print("MousePressDebug")
-            #     print(itemList)
-            self.send_itemList_signal.emit(itemList)                  #Temporary stop, Unstable (I need to find DesignParameterWith Id, without Module Name
+        # if self.listIgnoreFlag is True:
+        #     pass
+        # else:
+        #     # itemList = self.items(event.scenePos())
+        #     # itemList = self.items(event.scenePos(),Qt.IntersectsItemShape)
+        #     # if DEBUG:
+        #     #     print("MousePressDebug")
+        #     #     print(itemList)
+        #     # self.send_itemList_signal.emit(itemList)                  #Temporary stop, Unstable (I need to find DesignParameterWith Id, without Module Name
         self.send_xyCoordinate_signal.emit(event);
         if self.moveFlag is True:
             self.moveFlag = False
@@ -1348,9 +1369,21 @@ class _CustomScene(QGraphicsScene):
             print("moveDone emmit")
         else:
             self.oldPos = event.scenePos()
+        super().mousePressEvent(event)
+
+    def send_item_list(self):
+        itemList = self.selectedItems()
+        print(itemList)
+        self.send_itemList_signal.emit(itemList)
 
 
+    def dragEnterEvent(self, event: 'QGraphicsSceneDragDropEvent') -> None:
+        event.accept()
+        print(event.pos())
 
+    def dropEvent(self, event: 'QGraphicsSceneDragDropEvent') -> None:
+        event.accept()
+        print(event.pos())
 
     # def eventFilter(self, obj, event):
     #     if obj ==  and event.type() == QEvent.HoverEnter:
@@ -1415,6 +1448,8 @@ class _CustomScene(QGraphicsScene):
         elif QKeyEvent.key() == Qt.Key_Escape:
             print("selectionClear")
             self.clearSelection()
+
+        super().keyPressEvent(QKeyEvent)
 
             #signal Out!! with DesignaParameterItems
 

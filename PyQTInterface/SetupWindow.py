@@ -1676,8 +1676,8 @@ class _SelectedDesignListWidget(QListWidget):
         j=0
         k=0
 
-        for storedItem in self.itemDict:
-            self.itemDict[storedItem].setSelected(False)
+        # for storedItem in self.itemDict:
+        #     self.itemDict[storedItem].setSelected(False)
 
         self.blockSignals(True)
         self.clear()
