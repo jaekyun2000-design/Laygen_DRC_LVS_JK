@@ -1373,7 +1373,7 @@ class _CustomScene(QGraphicsScene):
 
     def send_item_list(self):
         itemList = self.selectedItems()
-        print(itemList)
+        # print(itemList)
         self.send_itemList_signal.emit(itemList)
 
 

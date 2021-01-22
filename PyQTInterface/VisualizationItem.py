@@ -88,7 +88,8 @@ class _RectBlock(QGraphicsRectItem):
             # self.setZValue(self.zValue()*10000)
             # print("HighLighted",self.zValue())
             pen.setStyle(Qt.DashLine)
-            pen.setColor(self._BlockTraits["_Outline"])
+            # pen.setColor(self._BlockTraits["_Outline"])
+            pen.setColor(Qt.GlobalColor.black)
             pen.setWidth(3)
             self.setZValue(1)
         else:
