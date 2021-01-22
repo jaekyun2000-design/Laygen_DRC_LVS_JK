@@ -340,7 +340,7 @@ class _PathSetupWindow(QWidget):
         layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
         if layerIndex != -1:
             self.layer_input.setCurrentIndex(layerIndex)
-        for i in range(len(self._DesignParameter['_XYCoordinates'])):
+        for i in range(len(self._DesignParameter['_XYCoordinates'][0])):
             CurrentEditPointNum = len(self.XYdictForLineEdit)-2
             displayString= str(self._DesignParameter['_XYCoordinates'][0][i][0])+','+ str(self._DesignParameter['_XYCoordinates'][0][i][1])
             self.XYdictForLineEdit[CurrentEditPointNum].setText(displayString)
@@ -419,6 +419,7 @@ class _PathSetupWindow(QWidget):
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
             self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
             self.visualItem.updateTraits(self._DesignParameter)
+            self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
             self.send_PathSetup_signal.emit(self.visualItem)
         except:
             print('======a============')
@@ -1687,30 +1688,36 @@ class _SelectedDesignListWidget(QListWidget):
 
 
         for item in _items:
-            if type(item) == VisualizationItem._RectBlock:
-                continue
-            elif type(item) == QGraphicsPathItem:
-                continue
-            elif item._clickFlag == False:
-                continue
+            if type(item) == VisualizationItem._VisualizationItem:
+                tmpName = item._ItemTraits['_DesignParameterName']
+                if tmpName == None:
+                    continue
+                # tmpName = item._DesignParameterName
+                self.itemDict[tmpName] = item
+                self.idDict[tmpName] = item._ItemTraits['_id']
+                item.setSelected(True)
+                print(item.isSelected())
 
-            tmpName = item._ItemTraits['_DesignParameterName']
-            # tmpName = item._DesignParameterName
-            self.itemDict[tmpName] = item
-            self.idDict[tmpName] = item._ItemTraits['_id']
-            item.setSelected(True)
-            print(item.isSelected())
+                if not self.findItems(tmpName, Qt.MatchExactly):  # Check whether it is empty or not
+                    self.addItem(QListWidgetItem(tmpName))
 
-            if not self.findItems(tmpName,Qt.MatchExactly):     #Check whether it is empty or not
-                self.addItem(QListWidgetItem(tmpName))
+            else:
+                continue
+            # if type(item) == VisualizationItem._RectBlock:
+            #     continue
+            # elif type(item) == QGraphicsPathItem:
+            #     continue
+            # elif item._clickFlag == False:
+            #     continue
+
 
     def UpdateSelectedItem(self,current,previous):
-        if previous is None:
-            for storedItem in self.itemDict:
-                self.itemDict[storedItem].setSelected(False)
-        else:
-            nameOfPrevious = previous.text()
-            self.itemDict[nameOfPrevious].setSelected(False)
+        # if previous is None:
+        #     for storedItem in self.itemDict:
+        #         self.itemDict[storedItem].setSelected(False)
+        # else:
+        #     nameOfPrevious = previous.text()
+        #     self.itemDict[nameOfPrevious].setSelected(False)
 
         nameOfCurrent = current.text()
         self.itemDict[nameOfCurrent].setSelected(True)

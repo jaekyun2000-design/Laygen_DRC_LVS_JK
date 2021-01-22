@@ -90,7 +90,7 @@ class _RectBlock(QGraphicsRectItem):
             pen.setStyle(Qt.DashLine)
             # pen.setColor(self._BlockTraits["_Outline"])
             pen.setColor(Qt.GlobalColor.black)
-            pen.setWidth(3)
+            pen.setWidth(5)
             self.setZValue(1)
         else:
             self.setZValue(self._BlockTraits['_Layer']/1000)

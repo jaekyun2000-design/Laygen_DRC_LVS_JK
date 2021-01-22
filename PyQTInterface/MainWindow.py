@@ -22,6 +22,8 @@ import threading
 import re
 from PyQTInterface import LayerInfo
 from PyQTInterface import VisualizationItem
+from PyQTInterface import VariableVisualItem
+from PyQTInterface import variableWindow
 from PyQTInterface import list_manager
 
 ##for easy debug##
@@ -75,6 +77,7 @@ class _MainWindow(QMainWindow):
 
     def initUI(self):
 
+        print("*********************Initalizing Graphic Interface Start")
 
         ################# MAIN WINDOW setting ####################
         self.setWindowTitle("S2S GUI PROJECT")
@@ -172,6 +175,7 @@ class _MainWindow(QMainWindow):
         graphicView.setInteractive(True)
         # graphicView.setScene(self.scene)
 
+        graphicView.variable_signal.connect(self.createVariable)
         self.scene.setSceneRect(-1000000000,-1000000000,2000000000,2000000000)
         self.scene.send_parameterIDList_signal.connect(self.parameterToTemplateHandler)
         self.scene.send_deleteItem_signal.connect(self.deleteDesignParameter)
@@ -401,6 +405,7 @@ class _MainWindow(QMainWindow):
     #         #     brush = QBrush(QColor(50,50,50))
     #         #     painter.fillPath(path,brush)
     #         #     self.scene.addPath(path)
+        print("************************Initalizing Graphic Interface Complete")
 
     def debugConstraint(self):
         try:
@@ -447,6 +452,7 @@ class _MainWindow(QMainWindow):
 
     def makePathWindow(self):
         self.scene.itemListClickIgnore(True)
+        # self.scene.
         self.pw = SetupWindow._PathSetupWindow()
         self.pw.show()
         self.pw.send_PathSetup_signal.connect(self.updateGraphicItem)
@@ -807,6 +813,11 @@ class _MainWindow(QMainWindow):
         self.qpd = QProgressDialog(Name,Cancel,Min,Max, self)
         self.qpd.setWindowModality(Qt.WindowModal)
         self.qpd.show()
+
+    def createVariable(self,type):
+        self.vw = variableWindow.VariableSetupWindow()
+
+
 
     def createNewDesignParameter(self,_DesignParameter):
         print(_DesignParameter)
@@ -1305,6 +1316,7 @@ class _MainWindow(QMainWindow):
 
 
 class _CustomView(QGraphicsView):
+    variable_signal = pyqtSignal(str)
     def __init__(self):
         super(_CustomView, self).__init__()
         self.show()
@@ -1331,6 +1343,37 @@ class _CustomView(QGraphicsView):
 
     # def dropEvent(self, event) -> None:
     #     super
+    def contextMenuEvent(self, event) -> None:
+        variable_create_array = QAction("create array variable", self)
+        variable_create_distance = QAction("create distance variable", self)
+        variable_create_enclosure = QAction("create enclousre variable", self)
+        variable_create_connect = QAction("create connect variable", self)
+
+        menu = QMenu(self)
+        menu.addAction(variable_create_array)
+        menu.addAction(variable_create_distance)
+        menu.addAction(variable_create_enclosure)
+        menu.addAction(variable_create_connect)
+
+        variable_create_array.triggered.connect(lambda tmp: self.variable_emit('array'))
+        variable_create_distance.triggered.connect(lambda tmp: self.variable_emit('distance'))
+        variable_create_enclosure.triggered.connect(lambda tmp: self.variable_emit('enclosure'))
+        variable_create_connect.triggered.connect(lambda tmp: self.variable_emit('connect'))
+
+
+        menu.exec(event.globalPos())
+
+    def variable_emit(self, type):
+        if type == 'array':
+            self.variable_signal.emit('array')
+        elif type == 'distance':
+            self.variable_signal.emit('distance')
+        elif type == 'enclosure':
+            self.variable_signal.emit('enclosure')
+        elif type == 'connect':
+            self.variable_signal.emit('connect')
+
+
     def dragEnterEvent(self, event) -> None:
         print('ed')
         event.accept()

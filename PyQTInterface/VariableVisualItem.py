@@ -18,6 +18,54 @@ from PyQTInterface import userDefineExceptions
 
 scaleValue = 1
 
+class VariableVisualItem(QGraphicsItemGroup):
+    def __init__(self, variable_traits=None):
+        super().__init__()
+        self.variable_id = None
+        self.type = None
+        self.setFlag(QGraphicsItemGroup.ItemIsSelectable,True)
+        self.sub_visual_item = []
+
+
+    def addToGroupFromList(self,visual_item_list):
+        self.sub_visual_item.extend(visual_item_list)
+        for vsitem in visual_item_list:
+            self.addToGroup(vsitem)
+        #
+        # self._XYCoordinatesForDisplay = []
+        # self._clickFlag = True
+        # self._isInHierarchy = False
+        # self._NoShowFlag = False
+        # self._SimplifyFlag = False
+        # self._multipleBlockFlag = False
+        # if _ItemTraits is None:
+        #     self._ItemTraits = dict(
+        #         _DesignParameterName = None,
+        #         _Layer = None,
+        #
+        #         _DesignParametertype = None,
+        #         _XYCoordinates = None,
+        #         _Width = None,
+        #         _Height = None,
+        #         _Color = None,
+        #         _DesignParameterRef=None,   #Reference of Design Parameter
+        #         _VisualizationItems = []    #This is for SRef!!
+        #     )
+        #     self.block = []
+        #     # self._BlockGroup = None,
+        # else:
+        #     self._ItemTraits = _ItemTraits
+        #     self.block = []
+        #     self.blockGeneration()
+
+
+
+
+
+
+
+
+
 class _RectBlock(QGraphicsRectItem):
     def __init__(self,_BlockTraits=None):
         super().__init__()
@@ -284,186 +332,6 @@ class _VisualizationItem(QGraphicsItemGroup):
                 # self.block[i].setPos(self._XYCoordinatesForDisplay[i][0],self._XYCoordinatesForDisplay[i][1])
             self.addToGroup(item)
 
-    #BlockGeneration Original!!
-    # def blockGeneration(self):                                  #This creates visual Block (which maps boundary or Path Item)
-    #     blockTraits = copy.deepcopy(self._ItemTraits)
-    #
-    #     _Layer = LayerReader._LayerMapping                      #Layer and Color Mapping
-    #     _Layer2Name = LayerReader._LayerNameTmp
-    #     DisplayInfo = DisplayReader._DisplayDict
-    #     if self._ItemTraits['_DesignParametertype'] == 1 or self._ItemTraits['_DesignParametertype'] == 2:
-    #         if type(self._ItemTraits['_Layer']) == str:                         #When GUI Creates DesignParameter --> It has Layer Information in the form of "String" : ex) Met1, Met2, Via12, PIMP
-    #             blockTraits['_Layer'] =  _Layer[self._ItemTraits['_Layer']][0]     #Layer Number             --> Convert Name to Number
-    #             blockTraits['_LayerName'] =  _Layer[self._ItemTraits['_Layer']][2]  #Layer Original Name    --> Original Name is required to access color information
-    #         else:                                                               #When GUI load DesignParameter from GDS File --> It has Layer Information in the form of "Number" : ex) 1,4,7
-    #             blockTraits['_Layer'] =  self._ItemTraits['_Layer']     #Layer Number
-    #             blockTraits['_LayerName'] =  _Layer2Name[str(blockTraits['_Layer'])]#Layer Original Name        -->Original Name is required to access color infromation
-    #         print(blockTraits['_DesignParameterName'])
-    #         blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']]['Fill']
-    #         blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']]['Outline']
-    #         blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']]['Stipple']
-    #
-    #
-    #
-    #     del _Layer
-    #     # blockTraits['_Layer'] = _Layer._Layer[self._ItemTraits['_Layer']]
-    #     # blockTraits['_XYCoordinates'] = [[0,0]]
-    #     # del _Layer
-    #     self.block=[]
-    #
-    #     if self._ItemTraits['_DesignParametertype'] is 1:                              # Boundary Case
-    #         # self.block.append(_RectBlock())
-    #         # self.block[0].updateTraits(blockTraits)
-    #         # self.block[0].setPos(self._XYCoordinatesForDisplay[0][0],self._XYCoordinatesForDisplay[0][1])
-    #         # self.addToGroup(self.block[0])
-    #         # for i in range(0,len(self._ItemTraits['_XYCoordinates'])):
-    #         for i in range(0,1):
-    #             self.block.append(_RectBlock())
-    #             self.block[i].updateTraits(blockTraits)
-    #             self.block[i].setPos(self._XYCoordinatesForDisplay[i][0]*scaleValue,self._XYCoordinatesForDisplay[i][1]*scaleValue)
-    #             self.addToGroup(self.block[i])
-    #
-    #
-    #
-    #
-    #     elif self._ItemTraits['_DesignParametertype'] is 2:                            # Path Case
-    #         for i in range(0,len(self._ItemTraits['_XYCoordinates'])-1):
-    #             if float(self._ItemTraits["_XYCoordinates"][i][0]) == float(self._ItemTraits["_XYCoordinates"][i+1][0]):          #Vertical Case
-    #                 Xmin = self._ItemTraits['_XYCoordinates'][i][0] - self._ItemTraits['_Width']/2
-    #                 Xwidth = self._ItemTraits['_Width']
-    #                 Ymin = min(self._ItemTraits['_XYCoordinates'][i][1],self._ItemTraits['_XYCoordinates'][i+1][1])
-    #                 Ymax = max(self._ItemTraits['_XYCoordinates'][i][1],self._ItemTraits['_XYCoordinates'][i+1][1])
-    #                 Ywidth = Ymax - Ymin
-    #
-    #                 if len(self._ItemTraits['_XYCoordinates']) is 2:                                                    #Only One Block Case
-    #                     pass
-    #                 elif i is 0:                                                                                        #There are more than 2 segments and First Block Case
-    #                     if self._ItemTraits["_XYCoordinates"][i][1] < self._ItemTraits["_XYCoordinates"][i+1][1]:          #UpWard Case
-    #                         Ywidth -= self._ItemTraits['_Width']/2
-    #                     elif self._ItemTraits["_XYCoordinates"][i][1] > self._ItemTraits["_XYCoordinates"][i+1][1]:        #DownWard Case
-    #                         Ymin += self._ItemTraits['_Width']/2
-    #                         Ywidth -= self._ItemTraits['_Width']/2
-    #                 elif i is len(self._ItemTraits['_XYCoordinates'])-2:                                                #Last Block Case
-    #                     if self._ItemTraits["_XYCoordinates"][i][1] < self._ItemTraits["_XYCoordinates"][i+1][1]:          #UpWard Case
-    #                         Ymin -= self._ItemTraits['_Width']/2
-    #                         Ywidth += self._ItemTraits['_Width']/2
-    #                     elif self._ItemTraits["_XYCoordinates"][i][1] > self._ItemTraits["_XYCoordinates"][i+1][1]:        #DownWard Case
-    #                         Ywidth += self._ItemTraits['_Width']/2
-    #                 else:                                                                                               #Interim Block Case
-    #                     if self._ItemTraits["_XYCoordinates"][i][1] < self._ItemTraits["_XYCoordinates"][i+1][1]:          #UpWard Case
-    #                         Ymin -= self._ItemTraits['_Width']/2
-    #                     elif self._ItemTraits["_XYCoordinates"][i][1] > self._ItemTraits["_XYCoordinates"][i+1][1]:        #DownWard Case
-    #                         Ymin += self._ItemTraits['_Width']/2
-    #             else:                                                                                                #Horizontal Case
-    #                 print(self._ItemTraits['_XYCoordinates'][i][1])
-    #                 print(self._ItemTraits['_Width'])
-    #                 Ymin = self._ItemTraits['_XYCoordinates'][i][1] - self._ItemTraits['_Width']/2
-    #                 Ywidth = self._ItemTraits['_Width']
-    #                 Xmin = min(self._ItemTraits['_XYCoordinates'][i][0],self._ItemTraits['_XYCoordinates'][i+1][0])
-    #                 Xmax = max(self._ItemTraits['_XYCoordinates'][i][0],self._ItemTraits['_XYCoordinates'][i+1][0])
-    #                 Xwidth = Xmax - Xmin
-    #
-    #                 if len(self._ItemTraits['_XYCoordinates']) is 2:                                                    #Only One Block Case
-    #                     pass
-    #                 elif i is 0:                                                                                        #There are more than 2 segments and First Block Case
-    #                     if self._ItemTraits["_XYCoordinates"][i][0] < self._ItemTraits["_XYCoordinates"][i+1][0]:          #Path to Right Case
-    #                         Xwidth -= self._ItemTraits['_Width']/2
-    #                     elif self._ItemTraits["_XYCoordinates"][i][0] > self._ItemTraits["_XYCoordinates"][i+1][0]:        #Path to Left Case
-    #                         Xwidth -= self._ItemTraits['_Width']/2
-    #                         Xmin += self._ItemTraits['_Width']/2
-    #                 elif i is len(self._ItemTraits['_XYCoordinates'])-2:
-    #                     if self._ItemTraits["_XYCoordinates"][i][0] < self._ItemTraits["_XYCoordinates"][i+1][0]:          #Path to Right Case
-    #                         Xmin -= self._ItemTraits['_Width']/2
-    #                         Xwidth += self._ItemTraits['_Width']/2
-    #                     elif self._ItemTraits["_XYCoordinates"][i][0] > self._ItemTraits["_XYCoordinates"][i+1][0]:        #Path to Left Case
-    #                         Xwidth += self._ItemTraits['_Width']/2
-    #                 else:
-    #                     if self._ItemTraits["_XYCoordinates"][i][0] < self._ItemTraits["_XYCoordinates"][i+1][0]:          #Path to Right Case
-    #                         Xmin -= self._ItemTraits['_Width']/2
-    #                     elif self._ItemTraits["_XYCoordinates"][i][0] > self._ItemTraits["_XYCoordinates"][i+1][0]:        #Path to Left Case
-    #                         Xmin += self._ItemTraits['_Width']/2
-    #             blockTraits['_Width'] = Xwidth
-    #             blockTraits['_Height'] = Ywidth
-    #             self.block.append(_RectBlock(blockTraits))  #Block Generation
-    #             self.block[i].setPos(Xmin*scaleValue,Ymin*scaleValue)
-    #             self.addToGroup(self.block[i])
-    #         # for xyPairs in (self._ItemTraits['_XYCoordinates']):
-    #         #     for i in range(0,len(xyPairs)-1):
-    #         #         if float(xyPairs[i][0]) == float(xyPairs[i+1][0]):          #Vertical Case
-    #         #             Xmin = xyPairs[i][0] - self._ItemTraits['_Width']/2
-    #         #             Xwidth = self._ItemTraits['_Width']
-    #         #             Ymin = min(xyPairs[i][1],xyPairs[i+1][1])
-    #         #             Ymax = max(xyPairs[i][1],xyPairs[i+1][1])
-    #         #             Ywidth = Ymax - Ymin
-    #         #
-    #         #             if len(xyPairs) is 2:                                                    #Only One Block Case
-    #         #                 pass
-    #         #             elif i is 0:                                                                                        #There are more than 2 segments and First Block Case
-    #         #                 if xyPairs[i][1] < xyPairs[i+1][1]:          #UpWard Case
-    #         #                     Ywidth -= self._ItemTraits['_Width']/2
-    #         #                 elif xyPairs[i][1] > xyPairs[i+1][1]:        #DownWard Case
-    #         #                     Ymin += self._ItemTraits['_Width']/2
-    #         #                     Ywidth -= self._ItemTraits['_Width']/2
-    #         #             elif i is len(xyPairs)-2:                                                #Last Block Case
-    #         #                 if xyPairs[i][1] < xyPairs[i+1][1]:          #UpWard Case
-    #         #                     Ymin -= self._ItemTraits['_Width']/2
-    #         #                     Ywidth += self._ItemTraits['_Width']/2
-    #         #                 elif xyPairs[i][1] > xyPairs[i+1][1]:        #DownWard Case
-    #         #                     Ywidth += self._ItemTraits['_Width']/2
-    #         #             else:                                                                                               #Interim Block Case
-    #         #                 if xyPairs[i][1] < xyPairs[i+1][1]:          #UpWard Case
-    #         #                     Ymin -= self._ItemTraits['_Width']/2
-    #         #                 elif xyPairs[i][1] > xyPairs[i+1][1]:        #DownWard Case
-    #         #                     Ymin += self._ItemTraits['_Width']/2
-    #         #         else:                                                                                                #Horizontal Case
-    #         #             print(xyPairs[i][1])
-    #         #             print(self._ItemTraits['_Width'])
-    #         #             Ymin = xyPairs[i][1] - self._ItemTraits['_Width']/2
-    #         #             Ywidth = self._ItemTraits['_Width']
-    #         #             Xmin = min(xyPairs[i][0],xyPairs[i+1][0])
-    #         #             Xmax = max(xyPairs[i][0],xyPairs[i+1][0])
-    #         #             Xwidth = Xmax - Xmin
-    #         #
-    #         #             if len(xyPairs) is 2:                                                    #Only One Block Case
-    #         #                 pass
-    #         #             elif i is 0:                                                                                        #There are more than 2 segments and First Block Case
-    #         #                 if xyPairs[i][0] < xyPairs[i+1][0]:          #Path to Right Case
-    #         #                     Xwidth -= self._ItemTraits['_Width']/2
-    #         #                 elif xyPairs[i][0] > xyPairs[i+1][0]:        #Path to Left Case
-    #         #                     Xwidth -= self._ItemTraits['_Width']/2
-    #         #                     Xmin += self._ItemTraits['_Width']/2
-    #         #             elif i is len(xyPairs)-2:
-    #         #                 if xyPairs[i][0] < xyPairs[i+1][0]:          #Path to Right Case
-    #         #                     Xmin -= self._ItemTraits['_Width']/2
-    #         #                     Xwidth += self._ItemTraits['_Width']/2
-    #         #                 elif xyPairs[i][0] > xyPairs[i+1][0]:        #Path to Left Case
-    #         #                     Xwidth += self._ItemTraits['_Width']/2
-    #         #             else:
-    #         #                 if xyPairs[i][0] < xyPairs[i+1][0]:          #Path to Right Case
-    #         #                     Xmin -= self._ItemTraits['_Width']/2
-    #         #                 elif xyPairs[i][0] > xyPairs[i+1][0]:        #Path to Left Case
-    #         #                     Xmin += self._ItemTraits['_Width']/2
-    #         #         blockTraits['_Width'] = Xwidth
-    #         #         blockTraits['_Height'] = Ywidth
-    #         #         self.block.append(_RectBlock(blockTraits))  #Block Generation
-    #         #         self.block[i].setPos(Xmin*scaleValue,Ymin*scaleValue)
-    #         #         self.addToGroup(self.block[i])
-    #     elif self._ItemTraits['_DesignParametertype'] is 3:                #SRef Case
-    #         for item in self._ItemTraits['_VisualizationItems']:
-    #             # self.block.append(_RectBlock())
-    #             # self.block[i].updateTraits(blockTraits)
-    #             # self.block[i].setPos(self._XYCoordinatesForDisplay[i][0],self._XYCoordinatesForDisplay[i][1])
-    #             self.addToGroup(item)
-    #
-    #         # self.addToGroup(self.block[i])
-    #         # for Obj in self._ItemTraits['_DesignObj']:
-    #         #     pass
-    #         # self.addToGroup(self.SRefComponent)
-    #         pass
-    #     elif self._ItemTraits['_DesignParametertype'] is 8:                #Test Case
-    #         pass
-    #     else:
-    #         print("WARNING1: Unvalid DataType Detected!")
     def blockGeneration(self,_XYCoordinatesPair=None):                                  #This creates visual Block (which maps boundary or Path Item)
             blockTraits = copy.deepcopy(self._ItemTraits)
 
