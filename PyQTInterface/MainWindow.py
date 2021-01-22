@@ -199,6 +199,7 @@ class _MainWindow(QMainWindow):
 
         ################# Right Dock Widget setting ####################
         dockWidget1 = QDockWidget()
+        dockWidget1.setMaximumHeight(400)
         dockWidget1_1 = QDockWidget("Layer")
         layoutWidget = QWidget()
         dockContentWidget1 = QWidget()
@@ -218,6 +219,11 @@ class _MainWindow(QMainWindow):
         FilterButton = QPushButton("Filter",dockContentWidget1)
         FilterButton.clicked.connect(self.makeFilterWindow)
 
+        ElemntClickCheckBox = QCheckBox("Element",dockContentWidget1)
+        SrefClickCheckBox = QCheckBox("Sref",dockContentWidget1)
+        VariableClickCheckBox = QCheckBox("Variable",dockContentWidget1)
+
+
         vboxOnDock1 = QVBoxLayout()             # Layout For Button Widget
 
         vboxOnDock1.addStretch(10)
@@ -226,6 +232,12 @@ class _MainWindow(QMainWindow):
         vboxOnDock1.addWidget(srefButtonL)
         vboxOnDock1.addWidget(srefButtonS)
         vboxOnDock1.addWidget(FilterButton)
+        vboxOnDock1.addStretch(2)
+        hboxOnDock1 = QHBoxLayout()
+        hboxOnDock1.addWidget(ElemntClickCheckBox)
+        hboxOnDock1.addWidget(SrefClickCheckBox)
+        hboxOnDock1.addWidget(VariableClickCheckBox)
+        vboxOnDock1.addLayout(hboxOnDock1)
         vboxOnDock1.addStretch(10)
 
         dockContentWidget1.setLayout(vboxOnDock1)
