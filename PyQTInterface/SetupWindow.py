@@ -363,7 +363,7 @@ class _PathSetupWindow(QWidget):
                     break
                 else:
                     try:
-                        X = int(XY.text().split(',')[0])
+                        XcurrentItemChanged = int(XY.text().split(',')[0])
                         Y = int(XY.text().split(',')[1])
                         self._DesignParameter['_XYCoordinates'][0].append([X,Y])
                     except:
@@ -2497,9 +2497,9 @@ class _ConstraintModel(QStandardItemModel):
                 # pass
 
     def readParseTreeWtihAST(self,motherItem,_AST):
-            if debugFlag == True:
-                print("Start Reading ParseTree with AST")
-                print("Mother Item: ",motherItem.text())
+            # if debugFlag == True:
+            #     print("Start Reading ParseTree with AST")
+            #     print("Mother Item: ",motherItem.text())
 
             for field in _AST._fields:
                 childVariable = _AST.__dict__[field]

@@ -1,5 +1,6 @@
 import sys
 import os
+import multiprocessing as mp
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 # from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsView, QGraphicsScene, QGraphicsItem
 from PyQt5.QtWidgets import *
@@ -407,6 +408,9 @@ class _MainWindow(QMainWindow):
     #         #     self.scene.addPath(path)
         print("************************Initalizing Graphic Interface Complete")
 
+    # def threading_test(self,count):
+
+
     def debugConstraint(self):
         try:
             print("test")
@@ -724,11 +728,26 @@ class _MainWindow(QMainWindow):
             self.qpd2 = QProgressDialog("Load GDS... (Creating VisualItem)", "Cancel", 0, len(visual_item_list)-1, self)
             self.qpd2.setWindowModality(Qt.WindowModal)
             self.qpd2.show()
-            for i, vis in enumerate(visual_item_list):
-                self.updateGraphicItem(vis)
-                self.qpd2.setValue(i)
-                if self.qpd2.wasCanceled():
-                    break
+            multicore = False
+            corenum = 8
+            if multicore:
+                chunk = int(len(visual_item_list)/corenum)
+                procs = []
+                for i in range(corenum):
+                    if i != corenum-1:
+                        proc = mp.Process(target=self.updateGraphicItem, args=visual_item_list[20*i:20*i+20])
+                    else:
+                        proc = mp.Process(target=self.updateGraphicItem, args=visual_item_list[20 * i:])
+                    procs.append(proc)
+                    proc.start()
+                for proc in procs:
+                    proc.join()
+            else:
+                for i, vis in enumerate(visual_item_list):
+                    self.updateGraphicItem(vis)
+                    self.qpd2.setValue(i)
+                    if self.qpd2.wasCanceled():
+                        break
 
             self._QTObj._qtProject._resetXYCoordinatesForDisplay()
 
@@ -815,8 +834,13 @@ class _MainWindow(QMainWindow):
         self.qpd.show()
 
     def createVariable(self,type):
-        self.vw = variableWindow.VariableSetupWindow()
+        selected_vis_items = self.scene.selectedItems()
+        self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
+        self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
 
+    def createVariableVisual(self, variableVisualItem):
+        self.scene.addItem(variableVisualItem)
+        pass
 
 
     def createNewDesignParameter(self,_DesignParameter):
@@ -1341,6 +1365,13 @@ class _CustomView(QGraphicsView):
         delta = newPosition - oldPosition
         self.translate(delta.x(),delta.y())
 
+    def mousePressEvent(self, event) -> None:
+        if event.button() == Qt.RightButton:
+            # print('return')
+            return
+
+        super().mousePressEvent(event)
+
     # def dropEvent(self, event) -> None:
     #     super
     def contextMenuEvent(self, event) -> None:
@@ -1402,6 +1433,9 @@ class _CustomScene(QGraphicsScene):
 
 
     def mousePressEvent(self, event):
+        # if event.button() == Qt.RightButton:
+        #     print('return')
+        #     return
         # super(self).mousePressEvent(event)
         # itemList = self.items(event.scenePos(),Qt.IntersectsItemShape)
         # for item in itemList:

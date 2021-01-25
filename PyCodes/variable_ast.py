@@ -24,8 +24,8 @@ class ElementArray(GeneratorVariable):
     _fields = (
         'elements',
         'XY',
-        'x_space_distance',
-        'y_space_distance',
+        'x_offset',
+        'y_offset',
     )
 
 class DynamicElementArray(GeneratorVariable):
