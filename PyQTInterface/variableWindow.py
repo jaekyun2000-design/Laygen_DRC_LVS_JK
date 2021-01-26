@@ -61,8 +61,8 @@ class VariableSetupWindow(QWidget):
         self.variable_type_widget = QLabel(self.variable_type)
         # self.variable_type_widget.addItems(QLabel(self.variable_type))
         # self.variable_type_widget.currentIndexChanged.connect(self.updateUI)
-        ui_list_a = []
-        ui_list_b = []
+        self.ui_list_a = []
+        self.ui_list_b = []
         if self.variable_type == 'array':
             self.XY_base = QLineEdit()
             self.x_offset = QLineEdit()
@@ -71,9 +71,9 @@ class VariableSetupWindow(QWidget):
             self.elements_dict_for_LineEdit=[]
             # self.elements_dict_for_LineEdit.append(QLineEdit())
             # self.elements_dict_for_LineEdit.append(QLineEdit())
-            ui_list_a.extend(['XY','x_offset','y_offset'])#,'Element1','Element2'])
-            ui_list_b.extend([self.XY_base,self.x_offset,self.y_offset])
-            # ui_list_b.extend(self.elements_dict_for_LineEdit)
+            self.ui_list_a.extend(['XY','x_offset','y_offset'])#,'Element1','Element2'])
+            self.ui_list_b.extend([self.XY_base,self.x_offset,self.y_offset])
+            # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
 
         okButton = QPushButton("OK",self)
         cancelButton = QPushButton("Cancel",self)
@@ -88,9 +88,9 @@ class VariableSetupWindow(QWidget):
         self.setupVboxColumn2.addWidget(self.variable_type_widget)
 
         self.setupVboxColumn1.addWidget(QLabel("_type"))
-        for label in ui_list_a:
+        for label in self.ui_list_a:
             self.setupVboxColumn1.addWidget(QLabel(label))
-        for widget in ui_list_b:
+        for widget in self.ui_list_b:
             self.setupVboxColumn2.addWidget(widget)
 
 
@@ -158,7 +158,11 @@ class VariableSetupWindow(QWidget):
     def on_buttonBox_accepted(self):
         variable_vis_item = VariableVisualItem.VariableVisualItem()
         variable_vis_item.addToGroupFromList(self.vis_items)
-        # self.send_AST_signal.emit(_ASTobj)
+        variable_info = dict()
+        for i, key in enumerate(self.ui_list_a):
+            variable_info[key] = self.ui_list_b[i].text()
+        variable_vis_item._type= self.variable_type
+        variable_vis_item.set_variable_info(variable_info)
         self.send_variableVisual_signal.emit(variable_vis_item)
         self.destroy()
 

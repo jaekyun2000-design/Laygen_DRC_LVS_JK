@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from PyQt5.QtWidgets import*
-from PyQt5.QtGui import QColor,QPen,QBrush,QTransform
+from PyQt5.QtGui import QColor,QPen,QBrush,QTransform, QFont
 from PyQt5.QtCore import Qt
 import copy
 
@@ -22,15 +22,18 @@ class VariableVisualItem(QGraphicsItemGroup):
     def __init__(self, variable_traits=None):
         super().__init__()
         self.variable_id = None
-        self.type = None
+        self._type = None
         self.setFlag(QGraphicsItemGroup.ItemIsSelectable,True)
         self.sub_visual_item = []
-
+        self.variable_info = dict()
+    def set_variable_info(self,variable_info):
+        self.variable_info = variable_info
 
     def addToGroupFromList(self,visual_item_list):
         self.sub_visual_item.extend(visual_item_list)
         for vsitem in visual_item_list:
             self.addToGroup(vsitem)
+
         #
         # self._XYCoordinatesForDisplay = []
         # self._clickFlag = True
@@ -58,3 +61,20 @@ class VariableVisualItem(QGraphicsItemGroup):
         #     self.block = []
         #     self.blockGeneration()
 
+    def paint(self, painter, option, widget) -> None:
+        super().paint(painter,option,widget)
+        if self.isSelected():
+            if self._type == 'array':
+                bounding_rect = self.boundingRect()
+                bounding_rect.setCoords(bounding_rect.topLeft().x(), -bounding_rect.topLeft().y(),
+                                        bounding_rect.bottomRight().x(),-bounding_rect.bottomRight().y())
+                painter.scale(1, -1)
+                painter.setPen(Qt.GlobalColor.red)
+                font = QFont()
+                font.setBold(True)
+                font.setPointSize(70)
+                painter.setFont(font)
+                painter.drawText(bounding_rect,Qt.AlignCenter,"x_offset: {"+self.variable_info['x_offset']+"}")
+                # painter.setBackgroundMode(Qt.OpaqueMode)
+        else:
+            painter.beginNativePainting()

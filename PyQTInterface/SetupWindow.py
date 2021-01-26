@@ -1257,10 +1257,10 @@ class _ConstraintSetupWindowAST(QWidget):
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
-            self.send_Destroy_signal.emit('cw')
+            self.send_destroy_signal.emit('cw')
         elif QKeyEvent.key() == Qt.Key_Escape:
             self.destroy()
-            self.send_Destroy_signal.emit('cw')
+            self.send_destroy_signal.emit('cw')
     def updateUIvalue(self):
         try:
             type = self._ParseTree['_type']

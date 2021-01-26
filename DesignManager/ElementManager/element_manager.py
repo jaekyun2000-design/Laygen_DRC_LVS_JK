@@ -74,10 +74,14 @@ class ElementManager:
                 elif key == '_DesignParametertype':
                     tmpDP[key] = 1
                 elif key == '_XYCoordinates':
-                    tmpDP[key] = ast.XY
-                    # for i in range (0,len(ast.XY)):
-                    #     slicing = ast.__dict__['XY'][i].find(',')
-                    #     tmpDP[key] = [[float(ast.__dict__['XY'][i][:slicing]),float(ast.__dict__['XY'][i][slicing+1:])]]
+                    # tmpDP[key] = ast.XY
+
+                    for i in range (0,len(ast.XY)):
+                        slicing = ast.__dict__['XY'][i].find(',')
+                        tmpDP[key] = [[float(ast.__dict__['XY'][i][:slicing]),float(ast.__dict__['XY'][i][slicing+1:])]]
+                    for i in range (0,len(ast.XY)):
+                        slicing = ast.__dict__['XY'].find(',')
+                        tmpDP[key] = [[float(ast.__dict__['XY'][:slicing]),float(ast.__dict__['XY'][slicing+1:])]]
                 elif key == '_XWidth':
                     tmpDP[key] = ast.__dict__['width']
                 elif key == '_YWidth':
