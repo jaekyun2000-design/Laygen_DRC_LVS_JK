@@ -27,12 +27,6 @@ from PyQt5.QtCore import *
 #         self.initUI()
 #
 #     def initUI(self):
-#         # model = QStandardItemModel()
-#         # model.setHeaderData(0,Qt.Horizontal,"Constraint Container(Floating)")
-#         # model.setHeaderData(1,Qt.Horizontal,"Constraint ID")
-#         # model.setHeaderData(2,Qt.Horizontal,"Constraint Type")
-#         # model.setHeaderData(3,Qt.Horizontal,"Value")
-#         #
 #         # self.setModel(model)
 #         # model = QStandardItemModel()
 #         # model.setHorizontalHeaderLabels(['    Layer    ','Visible','Clickable'])
@@ -69,16 +63,9 @@ class _ManageList(QTableView):
         self.initUI()
 
     def initUI(self):
-        # model = QStandardItemModel()
-        # model.setHeaderData(0,Qt.Horizontal,"Constraint Container(Floating)")
-        # model.setHeaderData(1,Qt.Horizontal,"Constraint ID")
-        # model.setHeaderData(2,Qt.Horizontal,"Constraint Type")
-        # model.setHeaderData(3,Qt.Horizontal,"Value")
-        #
-        # self.setModel(model)
 
-        model = QStandardItemModel()
-        model.setHorizontalHeaderLabels(['    Layer    ','Visible','Clickable'])
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(['    Layer    ','Visible','Clickable'])
         self.verticalHeader().setVisible(False)
 
         _Layer = LayerReader._LayerMapping
@@ -92,28 +79,54 @@ class _ManageList(QTableView):
             self._clickableList.append(layerclickable)
 
             item = QStandardItem(layer)
+            item.setEditable(False)
 
             itemv = QStandardItem(layervisible)
             itemv.setCheckable(True)
+            itemv.setCheckState(2)
+            itemv.setEditable(False)
             itemv.setText('')
 
             itemc = QStandardItem(layerclickable)
             itemc.setCheckable(True)
+            itemc.setCheckState(2)
+            itemc.setEditable(False)
             itemc.setText('')
 
-            model.appendRow(item)
-            model.setItem(self._Row,1,itemv)
-            model.setItem(self._Row,2,itemc)
+            self.model.appendRow(item)
+            self.model.setItem(self._Row,1,itemv)
+            self.model.setItem(self._Row,2,itemc)
             self._Row += 1
 
-        # print(self._layerList)
-        # print(self._visibleList)
-        # print(self._clickableList)
-
-        self.setModel(model)
+        self.setModel(self.model)
         self.resizeColumnsToContents()
 
+        self.model.itemChanged.connect(self.itemChanged)
 
     def updateList(self, _layerList):
         self._usedlayer = _layerList
-        print(self._usedlayer)
+
+    def itemChanged(self, item):
+        try:
+            layer = self.model.item(item.index().row()).text()
+            Visualitem = self._usedlayer[layer]
+
+            if item.index().column() == 1:
+                if item.checkState() == 0:
+                    for x in Visualitem:
+                        x.setVisible(False)
+
+                elif item.checkState() == 2:
+                    for x in Visualitem:
+                        x.setVisible(True)
+
+            elif item.index().column() == 2:
+                if item.checkState() == 0:
+                    for x in Visualitem:
+                        x.setFlag(QGraphicsItem.ItemIsSelectable, False)
+
+                elif item.checkState() == 2:
+                    for x in Visualitem:
+                        x.setFlag(QGraphicsItem.ItemIsSelectable, True)
+        except:
+            pass
