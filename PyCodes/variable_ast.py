@@ -68,7 +68,7 @@ class VariableTransformer(ast.NodeTransformer):
                     ),
                     args = [
                         ast.Name(
-                            id = 'elements'
+                            id=node.elements
                         )
                     ],
                     keywords = []
@@ -77,10 +77,74 @@ class VariableTransformer(ast.NodeTransformer):
                     ast.Assign(
                         targets = [
                             ast.Subscript(
-                                value=1
+                                value=ast.Subscript(
+                                    value = ast.Attribute(
+                                        value = ast.Name(
+                                            id = 'self'
+                                        ),
+                                        attr = '_DesignParameter'
+                                    ),
+                                    slice = ast.Index(
+                                        value = ast.Name(
+                                            id = 'element'
+                                        )
+                                    )
+                                ),
+                                slice = ast.Index(
+                                    value = ast.Str(
+                                        s = '_XYCoordinates'
+                                    )
+                                )
                             )
                         ],
-                        value =ast.List()
+                        value = ast.List(
+                            elts = [
+                                ast.BinOp(
+                                    # left = ast.Subscript(
+                                    #     value = ast.Name(
+                                    #         id = 'XY'
+                                    #     ),
+                                    #     slice = ast.Index(
+                                    #         value = ast.Num(
+                                    #             n = 0
+                                    #         )
+                                    #     ),
+                                    # ),
+                                    left = ast.Num(
+                                        n = node.XY[0]
+                                    ),
+                                    op=ast.Add()
+                                    ,
+                                    right = ast.BinOp(
+                                        left = ast.Name(
+                                            id = 'i'
+                                        ),
+                                        op = ast.Mult()
+                                        ,
+                                        right = ast.Name(
+                                            id = node.x_space_distance
+                                        )
+                                    )
+                                ),
+                                ast.BinOp(
+                                    left = ast.Num(
+                                        n = node.XY[1]
+                                    ),
+                                    op = ast.Add()
+                                    ,
+                                    right = ast.BinOp(
+                                        left=ast.Name(
+                                            id='i'
+                                        ),
+                                        op=ast.Mult()
+                                        ,
+                                        right=ast.Name(
+                                            id = node.y_space_distance
+                                        )
+                                    )
+                                )
+                            ]
+                        )
                     )
                 ],
                 orelse = []
@@ -174,7 +238,14 @@ class VariableTransformer(ast.NodeTransformer):
 if __name__ == '__main__':
     ea = ElementArray()
     tf = VariableTransformer()
+
+    ea.elements = 'listname'
+    ea.XY = [200,300]
+    ea.x_space_distance = 100
+    ea.y_space_distance = 200
+
     kk = tf.visit(ea)
     print(kk)
     print(astunparse.dump(kk))
     astunparse.unparse(kk)
+    print(astunparse.unparse(kk))
