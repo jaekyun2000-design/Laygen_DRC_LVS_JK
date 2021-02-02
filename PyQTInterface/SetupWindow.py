@@ -1428,6 +1428,155 @@ class _ConstraintSetupWindowCUSTOM(QWidget):
         except:
             print("updateFail")
 
+class _VariableSetupWindowCUSTOM(QWidget):
+
+    send_STMT_signal = pyqtSignal(dict)
+    send_CUSTOM_signal = pyqtSignal("PyQt_PyObject")
+    send_Destroy_signal = pyqtSignal(str)
+
+    def __init__(self,_AST = None, _STMT = None, _ASTapi = None):
+        super().__init__()
+        if _ASTapi == None:
+            self._ASTapi = ASTmodule._Custom_AST_API()
+        else:
+            self._ASTapi = _ASTapi
+
+        self.initUI()
+
+        if _AST == None:        #This is for editing created AST.       AST --> STMT
+            self._AST = None
+        else:
+            self._AST = _AST
+            #self.updateUIvalue()       #AST to STMT convert fuunction before excute updateUIvalue
+
+        if _STMT == None:
+            self._STMT = []
+        else:
+            self._STMT = _STMT
+            self.updateUIvalue()
+
+
+
+    def initUI(self):
+        self.type_input = QComboBox()
+        comboItemList = self._ASTapi.custom_variable_list
+        self.type_input.addItems(comboItemList)
+        self.type_input.currentIndexChanged.connect(self.updateUI)
+
+
+        okButton = QPushButton("OK",self)
+        cancelButton = QPushButton("Cancel",self)
+
+        okButton.clicked.connect(self.on_buttonBox_accepted)
+        cancelButton.clicked.connect(self.cancel_button_accepted)
+
+
+        self.setupVboxColumn1 = QVBoxLayout()
+        self.setupVboxColumn2 = QVBoxLayout()
+        setupBox = QHBoxLayout()
+
+
+        self.setupVboxColumn1.addWidget(QLabel("_type"))
+
+        self.setupVboxColumn2.addWidget(self.type_input)
+
+
+        setupBox.addLayout(self.setupVboxColumn1)
+        setupBox.addLayout(self.setupVboxColumn2)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(2)
+        hbox.addWidget(okButton)
+        hbox.addWidget(cancelButton)
+
+        vbox = QVBoxLayout()
+        vbox.addStretch(1)
+        vbox.addLayout(setupBox)
+        vbox.addStretch(3)
+        vbox.addLayout(hbox)
+
+        self.setLayout(vbox)
+
+        self.setWindowTitle('Constarint Setup Window')
+        self.setGeometry(300,300,500,500)
+        self.updateUI()
+        self.show()
+    def updateUI(self):
+        while self.setupVboxColumn1.count() != 1:               # original typed content delete
+            tmp = self.setupVboxColumn1.takeAt(1).widget()
+            tmp.setParent(None)
+            del tmp
+            tmp = self.setupVboxColumn2.takeAt(1).widget()
+            tmp.setParent(None)
+            self.setupVboxColumn2.removeWidget(tmp)
+            del tmp
+
+        currentClassName = self.type_input.currentText() # like: If, While, Number ,...
+        tmpObj = self._ASTapi._create_variable_ast_with_name(currentClassName)
+        strList = list(tmpObj._fields)
+        self.addQLabel(strList)
+        self.addQLine(len(strList))
+
+
+        if self.type_input.currentText() == "pyCode":
+            strList = ["_pyCode"]
+            self.addQLabel(strList)
+            self.addQLine(len(strList))
+
+    def addQLabel(self,strList):
+        for str in strList:
+            self.setupVboxColumn1.addWidget(QLabel(str))
+    def addQLine(self,num):
+        for i in range(0,num):
+            self.setupVboxColumn2.addWidget(QLineEdit())
+    def cancel_button_accepted(self):
+        self.destroy()
+    def on_buttonBox_accepted(self):
+        _ASTtype = self.type_input.currentText()
+        _ASTobj = self._ASTapi._create_variable_ast_with_name(_ASTtype)
+        for i in range(0,self.setupVboxColumn1.count()):
+            key = self.setupVboxColumn1.itemAt(i).widget().text()
+            if key == 'XY':
+                value = self.setupVboxColumn2.itemAt(i).widget().text()
+                xy_split = value.split(',')
+                _ASTobj.__dict__[key] = [[int(xy_split[0]),int(xy_split[1])]]
+            else:
+                try:
+                    value = self.setupVboxColumn2.itemAt(i).widget().text()
+                except:
+                    value = self.setupVboxColumn2.itemAt(i).widget().currentText()
+                try:
+                    _ASTobj.__dict__[key] = value
+                except:
+                    print("Value Initialization Fail")
+
+        self.send_CUSTOM_signal.emit(_ASTobj)
+        self.destroy()
+    def keyPressEvent(self, QKeyEvent):
+        if QKeyEvent.key() == Qt.Key_Return:
+            self.on_buttonBox_accepted()
+            self.send_Destroy_signal.emit('cw')
+        elif QKeyEvent.key() == Qt.Key_Escape:
+            self.destroy()
+            self.send_Destroy_signal.emit('cw')
+    def updateUIvalue(self):
+        try:
+            type = self._ParseTree['_type']
+            typeIndex = self.type_input.findText(type)
+            if typeIndex != -1:
+                self.type_input.setCurrentIndex(typeIndex)
+            else:
+                print("ERROR")
+                return
+            for key in self._ParseTree:
+                for i in range(1,self.setupVboxColumn1.count()):
+                    labelFieldName = self.setupVboxColumn1.itemAt(i).widget().text()
+                    if labelFieldName == key:
+                        self.setupVboxColumn2.itemAt(i).widget().setText(self._ParseTree[key])
+                        break
+        except:
+            print("updateFail")
+
 class _ConstraintSetupWindowPyCode(QWidget):
 
     send_PyCode_signal = pyqtSignal(str)

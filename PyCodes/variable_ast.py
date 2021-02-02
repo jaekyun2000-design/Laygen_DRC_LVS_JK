@@ -1,6 +1,7 @@
 import ast
 import astunparse
 
+custom_ast_list = ['GeneratorVariable', 'ArgumentVariable', 'ElementArray','DynamicElementArray','Distance']
 
 class GeneratorVariable(ast.AST):
     def __init__(self, *args, **kwargs):
@@ -24,8 +25,8 @@ class ElementArray(GeneratorVariable):
     _fields = (
         'elements',
         'XY',
-        'x_offset',
-        'y_offset',
+        'x_space_distance',
+        'y_space_distance',
     )
 
 class DynamicElementArray(GeneratorVariable):
@@ -50,106 +51,114 @@ class Distance(GeneratorVariable):
 
 class VariableTransformer(ast.NodeTransformer):
     def visit_ElementArray(self,node):
-        return [
-            ast.For(
-                target=ast.Tuple(
-                    elts = [
-                        ast.Name(
-                            id='i'
-                        ),
-                        ast.Name(
-                            id='element'
-                        ),
-                    ]
-                ),
-                iter=ast.Call(
-                    func = ast.Name(
-                        id = 'enumerate'
-                    ),
-                    args = [
-                        ast.Name(
-                            id=node.elements
-                        )
-                    ],
-                    keywords = []
-                ),
-                body = [
-                    ast.Assign(
-                        targets = [
-                            ast.Subscript(
-                                value=ast.Subscript(
-                                    value = ast.Attribute(
-                                        value = ast.Name(
-                                            id = 'self'
-                                        ),
-                                        attr = '_DesignParameter'
-                                    ),
-                                    slice = ast.Index(
-                                        value = ast.Name(
-                                            id = 'element'
-                                        )
-                                    )
-                                ),
-                                slice = ast.Index(
-                                    value = ast.Str(
-                                        s = '_XYCoordinates'
-                                    )
-                                )
-                            )
-                        ],
-                        value = ast.List(
-                            elts = [
-                                ast.BinOp(
-                                    # left = ast.Subscript(
-                                    #     value = ast.Name(
-                                    #         id = 'XY'
-                                    #     ),
-                                    #     slice = ast.Index(
-                                    #         value = ast.Num(
-                                    #             n = 0
-                                    #         )
-                                    #     ),
-                                    # ),
-                                    left = ast.Num(
-                                        n = node.XY[0]
-                                    ),
-                                    op=ast.Add()
-                                    ,
-                                    right = ast.BinOp(
-                                        left = ast.Name(
-                                            id = 'i'
-                                        ),
-                                        op = ast.Mult()
-                                        ,
-                                        right = ast.Name(
-                                            id = node.x_space_distance
-                                        )
-                                    )
-                                ),
-                                ast.BinOp(
-                                    left = ast.Num(
-                                        n = node.XY[1]
-                                    ),
-                                    op = ast.Add()
-                                    ,
-                                    right = ast.BinOp(
-                                        left=ast.Name(
-                                            id='i'
-                                        ),
-                                        op=ast.Mult()
-                                        ,
-                                        right=ast.Name(
-                                            id = node.y_space_distance
-                                        )
-                                    )
-                                )
-                            ]
-                        )
-                    )
-                ],
-                orelse = []
-            )
-        ]
+        # sentence0 = f"elements = {node.elements}"
+        sentence = f"for (i, element) in enumerate({node.elements}):\
+        \tself._DesignParameter[element]['_XYCoordinates'] = [({node.XY[0][0]} + (i * {node.x_space_distance})), ({node.XY[0][1]} + (i * {node.y_space_distance}))]"
+        print(sentence)
+        # tmp0 = ast.parse(sentence0)
+        tmp = ast.parse(sentence)
+        return tmp.body
+
+        # return [
+        #     ast.For(
+        #         target=ast.Tuple(
+        #             elts = [
+        #                 ast.Name(
+        #                     id='i'
+        #                 ),
+        #                 ast.Name(
+        #                     id='element'
+        #                 ),
+        #             ]
+        #         ),
+        #         iter=ast.Call(
+        #             func = ast.Name(
+        #                 id = 'enumerate'
+        #             ),
+        #             args = [
+        #                 ast.Name(
+        #                     id=node.elements
+        #                 )
+        #             ],
+        #             keywords = []
+        #         ),
+        #         body = [
+        #             ast.Assign(
+        #                 targets = [
+        #                     ast.Subscript(
+        #                         value=ast.Subscript(
+        #                             value = ast.Attribute(
+        #                                 value = ast.Name(
+        #                                     id = 'self'
+        #                                 ),
+        #                                 attr = '_DesignParameter'
+        #                             ),
+        #                             slice = ast.Index(
+        #                                 value = ast.Name(
+        #                                     id = 'element'
+        #                                 )
+        #                             )
+        #                         ),
+        #                         slice = ast.Index(
+        #                             value = ast.Str(
+        #                                 s = '_XYCoordinates'
+        #                             )
+        #                         )
+        #                     )
+        #                 ],
+        #                 value = ast.List(
+        #                     elts = [
+        #                         ast.BinOp(
+        #                             # left = ast.Subscript(
+        #                             #     value = ast.Name(
+        #                             #         id = 'XY'
+        #                             #     ),
+        #                             #     slice = ast.Index(
+        #                             #         value = ast.Num(
+        #                             #             n = 0
+        #                             #         )
+        #                             #     ),
+        #                             # ),
+        #                             left = ast.Num(
+        #                                 n = node.XY[0][0]
+        #                             ),
+        #                             op=ast.Add()
+        #                             ,
+        #                             right = ast.BinOp(
+        #                                 left = ast.Name(
+        #                                     id = 'i'
+        #                                 ),
+        #                                 op = ast.Mult()
+        #                                 ,
+        #                                 right = ast.Name(
+        #                                     id = int( node.x_space_distance)
+        #                                 )
+        #                             )
+        #                         ),
+        #                         ast.BinOp(
+        #                             left = ast.Num(
+        #                                 n = node.XY[0][1]
+        #                             ),
+        #                             op = ast.Add()
+        #                             ,
+        #                             right = ast.BinOp(
+        #                                 left=ast.Name(
+        #                                     id='i'
+        #                                 ),
+        #                                 op=ast.Mult()
+        #                                 ,
+        #                                 right=ast.Name(
+        #                                     id = int(node.y_space_distance)
+        #                                 )
+        #                             )
+        #                         )
+        #                     ]
+        #                 )
+        #             )
+        #         ],
+        #         orelse = []
+        #     )
+        # ]
 
 
     def visit_Sref(self,node):
@@ -239,10 +248,11 @@ if __name__ == '__main__':
     ea = ElementArray()
     tf = VariableTransformer()
 
-    ea.elements = 'listname'
-    ea.XY = [200,300]
-    ea.x_space_distance = 100
-    ea.y_space_distance = 200
+    ea.elements = ['a','b']
+    # XWidth,YWidth = str(200),
+    ea.XY = [['XWidth','YWidth']]
+    ea.x_space_distance = '100'
+    ea.y_space_distance = '200'
 
     kk = tf.visit(ea)
     print(kk)

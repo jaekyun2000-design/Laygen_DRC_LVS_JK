@@ -15,7 +15,7 @@ from PyQTInterface import template
 from PyQTInterface.layermap import LayerReader
 from PyCodes import QTInterfaceWithAST
 from PyCodes import ASTmodule
-from PyCodes import element_ast
+from PyCodes import element_ast, variable_ast
 from DesignManager.VariableManager import FilterPractice
 
 
@@ -324,7 +324,8 @@ class _MainWindow(QMainWindow):
         self.createConstraintWithPyCodeButton = QPushButton("PyCode")
         # self.createConstraintButtonASTLegacy = QPushButton("CreateAST(Legacy)")
         self.createConstraintButtonAST = QPushButton("CreateAST")
-        self.createConstraintButtonCUSTOM = QPushButton("Create(Custom)")
+        self.createConstraintButtonCUSTOM = QPushButton("Element(Custom)")
+        self.createVariableButtonCUSTOM = QPushButton("Variable(Custom)")
         self.saveConstraintAsJSONButton = QPushButton("SaveAs...(JSON)")
         self.saveConstraintAsPickleButton = QPushButton("SaveAs...(pickle)")
         self.loadConstraintFromPickleButton = QPushButton("Load...")
@@ -338,6 +339,7 @@ class _MainWindow(QMainWindow):
         # VBoxForPeriButton.addWidget(self.createConstraintButtonASTLegacy)
         VBoxForPeriButton.addWidget(self.createConstraintButtonAST)
         VBoxForPeriButton.addWidget(self.createConstraintButtonCUSTOM)
+        VBoxForPeriButton.addWidget(self.createVariableButtonCUSTOM)
         VBoxForPeriButton.addWidget(self.saveConstraintAsJSONButton)
         VBoxForPeriButton.addWidget(self.saveConstraintAsPickleButton)
         VBoxForPeriButton.addWidget(self.loadConstraintFromPickleButton)
@@ -362,6 +364,7 @@ class _MainWindow(QMainWindow):
         self.createConstraintWithPyCodeButton.clicked.connect(self.makePyCodeWindow)
         self.createConstraintButtonAST.clicked.connect(self.makeConstraintWindowAST)
         self.createConstraintButtonCUSTOM.clicked.connect(self.makeConstraintWindowCUSTOM)
+        self.createVariableButtonCUSTOM.clicked.connect(self.makeVariableWindowCUSTOM)
         self.saveConstraintAsJSONButton.clicked.connect(self.saveConstraint)
         self.saveConstraintAsPickleButton.clicked.connect(self.saveConstraintP)
         self.loadConstraintFromPickleButton.clicked.connect(self.loadConstraintP)
@@ -425,8 +428,9 @@ class _MainWindow(QMainWindow):
             module = self._CurrentModuleName
             topAST = self._QTObj._qtProject._ParseTreeForDesignConstrain[module]._ast
             topAST = element_ast.ElementTransformer().visit(topAST)
-            topAST = element_ast.MacroTransformer1().visit(topAST)
-            topAST = element_ast.MacroTransformer2().visit(topAST)
+            topAST = variable_ast.VariableTransformer().visit(topAST)
+            # topAST = element_ast.MacroTransformer1().visit(topAST)
+            # topAST = element_ast.MacroTransformer2().visit(topAST)
             code = astunparse.unparse(topAST)
             print(code)
         except:
@@ -517,6 +521,11 @@ class _MainWindow(QMainWindow):
 
     def makeConstraintWindowCUSTOM(self):
         self.cw = SetupWindow._ConstraintSetupWindowCUSTOM(_ASTapi = self._ASTapi)
+        self.cw.show()
+        self.cw.send_CUSTOM_signal.connect(self.createNewConstraintAST)
+
+    def makeVariableWindowCUSTOM(self):
+        self.cw = SetupWindow._VariableSetupWindowCUSTOM(_ASTapi=self._ASTapi)
         self.cw.show()
         self.cw.send_CUSTOM_signal.connect(self.createNewConstraintAST)
 
@@ -885,9 +894,6 @@ class _MainWindow(QMainWindow):
 
         self.dockContentWidget3.removeItem_by_ID(dc_id)     #Remove Item displays in constraint Window
         self.dockContentWidget3_2.removeItem_by_ID(dc_id)
-
-        # del self._QTObj._qtProject._DesignParameter[module][_ID]
-        # del self._QTObj._qtProject._DesignConstraint[module][dc_id]
 
     def deleteDesignParameterbyDesignConstraint(self,dc_id): # input : DesignconstraintID
         dc_module = dc_id[:-1]

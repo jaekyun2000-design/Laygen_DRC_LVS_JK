@@ -1,5 +1,5 @@
 import ast
-from PyCodes import element_ast
+from PyCodes import element_ast, variable_ast
 import re
 import copy
 import inspect, sys
@@ -13,8 +13,11 @@ class _Custom_AST_API():
         self.classList = []
         self.custom_stmt_list = []
         self.custom_class_list = []
+        self.custom_variable_list = []
+        self.custom_variableClass_list = []
         self._loadASTclassList()
         self._load_customASTclassList()
+        self._load_customVariableASTclassList()
 
     def _loadASTclassList(self):  # This function creates references when python version changes and ASTclass types are changed.
         for name, obj in inspect.getmembers(sys.modules['ast']):
@@ -28,7 +31,12 @@ class _Custom_AST_API():
                 if inspect.isclass(obj):
                     self.custom_stmt_list.append(name)
                     self.custom_class_list.append(obj)
-
+    def _load_customVariableASTclassList(self):
+        for name, obj in inspect.getmembers(variable_ast):
+            if name in variable_ast.custom_ast_list:
+                if inspect.isclass(obj):
+                    self.custom_variable_list.append(name)
+                    self.custom_variableClass_list.append(obj)
 
     def _createASTwithName(self,_name):
         _index = self.stmtList.index(_name)
@@ -38,6 +46,10 @@ class _Custom_AST_API():
     def _create_custom_ast_with_name(self,_name):
         _index = self.custom_stmt_list.index(_name)
         _tmp = self.custom_class_list[_index]
+        return _tmp()
+    def _create_variable_ast_with_name(self,_name):
+        _index = self.custom_variable_list.index(_name)
+        _tmp = self.custom_variableClass_list[_index]
         return _tmp()
 
 def _convertPyCodeToASTDict(_pyCode):
