@@ -50,10 +50,10 @@ class Path(ElementNode):
     def __init__(self, *args, **kwargs):
         super().__init__()
     _fields = (
-        'name',
-        'layer',
-        'XY',
-        'width',
+        'name',     # name str
+        'layer',    # layer name str
+        'XY',       # double list or variable name str
+        'width',    # int or str
     )
 
 class MacroKeyword(ast.AST):
@@ -145,9 +145,9 @@ class GeneratorTransformer(ast.NodeTransformer):
 class ElementTransformer(ast.NodeTransformer):
     def visit_Boundary(self,node):
 
-        sentence = f"{node.name} = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping[{node.layer}][0],\
-_Datatype = DesignParameters._LayerMapping[{node.layer}][1],_XYCoordinates = {node.XY},\
-_XWidth ={node.width}, _YWidth ={node.height})"
+        sentence = f"{node.name} = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+_Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY},\
+_XWidth = {node.width}, _YWidth = {node.height})"
         print(sentence)
         tmp = ast.parse(sentence)
         return tmp.body
@@ -237,45 +237,52 @@ _XWidth ={node.width}, _YWidth ={node.height})"
 
 
     def visit_Path(self,node):
-        return ast.Assign(
-                targets=[ast.Name(
-                    id=node.name
-                )],
-                value=ast.Call(
-                    func=ast.Attribute(
-                        value=ast.Name(
-                            id='self'
-                        ),
-                        attr='_PathElementDeclaration'
-                    ),
-                    args=[]
-                    ,
-                    keywords=[
-                        MacroKeyword(
-                            arg = '_Layer',
-                            id = "DesignParameters",
-                            attr='LayerMapping',
-                            index1 = ast.Str(
-                                s = node.layer
-                            ),
-                            index2 = ast.Num(
-                                n = 0
-                            )
-                        ),
-                        MacroKeyword(
-                            arg='_Datatype',
-                            id="DesignParameters",
-                            attr='LayerMapping',
-                            index1=ast.Str(
-                                s=node.layer
-                            ),
-                            index2=ast.Num(
-                                n=1
-                            ),
-                        )
-                    ]
-                )
-            )
+        sentence = f"{node.name} = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+_Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, \
+_Width = {node.width})"
+        print(sentence)
+        tmp = ast.parse(sentence)
+        return tmp.body
+
+        # return ast.Assign(
+        #         targets=[ast.Name(
+        #             id=node.name
+        #         )],
+        #         value=ast.Call(
+        #             func=ast.Attribute(
+        #                 value=ast.Name(
+        #                     id='self'
+        #                 ),
+        #                 attr='_PathElementDeclaration'
+        #             ),
+        #             args=[]
+        #             ,
+        #             keywords=[
+        #                 MacroKeyword(
+        #                     arg = '_Layer',
+        #                     id = "DesignParameters",
+        #                     attr='LayerMapping',
+        #                     index1 = ast.Str(
+        #                         s = node.layer
+        #                     ),
+        #                     index2 = ast.Num(
+        #                         n = 0
+        #                     )
+        #                 ),
+        #                 MacroKeyword(
+        #                     arg='_Datatype',
+        #                     id="DesignParameters",
+        #                     attr='LayerMapping',
+        #                     index1=ast.Str(
+        #                         s=node.layer
+        #                     ),
+        #                     index2=ast.Num(
+        #                         n=1
+        #                     ),
+        #                 )
+        #             ]
+        #         )
+        #     )
 
 
 class MacroTransformer1(ast.NodeTransformer):
@@ -352,6 +359,7 @@ class MacorSubscriptTransformer(ast.NodeTransformer):
 
 if __name__ == '__main__':
     a = Boundary()
+    b = Path()
     # a.name = "OD1"
     # a.layer = 'OD'
     # b= Path()
@@ -363,12 +371,18 @@ if __name__ == '__main__':
     # k.body.append(a)
 
     a.name = 'AdditionalMetal1Layer'
-    a.layer = 'Metal1'
+    a.layer = 'METAL1'
     a.XY = [[2,4]]
     a.width= '_XWidth'
     a.height = 200
 
+    b.name = 'AdditionalODPath'
+    b.layer = 'DIFF'
+    b.XY = 'XYcenter'
+    b.width = 200
+
     ef = ElementTransformer().visit_Boundary(a)
+    pt = ElementTransformer().visit_Path(b)
     # k = MacroTransformer1().visit(k)
     # k = MacroTransformer2().visit(k)
 
