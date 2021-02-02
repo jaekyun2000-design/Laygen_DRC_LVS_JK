@@ -1388,9 +1388,15 @@ class _ConstraintSetupWindowCUSTOM(QWidget):
         for i in range(0,self.setupVboxColumn1.count()):
             key = self.setupVboxColumn1.itemAt(i).widget().text()
             if key == 'XY':
-                value = self.setupVboxColumn2.itemAt(i).widget().text()
-                xy_split = value.split(',')
-                _ASTobj.__dict__[key] = [[int(xy_split[0]),int(xy_split[1])]]
+                try:
+                    value = self.setupVboxColumn2.itemAt(i).widget().text()
+                    xy_split = value.split(',')
+                    _ASTobj.__dict__[key] = [[int(xy_split[0]),int(xy_split[1])]]
+                except:
+                    self.warning = QMessageBox()
+                    self.warning.setText("Invalid Parameter Input")
+                    self.warning.show()
+                    return
             else:
                 try:
                     value = self.setupVboxColumn2.itemAt(i).widget().text()
