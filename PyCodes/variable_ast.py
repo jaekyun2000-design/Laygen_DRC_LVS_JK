@@ -51,7 +51,6 @@ class Distance(GeneratorVariable):
 
 class VariableTransformer(ast.NodeTransformer):
     def visit_ElementArray(self,node):
-        # sentence0 = f"elements = {node.elements}"
         if type(node.XY) ==str:
             sentence = f"for (i, element) in enumerate({node.elements}):\
                         \tself._DesignParameter[element]['_XYCoordinates'] = [({node.XY}[0][0] + (i * {node.x_space_distance})), ({node.XY}[0][1] + (i * {node.y_space_distance}))]"

@@ -39,11 +39,11 @@ class Boundary(ElementNode):
     def __init__(self, *args, **kwargs):
         super().__init__()
     _fields = (
-        'name',
-        'layer',
-        'XY',
-        'width',
-        'height'
+        'name',     # name str
+        'layer',    # layer name str
+        'XY',       # double list or variable name str
+        'width',    # int or str
+        'height'    # int or str
     )
 
 class Path(ElementNode):
@@ -144,45 +144,54 @@ class GeneratorTransformer(ast.NodeTransformer):
 
 class ElementTransformer(ast.NodeTransformer):
     def visit_Boundary(self,node):
-        return ast.Assign(
-                targets=[ast.Name(
-                    id=node.name
-                )],
-                value=ast.Call(
-                    func=ast.Attribute(
-                        value=ast.Name(
-                            id='self'
-                        ),
-                        attr='_BoundaryElementDeclaration'
-                    ),
-                    args=[]
-                    ,
-                    keywords=[
-                        MacroKeyword(
-                            arg='_Layer',
-                            id="DesignParameters",
-                            attr='LayerMapping',
-                            index1=ast.Str(
-                                s=node.layer
-                            ),
-                            index2=ast.Num(
-                                n=0
-                            )
-                        ),
-                        MacroKeyword(
-                            arg='_Datatype',
-                            id="DesignParameters",
-                            attr='LayerMapping',
-                            index1=ast.Str(
-                                s=node.layer
-                            ),
-                            index2=ast.Num(
-                                n=1
-                            ),
-                        )
-                    ]
-                )
-            )
+
+        sentence = f"{node.name} = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping[{node.layer}][0],\
+_Datatype = DesignParameters._LayerMapping[{node.layer}][1],_XYCoordinates = {node.XY},\
+_XWidth ={node.width}, _YWidth ={node.height})"
+        print(sentence)
+        tmp = ast.parse(sentence)
+        return tmp.body
+
+
+    #     return ast.Assign(
+    #             targets=[ast.Name(
+    #                 id=node.name
+    #             )],
+    #             value=ast.Call(
+    #                 func=ast.Attribute(
+    #                     value=ast.Name(
+    #                         id='self'
+    #                     ),
+    #                     attr='_BoundaryElementDeclaration'
+    #                 ),
+    #                 args=[]
+    #                 ,
+    #                 keywords=[
+    #                     MacroKeyword(
+    #                         arg='_Layer',
+    #                         id="DesignParameters",
+    #                         attr='LayerMapping',
+    #                         index1=ast.Str(
+    #                             s=node.layer
+    #                         ),
+    #                         index2=ast.Num(
+    #                             n=0
+    #                         )
+    #                     ),
+    #                     MacroKeyword(
+    #                         arg='_Datatype',
+    #                         id="DesignParameters",
+    #                         attr='LayerMapping',
+    #                         index1=ast.Str(
+    #                             s=node.layer
+    #                         ),
+    #                         index2=ast.Num(
+    #                             n=1
+    #                         ),
+    #                     )
+    #                 ]
+    #             )
+    #         )
 
 
     def visit_Sref(self,node):
@@ -343,43 +352,49 @@ class MacorSubscriptTransformer(ast.NodeTransformer):
 
 if __name__ == '__main__':
     a = Boundary()
-    a.name = "OD1"
-    a.layer = 'OD'
-    b= Path()
-    b.name = 'Met1Path'
-    b.layer = 'METAL4'
-    k = ast.Module()
-    k.body = []
-    k.body.append(b)
-    k.body.append(a)
-    k = ElementTransformer().visit(k)
-    k = MacroTransformer1().visit(k)
-    k = MacroTransformer2().visit(k)
-    print(astunparse.unparse(k))
+    # a.name = "OD1"
+    # a.layer = 'OD'
+    # b= Path()
+    # b.name = 'Met1Path'
+    # b.layer = 'METAL4'
+    # k = ast.Module()
+    # k.body = []
+    # k.body.append(b)
+    # k.body.append(a)
 
-    ab= MacroSubscript(
-        id = 'list1',
-        index = ast.Num(
-            n=0
-        )
-    )
-    ab = MacorSubscriptTransformer().visit(ab)
-    print(astunparse.unparse(ab))
+    a.name = 'AdditionalMetal1Layer'
+    a.layer = 'Metal1'
+    a.XY = [[2,4]]
+    a.width= '_XWidth'
+    a.height = 200
 
-    k = Generator()
-    k.name = 'FF'
-    asa = GeneratorTransformer()
-    kk = asa.visit(k)
-    astunparse.unparse(kk)
-    print(astunparse.unparse(kk))
-    # d = MacroListSubscript(
-    #     list_id = 'self',
-    #     list_id_attr = '_DesignParameter',
-    #     index1 = ast.Str(
-    #         s = '_ViaMet32Met4OnInLineTop1',
-    #     ),
-    #     index2 = ast.Str(
-    #         s = '_Wdith',
+    ef = ElementTransformer().visit_Boundary(a)
+    # k = MacroTransformer1().visit(k)
+    # k = MacroTransformer2().visit(k)
+
+    # ab= MacroSubscript(
+    #     id = 'list1',
+    #     index = ast.Num(
+    #         n=0
     #     )
     # )
-    # dk = MacroTransformer().visit(d)
+    # ab = MacorSubscriptTransformer().visit(ab)
+    # print(astunparse.unparse(ab))
+    #
+    # k = Generator()
+    # k.name = 'FF'
+    # asa = GeneratorTransformer()
+    # kk = asa.visit(k)
+    # astunparse.unparse(kk)
+    # print(astunparse.unparse(kk))
+    # # d = MacroListSubscript(
+    # #     list_id = 'self',
+    # #     list_id_attr = '_DesignParameter',
+    # #     index1 = ast.Str(
+    # #         s = '_ViaMet32Met4OnInLineTop1',
+    # #     ),
+    # #     index2 = ast.Str(
+    # #         s = '_Wdith',
+    # #     )
+    # # )
+    # # dk = MacroTransformer().visit(d)
