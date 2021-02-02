@@ -58,9 +58,10 @@ class VariableTransformer(ast.NodeTransformer):
             sentence = f"for (i, element) in enumerate({node.elements}):\
             \tself._DesignParameter[element]['_XYCoordinates'] = [({node.XY[0][0]} + (i * {node.x_space_distance})), ({node.XY[0][1]} + (i * {node.y_space_distance}))]"
         print(sentence)
-        # tmp0 = ast.parse(sentence0)
         tmp = ast.parse(sentence)
         return tmp.body
+
+        ###### Below is the genuine ast format of Element array : Do not delete #######
 
         # return [
         #     ast.For(
