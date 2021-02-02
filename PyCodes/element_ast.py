@@ -195,54 +195,6 @@ _XWidth = {node.width}, _YWidth = {node.height})"
     #             )
     #         )
 
-
-    def visit_Sref(self,node):
-        sentence = f"{node.name} = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(_DesignParameter = None,_Name = '{node.name}In{{}}'.format(_Name)))[0], _XYCoordinates = {node.XY}"
-        print(sentence)
-        tmp = ast.parse(sentence)
-        return tmp.body
-
-        # return ast.Assign(
-        #         targets=[ast.Name(
-        #             id=node.name
-        #         )],
-        #         value=ast.Call(
-        #             func=ast.Attribute(
-        #                 value=ast.Name(
-        #                     id='self'
-        #                 ),
-        #                 attr='_SrefElementDeclaration'
-        #             ),
-        #             args=[]
-        #             ,
-        #             keywords=[
-        #                 MacroKeyword(
-        #                     arg='_Layer',
-        #                     id="DesignParameters",
-        #                     attr='LayerMapping',
-        #                     index1=ast.Str(
-        #                         s=node.layer
-        #                     ),
-        #                     index2=ast.Num(
-        #                         n=0
-        #                     )
-        #                 ),
-        #                 MacroKeyword(
-        #                     arg='_Datatype',
-        #                     id="DesignParameters",
-        #                     attr='LayerMapping',
-        #                     index1=ast.Str(
-        #                         s=node.layer
-        #                     ),
-        #                     index2=ast.Num(
-        #                         n=1
-        #                     ),
-        #                 )
-        #             ]
-        #         )
-        #     )
-
-
     def visit_Path(self,node):
         sentence = f"{node.name} = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
 _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
@@ -290,6 +242,53 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
         #             ]
         #         )
         #     )
+
+    def visit_Sref(self,node):
+        sentence = f"{node.name} = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(_DesignParameter = None, _Name = '{node.name}In{{}}'.format(_Name)))[0], _XYCoordinates = {node.XY}"
+        print(sentence)
+        tmp = ast.parse(sentence)
+        return tmp.body
+
+        # return ast.Assign(
+        #         targets=[ast.Name(
+        #             id=node.name
+        #         )],
+        #         value=ast.Call(
+        #             func=ast.Attribute(
+        #                 value=ast.Name(
+        #                     id='self'
+        #                 ),
+        #                 attr='_SrefElementDeclaration'
+        #             ),
+        #             args=[]
+        #             ,
+        #             keywords=[
+        #                 MacroKeyword(
+        #                     arg='_Layer',
+        #                     id="DesignParameters",
+        #                     attr='LayerMapping',
+        #                     index1=ast.Str(
+        #                         s=node.layer
+        #                     ),
+        #                     index2=ast.Num(
+        #                         n=0
+        #                     )
+        #                 ),
+        #                 MacroKeyword(
+        #                     arg='_Datatype',
+        #                     id="DesignParameters",
+        #                     attr='LayerMapping',
+        #                     index1=ast.Str(
+        #                         s=node.layer
+        #                     ),
+        #                     index2=ast.Num(
+        #                         n=1
+        #                     ),
+        #                 )
+        #             ]
+        #         )
+        #     )
+
 
 
 class MacroTransformer1(ast.NodeTransformer):
@@ -389,7 +388,7 @@ if __name__ == '__main__':
     b.XY = 'XYcenter'
     b.width = 200
 
-    c.name = 'NMOSInInverter'
+    c.name = 'NMOS'
     c.library = 'NMOSWithDummy'
     c.className = '_NMOS'
     c.XY = [[0,0]]
