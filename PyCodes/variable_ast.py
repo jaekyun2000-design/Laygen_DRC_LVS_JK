@@ -23,10 +23,10 @@ class ElementArray(GeneratorVariable):
     def __init__(self, *args, **kwargs):
         super().__init__()
     _fields = (
-        'elements',
-        'XY',
-        'x_space_distance',
-        'y_space_distance',
+        'elements', # list or variable name str
+        'XY',       # double list or variable name str
+        'x_space_distance',     # int or string
+        'y_space_distance',     # int or string
     )
 
 class DynamicElementArray(GeneratorVariable):
@@ -52,8 +52,12 @@ class Distance(GeneratorVariable):
 class VariableTransformer(ast.NodeTransformer):
     def visit_ElementArray(self,node):
         # sentence0 = f"elements = {node.elements}"
-        sentence = f"for (i, element) in enumerate({node.elements}):\
-        \tself._DesignParameter[element]['_XYCoordinates'] = [({node.XY[0][0]} + (i * {node.x_space_distance})), ({node.XY[0][1]} + (i * {node.y_space_distance}))]"
+        if type(node.XY) ==str:
+            sentence = f"for (i, element) in enumerate({node.elements}):\
+                        \tself._DesignParameter[element]['_XYCoordinates'] = [({node.XY}[0][0] + (i * {node.x_space_distance})), ({node.XY}[0][1] + (i * {node.y_space_distance}))]"
+        else:
+            sentence = f"for (i, element) in enumerate({node.elements}):\
+            \tself._DesignParameter[element]['_XYCoordinates'] = [({node.XY[0][0]} + (i * {node.x_space_distance})), ({node.XY[0][1]} + (i * {node.y_space_distance}))]"
         print(sentence)
         # tmp0 = ast.parse(sentence0)
         tmp = ast.parse(sentence)
@@ -247,8 +251,8 @@ class VariableTransformer(ast.NodeTransformer):
 if __name__ == '__main__':
     ea = ElementArray()
     tf = VariableTransformer()
-
-    ea.elements = ['a','b']
+    k = ['a','b']
+    ea.elements = 'k'
     # XWidth,YWidth = str(200),
     ea.XY = [['XWidth','YWidth']]
     ea.x_space_distance = '100'
