@@ -75,6 +75,8 @@ class _MainWindow(QMainWindow):
         self.visualItemDict = dict()
         self.variableList = []
         self._ASTapi = ASTmodule._Custom_AST_API()
+        self._layerItem = dict()
+        self._id_layer_mapping = dict()
 
     def initUI(self):
 
@@ -554,24 +556,24 @@ class _MainWindow(QMainWindow):
         self.scene.addItem(graphicItem)
         self.scene.send_move_signal.connect(graphicItem.move)
         self.scene.send_moveDone_signal.connect(graphicItem.moveUpdate)
-        visual_item_list = self.scene.items()
-        _blockList = list()
-        _layerList = list()
-        layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+        # visual_item_list = self.scene.items()
+        # _blockList = list()
+        # _layerList = list()
+        # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+        #
+        # for index in range(0,len(visual_item_list)):
+        #     # print(visual_item_list[index].__class__.__name__)
+        #     if visual_item_list[index].__class__.__name__ == "_RectBlock":
+        #         _blockList.append(visual_item_list[index])
+        #
+        # for i in range(0,len(_blockList)):
+        #     _newLayer = layernum2name[str(_blockList[i].__dict__['_BlockTraits']['_Layer'])]
+        #     if _newLayer in _layerList:
+        #         pass
+        #     else:
+        #         _layerList.append(_newLayer)
 
-        for index in range(0,len(visual_item_list)):
-            # print(visual_item_list[index].__class__.__name__)
-            if visual_item_list[index].__class__.__name__ == "_RectBlock":
-                _blockList.append(visual_item_list[index])
-
-        for i in range(0,len(_blockList)):
-            _newLayer = layernum2name[str(_blockList[i].__dict__['_BlockTraits']['_Layer'])]
-            if _newLayer in _layerList:
-                pass
-            else:
-                _layerList.append(_newLayer)
-
-        self.dockContentWidget1_2.updateList(_layerList)
+        self.dockContentWidget1_2.updateList(self._layerItem)
 
         # layer 정보 : _RectBlock
         # layer visual on/off -> _Rectblock on/off  <important>
@@ -950,10 +952,36 @@ class _MainWindow(QMainWindow):
         visualItem.updateDesignParameter(DesignParameter)
         visualItem.setBoundingRegionGranularity(1)
         self.visualItemDict[DesignParameter._id] = visualItem
+
+        layer = visualItem._ItemTraits['_Layer']
+        if layer in self._layerItem:
+            self._layerItem[layer].append(visualItem)
+        else:
+            self._layerItem[layer] = [visualItem]
+
+        self._id_layer_mapping[DesignParameter._id] = layer
+
+        print(self._layerItem)
+        print(DesignParameter)
+
         return visualItem
 
     def updateVisualItemFromDesignParameter(self,DesignParameter):
         id = DesignParameter._id
+
+        self.visualItemDict[id].updateTraits(DesignParameter._DesignParameter)
+        visualItem = self.visualItemDict[id]
+
+        self._layerItem[self._id_layer_mapping[id]].remove(visualItem)
+
+        layer = visualItem._ItemTraits['_Layer']
+        if layer in self._layerItem:
+            self._layerItem[layer].append(visualItem)
+        else:
+            self._layerItem[layer] = [visualItem]
+
+        self._id_layer_mapping[id] = layer
+
         if id in self.visualItemDict:
             self.visualItemDict[id].updateTraits(DesignParameter._DesignParameter)
             return self.visualItemDict[id]
