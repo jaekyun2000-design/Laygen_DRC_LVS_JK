@@ -1,4 +1,4 @@
-from PyCodes import element_ast
+from PyCodes import element_ast, variable_ast
 from PyCodes import ASTmodule
 from PyCodes import userDefineExceptions
 
@@ -41,11 +41,30 @@ class ElementManager:
             tmpAST = element_ast.Sref()
             for key in element_ast.Sref._fields:
                 if key == 'name':
-                    tmpAST.__dict__['name'] = dp_dict['_DesignParameterName']
+                    tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
                 elif key == 'base':
-                    tmpAST.__dict__['base'] = dp_dict['_DesignObj']
-                elif key == '_XYCoordinates':
-                    tmpAST.__dict__['XY'] = dp_dict["_XYCoordinates"]  #Not complete
+                    tmpAST.__dict__[key] = dp_dict['_DesignObj']
+                elif key == 'XY':
+                    tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]  #Not complete
+
+        elif dp_dict['_DesignParametertype'] == 'element array':  #EA
+            tmpAST = variable_ast.ElementArray()
+            for key in variable_ast.ElementArray._fields:
+                if key == 'elements':
+                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                elif key == 'XY':
+                    # tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                    if ',' in dp_dict['variable_info'][key]:
+                        slicing = dp_dict['variable_info'][key].find(',')
+                        tmpAST.__dict__[key] = [[float(dp_dict['variable_info'][key][:slicing]),float(dp_dict['variable_info'][key][slicing+1:])]]
+                    else:
+                        tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                elif key == 'x_space_distance':
+                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                elif key == 'y_space_distance':
+                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+
+
 
         else:
             return None

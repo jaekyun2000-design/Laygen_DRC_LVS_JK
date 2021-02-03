@@ -4,52 +4,6 @@ from PyQTInterface.layermap import LayerReader
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-
-# class _ManageList(QListWidget):
-#
-#     def __init__(self):
-#         super().__init__()
-#
-#     def updateList(self, _layerList):
-#         self.layerlist = _layerList
-#         self.clear()
-#         for layer in self.layerlist:
-#             item = QListWidgetItem()
-#             self.addItem(item)
-#             checkBox1 = QCheckBox(layer)
-#             self.setItemWidget(item, checkBox1)
-
-# class _ManageList(QTableWidget):
-#
-#     def __init__(self):
-#         super().__init__()
-#         self.initUI()
-#
-#     def initUI(self):
-#         # self.setModel(model)
-#         # model = QStandardItemModel()
-#         # model.setHorizontalHeaderLabels(['    Layer    ','Visible','Clickable'])
-#         #
-#         # self.setModel(model)
-#         # self.resizeColumnsToContents()
-#         self.clear()
-#
-#         self.setColumnCount(3)
-#         self.setRowCount(20)
-#
-#         self.setHorizontalHeaderLabels(['    Layer    ','Visible','Clickable'])
-#         self.verticalHeader().setVisible(False)
-#         self.resizeColumnsToContents()
-#
-#
-#     def updateList(self, _layerList):
-#         self.layerlist = _layerList
-#
-#         for layer in self.layerlist:
-#             self.insertRow(1)
-#             item = QTableWidgetItem(layer)
-#             self.setItem(1,1,item)
 
 class _ManageList(QTableView):
 

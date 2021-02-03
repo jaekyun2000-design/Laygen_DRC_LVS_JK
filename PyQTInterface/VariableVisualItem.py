@@ -22,7 +22,7 @@ class VariableVisualItem(QGraphicsItemGroup):
     def __init__(self, variable_traits=None):
         super().__init__()
         self.variable_id = None
-        self._type = None
+        self._DesignParametertype = None
         self.setFlag(QGraphicsItemGroup.ItemIsSelectable,True)
         self.sub_visual_item = []
         self.variable_info = dict()
@@ -64,7 +64,7 @@ class VariableVisualItem(QGraphicsItemGroup):
     def paint(self, painter, option, widget) -> None:
         super().paint(painter,option,widget)
         if self.isSelected():
-            if self._type == 'array':
+            if self._DesignParametertype == 'element array':
                 bounding_rect = self.boundingRect()
                 bounding_rect.setCoords(bounding_rect.topLeft().x(), -bounding_rect.topLeft().y(),
                                         bounding_rect.bottomRight().x(),-bounding_rect.bottomRight().y())
@@ -74,7 +74,7 @@ class VariableVisualItem(QGraphicsItemGroup):
                 font.setBold(True)
                 font.setPointSize(70)
                 painter.setFont(font)
-                painter.drawText(bounding_rect,Qt.AlignCenter,"x_offset: {"+self.variable_info['x_offset']+"}")
+                painter.drawText(bounding_rect,Qt.AlignCenter,"x_space_distance: {"+self.variable_info['x_space_distance']+"}")
                 # painter.setBackgroundMode(Qt.OpaqueMode)
         else:
             painter.beginNativePainting()

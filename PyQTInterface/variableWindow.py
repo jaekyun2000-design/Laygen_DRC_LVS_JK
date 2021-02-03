@@ -63,7 +63,7 @@ class VariableSetupWindow(QWidget):
         # self.variable_type_widget.currentIndexChanged.connect(self.updateUI)
         self.ui_list_a = []
         self.ui_list_b = []
-        if self.variable_type == 'array':
+        if self.variable_type == 'element array':
             self.XY_base = QLineEdit()
             self.x_offset = QLineEdit()
             self.y_offset = QLineEdit()
@@ -71,7 +71,7 @@ class VariableSetupWindow(QWidget):
             self.elements_dict_for_LineEdit=[]
             # self.elements_dict_for_LineEdit.append(QLineEdit())
             # self.elements_dict_for_LineEdit.append(QLineEdit())
-            self.ui_list_a.extend(['XY','x_offset','y_offset'])#,'Element1','Element2'])
+            self.ui_list_a.extend(['XY','x_space_distance','y_space_distance'])#,'Element1','Element2'])
             self.ui_list_b.extend([self.XY_base,self.x_offset,self.y_offset])
             # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
 
@@ -135,7 +135,7 @@ class VariableSetupWindow(QWidget):
         # self.addQLine(len(strList))
         #
 
-        if self.variable_type_widget.text() == "array":
+        if self.variable_type_widget.text() == "element array":
             for i, vis_item in enumerate(self.vis_items):
                 id = vis_item._id
                 self.elements_dict_for_Label.append(QLabel('Element '+str(i)))
@@ -161,7 +161,12 @@ class VariableSetupWindow(QWidget):
         variable_info = dict()
         for i, key in enumerate(self.ui_list_a):
             variable_info[key] = self.ui_list_b[i].text()
-        variable_vis_item._type= self.variable_type
+        if self.variable_type == 'element array':
+            tmp_list = []
+            for i in range(len(self.elements_dict_for_LineEdit)):
+                tmp_list.append(self.elements_dict_for_LineEdit[i].text())
+            variable_info['elements'] = tmp_list
+        variable_vis_item._DesignParametertype= self.variable_type
         variable_vis_item.set_variable_info(variable_info)
         self.send_variableVisual_signal.emit(variable_vis_item)
         self.destroy()
@@ -178,7 +183,7 @@ class VariableSetupWindow(QWidget):
             self.send_Destroy_signal.emit('cw')
     def updateUIvalue(self):
         try:
-            type = self._ParseTree['_type']
+            type = self._ParseTree['_DesignParametertype']
             typeIndex = self.variable_type_widget.findText(type)
             if typeIndex != -1:
                 self.variable_type_widget.setCurrentIndex(typeIndex)

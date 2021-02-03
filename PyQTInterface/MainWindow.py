@@ -850,11 +850,25 @@ class _MainWindow(QMainWindow):
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
 
     def createVariableVisual(self, variableVisualItem):
+        print('222')
+        print(variableVisualItem)
+        print(variableVisualItem.__dict__)
+
+        design_dict = self._QTObj._qtProject._feed_design(design_type='parameter', module_name= self._CurrentModuleName, dp_dict= variableVisualItem.__dict__)
+        if design_dict['constraint']:
+            self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                             _parentName=self._CurrentModuleName,
+                                                             _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+
+        # visualItem = self.createVisualItemfromDesignParameter(
+        #     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
+
         self.scene.addItem(variableVisualItem)
         pass
 
 
     def createNewDesignParameter(self,_DesignParameter):
+        print('111')
         print(_DesignParameter)
         if self._QTObj._qtProject == None:
             self.warning=QMessageBox()
@@ -952,6 +966,8 @@ class _MainWindow(QMainWindow):
         visualItem.updateDesignParameter(DesignParameter)
         visualItem.setBoundingRegionGranularity(1)
         self.visualItemDict[DesignParameter._id] = visualItem
+
+        visualItem.setToolTip(DesignParameter._id + '\n' + str(DesignParameter._type))
 
         layer = visualItem._ItemTraits['_Layer']
         if layer in self._layerItem:
@@ -1430,7 +1446,7 @@ class _CustomView(QGraphicsView):
 
     def variable_emit(self, type):
         if type == 'array':
-            self.variable_signal.emit('array')
+            self.variable_signal.emit('element array')
         elif type == 'distance':
             self.variable_signal.emit('distance')
         elif type == 'enclosure':

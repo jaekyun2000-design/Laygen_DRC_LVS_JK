@@ -1739,6 +1739,8 @@ class QtProject:
                     self._DesignParameter[module_name][designID]._setDesignParameterValue(_index=key,
                                                                                                       _value=_dp_dict[
                                                                                                           key])
+                if '_DesignParameterName' not in _dp_dict:
+                    _dp_dict['_DesignParameterName'] = designID
                 self._DesignParameter[module_name][designID]._setDesignParameterName(
                     _DesignParameterName=_dp_dict['_DesignParameterName'])
                 self._UpdateXYCoordinateForDisplay(_id=designID, _ParentName=module_name)
@@ -1755,7 +1757,7 @@ class QtProject:
                             tmp_dict = self._feed_ast(_ast=tmp_ast, module_name=module_name,element_manager_update=False)
                             _designConstraint = tmp_dict['constraint']
                             _designConstraint_id = tmp_dict['constraint_id']
-                            self._ElementManager.load_dp_dc(_designParameter, _designConstraint)
+                            # self._ElementManager.load_dp_dc(_designParameter, _designConstraint)
                             self._ElementManager.load_dp_dc_id(dp_id=designID, dc_id=_designConstraint_id)
                     except:
                         print('Constraint -> Parameter is not implemented')
@@ -1916,7 +1918,7 @@ class QtProject:
                             tmp_dict = self._feed_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, element_manager_update=False)
                             _designParameter = tmp_dict['parameter']
                             _designParameter_id = tmp_dict['parameter_id']
-                            self._ElementManager.load_dp_dc(_designParameter, _designConstraint)
+                            # self._ElementManager.load_dp_dc(_designParameter, _designConstraint)
                             self._ElementManager.load_dp_dc_id(dp_id=_designParameter_id, dc_id=constraintID)
                     except:
                         print("Constraint -> Parameter is not implemented.")
