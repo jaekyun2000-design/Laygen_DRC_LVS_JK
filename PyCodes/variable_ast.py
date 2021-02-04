@@ -57,7 +57,7 @@ class VariableTransformer(ast.NodeTransformer):
         else:
             sentence = f"for (i, element) in enumerate({node.elements}):\
             \tself._DesignParameter[element]['_XYCoordinates'] = [({node.XY[0][0]} + (i * {node.x_space_distance})), ({node.XY[0][1]} + (i * {node.y_space_distance}))]"
-        print(sentence)
+        # print(sentence)
         tmp = ast.parse(sentence)
         return tmp.body
 
@@ -165,88 +165,7 @@ class VariableTransformer(ast.NodeTransformer):
         # ]
 
 
-    def visit_Sref(self,node):
-        return ast.Assign(
-                targets=[ast.Name(
-                    id=node.name
-                )],
-                value=ast.Call(
-                    func=ast.Attribute(
-                        value=ast.Name(
-                            id='self'
-                        ),
-                        attr='_SrefElementDeclaration'
-                    ),
-                    args=[]
-                    ,
-                    keywords=[
-                        MacroKeyword(
-                            arg='_Layer',
-                            id="DesignParameters",
-                            attr='LayerMapping',
-                            index1=ast.Str(
-                                s=node.layer
-                            ),
-                            index2=ast.Num(
-                                n=0
-                            )
-                        ),
-                        MacroKeyword(
-                            arg='_Datatype',
-                            id="DesignParameters",
-                            attr='LayerMapping',
-                            index1=ast.Str(
-                                s=node.layer
-                            ),
-                            index2=ast.Num(
-                                n=1
-                            ),
-                        )
-                    ]
-                )
-            )
 
-
-    def visit_Path(self,node):
-        return ast.Assign(
-                targets=[ast.Name(
-                    id=node.name
-                )],
-                value=ast.Call(
-                    func=ast.Attribute(
-                        value=ast.Name(
-                            id='self'
-                        ),
-                        attr='_PathElementDeclaration'
-                    ),
-                    args=[]
-                    ,
-                    keywords=[
-                        MacroKeyword(
-                            arg = '_Layer',
-                            id = "DesignParameters",
-                            attr='LayerMapping',
-                            index1 = ast.Str(
-                                s = node.layer
-                            ),
-                            index2 = ast.Num(
-                                n = 0
-                            )
-                        ),
-                        MacroKeyword(
-                            arg='_Datatype',
-                            id="DesignParameters",
-                            attr='LayerMapping',
-                            index1=ast.Str(
-                                s=node.layer
-                            ),
-                            index2=ast.Num(
-                                n=1
-                            ),
-                        )
-                    ]
-                )
-            )
 
 if __name__ == '__main__':
     ea = ElementArray()

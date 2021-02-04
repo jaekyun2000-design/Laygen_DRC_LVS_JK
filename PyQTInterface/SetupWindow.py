@@ -1963,7 +1963,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_RootDesignConstraint_signal = pyqtSignal(str)
     send_RecieveDone_signal = pyqtSignal()
     send_RequesteDesignConstraint_signal = pyqtSignal()
-    send_deleteID_signal = pyqtSignal(str)
+    # send_deleteID_signal = pyqtSignal(str)
+    send_deleteConstraint_signal = pyqtSignal(str)
 
 
 
@@ -2088,28 +2089,40 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             self._DesignConstraintFromQTobj[Module][Id]._setDesignConstraintValue(_index=Field,_value=_value)
             return
 
-    def removeItem_by_ID(self, ID):
+    def remove_item(self, ID):
+        """
+        :param ID:
+        :return: (None), remove display item
+        """
 
         _items = self.model.findItems(ID,column=1)
         for item in _items:
-            self.removeItem(item)
-
-    def removeItem(self,item):  # removes item and sends deletion signal of DesignParameterID
-        ID_by_Item_index = self.model.indexFromItem(item).siblingAtColumn(1)
-        ID_by_Item = self.model.itemFromIndex(ID_by_Item_index).text()  # Constraint ID of corresponding item
-
-        if self.model.indexFromItem(item).parent().isValid():
-            parentIndex = self.model.indexFromItem(item).parent()
-            self.model.removeRow(item.row(),parentIndex)
-        else:
-            self.model.removeRow(item.row())
-
-        if ID_by_Item == None or ID_by_Item == '':
-            pass
-        else:
-            self.send_deleteID_signal.emit(ID_by_Item)
-
+            # ID_by_Item_index = self.model.indexFromItem(item).siblingAtColumn(1)
+            # ID_by_Item = self.model.itemFromIndex(ID_by_Item_index).text()  # Constraint ID of corresponding item
+            if self.model.indexFromItem(item).parent().isValid():
+                parentIndex = self.model.indexFromItem(item).parent()
+                self.model.removeRow(item.row(), parentIndex)
+            else:
+                self.model.removeRow(item.row())
+            # self.removeItem(item)
         self.removeFlag = False
+    #
+    # def removeItem(self,item):  # removes item and sends deletion signal of DesignParameterID  ####for sending constraint purpose
+    #     ID_by_Item_index = self.model.indexFromItem(item).siblingAtColumn(1)
+    #     ID_by_Item = self.model.itemFromIndex(ID_by_Item_index).text()  # Constraint ID of corresponding item
+    #
+    #     if self.model.indexFromItem(item).parent().isValid():
+    #         parentIndex = self.model.indexFromItem(item).parent()
+    #         self.model.removeRow(item.row(),parentIndex)
+    #     else:
+    #         self.model.removeRow(item.row())
+    #     #
+    #     # if ID_by_Item == None or ID_by_Item == '':
+    #     #     pass
+    #     # else:
+    #     #     self.send_deleteID_signal.emit(ID_by_Item)
+    #
+    #     self.removeFlag = False
 
 
     def checkSend(self):
@@ -2133,7 +2146,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
         except:
             self.warning = QMessageBox()
-            self.warning.setText("Only Constraint Can be moved!")
+            self.warning.setText("Constraint Transfer failed")
             self.warning.show()
 
     def removeCurrentIndexItem(self):
@@ -2178,7 +2191,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 self.refreshItem(self.currentIndex().parent())
 
         else:
-            self.removeItem(selectedItem)
+            sibling_index = self.model.indexFromItem(selectedItem).siblingAtColumn(1)
+            sibling_id = self.model.itemFromIndex(sibling_index).text()
+            self.remove_item(sibling_id)
 
     def updateConstraintDictFromQTInterface(self,_qtProject):
         # for constraint in _QTInterface.
@@ -2219,7 +2234,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 constraintName = constraintItem.text()
                 constraintModule = re.sub(r'\d','',constraintName)
                 if constraintModule in self._DesignConstraintFromQTobj:
-                    print("It isn't allow to change constraint")
+                    print("It isn't allowed to change constraint")
                     self.warning = QMessageBox()
                     self.warning.setText("It isn't allowed to change constraint itself")
                     self.warning.show()
@@ -2316,7 +2331,10 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                     return
         elif QKeyEvent.key() == Qt.Key_Delete:
             self.removeFlag = True
-            self.removeCurrentIndexItem()
+            selectedItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
+            id = selectedItem.text()  # Constraint ID of corresponding item
+            self.send_deleteConstraint_signal.emit(id)
+            # self.removeCurrentIndexItem()
         elif QKeyEvent.key() == Qt.Key_C:
             if self.currentIndex().isValid() ==False:
                 return
