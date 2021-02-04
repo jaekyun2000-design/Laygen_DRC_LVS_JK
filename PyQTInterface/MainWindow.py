@@ -298,7 +298,8 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_UpdateDesignConstraintID_signal.connect(self.get_constraint_update_design)
         self.dockContentWidget3_2.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate2)
         self.dockContentWidget3_2.send_RequesteDesignConstraint_signal.connect(self.constraintConvey)
-        self.dockContentWidget3_2.send_deleteID_signal.connect(self.deleteDesignParameterbyDesignConstraint)
+        # self.dockContentWidget3_2.send_deleteID_signal.connect(self.deleteDesignParameterbyDesignConstraint)
+        self.dockContentWidget3_2.send_deleteConstraint_signal.connect(self.deleteDesignParameterbyDesignConstraint)
 
 
 
@@ -312,7 +313,8 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3.send_UpdateDesignConstraintID_signal.connect(self.get_constraint_update_design)
         self.dockContentWidget3.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate1)
         self.dockContentWidget3.send_RequesteDesignConstraint_signal.connect(self.constraintConvey)
-        self.dockContentWidget3.send_deleteID_signal.connect(self.deleteDesignParameterbyDesignConstraint)
+        # self.dockContentWidget3.send_deleteID_signal.connect(self.deleteDesignParameterbyDesignConstraint)
+        self.dockContentWidget3.send_deleteConstraint_signal.connect(self.deleteDesignParameterbyDesignConstraint)
 
         vboxLayout = QVBoxLayout()
         vboxLayout.addWidget(self.sendDownButton)
@@ -431,8 +433,6 @@ class _MainWindow(QMainWindow):
             topAST = self._QTObj._qtProject._ParseTreeForDesignConstrain[module]._ast
             topAST = element_ast.ElementTransformer().visit(topAST)
             topAST = variable_ast.VariableTransformer().visit(topAST)
-            # topAST = element_ast.MacroTransformer1().visit(topAST)
-            # topAST = element_ast.MacroTransformer2().visit(topAST)
             code = astunparse.unparse(topAST)
             print(code)
         except:
@@ -897,38 +897,42 @@ class _MainWindow(QMainWindow):
 
 
 
-    def deleteDesignParameter(self,_ID):    # input : DesignParameterID
-        module = _ID[:-1]
+    def deleteDesignParameter(self,dp_id,delete_dc=True):    # input : DesignParameterID
+        module = dp_id[:-1]
         while not module in self._QTObj._qtProject._DesignParameter:
             module = module[:-1]
 
-        dc_id = self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(_ID)
+        dc_id = self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id)
 
-        deletionItems = self.scene.selectedItems()
+        deletionItems = self.scene.selectedItems()      #Delete visual item
         for deleteItem in deletionItems:
             self.scene.removeItem(deleteItem)
 
-        self.dockContentWidget3.removeItem_by_ID(dc_id)     #Remove Item displays in constraint Window
-        self.dockContentWidget3_2.removeItem_by_ID(dc_id)
+        del self._QTObj._qtProject._DesignParameter[module][dp_id]
+        if delete_dc:
+            self.deleteDesignParameterbyDesignConstraint(dc_id, delete_dp=False)
+        # self.dockContentWidget3.removeItem_by_ID(dc_id)     #Remove Item displays in constraint Window
+        # self.dockContentWidget3_2.removeItem_by_ID(dc_id)
 
-    def deleteDesignParameterbyDesignConstraint(self,dc_id): # input : DesignconstraintID
+    def deleteDesignParameterbyDesignConstraint(self,dc_id,delete_dp=True): # input : DesignconstraintID
         dc_module = dc_id[:-1]
         while not dc_module in self._QTObj._qtProject._DesignConstraint:
             dc_module = dc_module[:-1]
 
-        try:
-            dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)  # get DesignParameterID
-        except:
-            # del self._QTObj._qtProject._DesignConstraint[dc_module][dc_id]
-            return None
-        dp_module = dp_id[:-1]
-        while not dp_module in self._QTObj._qtProject._DesignParameter:
-            dp_module = dp_module[:-1]
+        self.dockContentWidget3.remove_item(dc_id)
+        self.dockContentWidget3_2.remove_item(dc_id)
+        del self._QTObj._qtProject._DesignConstraint[dc_module][dc_id]
 
-        self.visualItemDict[dp_id]
-        self.scene.removeItem(self.visualItemDict[dp_id])
-        # del self._QTObj._qtProject._DesignParameter[dp_module][dp_id]
-        # del self._QTObj._qtProject._DesignConstraint[dc_module][dc_id]
+        if delete_dp:
+            try:
+                dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)  # get DesignParameterID
+                self.deleteDesignParameter(dp_id, delete_dc=False)
+            except:
+                return None
+
+
+            # del self._QTObj._qtProject._DesignParameter[dp_module][dp_id]
+            # del self._QTObj._qtProject._DesignConstraint[dc_module][dc_id]
 
 
 

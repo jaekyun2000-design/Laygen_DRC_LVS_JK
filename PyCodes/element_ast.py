@@ -145,13 +145,12 @@ class GeneratorTransformer(ast.NodeTransformer):
 
 class ElementTransformer(ast.NodeTransformer):
     def visit_Boundary(self,node):
-
-        sentence = f"{node.name} = self._SrefElementDelcaration(_DesignObj = DesignParameters._LayerMapping['{node.layer}'][0],\
+        sentence = f"{node.name} = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
 _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY},\
 _XWidth = {node.width}, _YWidth = {node.height})"
-        print(sentence)
+        # print(sentence)
         tmp = ast.parse(sentence)
-        return tmp.body
+        return tmp.body[0]
 
     ###### Below is the partial genuine ast format of Boundary Element : Do not delete #######
 
