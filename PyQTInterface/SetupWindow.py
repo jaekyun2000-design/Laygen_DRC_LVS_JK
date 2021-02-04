@@ -2091,6 +2091,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
     def remove_item(self, ID):
         """
+        This function is made for display item deletion purpose;
+        Actual module deletion is not implemented in this function.
+
         :param ID:
         :return: (None), remove display item
         """
@@ -2104,26 +2107,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 self.model.removeRow(item.row(), parentIndex)
             else:
                 self.model.removeRow(item.row())
-            # self.removeItem(item)
         self.removeFlag = False
-    #
-    # def removeItem(self,item):  # removes item and sends deletion signal of DesignParameterID  ####for sending constraint purpose
-    #     ID_by_Item_index = self.model.indexFromItem(item).siblingAtColumn(1)
-    #     ID_by_Item = self.model.itemFromIndex(ID_by_Item_index).text()  # Constraint ID of corresponding item
-    #
-    #     if self.model.indexFromItem(item).parent().isValid():
-    #         parentIndex = self.model.indexFromItem(item).parent()
-    #         self.model.removeRow(item.row(),parentIndex)
-    #     else:
-    #         self.model.removeRow(item.row())
-    #     #
-    #     # if ID_by_Item == None or ID_by_Item == '':
-    #     #     pass
-    #     # else:
-    #     #     self.send_deleteID_signal.emit(ID_by_Item)
-    #
-    #     self.removeFlag = False
-
 
     def checkSend(self):
         print("check Evaluation")
@@ -2329,12 +2313,11 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 itemName = item.text()
                 if (itemName in self.itemToDesignConstraintDict) == True:
                     return
-        elif QKeyEvent.key() == Qt.Key_Delete:
+        elif QKeyEvent.key() == Qt.Key_Delete:  # If delete key pushed, 'deleteConstraint_signal' sent to MainWindow
             self.removeFlag = True
             selectedItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
             id = selectedItem.text()  # Constraint ID of corresponding item
             self.send_deleteConstraint_signal.emit(id)
-            # self.removeCurrentIndexItem()
         elif QKeyEvent.key() == Qt.Key_C:
             if self.currentIndex().isValid() ==False:
                 return
