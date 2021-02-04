@@ -56,8 +56,6 @@ class _FilterWindow(QWidget):
         self.completer = QCompleter(self.fruits)
         self.lineEditInput.setCompleter(self.completer)
 
-        self.show()
-
         self.lineEditInput.textChanged.connect(self.filterList)
 
     def ok_clicked(self):

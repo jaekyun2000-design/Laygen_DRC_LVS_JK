@@ -200,3 +200,128 @@ class VariableSetupWindow(QWidget):
             print("updateFail")
 
 
+class _DesignVariableManagerWindow(QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.table = QTableView()
+        self.table.setShowGrid(False)
+        self.table.verticalHeader().setVisible(False)
+
+        self.initUI()
+
+    def initUI(self):
+        self.model = QStandardItemModel()
+        self.model.setHorizontalHeaderLabels(['Name', 'Value'])
+
+        variableList = _createNewDesignVariable().variableList
+
+        for variable in variableList:
+            item1 = QStandardItem(variable[0])
+            item1.setTextAlignment(Qt.AlignCenter)
+            item2 = QStandardItem(variable[1])
+            item2.setTextAlignment(Qt.AlignCenter)
+
+            self.model.appendRow(item1)
+            self.model.setItem(self.model.rowCount()-1,1,item2)
+
+            self.table.resizeRowsToContents()
+
+        addButton = QPushButton("Add", self)
+        addButton.clicked.connect(self.add_clicked)
+        quitButton = QPushButton("Quit", self)
+        quitButton.clicked.connect(self.quit_clicked)
+
+        button = QHBoxLayout()
+        button.addWidget(addButton)
+        button.addStretch(2)
+        button.addWidget(quitButton)
+
+        self.table.setModel(self.model)
+
+        self.arrangeWindow = QVBoxLayout()
+        self.arrangeWindow.addWidget(self.table)
+        self.arrangeWindow.addLayout(button)
+
+        self.setLayout(self.arrangeWindow)
+        self.table.horizontalHeader().setDefaultSectionSize(127)
+
+    def add_clicked(self):
+        self.addWidget = _createNewDesignVariable()
+        self.addWidget.show()
+        self.addWidget.send_variable_signal.connect(self.updateList)
+
+    def quit_clicked(self):
+        self.destroy()
+
+    def updateList(self, variable_info_list):
+        _name , _value = variable_info_list[0], variable_info_list[1]
+        name, value = QStandardItem(_name), QStandardItem(_value)
+        name.setTextAlignment(Qt.AlignCenter)
+        value.setTextAlignment(Qt.AlignCenter)
+
+        self.model.appendRow(name)
+        self.model.setItem(self.model.rowCount()-1,1,value)
+
+        self.table.resizeRowsToContents()
+
+
+        #add버튼 추가해서 직접 만들기, manager에 없는 경우 자동 생성
+
+
+class _createNewDesignVariable(QWidget):
+
+    send_variable_signal = pyqtSignal(list)
+    variableNameList = list()
+    variableValueList = list()
+    variableList = list()
+
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        nameInput = QLabel('Name :')
+        self.name = QLineEdit()
+        valueInput = QLabel('Value :')
+        self.value = QLineEdit()
+
+        okButton = QPushButton("OK", self)
+        okButton.clicked.connect(self.ok_clicked)
+        cancelButton = QPushButton("Cancel", self)
+        cancelButton.clicked.connect(self.cancel_clicked)
+
+        button = QHBoxLayout()
+        button.addStretch(2)
+        button.addWidget(okButton)
+        button.addWidget(cancelButton)
+
+        self.inputBox1 = QVBoxLayout()
+        self.inputBox2 = QVBoxLayout()
+        arrangeWindow = QHBoxLayout()
+
+        vbox = QVBoxLayout()
+
+        self.inputBox1.addWidget(nameInput)
+        self.inputBox1.addWidget(valueInput)
+
+        self.inputBox2.addWidget(self.name)
+        self.inputBox2.addWidget(self.value)
+
+        arrangeWindow.addLayout(self.inputBox1)
+        arrangeWindow.addLayout(self.inputBox2)
+
+        vbox.addLayout(arrangeWindow)
+        vbox.addLayout(button)
+
+        self.setLayout(vbox)
+
+    def ok_clicked(self):
+        self.send_variable_signal.emit([self.name.text(), self.value.text()])
+        self.variableNameList.append(self.name.text())
+        self.variableValueList.append(self.value.text())
+        self.variableList.append([self.name.text(), self.value.text()])
+        self.destroy()
+
+    def cancel_clicked(self):
+        self.destroy()

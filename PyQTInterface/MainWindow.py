@@ -226,6 +226,9 @@ class _MainWindow(QMainWindow):
         FilterButton = QPushButton("Filter",dockContentWidget1)
         FilterButton.clicked.connect(self.makeFilterWindow)
 
+        VariableButton = QPushButton("Variable",dockContentWidget1)
+        VariableButton.clicked.connect(self.makeVariableWindow)
+
         ElemntClickCheckBox = QCheckBox("Element",dockContentWidget1)
         SrefClickCheckBox = QCheckBox("Sref",dockContentWidget1)
         VariableClickCheckBox = QCheckBox("Variable",dockContentWidget1)
@@ -239,6 +242,7 @@ class _MainWindow(QMainWindow):
         vboxOnDock1.addWidget(srefButtonL)
         vboxOnDock1.addWidget(srefButtonS)
         vboxOnDock1.addWidget(FilterButton)
+        vboxOnDock1.addWidget(VariableButton)
         vboxOnDock1.addStretch(2)
         hboxOnDock1 = QHBoxLayout()
         hboxOnDock1.addWidget(ElemntClickCheckBox)
@@ -503,6 +507,10 @@ class _MainWindow(QMainWindow):
     def makeFilterWindow(self):
         self.fw = FilterPractice._FilterWindow()
         self.fw.show()
+
+    def makeVariableWindow(self):
+        self.dv = variableWindow._DesignVariableManagerWindow()
+        self.dv.show()
 
     def makeConstraintWindow(self):
         self.cw = SetupWindow._ConstraintSetupWindow()
@@ -850,10 +858,6 @@ class _MainWindow(QMainWindow):
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
 
     def createVariableVisual(self, variableVisualItem):
-        print('222')
-        print(variableVisualItem)
-        print(variableVisualItem.__dict__)
-
         design_dict = self._QTObj._qtProject._feed_design(design_type='parameter', module_name= self._CurrentModuleName, dp_dict= variableVisualItem.__dict__)
         if design_dict['constraint']:
             self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
@@ -868,8 +872,6 @@ class _MainWindow(QMainWindow):
 
 
     def createNewDesignParameter(self,_DesignParameter):
-        print('111')
-        print(_DesignParameter)
         if self._QTObj._qtProject == None:
             self.warning=QMessageBox()
             self.warning.setText("There is no Project")
