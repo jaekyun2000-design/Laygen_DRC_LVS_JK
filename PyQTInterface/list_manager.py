@@ -11,8 +11,6 @@ class _ManageList(QTableView):
         super().__init__()
         self._Row = 0
         self._layerList = list()
-        self._visibleList = list()
-        self._clickableList = list()
         self._usedlayer = list()
         self.initUI()
 
@@ -21,27 +19,23 @@ class _ManageList(QTableView):
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['    Layer    ','Visible','Clickable'])
         self.verticalHeader().setVisible(False)
+        self.setShowGrid(False)
 
         _Layer = LayerReader._LayerMapping
 
         for layer in _Layer:
-            layervisible = layer+'_V'
-            layerclickable = layer+'_C'
-
             self._layerList.append(layer)
-            self._visibleList.append(layervisible)
-            self._clickableList.append(layerclickable)
 
             item = QStandardItem(layer)
             item.setEditable(False)
 
-            itemv = QStandardItem(layervisible)
+            itemv = QStandardItem(layer)
             itemv.setCheckable(True)
             itemv.setCheckState(2)
             itemv.setEditable(False)
             itemv.setText('')
 
-            itemc = QStandardItem(layerclickable)
+            itemc = QStandardItem(layer)
             itemc.setCheckable(True)
             itemc.setCheckState(2)
             itemc.setEditable(False)
