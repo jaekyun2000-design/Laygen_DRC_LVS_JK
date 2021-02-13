@@ -31,7 +31,7 @@ class Sref(ElementNode):
         super().__init__()
     _fields = (
         'name',     # name str
-        'library'   # library module str
+        'library',   # library module str
         'className',    # class name str
         'XY',       # double list or str
     )
@@ -199,7 +199,7 @@ _XWidth = {node.width}, _YWidth = {node.height})"
 _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
         print(sentence)
         tmp = ast.parse(sentence)
-        return tmp.body
+        return tmp.body[0]
 
 
         # return ast.Assign(
@@ -246,7 +246,7 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
         sentence = f"{node.name} = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(_DesignParameter = None, _Name = '{node.name}In{{}}'.format(_Name)))[0], _XYCoordinates = {node.XY}"
         print(sentence)
         tmp = ast.parse(sentence)
-        return tmp.body
+        return tmp.body[0]
 
         # return ast.Assign(
         #         targets=[ast.Name(
