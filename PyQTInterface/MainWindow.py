@@ -548,6 +548,8 @@ class _MainWindow(QMainWindow):
             del self.bw
         if obj == 'pw':
             del self.pw
+        if obj == 'dv':
+            del self.dv
         self.scene.itemListClickIgnore(False)
 
 
