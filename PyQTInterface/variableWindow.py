@@ -63,6 +63,7 @@ class VariableSetupWindow(QWidget):
         # self.variable_type_widget.currentIndexChanged.connect(self.updateUI)
         self.ui_list_a = []
         self.ui_list_b = []
+        self.ui_list_c = []
         if self.variable_type == 'element array':
             self.XY_base = QLineEdit()
             self.x_offset = QLineEdit()
@@ -159,8 +160,32 @@ class VariableSetupWindow(QWidget):
         variable_vis_item = VariableVisualItem.VariableVisualItem()
         variable_vis_item.addToGroupFromList(self.vis_items)
         variable_info = dict()
+
+        self.XY_base_text = self.XY_base.text()
+        self.x_offset_text = self.x_offset.text()
+        self.y_offset_text = self.y_offset.text()
+
+        if ',' in self.XY_base_text:
+            slicing = self.XY_base_text.find(',')
+            self.XY_base_text = [[float(self.XY_base_text[:slicing]), float(self.XY_base_text[slicing + 1:])]]
+
+        print(self.XY_base_text)
+        print(type(self.XY_base_text))
+
+        try:
+            self.x_offset_text = float(self.x_offset.text())
+        except:
+            pass
+
+        try:
+            self.y_offset_text = float(self.y_offset.text())
+        except:
+            pass
+
+        self.ui_list_c.extend([self.XY_base_text, self.x_offset_text, self.y_offset_text])
+
         for i, key in enumerate(self.ui_list_a):
-            variable_info[key] = self.ui_list_b[i].text()
+            variable_info[key] = self.ui_list_c[i]
         if self.variable_type == 'element array':
             tmp_list = []
             for i in range(len(self.elements_dict_for_LineEdit)):
@@ -255,7 +280,7 @@ class _DesignVariableManagerWindow(QWidget):
         self.destroy()
 
     def updateList(self, variable_info_list):
-        _name , _value = variable_info_list[0], variable_info_list[1]
+        _name, _value = variable_info_list[0], variable_info_list[1]
         name, value = QStandardItem(_name), QStandardItem(_value)
         name.setTextAlignment(Qt.AlignCenter)
         value.setTextAlignment(Qt.AlignCenter)
