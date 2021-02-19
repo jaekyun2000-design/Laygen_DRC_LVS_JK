@@ -171,7 +171,7 @@ class _BoundarySetupWindow(QWidget):
                 except:
                     self.warning = QMessageBox()
                     self.warning.setIcon(QMessageBox.Warning)
-                    self.warning.setText("Unvalid XY Coordinates")
+                    self.warning.setText("Invalid XY Coordinates")
         pass
 
         try:
@@ -349,6 +349,7 @@ class _PathSetupWindow(QWidget):
 
     def cancel_button_accepted(self):
         self.destroy()
+
     def on_buttonBox_accepted(self):
         try:
             self._DesignParameter['_DesignParameterName'] = self.name_input.text()
@@ -363,9 +364,10 @@ class _PathSetupWindow(QWidget):
                     break
                 else:
                     try:
-                        XcurrentItemChanged = int(XY.text().split(',')[0])
+
+                        X = int(XY.text().split(',')[0])
                         Y = int(XY.text().split(',')[1])
-                        self._DesignParameter['_XYCoordinates'][0].append([X,Y])
+                        self._DesignParameter['_XYCoordinates'][0].append([X, Y])
                     except:
                         self.warning = QMessageBox()
                         self.warning.setIcon(QMessageBox.Warning)

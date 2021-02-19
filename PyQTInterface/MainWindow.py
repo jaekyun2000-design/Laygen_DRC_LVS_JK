@@ -899,7 +899,7 @@ class _MainWindow(QMainWindow):
 
 
 
-    def deleteDesignParameter(self,dp_id,delete_dc=True):    # input : Design parameter ID
+    def deleteDesignParameter(self, dp_id, delete_dc=True):    # input : Design parameter ID
         """
         Deletes Actual Design Parameter module and visual item(if exists).
         If delete_dc == True:
@@ -925,11 +925,11 @@ class _MainWindow(QMainWindow):
         if delete_dc:
             self.deleteDesignConstraint(dc_id, delete_dp=False)
 
-    def deleteDesignConstraint(self,dc_id,delete_dp=True):  # input : Design constraint ID
+    def deleteDesignConstraint(self, dc_id, delete_dp=True):  # input : Design constraint ID
         """
         Deletes Actual Design Constraint module.
         If delete_dp == True:
-            calls 'deleteDesignParameter' and implements constraint deletion
+            calls 'deleteDesignParameter' and implements parameter deletion
 
         :param dc_id:
         :param delete_dp:
