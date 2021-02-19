@@ -170,9 +170,6 @@ class VariableSetupWindow(QWidget):
             slicing = self.XY_base_text.find(',')
             self.XY_base_text = [[float(self.XY_base_text[:slicing]), float(self.XY_base_text[slicing + 1:])]]
 
-        print(self.XY_base_text)
-        print(type(self.XY_base_text))
-
         try:
             self.x_offset_text = float(self.x_offset.text())
         except:
@@ -246,7 +243,7 @@ class _DesignVariableManagerWindow(QWidget):
         for key in variableDict:
             item1 = QStandardItem(key)
             item1.setTextAlignment(Qt.AlignCenter)
-            item2 = QStandardItem(variableDict[key])
+            item2 = QStandardItem(variableDict[key]['value'])
             item2.setTextAlignment(Qt.AlignCenter)
 
             self.model.appendRow(item1)
@@ -344,15 +341,14 @@ class _createNewDesignVariable(QWidget):
 
     def ok_clicked(self):
         self.send_variable_signal.emit([self.name.text(), self.value.text()])
-        self.variableDict[self.name.text()] = self.value.text()
+        self.addDVtodict(self.name.text(), type='value', value=self.value.text())
         self.destroy()
 
     def cancel_clicked(self):
         self.destroy()
 
-    def get_DV(self):
-        self.vm = variable_manager.Manage_DV_by_id()
-        self.vm.send_DV_signal.connect(self.add_DV())
-
-    def add_DV(self, DV):
-        self.variableDict[DV] = ''
+    def addDVtodict(self, DV, type, value):
+        if DV not in self.variableDict:
+            self.variableDict[DV] = {'id':None, 'value':None}
+        self.variableDict[DV][type] = value
+        print(self.variableDict)

@@ -1,4 +1,5 @@
 from PyCodes import variable_ast
+from PyQTInterface import variableWindow
 from PyQt5.QtCore import *
 
 class VariableObj:
@@ -16,31 +17,36 @@ class VariableObj:
 
 class VariableArray(VariableObj):
     def __init__(self):
-        # super().__init__(self)
+        super().__init__()
         self.field = ['x_space_distance','y_space_distance','XY','elements']
 
 
 
-class Manage_DV_by_id():
+class Manage_DV_by_id(QObject):
 
     DVmanager = dict()
-    send_DV_signal = pyqtSignal(str)
+    send_DV_signal = pyqtSignal(str, str, str)
+    send_DV2_signal = pyqtSignal(list)
 
     def __init__(self, _id, _info, _type):
+        super().__init__()
         self._id = _id
         self._info = _info
         self._type = _type
+        self.send_signal()
+
+    def send_signal(self):
+        self.vw = variableWindow._createNewDesignVariable()
+        self.vw2 = variableWindow._DesignVariableManagerWindow()
+
+        self.send_DV_signal.connect(self.vw.addDVtodict)
+        self.send_DV2_signal.connect(self.vw2.updateList)
         self.print()
 
     def print(self):
-        print(self._info)
         if self._type == 'element array':
             for key in VariableArray().field:
                 if type(self._info[key]) is str:
                     self.DVmanager[self._info[key]] = self._id
-                    print('--')
-                    print(type(self._info[key]))
-                    print(self._info[key])
-                    print(type(self._info[key]))
-                    print('--')
-                    # self.send_DV_signal.emit(self._info[key])
+                    self.send_DV_signal.emit(self._info[key], 'id', self._id)
+                    self.send_DV2_signal.emit([self._info[key], None])

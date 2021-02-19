@@ -510,7 +510,6 @@ class _MainWindow(QMainWindow):
     def makeVariableWindow(self):
         self.dv = variableWindow._DesignVariableManagerWindow()
         self.dv.show()
-        print(variableWindow. _createNewDesignVariable().variableDict)
 
     def makeConstraintWindow(self):
         self.cw = SetupWindow._ConstraintSetupWindow()
