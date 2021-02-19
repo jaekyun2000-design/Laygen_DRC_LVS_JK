@@ -74,7 +74,7 @@ class VariableVisualItem(QGraphicsItemGroup):
                 font.setBold(True)
                 font.setPointSize(70)
                 painter.setFont(font)
-                painter.drawText(bounding_rect,Qt.AlignCenter,"x_space_distance: {"+self.variable_info['x_space_distance']+"}")
+                painter.drawText(bounding_rect,Qt.AlignCenter,"x_space_distance: {"+str(self.variable_info['x_space_distance'])+"}")
                 # painter.setBackgroundMode(Qt.OpaqueMode)
         else:
             painter.beginNativePainting()

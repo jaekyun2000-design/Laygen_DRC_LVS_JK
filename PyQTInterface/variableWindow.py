@@ -16,6 +16,7 @@ from PyCodes import userDefineExceptions
 from PyCodes import EnvForClientSetUp
 from PyCodes import QTInterfaceWithAST
 
+from DesignManager.VariableManager import variable_manager
 
 import re, ast, time
 
@@ -240,12 +241,12 @@ class _DesignVariableManagerWindow(QWidget):
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Name', 'Value'])
 
-        variableList = _createNewDesignVariable().variableList
+        variableDict = _createNewDesignVariable().variableDict
 
-        for variable in variableList:
-            item1 = QStandardItem(variable[0])
+        for key in variableDict:
+            item1 = QStandardItem(key)
             item1.setTextAlignment(Qt.AlignCenter)
-            item2 = QStandardItem(variable[1])
+            item2 = QStandardItem(variableDict[key])
             item2.setTextAlignment(Qt.AlignCenter)
 
             self.model.appendRow(item1)
@@ -299,9 +300,7 @@ class _DesignVariableManagerWindow(QWidget):
 class _createNewDesignVariable(QWidget):
 
     send_variable_signal = pyqtSignal(list)
-    variableNameList = list()
-    variableValueList = list()
-    variableList = list()
+    variableDict = dict()
 
     def __init__(self):
         super().__init__()
@@ -345,10 +344,15 @@ class _createNewDesignVariable(QWidget):
 
     def ok_clicked(self):
         self.send_variable_signal.emit([self.name.text(), self.value.text()])
-        self.variableNameList.append(self.name.text())
-        self.variableValueList.append(self.value.text())
-        self.variableList.append([self.name.text(), self.value.text()])
+        self.variableDict[self.name.text()] = self.value.text()
         self.destroy()
 
     def cancel_clicked(self):
         self.destroy()
+
+    def get_DV(self):
+        self.vm = variable_manager.Manage_DV_by_id()
+        self.vm.send_DV_signal.connect(self.add_DV())
+
+    def add_DV(self, DV):
+        self.variableDict[DV] = ''

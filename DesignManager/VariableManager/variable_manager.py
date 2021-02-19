@@ -1,4 +1,5 @@
 from PyCodes import variable_ast
+from PyQt5.QtCore import *
 
 class VariableObj:
     def __init__(self):
@@ -23,6 +24,7 @@ class VariableArray(VariableObj):
 class Manage_DV_by_id():
 
     DVmanager = dict()
+    send_DV_signal = pyqtSignal(str)
 
     def __init__(self, _id, _info, _type):
         self._id = _id
@@ -31,9 +33,14 @@ class Manage_DV_by_id():
         self.print()
 
     def print(self):
+        print(self._info)
         if self._type == 'element array':
             for key in VariableArray().field:
                 if type(self._info[key]) is str:
                     self.DVmanager[self._info[key]] = self._id
-
-        print(self.DVmanager)
+                    print('--')
+                    print(type(self._info[key]))
+                    print(self._info[key])
+                    print(type(self._info[key]))
+                    print('--')
+                    # self.send_DV_signal.emit(self._info[key])
