@@ -53,12 +53,12 @@ class ElementManager:
                 if key == 'elements':
                     tmpAST.__dict__[key] = dp_dict['variable_info'][key]
                 elif key == 'XY':
-                    # tmpAST.__dict__[key] = dp_dict['variable_info'][key]
-                    if ',' in dp_dict['variable_info'][key]:
-                        slicing = dp_dict['variable_info'][key].find(',')
-                        tmpAST.__dict__[key] = [[float(dp_dict['variable_info'][key][:slicing]),float(dp_dict['variable_info'][key][slicing+1:])]]
-                    else:
-                        tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                    # if ',' in dp_dict['variable_info'][key]:
+                    #     slicing = dp_dict['variable_info'][key].find(',')
+                    #     tmpAST.__dict__[key] = [[float(dp_dict['variable_info'][key][:slicing]),float(dp_dict['variable_info'][key][slicing+1:])]]
+                    # else:
+                    #     tmpAST.__dict__[key] = dp_dict['variable_info'][key]
                 elif key == 'x_space_distance':
                     tmpAST.__dict__[key] = dp_dict['variable_info'][key]
                 elif key == 'y_space_distance':

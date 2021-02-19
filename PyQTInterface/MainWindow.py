@@ -17,6 +17,7 @@ from PyCodes import QTInterfaceWithAST
 from PyCodes import ASTmodule
 from PyCodes import element_ast, variable_ast
 from DesignManager.VariableManager import FilterPractice
+from DesignManager.VariableManager import variable_manager
 
 
 import threading
@@ -509,6 +510,7 @@ class _MainWindow(QMainWindow):
     def makeVariableWindow(self):
         self.dv = variableWindow._DesignVariableManagerWindow()
         self.dv.show()
+        print(variableWindow. _createNewDesignVariable().variableList)
 
     def makeConstraintWindow(self):
         self.cw = SetupWindow._ConstraintSetupWindow()
@@ -867,6 +869,7 @@ class _MainWindow(QMainWindow):
         # visualItem = self.createVisualItemfromDesignParameter(
         #     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
 
+        variable_manager.Manage_DV_by_id(_id=design_dict['constraint_id'], _info=variableVisualItem.variable_info, _type=variableVisualItem._DesignParametertype)
         self.scene.addItem(variableVisualItem)
         pass
 
