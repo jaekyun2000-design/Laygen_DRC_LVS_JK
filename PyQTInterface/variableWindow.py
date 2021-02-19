@@ -227,12 +227,13 @@ class VariableSetupWindow(QWidget):
 
 class _DesignVariableManagerWindow(QWidget):
 
+    send_destroy_signal = pyqtSignal(str)
+
     def __init__(self):
         super().__init__()
         self.table = QTableView()
         self.table.setShowGrid(False)
         self.table.verticalHeader().setVisible(False)
-
         self.initUI()
 
     def initUI(self):
@@ -277,6 +278,7 @@ class _DesignVariableManagerWindow(QWidget):
         self.addWidget.send_variable_signal.connect(self.updateList)
 
     def quit_clicked(self):
+        self.send_destroy_signal.emit('dv')
         self.destroy()
 
     def updateList(self, variable_info_list):
