@@ -78,6 +78,7 @@ class _MainWindow(QMainWindow):
         self._ASTapi = ASTmodule._Custom_AST_API()
         self._layerItem = dict()
         self._id_layer_mapping = dict()
+        self.dvstate = False
 
     def initUI(self):
 
@@ -509,6 +510,7 @@ class _MainWindow(QMainWindow):
 
     def makeVariableWindow(self):
         self.dv = variableWindow._DesignVariableManagerWindow()
+        self.dvstate = True
         self.dv.show()
 
     def makeConstraintWindow(self):
@@ -867,8 +869,12 @@ class _MainWindow(QMainWindow):
 
         # visualItem = self.createVisualItemfromDesignParameter(
         #     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
-
-        variable_manager.Manage_DV_by_id(_id=design_dict['constraint_id'], _info=variableVisualItem.variable_info, _type=variableVisualItem._DesignParametertype)
+        if self.dvstate is False:
+            self.dv = variableWindow._DesignVariableManagerWindow()
+            print(self.dvstate, ':', self.dv)
+        else:
+            print(self.dvstate, ':', self.dv)
+        variable_manager.Manage_DV_by_id(_id=design_dict['constraint_id'], _info=variableVisualItem.variable_info, _type=variableVisualItem._DesignParametertype, _address=self.dv)
         self.scene.addItem(variableVisualItem)
         pass
 

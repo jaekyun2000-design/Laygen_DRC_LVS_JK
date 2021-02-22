@@ -9,7 +9,6 @@ class _ManageList(QTableView):
 
     def __init__(self):
         super().__init__()
-        self._Row = 0
         self._layerList = list()
         self._usedlayer = list()
         self.initUI()
@@ -42,9 +41,8 @@ class _ManageList(QTableView):
             itemc.setText('')
 
             self.model.appendRow(item)
-            self.model.setItem(self._Row,1,itemv)
-            self.model.setItem(self._Row,2,itemc)
-            self._Row += 1
+            self.model.setItem(self.model.rowCount()-1,1,itemv)
+            self.model.setItem(self.model.rowCount()-1,2,itemc)
 
         self.setModel(self.model)
         self.resizeColumnsToContents()

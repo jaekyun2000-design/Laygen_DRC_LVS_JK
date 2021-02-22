@@ -238,18 +238,17 @@ class _DesignVariableManagerWindow(QWidget):
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Name', 'Value'])
 
-        variableDict = _createNewDesignVariable().variableDict
+        self.variableDict = _createNewDesignVariable().variableDict
 
-        for key in variableDict:
+        for key in self.variableDict:
             item1 = QStandardItem(key)
             item1.setTextAlignment(Qt.AlignCenter)
-            item2 = QStandardItem(variableDict[key]['value'])
+            item1.setEditable(False)
+            item2 = QStandardItem(self.variableDict[key]['value'])
             item2.setTextAlignment(Qt.AlignCenter)
 
             self.model.appendRow(item1)
             self.model.setItem(self.model.rowCount()-1,1,item2)
-
-            self.table.resizeRowsToContents()
 
         addButton = QPushButton("Add", self)
         addButton.clicked.connect(self.add_clicked)
@@ -269,6 +268,10 @@ class _DesignVariableManagerWindow(QWidget):
 
         self.setLayout(self.arrangeWindow)
         self.table.horizontalHeader().setDefaultSectionSize(127)
+        self.table.resizeRowsToContents()
+
+        self.model.itemChanged.connect(self.itemChanged)
+        self.table.clicked.connect(self.itemClicked)
 
     def add_clicked(self):
         self.addWidget = _createNewDesignVariable()
@@ -282,17 +285,33 @@ class _DesignVariableManagerWindow(QWidget):
     def updateList(self, variable_info_list):
         _name, _value = variable_info_list[0], variable_info_list[1]
         name, value = QStandardItem(_name), QStandardItem(_value)
+        name.setEditable(False)
         name.setTextAlignment(Qt.AlignCenter)
         value.setTextAlignment(Qt.AlignCenter)
 
-        self.model.appendRow(name)
-        self.model.setItem(self.model.rowCount()-1,1,value)
+        if _name in self.variableDict:
+            pass
+        else:
+            self.model.appendRow(name)
+            self.model.setItem(self.model.rowCount()-1,1,value)
 
         self.table.resizeRowsToContents()
 
+    def itemChanged(self, item):
+        row = item.index().row()
+        _item = self.model.item(row).text()
+        if _item in self.variableDict:
+            self.variableDict[_item]['value'] = item.text()
 
-        #add버튼 추가해서 직접 만들기, manager에 없는 경우 자동 생성
+    def itemClicked(self, item):
+        _item = self.model.item(item.row()).text()
+        _idlist = self.variableDict[_item]['id']
+        try:
+            for i in range(len(_idlist)):
+                print(_idlist[i])
 
+        except:
+            pass
 
 class _createNewDesignVariable(QWidget):
 
@@ -349,6 +368,18 @@ class _createNewDesignVariable(QWidget):
 
     def addDVtodict(self, DV, type, value):
         if DV not in self.variableDict:
-            self.variableDict[DV] = {'id':None, 'value':None}
-        self.variableDict[DV][type] = value
+            self.variableDict[DV] = {'id':list(), 'value':None}
+            if type == 'id':
+                self.variableDict[DV][type].append(value)
+            elif type == 'value':
+                self.variableDict[DV][type] = value
+        else:
+            if type == 'id':
+                self.variableDict[DV][type].append(value)
+            elif type == 'value':
+                self.warning = QMessageBox()
+                self.warning.setIcon(QMessageBox.Warning)
+                self.warning.setText("This variable already exists")
+                self.warning.show()
+
         print(self.variableDict)

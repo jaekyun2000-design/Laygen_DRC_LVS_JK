@@ -25,22 +25,22 @@ class VariableArray(VariableObj):
 class Manage_DV_by_id(QObject):
 
     DVmanager = dict()
-    send_DV_signal = pyqtSignal(str, str, str)
-    send_DV2_signal = pyqtSignal(list)
+    send_DV_signal = pyqtSignal(list)
+    send_DV2_signal = pyqtSignal(str, str, str)
 
-    def __init__(self, _id, _info, _type):
+    def __init__(self, _id, _info, _type, _address):
         super().__init__()
         self._id = _id
         self._info = _info
         self._type = _type
+        self._address = _address
         self.send_signal()
 
     def send_signal(self):
         self.vw = variableWindow._createNewDesignVariable()
-        self.vw2 = variableWindow._DesignVariableManagerWindow()
 
-        self.send_DV_signal.connect(self.vw.addDVtodict)
-        self.send_DV2_signal.connect(self.vw2.updateList)
+        self.send_DV_signal.connect(self._address.updateList)
+        self.send_DV2_signal.connect(self.vw.addDVtodict)
         self.print()
 
     def print(self):
@@ -48,5 +48,5 @@ class Manage_DV_by_id(QObject):
             for key in VariableArray().field:
                 if type(self._info[key]) is str:
                     self.DVmanager[self._info[key]] = self._id
-                    self.send_DV_signal.emit(self._info[key], 'id', self._id)
-                    self.send_DV2_signal.emit([self._info[key], None])
+                    self.send_DV_signal.emit([self._info[key], None])
+                    self.send_DV2_signal.emit(self._info[key], 'id', self._id)
