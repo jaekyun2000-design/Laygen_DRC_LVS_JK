@@ -27,6 +27,7 @@ class Manage_DV_by_id(QObject):
     DVmanager = dict()
     send_DV_signal = pyqtSignal(list)
     send_DV2_signal = pyqtSignal(str, str, str)
+    send_DV3_signal = pyqtSignal(str, list)
 
     def __init__(self, _id, _info, _type, _address):
         super().__init__()
@@ -41,6 +42,7 @@ class Manage_DV_by_id(QObject):
 
         self.send_DV_signal.connect(self._address.updateList)
         self.send_DV2_signal.connect(self.vw.addDVtodict)
+        self.send_DV3_signal.connect(self._address.manageElements)
         self.print()
 
     def print(self):
@@ -50,3 +52,5 @@ class Manage_DV_by_id(QObject):
                     self.DVmanager[self._info[key]] = self._id
                     self.send_DV_signal.emit([self._info[key], None])
                     self.send_DV2_signal.emit(self._info[key], 'id', self._id)
+                if key == 'elements':
+                    self.send_DV3_signal.emit(self._id, self._info[key])
