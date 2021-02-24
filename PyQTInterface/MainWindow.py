@@ -509,7 +509,7 @@ class _MainWindow(QMainWindow):
         self.fw.show()
 
     def makeVariableWindow(self):
-        self.dv = variableWindow._DesignVariableManagerWindow()
+        self.dv = variableWindow._DesignVariableManagerWindow(self.visualItemDict)
         self.dvstate = True
         self.dv.show()
         self.dv.send_changedData_signal.connect(self.createNewConstraintVariable)
@@ -871,7 +871,7 @@ class _MainWindow(QMainWindow):
         # visualItem = self.createVisualItemfromDesignParameter(
         #     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
         if self.dvstate is False:
-            self.dv = variableWindow._DesignVariableManagerWindow()
+            self.dv = variableWindow._DesignVariableManagerWindow(self.visualItemDict)
             print(self.dvstate, ':', self.dv)
         else:
             print(self.dvstate, ':', self.dv)
@@ -989,6 +989,8 @@ class _MainWindow(QMainWindow):
 
     def createVisualItemfromDesignParameter(self,DesignParameter):
         visualItem = VisualizationItem._VisualizationItem()
+        print('--')
+        print(visualItem)
         # if visualItem._XYCoordinatesForDisplay
         visualItem.updateDesignParameter(DesignParameter)
         visualItem.setBoundingRegionGranularity(1)
@@ -1006,6 +1008,7 @@ class _MainWindow(QMainWindow):
 
         print(self._layerItem)
         print(DesignParameter)
+        print(self.visualItemDict)
 
         return visualItem
 

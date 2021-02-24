@@ -240,16 +240,18 @@ class _DesignVariableManagerWindow(QWidget):
 
     send_destroy_signal = pyqtSignal(str)
     send_changedData_signal = pyqtSignal(dict)
+    elementDict = dict()
 
-    def __init__(self):
+    def __init__(self, itemDict):
         super().__init__()
         self.table = CustomQTableView()
         self.table.setShowGrid(False)
         self.table.verticalHeader().setVisible(False)
+        self.itemDict = itemDict
         self.initUI()
 
     def initUI(self):
-
+        print(self.itemDict)
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Name', 'Value'])
 
@@ -313,7 +315,6 @@ class _DesignVariableManagerWindow(QWidget):
         self.addWidget.show()
         self.addWidget.send_variable_signal.connect(self.updateList)
 
-
     def quit_clicked(self):
         self.send_destroy_signal.emit('dv')
         self.destroy()
@@ -342,16 +343,16 @@ class _DesignVariableManagerWindow(QWidget):
     def itemClicked(self, item):
         _item = self.model.item(item.row()).text()
         _idlist = self.variableDict[_item]['id']
-        try:
-            for i in range(len(_idlist)):
-                print(_idlist[i])
+        for i in range(len(_idlist)):
+            print(self.elementDict[_idlist[i]])
+            self.itemDict[self.elementDict[_idlist[i]][0]].setSelected(True)
 
+    def manageElements(self, id, elements):
+        self.elementDict[id] = elements
+        print(self.elementDict)
 
-        except:
-            pass
 
 class _createNewDesignVariable(QWidget):
-
 
     send_variable_signal = pyqtSignal(list)
     variableDict = dict()
