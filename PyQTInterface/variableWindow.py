@@ -223,18 +223,33 @@ class VariableSetupWindow(QWidget):
             print("updateFail")
 
 
+class CustomQTableView(QTableView): ### QAbstractItemView class inherited
+
+    send_dataChanged_signal = pyqtSignal(tuple)  # This Signal emits topLeft index & bottomRight index to DV Object
+
+    def __init__(self):
+        super(CustomQTableView, self).__init__()
+
+    def dataChanged(self, *args, **kwargs): #args[0] : topLeft, args[1]: bottomRight, args[2]: roles
+        super(CustomQTableView, self).dataChanged(*args, **kwargs)
+
+        print("Variable data Changed")
+        self.send_dataChanged_signal.emit(args)
+
 class _DesignVariableManagerWindow(QWidget):
 
     send_destroy_signal = pyqtSignal(str)
+    send_changedData_signal = pyqtSignal(dict)
 
     def __init__(self):
         super().__init__()
-        self.table = QTableView()
+        self.table = CustomQTableView()
         self.table.setShowGrid(False)
         self.table.verticalHeader().setVisible(False)
         self.initUI()
 
     def initUI(self):
+
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Name', 'Value'])
 
@@ -272,11 +287,32 @@ class _DesignVariableManagerWindow(QWidget):
 
         self.model.itemChanged.connect(self.itemChanged)
         self.table.clicked.connect(self.itemClicked)
+        self.table.send_dataChanged_signal.connect(self.data_changed)
+
+    def data_changed(self, inclusive_index):
+        """
+        This function is created by Minsu Kim in order to receive the signal from CustomQTableView object,
+         and then emitting signal to MainWindow serially
+        :return: void (signal emission with table items)
+        """
+        _valueindex = inclusive_index[0]
+        _nameindex = _valueindex.siblingAtColumn(0)
+
+        _valueitemid = _valueindex.data()
+        _nameitemid = _nameindex.data()
+
+        _changedvariabledict = dict()
+        _changedvariabledict[_nameitemid] = dict(id = [], value = _valueitemid)
+
+        self.send_changedData_signal.emit(_changedvariabledict)
+
+        # TODO later,,, multiple changed case:
 
     def add_clicked(self):
         self.addWidget = _createNewDesignVariable()
         self.addWidget.show()
         self.addWidget.send_variable_signal.connect(self.updateList)
+
 
     def quit_clicked(self):
         self.send_destroy_signal.emit('dv')
@@ -310,10 +346,12 @@ class _DesignVariableManagerWindow(QWidget):
             for i in range(len(_idlist)):
                 print(_idlist[i])
 
+
         except:
             pass
 
 class _createNewDesignVariable(QWidget):
+
 
     send_variable_signal = pyqtSignal(list)
     variableDict = dict()

@@ -512,6 +512,8 @@ class _MainWindow(QMainWindow):
         self.dv = variableWindow._DesignVariableManagerWindow()
         self.dvstate = True
         self.dv.show()
+        self.dv.send_changedData_signal.connect(self.createNewConstraintVariable)
+        self.dv.send_destroy_signal.connect(self.delete_obj)
 
     def makeConstraintWindow(self):
         self.cw = SetupWindow._ConstraintSetupWindow()
@@ -522,7 +524,6 @@ class _MainWindow(QMainWindow):
         self.cw = SetupWindow._ConstraintSetupWindowPyCode()
         self.cw.show()
         self.cw.send_PyCode_signal.connect(self.createNewConstraintPyCode)
-
 
     def makeConstraintWindowAST(self):
         self.cw = SetupWindow._ConstraintSetupWindowAST(_ASTapi = self._ASTapi)
@@ -1153,7 +1154,32 @@ class _MainWindow(QMainWindow):
             except:
                 print("Invalid design parameter dict")
 
+    def createNewConstraintVariable(self,_variabledict):
+        print("#######################################")
+        print("Constraint creation from variable Start")
+        print("#######################################")
+        print(_variabledict)
+        if self._QTObj._qtProject == None:
+            self.warning=QMessageBox()
+            self.warning.setText("There is no Project")
+            self.warning.show()
+            self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: There is no Project")
 
+## Custom AST Deisgn here
+
+        # elif self._CurrentModuleName is None:
+        #     self.warning=QMessageBox()
+        #     self.warning.setText("There is No Module")
+        #     self.warning.show()
+        #     self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: There is no Module")
+        # else:
+        #     _variableDict = variableWindow._createNewDesignVariable.variableDict
+        #     design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+        #                                                       module_name=self._CurrentModuleName, _ast=_AST)
+        #     self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['id'],
+        #                                                      _parentName=self._CurrentModuleName,
+        #                                                      _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+        #
 
     def constraintConvey(self):
         self.dockContentWidget3._DesignConstraintFromQTobj = self._QTObj._qtProject._DesignConstraint
