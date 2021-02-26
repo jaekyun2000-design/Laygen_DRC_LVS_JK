@@ -1517,7 +1517,7 @@ class _VariableSetupWindowCUSTOM(QWidget):
 
         self.setLayout(vbox)
 
-        self.setWindowTitle('Constarint Setup Window')
+        self.setWindowTitle('Constraint Setup Window')
         self.setGeometry(300,300,500,500)
         self.updateUI()
         self.show()

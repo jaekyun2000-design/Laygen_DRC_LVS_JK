@@ -288,7 +288,7 @@ class _DesignVariableManagerWindow(QWidget):
         self.table.resizeRowsToContents()
 
         self.model.itemChanged.connect(self.itemChanged)
-        # self.table.clicked.connect(self. itemClicked)
+        self.table.clicked.connect(self. itemClicked)
         self.table.send_dataChanged_signal.connect(self.data_changed)
 
     def data_changed(self, inclusive_index):
@@ -303,8 +303,7 @@ class _DesignVariableManagerWindow(QWidget):
         _valueitemid = _valueindex.data()
         _nameitemid = _nameindex.data()
 
-        _changedvariabledict = dict()
-        _changedvariabledict[_nameitemid] = dict(id = [], value = _valueitemid)
+        _changedvariabledict = dict(name=_nameitemid, value=_valueitemid)
 
         self.send_changedData_signal.emit(_changedvariabledict)
 

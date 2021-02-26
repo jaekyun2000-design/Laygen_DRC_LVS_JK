@@ -63,8 +63,13 @@ class ElementManager:
                     tmpAST.__dict__[key] = dp_dict['variable_info'][key]
                 elif key == 'y_space_distance':
                     tmpAST.__dict__[key] = dp_dict['variable_info'][key]
-
-
+        # elif dp_dict['_DesignParametertype'] == 'variable':     # Variable dict
+        #     tmpAST = variable_ast.ArgumentVariable()
+        #     for key in variable_ast.ArgumentVariable._fields:
+        #         if key == 'name':
+        #             tmpAST.__dict__[key] = dp_dict['name']
+        #         elif key == 'value':
+        #             tmpAST.__dict__[key] = dp_dict['value']
 
         else:
             return None

@@ -466,7 +466,6 @@ class _MainWindow(QMainWindow):
 
     def makePathWindow(self):
         self.scene.itemListClickIgnore(True)
-        # self.scene.
         self.pw = SetupWindow._PathSetupWindow()
         self.pw.show()
         self.pw.send_PathSetup_signal.connect(self.updateGraphicItem)
@@ -512,7 +511,7 @@ class _MainWindow(QMainWindow):
         self.dv = variableWindow._DesignVariableManagerWindow(self.visualItemDict)
         self.dvstate = True
         self.dv.show()
-        self.dv.send_changedData_signal.connect(self.createNewConstraintVariable)
+        self.dv.send_changedData_signal.connect(self.createNewASTwithVariable)
         self.dv.send_destroy_signal.connect(self.delete_obj)
 
     def makeConstraintWindow(self):
@@ -541,10 +540,6 @@ class _MainWindow(QMainWindow):
         self.cw.show()
         self.cw.send_CUSTOM_signal.connect(self.createNewConstraintAST)
 
-    # def closingPathWidget(self):
-    #     self.scene.itemListClickIgnore(False)
-    #     del self.pw
-
     def delete_obj(self, obj):
         if obj == 'cw':
             del self.cw
@@ -555,8 +550,6 @@ class _MainWindow(QMainWindow):
         if obj == 'dv':
             del self.dv
         self.scene.itemListClickIgnore(False)
-
-
 
     def updateGraphicItem(self,graphicItem):
         for items in self.scene.items():
@@ -643,7 +636,7 @@ class _MainWindow(QMainWindow):
             # fileName=_fileName.split('/')[-1]
             self.updateXYCoordinatesForDisplay()
             self._QTObj._saveProject(_name=_fileName)
-            print(1)
+            print("Project saved")
         except:
             print("Save Project Failed")
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Save Project Fail: Unknown")
@@ -1151,32 +1144,36 @@ class _MainWindow(QMainWindow):
             except:
                 print("Invalid design parameter dict")
 
-    def createNewConstraintVariable(self,_variabledict):
+    def createNewASTwithVariable(self,_variabledict):
         print("#######################################")
         print("Constraint creation from variable Start")
         print("#######################################")
         print(_variabledict)
-        if self._QTObj._qtProject == None:
-            self.warning=QMessageBox()
-            self.warning.setText("There is no Project")
-            self.warning.show()
-            self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: There is no Project")
+        print("#######################################")
+        print("       CUSTOM ast creation Start       ")
+        print("#######################################")
 
-## Custom AST Deisgn here
+        _ASTForVariable = ASTmodule._Custom_AST_API()
+        _ASTtype = 'ArgumentVariable'
+        _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
+        # design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName,
+        #                                                   dp_dict=_variabledict)
+        ## Custom AST Deisgn here
 
-        # elif self._CurrentModuleName is None:
-        #     self.warning=QMessageBox()
-        #     self.warning.setText("There is No Module")
-        #     self.warning.show()
-        #     self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: There is no Module")
-        # else:
-        #     _variableDict = variableWindow._createNewDesignVariable.variableDict
-        #     design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
-        #                                                       module_name=self._CurrentModuleName, _ast=_AST)
-        #     self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['id'],
-        #                                                      _parentName=self._CurrentModuleName,
-        #                                                      _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-        #
+        try:
+            # key = _variabledict['name']
+            # value = _variabledict['value']
+            _ASTobj.__dict__['name'] = _variabledict['name']
+            _ASTobj.__dict__['value'] = _variabledict['value']
+
+        except:
+            print("Value Initialization Fail")
+        print("#######################################")
+        print("      CUSTOM ast creation Done         ")
+        print("#######################################")
+
+        self.createNewConstraintAST(_ASTobj)
+
 
     def constraintConvey(self):
         self.dockContentWidget3._DesignConstraintFromQTobj = self._QTObj._qtProject._DesignConstraint
@@ -1284,10 +1281,9 @@ class _MainWindow(QMainWindow):
             self._QTObj._qtProject._loadDesignConstraintAsPickle(_file=scf[0])
             for module in self._QTObj._qtProject._DesignConstraint:
                 _rootSTMTlist = ASTmodule._convertPyCodeToSTMTlist[self._QTObj._qtProject._ParseTreeForDesignConstrain[module]._ast]
-            print(1)
+
             # for module in self._QTObj._qtProject._DesignConstraint:
                 # self._QTObj._qtProject._DesignConstraint[module][]
-            # print(1)
         except:
             print("Load Constraint Failed")
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Load DesignConstraint Fail: Unknown")
@@ -1303,7 +1299,7 @@ class _MainWindow(QMainWindow):
             self._QTObj._qtProject._loadDesignConstraintAsPickle(_file=scf[0])
             # for module in self._QTObj._qtProject._DesignConstraint:
             #     self._QTObj._qtProject._DesignConstraint[module][]
-            # print(1)
+
         except:
             print("Load Constraint Failed")
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Save DesignConstraint Fail: Unknown")
@@ -1328,7 +1324,6 @@ class _MainWindow(QMainWindow):
         except:
             print("fail")
             pass
-        # print(1)
 
     def parameterToTemplateHandler(self,designParameterItemIDList,type):
         designParameterList = list()
