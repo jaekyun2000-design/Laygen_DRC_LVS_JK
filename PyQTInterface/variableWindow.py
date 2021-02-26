@@ -251,7 +251,7 @@ class _DesignVariableManagerWindow(QWidget):
         self.initUI()
 
     def initUI(self):
-        print(self.itemDict)
+        # print(self.itemDict)
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Name', 'Value'])
 
@@ -288,7 +288,7 @@ class _DesignVariableManagerWindow(QWidget):
         self.table.resizeRowsToContents()
 
         self.model.itemChanged.connect(self.itemChanged)
-        self.table.clicked.connect(self.itemClicked)
+        # self.table.clicked.connect(self. itemClicked)
         self.table.send_dataChanged_signal.connect(self.data_changed)
 
     def data_changed(self, inclusive_index):
@@ -344,12 +344,12 @@ class _DesignVariableManagerWindow(QWidget):
         _item = self.model.item(item.row()).text()
         _idlist = self.variableDict[_item]['id']
         for i in range(len(_idlist)):
-            print(self.elementDict[_idlist[i]])
+            # print(self.elementDict[_idlist[i]])
             self.itemDict[self.elementDict[_idlist[i]][0]].setSelected(True)
 
     def manageElements(self, id, elements):
         self.elementDict[id] = elements
-        print(self.elementDict)
+        # print(self.elementDict)
 
 
 class _createNewDesignVariable(QWidget):
@@ -421,4 +421,4 @@ class _createNewDesignVariable(QWidget):
                 self.warning.setText("This variable already exists")
                 self.warning.show()
 
-        print(self.variableDict)
+        # print(self.variableDict)

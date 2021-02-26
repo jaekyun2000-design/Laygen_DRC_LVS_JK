@@ -162,6 +162,9 @@ class _BoundarySetupWindow(QWidget):
         for XY in self.XYdictForLineEdit:
             if not XY.text():
                 break
+            # elif type(XY.text()) == str:
+            #     self._DesignParameter['_XYCoordinates'] = self.determineVariableValue("XY", XY.text())
+            #     pass
             else:
                 try:
                     X = int(XY.text().split(',')[0])
@@ -172,7 +175,6 @@ class _BoundarySetupWindow(QWidget):
                     self.warning = QMessageBox()
                     self.warning.setIcon(QMessageBox.Warning)
                     self.warning.setText("Invalid XY Coordinates")
-        pass
 
         try:
             self._DesignParameter['_DesignParameterName'] = self.name_input.text()
@@ -183,12 +185,22 @@ class _BoundarySetupWindow(QWidget):
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
             self.send_BoundaryDesign_signal.emit(self._DesignParameter)
             self.destroy()
+
+            if type(self._DesignParameter['_XWidth']) == str:
+                self.warning = QMessageBox()
+                self.warning.setText("test")
+                self.warning.setIcon(QMessageBox.Warning)
+                self.warning.show()
         except:
             self.send_Warning_signal.emit("Invalid Design Parameter Input")     #log message
             self.warning = QMessageBox()
             self.warning.setText("Invalid design parameter or Name")
             self.warning.setIcon(QMessageBox.Warning)
             self.warning.show()
+
+    def determineVariableValue(self, _type, _variable):
+        return [[0,0]]
+        pass
 
     def AddBoundaryPointWithMouse(self,_MouseEvent):
         ##### When Click the point, adjust x,y locations #####
@@ -1858,7 +1870,7 @@ class _SelectedDesignListWidget(QListWidget):
                 self.itemDict[tmpName] = item
                 self.idDict[tmpName] = item._ItemTraits['_id']
                 item.setSelected(True)
-                print(item.isSelected())
+                # print(item.isSelected())
 
                 if not self.findItems(tmpName, Qt.MatchExactly):  # Check whether it is empty or not
                     self.addItem(QListWidgetItem(tmpName))

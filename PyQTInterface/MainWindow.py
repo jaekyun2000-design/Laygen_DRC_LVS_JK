@@ -181,7 +181,7 @@ class _MainWindow(QMainWindow):
         # graphicView.setScene(self.scene)
 
         graphicView.variable_signal.connect(self.createVariable)
-        self.scene.setSceneRect(-1000000000,-1000000000,2000000000,2000000000)
+        self.scene.setSceneRect(-10000,-10000,20000,20000)
         self.scene.send_parameterIDList_signal.connect(self.parameterToTemplateHandler)
         self.scene.send_deleteItem_signal.connect(self.deleteDesignParameter)
         self.scene.selectionChanged.connect(self.scene.send_item_list)
@@ -989,8 +989,6 @@ class _MainWindow(QMainWindow):
 
     def createVisualItemfromDesignParameter(self,DesignParameter):
         visualItem = VisualizationItem._VisualizationItem()
-        print('--')
-        print(visualItem)
         # if visualItem._XYCoordinatesForDisplay
         visualItem.updateDesignParameter(DesignParameter)
         visualItem.setBoundingRegionGranularity(1)
@@ -1005,10 +1003,6 @@ class _MainWindow(QMainWindow):
             self._layerItem[layer] = [visualItem]
 
         self._id_layer_mapping[DesignParameter._id] = layer
-
-        print(self._layerItem)
-        print(DesignParameter)
-        print(self.visualItemDict)
 
         return visualItem
 
@@ -1530,9 +1524,19 @@ class _CustomScene(QGraphicsScene):
     send_deleteItem_signal = pyqtSignal(str)
     def __init__(self):
         super().__init__()
+        pen = QPen()
+        pen.setStyle(Qt.SolidLine)
+        pen.setColor(Qt.GlobalColor.red)
+        pen.setCapStyle(Qt.RoundCap)
+        pen.setWidth(5)
+
         self.moveFlag = False
         self.listIgnoreFlag = False
         self.oldPos = QPointF(0,0)
+
+        self.addLine(QLineF(-10000,0,10000,0),pen)
+        self.addLine(QLineF(0,-10000,0,10000),pen)
+
         # self.
 
 
