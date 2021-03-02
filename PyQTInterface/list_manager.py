@@ -49,7 +49,7 @@ class _ManageList(QTableView):
 
         self.model.itemChanged.connect(self.itemChanged)
 
-    def updateList(self, _layerList):
+    def updateLayerList(self, _layerList):
         self._usedlayer = _layerList
 
     def itemChanged(self, item):

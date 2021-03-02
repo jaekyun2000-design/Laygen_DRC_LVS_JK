@@ -1782,12 +1782,54 @@ class QtProject:
             return userDefineExceptions._InvalidInputError
         else:
             try:
-                for key in _dp_dict:
-                    self._DesignParameter[module_name][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
-                self._DesignParameter[module_name][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+                if module_name in self._DesignParameter:
+                    for key in _dp_dict:
+                        self._DesignParameter[module_name][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
+                    self._DesignParameter[module_name][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
 
-                # send design parameter info to element manager --> return: ast info or
-                _designParameter = self._DesignParameter[module_name][id]
+                    # send design parameter info to element manager --> return: ast info or
+                    _designParameter = self._DesignParameter[module_name][id]
+                else:
+                    if _dp_dict['_DesignParameterName'] in self._DesignParameter['PMOSInINV']:
+                        _tmpmodule = 'PMOSInINV'
+                    elif _dp_dict['_DesignParameterName'] in self._DesignParameter['NMOSInINV']:
+                        _tmpmodule = 'NMOSInINV'
+                    elif _dp_dict['_DesignParameterName'] in self._DesignParameter['INV']:
+                        _tmpmodule = 'INV'
+                    else:
+                        _tmpmodule = 'else'
+
+                if _tmpmodule == 'PMOSInINV':
+                    for key in _dp_dict:
+                        self._DesignParameter['PMOSInINV'][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
+                    self._DesignParameter['PMOSInINV'][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+
+                    # send design parameter info to element manager --> return: ast info or
+                    _designParameter = self._DesignParameter['PMOSInINV'][id]
+                elif _tmpmodule == 'NMOSInINV':
+                    for key in _dp_dict:
+                        self._DesignParameter['NMOSInINV'][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
+                    self._DesignParameter['NMOSInINV'][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+
+                    # send design parameter info to element manager --> return: ast info or
+                    _designParameter = self._DesignParameter['NMOSInINV'][id]
+                elif _tmpmodule == 'INV':
+                    for key in _dp_dict:
+                        self._DesignParameter['INV'][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
+                    self._DesignParameter['INV'][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+
+                    # send design parameter info to element manager --> return: ast info or
+                    _designParameter = self._DesignParameter['INV'][id]
+                elif _tmpmodule == 'else':
+                    for key in _dp_dict:
+                        self._DesignParameter[_dp_dict['_DesignParameterName'][:-1]][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
+                    self._DesignParameter[_dp_dict['_DesignParameterName'][:-1]][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+
+                    # send design parameter info to element manager --> return: ast info or
+                    _designParameter = self._DesignParameter[_dp_dict['_DesignParameterName'][:-1]][id]
+                else:
+                    pass
+
                 _designConstraint = None
                 _designConstraint_id = None
                 if element_manager_update == True:

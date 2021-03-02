@@ -16,6 +16,7 @@ from PyQTInterface.layermap import LayerReader
 from PyCodes import QTInterfaceWithAST
 from PyCodes import ASTmodule
 from PyCodes import element_ast, variable_ast
+from DesignManager.ElementManager import element_manager
 from DesignManager.VariableManager import FilterPractice
 from DesignManager.VariableManager import variable_manager
 
@@ -79,6 +80,7 @@ class _MainWindow(QMainWindow):
         self._layerItem = dict()
         self._id_layer_mapping = dict()
         self.dvstate = False
+        self._ElementManager = element_manager.ElementManager()
 
     def initUI(self):
 
@@ -578,7 +580,7 @@ class _MainWindow(QMainWindow):
         #     else:
         #         _layerList.append(_newLayer)
 
-        self.dockContentWidget1_2.updateList(self._layerItem)
+        self.dockContentWidget1_2.updateLayerList(self._layerItem)
 
         # layer 정보 : _RectBlock
         # layer visual on/off -> _Rectblock on/off  <important>
@@ -716,6 +718,8 @@ class _MainWindow(QMainWindow):
                         tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(self._QTObj._qtProject._DesignParameter[module][id])
                         # Step 2: From ast -> create Constraint
                         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=module, _ast=tmpAST, element_manager_update=False)
+                        tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
+                        self._ElementManager.load_dp_dc_id(dp_id=id, dc_id=id)
                         # Step 3: From QtDesignconstraint -> create Visual_ast item
                         try:
                             if design_dict['constraint']:
@@ -729,6 +733,16 @@ class _MainWindow(QMainWindow):
                             continue
                         visualItem = self.createVisualItemfromDesignParameter(self._QTObj._qtProject._DesignParameter[module][id])
                         visual_item_list.append(visualItem)
+
+                        layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+                        layer = layernum2name[str(tmp_dp_dict['_Layer'])]
+                        if layer in self._layerItem:
+                            self._layerItem[layer].append(visualItem)
+                        else:
+                            self._layerItem[layer] = [visualItem]
+
+                        self._id_layer_mapping[id] = layer
+
                         # self.updateGraphicItem(visualItem)
                 except:
                     print("module:",module)
