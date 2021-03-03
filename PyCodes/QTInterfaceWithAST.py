@@ -1789,6 +1789,7 @@ class QtProject:
 
                     # send design parameter info to element manager --> return: ast info or
                     _designParameter = self._DesignParameter[module_name][id]
+                    _tmpmodule = None
                 else:
                     if _dp_dict['_DesignParameterName'] in self._DesignParameter['PMOSInINV']:
                         _tmpmodule = 'PMOSInINV'
@@ -1828,7 +1829,12 @@ class QtProject:
                     # send design parameter info to element manager --> return: ast info or
                     _designParameter = self._DesignParameter[_dp_dict['_DesignParameterName'][:-1]][id]
                 else:
-                    pass
+                    for key in _dp_dict:
+                        self._DesignParameter[module_name][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
+                    self._DesignParameter[module_name][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+
+                    # send design parameter info to element manager --> return: ast info or
+                    _designParameter = self._DesignParameter[module_name][id]
 
                 _designConstraint = None
                 _designConstraint_id = None

@@ -349,7 +349,12 @@ class _PathSetupWindow(QWidget):
     def updateUI(self):
         self.name_input.setText(self._DesignParameter['_DesignParameterName'])
         self.width_input.setText(str(self._DesignParameter['_Width']))
-        layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
+        if type(self._DesignParameter['_Layer']) == int:
+            layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+            _tmplayer = layernum2name[str(self._DesignParameter['_Layer'])]
+            layerIndex = self.layer_input.findText(_tmplayer)
+        else:
+            layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
         if layerIndex != -1:
             self.layer_input.setCurrentIndex(layerIndex)
         for i in range(len(self._DesignParameter['_XYCoordinates'][0])):

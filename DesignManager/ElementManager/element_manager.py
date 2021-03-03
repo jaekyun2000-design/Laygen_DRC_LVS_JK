@@ -135,19 +135,8 @@ class ElementManager:
                 elif key == '_ItemRef':
                     tmpDP[key] = None
 
-        # elif ASTmodule._getASTtype(ast) == 'SRef':
-        #     tmpDP = dict()
-        #     for key in KeyManager._Pathkey.keys():
-        #         if key == '_DesignParametertype':
-        #             tmpDP[key] = 3
-        #         elif key == '_Height':
-        #             tmpDP[key] = None
-        #         elif key == '_Color':
-        #             tmpDP[key] = None
-        #         elif key == '_ItemRef':
-        #             tmpDP[key] = None
-        #         else:
-        #             tmpDP[key] = ast.__dict__[key]
+        elif ASTmodule._getASTtype(ast) == 'Sref':
+            tmpDP = ast.__dict__
 
         else:
             return None
