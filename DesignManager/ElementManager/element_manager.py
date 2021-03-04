@@ -38,14 +38,39 @@ class ElementManager:
                     tmpAST.__dict__[key] = dp_dict['_Width']
 
         elif dp_dict['_DesignParametertype'] == 3:  #Sref
-            tmpAST = element_ast.Sref()
-            for key in element_ast.Sref._fields:
-                if key == 'name':
-                    tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
-                elif key == 'base':
-                    tmpAST.__dict__[key] = dp_dict['_DesignObj']
-                elif key == 'XY':
-                    tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]  #Not complete
+            # tmpAST = element_ast.Sref()
+            # for key in element_ast.Sref._fields:
+            #     if key == 'name':
+            #         tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
+            #     elif key == 'base':
+            #         tmpAST.__dict__[key] = dp_dict['_DesignObj']
+            #     elif key == 'XY':
+            #         tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]  #Not complete
+            return None, None
+
+        # elif dp_dict['_DesignParametertype'] == 8:  #Text
+        #     print(dp_dict)
+        #     return None, None
+        #     tmpAST = element_ast.Text()
+        #     for key in element_ast.Text._fields:
+        #         if key == 'id':
+        #             tmpAST.__dict__[key] = dp_dict[key]
+        #         elif key == 'layer':
+        #             tmpAST.__dict__[key] = dp_dict[key]
+        #         elif key == 'presentation':
+        #             tmpAST.__dict__[key] = dp_dict[key]
+        #         elif key == 'reflect':
+        #             tmpAST.__dict__[key] = dp_dict[key]
+        #         elif key == 'XY':
+        #             tmpAST.__dict__[key] = dp_dict[key]
+        #         elif key == 'magnitude':
+        #             tmpAST.__dict__[key] = dp_dict[key]
+        #         elif key == 'angle':
+        #             tmpAST.__dict__[key] = dp_dict[key]
+        #         elif key == 'text':
+        #             tmpAST.__dict__[key] = dp_dict[key].decode().split
+        #         elif key == 'name':
+        #             tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
 
         elif dp_dict['_DesignParametertype'] == 'element array':  #EA
             tmpAST = variable_ast.ElementArray()
@@ -71,21 +96,23 @@ class ElementManager:
             tmpAST = element_ast.Text()
             for key in element_ast.Text._fields:
                 if key == 'id':
+                    tmpAST.__dict__[key] = dp_dict['_id']
+                elif key == 'name':
                     tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
                 elif key == 'layer':
                     tmpAST.__dict__[key] = dp_dict['_Layer']
                 elif key == 'XY':
                     tmpAST.__dict__[key] = dp_dict['_XYCoordinates']
                 elif key == 'pres':
-                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                    tmpAST.__dict__[key] = dp_dict['_Presentation']
                 elif key == 'reflect':
-                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                    tmpAST.__dict__[key] = dp_dict['_Reflect']
                 elif key == 'magnitude':
-                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                    tmpAST.__dict__[key] = dp_dict['_Mag']
                 elif key == 'angle':
-                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                    tmpAST.__dict__[key] = dp_dict['_Angle']
                 elif key == 'text':
-                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                    tmpAST.__dict__[key] = dp_dict['_TEXT'].decode().split
 
         # elif dp_dict['_DesignParametertype'] == 'variable':     # Variable dict
         #     tmpAST = variable_ast.ArgumentVariable()
@@ -96,7 +123,7 @@ class ElementManager:
         #             tmpAST.__dict__[key] = dp_dict['value']
 
         else:
-            return None
+            return None, None
 
         # self.load_dp_dc(dp=None, dc=tmpAST)
         if dp_dict['_DesignParameterName'] in self.elementConstraintDict:
@@ -160,7 +187,44 @@ class ElementManager:
                     tmpDP[key] = None
 
         elif ASTmodule._getASTtype(ast) == 'Sref':
-            tmpDP = ast.__dict__
+            # tmpDP = ast.__dict__
+            pass
+
+        elif ASTmodule._getASTtype(ast) == 'Text':
+            # 'id',  # name str
+            # 'layer',  # layer name str
+            # 'pres'  # list [a,a,a]
+            # 'reflect',  # list [a,a,a]
+            # 'XY',  # double list or variable name str
+            # 'magnitude',  # float
+            # 'angle',  # float
+            # 'text'  # int or str
+            tmpDP = dict()
+            for key in KeyManager._Textkey.keys():
+                if key == '_id':
+                    tmpDP[key] = ast.__dict__['id']
+                elif key == '_DesignParameterType':
+                    tmpDP[key] = 8
+                elif key == '_DesignParameterName':
+                    tmpDP[key] = ast.__dict__['name']
+                elif key == '_Layer':
+                    tmpDP[key] = ast.__dict__['layer']
+                elif key == '_Presentation':
+                    tmpDP[key] = ast.__dict__['pres']
+                elif key == '_Reflect':
+                    tmpDP[key] = ast.__dict__['reflect']
+                elif key == '_XYCoordinates':
+                    tmpDP[key] = ast.__dict__['XY']
+                elif key == '_Mag':
+                    tmpDP[key] = ast.__dict__['magnitude']
+                elif key == '_Angle':
+                    tmpDP[key] = ast.__dict__['angle']
+                elif key == '_TEXT':
+                    tmpDP[key] = ast.__dict__['text']
+                elif key == '_Ignore':
+                    tmpDP[key] = None
+                elif key == '_ElementName':
+                    tmpDP[key] = None
 
         else:
             return None
@@ -256,6 +320,21 @@ class KeyManager():
         _DataType="SRef",
         _XYCoordinates=[],
         _ItemRef=None
+        )
+
+    _Textkey = dict(
+        _id=None,
+        _DesignParameterType=8,
+        _Layer=None,
+        _Presentation=None,
+        _Reflect=None,
+        _XYCoordinates=[],
+        _Mag=None,
+        _Angle=None,
+        _TEXT=None,
+        _Ignore=None,
+        _ElementName=None,
+        _DesignParameterName=None
         )
 
 # if __name__ == '__main__':

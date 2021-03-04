@@ -86,9 +86,10 @@ class Text(ElementNode):
     def __init__(self, *args, **kwargs):
         super().__init__()
     _fields = (
-        'id',       # name str
+        'id',       # id str
+        'name',     # name str
         'layer',    # layer name str
-        'pres'  # list [a,a,a]
+        'pres',  # list [a,a,a]
         'reflect',  # list [a,a,a]
         'XY',       # double list or variable name str
         'magnitude',    # float
