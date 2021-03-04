@@ -3,7 +3,8 @@ import sys
 import os
 print("***Layer Map file load Start")
 
-_Technology='065nm'
+import user_setup
+_Technology= user_setup._Technology
 _CadenceServer = '141.223.86.110'
 if _Technology =='065nm':
     _UploadDirectory = '/mnt/ramdisk0'

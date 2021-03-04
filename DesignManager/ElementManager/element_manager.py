@@ -49,6 +49,19 @@ class ElementManager:
             return None, None
 
 
+        elif dp_dict['_DesignParametertype'] == 8:  #TEXT
+            #todo Text type support
+            pass
+            return None, None
+            # tmpAST = element_ast.Sref()
+            # for key in element_ast.Sref._fields:
+            #     if key == 'name':
+            #         tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
+            #     elif key == 'base':
+            #         tmpAST.__dict__[key] = dp_dict['_DesignObj']
+            #     elif key == 'XY':
+            #         tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]  #Not complete
+
         elif dp_dict['_DesignParametertype'] == 'element array':  #EA
             tmpAST = variable_ast.ElementArray()
             for key in variable_ast.ElementArray._fields:

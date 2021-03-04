@@ -29,6 +29,8 @@ from PyQTInterface import VariableVisualItem
 from PyQTInterface import variableWindow
 from PyQTInterface import list_manager
 
+from generatorLib import generator_model_api
+
 ##for easy debug##
 import json
 
@@ -36,13 +38,15 @@ import json
 import astunparse
 
 ##################
-DEBUG = True
+import user_setup
+DEBUG = user_setup.DEBUG
 subnanoMinimumScale =5 # 5 means(default)
 subnanoViewScale = 1  #
                       # 1 means(default): coordinates default unit is 1nm,
                       # 0.1 means: coordinates default unit is 0.1nm
                       # 10 means: coordinates default unit is 10nm
 EasyDebugFileName = ''
+
 
 
 class _CustomSignals(QObject):
@@ -84,7 +88,7 @@ class _MainWindow(QMainWindow):
 
     def initUI(self):
 
-        print("*********************Initalizing Graphic Interface Start")
+        print("***************************Initalizing Graphic Interface Start")
 
         ################# MAIN WINDOW setting ####################
         self.setWindowTitle("S2S GUI PROJECT")
@@ -419,7 +423,7 @@ class _MainWindow(QMainWindow):
     #         #     brush = QBrush(QColor(50,50,50))
     #         #     painter.fillPath(path,brush)
     #         #     self.scene.addPath(path)
-        print("************************Initalizing Graphic Interface Complete")
+        print("******************************Initalizing Graphic Interface Complete")
 
     # def threading_test(self,count):
 
