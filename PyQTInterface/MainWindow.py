@@ -1514,18 +1514,18 @@ class _CustomScene(QGraphicsScene):
     send_deleteItem_signal = pyqtSignal(str)
     def __init__(self):
         super().__init__()
-        # pen = QPen()
-        # pen.setStyle(Qt.SolidLine)
-        # pen.setColor(Qt.GlobalColor.red)
-        # pen.setCapStyle(Qt.RoundCap)
-        # pen.setWidth(5)
+        pen = QPen()
+        pen.setStyle(Qt.SolidLine)
+        pen.setColor(Qt.GlobalColor.red)
+        pen.setCapStyle(Qt.RoundCap)
+        pen.setWidth(5)
 
         self.moveFlag = False
         self.listIgnoreFlag = False
         self.oldPos = QPointF(0,0)
 
-        # self.addLine(QLineF(-10000,0,10000,0),pen)
-        # self.addLine(QLineF(0,-10000,0,10000),pen)
+        self.addLine(QLineF(-10000,0,10000,0),pen)
+        self.addLine(QLineF(0,-10000,0,10000),pen)
 
         # self.
 

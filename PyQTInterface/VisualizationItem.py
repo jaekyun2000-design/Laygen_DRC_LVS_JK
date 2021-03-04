@@ -2,9 +2,9 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-from PyQt5.QtWidgets import*
-from PyQt5.QtGui import QColor,QPen,QBrush,QTransform, QPainterPath, QPolygonF
-from PyQt5.QtCore import Qt, QPointF
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
 import copy
 
 # from PyCodes import QTInterface
@@ -231,6 +231,8 @@ class _VisualizationItem(QGraphicsItemGroup):
             self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
         elif self._type == 2:
             self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
+        elif self._type == 8:
+            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
 
         if QtDesignParameter._DesignParameterName == None:
             QtDesignParameter._DesignParameterName = QtDesignParameter._id
@@ -401,14 +403,40 @@ class _VisualizationItem(QGraphicsItemGroup):
                 for item in self._ItemTraits['_VisualizationItems']:
                     self.addToGroup(item)
                 pass
-            elif self._ItemTraits['_DesignParametertype'] is 8:                #Test Case
-                blockTraits['_Width'] = 200
-                blockTraits['_Height'] = 0.5
-                tmpBlock = _RectBlock()
-                tmpBlock.updateTraits(blockTraits)
-                tmpBlock.setPos(_XYCoordinatesPair[0][0],_XYCoordinatesPair[0][1])
-                self.block.append(tmpBlock)
-                self.addToGroup(tmpBlock)
+            elif self._ItemTraits['_DesignParametertype'] is 8:                #Text Case
+                if blockTraits['_Layer'] == 127:
+                    self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
+                    self.text.setPos(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1])
+                    self.text.setFlag(QGraphicsItem.ItemIgnoresTransformations)
+                    # print(type(self.text))
+                    # self.text.setFlag(QGraphicsItem.scale)
+                    # self.aa = QPainter()
+                    # self.aa.drawText(0,0,self.text)
+                    # self.text.setTransformOriginPoint(0,0)
+                    # self.text.scale()
+                    # self.text.setScale(1)
+                    # self.text.setRotation(180)
+                    self.addToGroup(self.text)
+
+
+                    # text = QPainter()
+                    # aa = QRectF(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1],100,100)
+                    # print(aa)
+                    # print(type(blockTraits['_TEXT'].decode()))
+                    # # text.scale(1, -1)
+                    # text.setPen(Qt.GlobalColor.red)
+                    # font = QFont()
+                    # font.setBold(True)
+                    # font.setPointSize(10)
+                    # # text.setFont(font)
+                    # text.drawText(aa, Qt.AlignCenter, 'x')
+                    #
+                    #
+                    # print("?")
+
+                else:
+                    pass
+
             else:
                 print("WARNING1: Unvalid DataType Detected!")
 
