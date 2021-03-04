@@ -239,7 +239,7 @@ class CustomQTableView(QTableView): ### QAbstractItemView class inherited
 class _DesignVariableManagerWindow(QWidget):
 
     send_destroy_signal = pyqtSignal(str)
-    send_changedData_signal = pyqtSignal(dict)
+    send_changedData_signal = pyqtSignal("PyQt_PyObject")
     elementDict = dict()
 
     def __init__(self, itemDict):
@@ -295,7 +295,7 @@ class _DesignVariableManagerWindow(QWidget):
         """
         This function is created by Minsu Kim in order to receive the signal from CustomQTableView object,
          and then emitting signal to MainWindow serially
-        :return: void (signal emission with table items)
+        :return: void (signal emission with created AST)
         """
         _valueindex = inclusive_index[0]
         _nameindex = _valueindex.siblingAtColumn(0)
@@ -305,7 +305,34 @@ class _DesignVariableManagerWindow(QWidget):
 
         _changedvariabledict = dict(name=_nameitemid, value=_valueitemid)
 
-        self.send_changedData_signal.emit(_changedvariabledict)
+        print("################################################")
+        print("       CUSTOM Variable ast creation Start       ")
+        print("################################################")
+
+        _ASTForVariable = ASTmodule._Custom_AST_API()
+        _ASTtype = 'ArgumentVariable'
+        _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
+
+        try:
+            if (_changedvariabledict['name'] == '' or None):
+                raise NotImplementedError
+            else:
+                _ASTobj.__dict__['name'] = _changedvariabledict['name']
+                _ASTobj.__dict__['value'] = _changedvariabledict['value']
+
+                self.send_changedData_signal.emit(_ASTobj)
+
+                print("################################################")
+                print("      CUSTOM Variable ast creation Done         ")
+                print("################################################")
+
+        except:
+            print("Value Initialization Fail")
+            print("There is no Input")
+
+
+
+
 
         # TODO later,,, multiple changed case:
 

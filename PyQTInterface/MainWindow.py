@@ -513,7 +513,7 @@ class _MainWindow(QMainWindow):
         self.dv = variableWindow._DesignVariableManagerWindow(self.visualItemDict)
         self.dvstate = True
         self.dv.show()
-        self.dv.send_changedData_signal.connect(self.createNewASTwithVariable)
+        self.dv.send_changedData_signal.connect(self.createNewConstraintAST)
         self.dv.send_destroy_signal.connect(self.delete_obj)
 
     def makeConstraintWindow(self):
@@ -1158,35 +1158,6 @@ class _MainWindow(QMainWindow):
             except:
                 print("Invalid design parameter dict")
 
-    def createNewASTwithVariable(self,_variabledict):
-        print("#######################################")
-        print("Constraint creation from variable Start")
-        print("#######################################")
-        print(_variabledict)
-        print("#######################################")
-        print("       CUSTOM ast creation Start       ")
-        print("#######################################")
-
-        _ASTForVariable = ASTmodule._Custom_AST_API()
-        _ASTtype = 'ArgumentVariable'
-        _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
-        # design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName,
-        #                                                   dp_dict=_variabledict)
-        ## Custom AST Deisgn here
-
-        try:
-            # key = _variabledict['name']
-            # value = _variabledict['value']
-            _ASTobj.__dict__['name'] = _variabledict['name']
-            _ASTobj.__dict__['value'] = _variabledict['value']
-
-        except:
-            print("Value Initialization Fail")
-        print("#######################################")
-        print("      CUSTOM ast creation Done         ")
-        print("#######################################")
-
-        self.createNewConstraintAST(_ASTobj)
 
 
     def constraintConvey(self):
