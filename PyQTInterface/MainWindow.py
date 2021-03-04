@@ -346,6 +346,7 @@ class _MainWindow(QMainWindow):
         self.ConstraintTemplateButton = QPushButton("Template")
         # self.parsetreeEasyRun = QPushButton("easyRun")
         self.variableCallButton = QPushButton("variableCall")
+        self.sref_debug = QPushButton("sref_debug")
 
         VBoxForPeriButton.addStretch(3)
         # VBoxForPeriButton.addWidget(self.createConstraintButton)
@@ -360,6 +361,7 @@ class _MainWindow(QMainWindow):
         VBoxForPeriButton.addWidget(self.ConstraintTemplateButton)
         # VBoxForPeriButton.addWidget(self.parsetreeEasyRun)
         VBoxForPeriButton.addWidget(self.variableCallButton)
+        VBoxForPeriButton.addWidget(self.sref_debug)
         VBoxForPeriButton.addStretch(3)
 
         # self.dockContentWidget3.setDragDropMode(self.dockContectWidget3.MyOwnDragDropMove)
@@ -385,6 +387,7 @@ class _MainWindow(QMainWindow):
         self.ConstraintTemplateButton.clicked.connect(self.makeTemplateWindow)
         # self.parsetreeEasyRun.clicked.connect(self.easyRun)
         self.variableCallButton.clicked.connect(self.variableListUpdate)
+        self.sref_debug.clicked.connect(self.sref_debug_module)
 
 
         ################ Logging Message Dock Widget setting ####################
@@ -427,6 +430,41 @@ class _MainWindow(QMainWindow):
 
     # def threading_test(self,count):
 
+    def sref_debug_module(self):
+        tmp_generator = generator_model_api.class_dict['NMOSWithDummy']()
+        name = 'sref_name'
+        library = 'NMOSWithDummy'
+        className = 'Is_it_necessary?'
+        XY = [[0,0]]
+        import ast
+        parameters = ast.parse(str(tmp_generator._ParametersForDesignCalculation))
+        sref_ast = element_ast.Sref()
+        sref_ast.name = name
+        sref_ast.library = library
+        sref_ast.className = className
+        sref_ast.XY = XY
+        # sref_ast.parameters = parameters.body[0]
+        a , id = self._QTObj._qtProject._createNewDesignConstraintAST( _ASTDtype = "pyCode",_ParentName=self._CurrentModuleName, _pyCode=str(tmp_generator._ParametersForDesignCalculation))
+        sref_ast.parameters = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][id]
+        # sref_ast.parameters = " "
+        design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= sref_ast)
+        self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
+                                                         _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+
+
+        # tmp_generator._ParametersForDesignCalculation
+
+
+
+        pass
+        # design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= _AST)
+        # self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
+        #                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+        #
+        #     if design_dict['parameter']:
+        #         visualItem = self.createVisualItemfromDesignParameter(
+        #             self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
+        #         self.updateGraphicItem(visualItem)
 
     def debugConstraint(self):
         try:

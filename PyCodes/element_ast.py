@@ -34,6 +34,7 @@ class Sref(ElementNode):
         'library',   # library module str
         'className',    # class name str
         'XY',       # double list or str
+        'parameters',
     )
 
 class Boundary(ElementNode):
