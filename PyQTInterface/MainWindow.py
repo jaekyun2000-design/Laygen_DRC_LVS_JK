@@ -714,7 +714,7 @@ class _MainWindow(QMainWindow):
             for module in addedModuleList:
                 try:
                     for id in self._QTObj._qtProject._DesignParameter[module]:
-                        # Step 1 : From QtDeisngParameter -> get AST
+                        # Step 1 : From QtDesignParameter -> get AST
                         tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(self._QTObj._qtProject._DesignParameter[module][id])
                         if tmpAST is None:
                             continue

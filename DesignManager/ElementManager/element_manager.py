@@ -48,29 +48,6 @@ class ElementManager:
             #         tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]  #Not complete
             return None, None
 
-        # elif dp_dict['_DesignParametertype'] == 8:  #Text
-        #     print(dp_dict)
-        #     return None, None
-        #     tmpAST = element_ast.Text()
-        #     for key in element_ast.Text._fields:
-        #         if key == 'id':
-        #             tmpAST.__dict__[key] = dp_dict[key]
-        #         elif key == 'layer':
-        #             tmpAST.__dict__[key] = dp_dict[key]
-        #         elif key == 'presentation':
-        #             tmpAST.__dict__[key] = dp_dict[key]
-        #         elif key == 'reflect':
-        #             tmpAST.__dict__[key] = dp_dict[key]
-        #         elif key == 'XY':
-        #             tmpAST.__dict__[key] = dp_dict[key]
-        #         elif key == 'magnitude':
-        #             tmpAST.__dict__[key] = dp_dict[key]
-        #         elif key == 'angle':
-        #             tmpAST.__dict__[key] = dp_dict[key]
-        #         elif key == 'text':
-        #             tmpAST.__dict__[key] = dp_dict[key].decode().split
-        #         elif key == 'name':
-        #             tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
 
         elif dp_dict['_DesignParametertype'] == 'element array':  #EA
             tmpAST = variable_ast.ElementArray()
@@ -113,7 +90,7 @@ class ElementManager:
                 elif key == 'angle':
                     tmpAST.__dict__[key] = dp_dict['_Angle']
                 elif key == 'text':
-                    tmpAST.__dict__[key] = dp_dict['_TEXT'].decode().split
+                    tmpAST.__dict__[key] = dp_dict['_TEXT'].decode()
 
         # elif dp_dict['_DesignParametertype'] == 'variable':     # Variable dict
         #     tmpAST = variable_ast.ArgumentVariable()
@@ -268,7 +245,7 @@ class ElementManager:
         :param _qtdp: input qt_designParameter object
         :return: design constraint ast format
         """
-        tmpAST , _ = self.get_dpdict_return_ast(_qtdp._DesignParameter)
+        tmpAST, _ = self.get_dpdict_return_ast(_qtdp._DesignParameter)
         return tmpAST
 
 
