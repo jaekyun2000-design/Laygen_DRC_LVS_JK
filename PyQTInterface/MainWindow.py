@@ -716,6 +716,8 @@ class _MainWindow(QMainWindow):
                     for id in self._QTObj._qtProject._DesignParameter[module]:
                         # Step 1 : From QtDeisngParameter -> get AST
                         tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(self._QTObj._qtProject._DesignParameter[module][id])
+                        if tmpAST is None:
+                            continue
                         # Step 2: From ast -> create Constraint
                         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=module, _ast=tmpAST, element_manager_update=False)
                         tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
@@ -735,7 +737,11 @@ class _MainWindow(QMainWindow):
                         visual_item_list.append(visualItem)
 
                         layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-                        layer = layernum2name[str(tmp_dp_dict['_Layer'])]
+                        if tmp_dp_dict['_Layer'] == 63 or tmp_dp_dict['_Layer'] == 127:
+                            layer = None
+                        else:
+                            layer = layernum2name[str(tmp_dp_dict['_Layer'])]
+
                         if layer in self._layerItem:
                             self._layerItem[layer].append(visualItem)
                         else:
@@ -1504,18 +1510,18 @@ class _CustomScene(QGraphicsScene):
     send_deleteItem_signal = pyqtSignal(str)
     def __init__(self):
         super().__init__()
-        pen = QPen()
-        pen.setStyle(Qt.SolidLine)
-        pen.setColor(Qt.GlobalColor.red)
-        pen.setCapStyle(Qt.RoundCap)
-        pen.setWidth(5)
+        # pen = QPen()
+        # pen.setStyle(Qt.SolidLine)
+        # pen.setColor(Qt.GlobalColor.red)
+        # pen.setCapStyle(Qt.RoundCap)
+        # pen.setWidth(5)
 
         self.moveFlag = False
         self.listIgnoreFlag = False
         self.oldPos = QPointF(0,0)
 
-        self.addLine(QLineF(-10000,0,10000,0),pen)
-        self.addLine(QLineF(0,-10000,0,10000),pen)
+        # self.addLine(QLineF(-10000,0,10000,0),pen)
+        # self.addLine(QLineF(0,-10000,0,10000),pen)
 
         # self.
 

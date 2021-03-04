@@ -5,6 +5,10 @@ from PyQTInterface.layermap import LayerReader
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
+# layer_visible_flag_dict = dict()
+# for layer in LayerReader._LayerMapping:
+#     layer_visible_flag_dict[layer] = True
+
 class _ManageList(QTableView):
 
     def __init__(self):
@@ -61,10 +65,12 @@ class _ManageList(QTableView):
                 if item.checkState() == 0:
                     for x in Visualitem:
                         x.setVisible(False)
+                        # layer_visible_flag_dict[layer] = False
 
                 elif item.checkState() == 2:
                     for x in Visualitem:
                         x.setVisible(True)
+                        # layer_visible_flag_dict[layer] = True
 
             elif item.index().column() == 2:
                 if item.checkState() == 0:

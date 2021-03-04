@@ -14,6 +14,8 @@ from PyQTInterface.layermap import LayerReader
 from PyQTInterface.layermap import DisplayReader
 import PyQt5
 
+# from import list_ma
+
 from PyQTInterface import userDefineExceptions
 DEBUG = True
 scaleValue = 1
@@ -74,6 +76,9 @@ class _RectBlock(QGraphicsRectItem):
 
 
     def paint(self, painter, option, widget=None):
+        # list_manager.layer_visible_flag_dict[self.itemtrait['layer']] is False:
+        #     self.setVisible(False)
+
         self._BlockTraits["_Color"].setAlphaF(1)
 
         pen = QPen()
@@ -284,6 +289,10 @@ class _VisualizationItem(QGraphicsItemGroup):
             self.block = []
             self.blockGeneration(self._ItemTraits['_XYCoordinates'])
             self.setPos(0,0)
+        elif self._ItemTraits['_DesignParametertype'] == 8:
+            self.block = []
+            self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+            self.setPos(0,0)
         else:
             self.block = []
             self.blockGeneration()
@@ -393,7 +402,13 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self.addToGroup(item)
                 pass
             elif self._ItemTraits['_DesignParametertype'] is 8:                #Test Case
-                pass
+                blockTraits['_Width'] = 200
+                blockTraits['_Height'] = 0.5
+                tmpBlock = _RectBlock()
+                tmpBlock.updateTraits(blockTraits)
+                tmpBlock.setPos(_XYCoordinatesPair[0][0],_XYCoordinatesPair[0][1])
+                self.block.append(tmpBlock)
+                self.addToGroup(tmpBlock)
             else:
                 print("WARNING1: Unvalid DataType Detected!")
 

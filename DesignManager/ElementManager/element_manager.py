@@ -85,6 +85,7 @@ class ElementManager:
                     tmpAST.__dict__[key] = dp_dict['variable_info'][key]
 
         elif dp_dict['_DesignParametertype'] == 8:  #TEXT
+            print(dp_dict)
             # 'id',  # name str
             # 'layer',  # layer name str
             # 'pres'  # list [a,a,a]
