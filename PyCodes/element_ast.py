@@ -56,30 +56,44 @@ class Path(ElementNode):
         'XY',       # double list or variable name str
         'width',    # int or str
     )
+#
+# class MacroKeyword(ast.AST):
+#     _fields = (
+#         'arg',
+#         'id',
+#         'attr',
+#         'index1',
+#         'index2'
+#     )
+#
+# class MacroListSubscript(ast.AST):
+#     _fields = (
+#         'list_id',
+#         'list_id_attr',
+#         'index1',
+#         'index2'
+#     )
+#
+#
+# class MacroSubscript(ast.AST):
+#     _fields = (
+#         'id',
+#         'id_attr',
+#         'index',
+#     )
+class Text(ElementNode):
 
-class MacroKeyword(ast.AST):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
     _fields = (
-        'arg',
-        'id',
-        'attr',
-        'index1',
-        'index2'
-    )
-
-class MacroListSubscript(ast.AST):
-    _fields = (
-        'list_id',
-        'list_id_attr',
-        'index1',
-        'index2'
-    )
-
-
-class MacroSubscript(ast.AST):
-    _fields = (
-        'id',
-        'id_attr',
-        'index',
+        'id',       # name str
+        'layer',    # layer name str
+        'pres'  # list [a,a,a]
+        'reflect',  # list [a,a,a]
+        'XY',       # double list or variable name str
+        'magnitude',    # float
+        'angle',  # float
+        'text'    # int or str
     )
 
 class GeneratorTransformer(ast.NodeTransformer):
@@ -144,6 +158,7 @@ class GeneratorTransformer(ast.NodeTransformer):
         )
 
 class ElementTransformer(ast.NodeTransformer):
+
     def visit_Boundary(self,node):
         sentence = f"{node.name} = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
 _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY},\
@@ -197,7 +212,6 @@ _XWidth = {node.width}, _YWidth = {node.height})"
     def visit_Path(self,node):
         sentence = f"{node.name} = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
 _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
-        print(sentence)
         tmp = ast.parse(sentence)
         return tmp.body[0]
 
@@ -244,7 +258,6 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
 
     def visit_Sref(self,node):
         sentence = f"{node.name} = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(_DesignParameter = None, _Name = '{node.name}In{{}}'.format(_Name)))[0], _XYCoordinates = {node.XY}"
-        print(sentence)
         tmp = ast.parse(sentence)
         return tmp.body[0]
 
@@ -288,6 +301,13 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
         #         )
         #     )
 
+    def visit_Text(self, node):
+        sentence = f"{node.id} = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Presentation = {node.pres}, _Reflect = {node.reflect}, _XYCoordinates = {node.XY},\
+ _Mag = {node.magnitude}, _Angle = {node.angle}, _TEXT = '{node.text}')"
+        print(sentence)
+        tmp = ast.parse(sentence)
+        return tmp.body[0]
 
 
 class MacroTransformer1(ast.NodeTransformer):
@@ -366,6 +386,7 @@ if __name__ == '__main__':
     a = Boundary()
     b = Path()
     c = Sref()
+    d = Text()
     # a.name = "OD1"
     # a.layer = 'OD'
     # b= Path()
@@ -392,9 +413,19 @@ if __name__ == '__main__':
     c.className = '_NMOS'
     c.XY = [[0,0]]
 
+    d.id = 'textname'
+    d.layer = 'METAL1PIN'
+    d.XY = [[0,0]]
+    d.pres = [0,1,2]
+    d.reflect = [0,0,0]
+    d.magnitude = 0.1
+    d.angle = 0.1
+    d.text = 'VDD'
+
     ef = ElementTransformer().visit_Boundary(a)
     pt = ElementTransformer().visit_Path(b)
     st = ElementTransformer().visit_Sref(c)
+    tt = ElementTransformer().visit_Text(d)
     # k = MacroTransformer1().visit(k)
     # k = MacroTransformer2().visit(k)
 

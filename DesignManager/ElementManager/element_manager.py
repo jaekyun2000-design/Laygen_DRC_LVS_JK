@@ -54,15 +54,39 @@ class ElementManager:
                     tmpAST.__dict__[key] = dp_dict['variable_info'][key]
                 elif key == 'XY':
                     tmpAST.__dict__[key] = dp_dict['variable_info'][key]
-                    # if ',' in dp_dict['variable_info'][key]:
-                    #     slicing = dp_dict['variable_info'][key].find(',')
-                    #     tmpAST.__dict__[key] = [[float(dp_dict['variable_info'][key][:slicing]),float(dp_dict['variable_info'][key][slicing+1:])]]
-                    # else:
-                    #     tmpAST.__dict__[key] = dp_dict['variable_info'][key]
                 elif key == 'x_space_distance':
                     tmpAST.__dict__[key] = dp_dict['variable_info'][key]
                 elif key == 'y_space_distance':
                     tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+
+        elif dp_dict['_DesignParametertype'] == 8:  #TEXT
+            # 'id',  # name str
+            # 'layer',  # layer name str
+            # 'pres'  # list [a,a,a]
+            # 'reflect',  # list [a,a,a]
+            # 'XY',  # double list or variable name str
+            # 'magnitude',  # float
+            # 'angle',  # float
+            # 'text'  # int or str
+            tmpAST = element_ast.Text()
+            for key in element_ast.Text._fields:
+                if key == 'id':
+                    tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
+                elif key == 'layer':
+                    tmpAST.__dict__[key] = dp_dict['_Layer']
+                elif key == 'XY':
+                    tmpAST.__dict__[key] = dp_dict['_XYCoordinates']
+                elif key == 'pres':
+                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                elif key == 'reflect':
+                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                elif key == 'magnitude':
+                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                elif key == 'angle':
+                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+                elif key == 'text':
+                    tmpAST.__dict__[key] = dp_dict['variable_info'][key]
+
         # elif dp_dict['_DesignParametertype'] == 'variable':     # Variable dict
         #     tmpAST = variable_ast.ArgumentVariable()
         #     for key in variable_ast.ArgumentVariable._fields:
