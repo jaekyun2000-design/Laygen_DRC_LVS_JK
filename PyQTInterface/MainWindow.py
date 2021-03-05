@@ -437,15 +437,15 @@ class _MainWindow(QMainWindow):
         className = 'Is_it_necessary?'
         XY = [[0,0]]
         import ast
-        parameters = ast.parse(str(tmp_generator._ParametersForDesignCalculation))
+        # parameters = ast.parse(str(tmp_generator._ParametersForDesignCalculation))
         sref_ast = element_ast.Sref()
         sref_ast.name = name
         sref_ast.library = library
         sref_ast.className = className
         sref_ast.XY = XY
-        # sref_ast.parameters = parameters.body[0]
-        a , id = self._QTObj._qtProject._createNewDesignConstraintAST( _ASTDtype = "pyCode",_ParentName=self._CurrentModuleName, _pyCode=str(tmp_generator._ParametersForDesignCalculation))
-        sref_ast.parameters = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][id]
+        sref_ast.parameters = tmp_generator._ParametersForDesignCalculation
+        # a , id = self._QTObj._qtProject._createNewDesignConstraintAST( _ASTDtype = "pyCode",_ParentName=self._CurrentModuleName, _pyCode=str(tmp_generator._ParametersForDesignCalculation))
+        # sref_ast.parameters = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][id]
         # sref_ast.parameters = " "
         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= sref_ast)
         self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
