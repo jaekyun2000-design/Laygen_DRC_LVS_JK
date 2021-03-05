@@ -408,14 +408,14 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
                     self.text.setPos(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1])
                     self.text.setFlag(QGraphicsItem.ItemIgnoresTransformations)
-                    # print(type(self.text))
-                    # self.text.setFlag(QGraphicsItem.scale)
-                    # self.aa = QPainter()
-                    # self.aa.drawText(0,0,self.text)
-                    # self.text.setTransformOriginPoint(0,0)
-                    # self.text.scale()
-                    # self.text.setScale(1)
-                    # self.text.setRotation(180)
+                    # # print(type(self.text))
+                    # # self.text.setFlag(QGraphicsItem.scale)
+                    # # self.aa = QPainter()
+                    # # self.aa.drawText(0,0,self.text)
+                    # # self.text.setTransformOriginPoint(0,0)
+                    # # self.text.scale()
+                    # # self.text.setScale(1)
+                    # # self.text.setRotation(180)
                     self.addToGroup(self.text)
 
 
@@ -430,8 +430,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                     # font.setPointSize(10)
                     # # text.setFont(font)
                     # text.drawText(aa, Qt.AlignCenter, 'x')
-                    #
-                    #
+                    # #
+                    # #
                     # print("?")
 
                 else:

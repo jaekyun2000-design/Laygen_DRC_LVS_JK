@@ -49,10 +49,10 @@ class ElementManager:
             return None, None
 
 
-        elif dp_dict['_DesignParametertype'] == 8:  #TEXT
-            #todo Text type support
-            pass
-            return None, None
+        # elif dp_dict['_DesignParametertype'] == 8:  #TEXT
+        #     #todo Text type support
+        #     pass
+        #     return None, None
             # tmpAST = element_ast.Sref()
             # for key in element_ast.Sref._fields:
             #     if key == 'name':
