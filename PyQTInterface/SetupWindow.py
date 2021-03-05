@@ -2034,6 +2034,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         ####################double click update flow#######################
         # 1> same field value find ! and update to Constraint  (If class is not constraint case only)
         # 2> If class is constraint : it refresh sub-hierarchy value.
+        # 2-2> If class is not constraint but list type or dictionary type: it refresh sub-hierarchy value.(Maybe?)
         ################# 3rd step is Unnecessary ########## 3> If class has parent : it update same-hierarchy value for parent
         ###################################################################
         #0 : placeholder, #1 : ID, #2: ConstraintRealType, #3: value
@@ -2081,7 +2082,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                     print('Warning during mouseDoubleClickEvent, Valid module name ({}), but invalid ID ({})'.format(moduleName,itemID))
 
             ###Step 3 sub-hierarchy refresh for placeholder's children #####################################    #To expand unseen contents <value = *, Case>
-            if self.currentIndex().parent().isValid():  # Sub-hierarchy case        Do nothing??
+            if self.currentIndex().parent().isValid():  # Sub-hierarchy case        Do nothing??->Yes, it does something....
                 self.refreshItem(self.currentIndex())
 
             self.send_UpdateDesignConstraintID_signal.emit(itemID,motherID)
@@ -2319,6 +2320,10 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
             #indexID.setEditable(True)
             tmpModuel = re.sub(r'\d', '', motherName)
+            if tmpModuel not in self._DesignConstraintFromQTobj:
+                #do nothing! (field value is not constraint but list or dictionary case)
+                return
+
             dc = self._DesignConstraintFromQTobj[tmpModuel][motherName]
             self.model.updateRowChildWithAST(_DesignConstraint= dc,motherIndex=itemIndex.parent())
 
@@ -2769,6 +2774,7 @@ class _ConstraintModel(QStandardItemModel):
 
 
         #test,, delete code order change...
+        #When dictionary field double clicked, it has some problems
         for row in range(0,motherItem.rowCount()):
             motherItem.removeRows(0)
 
