@@ -62,7 +62,6 @@ class ElementManager:
                     tmpAST.__dict__[key] = dp_dict['variable_info'][key]
 
         elif dp_dict['_DesignParametertype'] == 8:  #TEXT
-            # print(dp_dict)
             tmpAST = element_ast.Text()
             for key in element_ast.Text._fields:
                 if key == 'id':

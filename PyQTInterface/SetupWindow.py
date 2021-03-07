@@ -2034,6 +2034,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         ####################double click update flow#######################
         # 1> same field value find ! and update to Constraint  (If class is not constraint case only)
         # 2> If class is constraint : it refresh sub-hierarchy value.
+        # 2-2> If class is not constraint but list type or dictionary type: it refresh sub-hierarchy value.(Maybe?)
         ################# 3rd step is Unnecessary ########## 3> If class has parent : it update same-hierarchy value for parent
         ###################################################################
         #0 : placeholder, #1 : ID, #2: ConstraintRealType, #3: value
@@ -2060,7 +2061,16 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 placeHolderItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0))
                 placeHolder = placeHolderItem.text()
 
-                self.updateDesginConstraintWithSTR(Module=motherModuleName,Id=motherID,Field =placeHolder ,StringValue=value)
+                #if parent is not AST case (Double list or dictionary case)
+                if motherModuleName not in self._DesignConstraintFromQTobj:
+                    grandparentIDItem = self.model.itemFromIndex(self.currentIndex().parent().parent().siblingAtColumn(1))
+                    grandparentID = grandparentIDItem.text()
+                    grandParentModuleName = re.sub(r'\d','',grandparentID)
+                    fieldItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(0))
+                    field = fieldItem.text()
+                    self.updateDesignConstraintWithDict(Module=grandParentModuleName,Id=grandparentID,Field=field,Key=placeHolder,StringValue=value)
+                else:
+                    self.updateDesginConstraintWithSTR(Module=motherModuleName,Id=motherID,Field =placeHolder ,StringValue=value)
 
             ###Step 2 sub-hierarchy refresh#####################################            #To expand unseen contents <Constraint Case>
             if moduleName == '':
@@ -2072,7 +2082,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                     print('Warning during mouseDoubleClickEvent, Valid module name ({}), but invalid ID ({})'.format(moduleName,itemID))
 
             ###Step 3 sub-hierarchy refresh for placeholder's children #####################################    #To expand unseen contents <value = *, Case>
-            if self.currentIndex().parent().isValid():  # Sub-hierarchy case        Do nothing??
+            if self.currentIndex().parent().isValid():  # Sub-hierarchy case        Do nothing??->Yes, it does something....
                 self.refreshItem(self.currentIndex())
 
             self.send_UpdateDesignConstraintID_signal.emit(itemID,motherID)
@@ -2107,6 +2117,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
             self._DesignConstraintFromQTobj[Module][Id]._setDesignConstraintValue(_index=Field,_value=_value)
             return
+
+    def updateDesignConstraintWithDict(self,Module,Id,Field,Key,StringValue):
+        self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Key] = StringValue
 
     def remove_item(self, ID):
         """
@@ -2307,6 +2320,10 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
             #indexID.setEditable(True)
             tmpModuel = re.sub(r'\d', '', motherName)
+            if tmpModuel not in self._DesignConstraintFromQTobj:
+                #do nothing! (field value is not constraint but list or dictionary case)
+                return
+
             dc = self._DesignConstraintFromQTobj[tmpModuel][motherName]
             self.model.updateRowChildWithAST(_DesignConstraint= dc,motherIndex=itemIndex.parent())
 
@@ -2700,7 +2717,7 @@ class _ConstraintModel(QStandardItemModel):
                     _id = ''
                     _constraintValue = str(childVariable)
                     _constraintRealType = str(type(childVariable))
-                elif type(childVariable) == list:     #Compound STMT
+                elif type(childVariable) == list or type(childVariable) == dict:     #Compound STMT
                     _placeholder = field
                     _id = ''
                     _constraintRealType = str(type(childVariable))
@@ -2754,10 +2771,17 @@ class _ConstraintModel(QStandardItemModel):
             valueItem = self.itemFromIndex(motherItem.index().siblingAtColumn(3))
             valueItem.setText("*")
 
+
+
+        #test,, delete code order change...
+        #When dictionary field double clicked, it has some problems
+        for row in range(0,motherItem.rowCount()):
+            motherItem.removeRows(0)
+
         for childAST in _AST.__dict__[key]:   #### childConstraint is item in list!
             if type(childAST) == list:
-                for row in range(0,motherItem.rowCount()):
-                    motherItem.removeRows(0)
+                # for row in range(0,motherItem.rowCount()):
+                #     motherItem.removeRows(0)
                 if type(childAST[0]) != list:   #Boundary case
                     print("List case display")
                     tmpC = QStandardItem(str(type(childAST)))
@@ -2771,6 +2795,10 @@ class _ConstraintModel(QStandardItemModel):
                         tmpD = str(child_child_AST[0]) + ',' + str(child_child_AST[1])
                         tmpD = QStandardItem(tmpD)
                         motherItem.appendRow([QStandardItem(), QStandardItem(), tmpC, tmpD])
+            elif type(childAST) == str:
+                tmpA = QStandardItem(childAST)
+                tmpD = QStandardItem(str(_AST.__dict__[key][childAST]))
+                motherItem.appendRow([tmpA, QStandardItem(), QStandardItem(), tmpD])
             else:
                 childASTid = childAST._id
                 _type = childAST._type

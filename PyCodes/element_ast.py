@@ -26,6 +26,17 @@ class ElementNode(ast.AST):
     _fields = (
     )
 
+class Sref(ElementNode):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'name',     # name str
+        'library',   # library module str
+        'className',    # class name str
+        'XY',       # double list or str
+        'parameters',
+    )
+
 class Boundary(ElementNode):
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -47,31 +58,22 @@ class Path(ElementNode):
         'width',    # int or str
     )
 
-class Sref(ElementNode):
-    def __init__(self, *args, **kwargs):
-        super().__init__()
-    _fields = (
-        'name',     # name str
-        'library',   # library module str
-        'className',    # class name str
-        'XY',       # double list or str
-    )
+    class Text(ElementNode):
 
-class Text(ElementNode):
+        def __init__(self, *args, **kwargs):
+            super().__init__()
 
-    def __init__(self, *args, **kwargs):
-        super().__init__()
-    _fields = (
-        'id',       # id str
-        'name',     # name str
-        'layer',    # layer name str
-        'pres',  # list [a,a,a]
-        'reflect',  # list [a,a,a]
-        'XY',       # double list or variable name str
-        'magnitude',    # float
-        'angle',  # float
-        'text'    # int or str
-    )
+        _fields = (
+            'id',  # id str
+            'name',  # name str
+            'layer',  # layer name str
+            'pres',  # list [a,a,a]
+            'reflect',  # list [a,a,a]
+            'XY',  # double list or variable name str
+            'magnitude',  # float
+            'angle',  # float
+            'text'  # int or str
+        )
 
 # class MacroKeyword(ast.AST):
 #     _fields = (
@@ -305,6 +307,7 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
 
 
 
+
         # return ast.Assign(
         #         targets=[ast.Name(
         #             id=node.name
@@ -344,6 +347,7 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
         #             ]
         #         )
         #     )
+
 
         # return ast.Assign(
         #         targets=[ast.Name(
@@ -420,7 +424,6 @@ if __name__ == '__main__':
     ef = ElementTransformer().visit_Boundary(a)
     pt = ElementTransformer().visit_Path(b)
     st = ElementTransformer().visit_Sref(c)
-    tt = ElementTransformer().visit_Text(d)
 
     # ab= MacroSubscript(
     #     id = 'list1',

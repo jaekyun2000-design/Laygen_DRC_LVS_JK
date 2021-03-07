@@ -68,6 +68,7 @@ class VariableVisualItem(QGraphicsItemGroup):
                 bounding_rect = self.boundingRect()
                 bounding_rect.setCoords(bounding_rect.topLeft().x(), -bounding_rect.topLeft().y(),
                                         bounding_rect.bottomRight().x(),-bounding_rect.bottomRight().y())
+                print(bounding_rect.topLeft().x(), bounding_rect.topLeft().y(), bounding_rect.bottomRight().x(), bounding_rect.bottomRight().y())
                 painter.scale(1, -1)
                 painter.setPen(Qt.GlobalColor.red)
                 font = QFont()
