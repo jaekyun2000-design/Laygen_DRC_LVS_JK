@@ -26,16 +26,6 @@ class ElementNode(ast.AST):
     _fields = (
     )
 
-class Sref(ElementNode):
-    def __init__(self, *args, **kwargs):
-        super().__init__()
-    _fields = (
-        'name',     # name str
-        'library',   # library module str
-        'className',    # class name str
-        'XY',       # double list or str
-    )
-
 class Boundary(ElementNode):
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -56,7 +46,33 @@ class Path(ElementNode):
         'XY',       # double list or variable name str
         'width',    # int or str
     )
-#
+
+class Sref(ElementNode):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'name',     # name str
+        'library',   # library module str
+        'className',    # class name str
+        'XY',       # double list or str
+    )
+
+class Text(ElementNode):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'id',       # id str
+        'name',     # name str
+        'layer',    # layer name str
+        'pres',  # list [a,a,a]
+        'reflect',  # list [a,a,a]
+        'XY',       # double list or variable name str
+        'magnitude',    # float
+        'angle',  # float
+        'text'    # int or str
+    )
+
 # class MacroKeyword(ast.AST):
 #     _fields = (
 #         'arg',
@@ -81,21 +97,6 @@ class Path(ElementNode):
 #         'id_attr',
 #         'index',
 #     )
-class Text(ElementNode):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__()
-    _fields = (
-        'id',       # id str
-        'name',     # name str
-        'layer',    # layer name str
-        'pres',  # list [a,a,a]
-        'reflect',  # list [a,a,a]
-        'XY',       # double list or variable name str
-        'magnitude',    # float
-        'angle',  # float
-        'text'    # int or str
-    )
 
 class GeneratorTransformer(ast.NodeTransformer):
     def visit_Generator(self,node):
@@ -168,6 +169,98 @@ _XWidth = {node.width}, _YWidth = {node.height})"
         tmp = ast.parse(sentence)
         return tmp.body[0]
 
+    def visit_Path(self,node):
+        sentence = f"{node.name} = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+_Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
+        tmp = ast.parse(sentence)
+        return tmp.body[0]
+
+    def visit_Sref(self,node):
+        sentence = f"{node.name} = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(_DesignParameter = None, _Name = '{node.name}In{{}}'.format(_Name)))[0], _XYCoordinates = {node.XY}"
+        tmp = ast.parse(sentence)
+        return tmp.body[0]
+
+    def visit_Text(self, node):
+        sentence = f"{node.id} = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Presentation = {node.pres}, _Reflect = {node.reflect}, _XYCoordinates = {node.XY},\
+ _Mag = {node.magnitude}, _Angle = {node.angle}, _TEXT = '{node.text}')"
+        print(sentence)
+        tmp = ast.parse(sentence)
+        return tmp.body[0]
+
+
+# class MacroTransformer1(ast.NodeTransformer):
+#     def visit_MacroKeyword(self,node):
+#         return ast.copy_location(
+#             ast.keyword(
+#                     arg=node.arg,
+#                     value = MacroListSubscript(
+#                         list_id = node.id,
+#                         list_id_attr = node.attr,
+#                         index1 = node.index1,
+#                         index2 = node.index2
+#                     )
+#                     # value=ast.Subscript(
+#                     #     value=ast.Subscript(
+#                     #         value=ast.Attribute(
+#                     #             value=ast.Name(
+#                     #                 id=node.id
+#                     #             ),
+#                     #             attr=node.attr
+#                     #         ),
+#                     #         slice=node.index1
+#                     #     ),
+#                     #     slice=node.index2
+#                     # )
+#                 )
+#             ,node
+#         )
+#
+# class MacroTransformer2(ast.NodeTransformer):
+#     def visit_MacroListSubscript(self,node):
+#         return ast.copy_location(
+#             ast.Subscript(
+#                 value=ast.Subscript(
+#                     value=ast.Attribute(
+#                         value=ast.Name(
+#                             id=node.list_id
+#                         ),
+#                         attr=node.list_id_attr
+#                     ),
+#                     slice=node.index1
+#                 ),
+#                 slice=node.index2
+#             ),
+#             node
+#         )
+#
+#
+# class MacroSubscript(ast.AST):
+#     _fields = (
+#         'id',
+#         'attr',
+#         'index',
+#     )
+#
+# class MacorSubscriptTransformer(ast.NodeTransformer):
+#     def visit_MacroSubscript(self,node):
+#         for field in node._fields:
+#             if not field in node.__dict__:
+#                 node.__dict__[field] = None
+#         return ast.copy_location(
+#             ast.Subscript(
+#                 value=ast.Attribute(
+#                     value=ast.Name(
+#                         id=node.id
+#                     ),
+#                     attr=node.attr
+#                 ),
+#                 slice=node.index
+#             ),
+#             node
+#         )
+#
+
     ###### Below is the partial genuine ast format of Boundary Element : Do not delete #######
 
     #     return ast.Assign(
@@ -210,11 +303,6 @@ _XWidth = {node.width}, _YWidth = {node.height})"
     #             )
     #         )
 
-    def visit_Path(self,node):
-        sentence = f"{node.name} = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-_Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
-        tmp = ast.parse(sentence)
-        return tmp.body[0]
 
 
         # return ast.Assign(
@@ -257,11 +345,6 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
         #         )
         #     )
 
-    def visit_Sref(self,node):
-        sentence = f"{node.name} = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(_DesignParameter = None, _Name = '{node.name}In{{}}'.format(_Name)))[0], _XYCoordinates = {node.XY}"
-        tmp = ast.parse(sentence)
-        return tmp.body[0]
-
         # return ast.Assign(
         #         targets=[ast.Name(
         #             id=node.name
@@ -302,101 +385,12 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
         #         )
         #     )
 
-    def visit_Text(self, node):
-        sentence = f"{node.id} = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
- _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Presentation = {node.pres}, _Reflect = {node.reflect}, _XYCoordinates = {node.XY},\
- _Mag = {node.magnitude}, _Angle = {node.angle}, _TEXT = '{node.text}')"
-        print(sentence)
-        tmp = ast.parse(sentence)
-        return tmp.body[0]
-
-
-class MacroTransformer1(ast.NodeTransformer):
-    def visit_MacroKeyword(self,node):
-        return ast.copy_location(
-            ast.keyword(
-                    arg=node.arg,
-                    value = MacroListSubscript(
-                        list_id = node.id,
-                        list_id_attr = node.attr,
-                        index1 = node.index1,
-                        index2 = node.index2
-                    )
-                    # value=ast.Subscript(
-                    #     value=ast.Subscript(
-                    #         value=ast.Attribute(
-                    #             value=ast.Name(
-                    #                 id=node.id
-                    #             ),
-                    #             attr=node.attr
-                    #         ),
-                    #         slice=node.index1
-                    #     ),
-                    #     slice=node.index2
-                    # )
-                )
-            ,node
-        )
-
-class MacroTransformer2(ast.NodeTransformer):
-    def visit_MacroListSubscript(self,node):
-        return ast.copy_location(
-            ast.Subscript(
-                value=ast.Subscript(
-                    value=ast.Attribute(
-                        value=ast.Name(
-                            id=node.list_id
-                        ),
-                        attr=node.list_id_attr
-                    ),
-                    slice=node.index1
-                ),
-                slice=node.index2
-            ),
-            node
-        )
-
-
-class MacroSubscript(ast.AST):
-    _fields = (
-        'id',
-        'attr',
-        'index',
-    )
-
-class MacorSubscriptTransformer(ast.NodeTransformer):
-    def visit_MacroSubscript(self,node):
-        for field in node._fields:
-            if not field in node.__dict__:
-                node.__dict__[field] = None
-        return ast.copy_location(
-            ast.Subscript(
-                value=ast.Attribute(
-                    value=ast.Name(
-                        id=node.id
-                    ),
-                    attr=node.attr
-                ),
-                slice=node.index
-            ),
-            node
-        )
-
 
 if __name__ == '__main__':
     a = Boundary()
     b = Path()
     c = Sref()
     d = Text()
-    # a.name = "OD1"
-    # a.layer = 'OD'
-    # b= Path()
-    # b.name = 'Met1Path'
-    # b.layer = 'METAL4'
-    # k = ast.Module()
-    # k.body = []
-    # k.body.append(b)
-    # k.body.append(a)
 
     a.name = 'AdditionalMetal1Layer'
     a.layer = 'METAL1'
@@ -427,8 +421,6 @@ if __name__ == '__main__':
     pt = ElementTransformer().visit_Path(b)
     st = ElementTransformer().visit_Sref(c)
     tt = ElementTransformer().visit_Text(d)
-    # k = MacroTransformer1().visit(k)
-    # k = MacroTransformer2().visit(k)
 
     # ab= MacroSubscript(
     #     id = 'list1',

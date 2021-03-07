@@ -1,6 +1,6 @@
 import sys
 import os
-
+import collections
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from PyQTInterface import VisualizationItem
@@ -422,7 +422,7 @@ class QtProject:
         self._name = _name
         # self._idListForDesignParameter = dict() #### save assigned id
         # self._idListForDesignConstraint = dict()  #### save assigned id
-        self._DesignParameter = dict()  ####module, runset, argument --> _DesignParameter
+        self._DesignParameter = collections.OrderedDict()  ####module, runset, argument --> _DesignParameter
         self._DesignConstraint = dict()  ####module, runset, argument --> _DesignConstraint
         self._ParseTreeForDesignParameter = dict()
         self._ParseTreeForDesignConstrain = dict()  ####module, runset, argument --> _ParseTree
@@ -2475,6 +2475,36 @@ class QtProject:
                         "_ConstraintsForVariableDefineTemplate: " + userDefineExceptions._UnkownError)
                 return userDefineExceptions._UnkownError
 
+    def _getEntireHierarchy(self):
+
+        addedTopModule = list(self._DesignParameter.items())[-1][0]
+        hierarchyDict={}
+        searchStack =[]
+        searchStack.append(addedTopModule)
+        hierarchyDict[addedTopModule] = dict()
+        while searchStack:
+            searchmodule = searchStack.pop(0)
+            for _, element in self._DesignParameter[searchmodule].items():
+                if element._DesignParameter['_DesignParametertype'] == 3:
+                    try:
+                        if element._DesignParameter['_DesignObj'] in searchStack:
+                            continue
+                        else:
+                            searchStack.append(element._DesignParameter['_DesignObj'])
+                            if hierarchyDict[searchmodule] == None:
+                                hierarchyDict[searchmodule] = dict()
+                                hierarchyDict[searchmodule][element._DesignParameter['_DesignObj']] = None
+                            else:
+                                hierarchyDict[searchmodule][element._DesignParameter['_DesignObj']] = None
+
+                    except:
+                        print("element")
+
+        return hierarchyDict
+
+
+
+
     def _subHierarchyForDesignParameter(self, _ParentName=None, _id=None, _MaxSearchDepth=None):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
             print("_subHierarchyForDesignParameter Run.")
@@ -2523,6 +2553,7 @@ class QtProject:
             return userDefineExceptions._InvalidInputError
         else:
             try:
+
                 _tmpStack0 = []
                 _tmpStack0.insert(0, {_ParentName: [_id]})
                 _tmpStack0Pt = _tmpStack0[0]
@@ -2546,6 +2577,7 @@ class QtProject:
                         _tmpStack0.insert(0, _tmpStack1)
                         _tmpStack0Pt = _tmpStack0[0]
                 return _tmpStack0  ####[[[_ParentName0, _id0], [_ParentName0, _id1], [_ParentName1, _id]1], [], [], []] --> [[[_ParentName0, _id0], [_ParentName0, _id1], [_ParentName1, _id]1], [], [], []]
+
             except:
                 return userDefineExceptions._UnkownError
 

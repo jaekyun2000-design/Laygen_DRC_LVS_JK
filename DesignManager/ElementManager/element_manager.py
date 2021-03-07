@@ -62,15 +62,7 @@ class ElementManager:
                     tmpAST.__dict__[key] = dp_dict['variable_info'][key]
 
         elif dp_dict['_DesignParametertype'] == 8:  #TEXT
-            print(dp_dict)
-            # 'id',  # name str
-            # 'layer',  # layer name str
-            # 'pres'  # list [a,a,a]
-            # 'reflect',  # list [a,a,a]
-            # 'XY',  # double list or variable name str
-            # 'magnitude',  # float
-            # 'angle',  # float
-            # 'text'  # int or str
+            # print(dp_dict)
             tmpAST = element_ast.Text()
             for key in element_ast.Text._fields:
                 if key == 'id':
@@ -91,14 +83,6 @@ class ElementManager:
                     tmpAST.__dict__[key] = dp_dict['_Angle']
                 elif key == 'text':
                     tmpAST.__dict__[key] = dp_dict['_TEXT'].decode()
-
-        # elif dp_dict['_DesignParametertype'] == 'variable':     # Variable dict
-        #     tmpAST = variable_ast.ArgumentVariable()
-        #     for key in variable_ast.ArgumentVariable._fields:
-        #         if key == 'name':
-        #             tmpAST.__dict__[key] = dp_dict['name']
-        #         elif key == 'value':
-        #             tmpAST.__dict__[key] = dp_dict['value']
 
         else:
             return None, None
