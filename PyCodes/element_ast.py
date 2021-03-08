@@ -58,22 +58,22 @@ class Path(ElementNode):
         'width',    # int or str
     )
 
-    class Text(ElementNode):
+class Text(ElementNode):
 
-        def __init__(self, *args, **kwargs):
-            super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__()
 
-        _fields = (
-            'id',  # id str
-            'name',  # name str
-            'layer',  # layer name str
-            'pres',  # list [a,a,a]
-            'reflect',  # list [a,a,a]
-            'XY',  # double list or variable name str
-            'magnitude',  # float
-            'angle',  # float
-            'text'  # int or str
-        )
+    _fields = (
+        'id',  # id str
+        'name',  # name str
+        'layer',  # layer name str
+        'pres',  # list [a,a,a]
+        'reflect',  # list [a,a,a]
+        'XY',  # double list or variable name str
+        'magnitude',  # float
+        'angle',  # float
+        'text'  # int or str
+    )
 
 # class MacroKeyword(ast.AST):
 #     _fields = (
