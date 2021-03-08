@@ -31,7 +31,7 @@ class QtDesignParameter:
         self._ParentName = _ParentName
         if _DesignParameterName == None:
             self._DesignParameterName = _id
-            print("There is no valid design parameter name")
+            # print("There is no valid design parameter name")
         else:
             self._DesignParameterName = _DesignParameterName
         self._DesignParameter = None

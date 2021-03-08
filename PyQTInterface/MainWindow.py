@@ -743,7 +743,7 @@ class _MainWindow(QMainWindow):
                 idLength = 0
 
                 entireHierarchy = self._QTObj._qtProject._getEntireHierarchy()
-                print(entireHierarchy)
+                print("Hierarchy: \n {}".format(entireHierarchy))
 
 
                 for modules in addedModuleList:
