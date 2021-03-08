@@ -26,17 +26,6 @@ class ElementNode(ast.AST):
     _fields = (
     )
 
-class Sref(ElementNode):
-    def __init__(self, *args, **kwargs):
-        super().__init__()
-    _fields = (
-        'name',     # name str
-        'library',   # library module str
-        'className',    # class name str
-        'XY',       # double list or str
-        'parameters',
-    )
-
 class Boundary(ElementNode):
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -56,6 +45,17 @@ class Path(ElementNode):
         'layer',    # layer name str
         'XY',       # double list or variable name str
         'width',    # int or str
+    )
+
+class Sref(ElementNode):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'name',     # name str
+        'library',   # library module str
+        'className',    # class name str
+        'XY',       # double list or str
+        'parameters',
     )
 
 class Text(ElementNode):
@@ -178,7 +178,7 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
         return tmp.body[0]
 
     def visit_Sref(self,node):
-        sentence = f"{node.name} = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(_DesignParameter = None, _Name = '{node.name}In{{}}'.format(_Name)))[0], _XYCoordinates = {node.XY}"
+        sentence = f"{node.name} = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(_DesignParameter = {node.parameters}, _Name = '{node.name}In{{}}'.format(_Name)))[0], _XYCoordinates = {node.XY}"
         tmp = ast.parse(sentence)
         return tmp.body[0]
 
