@@ -431,6 +431,12 @@ class _MainWindow(QMainWindow):
     # def threading_test(self,count):
 
     def sref_debug_module(self):
+        # tmpcell = {'INV': {'Sub1': {'Sub2': {'PMOS': None}, 'NMOS': None,}, 'NMOS': None, 'PMOS': None}}
+        # # tmpcell = {'Gen1': {'Gen2-1': {'Gen3': None}, 'Gen2-2': None}}
+        #
+        # self.fc = SetupWindow._FlatteningCell(tmpcell)
+        # self.fc.show()
+
         tmp_generator = generator_model_api.class_dict['NMOSWithDummy']()
         name = 'sref_name'
         library = 'NMOSWithDummy'
@@ -834,6 +840,12 @@ class _MainWindow(QMainWindow):
 
             self._QTObj._qtProject._resetXYCoordinatesForDisplay()
 
+            self.fc = SetupWindow._FlatteningCell(entireHierarchy)
+            self.fc.show()
+
+            self.fc.send_flattendict_signal.connect(self.print_dict)
+
+
             # After Load All DesignParameter!!!! Now Setting For SRef!!!!
             # for module in addedModuleList:
             #     for id in self._QTObj._qtProject._DesignParameter[module]:
@@ -854,6 +866,9 @@ class _MainWindow(QMainWindow):
             pass
 
         print("Load GDS Done")
+
+    def print_dict(self, dict):
+        print(dict)
 
 
     # def loadPy(self):

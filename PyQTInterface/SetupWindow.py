@@ -20,6 +20,7 @@ from PyCodes import userDefineExceptions
 from PyCodes import EnvForClientSetUp
 from PyCodes import QTInterfaceWithAST
 
+from generatorLib import generator_model_api
 
 import re, ast, time
 
@@ -3083,7 +3084,100 @@ class _Progress(QProgressBar):
     def update(self,val):
         self.setValue(val)
 
+class _FlatteningCell(QWidget):
 
+    send_flattendict_signal = pyqtSignal(dict)
+
+    def __init__(self, _hierarchydict):
+        super().__init__()
+        self._hdict = _hierarchydict
+        self.model = QTreeWidget()
+        self.model.setColumnCount(3)
+        self.model.setHeaderLabels(['Cell Name', 'Flatten Option', 'Generator Name'])
+        self.itemlist = list()
+        self.combolist = list(generator_model_api.class_dict.keys())
+        self.initUI()
+
+    def initUI(self):
+        okButton = QPushButton("OK",self)
+        okButton.clicked.connect(self.ok_button_accepted)
+
+        top_cell = list(self._hdict.keys())
+
+        top_item = QTreeWidgetItem(top_cell)
+
+
+        self.loop(top_item, self._hdict[top_cell[0]], True)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(2)
+        hbox.addWidget(okButton)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.model)
+        vbox.addLayout(hbox)
+
+        self.setLayout(vbox)
+
+        self.setWindowTitle('SRef Flattening Window')
+        self.setGeometry(300,300,500,500)
+        self.show()
+
+    def ok_button_accepted(self):
+        _flatten_dict = dict()
+
+        for item in self.itemlist:
+            if self.model.itemWidget(item, 1).checkState() == 2:
+                _flatten_dict[item.text(0)] = None
+            else:
+                _flatten_dict[item.text(0)] = self.model.itemWidget(item, 2).currentText()
+
+        self.send_flattendict_signal.emit(_flatten_dict)
+
+        self.destroy()
+
+    def loop(self, parent_item, parent_dict, isTop):
+        for key in parent_dict:
+            if parent_dict[key] is None:
+                item = QTreeWidgetItem(parent_item, [key])
+                self.itemlist.append(item)
+            else:
+                item = QTreeWidgetItem(parent_item,[key])
+                self.itemlist.append(item)
+                self.loop(item, parent_dict[key], False)
+            self.AddCheckAndComboBoxes(item)
+
+        if isTop == True:
+            self.model.insertTopLevelItem(0, parent_item)
+
+    def AddCheckAndComboBoxes(self, item):
+        self.item = item
+
+        check = QCheckBox()
+        check.setText(self.item.text(1))
+
+        combo = QComboBox()
+        combo.addItems(self.combolist)
+
+        check.setText('OFF')
+        combo.setEnabled(True)
+
+        check.stateChanged.connect(self.ActivateCombobox)
+
+        self.model.setItemWidget(item, 1, check)
+        self.model.setItemWidget(item, 2, combo)
+
+    def ActivateCombobox(self, state):
+        item = self.model.currentItem()
+        siblingcheckbox = self.model.itemWidget(item, 1)
+        siblingcombobox = self.model.itemWidget(item, 2)
+
+        if state == 2:
+            siblingcheckbox.setText('ON')
+            siblingcombobox.setEnabled(False)
+        else:
+            siblingcheckbox.setText('OFF')
+            siblingcombobox.setEnabled(True)
 
 
 def get_id_return_module(id : str, type : str, moduleDict):
