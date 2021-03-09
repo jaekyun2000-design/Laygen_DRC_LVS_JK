@@ -892,6 +892,7 @@ class _MainWindow(QMainWindow):
 
 
 
+
         except:
             print("Load PySource Failed")
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Load PySource Fail: Unknown")
