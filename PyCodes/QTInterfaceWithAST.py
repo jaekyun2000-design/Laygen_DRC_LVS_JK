@@ -71,7 +71,7 @@ class QtDesignParameter:
             _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
         elif self._type == 3:  # sref
             _tmpDesignParameter["_DesignObj"] = None  ####[libName, moduleName] ????
-            _tmpDesignParameter["_DesignLibName"] = None  ####[libName, moduleName] ????
+            _tmpDesignParameter["_DesignLibraryName"] = None  ####[libName, moduleName] ????
             _tmpDesignParameter[
                 "_DesignModuleName"] = None  ###_ViaPoly2Met1OnPMOS = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_DesignParameter=None, _Name='ViaPoly2Met1OnPMOSIn{}'.format(_Name)))[0],
             _tmpDesignParameter[

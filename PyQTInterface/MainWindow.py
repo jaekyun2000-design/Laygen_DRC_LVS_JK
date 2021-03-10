@@ -471,6 +471,70 @@ class _MainWindow(QMainWindow):
         #         visualItem = self.createVisualItemfromDesignParameter(
         #             self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
         #         self.updateGraphicItem(visualItem)
+    def srefModulization(self,_flattenStatusDict):
+        flattenXCellList = []
+        srefModulesList = []
+        FlattenXStructureDict = {}
+        for _structureName, _library in _flattenStatusDict.items():
+            if _library == None:
+                print(f"{_structureName} module flattening start")
+                """
+                Flattening conduction
+                
+                """
+                pass
+            else:
+                FlattenXStructureDict[_structureName] = self._QTObj._qtProject._DesignParameter[_structureName]
+                # FlattenXStructureList.append(self._QTObj._qtProject._DesignParameter[_structureName])
+                for _id in self._QTObj._qtProject._DesignParameter.keys():
+                    for _element in self._QTObj._qtProject._DesignParameter[_id].keys():
+                        if self._QTObj._qtProject._DesignParameter[_id][_element]._DesignParameter['_DesignParametertype'] == 3:
+                            findHint = self._QTObj._qtProject._DesignParameter[_id][_element]._DesignParameter['_DesignObj'].find(_structureName)
+                            if findHint != -1:  # Found
+                                flattenXCellList.append([_id, _element])
+                            else:
+                                pass
+                        else:
+                            pass
+                    pass
+                pass
+
+        for i in range (len(flattenXCellList)-1):
+            srefModulesList.append(self._QTObj._qtProject._DesignParameter[flattenXCellList[i][0]][flattenXCellList[i][1]])
+        print(flattenXCellList)  # Name of the cells that should not be flattened
+        print(srefModulesList)   # Cell modules which use Sref Structure modules
+        print(FlattenXStructureDict)    # Structure modules which are used inside the Top cell.
+
+        return FlattenXStructureDict
+
+
+
+
+
+
+
+
+
+                # ParentName = "".join(re.findall('[^\d]', _cellName))
+                #
+                # _designObjName = self._QTObj._qtProject._DesignParameter[ParentName][_cellName]._DesignParameter['_DesignObj']  # _designObjName : str
+                # _designObj = self._QTObj._qtProject._DesignParameter['_designObj']                   # _designObj : object
+                #
+                # tmp_generator = generator_model_api.class_dict[_library]()
+                #
+                # sref_ast = element_ast.Sref()
+                # sref_ast.name = _cellName
+                # sref_ast.library = _library
+                # sref_ast.className = generator_model_api.class_name_dict[_library]
+                # sref_ast.XY = self._QTObj._qtProject._DesignParameter[ParentName][_cellName]._DesignParameter['_XYCoordinates']
+                # sref_ast.parameters = tmp_generator._ParametersForDesignCalculation
+                #
+                # design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= sref_ast)
+                # self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
+                #                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+                #
+                # return _designObj
+                #
 
     def debugConstraint(self):
         try:
@@ -745,7 +809,6 @@ class _MainWindow(QMainWindow):
 
                 moduleLength = len(addedModuleList)
                 minimumModule = round(moduleLength/50)
-
                 idLength = 0
 
                 entireHierarchy = self._QTObj._qtProject._getEntireHierarchy()
@@ -764,6 +827,8 @@ class _MainWindow(QMainWindow):
                 self.qpd.show()
 
             self._QTObj._qtProject._UpdateXYCoordinatesForDisplay(_ParentName=rootModule)
+
+
             for module in addedModuleList:
                 try:
                     for id in self._QTObj._qtProject._DesignParameter[module]:
@@ -866,6 +931,10 @@ class _MainWindow(QMainWindow):
             pass
 
         print("Load GDS Done")
+        aa = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': 'NbodyContact', 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'PbodyContact', 'M1_POD_CDNS_572756093854': None})
+        # print(aa)
+        # print(aa.keys())
+
 
     def print_dict(self, dict):
         print(dict)
