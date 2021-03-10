@@ -931,7 +931,7 @@ class _MainWindow(QMainWindow):
             pass
 
         print("Load GDS Done")
-        aa = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': 'NbodyContact', 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'PbodyContact', 'M1_POD_CDNS_572756093854': None})
+        # aa = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': 'NbodyContact', 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'PbodyContact', 'M1_POD_CDNS_572756093854': None})
         # print(aa)
         # print(aa.keys())
 
