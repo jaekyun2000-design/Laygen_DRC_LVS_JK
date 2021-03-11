@@ -509,6 +509,8 @@ class _MainWindow(QMainWindow):
 
         ################ SREF Modulization START ##################
         for modules in srefModulesList:
+            # Constraint Creation
+            modules._DesignParameter['_ModelStructure'] = self._QTObj._qtProject._DesignParameter[modules._DesignParameter['_DesignObj']]
             for i in range(0, len(flattenXCellList)):
                 findHint = modules._DesignParameter['_DesignObj'].find(flattenXCellList[i][2])
                 if findHint != -1:
@@ -526,9 +528,12 @@ class _MainWindow(QMainWindow):
                     break
                 else:
                     continue
-            pass
+
         pass
-        ########### SREF Modulization END  ###############
+
+
+        # TODO : SREF
+        ################ SREF Modulization END  #####################
 
 
 
@@ -536,7 +541,7 @@ class _MainWindow(QMainWindow):
 
 
 
-        return FlattenXStructureDict
+        return FlattenXStructureDict, srefModulesList
 
 
 
@@ -967,9 +972,9 @@ class _MainWindow(QMainWindow):
             pass
 
         print("Load GDS Done")
-        aa = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': 'NbodyContact', 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'PbodyContact', 'M1_POD_CDNS_572756093854': None})
-        # print(aa)
-        # print(aa.keys())
+        aa, ModulizedSREF = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': 'NbodyContact', 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'PbodyContact', 'M1_POD_CDNS_572756093854': None})
+
+        pass
 
 
     def print_dict(self, dict):
