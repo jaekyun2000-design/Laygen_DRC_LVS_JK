@@ -38,15 +38,18 @@ class ElementManager:
                     tmpAST.__dict__[key] = dp_dict['_Width']
 
         elif dp_dict['_DesignParametertype'] == 3:  #Sref
-            # tmpAST = element_ast.Sref()
-            # for key in element_ast.Sref._fields:
-            #     if key == 'name':
-            #         tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
-            #     elif key == 'base':
-            #         tmpAST.__dict__[key] = dp_dict['_DesignObj']
-            #     elif key == 'XY':
-            #         tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]  #Not complete
-            return None, None
+            tmpAST = element_ast.Sref()
+            for key in element_ast.Sref._fields:
+                if key == 'name':
+                    tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
+                elif key == 'library':
+                    tmpAST.__dict__[key] = dp_dict['_DesignLibraryName']
+                elif key == 'className':
+                    tmpAST.__dict__[key] = dp_dict['_className']
+                elif key == 'XY':
+                    tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]
+                elif key == 'parameters':
+                    tmpAST.__dict__[key] = dp_dict['_Parameters']
 
 
         elif dp_dict['_DesignParametertype'] == 'element array':  #EA
@@ -148,8 +151,33 @@ class ElementManager:
                     tmpDP[key] = None
 
         elif ASTmodule._getASTtype(ast) == 'Sref':
-            # tmpDP = ast.__dict__
-            pass
+            tmpDP = dict()
+            for key in KeyManager._SRefkey.keys():
+                if key == '_id':
+                    tmpDP[key] = None
+                elif key == '_DesignParametertype':
+                    tmpDP[key] = 3
+                elif key == '_XYCoordinates':
+                    tmpDP[key] = ast.XY
+                elif key == '_DesignObj':
+                    tmpDP[key] = None
+                elif key == '_DesignLibraryName':
+                    tmpDP[key] = ast.__dict__['library']
+                elif key == '_className':
+                    tmpDP[key] = ast.__dict__['className']
+                elif key == '_Reflect':
+                    tmpDP[key] = None
+                elif key == '_Angle':
+                    tmpDP[key] = None
+                elif key == '_Parameters':
+                    tmpDP[key] = ast.__dict__['parameters']
+                elif key == '_Ignore':
+                    tmpDP[key] = None
+                elif key == '_ElementName':
+                    tmpDP[key] = None
+                elif key == '_DesignParameterName':
+                    tmpDP[key] = ast.__dict__['name']
+                pass
 
         elif ASTmodule._getASTtype(ast) == 'Text':
             # 'id',  # name str
@@ -162,6 +190,7 @@ class ElementManager:
             # 'text'  # int or str
             tmpDP = dict()
             for key in KeyManager._Textkey.keys():
+
                 if key == '_id':
                     tmpDP[key] = ast.__dict__['id']
                 elif key == '_DesignParameterType':
@@ -277,10 +306,21 @@ class KeyManager():
         )
 
     _SRefkey = dict(
-        _Name=None,
-        _DataType="SRef",
-        _XYCoordinates=[],
-        _ItemRef=None
+        _id = None,
+        _DesignParametertype = 3,
+        _DesignObj = None,
+        _DesignLibraryName = None,
+        _className = None,
+
+        _Parameters = None,
+        _XYCoordinates = [],
+
+        _Reflect = None,
+        _Angle = None,
+        _Ignore = None,
+
+        _ElementName = None,
+        _DesignParameterName = None
         )
 
     _Textkey = dict(

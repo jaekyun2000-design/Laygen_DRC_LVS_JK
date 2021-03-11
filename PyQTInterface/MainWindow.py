@@ -491,7 +491,7 @@ class _MainWindow(QMainWindow):
                         if self._QTObj._qtProject._DesignParameter[_id][_element]._DesignParameter['_DesignParametertype'] == 3:
                             findHint = self._QTObj._qtProject._DesignParameter[_id][_element]._DesignParameter['_DesignObj'].find(_structureName)
                             if findHint != -1:  # Found
-                                flattenXCellList.append([_id, _element])
+                                flattenXCellList.append([_id, _element, _structureName, _library])
                             else:
                                 pass
                         else:
@@ -499,11 +499,42 @@ class _MainWindow(QMainWindow):
                     pass
                 pass
 
-        for i in range (len(flattenXCellList)-1):
+        for i in range(0, len(flattenXCellList)):
             srefModulesList.append(self._QTObj._qtProject._DesignParameter[flattenXCellList[i][0]][flattenXCellList[i][1]])
+
         print(flattenXCellList)  # Name of the cells that should not be flattened
-        print(srefModulesList)   # Cell modules which use Sref Structure modules
-        print(FlattenXStructureDict)    # Structure modules which are used inside the Top cell.
+        print(srefModulesList)   # Cell modules which use Sref Structure modules: Warning! dp values are not enough to create AST!!
+        print(f'Returning Flatten X Structures: \n{FlattenXStructureDict}')    # Structure modules which are used inside the Top cell.
+
+
+        ################ SREF Modulization START ##################
+        for modules in srefModulesList:
+            for i in range(0, len(flattenXCellList)):
+                findHint = modules._DesignParameter['_DesignObj'].find(flattenXCellList[i][2])
+                if findHint != -1:
+                    modules._DesignParameter['_DesignLibraryName'] = flattenXCellList[i][3]
+                    modules._DesignParameter['_className'] = generator_model_api.class_name_dict[modules._DesignParameter['_DesignLibraryName']]
+                    modules._DesignParameter['_Parameters'] = None
+                    tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(modules)
+                    if tmpAST == None:
+                        continue
+                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                      module_name=self._CurrentModuleName, _ast=tmpAST)
+                    self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                     _parentName=self._CurrentModuleName,
+                                                                     _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+                    break
+                else:
+                    continue
+            pass
+        pass
+        ########### SREF Modulization END  ###############
+
+
+
+
+
+
 
         return FlattenXStructureDict
 
@@ -515,26 +546,31 @@ class _MainWindow(QMainWindow):
 
 
 
-                # ParentName = "".join(re.findall('[^\d]', _cellName))
-                #
-                # _designObjName = self._QTObj._qtProject._DesignParameter[ParentName][_cellName]._DesignParameter['_DesignObj']  # _designObjName : str
-                # _designObj = self._QTObj._qtProject._DesignParameter['_designObj']                   # _designObj : object
-                #
-                # tmp_generator = generator_model_api.class_dict[_library]()
-                #
-                # sref_ast = element_ast.Sref()
-                # sref_ast.name = _cellName
-                # sref_ast.library = _library
-                # sref_ast.className = generator_model_api.class_name_dict[_library]
-                # sref_ast.XY = self._QTObj._qtProject._DesignParameter[ParentName][_cellName]._DesignParameter['_XYCoordinates']
-                # sref_ast.parameters = tmp_generator._ParametersForDesignCalculation
-                #
-                # design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= sref_ast)
-                # self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
-                #                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-                #
-                # return _designObj
-                #
+
+
+
+        # ParentName = "".join(re.findall('[^\d]', _cellName))
+        #
+        # _designObjName = self._QTObj._qtProject._DesignParameter[ParentName][_cellName]._DesignParameter['_DesignObj']  # _designObjName : str
+        # _designObj = self._QTObj._qtProject._DesignParameter['_designObj']                   # _designObj : object
+        #
+        # tmp_generator = generator_model_api.class_dict[_library]()
+        #
+        # sref_ast = element_ast.Sref()
+        # sref_ast.name = _cellName
+        # sref_ast.library = _library
+        # sref_ast.className = generator_model_api.class_name_dict[_library]
+        # sref_ast.XY = self._QTObj._qtProject._DesignParameter[ParentName][_cellName]._DesignParameter['_XYCoordinates']
+        # sref_ast.parameters = tmp_generator._ParametersForDesignCalculation
+        #
+        # design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= sref_ast)
+        # self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
+        #                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+        #
+        # return _designObj
+        #
+
+
 
     def debugConstraint(self):
         try:
@@ -931,7 +967,7 @@ class _MainWindow(QMainWindow):
             pass
 
         print("Load GDS Done")
-        # aa = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': 'NbodyContact', 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'PbodyContact', 'M1_POD_CDNS_572756093854': None})
+        aa = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': 'NbodyContact', 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'PbodyContact', 'M1_POD_CDNS_572756093854': None})
         # print(aa)
         # print(aa.keys())
 

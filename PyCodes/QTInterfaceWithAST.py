@@ -70,15 +70,14 @@ class QtDesignParameter:
             _tmpDesignParameter["_DesignParametertype"] = 2
             _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
         elif self._type == 3:  # sref
-            _tmpDesignParameter["_DesignObj"] = None  ####[libName, moduleName] ????
-            _tmpDesignParameter["_DesignLibraryName"] = None  ####[libName, moduleName] ????
-            _tmpDesignParameter[
-                "_DesignModuleName"] = None  ###_ViaPoly2Met1OnPMOS = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_DesignParameter=None, _Name='ViaPoly2Met1OnPMOSIn{}'.format(_Name)))[0],
-            _tmpDesignParameter[
-                "_XYCoordinates"] = []  ###$_DesignParameterName = self._SrefElementDeclaration(_DesignObj=$_DesignLibName.$_DesignModuleName(_DesignParameter=None, _Name=$_DesignObj))[0]
+            _tmpDesignParameter["_DesignObj"] = None  ## PMOSInInv, NMOSInInv ...
+            _tmpDesignParameter["_DesignLibraryName"] = None  #### PMOSWithDummy, NMOSWithDummy ...
+            _tmpDesignParameter["_className"] = None
+            _tmpDesignParameter["_XYCoordinates"] = []
             _tmpDesignParameter["_Reflect"] = None
             _tmpDesignParameter["_Angle"] = None
             _tmpDesignParameter["_Ignore"] = None
+            _tmpDesignParameter["_Parameters"] = None
             _tmpDesignParameter["_ElementName"] = None
             _tmpDesignParameter["_DesignParametertype"] = 3
             _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
