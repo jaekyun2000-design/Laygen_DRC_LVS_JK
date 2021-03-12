@@ -387,7 +387,7 @@ class _MainWindow(QMainWindow):
         self.ConstraintTemplateButton.clicked.connect(self.makeTemplateWindow)
         # self.parsetreeEasyRun.clicked.connect(self.easyRun)
         self.variableCallButton.clicked.connect(self.variableListUpdate)
-        self.sref_debug.clicked.connect(self.sref_debug_module)
+        self.sref_debug.clicked.connect(self.sref_visual_debug)
 
 
         ################ Logging Message Dock Widget setting ####################
@@ -460,7 +460,33 @@ class _MainWindow(QMainWindow):
 
         # tmp_generator._ParametersForDesignCalculation
 
+    def sref_visual_debug(self):
+        DesignParameter = QTInterfaceWithAST.QtDesignParameter(_id='test1',_type=1, _ParentName='INV', _DesignParameterName='name')
+        DesignParameter._createDesignParameter()
+        DesignParameter._setDesignParameterValue(_index='_Layer', _value='METAL1')
+        DesignParameter._setDesignParameterValue(_index='_Datatype', _value='PIMP')
+        DesignParameter._setDesignParameterValue(_index='_XYCoordinatesForDisplay', _value=[[0,0]])
+        DesignParameter._setDesignParameterValue(_index='_XWidth', _value=100)
+        DesignParameter._setDesignParameterValue(_index='_YWidth', _value=100)
+        DesignParameter._setDesignParameterValue(_index='_Ignore', _value=False)
+        DesignParameter._setDesignParameterValue(_index='_ElementName', _value='name')
+        visualItem = VisualizationItem._VisualizationItem()
+        visualItem.updateDesignParameter(DesignParameter)
+        visualItem.setBoundingRegionGranularity(1)
+        self.visualItemDict[DesignParameter._id] = visualItem
 
+        visualItem.setToolTip(DesignParameter._id + '\n' + str(DesignParameter._type))
+        # self.scene.addItem(visualItem)
+
+        visualItem2 = VisualizationItem._VisualizationItem()
+
+        visualItem2.setPos(-200,0)
+        visualItem2._subSrefVisualItem = visualItem
+        self.scene.addItem(visualItem2)
+        # visualItem3 = VisualizationItem._VisualizationItem()
+        # visualItem3.addToGroup(visualItem)
+        # self.scene.addItem(visualItem3)
+        # return visualItem
 
         pass
         # design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= _AST)

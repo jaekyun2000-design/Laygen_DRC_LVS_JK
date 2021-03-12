@@ -170,6 +170,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         self._NoShowFlag = False
         self._SimplifyFlag = False
         self._multipleBlockFlag = False
+        self._subSrefVisualItem = None
         if _ItemTraits is None:
             self._ItemTraits = dict(
                 _DesignParameterName = None,
@@ -190,9 +191,11 @@ class _VisualizationItem(QGraphicsItemGroup):
             self.block = []
             self.blockGeneration()
 
-    def paint(self, painter, option, widget) -> None:
-        pass
-
+    # def paint(self, painter, option, widget) -> None:
+    #     super(_VisualizationItem, self).paint(painter, option, widget)
+    #     if self._subSrefVisualItem != None:
+    #         self._subSrefVisualItem.paint(painter, option, widget)
+    #     pass
 
     def shape(self):
         if self._type == 1:
