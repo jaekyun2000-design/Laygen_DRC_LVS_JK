@@ -472,18 +472,65 @@ class _MainWindow(QMainWindow):
         #             self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
         #         self.updateGraphicItem(visualItem)
     def srefModulization(self,_flattenStatusDict):
-        print('_flattenStatusDict: ',_flattenStatusDict)
+        """
+        :param _flattenStatusDict:
+        :return: 1.Structure Modules which have been selected Not to be flattened
+                 2.Sref Cell Modules where subcell information is added
+                    (subcell information added inside self._QTObj._qtProject._DesignParameters[_id][_element].\
+                    _DesignParameter['_ModelStructure']
+        """
         flattenXCellList = []
+        FlattenedCellDict= {}
+        FlattenedCellList= []
         srefModulesList = []
         FlattenXStructureDict = {}
+
+        addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
+        topCellName = addedModulelist[-1]
+        lastSrefName = list(self._QTObj._qtProject._DesignParameter[topCellName].keys())[-1]
+        numberOfCells = int(re.findall('\d+', lastSrefName)[0])
+        print("##############################################################")
+        print(f"There are '{numberOfCells}' cells inside '{topCellName}' cell")
+        print("##############################################################")
+
         for _structureName, _library in _flattenStatusDict.items():
             if _library == None:
                 print(f"{_structureName} module flattening start")
-                """
-                Flattening conduction
-                
-                """
-                pass
+                numberOfNewCells = len(self._QTObj._qtProject._DesignParameter[_structureName].keys())
+                # tmpkeys = list(self._QTObj._qtProject._DesignParameter[_structureName].keys())
+                # for i in range(numberOfCells +1, numberOfCells + numberOfNewCells):
+                #     FlattenedCellDict[f'INV{i}'] = self._QTObj._qtProject._DesignParameter[_structureName][tmpkeys[i-1-numberOfCells]]
+                #
+                #     FlattenedCellDict[f'INV{i}']._id =  f'INV{i}'
+                #     FlattenedCellDict[f'INV{i}']._DesignParameterName = f'INV{i}'
+                #     FlattenedCellDict[f'INV{i}']._DesignParameter['_id'] = f'INV{i}'
+                #     FlattenedCellDict[f'INV{i}']._DesignParameter['_DesignParameterName'] = f'INV{i}'
+
+                # TODO: do not change '_id's or '_type's manually; Use QTInterFaceWithAST -> getDesignParameterID
+                for elements in self._QTObj._qtProject._DesignParameter[_structureName].keys():
+
+                    _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(topCellName)
+                    _newConstraintID = (topCellName + str(_designConstraintID))
+
+                    FlattenedCellDict[_newConstraintID] =  self._QTObj._qtProject._DesignParameter[_structureName][elements]
+                    FlattenedCellDict[_newConstraintID]._id = _newConstraintID
+                    FlattenedCellDict[_newConstraintID]._DesignParameterName = _newConstraintID
+                    FlattenedCellDict[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
+                    FlattenedCellDict[_newConstraintID]._DesignParameter['_DesignParameterName'] = _newConstraintID
+
+                    tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(FlattenedCellDict[_newConstraintID])
+                    if tmpAST is None:
+                        continue
+                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=topCellName,\
+                                                                      _ast=tmpAST, element_manager_update=False)
+                    self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                     _parentName=topCellName,
+                                                                     _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+                    tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
+                    self._ElementManager.load_dp_dc_id(dp_id=topCellName, dc_id=topCellName)
+
+
+
             else:
                 FlattenXStructureDict[_structureName] = self._QTObj._qtProject._DesignParameter[_structureName]
                 # FlattenXStructureList.append(self._QTObj._qtProject._DesignParameter[_structureName])
@@ -510,7 +557,7 @@ class _MainWindow(QMainWindow):
 
         ################ SREF Modulization START ##################
         for modules in srefModulesList:
-            # Constraint Creation
+            # Constraint Creation w/ Sub cell info added
             modules._DesignParameter['_ModelStructure'] = self._QTObj._qtProject._DesignParameter[modules._DesignParameter['_DesignObj']]
             for i in range(0, len(flattenXCellList)):
                 findHint = modules._DesignParameter['_DesignObj'].find(flattenXCellList[i][2])
@@ -529,20 +576,13 @@ class _MainWindow(QMainWindow):
                     break
                 else:
                     continue
-
-        pass
-
-
-        # TODO : SREF
+                pass
+            pass
+                # TODO: SREF Subcell info should not be disclosed inside srefModulesList.
         ################ SREF Modulization END  #####################
 
 
-
-
-
-
-
-        return FlattenXStructureDict, srefModulesList
+        return FlattenXStructureDict, srefModulesList, FlattenedCellDict
 
 
 
@@ -973,7 +1013,7 @@ class _MainWindow(QMainWindow):
             pass
 
         print("Load GDS Done")
-        aa, ModulizedSREF = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': 'NbodyContact', 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'PbodyContact', 'M1_POD_CDNS_572756093854': None})
+        aa, ModulizedSREF, FlattenedSREF = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': 'NbodyContact', 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'PbodyContact', 'M1_POD_CDNS_572756093854': None})
 
 
         for sref_design_parameter in ModulizedSREF:
@@ -981,13 +1021,14 @@ class _MainWindow(QMainWindow):
             sref_vi.updateDesignParameter(sref_design_parameter)
         self.scene.addItem(sref_vi)
 
+        #TODO: XYCoordinates Debugging needed
 
 
         # self.vi = VisualizationItem._VisualizationItem()
         # for i in range(len(ModulizedSREF)):
         #     self.vi.updateDesignParameter(ModulizedSREF[i])
 
-        # aa = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': 'NbodyContact', 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'PbodyContact', 'M1_POD_CDNS_572756093854': None})
+        # aa = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': 'NbodyContact', 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'ViaPoly2Met1', 'M1_POD_CDNS_572756093854': None})
         # print(aa)
         # print(aa.keys())
 
