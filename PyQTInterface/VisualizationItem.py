@@ -160,6 +160,7 @@ class _RectBlock(QGraphicsRectItem):
 class _VisualizationItem(QGraphicsItemGroup):
     def __init__(self,_ItemTraits=None):
         super().__init__()
+        self.outputForSRef = None
         self.setBoundingRegionGranularity(1)
         self._id = None
         self._type = None
@@ -212,7 +213,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         else:
             return super().shape()
 
-    def updateDesignParameter(self,QtDesignParameter):
+    def updateDesignParameter(self,QtDesignParameter,):
         self._id = QtDesignParameter._id
         self._type = QtDesignParameter._type
         try:
@@ -220,8 +221,8 @@ class _VisualizationItem(QGraphicsItemGroup):
         except:
             QtDesignParameter._XYCoordinatesForDisplay = []
         if QtDesignParameter._XYCoordinatesForDisplay == [] or QtDesignParameter._XYCoordinatesForDisplay == None:
-            if QtDesignParameter._DesignParameter['_XYCoordinatesForDisplay']:
-                QtDesignParameter._XYCoordinatesForDisplay = QtDesignParameter._DesignParameter['_XYCoordinatesForDisplay']
+            if QtDesignParameter._DesignParameter['_XYCoordinates']:
+                QtDesignParameter._XYCoordinatesForDisplay = QtDesignParameter._DesignParameter['_XYCoordinates']
             else:
                 QtDesignParameter._XYCoordinatesForDisplay = [[0,0]]
 
@@ -230,6 +231,8 @@ class _VisualizationItem(QGraphicsItemGroup):
         if self._type == 1:
             self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
         elif self._type == 2:
+            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
+        elif self._type == 3:
             self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
         elif self._type == 8:
             self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
@@ -240,6 +243,8 @@ class _VisualizationItem(QGraphicsItemGroup):
         else:
             self._ItemTraits['_DesignParameterName'] = QtDesignParameter._DesignParameterName
         self.updateTraits(QtDesignParameter._DesignParameter)
+
+        return self.outputForSRef
 
 
     def updateTraits(self,_DesignParameter):
@@ -273,8 +278,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.warning.setText("Invalid Design Value")
                 self.warning.setIcon(QMessageBox.Warning)
         elif self._ItemTraits['_DesignParametertype'] == 3:
-            pass
-
+            self._ItemTraits['_DesignParameterRef'] = _DesignParameter['_ModelStructure']
+            # for key in _DesignParameter['_ModelStructure']:
+            #     self._ItemTraits['_VisualizationItems'].append(_DesignParameter['_ModelStructure'][key])
         if self._multipleBlockFlag == None:
             _multipleBlockFlag = False
 
@@ -288,6 +294,10 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.blockGeneration(xyPairs)
             self.setPos(0,0)
         elif self._ItemTraits['_DesignParametertype'] == 2:
+            self.block = []
+            self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+            self.setPos(0,0)
+        elif self._ItemTraits['_DesignParametertype'] == 3:
             self.block = []
             self.blockGeneration(self._ItemTraits['_XYCoordinates'])
             self.setPos(0,0)
@@ -399,25 +409,21 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self.block.append(_RectBlock(blockTraits))  #Block Generation
                     self.block[i].setPos(Xmin*scaleValue,Ymin*scaleValue)
                     self.addToGroup(self.block[i])
+
             elif self._ItemTraits['_DesignParametertype'] is 3:                #SRef Case
-                for item in self._ItemTraits['_VisualizationItems']:
-                    self.addToGroup(item)
-                pass
+                for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
+                    sub_element_vi = _VisualizationItem()
+                    sub_element_vi.updateDesignParameter(sub_element_dp)
+                    sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
+                    self.addToGroup(sub_element_vi)
+
             elif self._ItemTraits['_DesignParametertype'] is 8:                #Text Case
                 if blockTraits['_Layer'] == 127:
                     self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
                     self.text.setPos(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1])
                     self.text.setFlag(QGraphicsItem.ItemIgnoresTransformations)
-                    # # print(type(self.text))
-                    # # self.text.setFlag(QGraphicsItem.scale)
-                    # # self.aa = QPainter()
-                    # # self.aa.drawText(0,0,self.text)
-                    # # self.text.setTransformOriginPoint(0,0)
-                    # # self.text.scale()
-                    # # self.text.setScale(1)
-                    # # self.text.setRotation(180)
-                    self.addToGroup(self.text)
 
+                    self.addToGroup(self.text)
 
                     # text = QPainter()
                     # aa = QRectF(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1],100,100)

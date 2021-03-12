@@ -472,6 +472,7 @@ class _MainWindow(QMainWindow):
         #             self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
         #         self.updateGraphicItem(visualItem)
     def srefModulization(self,_flattenStatusDict):
+        print('_flattenStatusDict: ',_flattenStatusDict)
         flattenXCellList = []
         srefModulesList = []
         FlattenXStructureDict = {}
@@ -974,7 +975,21 @@ class _MainWindow(QMainWindow):
         print("Load GDS Done")
         aa, ModulizedSREF = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': 'NbodyContact', 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'PbodyContact', 'M1_POD_CDNS_572756093854': None})
 
-        pass
+
+        for sref_design_parameter in ModulizedSREF:
+            sref_vi = VisualizationItem._VisualizationItem()
+            sref_vi.updateDesignParameter(sref_design_parameter)
+        self.scene.addItem(sref_vi)
+
+
+
+        # self.vi = VisualizationItem._VisualizationItem()
+        # for i in range(len(ModulizedSREF)):
+        #     self.vi.updateDesignParameter(ModulizedSREF[i])
+
+        # aa = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': 'NbodyContact', 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'PbodyContact', 'M1_POD_CDNS_572756093854': None})
+        # print(aa)
+        # print(aa.keys())
 
 
     def print_dict(self, dict):
