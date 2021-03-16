@@ -2474,30 +2474,53 @@ class QtProject:
                         "_ConstraintsForVariableDefineTemplate: " + userDefineExceptions._UnkownError)
                 return userDefineExceptions._UnkownError
 
-    def _getEntireHierarchy(self):
-
-        addedTopModule = list(self._DesignParameter.items())[-1][0]
-        hierarchyDict={}
-        searchStack =[]
-        searchStack.append(addedTopModule)
-        hierarchyDict[addedTopModule] = dict()
-        while searchStack:
-            searchmodule = searchStack.pop(0)
-            for _, element in self._DesignParameter[searchmodule].items():
+    def _getEntireHierarchy(self, searchmodule = None):
+        hierarchyDict = {}
+        if searchmodule == None: # Initial Condition
+            addedTopModule = list(self._DesignParameter.items())[-1][0]
+            hierarchyDict[addedTopModule] = dict()
+            for _, element in self._DesignParameter[addedTopModule].items():
                 if element._DesignParameter['_DesignParametertype'] == 3:
-                    try:
-                        if element._DesignParameter['_DesignObj'] in searchStack:
+                    subcell = element._DesignParameter['_DesignObj']
+                    tmpHierarchyDict1 = self._getEntireHierarchy(subcell)
+                    for key, value in tmpHierarchyDict1.items():
+                        if key in hierarchyDict[addedTopModule].keys():
                             continue
                         else:
-                            searchStack.append(element._DesignParameter['_DesignObj'])
-                            if hierarchyDict[searchmodule] == None:
-                                hierarchyDict[searchmodule] = dict()
-                                hierarchyDict[searchmodule][element._DesignParameter['_DesignObj']] = None
-                            else:
-                                hierarchyDict[searchmodule][element._DesignParameter['_DesignObj']] = None
+                            hierarchyDict[addedTopModule][key] = value
 
-                    except:
-                        print("element")
+        else: # Recursive Search
+            tmpstack = []
+            for _, element in self._DesignParameter[searchmodule].items():
+                if element._DesignParameter['_DesignParametertype'] == 3:
+                    subcell = element._DesignParameter['_DesignObj']
+                    tmpstack.append(subcell)
+                    tmpHierarchyDict2 = self._getEntireHierarchy(subcell)
+                    hierarchyDict[searchmodule] = tmpHierarchyDict2
+                else:
+                    continue
+            if tmpstack == []:
+                hierarchyDict[searchmodule] = None
+        # searchStack =[]
+        # searchStack.append(addedTopModule)
+        # while searchStack:
+        #     searchmodule = searchStack.pop(0)
+        #     for _, element in self._DesignParameter[searchmodule].items():
+        #         if element._DesignParameter['_DesignParametertype'] == 3:
+        #             try:
+        #                 if element._DesignParameter['_DesignObj'] in searchStack:
+        #                     pass
+        #                 else:
+        #                     searchStack.append(element._DesignParameter['_DesignObj'])
+        #                     if hierarchyDict[searchmodule] == None:
+        #                         hierarchyDict[searchmodule] = dict()
+        #                         hierarchyDict[searchmodule][element._DesignParameter['_DesignObj']] = None
+        #                     else:
+        #                         hierarchyDict[searchmodule][element._DesignParameter['_DesignObj']] = None
+        #
+        #             except:
+        #                 print("element")
+
 
         return hierarchyDict
 
