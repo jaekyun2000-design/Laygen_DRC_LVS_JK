@@ -457,6 +457,37 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
                                                          _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
+
+        # tmp_generator._ParametersForDesignCalculation
+
+    def sref_visual_debug(self):
+        DesignParameter = QTInterfaceWithAST.QtDesignParameter(_id='test1',_type=1, _ParentName='INV', _DesignParameterName='name')
+        DesignParameter._createDesignParameter()
+        DesignParameter._setDesignParameterValue(_index='_Layer', _value='METAL1')
+        DesignParameter._setDesignParameterValue(_index='_Datatype', _value='PIMP')
+        DesignParameter._setDesignParameterValue(_index='_XYCoordinatesForDisplay', _value=[[0,0]])
+        DesignParameter._setDesignParameterValue(_index='_XWidth', _value=100)
+        DesignParameter._setDesignParameterValue(_index='_YWidth', _value=100)
+        DesignParameter._setDesignParameterValue(_index='_Ignore', _value=False)
+        DesignParameter._setDesignParameterValue(_index='_ElementName', _value='name')
+        visualItem = VisualizationItem._VisualizationItem()
+        visualItem.updateDesignParameter(DesignParameter)
+        visualItem.setBoundingRegionGranularity(1)
+        self.visualItemDict[DesignParameter._id] = visualItem
+
+        visualItem.setToolTip(DesignParameter._id + '\n' + str(DesignParameter._type))
+        # self.scene.addItem(visualItem)
+
+        visualItem2 = VisualizationItem._VisualizationItem()
+
+        visualItem2.setPos(-200,0)
+        visualItem2._subSrefVisualItem = visualItem
+        self.scene.addItem(visualItem2)
+        # visualItem3 = VisualizationItem._VisualizationItem()
+        # visualItem3.addToGroup(visualItem)
+        # self.scene.addItem(visualItem3)
+        # return visualItem
+
         pass
         # design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= _AST)
         # self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
@@ -466,30 +497,54 @@ class _MainWindow(QMainWindow):
         #         visualItem = self.createVisualItemfromDesignParameter(
         #             self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
         #         self.updateGraphicItem(visualItem)
-    def srefProcessor(self, _cell, _parentCellName, _flattenStatusDict):    # srefProcessor(FF32, 'FF', {})
-        subCellName = _cell._DesignParameter['_DesignObj']
-        tmplist = []
-        stack = []
-        FlattenDict = {}
-        tmpModule = self._QTObj._qtProject._DesignParameter[subCellName]
+    def srefModulization(self,_flattenStatusDict):
+        flattenXCellList = []
+        srefModulesList = []
+        FlattenXStructureDict = {}
+        for _structureName, _library in _flattenStatusDict.items():
+            if _library == None:
+                print(f"{_structureName} module flattening start")
+                """
+                Flattening conduction
+                
+                """
+                pass
+            else:
+                FlattenXStructureDict[_structureName] = self._QTObj._qtProject._DesignParameter[_structureName]
+                # FlattenXStructureList.append(self._QTObj._qtProject._DesignParameter[_structureName])
+                for _id in self._QTObj._qtProject._DesignParameter.keys():
+                    for _element in self._QTObj._qtProject._DesignParameter[_id].keys():
+                        if self._QTObj._qtProject._DesignParameter[_id][_element]._DesignParameter['_DesignParametertype'] == 3:
+                            findHint = self._QTObj._qtProject._DesignParameter[_id][_element]._DesignParameter['_DesignObj'].find(_structureName)
+                            if findHint != -1:  # Found
+                                flattenXCellList.append([_id, _element, _structureName, _library])
+                            else:
+                                pass
+                        else:
+                            pass
+                    pass
+                pass
 
-        for _element in tmpModule:
-            if tmpModule[_element]._DesignParameter["_DesignParametertype"] == 3:    # Sub Sref exists.
-                processedModuleDict = self.srefProcessor(tmpModule[_element], subCellName, _flattenStatusDict)
-                for key,value in processedModuleDict.items():
-                    tmpModule[key] = value
-            else:   # For Boundarys, Paths
-                for _key, _value in _flattenStatusDict.items():
-                    if _key == _parentCellName:
-                        if _value == None:  #Flattening O
-                            tmplist.append(tmpModule[_element])
-                            break
-                        else:   # Flattening X
+        for i in range(0, len(flattenXCellList)):
+            srefModulesList.append(self._QTObj._qtProject._DesignParameter[flattenXCellList[i][0]][flattenXCellList[i][1]])
 
-                            FlattenDict[_element] = (tmpModule[_element])
-                            break
+        print(flattenXCellList)  # Name of the cells that should not be flattened
+        print(srefModulesList)   # Cell modules which use Sref Structure modules: Warning! dp values are not enough to create AST!!
+        print(f'Returning Flatten X Structures: \n{FlattenXStructureDict}')    # Structure modules which are used inside the Top cell.
 
-                    else:
+
+        ################ SREF Modulization START ##################
+        for modules in srefModulesList:
+            # Constraint Creation
+            modules._DesignParameter['_ModelStructure'] = self._QTObj._qtProject._DesignParameter[modules._DesignParameter['_DesignObj']]
+            for i in range(0, len(flattenXCellList)):
+                findHint = modules._DesignParameter['_DesignObj'].find(flattenXCellList[i][2])
+                if findHint != -1:
+                    modules._DesignParameter['_DesignLibraryName'] = flattenXCellList[i][3]
+                    modules._DesignParameter['_className'] = generator_model_api.class_name_dict[modules._DesignParameter['_DesignLibraryName']]
+                    modules._DesignParameter['_Parameters'] = None
+                    tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(modules)
+                    if tmpAST == None:
                         continue
         if FlattenDict != {}:
             _cell._DesignParameter['_ModelStructure'] = FlattenDict

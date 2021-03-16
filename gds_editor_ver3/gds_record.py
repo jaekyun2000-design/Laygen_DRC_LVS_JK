@@ -76,7 +76,7 @@ class GDS_SRFNAME():
         
         if len(self.srfname)%2:
             fmt='>HH'+str(len(self.srfname)+1)+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.srfname+'\0')
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.srfname)+b'\0')
             binary_gds_stream.write(fmt_binary_data)
         
             
@@ -115,7 +115,7 @@ class GDS_LIBNAME():
     def write_binary_gds_stream(self,binary_gds_stream):
         if len(self.libname)%2:
             fmt='>HH'+str(len(self.libname)+1)+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.libname+'\0')
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.libname)+b'\0')
             binary_gds_stream.write(fmt_binary_data)
         else:
             fmt='>HH'+str(len(self.libname))+'s'
@@ -136,7 +136,7 @@ class GDS_REFLIBS():
     def write_binary_gds_stream(self,binary_gds_stream):
         if len(self.reflibs)%2:
             fmt='>HH'+str(len(self.reflibs)+1)+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.reflibs+'\0')
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.reflibs)+b'\0')
             binary_gds_stream.write(fmt_binary_data)
         else:
             fmt='>HH'+str(len(self.reflibs))+'s'
@@ -157,7 +157,7 @@ class GDS_FONTS():
     def write_binary_gds_stream(self,binary_gds_stream):
         if len(self.fonts)%2:
             fmt='>HH'+str(len(self.fonts)+1)+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.fonts+'\0')
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.fonts)+b'\0')
             binary_gds_stream.write(fmt_binary_data)
         else:
             fmt='>HH'+str(len(self.fonts))+'s'
@@ -177,7 +177,7 @@ class GDS_ATTRTABLE():
     def write_binary_gds_stream(self,binary_gds_stream):
         if len(self.attrtable)%2:
             fmt='>HH'+str(len(self.attrtable)+1)+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.attrtable+'\0')
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.attrtable)+b'\0')
             binary_gds_stream.write(fmt_binary_data)
         else:
             fmt='>HH'+str(len(self.attrtable))+'s'
@@ -315,7 +315,7 @@ class GDS_MASK():
     def write_binary_gds_stream(self,binary_gds_stream):
         if len(self.mask)%2:
             fmt='>HH'+str(len(self.mask)+1)+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.mask+'\0')
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.mask)+b'\0')
             binary_gds_stream.write(fmt_binary_data)
         else:
             fmt='>HH'+str(len(self.mask))+'s'
@@ -372,11 +372,11 @@ class GDS_STRNAME():
     def write_binary_gds_stream(self,binary_gds_stream):
         if len(self.strname)%2:
             fmt='>HH'+str(len(self.strname)+1)+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.strname+'\0')
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.strname)+b'\0')
             binary_gds_stream.write(fmt_binary_data)
         else:
             fmt='>HH'+str(len(self.strname))+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.strname)
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.strname))
             binary_gds_stream.write(fmt_binary_data)
         
     def read_binary_gds_stream(self,tag, gds_data):
@@ -496,8 +496,8 @@ class GDS_XY():
         
         temp_list=[]
         for i in range(0,len(self.xy)):
-            temp_list.append(self.xy[i][0])
-            temp_list.append(self.xy[i][1])
+            temp_list.append(int(self.xy[i][0]))
+            temp_list.append(int(self.xy[i][1]))
         
         fmt='>HH{0}i'.format(len(temp_list))
         
@@ -606,11 +606,11 @@ class GDS_SNAME():
     def write_binary_gds_stream(self,binary_gds_stream):
         if len(self.sname)%2:
             fmt='>HH'+str(len(self.sname)+1)+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.sname+'\0')
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.sname)+b'\0')
             binary_gds_stream.write(fmt_binary_data)
         else:
             fmt='>HH'+str(len(self.sname))+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.sname)
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.sname)+b'\0')
             binary_gds_stream.write(fmt_binary_data)
             
     def read_binary_gds_stream(self,tag,gds_data):
@@ -743,7 +743,7 @@ class GDS_STRING():
     def write_binary_gds_stream(self,binary_gds_stream):
         if len(self.string_data)%2:
             fmt='>HH'+str(len(self.string_data)+1)+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.string_data+'\0')
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.string_data)+b'\0')
             binary_gds_stream.write(fmt_binary_data)
         else:
             fmt='>HH'+str(len(self.string_data))+'s'
@@ -826,13 +826,13 @@ class GDS_PROPVALUE():
         
         if len(self.propvalue)%2:
             fmt='>HH'+str(len(self.propvalue)+1)+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.propvalue+'\0')
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.propvalue)+b'\0')
             binary_gds_stream.write(fmt_binary_data)
         
             
         else:
             fmt='>HH'+str(len(self.propvalue))+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.propvalue)
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.propvalue)+b'\0')
             binary_gds_stream.write(fmt_binary_data)
             
     def read_binary_gds_stream(self,tag,gds_data):
@@ -922,7 +922,6 @@ def excess64_4byte_encode(real_num):
     excess64_4byte_mantissa=excess64_4byte_mantissa >> rest
     excess64_4byte_exponent=excess64_4byte_exponent+64  
     """6bit --> real4's exponent uses 7bit """
-    print(excess64_4byte_exponent)
     if excess64_4byte_exponent<0:
         excess64_4byte_mantissa=excess64_4byte_mantissa >> 4*(-excess64_4byte_exponent)
         excess64_4byte_exponent=0
