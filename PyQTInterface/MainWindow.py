@@ -457,11 +457,6 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
                                                          _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
-
-        # tmp_generator._ParametersForDesignCalculation
-
-
-
         pass
         # design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= _AST)
         # self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
@@ -474,40 +469,43 @@ class _MainWindow(QMainWindow):
     def srefProcessor(self, _cell, _parentCellName, _flattenStatusDict):    # srefProcessor(FF32, 'FF', {})
         subCellName = _cell._DesignParameter['_DesignObj']
         tmplist = []
-        finalList =[]
+        stack = []
         FlattenDict = {}
         tmpModule = self._QTObj._qtProject._DesignParameter[subCellName]
 
         for _element in tmpModule:
             if tmpModule[_element]._DesignParameter["_DesignParametertype"] == 3:    # Sub Sref exists.
-                processedModuleList = self.srefProcessor(_element, subCellName, _flattenStatusDict)
-                tmpModule[_element] = processedModuleList[0]
+                processedModuleDict = self.srefProcessor(tmpModule[_element], subCellName, _flattenStatusDict)
+                for key,value in processedModuleDict.items():
+                    tmpModule[key] = value
             else:   # For Boundarys, Paths
                 for _key, _value in _flattenStatusDict.items():
-                    if _key == subCellName:
+                    if _key == _parentCellName:
                         if _value == None:  #Flattening O
                             tmplist.append(tmpModule[_element])
-
+                            break
                         else:   # Flattening X
 
                             FlattenDict[_element] = (tmpModule[_element])
-
+                            break
 
                     else:
                         continue
         if FlattenDict != {}:
             _cell._DesignParameter['_ModelStructure'] = FlattenDict
             tmplist.append({subCellName: _cell})
+        tmpdict = {}
         for i in range(0, len(tmplist)):
-            for elements in tmplist[i]:
-                if type(elements) == dict:
-                    tmp = list(elements.values())
-                    finalList.append(tmp[0])
-                else:
-                    finalList.append(elements)
-                pass
-            pass
-        return finalList
+            tmpdict[tmplist[i]._id] = tmplist[i]
+        #     for elements in tmplist[i]:
+        #         if type(elements) == dict:
+        #             tmp = list(elements.values())
+        #             finalList.append(tmp[0])
+        #         else:
+        #             finalList.append(elements)
+        #         pass
+        #     pass
+        return tmpdict
 
 
 
@@ -1095,7 +1093,8 @@ class _MainWindow(QMainWindow):
         # for i in range(len(ModulizedSREF)):
         #     self.vi.updateDesignParameter(ModulizedSREF[i])
 
-        aa = self.srefModulization({'INV' : None, 'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': None, 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'ViaPoly2Met1', 'M1_POD_CDNS_572756093854': None})
+        # aa = self.srefModulization({'INV' : None, 'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': None, 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'ViaPoly2Met1', 'M1_POD_CDNS_572756093854': None})
+        # aa = self.srefModulization(({'subsrefTest' : None, 'nch_CDNS_615802355820' : 'NMOSWithDummy', 'pch_CDNS_615802355820' : None, 'subsrefGDS' : None }))
         # print(aa)
         print('DEBUG')
 
