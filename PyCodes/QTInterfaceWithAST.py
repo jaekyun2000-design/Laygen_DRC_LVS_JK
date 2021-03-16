@@ -1,6 +1,7 @@
 import sys
 import os
 import collections
+import traceback
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from PyQTInterface import VisualizationItem
@@ -838,7 +839,7 @@ class QtProject:
                         _tmpId = self._getDesignParameterId(_ParentName=_tmpStructureName)
                         _tmpId = _tmpStructureName + str(_tmpId)
                         if "_BOUNDARY" in vars(_tmpElement._ELEMENTS):
-                            self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName)
+                            self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName, _DesignParameterName=_tmpElement._GDS_ELEMENT_NAME)
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                 "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
@@ -852,7 +853,7 @@ class QtProject:
                             # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Ignore"]
                             # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_ElementName"]
                         elif "_PATH" in vars(_tmpElement._ELEMENTS):
-                            self._createNewDesignParameter(_id=_tmpId, _type=2, _ParentName=_tmpStructureName)
+                            self._createNewDesignParameter(_id=_tmpId, _type=2, _ParentName=_tmpStructureName, _DesignParameterName=_tmpElement._GDS_ELEMENT_NAME)
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                 "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
@@ -862,7 +863,7 @@ class QtProject:
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                 "_Width"] = _tmpElement._ELEMENTS._WIDTH.width
                         elif "_SREF" in vars(_tmpElement._ELEMENTS):
-                            self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName)
+                            self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName, _DesignParameterName=_tmpElement._GDS_ELEMENT_NAME)
                             # print('     monitor for debug: ', _tmpElement._ELEMENTS._SNAME.sname.decode())
                             # print('     monitor for debug: ', _tmpElement._ELEMENTS._XY)
                             _tmpSname = _tmpElement._ELEMENTS._SNAME.sname.decode()
@@ -882,7 +883,7 @@ class QtProject:
                                     self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                         "_Angle"] = _tmpElement._ELEMENTS._STRANS._ANGLE.angle
                         elif "_TEXT" in vars(_tmpElement._ELEMENTS):
-                            self._createNewDesignParameter(_id=_tmpId, _type=8, _ParentName=_tmpStructureName)
+                            self._createNewDesignParameter(_id=_tmpId, _type=8, _ParentName=_tmpStructureName, _DesignParameterName=_tmpElement._GDS_ELEMENT_NAME)
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                 "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
                             for _tmpXYCoordinate in _tmpElement._ELEMENTS._TEXTBODY._XY.xy:
@@ -905,6 +906,7 @@ class QtProject:
                             # print(vars(_tmpElement._ELEMENTS))
                 # print(self._DesignParameter)
             except:
+                traceback.print_exc()
                 print(userDefineExceptions._UnkownError)
                 return userDefineExceptions._UnkownError
 
@@ -1699,7 +1701,7 @@ class QtProject:
 
         return output
 
-    def _createNewDesignParameter(self, _id=None, _type=None, _ParentName=None):
+    def _createNewDesignParameter(self, _id=None, _type=None, _ParentName=None, _DesignParameterName=None):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
             print("_createNewDesignParameter Run.")
         if _ParentName == None or _id == None or _type == None:
@@ -1709,7 +1711,8 @@ class QtProject:
                 if _ParentName not in self._DesignParameter.keys():
                     self._DesignParameter[_ParentName] = dict()
                 self._DesignParameter[_ParentName][_id] = QtDesignParameter(_id=_id, _type=_type,
-                                                                            _ParentName=_ParentName)
+                                                                            _ParentName=_ParentName,
+                                                                            _DesignParameterName= _DesignParameterName)
                 self._DesignParameter[_ParentName][_id]._createDesignParameter()
             except:
                 return userDefineExceptions._UnkownError

@@ -30,6 +30,22 @@ class GDS_ELEMENT():
         elif '_BOX' in dir(self._ELEMENTS):
             self._ELEMENTS.write_binary_gds_stream( binary_gds_stream)
         """
+
+        if self._GDS_ELEMENT_NAME:
+            value_property = GDS_PROPERTY()
+            value_property._PROPATTR = gds_record.GDS_PROPATTR()
+            value_property._PROPATTR.propattr = 126
+            value_property._PROPVALUE = gds_record.GDS_PROPVALUE()
+            value_property._PROPVALUE.propvalue = self._GDS_ELEMENT_NAME
+            self._PROPERTY.append(value_property)
+            name_property = GDS_PROPERTY()
+            name_property._PROPATTR = gds_record.GDS_PROPATTR()
+            name_property._PROPATTR.propattr = 61
+            name_property._PROPVALUE = gds_record.GDS_PROPVALUE()
+            name_property._PROPVALUE.propvalue = self._GDS_ELEMENT_NAME
+            self._PROPERTY.append(name_property)
+
+
         if self._PROPERTY!=[]:
             for i in range(0,len(self._PROPERTY)):
                 self._PROPERTY[i].write_binary_gds_stream(binary_gds_stream)
@@ -157,11 +173,17 @@ class GDS_ELEMENT():
                 _gds_property_tmp=None
                 temp_list=[]
                 del temp_list, _gds_property_tmp
-                
+
             elif temp[0]==gds_tags.DICT['ENDEL']:
                 self._ENDEL=gds_record.GDS_ENDEL()
                 break
-        
+
+        #Code For Recovery element name from Property
+        for property in self._PROPERTY:
+            if property._PROPATTR.propattr is 61:
+                self._GDS_ELEMENT_NAME = property._PROPVALUE.propvalue.decode()
+                break
+
 class GDS_BOUNDARY():
     def __init__(self,gds_data=None):
         self._BOUNDARY=None
@@ -636,9 +658,8 @@ class GDS_PROPERTY():
         self._PROPATTR=None
         self._PROPVALUE=None
     def write_binary_gds_stream(self,binary_gds_stream):
-        self._PROPATTR.write_binary_gds_stream(binary_gds_stream)
-        self._PROPVALUE.write_binary_gds_stream(binary_gds_stream)
-        
+            self._PROPATTR.write_binary_gds_stream(binary_gds_stream)
+            self._PROPVALUE.write_binary_gds_stream(binary_gds_stream)
     def read_binary_gds_stream(self,gds_data):
         while True:
             temp=gds_data.pop(0)
