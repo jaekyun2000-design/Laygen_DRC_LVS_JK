@@ -2475,8 +2475,12 @@ class QtProject:
                 return userDefineExceptions._UnkownError
 
     def _getEntireHierarchy(self, searchmodule = None):
+        """
+        :param None (No input required)
+        :return: entireHierarchy
+        """
         hierarchyDict = {}
-        if searchmodule == None: # Initial Condition
+        if searchmodule == None:                                                    # Initial Condition
             addedTopModule = list(self._DesignParameter.items())[-1][0]
             hierarchyDict[addedTopModule] = dict()
             for _, element in self._DesignParameter[addedTopModule].items():
@@ -2488,8 +2492,7 @@ class QtProject:
                             continue
                         else:
                             hierarchyDict[addedTopModule][key] = value
-
-        else: # Recursive Search
+        else:                                                                       # Recursive Search for subcells
             tmpstack = []
             for _, element in self._DesignParameter[searchmodule].items():
                 if element._DesignParameter['_DesignParametertype'] == 3:
@@ -2499,8 +2502,9 @@ class QtProject:
                     hierarchyDict[searchmodule] = tmpHierarchyDict2
                 else:
                     continue
-            if tmpstack == []:
+            if tmpstack == []:                      # No Sref cell inside 'searchmodule' ( i.e, Sref Lowest Hierarchy)
                 hierarchyDict[searchmodule] = None
+
         # searchStack =[]
         # searchStack.append(addedTopModule)
         # while searchStack:
@@ -2521,10 +2525,7 @@ class QtProject:
         #             except:
         #                 print("element")
 
-
         return hierarchyDict
-
-
 
 
     def _subHierarchyForDesignParameter(self, _ParentName=None, _id=None, _MaxSearchDepth=None):

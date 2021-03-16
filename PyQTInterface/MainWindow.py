@@ -511,7 +511,7 @@ class _MainWindow(QMainWindow):
 
 
 
-    def srefModulization(self,_flattenStatusDict):
+    def srefModulization(self,_flattenStatusDict, _sref = None):
         """
         :param _flattenStatusDict:
         :return: 1.Structure Modules which have been selected Not to be flattened
@@ -521,34 +521,72 @@ class _MainWindow(QMainWindow):
                  3.Flattened Elements(Boundary, Path ... ) containing their designparameters
         """
 
-        addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
-        topCellName = addedModulelist[-1]
-        lastSrefName = list(self._QTObj._qtProject._DesignParameter[topCellName].keys())[-1]
-        numberOfCells = int(re.findall('\d+', lastSrefName)[0])
-        print("##############################################################")
-        print(f"There are '{numberOfCells}' cells inside '{topCellName}' cell")
-        print("##############################################################")
+        ######################################## Module Processing Start ###############################################
+        _finalModule = dict()
+        if _sref == None:                                                                           # Initial Condition
+            addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
+            topCellName = addedModulelist[-1]
+            lastSrefName = list(self._QTObj._qtProject._DesignParameter[topCellName].keys())[-1]
+            numberOfCells = int(re.findall('\d+', lastSrefName)[0])
+            print("##############################################################")
+            print(f"There are '{numberOfCells}' cells inside '{topCellName}' cell")
+            print("##############################################################")
 
-        processedCellList = []
-        finalList=[]
-
-        for cells in self._QTObj._qtProject._DesignParameter[topCellName].keys():
-            if self._QTObj._qtProject._DesignParameter[topCellName][cells]._DesignParameter['_DesignParametertype'] == 3:
-                processedCellList.append(self.srefProcessor(self._QTObj._qtProject._DesignParameter[topCellName][cells], topCellName,_flattenStatusDict))
-            else:
-                continue
-
-        for i in range(0, len(processedCellList)):
-            for elements in processedCellList[i]:
-                if type(elements) == dict:
-                    tmp = list(elements.values())
-                    finalList.append(tmp[0])
+            for _id, _elements in self._QTObj._qtProject._DesignParameter[topCellName].items():
+                if _elements._DesignParameter['_DesignParametertype'] == 3:
+                    NewModule1 = self.srefModulization(_flattenStatusDict, _elements)
+                    for _id, _module in NewModule1.items():
+                        _finalModule[_id] = _module
                 else:
-                    finalList.append(elements)
-                pass
-            pass
+                    _finalModule[_id] = _elements
+        else:                                                                                       # Subcell Cases
+            tmpstack = []
+            _childName = _sref._DesignParameter['_DesignObj']
+            for _id, _modules in self._QTObj._qtProject._DesignParameter[_childName].items():
+                if _modules._DesignParameter['_DesignParametertype'] == 3:                      # Another subcell exists
+                    tmpstack.append(_id)
+                    NewModule2 = self.srefModulization(_flattenStatusDict, _modules)
+                    for _id, _module in NewModule2.items():
+                        _finalModule[_id] = _module
+                else:
+                    continue
+            if tmpstack == []:                                                                   # Lowest Hierarchy
+                for key, value in _flattenStatusDict.items():
+                    findHint = _childName.find(key)
+                    if findHint != -1:
+                        if value != None:   # Not Flattening Case
+                            _sref._DesignParameter['_ModelStructure'] = self._QTObj._qtProject._DesignParameter[_childName]
+                            _finalModule[_sref._DesignParameter['_id']] = _sref
+                            break
+                        else:               # Flattening Case
+                            _finalModule[_sref._DesignParameter['_id']] = self._QTObj._qtProject._DesignParameter[_childName]
+                            break
+                    else:
+                        continue
 
-        return finalList
+        return _finalModule
+
+
+
+
+
+        # for cells in self._QTObj._qtProject._DesignParameter[topCellName].keys():
+        #     if self._QTObj._qtProject._DesignParameter[topCellName][cells]._DesignParameter['_DesignParametertype'] == 3:
+        #         processedCellList.append(self.srefProcessor(self._QTObj._qtProject._DesignParameter[topCellName][cells], topCellName,_flattenStatusDict))
+        #     else:
+        #         continue
+        #
+        # for i in range(0, len(processedCellList)):
+        #     for elements in processedCellList[i]:
+        #         if type(elements) == dict:
+        #             tmp = list(elements.values())
+        #             finalList.append(tmp[0])
+        #         else:
+        #             finalList.append(elements)
+        #         pass
+        #     pass
+        #
+        # return finalList
         #
         # flattenXCellList = []
         # FlattenedCellDict= {}
@@ -591,9 +629,6 @@ class _MainWindow(QMainWindow):
         #                                                              _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
         #             tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
         #             self._ElementManager.load_dp_dc_id(dp_id=topCellName, dc_id=topCellName)
-        #
-        #
-        #
         #     else:
         #         FlattenXStructureDict[_structureName] = self._QTObj._qtProject._DesignParameter[_structureName]
         #         # FlattenXStructureList.append(self._QTObj._qtProject._DesignParameter[_structureName])
@@ -643,8 +678,6 @@ class _MainWindow(QMainWindow):
         #     pass
         #         # TODO: SREF Subcell info should not be disclosed inside srefModulesList.
         # ################ SREF Modulization END  #####################
-        #
-        #
         # return FlattenXStructureDict, srefModulesList, FlattenedCellDict
 
 
@@ -1094,7 +1127,7 @@ class _MainWindow(QMainWindow):
         #     self.vi.updateDesignParameter(ModulizedSREF[i])
 
         # aa = self.srefModulization({'INV' : None, 'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': None, 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'ViaPoly2Met1', 'M1_POD_CDNS_572756093854': None})
-        # aa = self.srefModulization(({'subsrefTest' : None, 'nch_CDNS_615802355820' : 'NMOSWithDummy', 'pch_CDNS_615802355820' : None, 'subsrefGDS' : None }))
+        aa = self.srefModulization(({'subsrefTest' : None, 'nch_CDNS_615802355820' : 'NMOSWithDummy', 'pch_CDNS_615802355821' : None}))
         # print(aa)
         print('DEBUG')
 
