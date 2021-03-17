@@ -521,6 +521,7 @@ class _MainWindow(QMainWindow):
         else:                                                                                       # Subcell Cases
             tmpstack = []
             _childName = _sref._DesignParameter['_DesignObj']
+            _childXY = _sref._DesignParameter['_XYCoordinates']
             for _id, _modules in self._QTObj._qtProject._DesignParameter[_childName].items():
                 if _modules._DesignParameter['_DesignParametertype'] == 3:                      # Another subcell exists
                     tmpstack.append(_id)
@@ -538,7 +539,8 @@ class _MainWindow(QMainWindow):
                             _finalModule[_sref._DesignParameter['_id']] = _sref
                             break
                         else:               # Flattening Case
-                            _finalModule[_sref._DesignParameter['_id']] = self._QTObj._qtProject._DesignParameter[_childName]
+
+                            _finalModule[_childName] = self._QTObj._qtProject._DesignParameter[_childName]
                             break
                     else:
                         continue
