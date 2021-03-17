@@ -34,7 +34,7 @@ from generatorLib import generator_model_api
 ##for easy debug##
 import json
 
-
+import copy
 import astunparse
 
 ##################
@@ -502,6 +502,7 @@ class _MainWindow(QMainWindow):
 
         ######################################## Module Processing Start ###############################################
         _finalModule = dict()
+        Flag = True
         if _sref == None:                                                                           # Initial Condition
             addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
             topCellName = addedModulelist[-1]
@@ -521,13 +522,22 @@ class _MainWindow(QMainWindow):
         else:                                                                                       # Subcell Cases
             tmpstack = []
             _childName = _sref._DesignParameter['_DesignObj']
-            _childXY = _sref._DesignParameter['_XYCoordinates']
             for _id, _modules in self._QTObj._qtProject._DesignParameter[_childName].items():
                 if _modules._DesignParameter['_DesignParametertype'] == 3:                      # Another subcell exists
                     tmpstack.append(_id)
                     NewModule2 = self.srefModulization(_flattenStatusDict, _modules)
-                    for _id, _module in NewModule2.items():
-                        _finalModule[_id] = _module
+                    if Flag:
+                        _srefXY = _sref._DesignParameter['_XYCoordinates']
+                        for _id, _module in NewModule2.items():
+                            newXY = [[x+y for x,y in zip(_module._DesignParameter['_XYCoordinates'][0], _srefXY[0])]]
+                            newName = _module._id + str(_srefXY[0])
+                            tmpmodule =copy.deepcopy(_module)
+                            tmpmodule._DesignParameter['_XYCoordinates'] = newXY
+                            _finalModule[newName] = tmpmodule
+                    else:
+                        for _id, _module in NewModule2.items():
+                            _finalModule[_id] = _module
+
                 else:
                     continue
             if tmpstack == []:                                                                   # Lowest Hierarchy
@@ -535,12 +545,18 @@ class _MainWindow(QMainWindow):
                     findHint = _childName.find(key)
                     if findHint != -1:
                         if value != None:   # Not Flattening Case
+                            newName = (_sref._id)
                             _sref._DesignParameter['_ModelStructure'] = self._QTObj._qtProject._DesignParameter[_childName]
-                            _finalModule[_sref._DesignParameter['_id']] = _sref
+                            _finalModule[newName] = _sref
+                            Flag = True
                             break
                         else:               # Flattening Case
-
+                            # newName = (_sref._id + str(_childXY[0]))
+                            # for _, elements in self._QTObj._qtProject._DesignParameter[_childName]:
+                            #     newXYCoordinates = [elements._DesignParameter['_XYCoordinates'][0]+_childXY[0]]
+                            #     elements._DesignParameter['_XYCoordinates'] = newXYCoordinates
                             _finalModule[_childName] = self._QTObj._qtProject._DesignParameter[_childName]
+                            Flag = False
                             break
                     else:
                         continue
