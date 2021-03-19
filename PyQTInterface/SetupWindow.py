@@ -3087,9 +3087,11 @@ class _Progress(QProgressBar):
 class _FlatteningCell(QWidget):
 
     send_flattendict_signal = pyqtSignal(dict)
+    # send_ok_signal = pyqtSignal()
 
-    def __init__(self, _hierarchydict):
+    def __init__(self,  _hierarchydict):
         super().__init__()
+        self.loop_obj = QEventLoop()
         self._hdict = _hierarchydict
         self.model = QTreeWidget()
         self.model.setColumnCount(3)
@@ -3099,19 +3101,18 @@ class _FlatteningCell(QWidget):
         self.initUI()
 
     def initUI(self):
-        okButton = QPushButton("OK",self)
-        okButton.clicked.connect(self.ok_button_accepted)
+        self.okButton = QPushButton("OK",self)
+        self.okButton.clicked.connect(self.loop_obj.quit)
 
         top_cell = list(self._hdict.keys())
 
         top_item = QTreeWidgetItem(top_cell)
 
-
         self.loop(top_item, self._hdict[top_cell[0]], True)
 
         hbox = QHBoxLayout()
         hbox.addStretch(2)
-        hbox.addWidget(okButton)
+        hbox.addWidget(self.okButton)
 
         vbox = QVBoxLayout()
         vbox.addWidget(self.model)
@@ -3124,6 +3125,11 @@ class _FlatteningCell(QWidget):
         self.show()
 
     def ok_button_accepted(self):
+
+
+
+        self.loop_obj.exec_()
+
         _flatten_dict = dict()
 
         for item in self.itemlist:
@@ -3134,7 +3140,8 @@ class _FlatteningCell(QWidget):
 
         self.send_flattendict_signal.emit(_flatten_dict)
 
-        self.destroy()
+        return _flatten_dict
+
 
     def loop(self, parent_item, parent_dict, isTop):
         for key in parent_dict:

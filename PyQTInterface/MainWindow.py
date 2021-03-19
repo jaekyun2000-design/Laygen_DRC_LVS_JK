@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+import traceback
 
 
 from PyQTInterface import userDefineExceptions
@@ -59,6 +60,8 @@ class _CustomSignals(QObject):
 class _MainWindow(QMainWindow):
 
     # def MACRO(self):
+
+
     # send_Boundary_signal = pyqtSignal()
     # send_ProjectName_signal = pyqtSignal(str)
     # send_ModuleName_signal = pyqtSignal(str)
@@ -178,7 +181,7 @@ class _MainWindow(QMainWindow):
         graphicView.setDragMode(QGraphicsView.RubberBandDrag)
         graphicView.setAcceptDrops(True)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
-        self.scene.setMinimumRenderSize(5)
+        # self.scene.setMinimumRenderSize(5)
         self.setCentralWidget(graphicView)
         self.scene.setBackgroundBrush(QBrush(Qt.white))
         graphicView.scale(1,-1)
@@ -974,7 +977,7 @@ class _MainWindow(QMainWindow):
 
     # def create
 
-    def loadGDS(self):
+    def loadGDS(self):      ############################################################## What I need to fix is :  LoadGDS means not load SRef!!!! I have to change target GDS Module is root module!!!
         scf = QFileDialog.getOpenFileName(self,'Load GDS','./PyQTInterface/GDSFile')
         cm = self._CurrentModuleName
         _fileName=scf[0]
@@ -1103,9 +1106,24 @@ class _MainWindow(QMainWindow):
 
             # self._QTObj._qtProject._resetXYCoordinatesForDisplay()
 
+
             print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
             print("############################################ MINSUKIM #############################################")
 
+        # tmp = SetupWindow._FlatteningCell.ok_button_accepted(self.fc)
+        # while tmp is None:
+        #     print('x:',tmp)
+        #     pass
+        # print(tmp)
+
+        # tmp = SetupWindow._FlatteningCell.print(self.fc)
+        # self.fc.show()
+        # tmp = SetupWindow._FlatteningCell.ok_button_accepted(SetupWindow._FlatteningCell(entireHierarchy))
+        # print(tmp)
+        # self.fc = SetupWindow._FlatteningCell(entireHierarchy)
+        # self.fc.show()
+        #
+        # self.fc.send_flattendict_signal.connect(self.print_dict)
 
 
 
@@ -1172,8 +1190,6 @@ class _MainWindow(QMainWindow):
 
 
 
-    def returnProcessedDict(self, dict):
-        send_hierarchy_selected_signal.emit(dict)
 
     # def loadPy(self):
     #     self.loadWorker = ThreaderForProgress.loadPyWorker()
@@ -1193,6 +1209,9 @@ class _MainWindow(QMainWindow):
     #     self.dockContentWidget3_2.createNewConstraintAST(_id=_id, _parentName=self._CurrentModuleName, _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
     #     self.dockContentWidget4ForLoggingMessage._InfoMessage("Conversion Done!")
 
+
+
+
     def loadPy(self):
         scf = QFileDialog.getOpenFileName(self, 'Load SourceCode', './sourceCode')
         try:
@@ -1205,6 +1224,10 @@ class _MainWindow(QMainWindow):
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Convert DC to TreeView")
             self.dockContentWidget3_2.createNewConstraintAST(_id=_id, _parentName=self._CurrentModuleName, _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Conversion Done!")
+
+
+
+
         except:
             print("Load PySource Failed")
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Load PySource Fail: Unknown")
@@ -1218,6 +1241,7 @@ class _MainWindow(QMainWindow):
     def progressValueUpdate(self,val):
         print(val)
         self.qpd.setValue(val)
+
 
     #def launch_ProgressDiag_Thread(self,Name,Cancel,Min,Max):
     #    t = threading.Thread(target=self.progress_Diag,args=(Name,Cancel,Min,Max))
@@ -1873,7 +1897,7 @@ class _CustomScene(QGraphicsScene):
         pen.setStyle(Qt.SolidLine)
         pen.setColor(Qt.GlobalColor.red)
         pen.setCapStyle(Qt.RoundCap)
-        pen.setWidth(5)
+        pen.setWidth(3)
 
         self.moveFlag = False
         self.listIgnoreFlag = False
@@ -1905,7 +1929,7 @@ class _CustomScene(QGraphicsScene):
         #     #     print("MousePressDebug")
         #     #     print(itemList)
         #     # self.send_itemList_signal.emit(itemList)                  #Temporary stop, Unstable (I need to find DesignParameterWith Id, without Module Name
-        self.send_xyCoordinate_signal.emit(event);
+        self.send_xyCoordinate_signal.emit(event)
         if self.moveFlag is True:
             self.moveFlag = False
             self.send_moveDone_signal.emit()
