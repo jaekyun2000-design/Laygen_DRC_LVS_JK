@@ -59,8 +59,6 @@ class _CustomSignals(QObject):
 class _MainWindow(QMainWindow):
 
     # def MACRO(self):
-
-
     # send_Boundary_signal = pyqtSignal()
     # send_ProjectName_signal = pyqtSignal(str)
     # send_ModuleName_signal = pyqtSignal(str)
@@ -69,6 +67,7 @@ class _MainWindow(QMainWindow):
     send_progressMinimum_signal = pyqtSignal(int)
     send_progressValue_signal = pyqtSignal(int)
     send_callThread_signal = pyqtSignal()
+
 
     def __init__(self):
         super(_MainWindow, self).__init__()
@@ -496,61 +495,236 @@ class _MainWindow(QMainWindow):
                _sref param not needed: this param exists for recursive call
         :return: reconstructed cell structure according to param '_flattenStatusDict'
         """
-
-        ######################################## Module Processing Start ###############################################
         _finalModule = dict()
-        if _sref == None:                                                                   # 1. Initial Condition
+        if _sref == None:
+            ########################################## 1. Initial Condition ############################################
             addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
             topCellName = addedModulelist[-1]
             lastSrefName = list(self._QTObj._qtProject._DesignParameter[topCellName].keys())[-1]
             numberOfCells = int(re.findall('\d+', lastSrefName)[0])
+            tmpDict = dict()
             print("##############################################################")
-            print(f"There are '{numberOfCells}' cells inside '{topCellName}' cell")
+            print(f"There are '{numberOfCells + 1}' cells inside '{topCellName}' cell")
             print("##############################################################")
             for _id, _elements in self._QTObj._qtProject._DesignParameter[topCellName].items():
-                if _elements._DesignParameter['_DesignParametertype'] == 3:
-                    NewModule1 = self.srefModulization(_flattenStatusDict, _elements)          # Recursive Call
-                    _srefXY = _elements._DesignParameter['_XYCoordinates']
-                    for _id, _module in NewModule1.items():
-                        newXY = [[x+y for x,y in zip(_module._DesignParameter['_XYCoordinates'][0], _srefXY[0])]]
-                        newName = _module._id + str(_srefXY[0])
-                        tmpmodule =copy.deepcopy(_module)
-                        tmpmodule._DesignParameter['_XYCoordinates'] = newXY
-                        _finalModule[newName] = tmpmodule
+                if _elements._DesignParameter['_DesignParametertype'] == 3:                         # e.g : TopCell0
+                    _parentXY = _elements._DesignParameter['_XYCoordinates']
+                    _childName = _elements._DesignParameter['_DesignObj']
+                    _childModule = self.srefModulization(_flattenStatusDict, _elements)          # Recursive Call
+                    tmpModule = copy.deepcopy(_childModule)
+                    """
+                    output: 
+                        _childModule2 : dict(
+                                    _id1 = module1(QTDesignParameter)
+                                    _id2 = module2(QTDesignParameter)
+                    """
+                    try:
+                        if tmpModule._DesignParameter['_DesignParametertype'] == 2:
+                            newXY1 = [x + y for x, y in
+                                      zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
+                            newXY2 = [x + y for x, y in
+                                      zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
+                            newXYpair = [[newXY1, newXY2]]
+                            newName = tmpModule._id + str(newXYpair[0])
+                            tmpModule._id = newName
+                            tmpModule._DesignParameter['_XYCoordinates'] = newXYpair
+                            tmpDict[newName] = tmpModule
+                        else:
+                            newXY = [[x + y for x, y in zip(tmpModule._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+                            tmpModule._DesignParameter['_XYCoordinates'] = newXY
+                            newName = tmpModule._id + str(newXY[0])
+                            tmpModule._id = newName
+                            tmpModule._DesignParameter['_id'] = newName
+                            tmpDict[newName] = tmpModule
+                    except:
+                        for _id2, elements2 in tmpModule.items():
+                            newXY = [[x + y for x, y in zip(elements2._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+                            newName = elements2._id + str(newXY[0])
+                            elements2._DesignParameter['_XYCoordinates'] = newXY
+                            elements2._id = newName
+                            elements2._DesignParameter['_id'] = newName
+                            tmpDict[newName] = elements2
                 else:
-                    _finalModule[_id] = _elements
-        else:                                                                               # 2. Subcell Cases
-            tmpstack = []
+                    tmpDict[_id] = _elements
+
+            _finalModule = tmpDict
+            # for key, value in _flattenStatusDict.items():
+            #     findHint = _childName.find(key)
+            #     if findHint != -1:
+            #         if value != None:
+            #             tmpmodule = copy.deepcopy()
+            #             tmpmodule._DesignParameter['_ModelStructure'] = tmpDict
+            #             _finalModule[_childName] = tmpmodule
+            #             break
+            #         else:
+            #             continue
+            #     else:
+            #         continue
+                        # for key, value in _flattenStatusDict.items():
+                    #     findHint = _childName.find(key)
+                    #     if findHint != -1:
+                    #         if value != None:  # Not Flattening Case
+                    #             tmpmodule = copy.deepcopy(_elements)
+                    #             tmpmodule._DesignParameter['_ModelStructure'] = _childModule
+                    #             _finalModule[_id] = tmpmodule
+                    #             break
+                    #         else:  # Flattening Case
+                    #             for id1, _module in _childModule.items():
+                    #                 newXY = [[x+y for x,y in zip(_module._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+                    #                 newName = _module._id + str(_parentXY[0])
+                    #                 tmpmodule =copy.deepcopy(_module)
+                    #                 tmpmodule._DesignParameter['_XYCoordinates'] = newXY
+                    #                 _finalModule[newName] = tmpmodule
+                    #                 break
+
+
+                        # TopCell Boundary, Path, Text... Elements
+        else:
+            ############################################# 2. Subcell Cases ############################################
             _childName = _sref._DesignParameter['_DesignObj']
-            for _id, _modules in self._QTObj._qtProject._DesignParameter[_childName].items():
-                if _modules._DesignParameter['_DesignParametertype'] == 3:                      # Another subcell exists
-                    tmpstack.append(_id)
-                    NewModule2 = self.srefModulization(_flattenStatusDict, _modules)            # Recursive Call
-                    _srefXY = _sref._DesignParameter['_XYCoordinates']
-                    for _id, _module in NewModule2.items():
-                        newXY = [[x+y for x,y in zip(_module._DesignParameter['_XYCoordinates'][0], _srefXY[0])]]
-                        newName = _module._id + str(_srefXY[0])
-                        tmpmodule =copy.deepcopy(_module)
-                        tmpmodule._DesignParameter['_XYCoordinates'] = newXY
-                        _finalModule[newName] = tmpmodule
-                else:
-                    continue
-            if tmpstack == []:                                                                   # Lowest Hierarchy
-                for key, value in _flattenStatusDict.items():
-                    findHint = _childName.find(key)
-                    if findHint != -1:
-                        if value != None:   # Not Flattening Case
-                            _sref._DesignParameter['_ModelStructure'] = self._QTObj._qtProject._DesignParameter[_childName]
-                            _finalModule[_sref._id] = _sref
-                            break
-                        else:               # Flattening Case
-                            for _id, element in self._QTObj._qtProject._DesignParameter[_childName].items():
-                                _finalModule[_id] = element
-                            break
+            _parentName = _sref._id
+            _parentXY = _sref._DesignParameter['_XYCoordinates']
+            tmpDict = dict()
+            for _id1, _modules1 in self._QTObj._qtProject._DesignParameter[_childName].items():
+                if _modules1._DesignParameter['_DesignParametertype'] != 3:
+                    tmpModule = copy.deepcopy(_modules1)
+                    if tmpModule._DesignParameter['_DesignParametertype'] == 2:
+                        newXY1 = [x+y for x, y in zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
+                        newXY2 = [x+y for x, y in zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
+                        newXYpair = [[newXY1, newXY2]]
+                        newName = tmpModule._id + str(newXYpair[0])
+                        tmpModule._id = newName
+                        tmpModule._DesignParameter['_XYCoordinates'] = newXYpair
+                        tmpDict[newName] = tmpModule
+                    else:
+                        newXY = [[x+y for x,y in zip(tmpModule._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+                        newName = tmpModule._id + str(newXY[0])
+                        tmpModule._DesignParameter['_XYCoordinates'] = newXY
+                        tmpModule._id = newName
+                        tmpModule._DesignParameter['_id'] = newName
+                        tmpDict[newName] = tmpModule
+                else :
+                    _childModule2 = self.srefModulization(_flattenStatusDict, _modules1)
+                    tmpModule =  copy.deepcopy(_childModule2)
+                    try:
+                        if tmpModule._DesignParameter['_DesignParametertype'] == 2:
+                            newXY1 = [x + y for x, y in
+                                      zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
+                            newXY2 = [x + y for x, y in
+                                      zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
+                            newXYpair = [[newXY1, newXY2]]
+                            newName = tmpModule._id + str(newXYpair[0])
+                            tmpModule._id = newName
+                            tmpModule._DesignParameter['_XYCoordinates'] = newXYpair
+                            tmpDict[newName] = tmpModule
+                        else:
+                            newXY = [[x + y for x, y in zip(tmpModule._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+                            tmpModule._DesignParameter['_XYCoordinates'] = newXY
+                            newName = tmpModule._id + str(newXY[0])
+                            tmpModule._id = newName
+                            tmpModule._DesignParameter['_id'] = newName
+                            tmpDict[newName] = tmpModule
+                    except:
+                        for _id2, elements2 in tmpModule.items():
+                            newXY = [[x + y for x, y in zip(elements2._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+                            newName = elements2._id + str(newXY[0])
+                            elements2._DesignParameter['_XYCoordinates'] = newXY
+                            elements2._id = newName
+                            elements2._DesignParameter['_id'] = newName
+                            tmpDict[newName] = elements2
+                print(tmpDict)
+            for key, value in _flattenStatusDict.items():
+                findHint = _childName.find(key)
+                if findHint != -1:
+                    if value != None:
+                        tmpmodule = copy.deepcopy(_sref)
+                        tmpmodule._DesignParameter['_ModelStructure'] = tmpDict
+                        _finalModule[_childName] = tmpmodule
+                        break
                     else:
                         continue
-        return _finalModule                                                # adding one dimensional hierarchy every time
-        ###################################### Module Processing Done ##################################################
+
+        return _finalModule
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        #     if tmpstack == []:
+        #
+        #     _childName = _sref._DesignParameter['_DesignObj']
+        #     _parentXY = _sref._DesignParameter['_XYCoordinates']
+        #     for _id, _modules in self._QTObj._qtProject._DesignParameter[_childName].items():
+        #         if _modules._DesignParameter['_DesignParametertype'] == 3:                      # Another subcell exists
+        #             tmpstack.append(_id)
+        #             _childModule2 = self.srefModulization(_flattenStatusDict, _modules)            # Recursive Call
+        #             """
+        #             output:
+        #                 _childModule2 : dict(
+        #                             _id1 = module1(QTDesignParameter)
+        #                             _id2 = module2(QTDesignParameter)
+        #             """
+        #             tmpmodule = copy.deepcopy(_childModule2)
+        #             for _, _module in tmpmodule.items():
+        #                 newName = _ + str(_parentXY[0])
+        #                 if _module._DesignParameter['_DesignParametertype'] == 2:
+        #                     newXY1 = [x+y for x, y in zip(_module._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
+        #                     newXY2 = [x+y for x, y in zip(_module._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
+        #                     newXYpair = [[newXY1, newXY2]]
+        #                     _module._id = newName
+        #                     _module._DesignParameter['_XYCoordinates'] = newXYpair
+        #                     _finalModule[newName] = _module
+        #                 else:
+        #                     newXY = [[x+y for x,y in zip(_module._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+        #                     _module._DesignParameter['_XYCoordinates'] = newXY
+        #                     _module._id = newName
+        #                     _module._DesignParameter['_id'] = newName
+        #                     _finalModule[newName] = _module
+        #         else:                                       # Boundary, Path, Text elements in subcell
+        #             _finalModule[_id] = _modules
+        #     # for key, value in _flattenStatusDict.items():
+        #     #     findHint = _childName.find(key)
+        #     #     if findHint != -1:
+        #     #         if value != None:
+        #     #             _finalModule.clear()
+        #     #             tmpmodule = copy.deepcopy(_sref)
+        #     #             tmpmodule._DesignParameter['_ModelStructure'] = self._QTObj._qtProject._DesignParameter[_childName]
+        #     #             _finalModule[_sref._id] = tmpmodule
+        #     #             break
+        #     #         else:
+        #     #             break
+        #     # if tmpstack == []:                                                                   # Lowest Hierarchy
+        #     #     _finalModule.clear()
+        #     #     for key, value in _flattenStatusDict.items():
+        #     #         findHint = _childName.find(key)
+        #     #         if findHint != -1:
+        #     #             if value != None:   # Not Flattening Case
+        #     #                 tmpmodule = copy.deepcopy(_sref)
+        #     #                 tmpmodule._DesignParameter['_ModelStructure'] = self._QTObj._qtProject._DesignParameter[_childName]
+        #     #                 _finalModule[_sref._id] = tmpmodule
+        #     #                 break
+        #     #             else:               # Flattening Case
+        #     #                 # for _id, element in self._QTObj._qtProject._DesignParameter[_childName].items():
+        #     #                 #     tmpmodule = copy.deepcopy(element)
+        #     #                 #     newXY = [[x+y for x,y in zip(element._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+        #     #                 #     newName = element._id + str(_parentXY[0])
+        #     #                 #     tmpmodule._DesignParameter['_XYCoordinates'] = newXY
+        #     #                 #     _finalModule[newName] = tmpmodule
+        #     #                 break
+        #     #         else:
+        #     #             continue
+        #
+        # return _finalModule                                                # adding one dimensional hierarchy every time
 
     def debugConstraint(self):
         try:
@@ -800,9 +974,8 @@ class _MainWindow(QMainWindow):
 
     # def create
 
-    def loadGDS(self):      ############################################################## What I need to fix is :  LoadGDS means not load SRef!!!! I have to change target GDS Module is root module!!!
+    def loadGDS(self):
         scf = QFileDialog.getOpenFileName(self,'Load GDS','./PyQTInterface/GDSFile')
-    # try:
         cm = self._CurrentModuleName
         _fileName=scf[0]
         _moduleName = _fileName.replace(".gds","")
@@ -812,7 +985,6 @@ class _MainWindow(QMainWindow):
         print("loadFile")
         self._QTObj._qtProject._loadDesignsFromGDSlegacy(_file = _fileName, _topModuleName = _moduleName)
         print("FileLoadEnd")
-        visual_item_list = []
 
         if self.progrseeBar_unstable == True:
             updateModuleList = set(self._QTObj._qtProject._DesignParameter)
@@ -828,170 +1000,180 @@ class _MainWindow(QMainWindow):
 
             entireHierarchy = self._QTObj._qtProject._getEntireHierarchy()
             print("Hierarchy: \n {}".format(entireHierarchy))
+            for modules in addedModuleList:
+                idLength += len(self._QTObj._qtProject._DesignParameter[modules])
+
+            if DEBUG:
+                print(f'idLength= {idLength}')
+            j = 0
+            # self.qpd = QProgressDialog("Load GDS... (File Transform)","Cancel",0,idLength,self)
+            # self.qpd.setWindowModality(Qt.WindowModal)
+            # self.qpd.show()
+
+            self._QTObj._qtProject._UpdateXYCoordinatesForDisplay(_ParentName=rootModule)
+
+            # tmp = SetupWindow._FlatteningCell(self,entireHierarchy)
+            self.fc = SetupWindow._FlatteningCell(entireHierarchy)
+            self.fc.show()
+            self.fc.send_flattendict_signal.connect(self.loadGDSbyFlatteningStatus)
+
+    def loadGDSbyFlatteningStatus(self, _flattenStatusDict):
             print("############################################ MINSUKIM #############################################")
+            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+            visual_item_list = []
             namedDict = {}
             addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
-            ProcessedModuleDict = self.srefModulization({'PMOSInINV': 'PMOSWithDummy', 'NMOSInINV': 'NMOSWithDummy', 'M2_M1_CDNS_572756093850': None, 'M1_NOD_CDNS_572756093851': None, 'M2_M1_CDNS_572756093852': None, 'M1_PO_CDNS_572756093853': 'ViaPoly2Met1', 'M1_POD_CDNS_572756093854': None})
-            # ProcessedModuleDict = self.srefModulization(({'subsrefTest': None, 'nch_CDNS_615802355820': 'NMOSWithDummy', 'pch_CDNS_615802355821': None}))
             topCellName = addedModulelist[-1]
+            ProcessedModuleDict = self.srefModulization(_flattenStatusDict)
             for _id, _element in ProcessedModuleDict.items():
                 _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(topCellName)
                 _newConstraintID = (topCellName + str(_designConstraintID))
 
+                ########################################## New Naming ################################################
                 namedDict[_newConstraintID] = _element
                 namedDict[_newConstraintID]._id = _newConstraintID
                 namedDict[_newConstraintID]._DesignParameterName = _newConstraintID
                 namedDict[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
                 namedDict[_newConstraintID]._DesignParameter['_DesignParameterName'] = _newConstraintID
 
+                ######################################### AST Creation ################################################
                 tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(namedDict[_newConstraintID])
                 if tmpAST is None:
                     continue
-                design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=topCellName, \
+                design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=topCellName,
                                                                   _ast=tmpAST, element_manager_update=False)
                 self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
                                                                  _parentName=topCellName,
                                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
                 tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
                 self._ElementManager.load_dp_dc_id(dp_id=topCellName, dc_id=topCellName)
-            print("############################################ MINSUKIM #############################################")
 
-            for modules in addedModuleList:
-                idLength += len(self._QTObj._qtProject._DesignParameter[modules])
+                ####################################### Visual Item Creation ##########################################
 
-
-            if DEBUG:
-                print(f'idLength= {idLength}')
-            j = 0
-            self.qpd = QProgressDialog("Load GDS... (File Transform)","Cancel",0,idLength,self)
-            self.qpd.setWindowModality(Qt.WindowModal)
-            self.qpd.show()
-
-        self._QTObj._qtProject._UpdateXYCoordinatesForDisplay(_ParentName=rootModule)
-
-
-        for module in addedModuleList:
-            try:
-                for id in self._QTObj._qtProject._DesignParameter[module]:
-                    # Step 1 : From QtDesignParameter -> get AST
-                    tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(self._QTObj._qtProject._DesignParameter[module][id])
-                    if tmpAST is None:
-                        continue
-                    # Step 2: From ast -> create Constraint
-                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=module, _ast=tmpAST, element_manager_update=False)
-                    tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
-                    self._ElementManager.load_dp_dc_id(dp_id=id, dc_id=id)
-                    # Step 3: From QtDesignconstraint -> create Visual_ast item
-                    try:
-                        if design_dict['constraint']:
-                            self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
-                                                                             _parentName=module,
-                                                                             _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-                    except:
-                        print("Invalid ast.")
-                    # Step 4: From QtDesignParameter -> create Visual Element item
-                    if self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignParametertype'] == 3:
-                        continue
-                    visualItem = self.createVisualItemfromDesignParameter(self._QTObj._qtProject._DesignParameter[module][id])
+                if namedDict[_newConstraintID]._DesignParameter['_DesignParametertype'] != 3:
+                    visualItem = self.createVisualItemfromDesignParameter(namedDict[_newConstraintID])
                     visual_item_list.append(visualItem)
-
                     layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                     if tmp_dp_dict['_Layer'] == 63 or tmp_dp_dict['_Layer'] == 127:
                         layer = None
                     else:
                         layer = layernum2name[str(tmp_dp_dict['_Layer'])]
-
                     if layer in self._layerItem:
                         self._layerItem[layer].append(visualItem)
                     else:
                         self._layerItem[layer] = [visualItem]
 
-                    self._id_layer_mapping[id] = layer
-
-                    # self.updateGraphicItem(visualItem)
-            except:
-                print("module:",module)
-                print("ID:",id)
-                print("ErrorOccured")
-
-            if self.progrseeBar_unstable == True:
-                j += len(self._QTObj._qtProject._DesignParameter[module])
-                self.qpd.setValue(j)
-                if self.qpd.wasCanceled():
-                    break
-
-        self.qpd2 = QProgressDialog("Load GDS... (Creating VisualItem)", "Cancel", 0, len(visual_item_list)-1, self)
-        self.qpd2.setWindowModality(Qt.WindowModal)
-        self.qpd2.show()
-        multicore = False
-        corenum = 8
-        if multicore:
-            chunk = int(len(visual_item_list)/corenum)
-            procs = []
-            for i in range(corenum):
-                if i != corenum-1:
-                    proc = mp.Process(target=self.updateGraphicItem, args=visual_item_list[20*i:20*i+20])
+                    self._id_layer_mapping[namedDict[_newConstraintID]._id] = layer
+                    self.scene.addItem(visualItem)
                 else:
-                    proc = mp.Process(target=self.updateGraphicItem, args=visual_item_list[20 * i:])
-                procs.append(proc)
-                proc.start()
-            for proc in procs:
-                proc.join()
-        else:
-            for i, vis in enumerate(visual_item_list):
-                self.updateGraphicItem(vis)
-                self.qpd2.setValue(i)
-                if self.qpd2.wasCanceled():
-                    break
+                    sref_vi = VisualizationItem._VisualizationItem()
+                    sref_vi.updateDesignParameter(namedDict[_newConstraintID])
+                    self.scene.addItem(sref_vi)
+                    self.vi = VisualizationItem._VisualizationItem()
+                    self.vi.updateDesignParameter(namedDict[_newConstraintID])
+                # if self.progrseeBar_unstable == True:
+                #     j += len(_element)
+                #     self.qpd.setValue(j)
+                #     if self.qpd.wasCanceled():
+                #         break
+            # self.qpd2 = QProgressDialog("Load GDS... (Creating VisualItem)", "Cancel", 0, len(visual_item_list) - 1,self)
+            # self.qpd2.setWindowModality(Qt.WindowModal)
+            # self.qpd2.show()
 
-        self._QTObj._qtProject._resetXYCoordinatesForDisplay()
+            # multicore = False
+            # corenum = 8
+            # if multicore:
+            #     chunk = int(len(visual_item_list) / corenum)
+            #     procs = []
+            #     for i in range(corenum):
+            #         if i != corenum - 1:
+            #             proc = mp.Process(target=self.updateGraphicItem, args=visual_item_list[20 * i:20 * i + 20])
+            #         else:
+            #             proc = mp.Process(target=self.updateGraphicItem, args=visual_item_list[20 * i:])
+            #         procs.append(proc)
+            #         proc.start()
+            #     for proc in procs:
+            #         proc.join()
+            # else:
+            #     for i, vis in enumerate(visual_item_list):
+            #         self.updateGraphicItem(vis)
+            #         self.qpd2.setValue(i)
+            #         if self.qpd2.wasCanceled():
+            #             break
 
-        self.fc = SetupWindow._FlatteningCell(entireHierarchy)
-        self.fc.show()
+            # self._QTObj._qtProject._resetXYCoordinatesForDisplay()
 
-        self.fc.send_flattendict_signal.connect(self.print_dict)
+            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+            print("############################################ MINSUKIM #############################################")
 
 
-        # After Load All DesignParameter!!!! Now Setting For SRef!!!!
+
+
         # for module in addedModuleList:
-        #     for id in self._QTObj._qtProject._DesignParameter[module]:
-        #         if self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignParametertype'] == 3:   #In Case Of SRef!
-        #
-        #             correspondingModule = self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignObj']
-        #             for correspondingID in self._QTObj._qtProject._DesignParameter[correspondingModule]:
-        #                 print(correspondingID)
-        #                 correspondingVisualItem = self.visualItemDict[correspondingID]
-        #                 srefVisualItem = self.visualItemDict[id]
-        #                 srefVisualItem.updateDesignObj(correspondingVisualItem)
-        #                 # print("ee!")
-        #             # print("find!!!")
+            # try:
+            #     for id in self._QTObj._qtProject._DesignParameter[module]:
+            #         # Step 1 : From QtDesignParameter -> get AST
+            #         tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(self._QTObj._qtProject._DesignParameter[module][id])
+            #         if tmpAST is None:
+            #             continue
+            #         # Step 2: From ast -> create Constraint
+            #         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=module, _ast=tmpAST, element_manager_update=False)
+            #         tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
+            #         self._ElementManager.load_dp_dc_id(dp_id=id, dc_id=id)
+            #         # Step 3: From QtDesignconstraint -> create Visual_ast item
+            #         try:
+            #             if design_dict['constraint']:
+            #                 self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+            #                                                                  _parentName=module,
+            #                                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+            #         except:
+            #             print("Invalid ast.")
+            #         # Step 4: From QtDesignParameter -> create Visual Element item
+            #         if self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignParametertype'] == 3:
+            #             continue
+            #         visualItem = self.createVisualItemfromDesignParameter(self._QTObj._qtProject._DesignParameter[module][id])
+            #         visual_item_list.append(visualItem)
+            #
+            #         layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+            #         if tmp_dp_dict['_Layer'] == 63 or tmp_dp_dict['_Layer'] == 127:
+            #             layer = None
+            #         else:
+            #             layer = layernum2name[str(tmp_dp_dict['_Layer'])]
+            #
+            #         if layer in self._layerItem:
+            #             self._layerItem[layer].append(visualItem)
+            #         else:
+            #             self._layerItem[layer] = [visualItem]
+            #
+            #         self._id_layer_mapping[id] = layer
+            #
+            #         # self.updateGraphicItem(visualItem)
+            # except:
+            #     print("module:",module)
+            #     print("ID:",id)
+            #     print("ErrorOccured")
+
+            # if self.progrseeBar_unstable == True:
+            #     j += len(self._QTObj._qtProject._DesignParameter[module])
+            #     self.qpd.setValue(j)
+            #     if self.qpd.wasCanceled():
+            #         break
+
+
+
+
+
 
     # except:
-        print("Load GDS Failed")
-        self.dockContentWidget4ForLoggingMessage._WarningMessage("Load GDS Fail: Unknown")
-        pass
-
-        print("Load GDS Done")
-
-        # for sref_design_parameter in ModulizedSREF:
-        #     sref_vi = VisualizationItem._VisualizationItem()
-        #     sref_vi.updateDesignParameter(sref_design_parameter)
-        # self.scene.addItem(sref_vi)
-
-        #TODO: XYCoordinates Debugging needed
+    #     print("Load GDS Failed")
+    #     self.dockContentWidget4ForLoggingMessage._WarningMessage("Load GDS Fail: Unknown")
+    #     pass
+    #     print("Load GDS Done")
 
 
-        # self.vi = VisualizationItem._VisualizationItem()
-        # for i in range(len(ModulizedSREF)):
-        #     self.vi.updateDesignParameter(ModulizedSREF[i])
 
-
-        print('MINSU!!')
-
-
-    def print_dict(self, dict):
-        print(dict)
-
+    def returnProcessedDict(self, dict):
+        send_hierarchy_selected_signal.emit(dict)
 
     # def loadPy(self):
     #     self.loadWorker = ThreaderForProgress.loadPyWorker()
@@ -1011,9 +1193,6 @@ class _MainWindow(QMainWindow):
     #     self.dockContentWidget3_2.createNewConstraintAST(_id=_id, _parentName=self._CurrentModuleName, _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
     #     self.dockContentWidget4ForLoggingMessage._InfoMessage("Conversion Done!")
 
-
-
-
     def loadPy(self):
         scf = QFileDialog.getOpenFileName(self, 'Load SourceCode', './sourceCode')
         try:
@@ -1026,10 +1205,6 @@ class _MainWindow(QMainWindow):
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Convert DC to TreeView")
             self.dockContentWidget3_2.createNewConstraintAST(_id=_id, _parentName=self._CurrentModuleName, _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Conversion Done!")
-
-
-
-
         except:
             print("Load PySource Failed")
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Load PySource Fail: Unknown")
@@ -1043,7 +1218,6 @@ class _MainWindow(QMainWindow):
     def progressValueUpdate(self,val):
         print(val)
         self.qpd.setValue(val)
-
 
     #def launch_ProgressDiag_Thread(self,Name,Cancel,Min,Max):
     #    t = threading.Thread(target=self.progress_Diag,args=(Name,Cancel,Min,Max))

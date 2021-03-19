@@ -2497,12 +2497,14 @@ class QtProject:
                             hierarchyDict[addedTopModule][key] = value
         else:                                                                       # Recursive Search for subcells
             tmpstack = []
+            hierarchyDict[searchmodule] = dict()
             for _, element in self._DesignParameter[searchmodule].items():
                 if element._DesignParameter['_DesignParametertype'] == 3:
                     subcell = element._DesignParameter['_DesignObj']
                     tmpstack.append(subcell)
                     tmpHierarchyDict2 = self._getEntireHierarchy(subcell)
-                    hierarchyDict[searchmodule] = tmpHierarchyDict2
+                    for key, value in tmpHierarchyDict2.items():
+                        hierarchyDict[searchmodule][key] = value
                 else:
                     continue
             if tmpstack == []:                      # No Sref cell inside 'searchmodule' ( i.e, Sref Lowest Hierarchy)
