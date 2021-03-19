@@ -1018,16 +1018,17 @@ class _MainWindow(QMainWindow):
             # tmp = SetupWindow._FlatteningCell(self,entireHierarchy)
             self.fc = SetupWindow._FlatteningCell(entireHierarchy)
             self.fc.show()
-            self.fc.send_flattendict_signal.connect(self.loadGDSbyFlatteningStatus)
+            flattening_dict = self.fc.ok_button_accepted()
+            print(flattening_dict)
+            self.fc.destroy()
 
-    def loadGDSbyFlatteningStatus(self, _flattenStatusDict):
             print("############################################ MINSUKIM #############################################")
             print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
             visual_item_list = []
             namedDict = {}
             addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
             topCellName = addedModulelist[-1]
-            ProcessedModuleDict = self.srefModulization(_flattenStatusDict)
+            ProcessedModuleDict = self.srefModulization(flattening_dict)
             for _id, _element in ProcessedModuleDict.items():
                 _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(topCellName)
                 _newConstraintID = (topCellName + str(_designConstraintID))
