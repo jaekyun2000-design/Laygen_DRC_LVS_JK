@@ -189,8 +189,17 @@ class _VisualizationItem(QGraphicsItemGroup):
             # self._BlockGroup = None,
         else:
             self._ItemTraits = _ItemTraits
-            self.block = []
-            self.blockGeneration()
+            if self._ItemTraits['_DesignParametertype'] == 1:
+                for xyPairs in self._ItemTraits['_XYCoordinates']:
+                    self.blockGeneration(xyPairs)
+            elif self._ItemTraits['_DesignParametertype'] == 2:
+                self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+            elif self._ItemTraits['_DesignParametertype'] == 3:
+                self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+            elif self._ItemTraits['_DesignParametertype'] == 8:
+                self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+            else:
+                self.blockGeneration()
 
     # def paint(self, painter, option, widget) -> None:
     #     super(_VisualizationItem, self).paint(painter, option, widget)
@@ -216,7 +225,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         else:
             return super().shape()
 
-    def updateDesignParameter(self,QtDesignParameter,):
+    def updateDesignParameter(self,QtDesignParameter):
         self._id = QtDesignParameter._id
         self._type = QtDesignParameter._type
         try:
@@ -348,7 +357,7 @@ class _VisualizationItem(QGraphicsItemGroup):
             if self._ItemTraits['_DesignParametertype'] is 1:                              # Boundary Case
                 tmpBlock = _RectBlock()
                 tmpBlock.updateTraits(blockTraits)
-                tmpBlock.setPos(_XYCoordinatesPair[0],_XYCoordinatesPair[1])
+                tmpBlock.setPos(_XYCoordinatesPair[0] - blockTraits['_Width']/2,_XYCoordinatesPair[1] - blockTraits['_Height']/2)
                 self.block.append(tmpBlock)
                 self.addToGroup(tmpBlock)
 

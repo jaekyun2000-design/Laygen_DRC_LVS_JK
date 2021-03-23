@@ -1969,6 +1969,13 @@ class _CustomScene(QGraphicsScene):
         elif QKeyEvent.key() == Qt.Key_Escape:
             print("selectionClear")
             self.clearSelection()
+        elif QKeyEvent.key() == Qt.Key_I:
+            print('\'I\' pressed')
+            itemList = self.selectedItems()
+            for item in itemList:
+                if type(item) == VisualizationItem._VisualizationItem:
+                    copied_item = self.copyItem(item)
+                    self.newWindow(copied_item)
 
         super().keyPressEvent(QKeyEvent)
 
@@ -1982,6 +1989,22 @@ class _CustomScene(QGraphicsScene):
 
     def itemListClickIgnore(self,flag):
         self.listIgnoreFlag = flag
+
+    def newWindow(self, item):
+
+        # copy_item = copy.deepcopy(item)
+        # x = item
+        self.view = _CustomView()
+        dummy = _CustomScene()
+        dummy.addItem(item)
+        self.view.setScene(dummy)
+        self.view.show()
+
+    def copyItem(self, item):
+        newitem = VisualizationItem._VisualizationItem(item._ItemTraits)
+
+        return newitem
+
 
     # def deliveryContent(self):
 
