@@ -514,7 +514,6 @@ class _MainWindow(QMainWindow):
                     _parentXY = _elements._DesignParameter['_XYCoordinates']
                     _childName = _elements._DesignParameter['_DesignObj']
                     _childModule = self.srefModulization(_flattenStatusDict, _elements)          # Recursive Call
-                    tmpModule = copy.deepcopy(_childModule)
                     """
                     output: 
                         _childModule2 : dict(
@@ -522,66 +521,32 @@ class _MainWindow(QMainWindow):
                                     _id2 = module2(QTDesignParameter)
                     """
                     try:
-                        if tmpModule._DesignParameter['_DesignParametertype'] == 2:
-                            newXY1 = [x + y for x, y in
-                                      zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
-                            newXY2 = [x + y for x, y in
-                                      zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
-                            newXYpair = [[newXY1, newXY2]]
-                            newName = tmpModule._id + str(newXYpair[0])
-                            tmpModule._id = newName
-                            tmpModule._DesignParameter['_XYCoordinates'] = newXYpair
-                            tmpDict[newName] = tmpModule
+                        if _childModule._DesignParameter['_DesignParametertype'] == 2:
+
+                            # newName = _childModule._id + str(newXYpair[0])
+                            # _childModule._id = newName
+                            # _childModule._DesignParameter['_XYCoordinates'] = newXYpair
+                            tmpDict[_childModule._id] = _childModule
                         else:
-                            newXY = [[x + y for x, y in zip(tmpModule._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
-                            tmpModule._DesignParameter['_XYCoordinates'] = newXY
-                            newName = tmpModule._id + str(newXY[0])
-                            tmpModule._id = newName
-                            tmpModule._DesignParameter['_id'] = newName
-                            tmpDict[newName] = tmpModule
+                            # newXY = [[x + y for x, y in zip(_childModule._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+                            # _childModule._DesignParameter['_XYCoordinates'] = newXY
+                            # newName = _childModule._id + str(newXY[0])
+                            # _childModule._id = newName
+                            # _childModule._DesignParameter['_id'] = newName
+                            tmpDict[_childModule._id] = _childModule
                     except:
-                        for _id2, elements2 in tmpModule.items():
-                            newXY = [[x + y for x, y in zip(elements2._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
-                            newName = elements2._id + str(newXY[0])
-                            elements2._DesignParameter['_XYCoordinates'] = newXY
-                            elements2._id = newName
-                            elements2._DesignParameter['_id'] = newName
-                            tmpDict[newName] = elements2
+                        for _id2, elements2 in _childModule.items():
+                            # newXY = [[x + y for x, y in zip(elements2._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+                            # newName = elements2._id + str(newXY[0])
+                            # elements2._DesignParameter['_XYCoordinates'] = newXY
+                            # elements2._id = newName
+                            # elements2._DesignParameter['_id'] = newName
+                            tmpDict[elements2._id] = elements2
                 else:
                     tmpDict[_id] = _elements
 
             _finalModule = tmpDict
-            # for key, value in _flattenStatusDict.items():
-            #     findHint = _childName.find(key)
-            #     if findHint != -1:
-            #         if value != None:
-            #             tmpmodule = copy.deepcopy()
-            #             tmpmodule._DesignParameter['_ModelStructure'] = tmpDict
-            #             _finalModule[_childName] = tmpmodule
-            #             break
-            #         else:
-            #             continue
-            #     else:
-            #         continue
-                        # for key, value in _flattenStatusDict.items():
-                    #     findHint = _childName.find(key)
-                    #     if findHint != -1:
-                    #         if value != None:  # Not Flattening Case
-                    #             tmpmodule = copy.deepcopy(_elements)
-                    #             tmpmodule._DesignParameter['_ModelStructure'] = _childModule
-                    #             _finalModule[_id] = tmpmodule
-                    #             break
-                    #         else:  # Flattening Case
-                    #             for id1, _module in _childModule.items():
-                    #                 newXY = [[x+y for x,y in zip(_module._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
-                    #                 newName = _module._id + str(_parentXY[0])
-                    #                 tmpmodule =copy.deepcopy(_module)
-                    #                 tmpmodule._DesignParameter['_XYCoordinates'] = newXY
-                    #                 _finalModule[newName] = tmpmodule
-                    #                 break
 
-
-                        # TopCell Boundary, Path, Text... Elements
         else:
             ############################################# 2. Subcell Cases ############################################
             _childName = _sref._DesignParameter['_DesignObj']
@@ -590,52 +555,52 @@ class _MainWindow(QMainWindow):
             tmpDict = dict()
             for _id1, _modules1 in self._QTObj._qtProject._DesignParameter[_childName].items():
                 if _modules1._DesignParameter['_DesignParametertype'] != 3:
-                    tmpModule = copy.deepcopy(_modules1)
-                    if tmpModule._DesignParameter['_DesignParametertype'] == 2:
-                        newXY1 = [x+y for x, y in zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
-                        newXY2 = [x+y for x, y in zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
-                        newXYpair = [[newXY1, newXY2]]
-                        newName = tmpModule._id + str(newXYpair[0])
-                        tmpModule._id = newName
-                        tmpModule._DesignParameter['_XYCoordinates'] = newXYpair
-                        tmpDict[newName] = tmpModule
+                    if _modules1._DesignParameter['_DesignParametertype'] == 2:
+                        # newXY1 = [x+y for x, y in zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
+                        # newXY2 = [x+y for x, y in zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
+                        # newXYpair = [[newXY1, newXY2]]
+                        # newName = tmpModule._id + str(newXYpair[0])
+                        # tmpModule._id = newName
+                        # tmpModule._DesignParameter['_XYCoordinates'] = newXYpair
+                        tmpDict[_modules1._id] = _modules1
                     else:
-                        newXY = [[x+y for x,y in zip(tmpModule._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
-                        newName = tmpModule._id + str(newXY[0])
-                        tmpModule._DesignParameter['_XYCoordinates'] = newXY
-                        tmpModule._id = newName
-                        tmpModule._DesignParameter['_id'] = newName
-                        tmpDict[newName] = tmpModule
+                        # newXY = [[x+y for x,y in zip(tmpModule._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+                        # newName = tmpModule._id + str(newXY[0])
+                        # tmpModule._DesignParameter['_XYCoordinates'] = newXY
+                        # _modules1._id = newName
+                        # _modules1._DesignParameter['_id'] = newName
+                        tmpDict[_modules1._id] = _modules1
                 else :
                     _childModule2 = self.srefModulization(_flattenStatusDict, _modules1)
-                    tmpModule =  copy.deepcopy(_childModule2)
+
+                    # tmpModule =  copy.deepcopy(_childModule2)
                     try:
-                        if tmpModule._DesignParameter['_DesignParametertype'] == 2:
-                            newXY1 = [x + y for x, y in
-                                      zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
-                            newXY2 = [x + y for x, y in
-                                      zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
-                            newXYpair = [[newXY1, newXY2]]
-                            newName = tmpModule._id + str(newXYpair[0])
-                            tmpModule._id = newName
-                            tmpModule._DesignParameter['_XYCoordinates'] = newXYpair
-                            tmpDict[newName] = tmpModule
+                        if _childModule2._DesignParameter['_DesignParametertype'] == 2:
+                            # newXY1 = [x + y for x, y in
+                            #           zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
+                            # newXY2 = [x + y for x, y in
+                            #           zip(tmpModule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
+                            # newXYpair = [[newXY1, newXY2]]
+                            # newName = tmpModule._id + str(newXYpair[0])
+                            # tmpModule._id = newName
+                            # tmpModule._DesignParameter['_XYCoordinates'] = newXYpair
+                            tmpDict[_childModule2._id] = _childModule2
                         else:
-                            newXY = [[x + y for x, y in zip(tmpModule._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
-                            tmpModule._DesignParameter['_XYCoordinates'] = newXY
-                            newName = tmpModule._id + str(newXY[0])
-                            tmpModule._id = newName
-                            tmpModule._DesignParameter['_id'] = newName
-                            tmpDict[newName] = tmpModule
+                            # newXY = [[x + y for x, y in zip(_childModule2._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+                            # # tmpModule._DesignParameter['_XYCoordinates'] = newXY
+                            # newName = tmpModule._id + str(newXY[0])
+                            # tmpModule._id = newName
+                            # tmpModule._DesignParameter['_id'] = newName
+                            tmpDict[_childModule2._id] = _childModule2
                     except:
-                        for _id2, elements2 in tmpModule.items():
-                            newXY = [[x + y for x, y in zip(elements2._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
-                            newName = elements2._id + str(newXY[0])
-                            elements2._DesignParameter['_XYCoordinates'] = newXY
-                            elements2._id = newName
-                            elements2._DesignParameter['_id'] = newName
-                            tmpDict[newName] = elements2
-                print(tmpDict)
+                        for _id2, elements2 in _childModule2.items():
+                            name = elements2._DesignParameter['_DesignParameterName']
+                            # newXY = [[x + y for x, y in zip(elements2._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+                            # newName = elements2._id + str(newXY[0])
+                            # # elements2._DesignParameter['_XYCoordinates'] = newXY
+                            # elements2._id = newName
+                            # elements2._DesignParameter['_id'] = newName
+                            tmpDict[name] = elements2
             for key, value in _flattenStatusDict.items():
                 findHint = _childName.find(key)
                 if findHint != -1:
@@ -648,20 +613,6 @@ class _MainWindow(QMainWindow):
                         continue
 
         return _finalModule
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         #     if tmpstack == []:
         #
@@ -1013,7 +964,7 @@ class _MainWindow(QMainWindow):
             # self.qpd.setWindowModality(Qt.WindowModal)
             # self.qpd.show()
 
-            self._QTObj._qtProject._UpdateXYCoordinatesForDisplay(_ParentName=rootModule)
+            # self._QTObj._qtProject._UpdateXYCoordinatesForDisplay(_ParentName=rootModule)
 
             # tmp = SetupWindow._FlatteningCell(self,entireHierarchy)
             self.fc = SetupWindow._FlatteningCell(entireHierarchy)
@@ -1043,6 +994,8 @@ class _MainWindow(QMainWindow):
                 ######################################### AST Creation ################################################
                 tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(namedDict[_newConstraintID])
                 if tmpAST is None:
+
+
                     continue
                 design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=topCellName,
                                                                   _ast=tmpAST, element_manager_update=False)

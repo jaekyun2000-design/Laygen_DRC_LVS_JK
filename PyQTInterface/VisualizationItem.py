@@ -281,6 +281,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.warning.setText("Invalid Design Value")
                 self.warning.setIcon(QMessageBox.Warning)
         elif self._ItemTraits['_DesignParametertype'] == 3:
+
             self._ItemTraits['_DesignParameterRef'] = _DesignParameter['_ModelStructure']
             # for key in _DesignParameter['_ModelStructure']:
             #     self._ItemTraits['_VisualizationItems'].append(_DesignParameter['_ModelStructure'][key])
@@ -418,6 +419,11 @@ class _VisualizationItem(QGraphicsItemGroup):
                     sub_element_vi = _VisualizationItem()
                     sub_element_vi.updateDesignParameter(sub_element_dp)
                     sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
+                    print(sub_element_dp._DesignParameter['_XYCoordinates'])
+                    # try:
+                    sub_element_vi.setPos(self._ItemTraits['_XYCoordinates'][0][0], self._ItemTraits['_XYCoordinates'][0][1])
+                    # except:
+                    #     print('debuug')
                     self.addToGroup(sub_element_vi)
 
             elif self._ItemTraits['_DesignParametertype'] is 8:                #Text Case
