@@ -495,7 +495,7 @@ class _MainWindow(QMainWindow):
     def srefModulization(self,_flattenStatusDict, _sref = None):
         """
         :param _flattenStatusDict:
-               _sref param not needed: this param exists for recursive call
+               _sref param not needed: this param exists only for recursive call
         :return: reconstructed cell structure according to param '_flattenStatusDict'
         """
         _finalModule = dict()
@@ -510,11 +510,12 @@ class _MainWindow(QMainWindow):
             print(f"There are '{numberOfCells + 1}' cells inside '{topCellName}' cell")
             print("##############################################################")
             for _id, _elements in self._QTObj._qtProject._DesignParameter[topCellName].items():
-                if _elements._DesignParameter['_DesignParametertype'] == 3:                         # e.g : TopCell0
+                if _elements._DesignParameter['_DesignParametertype'] == 3:                      # Sref inside top cell
                     _childName = _elements._DesignParameter['_DesignObj']
                     _childModule = self.srefModulization(_flattenStatusDict, _elements)          # Recursive Call
                     for _id2, elements2 in _childModule.items():
                         name = elements2._DesignParameter['_DesignParameterName']
+
                         ###### Preventing Name Overwriting #####
                         while True:
                             if name in list(tmpDict.keys()):
@@ -523,6 +524,7 @@ class _MainWindow(QMainWindow):
                             else:
                                 break
                         #########################################
+
                         tmpDict[name] = elements2
                 else:
                     tmpDict[_id] = _elements
@@ -564,17 +566,18 @@ class _MainWindow(QMainWindow):
                         for _id, element in tmpDict.items():
                             tmpmodule = copy.deepcopy(element)
                             if tmpmodule._DesignParameter['_DesignParametertype'] == 2:
-                                # TODO Path format Different
-                                newXY1 = [x+y for x, y in zip(tmpmodule._DesignParameter['_XYCoordinates'][0][0], _parentXY[0])]
-                                newXY2 = [x+y for x, y in zip(tmpmodule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
-                                newXYpair = [[newXY1, newXY2]]
+                                _XYpairs = tmpmodule._DesignParameter['_XYCoordinates'][0]  # [[a,a'],[b,b'],[c,c']]
+                                _modifiedXYpairs = []
+                                for i in range(0,len(_XYpairs)):
+                                    _newXY = [x+y for x,y in zip(_XYpairs[i], _parentXY[0])]
+                                    _modifiedXYpairs.append(_newXY)
                                 while True:
                                     if tmpmodule._id in _finalModule:   # Preventing name overwriting
                                         newName = tmpmodule._id + str(1)
                                         tmpmodule._id = newName
                                     else:
                                         break
-                                tmpmodule._DesignParameter['_XYCoordinates'] = newXYpair
+                                tmpmodule._DesignParameter['_XYCoordinates'] = [_modifiedXYpairs]
                                 _finalModule[tmpmodule._id] = tmpmodule
                             else:
                                 newXY = [[x+y for x,y in zip(tmpmodule._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
@@ -839,7 +842,6 @@ class _MainWindow(QMainWindow):
 
     def loadGDS(self):
         scf = QFileDialog.getOpenFileName(self,'Load GDS','./PyQTInterface/GDSFile')
-        cm = self._CurrentModuleName
         _fileName=scf[0]
         _moduleName = _fileName.replace(".gds","")
         _moduleName = _moduleName.split('/')[-1]
@@ -852,13 +854,13 @@ class _MainWindow(QMainWindow):
         if self.progrseeBar_unstable == True:
             updateModuleList = set(self._QTObj._qtProject._DesignParameter)
             addedModuleList = list(updateModuleList-originalModuleList)
-            randModule = addedModuleList[0]
-            anyId = list(self._QTObj._qtProject._DesignParameter[randModule])[0]
-            hierarchyHint=self._QTObj._qtProject._HierarchyFromRootForDesignParameter(_id=anyId,_ParentName=randModule)
-            rootModule = list(hierarchyHint[0])[0]
-
-            moduleLength = len(addedModuleList)
-            minimumModule = round(moduleLength/50)
+            # randModule = addedModuleList[0]
+            # anyId = list(self._QTObj._qtProject._DesignParameter[randModule])[0]
+            # hierarchyHint=self._QTObj._qtProject._HierarchyFromRootForDesignParameter(_id=anyId,_ParentName=randModule)
+            # rootModule = list(hierarchyHint[0])[0]
+            #
+            # moduleLength = len(addedModuleList)
+            # minimumModule = round(moduleLength/50)
             idLength = 0
 
             entireHierarchy = self._QTObj._qtProject._getEntireHierarchy()
@@ -879,6 +881,7 @@ class _MainWindow(QMainWindow):
             visual_item_list = []
             addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
             topCellName = addedModulelist[-1]
+            self._CurrentModuleName = topCellName       # Necessary For adding elements inside the cell
             ProcessedModuleDict = self.srefModulization(flattening_dict)            # Reconstruct imported GDS
             self._QTObj._qtProject._DesignParameter[topCellName].clear()            # discard original top cell info
             self._QTObj._qtProject._DesignParameter[topCellName] = ProcessedModuleDict  # Replace with processed ones
@@ -915,6 +918,7 @@ class _MainWindow(QMainWindow):
                             tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
                             self._ElementManager.load_dp_dc_id(dp_id=topCellName, dc_id=topCellName)
                             break
+                            # TODO: ADD SREF Parameter Fields!
                         else:
                             continue
                 else :
