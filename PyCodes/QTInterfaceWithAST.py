@@ -2489,9 +2489,10 @@ class QtProject:
             for _id , element in self._DesignParameter[addedTopModule].items():
                 if element._DesignParameter['_DesignParametertype'] == 3:
                     subcell = element._DesignParameter['_DesignObj']
+                    subcellName = element._DesignParameter['_DesignParameterName']
                     tmpHierarchyDict1 = self._getEntireHierarchy(subcell)
                     for key, value in tmpHierarchyDict1.items():
-                        newName = key + '/' + _id
+                        newName = key + '/' + subcellName
                         if key in hierarchyDict[addedTopModule].keys():
                             continue
                         else:
@@ -2502,36 +2503,16 @@ class QtProject:
             for _id, element in self._DesignParameter[searchmodule].items():
                 if element._DesignParameter['_DesignParametertype'] == 3:
                     subcell = element._DesignParameter['_DesignObj']
+                    subcellName = element._DesignParameter['_DesignParameterName']
                     tmpstack.append(subcell)
                     tmpHierarchyDict2 = self._getEntireHierarchy(subcell)
                     for key, value in tmpHierarchyDict2.items():
-                        newName = key + '/' + _id
+                        newName = key + '/' + subcellName
                         hierarchyDict[searchmodule][newName] = value
                 else:
                     continue
             if tmpstack == []:                      # No Sref cell inside 'searchmodule' ( i.e, Sref Lowest Hierarchy)
                 hierarchyDict[searchmodule] = None
-
-        # searchStack =[]
-        # searchStack.append(addedTopModule)
-        # while searchStack:
-        #     searchmodule = searchStack.pop(0)
-        #     for _, element in self._DesignParameter[searchmodule].items():
-        #         if element._DesignParameter['_DesignParametertype'] == 3:
-        #             try:
-        #                 if element._DesignParameter['_DesignObj'] in searchStack:
-        #                     pass
-        #                 else:
-        #                     searchStack.append(element._DesignParameter['_DesignObj'])
-        #                     if hierarchyDict[searchmodule] == None:
-        #                         hierarchyDict[searchmodule] = dict()
-        #                         hierarchyDict[searchmodule][element._DesignParameter['_DesignObj']] = None
-        #                     else:
-        #                         hierarchyDict[searchmodule][element._DesignParameter['_DesignObj']] = None
-        #
-        #             except:
-        #                 print("element")
-
         return hierarchyDict
 
 
