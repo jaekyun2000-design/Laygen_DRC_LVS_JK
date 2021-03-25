@@ -2486,25 +2486,27 @@ class QtProject:
         if searchmodule == None:                                                    # Initial Condition
             addedTopModule = list(self._DesignParameter.items())[-1][0]
             hierarchyDict[addedTopModule] = dict()
-            for _, element in self._DesignParameter[addedTopModule].items():
+            for _id , element in self._DesignParameter[addedTopModule].items():
                 if element._DesignParameter['_DesignParametertype'] == 3:
                     subcell = element._DesignParameter['_DesignObj']
                     tmpHierarchyDict1 = self._getEntireHierarchy(subcell)
                     for key, value in tmpHierarchyDict1.items():
+                        newName = key + '/' + _id
                         if key in hierarchyDict[addedTopModule].keys():
                             continue
                         else:
-                            hierarchyDict[addedTopModule][key] = value
+                            hierarchyDict[addedTopModule][newName] = value
         else:                                                                       # Recursive Search for subcells
             tmpstack = []
             hierarchyDict[searchmodule] = dict()
-            for _, element in self._DesignParameter[searchmodule].items():
+            for _id, element in self._DesignParameter[searchmodule].items():
                 if element._DesignParameter['_DesignParametertype'] == 3:
                     subcell = element._DesignParameter['_DesignObj']
                     tmpstack.append(subcell)
                     tmpHierarchyDict2 = self._getEntireHierarchy(subcell)
                     for key, value in tmpHierarchyDict2.items():
-                        hierarchyDict[searchmodule][key] = value
+                        newName = key + '/' + _id
+                        hierarchyDict[searchmodule][newName] = value
                 else:
                     continue
             if tmpstack == []:                      # No Sref cell inside 'searchmodule' ( i.e, Sref Lowest Hierarchy)
