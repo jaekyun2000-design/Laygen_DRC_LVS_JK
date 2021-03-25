@@ -3094,13 +3094,14 @@ class _FlatteningCell(QWidget):
         self.loop_obj = QEventLoop()
         self._hdict = _hierarchydict
         self.model = QTreeWidget()
-        self.model.setColumnCount(3)
-        self.model.setHeaderLabels(['Cell Name', 'Flatten Option', 'Generator Name'])
+        self.model.setColumnCount(4)
+        self.model.setHeaderLabels(['Design Object', 'Cell Name', 'Flatten Option', 'Generator Name'])
         self.itemlist = list()
         self.combolist = list(generator_model_api.class_dict.keys())
         self.initUI()
 
     def initUI(self):
+        print(self._hdict)
         self.okButton = QPushButton("OK",self)
         self.okButton.clicked.connect(self.loop_obj.quit)
 
@@ -3122,24 +3123,20 @@ class _FlatteningCell(QWidget):
         self.setLayout(vbox)
 
         self.setWindowTitle('SRef Flattening Window')
-        self.setGeometry(300,300,500,500)
+        self.setGeometry(300,300,900,500)
         self.show()
 
     def ok_button_accepted(self):
-
-
 
         self.loop_obj.exec_()
 
         _flatten_dict = dict()
 
         for item in self.itemlist:
-            if self.model.itemWidget(item, 1).checkState() == 2:
-                _flatten_dict[item.text(0)] = None
+            if self.model.itemWidget(item, 2).checkState() == 2:
+                _flatten_dict[item.text(0) + '/' + item.text(1)] = None
             else:
-                _flatten_dict[item.text(0)] = self.model.itemWidget(item, 2).currentText()
-
-        # self.send_flattendict_signal.emit(_flatten_dict)
+                _flatten_dict[item.text(0) + '/' + item.text(1)] = self.model.itemWidget(item, 3).currentText()
 
         return _flatten_dict
 
@@ -3147,22 +3144,33 @@ class _FlatteningCell(QWidget):
     def loop(self, parent_item, parent_dict, isTop):
         for key in parent_dict:
             if parent_dict[key] is None:
-                item = QTreeWidgetItem(parent_item, [key])
+                design_object, cell_name = self.slice(key)
+                item = QTreeWidgetItem(parent_item, [design_object])
+                item.setText(1, cell_name)
                 self.itemlist.append(item)
             else:
-                item = QTreeWidgetItem(parent_item,[key])
+                design_object, cell_name = self.slice(key)
+                item = QTreeWidgetItem(parent_item,[design_object])
+                item.setText(1, cell_name)
                 self.itemlist.append(item)
                 self.loop(item, parent_dict[key], False)
-            self.AddCheckAndComboBoxes(item)
+            self.modifyBraches(item, cell_name)
 
         if isTop == True:
             self.model.insertTopLevelItem(0, parent_item)
 
-    def AddCheckAndComboBoxes(self, item):
-        self.item = item
+    def slice(self, subcellname):
+        slash = subcellname.find('/')
+        design_object = subcellname[:slash]
+        cell_name = subcellname[slash+1:]
+
+        return design_object, cell_name
+
+    def modifyBraches(self, item, cn):
+        cell_name = QLabel(cn)
 
         check = QCheckBox()
-        check.setText(self.item.text(1))
+        check.setText(item.text(1))
 
         combo = QComboBox()
         combo.addItems(self.combolist)
@@ -3172,13 +3180,14 @@ class _FlatteningCell(QWidget):
 
         check.stateChanged.connect(self.ActivateCombobox)
 
-        self.model.setItemWidget(item, 1, check)
-        self.model.setItemWidget(item, 2, combo)
+        # self.model.setItemWidget(item, 1, cell_name)
+        self.model.setItemWidget(item, 2, check)
+        self.model.setItemWidget(item, 3, combo)
 
     def ActivateCombobox(self, state):
         item = self.model.currentItem()
-        siblingcheckbox = self.model.itemWidget(item, 1)
-        siblingcombobox = self.model.itemWidget(item, 2)
+        siblingcheckbox = self.model.itemWidget(item, 2)
+        siblingcombobox = self.model.itemWidget(item, 3)
 
         if state == 2:
             siblingcheckbox.setText('ON')
