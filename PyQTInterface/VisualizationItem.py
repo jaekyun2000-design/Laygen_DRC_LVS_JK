@@ -425,10 +425,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                     sub_element_vi = _VisualizationItem()
                     sub_element_vi.updateDesignParameter(sub_element_dp)
                     sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
-                    # try:
                     sub_element_vi.setPos(self._ItemTraits['_XYCoordinates'][0][0], self._ItemTraits['_XYCoordinates'][0][1])
-                    # except:
-                    #     print('debuug')
+
                     self.addToGroup(sub_element_vi)
 
             elif self._ItemTraits['_DesignParametertype'] is 8:                #Text Case

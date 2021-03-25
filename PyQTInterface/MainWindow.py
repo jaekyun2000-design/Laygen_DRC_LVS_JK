@@ -500,7 +500,7 @@ class _MainWindow(QMainWindow):
     def srefModulization(self,_flattenStatusDict, _sref = None):
         """
         :param _flattenStatusDict:
-               _sref param not needed: this param exists for recursive call
+               _sref param not needed: this param exists only for recursive call
         :return: reconstructed cell structure according to param '_flattenStatusDict'
         """
         _finalModule = dict()
@@ -515,11 +515,12 @@ class _MainWindow(QMainWindow):
             print(f"There are '{numberOfCells + 1}' cells inside '{topCellName}' cell")
             print("##############################################################")
             for _id, _elements in self._QTObj._qtProject._DesignParameter[topCellName].items():
-                if _elements._DesignParameter['_DesignParametertype'] == 3:                         # e.g : TopCell0
+                if _elements._DesignParameter['_DesignParametertype'] == 3:                      # Sref inside top cell
                     _childName = _elements._DesignParameter['_DesignObj']
                     _childModule = self.srefModulization(_flattenStatusDict, _elements)          # Recursive Call
                     for _id2, elements2 in _childModule.items():
                         name = elements2._DesignParameter['_DesignParameterName']
+
                         ###### Preventing Name Overwriting #####
                         while True:
                             if name in list(tmpDict.keys()):
@@ -528,6 +529,7 @@ class _MainWindow(QMainWindow):
                             else:
                                 break
                         #########################################
+
                         tmpDict[name] = elements2
                 else:
                     tmpDict[_id] = _elements
@@ -569,17 +571,18 @@ class _MainWindow(QMainWindow):
                         for _id, element in tmpDict.items():
                             tmpmodule = copy.deepcopy(element)
                             if tmpmodule._DesignParameter['_DesignParametertype'] == 2:
-                                # TODO Path format Different
-                                newXY1 = [x+y for x, y in zip(tmpmodule._DesignParameter['_XYCoordinates'][0][0], _parentXY[0])]
-                                newXY2 = [x+y for x, y in zip(tmpmodule._DesignParameter['_XYCoordinates'][0][1], _parentXY[0])]
-                                newXYpair = [[newXY1, newXY2]]
+                                _XYpairs = tmpmodule._DesignParameter['_XYCoordinates'][0]  # [[a,a'],[b,b'],[c,c']]
+                                _modifiedXYpairs = []
+                                for i in range(0,len(_XYpairs)):
+                                    _newXY = [x+y for x,y in zip(_XYpairs[i], _parentXY[0])]
+                                    _modifiedXYpairs.append(_newXY)
                                 while True:
                                     if tmpmodule._id in _finalModule:   # Preventing name overwriting
                                         newName = tmpmodule._id + str(1)
                                         tmpmodule._id = newName
                                     else:
                                         break
-                                tmpmodule._DesignParameter['_XYCoordinates'] = newXYpair
+                                tmpmodule._DesignParameter['_XYCoordinates'] = [_modifiedXYpairs]
                                 _finalModule[tmpmodule._id] = tmpmodule
                             else:
                                 newXY = [[x+y for x,y in zip(tmpmodule._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
@@ -842,9 +845,8 @@ class _MainWindow(QMainWindow):
 
     # def create
 
-    def loadGDS(self):      ############################################################## What I need to fix is :  LoadGDS means not load SRef!!!! I have to change target GDS Module is root module!!!
+    def loadGDS(self):
         scf = QFileDialog.getOpenFileName(self,'Load GDS','./PyQTInterface/GDSFile')
-        cm = self._CurrentModuleName
         _fileName=scf[0]
         _moduleName = _fileName.replace(".gds","")
         _moduleName = _moduleName.split('/')[-1]
@@ -857,13 +859,13 @@ class _MainWindow(QMainWindow):
         if self.progrseeBar_unstable == True:
             updateModuleList = set(self._QTObj._qtProject._DesignParameter)
             addedModuleList = list(updateModuleList-originalModuleList)
-            randModule = addedModuleList[0]
-            anyId = list(self._QTObj._qtProject._DesignParameter[randModule])[0]
-            hierarchyHint=self._QTObj._qtProject._HierarchyFromRootForDesignParameter(_id=anyId,_ParentName=randModule)
-            rootModule = list(hierarchyHint[0])[0]
-
-            moduleLength = len(addedModuleList)
-            minimumModule = round(moduleLength/50)
+            # randModule = addedModuleList[0]
+            # anyId = list(self._QTObj._qtProject._DesignParameter[randModule])[0]
+            # hierarchyHint=self._QTObj._qtProject._HierarchyFromRootForDesignParameter(_id=anyId,_ParentName=randModule)
+            # rootModule = list(hierarchyHint[0])[0]
+            #
+            # moduleLength = len(addedModuleList)
+            # minimumModule = round(moduleLength/50)
             idLength = 0
 
             entireHierarchy = self._QTObj._qtProject._getEntireHierarchy()
@@ -873,10 +875,6 @@ class _MainWindow(QMainWindow):
 
             if DEBUG:
                 print(f'idLength= {idLength}')
-            j = 0
-            # self.qpd = QProgressDialog("Load GDS... (File Transform)","Cancel",0,idLength,self)
-            # self.qpd.setWindowModality(Qt.WindowModal)
-            # self.qpd.show()
 
             self.fc = SetupWindow._FlatteningCell(entireHierarchy)
             self.fc.show()
@@ -884,43 +882,65 @@ class _MainWindow(QMainWindow):
             print(flattening_dict)
             self.fc.destroy()
 
-            print("############################################ MINSUKIM #############################################")
-            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+            print("############################ Cell DP, DC, VISUALITEM CREATION START ###############################")
             visual_item_list = []
-            namedDict = {}
             addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
             topCellName = addedModulelist[-1]
-            ProcessedModuleDict = self.srefModulization(flattening_dict)
+            self._CurrentModuleName = topCellName       # Necessary For adding elements inside the cell
+            ProcessedModuleDict = self.srefModulization(flattening_dict)            # Reconstruct imported GDS
+            self._QTObj._qtProject._DesignParameter[topCellName].clear()            # discard original top cell info
+            self._QTObj._qtProject._DesignParameter[topCellName] = ProcessedModuleDict  # Replace with processed ones
 
-            for _id, _element in ProcessedModuleDict.items():
+            for _id, _element in self._QTObj._qtProject._DesignParameter[topCellName].items():
                 _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(topCellName)
                 _newConstraintID = (topCellName + str(_designConstraintID))
 
                 ########################################## New Naming ################################################
-                namedDict[_newConstraintID] = _element
-                namedDict[_newConstraintID]._id = _newConstraintID
-                namedDict[_newConstraintID]._DesignParameterName = _newConstraintID
-                namedDict[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
-                namedDict[_newConstraintID]._DesignParameter['_DesignParameterName'] = _newConstraintID
+                self._QTObj._qtProject._DesignParameter[_newConstraintID] = _element
+                self._QTObj._qtProject._DesignParameter[_newConstraintID]._id = _newConstraintID
+                self._QTObj._qtProject._DesignParameter[_newConstraintID]._DesignParameterName = _newConstraintID
+                self._QTObj._qtProject._DesignParameter[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
+                self._QTObj._qtProject._DesignParameter[_newConstraintID]._DesignParameter['_DesignParameterName'] = _newConstraintID
 
                 ######################################### AST Creation ################################################
-                tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(namedDict[_newConstraintID])
-                if tmpAST is None:
-
-
-                    continue
-                design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=topCellName,
-                                                                  _ast=tmpAST, element_manager_update=False)
-                self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
-                                                                 _parentName=topCellName,
-                                                                 _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-                tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
-                self._ElementManager.load_dp_dc_id(dp_id=topCellName, dc_id=topCellName)
+                if self._QTObj._qtProject._DesignParameter[_newConstraintID]._DesignParameter['_DesignParametertype'] == 3:
+                    _cellModel = self._QTObj._qtProject._DesignParameter[_newConstraintID]._DesignParameter['_DesignObj']
+                    for key, value in flattening_dict.items():
+                        findHint = _cellModel.find(key)
+                        if findHint != -1:
+                            _element._DesignParameter['_DesignLibraryName'] = value
+                            _element._DesignParameter['_className'] = \
+                                generator_model_api.class_name_dict[_element._DesignParameter['_DesignLibraryName']]
+                            tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(_element)
+                            if tmpAST == None:
+                                continue
+                            design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                              module_name=topCellName,
+                                                                              _ast=tmpAST, element_manager_update=False)
+                            self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                             _parentName=topCellName,
+                                                                             _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+                            tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
+                            self._ElementManager.load_dp_dc_id(dp_id=topCellName, dc_id=topCellName)
+                            break
+                            # TODO: ADD SREF Parameter Fields!
+                        else:
+                            continue
+                else :
+                    tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(self._QTObj._qtProject._DesignParameter[_newConstraintID])
+                    if tmpAST is None:
+                        continue
+                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=topCellName,
+                                                                      _ast=tmpAST, element_manager_update=False)
+                    self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                     _parentName=topCellName,
+                                                                     _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+                    tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
+                    self._ElementManager.load_dp_dc_id(dp_id=topCellName, dc_id=topCellName)
 
                 ####################################### Visual Item Creation ##########################################
-
-                if namedDict[_newConstraintID]._DesignParameter['_DesignParametertype'] != 3:
-                    visualItem = self.createVisualItemfromDesignParameter(namedDict[_newConstraintID])
+                if self._QTObj._qtProject._DesignParameter[_newConstraintID]._DesignParameter['_DesignParametertype'] != 3:
+                    visualItem = self.createVisualItemfromDesignParameter(self._QTObj._qtProject._DesignParameter[_newConstraintID])
                     visual_item_list.append(visualItem)
                     layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                     if tmp_dp_dict['_Layer'] == 63 or tmp_dp_dict['_Layer'] == 127:
@@ -932,131 +952,16 @@ class _MainWindow(QMainWindow):
                     else:
                         self._layerItem[layer] = [visualItem]
 
-                    self._id_layer_mapping[namedDict[_newConstraintID]._id] = layer
+                    self._id_layer_mapping[self._QTObj._qtProject._DesignParameter[_newConstraintID]._id] = layer
                     self.scene.addItem(visualItem)
                 else:
                     sref_vi = VisualizationItem._VisualizationItem()
-                    sref_vi.updateDesignParameter(namedDict[_newConstraintID])
+                    sref_vi.updateDesignParameter(self._QTObj._qtProject._DesignParameter[_newConstraintID])
                     self.scene.addItem(sref_vi)
                     self.vi = VisualizationItem._VisualizationItem()
-                    self.vi.updateDesignParameter(namedDict[_newConstraintID])
-                # if self.progrseeBar_unstable == True:
-                #     j += len(_element)
-                #     self.qpd.setValue(j)
-                #     if self.qpd.wasCanceled():
-                #         break
-            # self.qpd2 = QProgressDialog("Load GDS... (Creating VisualItem)", "Cancel", 0, len(visual_item_list) - 1,self)
-            # self.qpd2.setWindowModality(Qt.WindowModal)
-            # self.qpd2.show()
+                    self.vi.updateDesignParameter(self._QTObj._qtProject._DesignParameter[_newConstraintID])
 
-            # multicore = False
-            # corenum = 8
-            # if multicore:
-            #     chunk = int(len(visual_item_list) / corenum)
-            #     procs = []
-            #     for i in range(corenum):
-            #         if i != corenum - 1:
-            #             proc = mp.Process(target=self.updateGraphicItem, args=visual_item_list[20 * i:20 * i + 20])
-            #         else:
-            #             proc = mp.Process(target=self.updateGraphicItem, args=visual_item_list[20 * i:])
-            #         procs.append(proc)
-            #         proc.start()
-            #     for proc in procs:
-            #         proc.join()
-            # else:
-            #     for i, vis in enumerate(visual_item_list):
-            #         self.updateGraphicItem(vis)
-            #         self.qpd2.setValue(i)
-            #         if self.qpd2.wasCanceled():
-            #             break
-
-            # self._QTObj._qtProject._resetXYCoordinatesForDisplay()
-
-            self._QTObj._qtProject._DesignParameter[topCellName].clear()
-            self._QTObj._qtProject._DesignParameter[topCellName] = namedDict
-            print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
-            print("############################################ MINSUKIM #############################################")
-
-        # tmp = SetupWindow._FlatteningCell.ok_button_accepted(self.fc)
-        # while tmp is None:
-        #     print('x:',tmp)
-        #     pass
-        # print(tmp)
-
-        # tmp = SetupWindow._FlatteningCell.print(self.fc)
-        # self.fc.show()
-        # tmp = SetupWindow._FlatteningCell.ok_button_accepted(SetupWindow._FlatteningCell(entireHierarchy))
-        # print(tmp)
-        # self.fc = SetupWindow._FlatteningCell(entireHierarchy)
-        # self.fc.show()
-        #
-        # self.fc.send_flattendict_signal.connect(self.print_dict)
-
-
-
-        # for module in addedModuleList:
-            # try:
-            #     for id in self._QTObj._qtProject._DesignParameter[module]:
-            #         # Step 1 : From QtDesignParameter -> get AST
-            #         tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(self._QTObj._qtProject._DesignParameter[module][id])
-            #         if tmpAST is None:
-            #             continue
-            #         # Step 2: From ast -> create Constraint
-            #         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=module, _ast=tmpAST, element_manager_update=False)
-            #         tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
-            #         self._ElementManager.load_dp_dc_id(dp_id=id, dc_id=id)
-            #         # Step 3: From QtDesignconstraint -> create Visual_ast item
-            #         try:
-            #             if design_dict['constraint']:
-            #                 self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
-            #                                                                  _parentName=module,
-            #                                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-            #         except:
-            #             print("Invalid ast.")
-            #         # Step 4: From QtDesignParameter -> create Visual Element item
-            #         if self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter['_DesignParametertype'] == 3:
-            #             continue
-            #         visualItem = self.createVisualItemfromDesignParameter(self._QTObj._qtProject._DesignParameter[module][id])
-            #         visual_item_list.append(visualItem)
-            #
-            #         layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-            #         if tmp_dp_dict['_Layer'] == 63 or tmp_dp_dict['_Layer'] == 127:
-            #             layer = None
-            #         else:
-            #             layer = layernum2name[str(tmp_dp_dict['_Layer'])]
-            #
-            #         if layer in self._layerItem:
-            #             self._layerItem[layer].append(visualItem)
-            #         else:
-            #             self._layerItem[layer] = [visualItem]
-            #
-            #         self._id_layer_mapping[id] = layer
-            #
-            #         # self.updateGraphicItem(visualItem)
-            # except:
-            #     print("module:",module)
-            #     print("ID:",id)
-            #     print("ErrorOccured")
-
-            # if self.progrseeBar_unstable == True:
-            #     j += len(self._QTObj._qtProject._DesignParameter[module])
-            #     self.qpd.setValue(j)
-            #     if self.qpd.wasCanceled():
-            #         break
-
-
-
-
-
-
-    # except:
-    #     print("Load GDS Failed")
-    #     self.dockContentWidget4ForLoggingMessage._WarningMessage("Load GDS Fail: Unknown")
-    #     pass
-    #     print("Load GDS Done")
-
-
-
+            print("############################ Cell DP, DC, VISUALITEM CREATION DONE ################################")
 
     # def loadPy(self):
     #     self.loadWorker = ThreaderForProgress.loadPyWorker()
@@ -1091,9 +996,6 @@ class _MainWindow(QMainWindow):
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Convert DC to TreeView")
             self.dockContentWidget3_2.createNewConstraintAST(_id=_id, _parentName=self._CurrentModuleName, _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Conversion Done!")
-
-
-
 
         except:
             print("Load PySource Failed")
