@@ -90,7 +90,7 @@ class _MainWindow(QMainWindow):
 
     def initUI(self):
 
-        print("***************************Initalizing Graphic Interface Start")
+        print("*********************Initializing Graphic Interface Start")
 
         ################# MAIN WINDOW setting ####################
         self.setWindowTitle("S2S GUI PROJECT")
@@ -430,7 +430,7 @@ class _MainWindow(QMainWindow):
     #         #     brush = QBrush(QColor(50,50,50))
     #         #     painter.fillPath(path,brush)
     #         #     self.scene.addPath(path)
-        print("******************************Initalizing Graphic Interface Complete")
+        print("************************Initializing Graphic Interface Complete")
 
     # def threading_test(self,count):
 
@@ -496,21 +496,21 @@ class _MainWindow(QMainWindow):
         # return visualItem
 
         pass
-    def hierarchyCalculator(self, _targetDict, _level = None):
-        if _level == None:
-            _level = 1
-        else:
-            _level = _level
-        for key, value in _targetDict.items():
-            if key == 'flattenFlag' :
-                continue
-            elif value['subcell'] == None:
-                break
-            else:
-                _level = _level + 1
-                subLevel = self.hierarchyCalculator(value['subcell'], _level)
-                _level = max(subLevel, _level)
-        return _level
+    # def hierarchyCalculator(self, _targetDict, _level = None):
+    #     if _level == None:
+    #         _level = 1
+    #     else:
+    #         _level = _level
+    #     for key, value in _targetDict.items():
+    #         if key == 'flattenFlag' :
+    #             continue
+    #         elif value['subcell'] == None:
+    #             break
+    #         else:
+    #             _level = _level + 1
+    #             subLevel = self.hierarchyCalculator(value['subcell'], _level)
+    #             _level = max(subLevel, _level)
+    #     return _level
 
 
 
@@ -529,9 +529,9 @@ class _MainWindow(QMainWindow):
             lastSrefName = list(self._QTObj._qtProject._DesignParameter[topCellName].keys())[-1]
             numberOfCells = int(re.findall('\d+', lastSrefName)[0])
             tmpDict = dict()
-            print("##############################################################")
-            print(f"There are '{numberOfCells + 1}' cells inside '{topCellName}' cell")
-            print("##############################################################")
+            print("             #######################################################################               ")
+            print(f"               There are '{numberOfCells + 1}' cells inside '{topCellName}' cell                  ")
+            print("             #######################################################################               ")
             for _id, _elements in self._QTObj._qtProject._DesignParameter[topCellName].items():
                 if _elements._DesignParameter['_DesignParametertype'] == 3:                      # Sref inside top cell
                     _childName = _elements._DesignParameter['_DesignObj']
@@ -585,7 +585,7 @@ class _MainWindow(QMainWindow):
                         break
                     else:                                   # Flattening Condition
                         """                 
-                        Flattening Condition needs XYcoordinate modification, and renaming process
+                        Flattening Condition needs XY coordinate modification, and renaming process
                         """
                         for _id, element in tmpDict.items():
                             tmpmodule = copy.deepcopy(element)
@@ -871,13 +871,14 @@ class _MainWindow(QMainWindow):
         _moduleName = _moduleName.split('/')[-1]
         originalModuleList = set(self._QTObj._qtProject._DesignParameter)
         # self.dockContentWidget4ForLoggingMessage._InfoMessage("Load GDS File Starts.")
-        print("loadFile")
+        print("**************************File Load From Legacy Start")
         self._QTObj._qtProject._loadDesignsFromGDSlegacy(_file = _fileName, _topModuleName = _moduleName)
-        print("FileLoadEnd")
+        print("****************************File Load From Legacy Complete")
 
         if self.progrseeBar_unstable == True:
             updateModuleList = set(self._QTObj._qtProject._DesignParameter)
             addedModuleList = list(updateModuleList-originalModuleList)
+            idLength = 0
             # randModule = addedModuleList[0]
             # anyId = list(self._QTObj._qtProject._DesignParameter[randModule])[0]
             # hierarchyHint=self._QTObj._qtProject._HierarchyFromRootForDesignParameter(_id=anyId,_ParentName=randModule)
@@ -885,15 +886,12 @@ class _MainWindow(QMainWindow):
             #
             # moduleLength = len(addedModuleList)
             # minimumModule = round(moduleLength/50)
-            idLength = 0
-
             entireHierarchy = self._QTObj._qtProject._getEntireHierarchy()
-            print("Hierarchy: \n {}".format(entireHierarchy))
             for modules in addedModuleList:
                 idLength += len(self._QTObj._qtProject._DesignParameter[modules])
 
             if DEBUG:
-                print(f'idLength= {idLength}')
+                print(f'DEBUGGING MODE, idLength= {idLength}')
 
             self.fc = SetupWindow._FlatteningCell(entireHierarchy)
             self.fc.show()

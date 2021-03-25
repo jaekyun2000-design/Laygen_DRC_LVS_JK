@@ -3101,7 +3101,6 @@ class _FlatteningCell(QWidget):
         self.initUI()
 
     def initUI(self):
-        print(self._hdict)
         self.okButton = QPushButton("OK",self)
         self.okButton.clicked.connect(self.loop_obj.quit)
 
