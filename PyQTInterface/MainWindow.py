@@ -898,7 +898,6 @@ class _MainWindow(QMainWindow):
             self.fc = SetupWindow._FlatteningCell(entireHierarchy)
             self.fc.show()
             flattening_dict = self.fc.ok_button_accepted()
-            print(flattening_dict)
             self.fc.destroy()
 
             print("############################ Cell DP, DC, VISUALITEM CREATION START ###############################")
@@ -912,12 +911,8 @@ class _MainWindow(QMainWindow):
             for _id, _element in ProcessedModuleDict.items():
                 _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(topCellName)
                 _newConstraintID = (topCellName + str(_designConstraintID))
-
-                ########################################## New Naming ################################################
                 topcell[_newConstraintID] = _element
                 topcell[_newConstraintID]._id = _newConstraintID
-
-
                 ######################################### AST Creation ################################################
                 if topcell[_newConstraintID]._DesignParameter['_DesignParametertype'] == 3:
                     _cellModel = _element._DesignParameter['_DesignObj']
@@ -926,13 +921,13 @@ class _MainWindow(QMainWindow):
                     for key, value in flattening_dict.items():
                         findHint = _newCellName.find(key)
                         if findHint != -1:
-                            _element._DesignParameter['_DesignLibraryName'] = value
-                            _element._DesignParameter['_className'] = \
+                            topcell[_newConstraintID]._DesignParameter['_DesignLibraryName'] = value
+                            topcell[_newConstraintID]._DesignParameter['_className'] = \
                                 generator_model_api.class_name_dict[_element._DesignParameter['_DesignLibraryName']]
                             topcell[_newConstraintID]._DesignParameterName = _newConstraintID
                             topcell[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
                             topcell[_newConstraintID]._DesignParameter['_DesignParameterName'] = _newConstraintID
-                            tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(_element)
+                            tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(topcell[_newConstraintID])
                             if tmpAST == None:
                                 continue
                             design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
