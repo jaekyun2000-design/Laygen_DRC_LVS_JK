@@ -160,7 +160,6 @@ class _RectBlock(QGraphicsRectItem):
 class _VisualizationItem(QGraphicsItemGroup):
     def __init__(self,_ItemTraits=None):
         super().__init__()
-        self.outputForSRef = None
         self.setBoundingRegionGranularity(1)
         self._id = None
         self._type = None
@@ -255,8 +254,6 @@ class _VisualizationItem(QGraphicsItemGroup):
         else:
             self._ItemTraits['_DesignParameterName'] = QtDesignParameter._DesignParameterName
         self.updateTraits(QtDesignParameter._DesignParameter)
-
-        return self.outputForSRef
 
 
     def updateTraits(self,_DesignParameter):
@@ -428,7 +425,6 @@ class _VisualizationItem(QGraphicsItemGroup):
                     sub_element_vi = _VisualizationItem()
                     sub_element_vi.updateDesignParameter(sub_element_dp)
                     sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
-                    print(sub_element_dp._DesignParameter['_XYCoordinates'])
                     # try:
                     sub_element_vi.setPos(self._ItemTraits['_XYCoordinates'][0][0], self._ItemTraits['_XYCoordinates'][0][1])
                     # except:

@@ -170,7 +170,7 @@ class _BoundarySetupWindow(QWidget):
                 try:
                     X = int(XY.text().split(',')[0])
                     Y = int(XY.text().split(',')[1])
-                    self._DesignParameter['_XYCoordinates']=[[X+float(self.width_input.text()),Y+float(self.height_input.text())]]
+                    self._DesignParameter['_XYCoordinates']=[[X+float(self.width_input.text())/2,Y+float(self.height_input.text())/2]]
                     # self._DesignParameter['_XYCoordinatesForDisplay'] = [[X,Y]]
                 except:
                     self.warning = QMessageBox()
@@ -3108,6 +3108,7 @@ class _FlatteningCell(QWidget):
 
         top_item = QTreeWidgetItem(top_cell)
 
+
         self.loop(top_item, self._hdict[top_cell[0]], True)
 
         hbox = QHBoxLayout()
@@ -3138,7 +3139,7 @@ class _FlatteningCell(QWidget):
             else:
                 _flatten_dict[item.text(0)] = self.model.itemWidget(item, 2).currentText()
 
-        self.send_flattendict_signal.emit(_flatten_dict)
+        # self.send_flattendict_signal.emit(_flatten_dict)
 
         return _flatten_dict
 

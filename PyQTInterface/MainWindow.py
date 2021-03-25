@@ -180,6 +180,8 @@ class _MainWindow(QMainWindow):
         graphicView.setRubberBandSelectionMode(Qt.ContainsItemShape)
         graphicView.setDragMode(QGraphicsView.RubberBandDrag)
         graphicView.setAcceptDrops(True)
+        graphicView.name_list_signal.connect(self.debug)
+        self.scene.send_module_name_list_signal.connect(graphicView.name_out_fcn)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
         # self.scene.setMinimumRenderSize(5)
         self.setCentralWidget(graphicView)
@@ -431,6 +433,9 @@ class _MainWindow(QMainWindow):
         print("******************************Initalizing Graphic Interface Complete")
 
     # def threading_test(self,count):
+
+    def debug(self,name_list):
+        print(name_list)
 
     def sref_debug_module(self):
         # tmpcell = {'INV': {'Sub1': {'Sub2': {'PMOS': None}, 'NMOS': None,}, 'NMOS': None, 'PMOS': None}}
@@ -1671,10 +1676,14 @@ class _MainWindow(QMainWindow):
 
 class _CustomView(QGraphicsView):
     variable_signal = pyqtSignal(str)
+    nameout_signal = pyqtSignal(str)
+    name_list_signal = pyqtSignal(list)
+
     def __init__(self):
         super(_CustomView, self).__init__()
         self.show()
         self.setMouseTracking(True)
+        self.modulename=None
 
     def wheelEvent(self, QWheelEvent):
         zoomInFactor = 1.25
@@ -1745,6 +1754,10 @@ class _CustomView(QGraphicsView):
         event.proposedAction()
         super(self).dropEvent(event)
 
+    def name_out_fcn(self,name_list):
+        name_list.insert(0,self.modulename)
+        self.name_list_signal.emit(name_list)
+
 class _CustomScene(QGraphicsScene):
     send_debug_signal = pyqtSignal()
     send_xyCoordinate_signal = pyqtSignal(QGraphicsSceneMouseEvent)
@@ -1753,20 +1766,25 @@ class _CustomScene(QGraphicsScene):
     send_move_signal = pyqtSignal(QPointF)
     send_moveDone_signal = pyqtSignal()
     send_deleteItem_signal = pyqtSignal(str)
-    def __init__(self):
+    send_module_name_list_signal = pyqtSignal(list)
+
+    viewList = []
+
+    def __init__(self, axis=True):
         super().__init__()
-        pen = QPen()
-        pen.setStyle(Qt.SolidLine)
-        pen.setColor(Qt.GlobalColor.red)
-        pen.setCapStyle(Qt.RoundCap)
-        pen.setWidth(3)
+        if axis:
+            pen = QPen()
+            pen.setStyle(Qt.SolidLine)
+            pen.setColor(Qt.GlobalColor.red)
+            pen.setCapStyle(Qt.RoundCap)
+            pen.setWidth(3)
+
+            self.addLine(QLineF(-10000,0,10000,0),pen)
+            self.addLine(QLineF(0,-10000,0,10000),pen)
 
         self.moveFlag = False
         self.listIgnoreFlag = False
         self.oldPos = QPointF(0,0)
-
-        self.addLine(QLineF(-10000,0,10000,0),pen)
-        self.addLine(QLineF(0,-10000,0,10000),pen)
 
         # self.
 
@@ -1878,12 +1896,21 @@ class _CustomScene(QGraphicsScene):
             print("selectionClear")
             self.clearSelection()
         elif QKeyEvent.key() == Qt.Key_I:
-            print('\'I\' pressed')
             itemList = self.selectedItems()
             for item in itemList:
-                if type(item) == VisualizationItem._VisualizationItem:
-                    copied_item = self.copyItem(item)
-                    self.newWindow(copied_item)
+                if item._ItemTraits['_DesignParametertype'] == 3:
+                    subElement = item._ItemTraits['_DesignParameterName']
+                    structure_dict = self.copyItem(item)
+                    self.newWindow(structure_dict, subElement)
+        elif QKeyEvent.key() == Qt.Key_O:
+            itemList = self.selectedItems()
+            for item in itemList:
+                try:
+                    if item._ItemTraits['_DesignParametertype'] is not 3:
+                        self.send_module_name_list_signal.emit([item._ItemTraits['_DesignParameterName']])
+                        print(item._ItemTraits['_DesignParameterName'])
+                except:
+                    pass
 
         super().keyPressEvent(QKeyEvent)
 
@@ -1898,24 +1925,40 @@ class _CustomScene(QGraphicsScene):
     def itemListClickIgnore(self,flag):
         self.listIgnoreFlag = flag
 
-    def newWindow(self, item):
+    def newWindow(self, structure_dict, subElementName):
 
-        # copy_item = copy.deepcopy(item)
-        # x = item
-        self.view = _CustomView()
-        dummy = _CustomScene()
-        dummy.addItem(item)
-        self.view.setScene(dummy)
-        self.view.show()
+        self.viewList.append(_CustomView())
+        self.viewList[-1].setWindowTitle(subElementName)
+        self.viewList[-1].modulename = subElementName
+        self.viewList[-1].nameout_signal.connect(self.receive_module_name)
+        self.viewList[-1].name_list_signal.connect(self.receive_module_name)
+
+        self.viewList[-1].setDragMode(QGraphicsView.RubberBandDrag)
+        self.viewList[-1].scale(1,-1)
+        for item in self.viewList:
+            print(item.windowTitle())
+        dummy = _CustomScene(axis=False)
+        dummy.send_module_name_list_signal.connect(self.viewList[-1].name_out_fcn)
+        for key, value in structure_dict.items():
+            DP = VisualizationItem._VisualizationItem()
+            DP.updateDesignParameter(value)
+            DP.setToolTip(key)
+            dummy.addItem(DP)
+
+        self.viewList[-1].setScene(dummy)
+        self.viewList[-1].setGeometry(200,200,1200,800)
+        self.viewList[-1].show()
+
+    def receive_module_name(self,name_list):
+        if type(name_list) == str:
+            name_list = [name_list]
+        self.send_module_name_list_signal.emit(name_list)
 
     def copyItem(self, item):
-        newitem = VisualizationItem._VisualizationItem(item._ItemTraits)
-
-        return newitem
-
-
-    # def deliveryContent(self):
-
+        structure_dict = dict()
+        for key, value in item._ItemTraits['_DesignParameterRef'].items():
+            structure_dict[key] = value
+        return structure_dict
 
 class _VersatileWindow(QWidget):
     send_Name_signal = pyqtSignal(str)
