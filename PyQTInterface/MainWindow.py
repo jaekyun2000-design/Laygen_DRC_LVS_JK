@@ -534,7 +534,7 @@ class _MainWindow(QMainWindow):
             print("##############################################################")
             for _id, _elements in self._QTObj._qtProject._DesignParameter[topCellName].items():
                 if _elements._DesignParameter['_DesignParametertype'] == 3:                      # Sref inside top cell
-                    _childName = _elements._DesignParameter['_DesignObj']
+                    _childName = _elements._DesignParameter['_DesignObj_Name']
                     _childModule = self.srefModulization(_flattenStatusDict, _elements)          # Recursive Call
                     for _id2, elements2 in _childModule.items():
                         name = elements2._DesignParameter['_DesignParameterName']
@@ -555,7 +555,7 @@ class _MainWindow(QMainWindow):
 
         else:
             ############################################# 2. Subcell Cases ############################################
-            _childName = _sref._DesignParameter['_DesignObj']
+            _childName = _sref._DesignParameter['_DesignObj_Name']
             _newChildName = _childName + '/' + _sref._DesignParameter['_DesignParameterName']
             _parentName = _sref._id
             _parentXY = _sref._DesignParameter['_XYCoordinates']
@@ -920,7 +920,7 @@ class _MainWindow(QMainWindow):
 
                 ######################################### AST Creation ################################################
                 if topcell[_newConstraintID]._DesignParameter['_DesignParametertype'] == 3:
-                    _cellModel = _element._DesignParameter['_DesignObj']
+                    _cellModel = _element._DesignParameter['_DesignObj_Name']
                     _cellName = _element._DesignParameter['_DesignParameterName']
                     _newCellName = _cellModel + '/' + _cellName
                     for key, value in flattening_dict.items():
