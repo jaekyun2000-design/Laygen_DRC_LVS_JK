@@ -22,7 +22,7 @@ from PyCodes import QTInterfaceWithAST
 
 from generatorLib import generator_model_api
 
-import re, ast, time
+import re, ast, time, sys
 
 debugFlag = True
 
@@ -3090,6 +3090,16 @@ class _FlatteningCell(QWidget):
     # send_ok_signal = pyqtSignal()
 
     def __init__(self,  _hierarchydict):
+        self.grouping = False
+        try:
+            sys.path.append('O:\OneDrive - postech.ac.kr\GeneratorAutomation\VariableSuggestion-git')
+            import topAPI
+            # topAPI.gds2generator.CellInspector()
+            self.grouping = True
+            self.inspector = topAPI.gds2generator.CellInspector()
+        except:
+            import traceback
+            traceback.print_exc()
         super().__init__()
         self.loop_obj = QEventLoop()
         self._hdict = _hierarchydict
@@ -3177,6 +3187,13 @@ class _FlatteningCell(QWidget):
 
         check.setText('OFF')
         combo.setEnabled(True)
+
+        if self.grouping:
+            module_name = self.inspector.convert_pcell_name_to_generator_name(item.text(0))
+            print(module_name, item.text(0))
+            module_index = combo.findText(module_name)
+            if module_index != -1:
+                combo.setCurrentIndex(module_index)
 
         check.stateChanged.connect(self.ActivateCombobox)
 
