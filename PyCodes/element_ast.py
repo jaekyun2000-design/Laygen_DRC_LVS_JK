@@ -59,10 +59,8 @@ class Sref(ElementNode):
     )
 
 class Text(ElementNode):
-
     def __init__(self, *args, **kwargs):
         super().__init__()
-
     _fields = (
         'id',  # id str
         'name',  # name str
@@ -74,31 +72,6 @@ class Text(ElementNode):
         'angle',  # float
         'text'  # int or str
     )
-
-# class MacroKeyword(ast.AST):
-#     _fields = (
-#         'arg',
-#         'id',
-#         'attr',
-#         'index1',
-#         'index2'
-#     )
-#
-# class MacroListSubscript(ast.AST):
-#     _fields = (
-#         'list_id',
-#         'list_id_attr',
-#         'index1',
-#         'index2'
-#     )
-#
-#
-# class MacroSubscript(ast.AST):
-#     _fields = (
-#         'id',
-#         'id_attr',
-#         'index',
-#     )
 
 class GeneratorTransformer(ast.NodeTransformer):
     def visit_Generator(self,node):

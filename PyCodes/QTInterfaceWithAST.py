@@ -1995,15 +1995,15 @@ class QtProject:
                 _designParameter = None
                 _designParameter_id = None
                 if element_manager_update == True:
-                    try:
-                        tmp_dp_dict, parameter_id = self._ElementManager.get_ast_return_dpdict(_ast)
-                        parameter_id = self._ElementManager.get_dp_id_by_dc_id(id)
-                        if parameter_id:
-                            tmp_dict = self._update_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, id=parameter_id, element_manager_update=False)
-                            _designParameter = tmp_dict['parameter']
-                            _designParameter_id = tmp_dict['parameter_id']
-                    except:
-                        print("Constraint -> Parameter is not implemented.")
+                # try:
+                    tmp_dp_dict, parameter_id = self._ElementManager.get_ast_return_dpdict(_ast)
+                    parameter_id = self._ElementManager.get_dp_id_by_dc_id(id)
+                    if parameter_id:
+                        tmp_dict = self._update_design_dictionary(_dp_dict= tmp_dp_dict, module_name=module_name, id=parameter_id, element_manager_update=False)
+                        _designParameter = tmp_dict['parameter']
+                        _designParameter_id = tmp_dict['parameter_id']
+                # except:
+                    print("Constraint -> Parameter is not implemented.")
 
 
                 output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': _designParameter_id, 'constraint_id': id}

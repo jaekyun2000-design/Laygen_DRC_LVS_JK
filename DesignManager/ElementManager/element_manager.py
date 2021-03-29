@@ -154,13 +154,14 @@ class ElementManager:
             tmpDP = dict()
             for key in KeyManager._SRefkey.keys():
                 if key == '_id':
-                    tmpDP[key] = None
+                    tmpDP[key] = ast.__dict__['name']
                 elif key == '_DesignParametertype':
                     tmpDP[key] = 3
                 elif key == '_XYCoordinates':
                     tmpDP[key] = ast.XY
                 elif key == '_DesignObj':
                     tmpDP[key] = None
+                    # TODO: DesignObj necessary for constraint -> parameter?
                 elif key == '_DesignLibraryName':
                     tmpDP[key] = ast.__dict__['library']
                 elif key == '_className':
