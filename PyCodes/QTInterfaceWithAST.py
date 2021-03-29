@@ -2,6 +2,7 @@ import sys
 import os
 import collections
 import traceback
+import copy
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from PyQTInterface import VisualizationItem
@@ -72,6 +73,7 @@ class QtDesignParameter:
             _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
         elif self._type == 3:  # sref
             _tmpDesignParameter["_DesignObj"] = None  ## PMOSInInv, NMOSInInv ...
+            _tmpDesignParameter["_DesignObj_Name"] = None  ## PMOSInInv, NMOSInInv ...
             _tmpDesignParameter["_DesignLibraryName"] = None  #### PMOSWithDummy, NMOSWithDummy ...
             _tmpDesignParameter["_className"] = None
             _tmpDesignParameter["_XYCoordinates"] = []
@@ -773,7 +775,7 @@ class QtProject:
                             _tmpSname = _tmpElement._ELEMENTS._SNAME.sname.decode()
                             if '\x00' in _tmpSname:
                                 _tmpSname = _tmpSname.split('\x00', 1)[0]
-                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_DesignObj"] = _tmpSname
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_DesignObj_Name"] = _tmpSname
                             for _tmpXYCoordinate in _tmpElement._ELEMENTS._XY.xy:
                                 self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                     "_XYCoordinates"].append(_tmpXYCoordinate)
@@ -869,7 +871,8 @@ class QtProject:
                             _tmpSname = _tmpElement._ELEMENTS._SNAME.sname.decode()
                             if '\x00' in _tmpSname:
                                 _tmpSname = _tmpSname.split('\x00', 1)[0]
-                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_DesignObj"] = _tmpSname
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_DesignObj_Name"] = _tmpSname
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_DesignObj"] = copy.deepcopy(self._DesignParameter[_tmpSname])
                             for _tmpXYCoordinate in _tmpElement._ELEMENTS._XY.xy:
                                 self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                     "_XYCoordinates"].append(_tmpXYCoordinate)
@@ -1157,7 +1160,7 @@ class QtProject:
                                               _tmpReflectOnX[1][1]
                                     _tmpTranspose1 = [[_tmp100, _tmp101], [_tmp110, _tmp111]]
                             self._UpdateXYCoordinatesForDisplay(
-                                _ParentName=self._DesignParameter[_ParentName][_tmpId]._DesignParameter['_DesignObj'],
+                                _ParentName=self._DesignParameter[_ParentName][_tmpId]._DesignParameter['_DesignObj_Name'],
                                 _Offset=[_tmpX2, _tmpY2], _Transpose=_tmpTranspose1)
                     elif self._DesignParameter[_ParentName][_tmpId]._type == 8:
                         # print('monitor for debug in _UpdateXYCoordinatesForDisplay 8')
@@ -2488,7 +2491,7 @@ class QtProject:
             hierarchyDict[addedTopModule] = dict()
             for _id , element in self._DesignParameter[addedTopModule].items():
                 if element._DesignParameter['_DesignParametertype'] == 3:
-                    subcell = element._DesignParameter['_DesignObj']
+                    subcell = element._DesignParameter['_DesignObj_Name']
                     subcellName = element._DesignParameter['_DesignParameterName']
                     tmpHierarchyDict1 = self._getEntireHierarchy(subcell)
                     for key, value in tmpHierarchyDict1.items():
@@ -2502,7 +2505,7 @@ class QtProject:
             hierarchyDict[searchmodule] = dict()
             for _id, element in self._DesignParameter[searchmodule].items():
                 if element._DesignParameter['_DesignParametertype'] == 3:
-                    subcell = element._DesignParameter['_DesignObj']
+                    subcell = element._DesignParameter['_DesignObj_Name']
                     subcellName = element._DesignParameter['_DesignParameterName']
                     tmpstack.append(subcell)
                     tmpHierarchyDict2 = self._getEntireHierarchy(subcell)
@@ -2543,9 +2546,9 @@ class QtProject:
                             "_DesignParametertype"] == 3:
                             for element1ForId in self._DesignParameter[
                                 self._DesignParameter[element0ForParent][element0ForId]._DesignParameter[
-                                    "_DesignObj"]].keys():
+                                    "_DesignObj_Name"]].keys():
                                 _tmpStack1.append([self._DesignParameter[element0ForParent][
-                                                       element0ForId]._DesignParameter["_DesignObj"], element1ForId])
+                                                       element0ForId]._DesignParameter["_DesignObj_Name"], element1ForId])
                     if not _tmpStack1:
                         break
                     else:
@@ -2577,7 +2580,7 @@ class QtProject:
                                 if self._DesignParameter[element1ForParent][element1ForId]._DesignParameter[
                                     "_DesignParametertype"] == 3:
                                     if self._DesignParameter[element1ForParent][element1ForId]._DesignParameter[
-                                        "_DesignObj"] == element0ForParent:
+                                        "_DesignObj_Name"] == element0ForParent:
                                         if element1ForParent in _tmpStack1.keys():
                                             _tmpStack1[element1ForParent].append(element1ForId)
                                         else:
