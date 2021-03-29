@@ -213,17 +213,17 @@ class _BoundarySetupWindow(QWidget):
 
             xdistance = abs(self.tmpXYCoordinates[-1][0] - self.tmpXYCoordinates[-2][0])
             ydistance = abs(self.tmpXYCoordinates[-1][1] - self.tmpXYCoordinates[-2][1])
-            origin = [min(self.tmpXYCoordinates[-1][0],self.tmpXYCoordinates[-2][0]),min(self.tmpXYCoordinates[-1][1],self.tmpXYCoordinates[-2][1])]
+            origin = [(self.tmpXYCoordinates[-1][0]+self.tmpXYCoordinates[-2][0])/2,(self.tmpXYCoordinates[-1][1]+self.tmpXYCoordinates[-2][1])/2]
             self.tmpXYCoordinates.pop(0)
 
             self._DesignParameter['_Width'] = xdistance
             self._DesignParameter['_Height'] = ydistance
+            self._DesignParameter['_XYCoordinates'] = [origin]
             self.width_input.setText(str(self._DesignParameter['_Width']))
             self.height_input.setText(str(self._DesignParameter['_Height']))
             self.XYdictForLineEdit[0].setText(str(origin[0])+','+str(origin[1]))
 
         self._DesignParameter['_Layer'] = self.layer_input.currentText()
-        self.visualItem._XYCoordinatesForDisplay = self._DesignParameter['_XYCoordinates']
 
         self.visualItem.updateTraits(self._DesignParameter)
         self.send_BoundarySetup_signal.emit(self.visualItem)

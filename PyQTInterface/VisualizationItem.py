@@ -240,7 +240,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
 
         if self._type == 1:
-            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
+            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._DesignParameter['_XYCoordinates']
         elif self._type == 2:
             self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
         elif self._type == 3:

@@ -1701,8 +1701,8 @@ class _CustomScene(QGraphicsScene):
             pen.setCapStyle(Qt.RoundCap)
             pen.setWidth(3)
 
-            self.addLine(QLineF(-10000,0,10000,0),pen)
-            self.addLine(QLineF(0,-10000,0,10000),pen)
+            self.addLine(QLineF(-1000000,0,1000000,0),pen)
+            self.addLine(QLineF(0,-1000000,0,1000000),pen)
 
         self.moveFlag = False
         self.listIgnoreFlag = False
