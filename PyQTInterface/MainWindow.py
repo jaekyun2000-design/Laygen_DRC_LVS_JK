@@ -191,7 +191,7 @@ class _MainWindow(QMainWindow):
         # graphicView.setScene(self.scene)
 
         graphicView.variable_signal.connect(self.createVariable)
-        self.scene.setSceneRect(-10000,-10000,20000,20000)
+        self.scene.setSceneRect(-1000000,-1000000,2000000,2000000)
         self.scene.send_parameterIDList_signal.connect(self.parameterToTemplateHandler)
         self.scene.send_deleteItem_signal.connect(self.deleteDesignParameter)
         self.scene.selectionChanged.connect(self.scene.send_item_list)
@@ -1630,7 +1630,7 @@ class _CustomView(QGraphicsView):
         if event.button() == Qt.RightButton:
             # print('return')
             return
-
+        # super(_CustomView, self).mousePressEvent(event)
         super().mousePressEvent(event)
 
     # def dropEvent(self, event) -> None:
@@ -1707,12 +1707,46 @@ class _CustomScene(QGraphicsScene):
         self.moveFlag = False
         self.listIgnoreFlag = False
         self.oldPos = QPointF(0,0)
+        self.itemList = list()
 
         # self.
 
 
 
     def mousePressEvent(self, event):
+        _RectBlock_list = list()
+        # for i in range(len(self.items(event.scenePos()))):
+        #     if i%2 == 1:
+        #         _RectBlock_list.append(self.items(event.scenePos())[i])
+        #     else:
+        #         pass
+        print('xxx:',self.selectedItems())
+
+        try:
+            self.itemList.append(self.selectedItems()[0])
+            self.selectedItems()[0].setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
+        except:
+            for i in range(len(self.itemList)):
+                self.itemList[i].setFlag(QGraphicsItemGroup.ItemIsSelectable, True)
+
+
+
+
+        # if event.button() == Qt.LeftButton:
+        #     for i in range(len(_RectBlock_list)):
+        #         # _RectBlock_list[i].mousePressEvent(event)
+        #         # _RectBlock_list[i].setSelected(True)
+        #         if _RectBlock_list[i].isSelected():
+        #             _RectBlock_list[i].setSelected(False)
+        #             try:
+        #                 _RectBlock_list[i+1].setSelected(True)
+        #                 break
+        #             except:
+        #                 pass
+                        # _RectBlock_list[0].setSelected(True)
+
+        # self.selectionChanged.emit()
+
         # if event.button() == Qt.RightButton:
         #     print('return')
         #     return
@@ -1737,13 +1771,15 @@ class _CustomScene(QGraphicsScene):
             self.send_moveDone_signal.emit()
             print("moveDone emmit")
         else:
-            self.oldPos = event.scenePos()
+            # self.oldPos = event.scenePos()
+            pass
         super().mousePressEvent(event)
 
     def send_item_list(self):
         itemList = self.selectedItems()
         # print(itemList)
         self.send_itemList_signal.emit(itemList)
+        pass
 
 
     def dragEnterEvent(self, event: 'QGraphicsSceneDragDropEvent') -> None:
@@ -1830,7 +1866,6 @@ class _CustomScene(QGraphicsScene):
                 try:
                     if item._ItemTraits['_DesignParametertype'] is not 3:
                         self.send_module_name_list_signal.emit([item._ItemTraits['_DesignParameterName']])
-                        print(item._ItemTraits['_DesignParameterName'])
                 except:
                     pass
 
@@ -1857,8 +1892,6 @@ class _CustomScene(QGraphicsScene):
 
         self.viewList[-1].setDragMode(QGraphicsView.RubberBandDrag)
         self.viewList[-1].scale(1,-1)
-        for item in self.viewList:
-            print(item.windowTitle())
         dummy = _CustomScene(axis=False)
         dummy.send_module_name_list_signal.connect(self.viewList[-1].name_out_fcn)
         for key, value in structure_dict.items():

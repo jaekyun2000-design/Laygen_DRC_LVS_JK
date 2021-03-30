@@ -180,6 +180,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                 _XYCoordinates = None,
                 _Width = None,
                 _Height = None,
+                _Reflect = None,
+                _Angle = None,
                 _Color = None,
                 _DesignParameterRef=None,   #Reference of Design Parameter
                 _VisualizationItems = []    #This is for SRef!!
@@ -287,8 +289,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.warning.setText("Invalid Design Value")
                 self.warning.setIcon(QMessageBox.Warning)
         elif self._ItemTraits['_DesignParametertype'] == 3:
-
             self._ItemTraits['_DesignParameterRef'] = _DesignParameter['_ModelStructure']
+            self._ItemTraits['_Reflect'] = _DesignParameter['_Reflect']
+            self._ItemTraits['_Angle'] = _DesignParameter['_Angle']
             # for key in _DesignParameter['_ModelStructure']:
             #     self._ItemTraits['_VisualizationItems'].append(_DesignParameter['_ModelStructure'][key])
         if self._multipleBlockFlag == None:
@@ -422,6 +425,9 @@ class _VisualizationItem(QGraphicsItemGroup):
 
             elif self._ItemTraits['_DesignParametertype'] is 3:                #SRef Case
                 for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
+                    print('Reflect:', self._ItemTraits['_Reflect'])
+                    print('Angle:', self._ItemTraits['_Angle'])
+                    print('==')
                     sub_element_vi = _VisualizationItem()
                     sub_element_vi.updateDesignParameter(sub_element_dp)
                     sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
