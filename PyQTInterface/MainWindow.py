@@ -1729,6 +1729,7 @@ class _CustomScene(QGraphicsScene):
         else:
             for i in range(len(self.itemList)):
                 self.itemList[i].setFlag(QGraphicsItemGroup.ItemIsSelectable, True)
+                self.itemList.clear()
 
 
 
