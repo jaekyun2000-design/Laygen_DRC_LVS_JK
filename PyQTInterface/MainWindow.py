@@ -1720,12 +1720,13 @@ class _CustomScene(QGraphicsScene):
         #         _RectBlock_list.append(self.items(event.scenePos())[i])
         #     else:
         #         pass
-        print('xxx:',self.selectedItems())
 
-        try:
-            self.itemList.append(self.selectedItems()[0])
-            self.selectedItems()[0].setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
-        except:
+        if len(self.selectedItems()) != 0:
+            selected = self.selectedItems()
+            for i in range(len(selected)):
+                self.itemList.append(selected[i])
+                selected[i].setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
+        else:
             for i in range(len(self.itemList)):
                 self.itemList[i].setFlag(QGraphicsItemGroup.ItemIsSelectable, True)
 
