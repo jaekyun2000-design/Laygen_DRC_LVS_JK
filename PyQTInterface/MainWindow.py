@@ -1720,7 +1720,7 @@ class _CustomScene(QGraphicsScene):
         #         _RectBlock_list.append(self.items(event.scenePos())[i])
         #     else:
         #         pass
-
+        print(self.selectedItems())
         if len(self.selectedItems()) != 0:
             selected = self.selectedItems()
             for i in range(len(selected)):
@@ -1729,7 +1729,7 @@ class _CustomScene(QGraphicsScene):
         else:
             for i in range(len(self.itemList)):
                 self.itemList[i].setFlag(QGraphicsItemGroup.ItemIsSelectable, True)
-                self.itemList.clear()
+            self.itemList.clear()
 
 
 
