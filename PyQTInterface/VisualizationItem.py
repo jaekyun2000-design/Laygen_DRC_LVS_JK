@@ -180,6 +180,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                 _XYCoordinates = None,
                 _Width = None,
                 _Height = None,
+                _Reflect = None,
+                _Angle = None,
                 _Color = None,
                 _DesignParameterRef=None,   #Reference of Design Parameter
                 _VisualizationItems = []    #This is for SRef!!
@@ -287,8 +289,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.warning.setText("Invalid Design Value")
                 self.warning.setIcon(QMessageBox.Warning)
         elif self._ItemTraits['_DesignParametertype'] == 3:
-
             self._ItemTraits['_DesignParameterRef'] = _DesignParameter['_ModelStructure']
+            self._ItemTraits['_Reflect'] = _DesignParameter['_Reflect']
+            self._ItemTraits['_Angle'] = _DesignParameter['_Angle']
             # for key in _DesignParameter['_ModelStructure']:
             #     self._ItemTraits['_VisualizationItems'].append(_DesignParameter['_ModelStructure'][key])
         if self._multipleBlockFlag == None:
@@ -422,18 +425,31 @@ class _VisualizationItem(QGraphicsItemGroup):
 
             elif self._ItemTraits['_DesignParametertype'] is 3:                #SRef Case
                 for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
+
                     sub_element_vi = _VisualizationItem()
                     sub_element_vi.updateDesignParameter(sub_element_dp)
                     sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
                     sub_element_vi.setPos(self._ItemTraits['_XYCoordinates'][0][0], self._ItemTraits['_XYCoordinates'][0][1])
 
+                    if self._ItemTraits['_Reflect'] == None and self._ItemTraits['_Angle'] == None:
+                        pass
+                    elif self._ItemTraits['_Reflect'] == [0, 0, 0]:
+                        rot = self._ItemTraits['_Angle']
+                        sub_element_vi.setRotation(rot)
+                    elif self._ItemTraits['_Reflect'] == [1, 0, 0]:
+                        sub_element_vi.setTransform(QTransform(1,0,0,-1,0,0))
+                        if self._ItemTraits['_Angle'] == None:
+                            pass
+                        else:
+                            rot = 360 - self._ItemTraits['_Angle']
+                            sub_element_vi.setRotation(rot)
                     self.addToGroup(sub_element_vi)
 
             elif self._ItemTraits['_DesignParametertype'] is 8:                #Text Case
                 if blockTraits['_Layer'] == 127:
                     self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
                     self.text.setPos(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1])
-                    self.text.setFlag(QGraphicsItem.ItemIgnoresTransformations)
+                    self.text.setTransform(QTransform(1,0,0,-1,0,0))
 
                     self.addToGroup(self.text)
 
