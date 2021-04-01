@@ -1,5 +1,13 @@
 import sys
 import os
+
+try:
+    sys.path.append('O:\OneDrive - postech.ac.kr\GeneratorAutomation\VariableSuggestion-git')
+    import topAPI
+except:
+    print("GDS2GEN topAPI module does not exist.")
+
+
 import multiprocessing as mp
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 # from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsView, QGraphicsScene, QGraphicsItem
@@ -114,6 +122,7 @@ class _MainWindow(QMainWindow):
         saveAction = QAction("Save Project",self)
         DebugAction = QAction("Debug constraint",self)
         EncodeAction = QAction("Encode constraint",self)
+        RunGDSAction = QAction("Run constraint",self)
 
         newAction.setShortcut('Ctrl+N')
         newAction.triggered.connect(self.newProject)
@@ -130,6 +139,9 @@ class _MainWindow(QMainWindow):
         EncodeAction.setShortcut('Ctrl+E')
         EncodeAction.triggered.connect(self.encodeConstraint)
 
+        RunGDSAction.setShortcut('Ctrl+R')
+        RunGDSAction.triggered.connect(self.runConstraint)
+
 
 
         menubar = self.menuBar()
@@ -140,6 +152,7 @@ class _MainWindow(QMainWindow):
         fileMenu.addAction(saveAction)
         fileMenu.addAction(DebugAction)
         fileMenu.addAction(EncodeAction)
+        fileMenu.addAction(RunGDSAction)
 
         #Second Menu#
         self.statusBar().showMessage("No Module")
@@ -635,6 +648,31 @@ class _MainWindow(QMainWindow):
             print(code)
         except:
             print("encoding fail")
+
+    def runConstraint(self):
+        try:
+            if user_setup.GDS2GEN is False:
+                return
+
+            self.gds2gen = topAPI.gds2generator.GDS2Generator(True)
+            self.gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter,self._CurrentModuleName)
+            self.gds2gen.load_qt_design_constraints(self._QTObj._qtProject._DesignConstraint)
+            self.gds2gen.set_root_cell(self._CurrentModuleName)
+            stream_data = self.gds2gen.ready_for_top_cell()
+            self.gds2gen.set_topcell_name('test')
+            file = open('./tmp.gds','wb')
+            stream_data.write_binary_gds_stream(file)
+            file.close()
+            #
+            # module = self._CurrentModuleName
+            # topAST = self._QTObj._qtProject._ParseTreeForDesignConstrain[module]._ast
+            # topAST = element_ast.ElementTransformer().visit(topAST)
+            # topAST = variable_ast.VariableTransformer().visit(topAST)
+            # code = astunparse.unparse(topAST)
+            # print(code)
+        except:
+            traceback.print_exc()
+            print("Run fail")
 
     def checkNameDuplication(self,checkItem):
         name = checkItem._ItemTraits['_DesignParameterName']
