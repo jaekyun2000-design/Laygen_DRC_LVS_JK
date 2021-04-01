@@ -173,7 +173,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         self._subSrefVisualItem = None
         if _ItemTraits is None:
             self._ItemTraits = dict(
-                _DesignParameterName = None,
+                _ElementName = None,
                 _Layer = None,
 
                 _DesignParametertype = None,
@@ -250,11 +250,11 @@ class _VisualizationItem(QGraphicsItemGroup):
         elif self._type == 8:
             self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
 
-        if QtDesignParameter._DesignParameterName == None:
-            QtDesignParameter._DesignParameterName = QtDesignParameter._id
-            self._ItemTraits['_DesignParameterName'] = QtDesignParameter._id
+        if QtDesignParameter._ElementName == None:
+            QtDesignParameter._ElementName = QtDesignParameter._id
+            self._ItemTraits['_ElementName'] = QtDesignParameter._id
         else:
-            self._ItemTraits['_DesignParameterName'] = QtDesignParameter._DesignParameterName
+            self._ItemTraits['_ElementName'] = QtDesignParameter._ElementName
         self.updateTraits(QtDesignParameter._DesignParameter)
 
 
@@ -267,8 +267,8 @@ class _VisualizationItem(QGraphicsItemGroup):
         for key in _DesignParameter.keys():                      #set itemTrait on Object)
             if key == "_XYCoordinates":    # DesignParameter's XYcoordinate is for real xy coordinates,,,
                 continue                   # Itemtrait's XY coordinate matches QtDesignParameter's XYCoordinatesForDisplay
-            elif key == "_DesignParameterName":
-                self._DesignParameterName = _DesignParameter[key]
+            elif key == "_ElementName":
+                self._ElementName = _DesignParameter[key]
             else:
                 self._ItemTraits[key] = _DesignParameter[key]
 

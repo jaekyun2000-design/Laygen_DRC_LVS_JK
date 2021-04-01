@@ -47,7 +47,7 @@ class _BoundarySetupWindow(QWidget):
                 _XWidth = None,
                 _YWidth = None,
                 _Ignore = None,
-                _DesignParameterName = None
+                _ElementName = None
 
                 )
         else:
@@ -132,7 +132,7 @@ class _BoundarySetupWindow(QWidget):
 
 
     def updateUI(self):
-        self.name_input.setText(self._DesignParameter['_DesignParameterName'])
+        self.name_input.setText(self._DesignParameter['_ElementName'])
         self.width_input.setText(str(self._DesignParameter['_XWidth']))
         self.height_input.setText(str(self._DesignParameter['_YWidth']))
         self.XYdictForLineEdit[0].setText(str(self._DesignParameter['_XYCoordinates'][0][0])+','+ str(self._DesignParameter['_XYCoordinates'][0][1]))
@@ -178,8 +178,8 @@ class _BoundarySetupWindow(QWidget):
                     self.warning.setText("Invalid XY Coordinates")
 
         try:
-            self._DesignParameter['_DesignParameterName'] = self.name_input.text()
-            if self._DesignParameter['_DesignParameterName'] == '':
+            self._DesignParameter['_ElementName'] = self.name_input.text()
+            if self._DesignParameter['_ElementName'] == '':
                 raise NotImplementedError
             self._DesignParameter['_XWidth'] = float(self.width_input.text())
             self._DesignParameter['_YWidth'] = float(self.height_input.text())
@@ -251,7 +251,7 @@ class _PathSetupWindow(QWidget):
 
         if PathElement is None:
             self._DesignParameter = dict(
-                    _DesignParameterName = None,
+                    _ElementName = None,
                     _Layer = None,
                     _DesignParametertype = 2,
                     _XYCoordinates = [],
@@ -348,7 +348,7 @@ class _PathSetupWindow(QWidget):
         self.show()
 
     def updateUI(self):
-        self.name_input.setText(self._DesignParameter['_DesignParameterName'])
+        self.name_input.setText(self._DesignParameter['_ElementName'])
         self.width_input.setText(str(self._DesignParameter['_Width']))
         if type(self._DesignParameter['_Layer']) == int:
             layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
@@ -370,8 +370,8 @@ class _PathSetupWindow(QWidget):
 
     def on_buttonBox_accepted(self):
         try:
-            self._DesignParameter['_DesignParameterName'] = self.name_input.text()
-            if self._DesignParameter['_DesignParameterName'] == '':
+            self._DesignParameter['_ElementName'] = self.name_input.text()
+            if self._DesignParameter['_ElementName'] == '':
                 raise NotImplementedError
             self._DesignParameter['_Width'] = self.width_input.text()
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
@@ -558,7 +558,7 @@ class _SRefSetupWindow(QWidget):
                 _XWidth = None,
                 _YWidth = None,
                 _Ignore = None,
-                _DesignParameterName = None
+                _ElementName = None
 
                 )
         else:
@@ -632,7 +632,7 @@ class _SRefSetupWindow(QWidget):
         self.show()
 
     def updateUI(self):
-        self.name_input.setText(self._DesignParameter['_DesignParameterName'])
+        self.name_input.setText(self._DesignParameter['_ElementName'])
         self.width_input.setText(str(self._DesignParameter['_XWidth']))
         self.height_input.setText(str(self._DesignParameter['_YWidth']))
         if type(self._DesignParameter['_Layer']) == int:
@@ -661,7 +661,7 @@ class _SRefSetupWindow(QWidget):
     def on_buttonBox_accepted(self):
 
         try:
-            self._DesignParameter['_DesignParameterName'] = self.name_input.text()
+            self._DesignParameter['_ElementName'] = self.name_input.text()
             self._DesignParameter['_XWidth'] = float(self.width_input.text())
             self._DesignParameter['_YWidth'] = float(self.height_input.text())
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
@@ -1869,10 +1869,10 @@ class _SelectedDesignListWidget(QListWidget):
 
         for item in _items:
             if type(item) == VisualizationItem._VisualizationItem:
-                tmpName = item._ItemTraits['_DesignParameterName']
+                tmpName = item._ItemTraits['_ElementName']
                 if tmpName == None:
                     continue
-                # tmpName = item._DesignParameterName
+                # tmpName = item._ElementName
                 self.itemDict[tmpName] = item
                 self.idDict[tmpName] = item._ItemTraits['_id']
                 item.setSelected(True)

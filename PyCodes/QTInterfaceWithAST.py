@@ -27,15 +27,15 @@ from gds_editor_ver3 import gds_stream
 
 class QtDesignParameter:
     def __init__(self, _id=None, _type=None, _ParentName=None, _ItemTraits=None,
-                 _DesignParameterName=None):  # _ParentName: module name, _DesignParameterName: designParameter name
+                 _ElementName=None):  # _ParentName: module name, _ElementName: designParameter name
         self._id = _id
         self._type = _type  # boundary, path, sref, gdsObj
         self._ParentName = _ParentName
-        if _DesignParameterName == None:
-            self._DesignParameterName = _id
+        if _ElementName == None:
+            self._ElementName = _id
             # print("There is no valid design parameter name")
         else:
-            self._DesignParameterName = _DesignParameterName
+            self._ElementName = _ElementName
         self._DesignParameter = None
         self._DesignHierarchy = None
         self._XYCoordinatesForDisplay = []
@@ -61,7 +61,7 @@ class QtDesignParameter:
             _tmpDesignParameter["_Ignore"] = None
             _tmpDesignParameter["_ElementName"] = None
             _tmpDesignParameter["_DesignParametertype"] = 1
-            _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
+            _tmpDesignParameter["_ElementName"] = self._ElementName
         elif self._type == 2:  # path
             _tmpDesignParameter["_Layer"] = None
             _tmpDesignParameter["_Datatype"] = None
@@ -70,7 +70,7 @@ class QtDesignParameter:
             _tmpDesignParameter["_Ignore"] = None
             _tmpDesignParameter["_ElementName"] = None
             _tmpDesignParameter["_DesignParametertype"] = 2
-            _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
+            _tmpDesignParameter["_ElementName"] = self._ElementName
         elif self._type == 3:  # sref
             _tmpDesignParameter["_DesignObj"] = None  ## PMOSInInv, NMOSInInv ...
             _tmpDesignParameter["_DesignObj_Name"] = None  ## PMOSInInv, NMOSInInv ...
@@ -83,15 +83,15 @@ class QtDesignParameter:
             _tmpDesignParameter["_Parameters"] = None
             _tmpDesignParameter["_ElementName"] = None
             _tmpDesignParameter["_DesignParametertype"] = 3
-            _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
+            _tmpDesignParameter["_ElementName"] = self._ElementName
         elif self._type == 4:  # gds
             _tmpDesignParameter["_GDSFile"] = None
             _tmpDesignParameter["_DesignParametertype"] = 4
-            _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
+            _tmpDesignParameter["_ElementName"] = self._ElementName
         elif self._type == 5:  # gds
             _tmpDesignParameter["_Name"] = None
             _tmpDesignParameter["_DesignParametertype"] = 5
-            _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
+            _tmpDesignParameter["_ElementName"] = self._ElementName
         elif self._type == 8:  # text
             _tmpDesignParameter["_Layer"] = None
             # _tmpDesignParameter["_Datatype"] = None
@@ -104,7 +104,7 @@ class QtDesignParameter:
             _tmpDesignParameter["_Ignore"] = None
             _tmpDesignParameter["_ElementName"] = None
             _tmpDesignParameter["_DesignParametertype"] = 8
-            _tmpDesignParameter["_DesignParameterName"] = self._DesignParameterName
+            _tmpDesignParameter["_ElementName"] = self._ElementName
 
             # def _TextElementDeclaration(self, _Layer=None, _Datatype=None, _Presentation=None, _Reflect=None,
             #                             _XYCoordinates=[], _Mag=None, _Angle=None, _TEXT=None, _ElementName=None, ):
@@ -143,8 +143,8 @@ class QtDesignParameter:
     ##################################################################################################
     # def _updateVisualItem(self):
     #     self._VisualizationItemObj.updateTraits(self._DesignParameter)
-    def _setDesignParameterName(self, _DesignParameterName=None):
-        self._DesignParameterName = _DesignParameterName
+    def _setDesignParameterName(self, _ElementName=None):
+        self._ElementName = _ElementName
 
     # def _VisualItem(self):
     #     return self._VisualizationItemObj
@@ -712,7 +712,7 @@ class QtProject:
                                 _XWidth=None,
                                 _YWidth=None,
                                 _Ignore=None,
-                                _DesignParameterName=None
+                                _ElementName=None
                             )
 
                             _XYCenter, _XWidth, _YWidth = self._XYCoordinate2CenterCoordinateAndWidth(
@@ -723,7 +723,7 @@ class QtProject:
                             dp_dict['_XWidth'] = _XWidth
                             dp_dict['_YWidth'] = _YWidth
 
-                            dp_dict['_DesignParameterName'] = _tmpId
+                            dp_dict['_ElementName'] = _tmpId
 
                             dp_dict_list.append(dp_dict)
 
@@ -740,7 +740,7 @@ class QtProject:
                             # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_ElementName"]
                         elif "_PATH" in vars(_tmpElement._ELEMENTS):
                             dp_dict = dict(
-                                _DesignParameterName=None,
+                                _ElementName=None,
                                 _Layer=None,
                                 _DesignParametertype=2,
                                 _XYCoordinates=[],
@@ -755,7 +755,7 @@ class QtProject:
                             dp_dict['_XYCoordinates'].append(_tmpElement._ELEMENTS._XY.xy)
                             dp_dict['_Width'] = _tmpElement._ELEMENTS._WIDTH.width
 
-                            dp_dict['_DesignParameterName'] = _tmpId
+                            dp_dict['_ElementName'] = _tmpId
 
                             dp_dict_list.append(dp_dict)
 
@@ -841,7 +841,7 @@ class QtProject:
                         _tmpId = self._getDesignParameterId(_ParentName=_tmpStructureName)
                         _tmpId = _tmpStructureName + str(_tmpId)
                         if "_BOUNDARY" in vars(_tmpElement._ELEMENTS):
-                            self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName, _DesignParameterName=_tmpElement._GDS_ELEMENT_NAME)
+                            self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                 "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
@@ -855,7 +855,7 @@ class QtProject:
                             # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Ignore"]
                             # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_ElementName"]
                         elif "_PATH" in vars(_tmpElement._ELEMENTS):
-                            self._createNewDesignParameter(_id=_tmpId, _type=2, _ParentName=_tmpStructureName, _DesignParameterName=_tmpElement._GDS_ELEMENT_NAME)
+                            self._createNewDesignParameter(_id=_tmpId, _type=2, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                 "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
@@ -865,7 +865,7 @@ class QtProject:
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                 "_Width"] = _tmpElement._ELEMENTS._WIDTH.width
                         elif "_SREF" in vars(_tmpElement._ELEMENTS):
-                            self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName, _DesignParameterName=_tmpElement._GDS_ELEMENT_NAME)
+                            self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
                             # print('     monitor for debug: ', _tmpElement._ELEMENTS._SNAME.sname.decode())
                             # print('     monitor for debug: ', _tmpElement._ELEMENTS._XY)
                             _tmpSname = _tmpElement._ELEMENTS._SNAME.sname.decode()
@@ -886,7 +886,7 @@ class QtProject:
                                     self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                         "_Angle"] = _tmpElement._ELEMENTS._STRANS._ANGLE.angle
                         elif "_TEXT" in vars(_tmpElement._ELEMENTS):
-                            self._createNewDesignParameter(_id=_tmpId, _type=8, _ParentName=_tmpStructureName, _DesignParameterName=_tmpElement._GDS_ELEMENT_NAME)
+                            self._createNewDesignParameter(_id=_tmpId, _type=8, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                 "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
                             for _tmpXYCoordinate in _tmpElement._ELEMENTS._TEXTBODY._XY.xy:
@@ -1704,7 +1704,7 @@ class QtProject:
 
         return output
 
-    def _createNewDesignParameter(self, _id=None, _type=None, _ParentName=None, _DesignParameterName=None):
+    def _createNewDesignParameter(self, _id=None, _type=None, _ParentName=None, _ElementName=None):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
             print("_createNewDesignParameter Run.")
         if _ParentName == None or _id == None or _type == None:
@@ -1715,7 +1715,7 @@ class QtProject:
                     self._DesignParameter[_ParentName] = dict()
                 self._DesignParameter[_ParentName][_id] = QtDesignParameter(_id=_id, _type=_type,
                                                                             _ParentName=_ParentName,
-                                                                            _DesignParameterName= _DesignParameterName)
+                                                                            _ElementName= _ElementName)
                 self._DesignParameter[_ParentName][_id]._createDesignParameter()
             except:
                 return userDefineExceptions._UnkownError
@@ -1744,10 +1744,10 @@ class QtProject:
                     self._DesignParameter[module_name][designID]._setDesignParameterValue(_index=key,
                                                                                                       _value=_dp_dict[
                                                                                                           key])
-                if '_DesignParameterName' not in _dp_dict:
-                    _dp_dict['_DesignParameterName'] = designID
+                if '_ElementName' not in _dp_dict:
+                    _dp_dict['_ElementName'] = designID
                 self._DesignParameter[module_name][designID]._setDesignParameterName(
-                    _DesignParameterName=_dp_dict['_DesignParameterName'])
+                    _ElementName=_dp_dict['_ElementName'])
                 self._UpdateXYCoordinateForDisplay(_id=designID, _ParentName=module_name)
                 if _dp_dict['_DesignParametertype'] == 1:
                     self._ConvertBoundaryXYExpression(_id=designID, _ParentName=module_name)
@@ -1790,17 +1790,17 @@ class QtProject:
                 if module_name in self._DesignParameter:
                     for key in _dp_dict:
                         self._DesignParameter[module_name][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
-                    self._DesignParameter[module_name][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+                    self._DesignParameter[module_name][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
 
                     # send design parameter info to element manager --> return: ast info or
                     _designParameter = self._DesignParameter[module_name][id]
                     _tmpmodule = None
                 else:
-                    if _dp_dict['_DesignParameterName'] in self._DesignParameter['PMOSInINV']:
+                    if _dp_dict['_ElementName'] in self._DesignParameter['PMOSInINV']:
                         _tmpmodule = 'PMOSInINV'
-                    elif _dp_dict['_DesignParameterName'] in self._DesignParameter['NMOSInINV']:
+                    elif _dp_dict['_ElementName'] in self._DesignParameter['NMOSInINV']:
                         _tmpmodule = 'NMOSInINV'
-                    elif _dp_dict['_DesignParameterName'] in self._DesignParameter['INV']:
+                    elif _dp_dict['_ElementName'] in self._DesignParameter['INV']:
                         _tmpmodule = 'INV'
                     else:
                         _tmpmodule = 'else'
@@ -1808,35 +1808,35 @@ class QtProject:
                 if _tmpmodule == 'PMOSInINV':
                     for key in _dp_dict:
                         self._DesignParameter['PMOSInINV'][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
-                    self._DesignParameter['PMOSInINV'][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+                    self._DesignParameter['PMOSInINV'][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
 
                     # send design parameter info to element manager --> return: ast info or
                     _designParameter = self._DesignParameter['PMOSInINV'][id]
                 elif _tmpmodule == 'NMOSInINV':
                     for key in _dp_dict:
                         self._DesignParameter['NMOSInINV'][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
-                    self._DesignParameter['NMOSInINV'][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+                    self._DesignParameter['NMOSInINV'][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
 
                     # send design parameter info to element manager --> return: ast info or
                     _designParameter = self._DesignParameter['NMOSInINV'][id]
                 elif _tmpmodule == 'INV':
                     for key in _dp_dict:
                         self._DesignParameter['INV'][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
-                    self._DesignParameter['INV'][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+                    self._DesignParameter['INV'][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
 
                     # send design parameter info to element manager --> return: ast info or
                     _designParameter = self._DesignParameter['INV'][id]
                 elif _tmpmodule == 'else':
                     for key in _dp_dict:
-                        self._DesignParameter[_dp_dict['_DesignParameterName'][:-1]][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
-                    self._DesignParameter[_dp_dict['_DesignParameterName'][:-1]][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+                        self._DesignParameter[_dp_dict['_ElementName'][:-1]][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
+                    self._DesignParameter[_dp_dict['_ElementName'][:-1]][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
 
                     # send design parameter info to element manager --> return: ast info or
-                    _designParameter = self._DesignParameter[_dp_dict['_DesignParameterName'][:-1]][id]
+                    _designParameter = self._DesignParameter[_dp_dict['_ElementName'][:-1]][id]
                 else:
                     for key in _dp_dict:
                         self._DesignParameter[module_name][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
-                    self._DesignParameter[module_name][id]._setDesignParameterName(_DesignParameterName=_dp_dict['_DesignParameterName'])
+                    self._DesignParameter[module_name][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
 
                     # send design parameter info to element manager --> return: ast info or
                     _designParameter = self._DesignParameter[module_name][id]
@@ -2492,7 +2492,7 @@ class QtProject:
             for _id , element in self._DesignParameter[addedTopModule].items():
                 if element._DesignParameter['_DesignParametertype'] == 3:
                     subcell = element._DesignParameter['_DesignObj_Name']
-                    subcellName = element._DesignParameter['_DesignParameterName']
+                    subcellName = element._DesignParameter['_ElementName']
                     tmpHierarchyDict1 = self._getEntireHierarchy(subcell)
                     for key, value in tmpHierarchyDict1.items():
                         newName = key + '/' + subcellName
@@ -2506,7 +2506,7 @@ class QtProject:
             for _id, element in self._DesignParameter[searchmodule].items():
                 if element._DesignParameter['_DesignParametertype'] == 3:
                     subcell = element._DesignParameter['_DesignObj_Name']
-                    subcellName = element._DesignParameter['_DesignParameterName']
+                    subcellName = element._DesignParameter['_ElementName']
                     tmpstack.append(subcell)
                     tmpHierarchyDict2 = self._getEntireHierarchy(subcell)
                     for key, value in tmpHierarchyDict2.items():
