@@ -15,7 +15,7 @@ class ElementManager:
             tmpAST = element_ast.Boundary()
             for key in element_ast.Boundary._fields:
                 if key == 'name':
-                    tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
+                    tmpAST.__dict__[key] = dp_dict['_ElementName']
                 elif key == 'layer':
                     tmpAST.__dict__[key] = dp_dict['_Layer']
                 elif key == 'XY':
@@ -29,7 +29,7 @@ class ElementManager:
             tmpAST = element_ast.Path()
             for key in element_ast.Path._fields:
                 if key == 'name':
-                    tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
+                    tmpAST.__dict__[key] = dp_dict['_ElementName']
                 elif key == 'layer':
                     tmpAST.__dict__[key] = dp_dict['_Layer']
                 elif key == 'XY':
@@ -41,7 +41,7 @@ class ElementManager:
             tmpAST = element_ast.Sref()
             for key in element_ast.Sref._fields:
                 if key == 'name':
-                    tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
+                    tmpAST.__dict__[key] = dp_dict['_ElementName']
                 elif key == 'library':
                     tmpAST.__dict__[key] = dp_dict['_DesignLibraryName']
                 elif key == 'className':
@@ -70,7 +70,7 @@ class ElementManager:
                 if key == 'id':
                     tmpAST.__dict__[key] = dp_dict['_id']
                 elif key == 'name':
-                    tmpAST.__dict__[key] = dp_dict['_DesignParameterName']
+                    tmpAST.__dict__[key] = dp_dict['_ElementName']
                 elif key == 'layer':
                     tmpAST.__dict__[key] = dp_dict['_Layer']
                 elif key == 'XY':
@@ -90,19 +90,11 @@ class ElementManager:
             return None, None
 
         # self.load_dp_dc(dp=None, dc=tmpAST)
-        if dp_dict['_DesignParameterName'] in self.elementConstraintDict:
-            constraint_id = self.elementConstraintDict[dp_dict['_DesignParameterName']]._id
+        if dp_dict['_ElementName'] in self.elementConstraintDict:
+            constraint_id = self.elementConstraintDict[dp_dict['_ElementName']]._id
         else:
             constraint_id = None
-
         return tmpAST , constraint_id
-
-    # def get_dp_return_ast(self, _qtdp):
-        # if dp._type == 1:
-        #     dp.
-        # elif dp._type == 2:
-        #
-        # elif dp._type == 3:
 
     def get_ast_return_dpdict(self, ast):
         if ASTmodule._getASTtype(ast) == 'Boundary':
@@ -127,13 +119,13 @@ class ElementManager:
                     tmpDP[key] = ast.__dict__['height']
                 elif key == '_Ignore':
                     tmpDP[key] = None
-                elif key == '_DesignParameterName':
+                elif key == '_ElementName':
                     tmpDP[key] = ast.__dict__['name']
 
         elif ASTmodule._getASTtype(ast) == 'Path':
             tmpDP = dict()
             for key in KeyManager._Pathkey.keys():
-                if key == '_DesignParameterName':
+                if key == '_ElementName':
                     tmpDP[key] = ast.__dict__['name']
                 elif key == '_Layer':
                     tmpDP[key] = ast.__dict__['layer']
@@ -154,13 +146,14 @@ class ElementManager:
             tmpDP = dict()
             for key in KeyManager._SRefkey.keys():
                 if key == '_id':
-                    tmpDP[key] = None
+                    tmpDP[key] = ast.__dict__['name']
                 elif key == '_DesignParametertype':
                     tmpDP[key] = 3
                 elif key == '_XYCoordinates':
                     tmpDP[key] = ast.XY
                 elif key == '_DesignObj':
                     tmpDP[key] = None
+                    # TODO: DesignObj necessary for constraint -> parameter?
                 elif key == '_DesignLibraryName':
                     tmpDP[key] = ast.__dict__['library']
                 elif key == '_className':
@@ -175,7 +168,7 @@ class ElementManager:
                     tmpDP[key] = None
                 elif key == '_ElementName':
                     tmpDP[key] = None
-                elif key == '_DesignParameterName':
+                elif key == '_ElementName':
                     tmpDP[key] = ast.__dict__['name']
                 pass
 
@@ -195,7 +188,7 @@ class ElementManager:
                     tmpDP[key] = ast.__dict__['id']
                 elif key == '_DesignParameterType':
                     tmpDP[key] = 8
-                elif key == '_DesignParameterName':
+                elif key == '_ElementName':
                     tmpDP[key] = ast.__dict__['name']
                 elif key == '_Layer':
                     tmpDP[key] = ast.__dict__['layer']
@@ -234,7 +227,7 @@ class ElementManager:
         _qtdp._id = _id # string
         _qtdp._type = _type  # int, boundary-1, path-2, sref-3
         _qtdp._ParentName = _ParentName # string
-        _qtdp._DesignParameterName = _DesignParameterName #string
+        _qtdp._ElementName = _ElementName #string
         _qtdp._DesignParameter = None
         :param _qtdp: input qt_designParameter object
         :return: design parameter dictionary format
@@ -252,7 +245,7 @@ class ElementManager:
         _qtdp._id = _id # string
         _qtdp._type = _type  # int, boundary-1, path-2, sref-3
         _qtdp._ParentName = _ParentName # string
-        _qtdp._DesignParameterName = _DesignParameterName #string
+        _qtdp._ElementName = _ElementName #string
         _qtdp._DesignParameter = None
         :param _qtdp: input qt_designParameter object
         :return: design constraint ast format
@@ -269,7 +262,7 @@ class ElementManager:
 
     def load_dp_dc(self,dp,dc):
 
-        self.elementParameterDict[dp._DesignParameterName] = dp
+        self.elementParameterDict[dp._ElementName] = dp
         self.elementConstraintDict[dc._ast.name] = dc
 
     def load_dp_dc_id(self,dp_id, dc_id):
@@ -291,11 +284,11 @@ class KeyManager():
         _XWidth=None,
         _YWidth=None,
         _Ignore=None,
-        _DesignParameterName=None
+        _ElementName=None
         )
 
     _Pathkey = dict(
-        _DesignParameterName=None,
+        _ElementName=None,
         _Layer=None,
         _DesignParametertype=2,
         _XYCoordinates=[],
@@ -311,16 +304,12 @@ class KeyManager():
         _DesignObj = None,
         _DesignLibraryName = None,
         _className = None,
-
         _Parameters = None,
         _XYCoordinates = [],
-
         _Reflect = None,
         _Angle = None,
         _Ignore = None,
-
-        _ElementName = None,
-        _DesignParameterName = None
+        _ElementName = None
         )
 
     _Textkey = dict(
@@ -334,14 +323,13 @@ class KeyManager():
         _Angle=None,
         _TEXT=None,
         _Ignore=None,
-        _ElementName=None,
-        _DesignParameterName=None
+        _ElementName=None
         )
 
 # if __name__ == '__main__':
 #     a = ElementManager()
-#     # x = {'_Layer': 'PIMP', '_DesignParametertype': 1, '_XYCoordinates': [[0, 0]], '_XWidth': 100.0, '_YWidth': 100.0, '_Ignore': None, '_DesignParameterName': 'qwe'}    # DP Boundary sample
-#     x = {'_DesignParameterName': 'qwe', '_Layer': 'PIMP', '_DesignParametertype': 2, '_XYCoordinates': [[-445, 233], [33, 233], [33, -8]], '_Width': 100.0, '_Height': None, '_Color': None, '_ItemRef':None}  # DP Path sample
+#     # x = {'_Layer': 'PIMP', '_DesignParametertype': 1, '_XYCoordinates': [[0, 0]], '_XWidth': 100.0, '_YWidth': 100.0, '_Ignore': None, '_ElementName': 'qwe'}    # DP Boundary sample
+#     x = {'_ElementName': 'qwe', '_Layer': 'PIMP', '_DesignParametertype': 2, '_XYCoordinates': [[-445, 233], [33, 233], [33, -8]], '_Width': 100.0, '_Height': None, '_Color': None, '_ItemRef':None}  # DP Path sample
 #     # _ast = element_ast.Boundary()
 #     # _ast.__dict__ = dict(name='qwe', layer='PIMP', width=100.0, height=100.0, XY=[[0,0]]) # DC Boundary sample
 #     _ast = element_ast.Path()

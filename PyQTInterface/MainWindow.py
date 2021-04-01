@@ -98,7 +98,7 @@ class _MainWindow(QMainWindow):
 
     def initUI(self):
 
-        print("***************************Initalizing Graphic Interface Start")
+        print("*********************Initializing Graphic Interface Start")
 
         ################# MAIN WINDOW setting ####################
         self.setWindowTitle("S2S GUI PROJECT")
@@ -443,7 +443,7 @@ class _MainWindow(QMainWindow):
     #         #     brush = QBrush(QColor(50,50,50))
     #         #     painter.fillPath(path,brush)
     #         #     self.scene.addPath(path)
-        print("******************************Initalizing Graphic Interface Complete")
+        print("************************Initializing Graphic Interface Complete")
 
     # def threading_test(self,count):
 
@@ -481,7 +481,7 @@ class _MainWindow(QMainWindow):
         # tmp_generator._ParametersForDesignCalculation
 
     def sref_visual_debug(self):
-        DesignParameter = QTInterfaceWithAST.QtDesignParameter(_id='test1',_type=1, _ParentName='INV', _DesignParameterName='name')
+        DesignParameter = QTInterfaceWithAST.QtDesignParameter(_id='test1',_type=1, _ParentName='INV', _ElementName='name')
         DesignParameter._createDesignParameter()
         DesignParameter._setDesignParameterValue(_index='_Layer', _value='METAL1')
         DesignParameter._setDesignParameterValue(_index='_Datatype', _value='PIMP')
@@ -509,21 +509,21 @@ class _MainWindow(QMainWindow):
         # return visualItem
 
         pass
-    def hierarchyCalculator(self, _targetDict, _level = None):
-        if _level == None:
-            _level = 1
-        else:
-            _level = _level
-        for key, value in _targetDict.items():
-            if key == 'flattenFlag' :
-                continue
-            elif value['subcell'] == None:
-                break
-            else:
-                _level = _level + 1
-                subLevel = self.hierarchyCalculator(value['subcell'], _level)
-                _level = max(subLevel, _level)
-        return _level
+    # def hierarchyCalculator(self, _targetDict, _level = None):
+    #     if _level == None:
+    #         _level = 1
+    #     else:
+    #         _level = _level
+    #     for key, value in _targetDict.items():
+    #         if key == 'flattenFlag' :
+    #             continue
+    #         elif value['subcell'] == None:
+    #             break
+    #         else:
+    #             _level = _level + 1
+    #             subLevel = self.hierarchyCalculator(value['subcell'], _level)
+    #             _level = max(subLevel, _level)
+    #     return _level
 
 
 
@@ -542,15 +542,15 @@ class _MainWindow(QMainWindow):
             lastSrefName = list(self._QTObj._qtProject._DesignParameter[topCellName].keys())[-1]
             numberOfCells = int(re.findall('\d+', lastSrefName)[0])
             tmpDict = dict()
-            print("##############################################################")
-            print(f"There are '{numberOfCells + 1}' cells inside '{topCellName}' cell")
-            print("##############################################################")
+            print("             #######################################################################               ")
+            print(f"               There are '{numberOfCells + 1}' cells inside '{topCellName}' cell                  ")
+            print("             #######################################################################               ")
             for _id, _elements in self._QTObj._qtProject._DesignParameter[topCellName].items():
                 if _elements._DesignParameter['_DesignParametertype'] == 3:                      # Sref inside top cell
                     _childName = _elements._DesignParameter['_DesignObj_Name']
                     _childModule = self.srefModulization(_flattenStatusDict, _elements)          # Recursive Call
                     for _id2, elements2 in _childModule.items():
-                        name = elements2._DesignParameter['_DesignParameterName']
+                        name = elements2._DesignParameter['_ElementName']
 
                         ###### Preventing Name Overwriting #####
                         while True:
@@ -569,7 +569,7 @@ class _MainWindow(QMainWindow):
         else:
             ############################################# 2. Subcell Cases ############################################
             _childName = _sref._DesignParameter['_DesignObj_Name']
-            _newChildName = _childName + '/' + _sref._DesignParameter['_DesignParameterName']
+            _newChildName = _childName + '/' + _sref._DesignParameter['_ElementName']
             _parentName = _sref._id
             _parentXY = _sref._DesignParameter['_XYCoordinates']
             tmpDict = dict()
@@ -579,7 +579,7 @@ class _MainWindow(QMainWindow):
                 else :                                      # If one of the subcells is SREF, Recursive call
                     _childModule2 = self.srefModulization(_flattenStatusDict, _modules1)
                     for _id2, elements2 in _childModule2.items():
-                        _name = elements2._DesignParameter['_DesignParameterName']
+                        _name = elements2._DesignParameter['_ElementName']
                         while True:
                             if _name in list(tmpDict.keys()):
                                 newName = _name + str(1)
@@ -598,7 +598,7 @@ class _MainWindow(QMainWindow):
                         break
                     else:                                   # Flattening Condition
                         """                 
-                        Flattening Condition needs XYcoordinate modification, and renaming process
+                        Flattening Condition needs XY coordinate modification, and renaming process
                         """
                         for _id, element in tmpDict.items():
                             tmpmodule = copy.deepcopy(element)
@@ -675,10 +675,10 @@ class _MainWindow(QMainWindow):
             print("Run fail")
 
     def checkNameDuplication(self,checkItem):
-        name = checkItem._ItemTraits['_DesignParameterName']
+        name = checkItem._ItemTraits['_ElementName']
         for item in self.scene.items():
             try:
-                if name == item._ItemTraits['_DesignParameterName']:
+                if name == item._ItemTraits['_ElementName']:
                     print("ERROR: Duplicated Name")
                     return True
             except:
@@ -909,13 +909,14 @@ class _MainWindow(QMainWindow):
         _moduleName = _moduleName.split('/')[-1]
         originalModuleList = set(self._QTObj._qtProject._DesignParameter)
         # self.dockContentWidget4ForLoggingMessage._InfoMessage("Load GDS File Starts.")
-        print("loadFile")
+        print("**************************File Load From Legacy Start")
         self._QTObj._qtProject._loadDesignsFromGDSlegacy(_file = _fileName, _topModuleName = _moduleName)
-        print("FileLoadEnd")
+        print("****************************File Load From Legacy Complete")
 
         if self.progrseeBar_unstable == True:
             updateModuleList = set(self._QTObj._qtProject._DesignParameter)
             addedModuleList = list(updateModuleList-originalModuleList)
+            idLength = 0
             # randModule = addedModuleList[0]
             # anyId = list(self._QTObj._qtProject._DesignParameter[randModule])[0]
             # hierarchyHint=self._QTObj._qtProject._HierarchyFromRootForDesignParameter(_id=anyId,_ParentName=randModule)
@@ -923,20 +924,16 @@ class _MainWindow(QMainWindow):
             #
             # moduleLength = len(addedModuleList)
             # minimumModule = round(moduleLength/50)
-            idLength = 0
-
             entireHierarchy = self._QTObj._qtProject._getEntireHierarchy()
-            print("Hierarchy: \n {}".format(entireHierarchy))
             for modules in addedModuleList:
                 idLength += len(self._QTObj._qtProject._DesignParameter[modules])
 
             if DEBUG:
-                print(f'idLength= {idLength}')
+                print(f'DEBUGGING MODE, idLength= {idLength}')
 
             self.fc = SetupWindow._FlatteningCell(entireHierarchy)
             self.fc.show()
             flattening_dict = self.fc.ok_button_accepted()
-            print(flattening_dict)
             self.fc.destroy()
 
             print("############################ Cell DP, DC, VISUALITEM CREATION START ###############################")
@@ -950,27 +947,23 @@ class _MainWindow(QMainWindow):
             for _id, _element in ProcessedModuleDict.items():
                 _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(topCellName)
                 _newConstraintID = (topCellName + str(_designConstraintID))
-
-                ########################################## New Naming ################################################
                 topcell[_newConstraintID] = _element
                 topcell[_newConstraintID]._id = _newConstraintID
-
-
                 ######################################### AST Creation ################################################
                 if topcell[_newConstraintID]._DesignParameter['_DesignParametertype'] == 3:
                     _cellModel = _element._DesignParameter['_DesignObj_Name']
-                    _cellName = _element._DesignParameter['_DesignParameterName']
+                    _cellName = _element._DesignParameter['_ElementName']
                     _newCellName = _cellModel + '/' + _cellName
                     for key, value in flattening_dict.items():
                         findHint = _newCellName.find(key)
                         if findHint != -1:
-                            _element._DesignParameter['_DesignLibraryName'] = value
-                            _element._DesignParameter['_className'] = \
+                            topcell[_newConstraintID]._DesignParameter['_DesignLibraryName'] = value
+                            topcell[_newConstraintID]._DesignParameter['_className'] = \
                                 generator_model_api.class_name_dict[_element._DesignParameter['_DesignLibraryName']]
-                            topcell[_newConstraintID]._DesignParameterName = _newConstraintID
+                            topcell[_newConstraintID]._ElementName = _newConstraintID
                             topcell[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
-                            topcell[_newConstraintID]._DesignParameter['_DesignParameterName'] = _newConstraintID
-                            tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(_element)
+                            topcell[_newConstraintID]._DesignParameter['_ElementName'] = _newConstraintID
+                            tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(topcell[_newConstraintID])
                             if tmpAST == None:
                                 continue
                             design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
@@ -1260,7 +1253,7 @@ class _MainWindow(QMainWindow):
 
         for key in _DesignParameter:
             self._QTObj._qtProject._DesignParameter[_Module][_ID]._setDesignParameterValue(_index = key, _value= _DesignParameter[key])
-        self._QTObj._qtProject._DesignParameter[_Module][_ID]._setDesignParameterName(_DesignParameter['_DesignParameterName'])
+        self._QTObj._qtProject._DesignParameter[_Module][_ID]._setDesignParameterName(_DesignParameter['_ElementName'])
 
         # self._QTObj._qtProject._DesignParameter[_Module][_ID]._updateVisualItem()
         # visualItem = self._QTObj._qtProject._DesignParameter[_Module][_ID]._VisualizationItemObj
@@ -1747,9 +1740,6 @@ class _CustomScene(QGraphicsScene):
         self.oldPos = QPointF(0,0)
         self.itemList = list()
 
-        # self.
-
-
 
     def mousePressEvent(self, event):
         _RectBlock_list = list()
@@ -1758,7 +1748,7 @@ class _CustomScene(QGraphicsScene):
         #         _RectBlock_list.append(self.items(event.scenePos())[i])
         #     else:
         #         pass
-
+        print(self.selectedItems())
         if len(self.selectedItems()) != 0:
             selected = self.selectedItems()
             for i in range(len(selected)):
@@ -1767,6 +1757,7 @@ class _CustomScene(QGraphicsScene):
         else:
             for i in range(len(self.itemList)):
                 self.itemList[i].setFlag(QGraphicsItemGroup.ItemIsSelectable, True)
+            self.itemList.clear()
 
 
 
@@ -1896,7 +1887,7 @@ class _CustomScene(QGraphicsScene):
             itemList = self.selectedItems()
             for item in itemList:
                 if item._ItemTraits['_DesignParametertype'] == 3:
-                    subElement = item._ItemTraits['_DesignParameterName']
+                    subElement = item._ItemTraits['_ElementName']
                     structure_dict = self.copyItem(item)
                     self.newWindow(structure_dict, subElement)
         elif QKeyEvent.key() == Qt.Key_O:
@@ -1904,7 +1895,7 @@ class _CustomScene(QGraphicsScene):
             for item in itemList:
                 try:
                     if item._ItemTraits['_DesignParametertype'] is not 3:
-                        self.send_module_name_list_signal.emit([item._ItemTraits['_DesignParameterName']])
+                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']])
                 except:
                     pass
 
