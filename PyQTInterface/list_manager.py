@@ -5,16 +5,17 @@ from PyQTInterface.layermap import LayerReader
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
+import traceback
+
 # layer_visible_flag_dict = dict()
 # for layer in LayerReader._LayerMapping:
 #     layer_visible_flag_dict[layer] = True
 
 class _ManageList(QTableView):
-
     def __init__(self):
         super().__init__()
         self._layerList = list()
-        self._usedlayer = list()
+        self._usedlayer = dict()
         self.initUI()
 
     def initUI(self):
@@ -53,8 +54,16 @@ class _ManageList(QTableView):
 
         self.model.itemChanged.connect(self.itemChanged)
 
-    def updateLayerList(self, _layerList):
-        self._usedlayer = _layerList
+    def updateLayerList(self, _layerDict):
+        self._usedlayer = _layerDict
+        # for layer in _layerDict:
+        #     item = _layerDict[layer]
+        #     if layer in self._usedlayer:
+        #         if self._usedlayer[layer].count(item) == 0:
+        #             self._usedlayer[layer].extend(item)
+        #     else:
+        #         self._usedlayer[layer] = item
+
 
     def itemChanged(self, item):
         try:
@@ -64,21 +73,33 @@ class _ManageList(QTableView):
             if item.index().column() == 1:
                 if item.checkState() == 0:
                     for x in Visualitem:
-                        x.setVisible(False)
+                        try:
+                            x.setVisible(False)
+                        except:
+                            continue
                         # layer_visible_flag_dict[layer] = False
 
                 elif item.checkState() == 2:
                     for x in Visualitem:
-                        x.setVisible(True)
+                        try:
+                            x.setVisible(True)
+                        except:
+                            continue
                         # layer_visible_flag_dict[layer] = True
 
             elif item.index().column() == 2:
                 if item.checkState() == 0:
                     for x in Visualitem:
-                        x.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                        try:
+                            x.setFlag(QGraphicsItem.ItemIsSelectable, False)
+                        except:
+                            continue
 
                 elif item.checkState() == 2:
                     for x in Visualitem:
-                        x.setFlag(QGraphicsItem.ItemIsSelectable, True)
+                        try:
+                            x.setFlag(QGraphicsItem.ItemIsSelectable, True)
+                        except:
+                            continue
         except:
-            pass
+            traceback.print_exc()

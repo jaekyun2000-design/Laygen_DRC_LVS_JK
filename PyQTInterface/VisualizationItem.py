@@ -7,6 +7,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import copy
 
+from PyQTInterface import list_manager
+
 # from PyCodes import QTInterface
 
 from PyQTInterface import LayerInfo
@@ -158,6 +160,11 @@ class _RectBlock(QGraphicsRectItem):
 
 
 class _VisualizationItem(QGraphicsItemGroup):
+    _subElementLayer = dict()
+    _Layer = LayerReader._LayerMapping
+    for layer in _Layer:
+        _subElementLayer[layer] = list()
+
     def __init__(self,_ItemTraits=None):
         super().__init__()
         self.setBoundingRegionGranularity(1)
@@ -358,6 +365,12 @@ class _VisualizationItem(QGraphicsItemGroup):
                 tmpBlock = _RectBlock()
                 tmpBlock.updateTraits(blockTraits)
                 tmpBlock.setPos(_XYCoordinatesPair[0] - blockTraits['_Width']/2,_XYCoordinatesPair[1] - blockTraits['_Height']/2)
+
+                layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+                layer = layernum2name[str(blockTraits['_Layer'])]
+
+                self._subElementLayer[layer].append(self)
+
                 self.block.append(tmpBlock)
                 self.addToGroup(tmpBlock)
 
@@ -419,17 +432,29 @@ class _VisualizationItem(QGraphicsItemGroup):
                                 Xmin += self._ItemTraits['_Width']/2
                     blockTraits['_Width'] = Xwidth
                     blockTraits['_Height'] = Ywidth
+
+                    layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+                    layer = layernum2name[str(blockTraits['_Layer'])]
+
+                    self._subElementLayer[layer].append(self)
+
                     self.block.append(_RectBlock(blockTraits))  #Block Generation
                     self.block[i].setPos(Xmin*scaleValue,Ymin*scaleValue)
                     self.addToGroup(self.block[i])
 
             elif self._ItemTraits['_DesignParametertype'] is 3:                #SRef Case
                 for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
-
                     sub_element_vi = _VisualizationItem()
                     sub_element_vi.updateDesignParameter(sub_element_dp)
                     sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
                     sub_element_vi.setPos(self._ItemTraits['_XYCoordinates'][0][0], self._ItemTraits['_XYCoordinates'][0][1])
+
+                    layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+                    layer = layernum2name[str(sub_element_vi._ItemTraits['_Layer'])]
+
+                    print('xxx', blockTraits['_DesignParameterName'], layer, sub_element_vi)
+
+                    self._subElementLayer[layer].append(sub_element_vi)
 
                     if self._ItemTraits['_Reflect'] == None and self._ItemTraits['_Angle'] == None:
                         pass
@@ -474,6 +499,12 @@ class _VisualizationItem(QGraphicsItemGroup):
             else:
                 print("WARNING1: Unvalid DataType Detected!")
 
+            # print('--')
+            # print(self._subElementLayer)
+            # self.send_subelementlayer_signal.emit(self._subElementLayer)
+
+    def returnLayerDict(self):
+        return self._subElementLayer
 
     def returnItem(self):
         if self._ItemTraits['_DesignParametertype'] is "Boundary":
