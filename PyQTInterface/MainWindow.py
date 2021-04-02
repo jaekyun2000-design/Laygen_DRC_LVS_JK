@@ -910,7 +910,12 @@ class _MainWindow(QMainWindow):
         originalModuleList = set(self._QTObj._qtProject._DesignParameter)
         # self.dockContentWidget4ForLoggingMessage._InfoMessage("Load GDS File Starts.")
         print("**************************File Load From Legacy Start")
-        self._QTObj._qtProject._loadDesignsFromGDSlegacy(_file = _fileName, _topModuleName = _moduleName)
+        try:
+            self._QTObj._qtProject._loadDesignsFromGDSlegacy(_file = _fileName, _topModuleName = _moduleName)
+        except:
+            import collections
+            self._QTObj._qtProject._DesignParameter = collections.OrderedDict()
+            self._QTObj._qtProject._loadDesignsFromGDSlegacy(_file = _fileName, _topModuleName = _moduleName, _reverse=True)
         print("****************************File Load From Legacy Complete")
 
         if self.progrseeBar_unstable == True:
