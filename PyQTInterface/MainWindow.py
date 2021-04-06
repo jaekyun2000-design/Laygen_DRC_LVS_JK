@@ -1,12 +1,13 @@
 import sys
 import os
+import traceback
 
 try:
     sys.path.append('O:\OneDrive - postech.ac.kr\GeneratorAutomation\VariableSuggestion-git')
     import topAPI
 except:
+    traceback.print_exc()
     print("GDS2GEN topAPI module does not exist.")
-
 
 import multiprocessing as mp
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
@@ -15,7 +16,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-import traceback
 
 
 from PyQTInterface import userDefineExceptions
@@ -658,6 +658,8 @@ class _MainWindow(QMainWindow):
             self.gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter,self._CurrentModuleName)
             self.gds2gen.load_qt_design_constraints(self._QTObj._qtProject._DesignConstraint)
             self.gds2gen.set_root_cell(self._CurrentModuleName)
+            self.gds2gen.update_designparameter_by_user_variable()
+
             stream_data = self.gds2gen.ready_for_top_cell()
             self.gds2gen.set_topcell_name('test')
             file = open('./tmp.gds','wb')
@@ -977,8 +979,8 @@ class _MainWindow(QMainWindow):
                             self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
                                                                              _parentName=topCellName,
                                                                              _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-                            tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
-                            self._ElementManager.load_dp_dc_id(dp_id=topCellName, dc_id=topCellName)
+                            tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
+                            self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=_newConstraintID, dc_id=design_dict['constraint_id'])
                             break
                         else:
                             continue
@@ -991,8 +993,8 @@ class _MainWindow(QMainWindow):
                     self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
                                                                      _parentName=topCellName,
                                                                      _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-                    tmp_dp_dict, _ = self._ElementManager.get_ast_return_dpdict(tmpAST)
-                    self._ElementManager.load_dp_dc_id(dp_id=topCellName, dc_id=topCellName)
+                    tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
+                    self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=_newConstraintID, dc_id=design_dict['constraint_id'])
 
                 ####################################### Visual Item Creation ##########################################
                 if topcell[_newConstraintID]._DesignParameter['_DesignParametertype'] != 3:

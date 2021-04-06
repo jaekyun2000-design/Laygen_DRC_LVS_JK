@@ -1981,6 +1981,7 @@ class QtProject:
                 output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': _designParameter_id, 'constraint_id': constraintID}
                 return output
             except:
+                traceback.print_exc()
                 return userDefineExceptions._UnkownError
 
     def _update_ast(self, module_name: str, id: str, _ast: ast.AST, element_manager_update: bool=True) -> list:
@@ -2010,6 +2011,7 @@ class QtProject:
                 output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': _designParameter_id, 'constraint_id': id}
                 return output
             except:
+                traceback.print_exc()
                 return userDefineExceptions._UnkownError
 
     def _getASTtype(self, _targetObject):
