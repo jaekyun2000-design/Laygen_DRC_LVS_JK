@@ -812,7 +812,7 @@ class _MainWindow(QMainWindow):
         #     else:
         #         _layerList.append(_newLayer)
 
-        self.dockContentWidget1_2.updateLayerList(self._layerItem)
+        # self.dockContentWidget1_2.updateLayerList(self._layerItem)
 
         # layer 정보 : _RectBlock
         # layer visual on/off -> _Rectblock on/off  <important>
@@ -1018,6 +1018,12 @@ class _MainWindow(QMainWindow):
                     self.scene.addItem(sref_vi)
                     self.vi = VisualizationItem._VisualizationItem()
                     self.vi.updateDesignParameter(topcell[_newConstraintID])
+
+                    x = sref_vi.returnLayerDict()
+                    self.dockContentWidget1_2.updateLayerList(x)
+
+                    # for i in range(len(sref_vi.returnLayerDict()['PIMP'])):
+                    #     print(sref_vi.returnLayerDict()['PIMP'][i]._ItemTraits)
 
             print("############################ Cell DP, DC, VISUALITEM CREATION DONE ################################")
 
@@ -1755,7 +1761,6 @@ class _CustomScene(QGraphicsScene):
         #         _RectBlock_list.append(self.items(event.scenePos())[i])
         #     else:
         #         pass
-        print(self.selectedItems())
         if len(self.selectedItems()) != 0:
             selected = self.selectedItems()
             for i in range(len(selected)):
