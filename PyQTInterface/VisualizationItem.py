@@ -450,11 +450,11 @@ class _VisualizationItem(QGraphicsItemGroup):
                     sub_element_vi.setPos(self._ItemTraits['_XYCoordinates'][0][0], self._ItemTraits['_XYCoordinates'][0][1])
 
                     layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-                    layer = layernum2name[str(sub_element_vi._ItemTraits['_Layer'])]
-
-                    print('xxx', blockTraits['_DesignParameterName'], layer, sub_element_vi)
-
-                    self._subElementLayer[layer].append(sub_element_vi)
+                    if sub_element_vi._ItemTraits['_Layer'] == None:
+                        pass
+                    else:
+                        layer = layernum2name[str(sub_element_vi._ItemTraits['_Layer'])]
+                        self._subElementLayer[layer].append(sub_element_vi)
 
                     if self._ItemTraits['_Reflect'] == None and self._ItemTraits['_Angle'] == None:
                         pass

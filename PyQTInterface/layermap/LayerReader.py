@@ -888,6 +888,49 @@ elif _Technology == '130nm':
 elif _Technology == '350nm':
     _LayerMapping.update({'RH':(None,None)})
 
+ #########################   IP Layer Mapping    #################################'
+
+if _Technology == '180nm':
+    _LayerMapping.update({'IP':(None,None)})
+elif _Technology == '065nm':
+    _LayerMapping.update({'IP':_LayerMappingTmp[('IP','drawing')]})
+    # if self._TechnologyINV == '180nm':
+    #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
+    #         _DataType = layermapping[('NWELL', 'drawing')][1]
+    #     elif self._TechnologyINV == '065nm':
+    #         _Layernumber = layermapping[('NW', 'drawing')][0]
+    #         _DataType = layermapping[('NW', 'drawing')][1]
+elif _Technology == '045nm':
+    _LayerMapping.update({'IP':_LayerMappingTmp[('IP','drawing')]})
+elif _Technology == '090nm':
+    _LayerMapping.update({'IP':_LayerMappingTmp[('IP','drawing')]})
+elif _Technology == '130nm':
+    _LayerMapping.update({'IP':(None,None)})
+elif _Technology == '350nm':
+    _LayerMapping.update({'IP':(None,None)})
+
+ #########################   text Layer Mapping    #################################'
+
+if _Technology == '180nm':
+    _LayerMapping.update({'text':(None,None)})
+elif _Technology == '065nm':
+    _LayerMapping.update({'text':_LayerMappingTmp[('text','drawing')]})
+    # if self._TechnologyINV == '180nm':
+    #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
+    #         _DataType = layermapping[('NWELL', 'drawing')][1]
+    #     elif self._TechnologyINV == '065nm':
+    #         _Layernumber = layermapping[('NW', 'drawing')][0]
+    #         _DataType = layermapping[('NW', 'drawing')][1]
+elif _Technology == '045nm':
+    _LayerMapping.update({'text':_LayerMappingTmp[('text','drawing')]})
+elif _Technology == '090nm':
+    _LayerMapping.update({'text':_LayerMappingTmp[('text','drawing')]})
+elif _Technology == '130nm':
+    _LayerMapping.update({'text':(None,None)})
+elif _Technology == '350nm':
+    _LayerMapping.update({'text':(None,None)})
+
+
 _LayerMapFile.close()
 
 
