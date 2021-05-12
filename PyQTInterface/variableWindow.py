@@ -248,6 +248,7 @@ class _DesignVariableManagerWindow(QWidget):
         self.table.setShowGrid(False)
         self.table.verticalHeader().setVisible(False)
         self.itemDict = itemDict
+        self.selectedItem = None
         self.initUI()
 
     def initUI(self):
@@ -256,9 +257,10 @@ class _DesignVariableManagerWindow(QWidget):
         self.model.setHorizontalHeaderLabels(['Name', 'Value'])
 
         self.variableDict = _createNewDesignVariable().variableDict
+        self.idDict = _createNewDesignVariable().idDict
 
         for key in self.variableDict:
-            item1 = QStandardItem(key)
+            item1 = QStandardItem(self.variableDict[key]['DV'])
             item1.setTextAlignment(Qt.AlignCenter)
             item1.setEditable(False)
             item2 = QStandardItem(self.variableDict[key]['value'])
@@ -269,13 +271,31 @@ class _DesignVariableManagerWindow(QWidget):
 
         addButton = QPushButton("Add", self)
         addButton.clicked.connect(self.add_clicked)
+        checkButton = QPushButton("check", self)
+        checkButton.clicked.connect(self.check_clicked)
+        editButton = QPushButton("Edit", self)
+        editButton.clicked.connect(self.edit_clicked)
+        deleteButton = QPushButton("Delete", self)
+        deleteButton.clicked.connect(self.delete_clicked)
         quitButton = QPushButton("Quit", self)
         quitButton.clicked.connect(self.quit_clicked)
 
-        button = QHBoxLayout()
-        button.addWidget(addButton)
-        button.addStretch(2)
-        button.addWidget(quitButton)
+        button = QVBoxLayout()
+
+        button1 = QHBoxLayout()
+        button1.addWidget(addButton)
+        button1.addStretch(2)
+        button1.addWidget(checkButton)
+        button1.addStretch(2)
+        button1.addWidget(editButton)
+
+        button2 = QHBoxLayout()
+        button2.addWidget(deleteButton)
+        button2.addStretch(2)
+        button2.addWidget(quitButton)
+
+        button.addLayout(button1)
+        button.addLayout(button2)
 
         self.table.setModel(self.model)
 
@@ -345,30 +365,58 @@ class _DesignVariableManagerWindow(QWidget):
         self.send_destroy_signal.emit('dv')
         self.destroy()
 
-    def updateList(self, variable_info_list):
+    def check_clicked(self):
+        print('varDict:',self.variableDict)
+        print('idDict:',self.idDict)
+
+    def edit_clicked(self):
+        if self.selectedItem == None:
+            self.msg = QMessageBox()
+            self.msg.setText("Nothing selected")
+            self.msg.show()
+        else:
+            vid = self.idDict[self.selectedItem]['vid']
+            DV = self.variableDict[vid]['DV']
+            value = self.variableDict[vid]['value']
+
+            self.editWidget = _editDesignVariable(self, vid, DV, value)
+            self.editWidget.show()
+            self.selectedItem = None
+
+    def delete_clicked(self):
+        self.msg = QMessageBox()
+        self.msg.setText("Delete")
+        self.msg.show()
+
+    def updateList(self, variable_info_list, tt=None):
         _name, _value = variable_info_list[0], variable_info_list[1]
         name, value = QStandardItem(_name), QStandardItem(_value)
         name.setEditable(False)
         name.setTextAlignment(Qt.AlignCenter)
         value.setTextAlignment(Qt.AlignCenter)
 
-        if _name in self.variableDict:
+        if _name in self.idDict:
             pass
         else:
             self.model.appendRow(name)
             self.model.setItem(self.model.rowCount()-1,1,value)
+            if tt == 'edit':
+                self.model.takeRow(self.selectedRow)
 
         self.table.resizeRowsToContents()
 
     def itemChanged(self, item):
         row = item.index().row()
         _item = self.model.item(row).text()
-        if _item in self.variableDict:
-            self.variableDict[_item]['value'] = item.text()
+        if _item in self.idDict:
+            vid = self.idDict[_item]['vid']
+            self.variableDict[vid]['value'] = item.text()
 
     def itemClicked(self, item):
         _item = self.model.item(item.row()).text()
-        _idlist = self.variableDict[_item]['id']
+        self.selectedRow = item.row()
+        self.selectedItem = _item
+        _idlist = self.idDict[_item]['id']
         for i in range(len(_idlist)):
             # print(self.elementDict[_idlist[i]])
             self.itemDict[self.elementDict[_idlist[i]][0]].setSelected(True)
@@ -382,6 +430,7 @@ class _createNewDesignVariable(QWidget):
 
     send_variable_signal = pyqtSignal(list)
     variableDict = dict()
+    idDict = dict()
 
     def __init__(self):
         super().__init__()
@@ -432,19 +481,109 @@ class _createNewDesignVariable(QWidget):
         self.destroy()
 
     def addDVtodict(self, DV, type, value):
-        if DV not in self.variableDict:
-            self.variableDict[DV] = {'id':list(), 'value':None}
+        vid = 'vid' + str(len(self.variableDict))
+        if DV not in self.idDict:
+            self.idDict[DV] = {'vid':vid, 'id':list()}
+            self.variableDict[vid] = {'DV':DV, 'value':None}
+
             if type == 'id':
-                self.variableDict[DV][type].append(value)
+                self.idDict[DV][type].append(value)
             elif type == 'value':
-                self.variableDict[DV][type] = value
+                self.variableDict[vid][type] = value
+
+            # if DV not in self.variableDict:
+            #     self.variableDict[DV] = {'id':list(), 'value':None}
+            #     if type == 'id':
+            #         self.variableDict[DV][type].append(value)
+            #     elif type == 'value':
+            #         self.variableDict[DV][type] = value
+            # else:
+            #     if type == 'id':
+            #         self.variableDict[DV][type].append(value)
+            #     elif type == 'value':
+            #         self.warning = QMessageBox()
+            #         self.warning.setIcon(QMessageBox.Warning)
+            #         self.warning.setText("This variable already exists")
+            #         self.warning.show()
         else:
             if type == 'id':
-                self.variableDict[DV][type].append(value)
+                self.idDict[DV][type].append(value)
             elif type == 'value':
                 self.warning = QMessageBox()
                 self.warning.setIcon(QMessageBox.Warning)
                 self.warning.setText("This variable already exists")
                 self.warning.show()
 
-        # print(self.variableDict)
+        # print('varDict:',self.variableDict)
+        # print('idDict:',self.idDict)
+
+class _editDesignVariable(QWidget):
+
+    send_DV_signal = pyqtSignal(list, str)
+
+    def __init__(self, address, vid, DV, value):
+        super().__init__()
+        self.address = address
+        self.vid = vid
+        self.DV = DV
+        self.value = value
+        self.initUI()
+
+    def initUI(self):
+        self.variableDict = _createNewDesignVariable().variableDict
+        self.idDict = _createNewDesignVariable().idDict
+
+        self.send_DV_signal.connect(self.address.updateList)
+
+        nameInput = QLabel('Name :')
+        self.name = QLineEdit(self.DV)
+        valueInput = QLabel('Value :')
+        self.value = QLineEdit(self.value)
+
+        okButton = QPushButton("OK", self)
+        okButton.clicked.connect(self.ok_clicked)
+        cancelButton = QPushButton("Cancel", self)
+        cancelButton.clicked.connect(self.cancel_clicked)
+
+        button = QHBoxLayout()
+        button.addStretch(2)
+        button.addWidget(okButton)
+        button.addWidget(cancelButton)
+
+        self.inputBox1 = QVBoxLayout()
+        self.inputBox2 = QVBoxLayout()
+        arrangeWindow = QHBoxLayout()
+
+        vbox = QVBoxLayout()
+
+        self.inputBox1.addWidget(nameInput)
+        self.inputBox1.addWidget(valueInput)
+
+        self.inputBox2.addWidget(self.name)
+        self.inputBox2.addWidget(self.value)
+
+        arrangeWindow.addLayout(self.inputBox1)
+        arrangeWindow.addLayout(self.inputBox2)
+
+        vbox.addLayout(arrangeWindow)
+        vbox.addLayout(button)
+
+        self.setLayout(vbox)
+
+    def ok_clicked(self):
+        self.variableDict[self.vid]['DV'] = self.name.text()
+        self.variableDict[self.vid]['value'] = self.value.text()
+
+        test_list = [self.name.text(), self.value.text()]
+        print(test_list)
+        print(type(test_list))
+
+        self.send_DV_signal.emit(test_list, 'edit')
+
+        self.idDict[self.name.text()] = self.idDict[self.DV]
+        del self.idDict[self.DV]
+
+        self.destroy()
+
+    def cancel_clicked(self):
+        self.destroy()
