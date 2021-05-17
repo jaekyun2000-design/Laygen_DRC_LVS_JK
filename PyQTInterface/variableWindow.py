@@ -264,6 +264,7 @@ class _DesignVariableManagerWindow(QWidget):
             item1.setTextAlignment(Qt.AlignCenter)
             item1.setEditable(False)
             item2 = QStandardItem(self.variableDict[key]['value'])
+            item2.setEditable(False)
             item2.setTextAlignment(Qt.AlignCenter)
 
             self.model.appendRow(item1)
@@ -307,7 +308,7 @@ class _DesignVariableManagerWindow(QWidget):
         self.table.horizontalHeader().setDefaultSectionSize(127)
         self.table.resizeRowsToContents()
 
-        self.model.itemChanged.connect(self.itemChanged)
+        # self.model.itemChanged.connect(self.itemChanged)
         self.table.clicked.connect(self. itemClicked)
         self.table.send_dataChanged_signal.connect(self.data_changed)
 
@@ -384,33 +385,51 @@ class _DesignVariableManagerWindow(QWidget):
             self.selectedItem = None
 
     def delete_clicked(self):
-        self.msg = QMessageBox()
-        self.msg.setText("Delete")
-        self.msg.show()
+        if self.selectedItem == None:
+            self.msg = QMessageBox()
+            self.msg.setText("Nothing selected")
+            self.msg.show()
+        else:
+            vid = self.idDict[self.selectedItem]['vid']
+            DV = self.variableDict[vid]['DV']
+
+            del self.variableDict[vid]
+
+            self.updateList([DV, None], 'delete')
+            self.selectedItem = None
 
     def updateList(self, variable_info_list, tt=None):
         _name, _value = variable_info_list[0], variable_info_list[1]
         name, value = QStandardItem(_name), QStandardItem(_value)
         name.setEditable(False)
+        value.setEditable(False)
         name.setTextAlignment(Qt.AlignCenter)
         value.setTextAlignment(Qt.AlignCenter)
 
         if _name in self.idDict:
-            pass
-        else:
-            self.model.appendRow(name)
-            self.model.setItem(self.model.rowCount()-1,1,value)
             if tt == 'edit':
+                self.model.setItem(self.selectedRow, 1, value)
+            elif tt == 'delete':
                 self.model.takeRow(self.selectedRow)
+
+                del self.idDict[_name]
+            else:
+                pass
+        else:
+            if tt == 'edit':
+                self.model.setItem(self.selectedRow, 0, name)
+            else:
+                self.model.appendRow(name)
+                self.model.setItem(self.model.rowCount()-1,1,value)
 
         self.table.resizeRowsToContents()
 
-    def itemChanged(self, item):
-        row = item.index().row()
-        _item = self.model.item(row).text()
-        if _item in self.idDict:
-            vid = self.idDict[_item]['vid']
-            self.variableDict[vid]['value'] = item.text()
+    # def itemChanged(self, item):
+    #     row = item.index().row()
+    #     _item = self.model.item(row).text()
+    #     if _item in self.idDict:
+    #         vid = self.idDict[_item]['vid']
+    #         self.variableDict[vid]['value'] = item.text()
 
     def itemClicked(self, item):
         _item = self.model.item(item.row()).text()
@@ -481,7 +500,13 @@ class _createNewDesignVariable(QWidget):
         self.destroy()
 
     def addDVtodict(self, DV, type, value):
-        vid = 'vid' + str(len(self.variableDict))
+        vid_list = list(self.variableDict.keys())
+        if vid_list == []:
+            vid = 'vid0'
+        else:
+            tmp = int(vid_list[-1][3:])+1
+            vid = 'vid' + str(tmp)
+
         if DV not in self.idDict:
             self.idDict[DV] = {'vid':vid, 'id':list()}
             self.variableDict[vid] = {'DV':DV, 'value':None}
@@ -491,20 +516,6 @@ class _createNewDesignVariable(QWidget):
             elif type == 'value':
                 self.variableDict[vid][type] = value
 
-            # if DV not in self.variableDict:
-            #     self.variableDict[DV] = {'id':list(), 'value':None}
-            #     if type == 'id':
-            #         self.variableDict[DV][type].append(value)
-            #     elif type == 'value':
-            #         self.variableDict[DV][type] = value
-            # else:
-            #     if type == 'id':
-            #         self.variableDict[DV][type].append(value)
-            #     elif type == 'value':
-            #         self.warning = QMessageBox()
-            #         self.warning.setIcon(QMessageBox.Warning)
-            #         self.warning.setText("This variable already exists")
-            #         self.warning.show()
         else:
             if type == 'id':
                 self.idDict[DV][type].append(value)
@@ -575,13 +586,14 @@ class _editDesignVariable(QWidget):
         self.variableDict[self.vid]['value'] = self.value.text()
 
         test_list = [self.name.text(), self.value.text()]
-        print(test_list)
-        print(type(test_list))
 
         self.send_DV_signal.emit(test_list, 'edit')
 
-        self.idDict[self.name.text()] = self.idDict[self.DV]
-        del self.idDict[self.DV]
+        if self.name.text() in self.idDict:
+            self.idDict[self.name.text()] = self.idDict[self.DV]
+        else:
+            self.idDict[self.name.text()] = self.idDict[self.DV]
+            del self.idDict[self.DV]
 
         self.destroy()
 
