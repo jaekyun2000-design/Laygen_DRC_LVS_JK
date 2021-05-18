@@ -639,14 +639,14 @@ class _MainWindow(QMainWindow):
             pass
 
     def encodeConstraint(self):
-        # try:
+        try:
             module = self._CurrentModuleName
             topAST = self._QTObj._qtProject._ParseTreeForDesignConstrain[module]._ast
             topAST = element_ast.ElementTransformer().visit(topAST)
             topAST = variable_ast.VariableTransformer().visit(topAST)
             code = astunparse.unparse(topAST)
             print(code)
-        # except:
+        except:
             print("encoding fail")
 
     def runConstraint(self):
@@ -1014,8 +1014,9 @@ class _MainWindow(QMainWindow):
                     sref_vi = VisualizationItem._VisualizationItem()
                     sref_vi.updateDesignParameter(topcell[_newConstraintID])
                     self.scene.addItem(sref_vi)
-                    self.vi = VisualizationItem._VisualizationItem()
-                    self.vi.updateDesignParameter(topcell[_newConstraintID])
+                    self.visualItemDict[topcell[_newConstraintID]._id] = sref_vi
+                    # self.vi = VisualizationItem._VisualizationItem()
+                    # self.vi.updateDesignParameter(topcell[_newConstraintID])
 
                     x = sref_vi.returnLayerDict()
                     self.dockContentWidget1_2.updateLayerList(x)
@@ -1223,31 +1224,19 @@ class _MainWindow(QMainWindow):
 
         visualItem.setToolTip(DesignParameter._id + '\n' + str(DesignParameter._type))
 
-        layer = visualItem._ItemTraits['_Layer']
-        if layer in self._layerItem:
-            self._layerItem[layer].append(visualItem)
-        else:
-            self._layerItem[layer] = [visualItem]
-
-        self._id_layer_mapping[DesignParameter._id] = layer
+        # layer = visualItem._ItemTraits['_Layer']
+        # if layer in self._layerItem:
+        #     self._layerItem[layer].append(visualItem)
+        # else:
+        #     self._layerItem[layer] = [visualItem]
+        #
+        # self._id_layer_mapping[DesignParameter._id] = layer
 
         return visualItem
 
     def updateVisualItemFromDesignParameter(self,DesignParameter):
         id = DesignParameter._id
-
         self.visualItemDict[id].updateTraits(DesignParameter._DesignParameter)
-        visualItem = self.visualItemDict[id]
-
-        self._layerItem[self._id_layer_mapping[id]].remove(visualItem)
-
-        layer = visualItem._ItemTraits['_Layer']
-        if layer in self._layerItem:
-            self._layerItem[layer].append(visualItem)
-        else:
-            self._layerItem[layer] = [visualItem]
-
-        self._id_layer_mapping[id] = layer
 
         if id in self.visualItemDict:
             self.visualItemDict[id].updateTraits(DesignParameter._DesignParameter)

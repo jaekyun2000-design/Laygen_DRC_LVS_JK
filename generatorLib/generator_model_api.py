@@ -1,8 +1,6 @@
 import glob, os, sys
 import sys, inspect
 
-os.chdir('../')
-
 sys.path.append('./generatorLib/generator_models')
 print("*********************Generator Library Loading Start")
 
