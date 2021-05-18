@@ -318,8 +318,9 @@ class _DesignVariableManagerWindow(QWidget):
          and then emitting signal to MainWindow serially
         :return: void (signal emission with created AST)
         """
-        _valueindex = inclusive_index[0]
-        _nameindex = _valueindex.siblingAtColumn(0)
+        _index = inclusive_index[0]
+        _nameindex = _index.siblingAtColumn(0)
+        _valueindex = _index.siblingAtColumn(1)
 
         _valueitemid = _valueindex.data()
         _nameitemid = _nameindex.data()
