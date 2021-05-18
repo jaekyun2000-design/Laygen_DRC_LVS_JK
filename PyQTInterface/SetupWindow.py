@@ -683,6 +683,143 @@ class _SRefSetupWindow(QWidget):
             self.destroy()
             self.send_Destroy_signal.emit('sw')
 
+class _TextSetupWindow(QWidget):
+
+    send_TextSetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+    send_TextDesign_signal = pyqtSignal(dict)
+    send_Destroy_signal = pyqtSignal(str)
+    send_Warning_signal = pyqtSignal(str)
+    send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+
+    def __init__(self,TextElement=None):
+        super().__init__()
+        self.initUI()
+        if TextElement == None:
+            self.visualItem = VisualizationItem._VisualizationItem()
+            self._DesignParameter = dict(
+                _DesignParametertype = 8,
+                _Layer = 127,
+                _TEXT = None,
+                _Width = None,
+                _XYCoordinates = [],
+                _Ignore = None,
+                _ElementName = None
+                )
+        else:
+            self._DesignParameter = TextElement._ItemTraits
+            self.updateUI()
+
+
+    def initUI(self):
+        okButton = QPushButton("OK",self)
+        cancelButton = QPushButton("Cancel",self)
+
+        okButton.clicked.connect(self.on_buttonBox_accepted)
+        cancelButton.clicked.connect(self.cancel_button_accepted)
+
+        self.text = None
+        self.width = None
+        self.XY_input = []
+
+        textLabel = QLabel("Text")
+        widthLabel = QLabel("Width")
+        XYLabel = QLabel("XY")
+
+        self.text_input = QLineEdit()
+        self.width_input = QLineEdit()
+        self.XY_input.append(QLineEdit())
+
+        self.setupVboxColumn1 = QVBoxLayout()
+        self.setupVboxColumn2 = QVBoxLayout()
+        setupBox = QHBoxLayout()
+
+        self.setupVboxColumn1.addWidget(textLabel)
+        self.setupVboxColumn1.addWidget(widthLabel)
+        self.setupVboxColumn1.addWidget(XYLabel)
+
+        self.setupVboxColumn2.addWidget(self.text_input)
+        self.setupVboxColumn2.addWidget(self.width_input)
+        self.setupVboxColumn2.addWidget(self.XY_input[0])
+
+        setupBox.addLayout(self.setupVboxColumn1)
+        setupBox.addLayout(self.setupVboxColumn2)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(2)
+        hbox.addWidget(okButton)
+        hbox.addWidget(cancelButton)
+        # hbox.addStretch(1)
+
+        vbox = QVBoxLayout()
+        vbox.addStretch(1)
+        vbox.addLayout(setupBox)
+        vbox.addStretch(3)
+        vbox.addLayout(hbox)
+        # vbox.addStretch(1)
+
+        self.setLayout(vbox)
+
+        self.setWindowTitle('Text Setup Window')
+        self.setGeometry(300,300,500,200)
+        self.show()
+
+
+    def updateUI(self):
+        pass
+
+    def cancel_button_accepted(self):
+        self.destroy()
+
+    def on_buttonBox_accepted(self):
+        for XY in self.XY_input:
+            if not XY.text():
+                break
+            else:
+                try:
+                    X = int(XY.text().split(',')[0])
+                    Y = int(XY.text().split(',')[1])
+                    self._DesignParameter['_XYCoordinates']=[[X,Y+float(self.width_input.text())]]
+                except:
+                    self.warning = QMessageBox()
+                    self.warning.setIcon(QMessageBox.Warning)
+                    self.warning.setText("Invalid XY Coordinates")
+
+        try:
+            self._DesignParameter['_ElementName'] = self.text_input.text()
+            if self._DesignParameter['_ElementName'] == '':
+                raise NotImplementedError
+            self._DesignParameter['_TEXT'] = self.text_input.text()
+            self._DesignParameter['_Width'] = float(self.width_input.text())
+            self.send_TextDesign_signal.emit(self._DesignParameter)
+            self.destroy()
+
+            # if type(self._DesignParameter['_XWidth']) == str:
+            #     self.warning = QMessageBox()
+            #     self.warning.setText("test")
+            #     self.warning.setIcon(QMessageBox.Warning)
+            #     self.warning.show()
+        except:
+            self.send_Warning_signal.emit("Invalid Design Parameter Input")     #log message
+            self.warning = QMessageBox()
+            self.warning.setText("Invalid design parameter or Name")
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.show()
+
+    def DetermineCoordinateWithMouse(self, _MouseEvent):
+        ##### When Click the point, adjust x,y locations #####
+        self.XY_input[0].setText(str(_MouseEvent.scenePos().toPoint().x())+','+str(_MouseEvent.scenePos().toPoint().y()))
+
+        self.visualItem.updateTraits(self._DesignParameter)
+        self.send_TextSetup_signal.emit(self.visualItem)
+
+    def keyPressEvent(self, QKeyEvent):
+        if QKeyEvent.key() == Qt.Key_Return:
+            self.on_buttonBox_accepted()
+            self.send_Destroy_signal.emit('txtw')
+        elif QKeyEvent.key() == Qt.Key_Escape:
+            self.destroy()
+            self.send_Destroy_signal.emit('txtw')
+
 class _ConstraintSetupWindow(QWidget):
 
     send_DesignConstraint_signal = pyqtSignal(dict)

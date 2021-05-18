@@ -56,6 +56,6 @@ class Manage_DV_by_id(QObject):
                     if type(self._info[key]) is str:
                         self.DVmanager[self._info[key]] = self._id
                         self.send_DV_signal.emit([self._info[key], None])
-                        self.send_DV2_signal.emit(self._info[key], 'id', self._id, 'add')
+                        self.send_DV2_signal.emit(self._info[key], 'id', self._id)
                     if key == 'elements':
                         self.send_DV3_signal.emit(self._id, self._info[key])

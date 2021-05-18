@@ -248,6 +248,12 @@ class _MainWindow(QMainWindow):
         srefButtonS = QPushButton("SRefSave",dockContentWidget1)
         srefButtonS.clicked.connect(self.makeSRefWindow)
 
+        TextButton = QPushButton("Text",dockContentWidget1)
+        TextButton.clicked.connect(self.makeTextWindow)
+
+        PinButton = QPushButton("Pin",dockContentWidget1)
+        PinButton.clicked.connect(self.makePinWindow)
+
         FilterButton = QPushButton("Filter",dockContentWidget1)
         FilterButton.clicked.connect(self.makeFilterWindow)
 
@@ -266,6 +272,8 @@ class _MainWindow(QMainWindow):
         vboxOnDock1.addWidget(pathButton)
         vboxOnDock1.addWidget(srefButtonL)
         vboxOnDock1.addWidget(srefButtonS)
+        vboxOnDock1.addWidget(TextButton)
+        vboxOnDock1.addWidget(PinButton)
         vboxOnDock1.addWidget(FilterButton)
         vboxOnDock1.addWidget(VariableButton)
         vboxOnDock1.addStretch(2)
@@ -736,6 +744,19 @@ class _MainWindow(QMainWindow):
 
         self.dockContentWidget4ForLoggingMessage._InfoMessage("Project Load Done")
 
+    def makeTextWindow(self):
+        self.txtw = SetupWindow._TextSetupWindow()
+        self.txtw.show()
+        self.txtw.send_TextSetup_signal.connect(self.updateGraphicItem)
+        self.txtw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
+        self.txtw.send_TextDesign_signal.connect(self.createNewDesignParameter)
+        self.txtw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
+        self.scene.send_xyCoordinate_signal.connect(self.txtw.DetermineCoordinateWithMouse)
+        self.txtw.send_Destroy_signal.connect(self.delete_obj)
+
+    def makePinWindow(self):
+        print('pin')
+        pass
 
     def makeFilterWindow(self):
         self.fw = FilterPractice._FilterWindow()
@@ -783,6 +804,8 @@ class _MainWindow(QMainWindow):
             del self.pw
         if obj == 'dv':
             del self.dv
+        if obj == 'txtw':
+            del self.txtw
         self.scene.itemListClickIgnore(False)
 
     def updateGraphicItem(self,graphicItem):
@@ -1018,8 +1041,9 @@ class _MainWindow(QMainWindow):
                     # self.vi = VisualizationItem._VisualizationItem()
                     # self.vi.updateDesignParameter(topcell[_newConstraintID])
 
-                    x = sref_vi.returnLayerDict()
-                    self.dockContentWidget1_2.updateLayerList(x)
+                    self._layerItem = sref_vi.returnLayerDict()
+
+                self.dockContentWidget1_2.updateLayerList(self._layerItem)
 
                     # for i in range(len(sref_vi.returnLayerDict()['PIMP'])):
                     #     print(sref_vi.returnLayerDict()['PIMP'][i]._ItemTraits)

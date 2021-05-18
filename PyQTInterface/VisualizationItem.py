@@ -472,7 +472,10 @@ class _VisualizationItem(QGraphicsItemGroup):
 
             elif self._ItemTraits['_DesignParametertype'] is 8:                #Text Case
                 if blockTraits['_Layer'] == 127:
-                    self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
+                    try:
+                        self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
+                    except:
+                        self.text = QGraphicsTextItem(blockTraits['_TEXT'])
                     self.text.setPos(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1])
                     self.text.setTransform(QTransform(1,0,0,-1,0,0))
 
