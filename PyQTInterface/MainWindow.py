@@ -639,14 +639,14 @@ class _MainWindow(QMainWindow):
             pass
 
     def encodeConstraint(self):
-        try:
+        # try:
             module = self._CurrentModuleName
             topAST = self._QTObj._qtProject._ParseTreeForDesignConstrain[module]._ast
             topAST = element_ast.ElementTransformer().visit(topAST)
             topAST = variable_ast.VariableTransformer().visit(topAST)
             code = astunparse.unparse(topAST)
             print(code)
-        except:
+        # except:
             print("encoding fail")
 
     def runConstraint(self):
@@ -967,6 +967,7 @@ class _MainWindow(QMainWindow):
                             topcell[_newConstraintID]._DesignParameter['_DesignLibraryName'] = value
                             topcell[_newConstraintID]._DesignParameter['_className'] = \
                                 generator_model_api.class_name_dict[_element._DesignParameter['_DesignLibraryName']]
+
                             topcell[_newConstraintID]._ElementName = _newConstraintID
                             topcell[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
                             topcell[_newConstraintID]._DesignParameter['_ElementName'] = _newConstraintID
