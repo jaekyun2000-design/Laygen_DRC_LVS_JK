@@ -778,7 +778,7 @@ class _TextSetupWindow(QWidget):
                 try:
                     X = int(XY.text().split(',')[0])
                     Y = int(XY.text().split(',')[1])
-                    self._DesignParameter['_XYCoordinates']=[[X,Y+float(self.width_input.text())]]
+                    self._DesignParameter['_XYCoordinates']=[[X,Y]]
                 except:
                     self.warning = QMessageBox()
                     self.warning.setIcon(QMessageBox.Warning)

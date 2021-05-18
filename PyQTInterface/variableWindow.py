@@ -399,7 +399,7 @@ class _DesignVariableManagerWindow(QWidget):
             self.updateList([DV, None], 'delete')
             self.selectedItem = None
 
-    def updateList(self, variable_info_list, tt=None):
+    def updateList(self, variable_info_list, _type=None):
         _name, _value = variable_info_list[0], variable_info_list[1]
         name, value = QStandardItem(_name), QStandardItem(_value)
         name.setEditable(False)
@@ -408,16 +408,16 @@ class _DesignVariableManagerWindow(QWidget):
         value.setTextAlignment(Qt.AlignCenter)
 
         if _name in self.idDict:
-            if tt == 'edit':
+            if _type == 'edit':
                 self.model.setItem(self.selectedRow, 1, value)
-            elif tt == 'delete':
+            elif _type == 'delete':
                 self.model.takeRow(self.selectedRow)
 
                 del self.idDict[_name]
             else:
                 pass
         else:
-            if tt == 'edit':
+            if _type == 'edit':
                 self.model.setItem(self.selectedRow, 0, name)
             else:
                 self.model.appendRow(name)

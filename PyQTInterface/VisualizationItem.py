@@ -267,7 +267,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
     def updateTraits(self,_DesignParameter):
         if self._ItemTraits['_XYCoordinates'] == None or len(self._ItemTraits['_XYCoordinates']) == 0 :
-            self._ItemTraits['_XYCoordinates'] = [[0,0]]
+            self._ItemTraits['_XYCoordinates'] = None
         else:
             pass
 
@@ -305,30 +305,32 @@ class _VisualizationItem(QGraphicsItemGroup):
             _multipleBlockFlag = False
 
 
-
-        for i in range(0,len(self.block)):
-            self.removeFromGroup(self.block[i])
-        if self._ItemTraits['_DesignParametertype'] == 1:
-            self.block = []
-            for xyPairs in self._ItemTraits['_XYCoordinates']:
-                self.blockGeneration(xyPairs)
-            self.setPos(0,0)
-        elif self._ItemTraits['_DesignParametertype'] == 2:
-            self.block = []
-            self.blockGeneration(self._ItemTraits['_XYCoordinates'])
-            self.setPos(0,0)
-        elif self._ItemTraits['_DesignParametertype'] == 3:
-            self.block = []
-            self.blockGeneration(self._ItemTraits['_XYCoordinates'])
-            self.setPos(0,0)
-        elif self._ItemTraits['_DesignParametertype'] == 8:
-            self.block = []
-            self.blockGeneration(self._ItemTraits['_XYCoordinates'])
-            self.setPos(0,0)
-        else:
-            self.block = []
-            self.blockGeneration()
-            self.setPos(0,0)
+        try:
+            for i in range(0,len(self.block)):
+                self.removeFromGroup(self.block[i])
+            if self._ItemTraits['_DesignParametertype'] == 1:
+                self.block = []
+                for xyPairs in self._ItemTraits['_XYCoordinates']:
+                    self.blockGeneration(xyPairs)
+                self.setPos(0,0)
+            elif self._ItemTraits['_DesignParametertype'] == 2:
+                self.block = []
+                self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+                self.setPos(0,0)
+            elif self._ItemTraits['_DesignParametertype'] == 3:
+                self.block = []
+                self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+                self.setPos(0,0)
+            elif self._ItemTraits['_DesignParametertype'] == 8:
+                self.block = []
+                self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+                self.setPos(0,0)
+            else:
+                self.block = []
+                self.blockGeneration()
+                self.setPos(0,0)
+        except:
+            pass
 
     def updateDesignObj(self,visualItem):
         self._ItemTraits['_VisualizationItems'].append(visualItem)
