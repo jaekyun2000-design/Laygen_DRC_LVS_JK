@@ -151,12 +151,15 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
         return tmp.body[0]
 
     def visit_Sref(self,node):
-        sentence = f"{node.name} = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(_DesignParameter = {node.parameters}, _Name = '{node.name}In{{}}'.format(_Name)))[0], _XYCoordinates = {node.XY})"
+        sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(_DesignParameter = " \
+                   f" dict( dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))," \
+                   f" ** {node.parameters})" \
+                   f", _Name = '{node.name}In{{}}'.format(_Name)), _XYCoordinates = {node.XY})[0]"
         tmp = ast.parse(sentence)
         return tmp.body[0]
 
     def visit_Text(self, node):
-        sentence = f"{node.id} = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+        sentence = f"self.{node.id} = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
  _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Presentation = {node.pres}, _Reflect = {node.reflect}, _XYCoordinates = {node.XY},\
  _Mag = {node.magnitude}, _Angle = {node.angle}, _TEXT = '{node.text}')"
         print(sentence)

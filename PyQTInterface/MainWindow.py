@@ -96,6 +96,7 @@ class _MainWindow(QMainWindow):
         self._id_layer_mapping = dict()
         self.dvstate = False
         self._ElementManager = element_manager.ElementManager()
+        self.library_manager = generator_model_api
 
     def initUI(self):
 
@@ -678,6 +679,7 @@ class _MainWindow(QMainWindow):
             file = open('./tmp.gds','wb')
             stream_data.write_binary_gds_stream(file)
             file.close()
+
             #
             # module = self._CurrentModuleName
             # topAST = self._QTObj._qtProject._ParseTreeForDesignConstrain[module]._ast

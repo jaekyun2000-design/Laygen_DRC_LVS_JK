@@ -29,6 +29,12 @@ class _StickDiagram:
     def __init__(self):
         pass
 
+    def exec_pass(self,code, library_manager):
+        for name in library_manager.class_name_dict:
+            locals()[name] = library_manager.libraries[name]
+
+        exec(code)
+
     def RoundupMinSnapSpacing(self, _DesignParameter=None, _MinSnapSpacing=None):
         if _DesignParameter ==None or _MinSnapSpacing ==None:
             raise user_define_exceptions.IncorrectInputError('_DesignParameter or _MinSnapSpacing has incorrect valuse')
