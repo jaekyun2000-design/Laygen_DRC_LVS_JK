@@ -301,6 +301,11 @@ class _VisualizationItem(QGraphicsItemGroup):
             self._ItemTraits['_Angle'] = _DesignParameter['_Angle']
             # for key in _DesignParameter['_ModelStructure']:
             #     self._ItemTraits['_VisualizationItems'].append(_DesignParameter['_ModelStructure'][key])
+        elif self._ItemTraits['_DesignParametertype'] == 8:
+            self._ItemTraits['_Width'] = _DesignParameter['_Mag']
+            self._ItemTraits['_Reflect'] = _DesignParameter['_Reflect']
+            self._ItemTraits['_Angle'] = _DesignParameter['_Angle']
+            pass
         if self._multipleBlockFlag == None:
             _multipleBlockFlag = False
 
@@ -348,7 +353,7 @@ class _VisualizationItem(QGraphicsItemGroup):
             _Layer = LayerReader._LayerMapping                      #Layer and Color Mapping
             _Layer2Name = LayerReader._LayerNameTmp
             DisplayInfo = DisplayReader._DisplayDict
-            if self._ItemTraits['_DesignParametertype'] == 1 or self._ItemTraits['_DesignParametertype'] == 2:
+            if self._ItemTraits['_DesignParametertype'] == 1 or self._ItemTraits['_DesignParametertype'] == 2 or self._ItemTraits['_DesignParametertype'] == 8:
                 if type(self._ItemTraits['_Layer']) == str:                         #When GUI Creates DesignParameter --> It has Layer Information in the form of "String" : ex) Met1, Met2, Via12, PIMP
                     blockTraits['_Layer'] =  _Layer[self._ItemTraits['_Layer']][0]     #Layer Number             --> Convert Name to Number
                     blockTraits['_LayerName'] =  _Layer[self._ItemTraits['_Layer']][2]  #Layer Original Name    --> Original Name is required to access color information
@@ -478,10 +483,26 @@ class _VisualizationItem(QGraphicsItemGroup):
                         self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
                     except:
                         self.text = QGraphicsTextItem(blockTraits['_TEXT'])
+                    # self.text.setTextWidth(blockTraits['_Width'])
+                    # self.text.setPoi
+                    # rect = QRectF(0,0,10000,blockTraits['_Width'])
+                    # self.text.boundingRect(rect)
+                    # self.text.adjustSize()
+                    if blockTraits['_Width'] < 1:
+                        fontSize = 1000 * blockTraits['_Width']
+                    else:
+                        fontSize = blockTraits['_Width']
+                    font = QFont('tmp', fontSize)
+                    self.text.setFont(font)
                     self.text.setPos(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1])
                     self.text.setTransform(QTransform(1,0,0,-1,0,0))
 
+                    _point = QGraphicsTextItem('X')
+                    _point.setFont(font)
+                    _point.setPos(blockTraits['_XYCoordinates'][0][0] - (4+fontSize*4/10), blockTraits['_XYCoordinates'][0][1] - (3+fontSize*7/10))
+
                     self.addToGroup(self.text)
+                    self.addToGroup(_point)
 
                     # text = QPainter()
                     # aa = QRectF(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1],100,100)
@@ -499,7 +520,31 @@ class _VisualizationItem(QGraphicsItemGroup):
                     # print("?")
 
                 else:
-                    pass
+                    layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+                    layer = layernum2name[str(blockTraits['_Layer'])]
+                    if 'PIN' in layer:
+                        try:
+                            self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
+                        except:
+                            self.text = QGraphicsTextItem(blockTraits['_TEXT'])
+                        # self.text.setTextWidth(blockTraits['_Width'])
+                        self.text.setDefaultTextColor(blockTraits['_Color'])
+                        if blockTraits['_Width'] < 1:
+                            fontSize = 1000 * blockTraits['_Width']
+                        else:
+                            fontSize = blockTraits['_Width']
+                        font = QFont('tmp', fontSize)
+                        self.text.setFont(font)
+                        self.text.setPos(blockTraits['_XYCoordinates'][0][0], blockTraits['_XYCoordinates'][0][1])
+                        self.text.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+
+                        _point = QGraphicsTextItem('X')
+                        _point.setDefaultTextColor(blockTraits['_Color'])
+                        _point.setFont(font)
+                        _point.setPos(blockTraits['_XYCoordinates'][0][0] - (4+fontSize*4/10), blockTraits['_XYCoordinates'][0][1] - (3+fontSize*7/10))
+
+                        self.addToGroup(self.text)
+                        self.addToGroup(_point)
 
             else:
                 print("WARNING1: Unvalid DataType Detected!")

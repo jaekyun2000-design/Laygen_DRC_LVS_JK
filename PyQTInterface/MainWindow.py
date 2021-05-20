@@ -762,8 +762,14 @@ class _MainWindow(QMainWindow):
         self.txtw.send_Destroy_signal.connect(self.delete_obj)
 
     def makePinWindow(self):
-        print('pin')
-        pass
+        self.pinw = SetupWindow._PinSetupWindow()
+        self.pinw.show()
+        self.pinw.send_PinSetup_signal.connect(self.updateGraphicItem)
+        self.pinw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
+        self.pinw.send_PinDesign_signal.connect(self.createNewDesignParameter)
+        self.pinw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
+        self.scene.send_xyCoordinate_signal.connect(self.pinw.DetermineCoordinateWithMouse)
+        self.pinw.send_Destroy_signal.connect(self.delete_obj)
 
     def makeFilterWindow(self):
         self.fw = FilterPractice._FilterWindow()
@@ -813,6 +819,8 @@ class _MainWindow(QMainWindow):
             del self.dv
         if obj == 'txtw':
             del self.txtw
+        if obj == 'pinw':
+            del self.pinw
         self.scene.itemListClickIgnore(False)
 
     def updateGraphicItem(self,graphicItem):
