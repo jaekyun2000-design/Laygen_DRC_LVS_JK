@@ -828,7 +828,12 @@ class QtProject:
             _GDSStreamObj = gds_stream.GDS_STREAM()
             with open("{}".format(_file), 'rb') as f:
                 _GDSStreamObj.read_binary_gds_stream(gds_file=f)
-
+            # try:
+            #     with open("{}".format(_file), 'rb') as f:
+            #         _GDSStreamObj.read_binary_gds_stream(gds_file=f)
+            # except:
+            #     print("No File Selected")
+            #     pass
             structure_order = _GDSStreamObj._STRUCTURES if _reverse is False else reversed(_GDSStreamObj._STRUCTURES)
             for _tmpStructure in structure_order:
                 # _tmpStructureName = _tmpStructure._STRNAME.strname.split('\x00', 1)[0]

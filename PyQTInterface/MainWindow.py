@@ -930,6 +930,10 @@ class _MainWindow(QMainWindow):
     def loadGDS(self):
         scf = QFileDialog.getOpenFileName(self,'Load GDS','./PyQTInterface/GDSFile')
         _fileName=scf[0]
+        if _fileName == '':
+            print("No File Selected")
+            return
+
         _moduleName = _fileName.replace(".gds","")
         _moduleName = _moduleName.split('/')[-1]
         originalModuleList = set(self._QTObj._qtProject._DesignParameter)
@@ -988,8 +992,11 @@ class _MainWindow(QMainWindow):
                         findHint = _newCellName.find(key)
                         if findHint != -1:
                             topcell[_newConstraintID]._DesignParameter['_DesignLibraryName'] = value
-                            topcell[_newConstraintID]._DesignParameter['_className'] = \
-                                generator_model_api.class_name_dict[_element._DesignParameter['_DesignLibraryName']]
+                            _className = generator_model_api.class_name_dict[_element._DesignParameter['_DesignLibraryName']]
+                            topcell[_newConstraintID]._DesignParameter['_className'] =_className
+                            topcell[_newConstraintID]._DesignParameter['_Parameters'] = \
+                                generator_model_api.class_dict[value]._ParametersForDesignCalculation
+
 
                             topcell[_newConstraintID]._ElementName = _newConstraintID
                             topcell[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
