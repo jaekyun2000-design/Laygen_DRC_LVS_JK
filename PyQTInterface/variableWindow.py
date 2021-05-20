@@ -408,7 +408,10 @@ class _DesignVariableManagerWindow(QWidget):
         value.setTextAlignment(Qt.AlignCenter)
 
         if _name in self.idDict:
-            if _type == 'edit':
+            if _type == 'add':
+                self.model.appendRow(name)
+                self.model.setItem(self.model.rowCount()-1,1,value)
+            elif _type == 'edit':
                 self.model.setItem(self.selectedRow, 1, value)
             elif _type == 'delete':
                 self.model.takeRow(self.selectedRow)
@@ -448,7 +451,7 @@ class _DesignVariableManagerWindow(QWidget):
 
 class _createNewDesignVariable(QWidget):
 
-    send_variable_signal = pyqtSignal(list)
+    send_variable_signal = pyqtSignal(list, str)
     variableDict = dict()
     idDict = dict()
 
@@ -493,8 +496,8 @@ class _createNewDesignVariable(QWidget):
         self.setLayout(vbox)
 
     def ok_clicked(self):
-        self.send_variable_signal.emit([self.name.text(), self.value.text()])
         self.addDVtodict(self.name.text(), type='value', value=self.value.text())
+        self.send_variable_signal.emit([self.name.text(), self.value.text()], 'add')
         self.destroy()
 
     def cancel_clicked(self):

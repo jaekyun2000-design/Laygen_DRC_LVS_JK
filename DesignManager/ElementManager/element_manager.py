@@ -84,7 +84,10 @@ class ElementManager:
                 elif key == 'angle':
                     tmpAST.__dict__[key] = dp_dict['_Angle']
                 elif key == 'text':
-                    tmpAST.__dict__[key] = dp_dict['_TEXT'].decode()
+                    try:
+                        tmpAST.__dict__[key] = dp_dict['_TEXT'].decode()
+                    except:
+                        tmpAST.__dict__[key] = dp_dict['_TEXT']
 
         else:
             return None, None
