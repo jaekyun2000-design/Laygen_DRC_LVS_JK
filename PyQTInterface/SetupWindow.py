@@ -775,22 +775,21 @@ class _TextSetupWindow(QWidget):
         self.destroy()
 
     def on_buttonBox_accepted(self):
-        for XY in self.XY_input:
-            if not XY.text():
-                self.warning = QMessageBox()
-                self.warning.setIcon(QMessageBox.Warning)
-                self.warning.setText("Invalid XY Coordinates")
-        else:
-                try:
-                    X = int(XY.text().split(',')[0])
-                    Y = int(XY.text().split(',')[1])
-                    self._DesignParameter['_XYCoordinates']=[[X,Y]]
-                except:
-                    self.warning = QMessageBox()
-                    self.warning.setIcon(QMessageBox.Warning)
-                    self.warning.setText("Invalid XY Coordinates")
-
         try:
+            for XY in self.XY_input:
+                if not XY.text():
+                    raise NotImplementedError
+            else:
+                    try:
+                        X = int(XY.text().split(',')[0])
+                        Y = int(XY.text().split(',')[1])
+                        self._DesignParameter['_XYCoordinates']=[[X,Y]]
+                    except:
+                        self.warning = QMessageBox()
+                        self.warning.setIcon(QMessageBox.Warning)
+                        self.warning.setText("Invalid XY Coordinates")
+                        self.warning.show()
+
             self._DesignParameter['_ElementName'] = self.text_input.text()
             if self._DesignParameter['_ElementName'] == '':
                 raise NotImplementedError

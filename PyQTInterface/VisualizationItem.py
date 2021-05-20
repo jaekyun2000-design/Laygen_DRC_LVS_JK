@@ -483,11 +483,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                         self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
                     except:
                         self.text = QGraphicsTextItem(blockTraits['_TEXT'])
-                    # self.text.setTextWidth(blockTraits['_Width'])
-                    # self.text.setPoi
-                    # rect = QRectF(0,0,10000,blockTraits['_Width'])
-                    # self.text.boundingRect(rect)
-                    # self.text.adjustSize()
+
                     if blockTraits['_Width'] < 1:
                         fontSize = 1000 * blockTraits['_Width']
                     else:
@@ -497,12 +493,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self.text.setPos(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1])
                     self.text.setTransform(QTransform(1,0,0,-1,0,0))
 
-                    _point = QGraphicsTextItem('X')
-                    _point.setFont(font)
-                    _point.setPos(blockTraits['_XYCoordinates'][0][0] - (4+fontSize*4/10), blockTraits['_XYCoordinates'][0][1] - (3+fontSize*7/10))
-
                     self.addToGroup(self.text)
-                    self.addToGroup(_point)
 
                     # text = QPainter()
                     # aa = QRectF(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1],100,100)
@@ -527,7 +518,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                             self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
                         except:
                             self.text = QGraphicsTextItem(blockTraits['_TEXT'])
-                        # self.text.setTextWidth(blockTraits['_Width'])
+
                         self.text.setDefaultTextColor(blockTraits['_Color'])
                         if blockTraits['_Width'] < 1:
                             fontSize = 1000 * blockTraits['_Width']
@@ -541,7 +532,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                         _point = QGraphicsTextItem('X')
                         _point.setDefaultTextColor(blockTraits['_Color'])
                         _point.setFont(font)
-                        _point.setPos(blockTraits['_XYCoordinates'][0][0] - (4+fontSize*4/10), blockTraits['_XYCoordinates'][0][1] - (3+fontSize*7/10))
+                        _point.setPos(blockTraits['_XYCoordinates'][0][0] - (4+fontSize*42/100), blockTraits['_XYCoordinates'][0][1] - (4+fontSize*64/100))
 
                         self.addToGroup(self.text)
                         self.addToGroup(_point)
