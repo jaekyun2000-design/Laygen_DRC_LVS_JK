@@ -3229,7 +3229,7 @@ class _FlatteningCell(QWidget):
     def __init__(self,  _hierarchydict):
         self.grouping = False
         try:
-            sys.path.append('O:\OneDrive - postech.ac.kr\GeneratorAutomation\VariableSuggestion-git')
+            sys.path.append('..\VariableSuggestion-git')
             import topAPI
             # topAPI.gds2generator.CellInspector()
             self.grouping = True

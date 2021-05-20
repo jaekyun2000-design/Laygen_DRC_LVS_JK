@@ -3,10 +3,11 @@ import os
 import traceback
 
 try:
-    sys.path.append('O:\OneDrive - postech.ac.kr\GeneratorAutomation\VariableSuggestion-git')
+    sys.path.append('..\VariableSuggestion-git')
     import topAPI
 except:
     traceback.print_exc()
+    sys.stderr.write("topAPI support failed\n")
     print("GDS2GEN topAPI module does not exist.")
 
 import multiprocessing as mp
@@ -653,6 +654,7 @@ class _MainWindow(QMainWindow):
             topAST = element_ast.ElementTransformer().visit(topAST)
             topAST = variable_ast.VariableTransformer().visit(topAST)
             code = astunparse.unparse(topAST)
+            return code
             print(code)
         except:
             print("encoding fail")
@@ -663,10 +665,13 @@ class _MainWindow(QMainWindow):
                 return
 
             self.gds2gen = topAPI.gds2generator.GDS2Generator(True)
+            self.gds2gen.load_qt_project(self)
             self.gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter,self._CurrentModuleName)
-            self.gds2gen.load_qt_design_constraints(self._QTObj._qtProject._DesignConstraint)
+            self.gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
+            # self.gds2gen.load_qt_design_constraints(self._QTObj._qtProject._DesignConstraint)
             self.gds2gen.set_root_cell(self._CurrentModuleName)
-            self.gds2gen.update_designparameter_by_user_variable()
+            # self.gds2gen.update_designparameter_by_user_variable()
+            self.gds2gen.run_qt_constraint_ast()
 
             stream_data = self.gds2gen.ready_for_top_cell()
             self.gds2gen.set_topcell_name('test')
@@ -1924,7 +1929,7 @@ class _CustomScene(QGraphicsScene):
             itemList = self.selectedItems()
             for item in itemList:
                 try:
-                    if item._ItemTraits['_DesignParametertype'] is not 3:
+                    if item._ItemTraits['_DesignParametertype'] != 3:
                         self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']])
                 except:
                     pass
