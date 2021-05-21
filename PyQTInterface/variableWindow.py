@@ -497,7 +497,7 @@ class _createNewDesignVariable(QWidget):
 
     def ok_clicked(self):
         self.addDVtodict(self.name.text(), type='value', value=self.value.text())
-        self.send_variable_signal.emit([self.name.text(), self.value.text()], 'add')
+        self.send_variable_signal.emit([self.name.text(), self.value.text()], self.add)
         self.destroy()
 
     def cancel_clicked(self):
@@ -520,14 +520,14 @@ class _createNewDesignVariable(QWidget):
             elif type == 'value':
                 self.variableDict[vid][type] = value
 
+            self.add = 'add'
+
         else:
-            if type == 'id':
-                self.idDict[DV][type].append(value)
-            elif type == 'value':
-                self.warning = QMessageBox()
-                self.warning.setIcon(QMessageBox.Warning)
-                self.warning.setText("This variable already exists")
-                self.warning.show()
+            self.add = None
+            self.warning = QMessageBox()
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.setText("This variable already exists")
+            self.warning.show()
 
         # print('varDict:',self.variableDict)
         # print('idDict:',self.idDict)
