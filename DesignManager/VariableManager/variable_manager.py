@@ -59,3 +59,6 @@ class Manage_DV_by_id(QObject):
                         self.send_DV2_signal.emit(self._info[key], 'id', self._id)
                     if key == 'elements':
                         self.send_DV3_signal.emit(self._id, self._info[key])
+class Variable_IDwithAST:
+    def __init__(self):
+        self.variableIDwithASTDict =dict()

@@ -232,14 +232,12 @@ class CustomQTableView(QTableView): ### QAbstractItemView class inherited
 
     def dataChanged(self, *args, **kwargs): #args[0] : topLeft, args[1]: bottomRight, args[2]: roles
         super(CustomQTableView, self).dataChanged(*args, **kwargs)
-
-        print("Variable data Changed")
         self.send_dataChanged_signal.emit(args)
 
 class _DesignVariableManagerWindow(QWidget):
 
     send_destroy_signal = pyqtSignal(str)
-    send_changedData_signal = pyqtSignal("PyQt_PyObject")
+    send_changedData_signal = pyqtSignal("PyQt_PyObject", str, dict)
     elementDict = dict()
 
     def __init__(self, itemDict):
@@ -326,13 +324,17 @@ class _DesignVariableManagerWindow(QWidget):
         _nameitemid = _nameindex.data()
 
         _changedvariabledict = dict(name=_nameitemid, value=_valueitemid)
+        for _vid, _varInfo in self.variableDict.items():
+            _varName = list(_varInfo.values())[0]
+            if (_changedvariabledict['name'].find(_varName)) != -1:
+                _vidOfChangedVar = _vid
 
-        print("################################################")
-        print("       CUSTOM Variable ast creation Start       ")
-        print("################################################")
 
+        print("###############################################################")
+        print("       CUSTOM Variable ast creation / Modification Start       ")
+        print("###############################################################")
         _ASTForVariable = ASTmodule._Custom_AST_API()
-        _ASTtype = 'ArgumentVariable'
+        _ASTtype = 'LogicExpression'
         _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
 
         try:
@@ -342,11 +344,7 @@ class _DesignVariableManagerWindow(QWidget):
                 _ASTobj.__dict__['name'] = _changedvariabledict['name']
                 _ASTobj.__dict__['value'] = _changedvariabledict['value']
 
-                self.send_changedData_signal.emit(_ASTobj)
-
-                print("################################################")
-                print("      CUSTOM Variable ast creation Done         ")
-                print("################################################")
+                self.send_changedData_signal.emit(_ASTobj,_vidOfChangedVar, _changedvariabledict)
 
         except:
             print("Value Initialization Fail")

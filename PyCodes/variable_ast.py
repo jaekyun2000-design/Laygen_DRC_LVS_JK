@@ -1,7 +1,7 @@
 import ast
 import astunparse
 
-custom_ast_list = ['GeneratorVariable', 'ArgumentVariable', 'ElementArray','DynamicElementArray','Distance']
+custom_ast_list = ['GeneratorVariable', 'LogicExpression', 'ElementArray','DynamicElementArray','Distance']
 
 class GeneratorVariable(ast.AST):
     def __init__(self, *args, **kwargs):
@@ -10,16 +10,36 @@ class GeneratorVariable(ast.AST):
     _fields = (
     )
 
-class ArgumentVariable(GeneratorVariable):
+class LogicExpression(GeneratorVariable):
+    """
+    LogicExpression class:
+    Variable declaration with initial deterministic value
+    Usage: 'name' = 'logic expression'
+    """
     def __init__(self, *args, **kwargs):
         super().__init__()
     _fields = (
-        'name', #(str)
-        'value', #(str)
+        'name',     # str
+        'value',    # str
     )
 
-
+class ArgumentVariable(GeneratorVariable):
+    """
+    ArgumentVariable class:
+    Argument declaration with empty value space
+    values will be assigned @ runtime referring Variable Manager administrated values
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'name'      # str
+    )
 class ElementArray(GeneratorVariable):
+    """
+    ElementArray class:
+    Array declaration
+    encoded python code will be expressed w/ a loop
+    """
     def __init__(self, *args, **kwargs):
         super().__init__()
     _fields = (
@@ -61,117 +81,16 @@ class VariableTransformer(ast.NodeTransformer):
         tmp = ast.parse(sentence)
         return tmp.body
 
-    def visit_ArgumentVariable(self,node):
+    def visit_LogicExpression(self,node):
         sentence = f"{node.name} = {node.value}"
         # print(sentence)
         tmp = ast.parse(sentence)
         return tmp.body
 
-        ###### Below is the genuine ast format of Element array : Do not delete #######
-
-        # return [
-        #     ast.For(
-        #         target=ast.Tuple(
-        #             elts = [
-        #                 ast.Name(
-        #                     id='i'
-        #                 ),
-        #                 ast.Name(
-        #                     id='element'
-        #                 ),
-        #             ]
-        #         ),
-        #         iter=ast.Call(
-        #             func = ast.Name(
-        #                 id = 'enumerate'
-        #             ),
-        #             args = [
-        #                 ast.Name(
-        #                     id=node.elements
-        #                 )
-        #             ],
-        #             keywords = []
-        #         ),
-        #         body = [
-        #             ast.Assign(
-        #                 targets = [
-        #                     ast.Subscript(
-        #                         value=ast.Subscript(
-        #                             value = ast.Attribute(
-        #                                 value = ast.Name(
-        #                                     id = 'self'
-        #                                 ),
-        #                                 attr = '_DesignParameter'
-        #                             ),
-        #                             slice = ast.Index(
-        #                                 value = ast.Name(
-        #                                     id = 'element'
-        #                                 )
-        #                             )
-        #                         ),
-        #                         slice = ast.Index(
-        #                             value = ast.Str(
-        #                                 s = '_XYCoordinates'
-        #                             )
-        #                         )
-        #                     )
-        #                 ],
-        #                 value = ast.List(
-        #                     elts = [
-        #                         ast.BinOp(
-        #                             # left = ast.Subscript(
-        #                             #     value = ast.Name(
-        #                             #         id = 'XY'
-        #                             #     ),
-        #                             #     slice = ast.Index(
-        #                             #         value = ast.Num(
-        #                             #             n = 0
-        #                             #         )
-        #                             #     ),
-        #                             # ),
-        #                             left = ast.Num(
-        #                                 n = node.XY[0][0]
-        #                             ),
-        #                             op=ast.Add()
-        #                             ,
-        #                             right = ast.BinOp(
-        #                                 left = ast.Name(
-        #                                     id = 'i'
-        #                                 ),
-        #                                 op = ast.Mult()
-        #                                 ,
-        #                                 right = ast.Name(
-        #                                     id = int( node.x_space_distance)
-        #                                 )
-        #                             )
-        #                         ),
-        #                         ast.BinOp(
-        #                             left = ast.Num(
-        #                                 n = node.XY[0][1]
-        #                             ),
-        #                             op = ast.Add()
-        #                             ,
-        #                             right = ast.BinOp(
-        #                                 left=ast.Name(
-        #                                     id='i'
-        #                                 ),
-        #                                 op=ast.Mult()
-        #                                 ,
-        #                                 right=ast.Name(
-        #                                     id = int(node.y_space_distance)
-        #                                 )
-        #                             )
-        #                         )
-        #                     ]
-        #                 )
-        #             )
-        #         ],
-        #         orelse = []
-        #     )
-        # ]
-
-
-
+    def visit_ArgumentVariable(self,node):
+        sentence = f"{node.name} = None"
+        tmp = ast.parse(sentence)
+        return tmp.body
 
 if __name__ == '__main__':
     ea = ElementArray()

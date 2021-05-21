@@ -96,6 +96,7 @@ class _MainWindow(QMainWindow):
         self._id_layer_mapping = dict()
         self.dvstate = False
         self._ElementManager = element_manager.ElementManager()
+        self._VariableIDwithAST = variable_manager.Variable_IDwithAST()
         self.library_manager = generator_model_api
 
     def initUI(self):
