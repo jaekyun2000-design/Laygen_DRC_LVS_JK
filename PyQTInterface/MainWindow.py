@@ -97,7 +97,6 @@ class _MainWindow(QMainWindow):
         self.dvstate = False
         self._ElementManager = element_manager.ElementManager()
         self._VariableIDwithAST = variable_manager.Variable_IDwithAST()
-        self.library_manager = generator_model_api
 
     def initUI(self):
 
@@ -656,10 +655,8 @@ class _MainWindow(QMainWindow):
             topAST = element_ast.ElementTransformer().visit(topAST)
             topAST = variable_ast.VariableTransformer().visit(topAST)
             code = astunparse.unparse(topAST)
-            return code
             print(code)
         except:
-            traceback.print_exc()
             print("encoding fail")
 
     def runConstraint(self):
@@ -668,20 +665,16 @@ class _MainWindow(QMainWindow):
                 return
 
             self.gds2gen = topAPI.gds2generator.GDS2Generator(True)
-            self.gds2gen.load_qt_project(self)
             self.gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter,self._CurrentModuleName)
-            self.gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
-            # self.gds2gen.load_qt_design_constraints(self._QTObj._qtProject._DesignConstraint)
+            self.gds2gen.load_qt_design_constraints(self._QTObj._qtProject._DesignConstraint)
             self.gds2gen.set_root_cell(self._CurrentModuleName)
-            # self.gds2gen.update_designparameter_by_user_variable()
-            self.gds2gen.run_qt_constraint_ast()
+            self.gds2gen.update_designparameter_by_user_variable()
 
             stream_data = self.gds2gen.ready_for_top_cell()
             self.gds2gen.set_topcell_name('test')
             file = open('./tmp.gds','wb')
             stream_data.write_binary_gds_stream(file)
             file.close()
-
             #
             # module = self._CurrentModuleName
             # topAST = self._QTObj._qtProject._ParseTreeForDesignConstrain[module]._ast
@@ -1391,8 +1384,14 @@ class _MainWindow(QMainWindow):
                 self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: Source Code syntax error")
 
 
-    def createNewConstraintAST(self,_AST):
-
+    def createNewConstraintAST(self,_AST,_vid, _changedVariableDict):
+        """
+        Creates / Modifies Constraints(AST)
+        :param _AST:
+        :param _vid:
+        :param _changedVariableDict:
+        :return:
+        """
         if self._QTObj._qtProject == None:
             self.warning=QMessageBox()
             self.warning.setText("There is no Project")
@@ -1404,17 +1403,49 @@ class _MainWindow(QMainWindow):
             self.warning.show()
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: There is no Module")
         else:
-            design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= _AST)
-            self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
-                                                             _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+            if _vid in self._VariableIDwithAST.variableIDwithASTDict.keys():    # AST Edit Mode
+                ############ Orignal Value Extraction from _vid Info #####################
+                _originalName = self._VariableIDwithAST.variableIDwithASTDict[_vid].name
+                _originalValue = self._VariableIDwithAST.variableIDwithASTDict[_vid].value
 
-            try:
-                if design_dict['parameter']:
-                    visualItem = self.createVisualItemfromDesignParameter(
-                        self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
-                    self.updateGraphicItem(visualItem)
-            except:
-                print("Invalid design parameter dict")
+                ######################## Constraint(AST) Edition ##########################
+                _Constraints = self._QTObj._qtProject._DesignConstraint
+                moduleName = list(_Constraints.values())[0]
+                for _, module in moduleName.items():
+                    if module._ast.name == _originalName:
+                        module._ast.name = _changedVariableDict['name']
+                        module._ast.value = _changedVariableDict['value']
+                        try:    # Case when changed Item is in the left dockWidget(3)
+                            _changedItem = self.dockContentWidget3.model.findItems(module._id, column = 1)[0]
+                            _changedItemIndex = self.dockContentWidget3.model.indexFromItem(_changedItem)
+                            self.dockContentWidget3.refreshItem(_changedItemIndex)
+                        except:                   # Case when changed Item is in the right dockWidget(3_2)
+                            try:
+                                _changedItem = self.dockContentWidget3_2.model.findItems(module._id, column=1)[0]
+                                _changedItemIndex = self.dockContentWidget3_2.model.indexFromItem(_changedItem)
+                                self.dockContentWidget3_2.refreshItem(_changedItemIndex)
+                            except:
+                                raise NotImplementedError
+                                return
+
+                        print("###############################################################")
+                        print("               CUSTOM Variable ast Modification Done           ")
+                        print("###############################################################")
+            else:        # New AST Creation Mode
+                design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= _AST)
+                self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
+                                                                 _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+                self._VariableIDwithAST.variableIDwithASTDict[_vid] = _AST
+                print("###############################################################")
+                print("               CUSTOM Variable ast Creation Done               ")
+                print("###############################################################")
+                try:
+                    if design_dict['parameter']:
+                        visualItem = self.createVisualItemfromDesignParameter(
+                            self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
+                        self.updateGraphicItem(visualItem)
+                except:
+                    print("Invalid design parameter dict")
 
 
 
@@ -1942,7 +1973,7 @@ class _CustomScene(QGraphicsScene):
             itemList = self.selectedItems()
             for item in itemList:
                 try:
-                    if item._ItemTraits['_DesignParametertype'] != 3:
+                    if item._ItemTraits['_DesignParametertype'] is not 3:
                         self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']])
                 except:
                     pass
