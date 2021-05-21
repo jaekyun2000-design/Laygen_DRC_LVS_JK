@@ -2566,13 +2566,15 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                     #currentItemType.setText(_itemType)
                 index = self.currentIndex()
 
-                #try:
-                self.refreshItem(index)
-                print("debug:receiveDone")
-                self.send_RecieveDone_signal.emit()
-                #except:
-                 #   print("Somehow failed Refresh")
-                  #  pass
+                try:
+                    self.refreshItem(index)
+                    print("debug:receiveDone")
+                    self.send_RecieveDone_signal.emit()
+                except:
+                    import traceback
+                    traceback.print_exc()
+                    print("Somehow failed Refresh")
+                    pass
 
     def refreshItem(self,itemIndex):  #Refresh Design Constraint
 
@@ -3071,7 +3073,8 @@ class _ConstraintModel(QStandardItemModel):
         #test,, delete code order change...
         #When dictionary field double clicked, it has some problems
         for row in range(0,motherItem.rowCount()):
-            motherItem.removeRows(0)
+            print(motherItem.rowCount())
+            motherItem.removeRow(0)
 
         for childAST in _AST.__dict__[key]:   #### childConstraint is item in list!
             if type(childAST) == list:
