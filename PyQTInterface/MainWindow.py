@@ -658,6 +658,7 @@ class _MainWindow(QMainWindow):
             return code
             print(code)
         except:
+            traceback.print_exc()
             print("encoding fail")
 
     def runConstraint(self):
