@@ -1046,8 +1046,9 @@ class _MainWindow(QMainWindow):
                 if topcell[_newConstraintID]._DesignParameter['_DesignParametertype'] != 3:
                     visualItem = self.createVisualItemfromDesignParameter(topcell[_newConstraintID])
                     visual_item_list.append(visualItem)
-                    layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-                    layer = layernum2name[str(tmp_dp_dict['_Layer'])]
+                    # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+                    # layer = layernum2name[str(tmp_dp_dict['_Layer'])]
+                    layer = tmp_dp_dict['_Layer']
                     if layer in self._layerItem:
                         self._layerItem[layer].append(visualItem)
                     else:

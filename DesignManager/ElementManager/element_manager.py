@@ -1,6 +1,7 @@
 from PyCodes import element_ast, variable_ast
 from PyCodes import ASTmodule
 from PyCodes import userDefineExceptions
+from PyQTInterface.layermap import LayerReader
 
 class ElementManager:
     def __init__(self):
@@ -17,7 +18,13 @@ class ElementManager:
                 if key == 'name':
                     tmpAST.__dict__[key] = dp_dict['_ElementName']
                 elif key == 'layer':
-                    tmpAST.__dict__[key] = dp_dict['_Layer']
+                    if type(dp_dict['_Layer']) == str:
+                        tmpAST.__dict__[key] = dp_dict['_Layer']
+                    elif type(dp_dict['_Layer']) == int:
+                        layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+                        tmpAST.__dict__[key] = layernum2name[str(dp_dict['_Layer'])]
+                    else:
+                        pass
                 elif key == 'XY':
                     tmpAST.__dict__[key] = dp_dict['_XYCoordinates']
                 elif key == 'width':
