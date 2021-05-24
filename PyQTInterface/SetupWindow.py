@@ -2298,6 +2298,16 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.EditMode = False
         self.setAnimated(True)
 
+        #########WIP tb for combobox#########
+        # index = self.model.index(0,0,QModelIndex())
+        # self.model.setData(index,"a")
+        # combo_degelate = ComboDelegate(self,['a','b'])
+        # self.setItemDelegateForColumn(4,combo_degelate)
+        # self.show()
+        # self.model.appendRow([QStandardItem('aa'),QStandardItem('aa'),QStandardItem('aa')])
+        # self.openPersistentEditor(self.model.index(0,4))
+
+
     def initUI(self,type):
         self.model = _ConstraintModel()
         if type == "Hierarchy":
@@ -2307,6 +2317,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.model.setHeaderData(1,Qt.Horizontal,"Constraint ID")
         self.model.setHeaderData(2,Qt.Horizontal,"Constraint Type")
         self.model.setHeaderData(3,Qt.Horizontal,"Value")
+        self.model.setHeaderData(4,Qt.Horizontal,"fcn_type")
 
         self.setModel(self.model)
 
@@ -2314,7 +2325,19 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
     def createNewConstraintAST(self,_id , _parentName, _DesignConstraint):
         self._DesignConstraintFromQTobj = _DesignConstraint
-        self.model.createNewColumnWithID(_id=_id, _parentName=_parentName, _DesignConstraint = _DesignConstraint)
+        rc = self.model.createNewColumnWithID(_id=_id, _parentName=_parentName, _DesignConstraint = _DesignConstraint)
+
+        if _DesignConstraint[_parentName][_id]._type == 'Sref':
+            sref_item = self.model.item(rc,0)
+            calculate_name_item = sref_item.child(4,4) #row=4 for calculate_fcn in Sref ast
+            idx = self.model.indexFromItem(calculate_name_item).siblingAtColumn(4)
+            fcn_list = list(generator_model_api.class_function_dict[_DesignConstraint[_parentName][_id]._ast.library].keys())
+            combo_delegetor = ComboDelegate(self,fcn_list)
+            self.setItemDelegateForColumn(4,combo_delegetor)
+            # idx = self.model.index(rc,3,QModelIndex())
+            # self.model.appendRow([QStandardItem('aa')])
+            # self.openPersistentEditor(self.model.index(rc,3))
+            self.openPersistentEditor(idx)
 
 
     def UpdateSelectedItem(self, item):
@@ -2705,7 +2728,7 @@ class _ConstraintModel(QStandardItemModel):
         self._ConstraintDict = dict()
         self._ConstraintItem = dict()
         self._Root = None
-        self.setColumnCount(4)
+        self.setColumnCount(5)
         # self.testInitial()
 
     def readConstraint(self,rootConstraint):
@@ -2727,11 +2750,11 @@ class _ConstraintModel(QStandardItemModel):
         if rc == None:
             rc = self.rowCount()
 
-
-        self.insertRow(rc, [tmpConstraintType, QStandardItem(_id), QStandardItem(_type),QStandardItem() ])
+        self.insertRow(rc, [tmpConstraintType, QStandardItem(_id), QStandardItem(_type),QStandardItem(), QStandardItem() ])
         # Item Field:  0-> PlaceHolder Type , 1-> _id , 2-> Content Type , 3 -> value
         #self._ConstraintNameList.append(constraintName)
         self.readParseTreeWtihAST(motherItem=tmpConstraintType, _AST= _DesignConstraint[_parentName][_id]._ast)
+        return rc
 
     def updateRowChildWithAST(self,_DesignConstraint,rc=None,motherIndex=None):
         if motherIndex == None:                                             #When There is no parent  (It Creats a New Row)
@@ -3055,7 +3078,7 @@ class _ConstraintModel(QStandardItemModel):
                 tmpD = QStandardItem(_constraintValue)
 
                 # tmpA.appendRow([QStandardItem("hi"),QStandardItem("test")])
-                motherItem.appendRow([tmpA, tmpB, tmpC, tmpD])
+                motherItem.appendRow([tmpA, tmpB, tmpC, tmpD, QStandardItem()])
 
     def readParseTreeForMultiChildren(self,motherItem=None,_AST = None,key=None):
         checkChild = self.findChildrenWithText(motherItem,key,column=0)   #If Constraint has child constraint, then show Constraint Name for Child constraint.
@@ -3510,6 +3533,38 @@ class _FlatteningCell(QWidget):
             siblingcheckbox.setText('OFF')
             siblingcombobox.setEnabled(True)
 
+class ComboDelegate(QItemDelegate):
+    def __init__(self,parent,create_fcn_list):
+        super(ComboDelegate, self).__init__(parent)
+        self.create_fcn_list = create_fcn_list
+
+    def createEditor(self, parent: QWidget, option: 'QStyleOptionViewItem', index: QModelIndex) -> QWidget:
+        combo_box = QComboBox(parent)
+        # row = index.row()
+        for fcn_name in self.create_fcn_list:
+            combo_box.addItem(fcn_name)
+        return combo_box
+
+    def setEditorData(self, editor: QWidget, index: QModelIndex) -> None:
+        current_text = index.data(Qt.EditRole)
+        combo_idx = editor.findText(current_text)
+        if combo_idx >= 0 :
+            editor.setCurrentIndex(combo_idx)
+
+    def setModelData(self, editor: QWidget, model: QAbstractItemModel, index: QModelIndex) -> None:
+        model.setData(index, editor.currentText(), Qt.EditRole)
+    # def setModelData(self, editor: QWidget, model: QtCore.QAbstractItemModel, index: QtCore.QModelIndex) -> None:
+    #     model.setData(index,editor.currentText())
+    #
+    # def setEditorData(self, editor: QWidget, index: QtCore.QModelIndex) -> None:
+    #     text = index.model().data(index).toString()
+    #     combo_idx = comboitems
+
+# class CheckboxDelegate(QStyledItemDelegate):
+#     def __init__(self):
+#         super(CheckboxDelegate, self).__init__()
+#
+#     def paint(self):
 
 def get_id_return_module(id : str, type : str, moduleDict):
     """

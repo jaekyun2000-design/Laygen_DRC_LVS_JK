@@ -2,6 +2,7 @@ from PyCodes import element_ast, variable_ast
 from PyCodes import ASTmodule
 from PyCodes import userDefineExceptions
 from PyQTInterface.layermap import LayerReader
+from generatorLib import generator_model_api
 
 class ElementManager:
     def __init__(self):
@@ -61,6 +62,8 @@ class ElementManager:
                     tmpAST.__dict__[key] = dp_dict['_className']
                 elif key == 'XY':
                     tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]
+                elif key == 'calculate_fcn':
+                    tmpAST.__dict__[key] = list(generator_model_api.class_function_dict[dp_dict['_DesignLibraryName']].keys())[0]
                 elif key == 'parameters':
                     tmpAST.__dict__[key] = dp_dict['_Parameters']
 
