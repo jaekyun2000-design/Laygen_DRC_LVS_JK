@@ -237,6 +237,7 @@ class CustomQTableView(QTableView): ### QAbstractItemView class inherited
 class _DesignVariableManagerWindow(QWidget):
 
     send_destroy_signal = pyqtSignal(str)
+    send_vid_name_signal = pyqtSignal(list)
     send_changedData_signal = pyqtSignal("PyQt_PyObject", str, dict)
     elementDict = dict()
 
@@ -328,7 +329,6 @@ class _DesignVariableManagerWindow(QWidget):
             _varName = list(_varInfo.values())[0]
             if (_changedvariabledict['name'].find(_varName)) != -1:
                 _vidOfChangedVar = _vid
-
 
         print("###############################################################")
         print("       CUSTOM Variable ast creation / Modification Start       ")

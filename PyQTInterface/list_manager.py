@@ -4,6 +4,7 @@ from PyQTInterface.layermap import LayerReader
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
+from PyQt5.QtCore import pyqtSignal
 
 import traceback
 
@@ -12,6 +13,9 @@ import traceback
 #     layer_visible_flag_dict[layer] = True
 
 class _ManageList(QTableView):
+
+    send_listInLayer_signal = pyqtSignal(list)
+
     def __init__(self):
         super().__init__()
         self._layerList = list()
@@ -94,6 +98,8 @@ class _ManageList(QTableView):
                             x.setFlag(QGraphicsItem.ItemIsSelectable, False)
                         except:
                             continue
+                    self.send_listInLayer_signal.emit(Visualitem)
+
 
                 elif item.checkState() == 2:
                     for x in Visualitem:

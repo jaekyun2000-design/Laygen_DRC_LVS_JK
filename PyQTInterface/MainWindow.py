@@ -1179,6 +1179,12 @@ class _MainWindow(QMainWindow):
             self.updateGraphicItem(visualItem)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Design Parameter Created")
 
+            vi = VisualizationItem._VisualizationItem()
+            self._layerItem = vi.returnLayerDict()
+
+            self.dockContentWidget1_2.send_listInLayer_signal.connect(self.scene.getNonselectableLayerList)
+            self.dockContentWidget1_2.updateLayerList(self._layerItem)
+
             try:
                 if design_dict['constraint']:
                     self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
@@ -1830,7 +1836,10 @@ class _CustomScene(QGraphicsScene):
         self.listIgnoreFlag = False
         self.oldPos = QPointF(0,0)
         self.itemList = list()
+        self.nslist = list()
 
+    def getNonselectableLayerList(self, _layerlist):
+        self.nslist = _layerlist
 
     def mousePressEvent(self, event):
         _RectBlock_list = list()
@@ -1839,6 +1848,10 @@ class _CustomScene(QGraphicsScene):
         #         _RectBlock_list.append(self.items(event.scenePos())[i])
         #     else:
         #         pass
+        for layer in self.nslist:
+            if layer in self.itemList:
+                self.itemList.remove(layer)
+
         if len(self.selectedItems()) != 0:
             selected = self.selectedItems()
             for i in range(len(selected)):
