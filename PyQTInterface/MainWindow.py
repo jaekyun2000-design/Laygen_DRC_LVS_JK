@@ -1,3 +1,4 @@
+import ast
 import sys
 import os
 import traceback
@@ -652,7 +653,11 @@ class _MainWindow(QMainWindow):
     def encodeConstraint(self):
         try:
             module = self._CurrentModuleName
-            topAST = self._QTObj._qtProject._ParseTreeForDesignConstrain[module]._ast
+            # topAST = self._QTObj._qtProject._ParseTreeForDesignConstrain[module]._ast
+            constraint_names = self.dockContentWidget3.model.findItems('',Qt.MatchContains,1)
+            constraint_ids = [item.text() for item in constraint_names]
+            topAST = ast.Module()
+            topAST.body = [self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids]
             topAST = element_ast.ElementTransformer().visit(topAST)
             topAST = variable_ast.VariableTransformer().visit(topAST)
             code = astunparse.unparse(topAST)

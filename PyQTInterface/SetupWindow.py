@@ -2296,6 +2296,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.removeFlag = False
 
         self.EditMode = False
+        self.setAnimated(True)
 
     def initUI(self,type):
         self.model = _ConstraintModel()
@@ -2333,8 +2334,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         ################# 3rd step is Unnecessary ########## 3> If class has parent : it update same-hierarchy value for parent
         ###################################################################
         #0 : placeholder, #1 : ID, #2: ConstraintRealType, #3: value
-
-
+        # a = self.model.findItems('',Qt.MatchContains,1)
+        # ids = [item.text() for item in a]
         try:
             ###Step 1 update value#####################################
             itemIDitem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))     #ID
