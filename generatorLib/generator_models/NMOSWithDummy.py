@@ -178,14 +178,14 @@ class _NMOS(StickDiagram._StickDiagram):
         self._DesignParameter['_NPLayer']['_YWidth'] = self._DesignParameter['_POLayer']['_YWidth'] + 2 * _DRCObj._NpMinEnclosureOfPo
 
 
-        self._DesignParameter['_NLVTlayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['NLVT'][0],
-                                                    _Datatype=DesignParameters._LayerMapping['NLVT'][1],
-                                                    _XYCoordinates=[], _XWidth=400, _YWidth=400)
-        self._DesignParameter['_NLVTlayer']['_XYCoordinates'] = _XYCoordinateOfNMOS
-        self._DesignParameter['_NLVTlayer']['_XWidth'] = self._DesignParameter['_ODLayer']['_XWidth'] + 2 * _DRCObj._NpMinExtensiononNactive if _NMOSDummy == False else \
-            self._DesignParameter['_NLVTlayer']['_XWidth'] + abs(self._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0] -self._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0]) + 2 * _DRCObj._NpMinEnclosureOfPo
-        self._DesignParameter['_NLVTlayer']['_YWidth'] = self._DesignParameter['_POLayer'][
-                                                           '_YWidth'] + 2 * _DRCObj._NpMinEnclosureOfPo
+        # self._DesignParameter['_NLVTlayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['NLVT'][0],
+        #                                             _Datatype=DesignParameters._LayerMapping['NLVT'][1],
+        #                                             _XYCoordinates=[], _XWidth=400, _YWidth=400)
+        # self._DesignParameter['_NLVTlayer']['_XYCoordinates'] = _XYCoordinateOfNMOS
+        # self._DesignParameter['_NLVTlayer']['_XWidth'] = self._DesignParameter['_ODLayer']['_XWidth'] + 2 * _DRCObj._NpMinExtensiononNactive if _NMOSDummy == False else \
+        #     self._DesignParameter['_NLVTlayer']['_XWidth'] + abs(self._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0] -self._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0]) + 2 * _DRCObj._NpMinEnclosureOfPo
+        # self._DesignParameter['_NLVTlayer']['_YWidth'] = self._DesignParameter['_POLayer'][
+        #                                                    '_YWidth'] + 2 * _DRCObj._NpMinEnclosureOfPo
 
         if DesignParameters._Technology=='180nm':
             print('#############################     WELLBODY Layer Calculation    #########################################')

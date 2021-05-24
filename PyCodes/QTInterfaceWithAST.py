@@ -1778,7 +1778,8 @@ class QtProject:
             except:
                 return userDefineExceptions._UnkownError
 
-    def _update_design_dictionary(self, module_name: str, id: str, _dp_dict: dict, element_manager_update: bool = True) -> dict:
+    def _update_design_dictionary(self, module_name: str, id: str, _dp_dict: dict,
+                                  element_manager_update: bool = True) -> dict:
         # _createNewDesignParameter_by_dict(self, module_name, _dp_dict, element_manager_update=True):
         """
         :param module_name:  current module name
@@ -1793,60 +1794,13 @@ class QtProject:
             return userDefineExceptions._InvalidInputError
         else:
             try:
-                if module_name in self._DesignParameter:
-                    for key in _dp_dict:
-                        self._DesignParameter[module_name][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
-                    self._DesignParameter[module_name][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
+                for key in _dp_dict:
+                    self._DesignParameter[module_name][id]._setDesignParameterValue(_index=key, _value=_dp_dict[key])
+                self._DesignParameter[module_name][id]._setDesignParameterName(
+                    _DesignParameterName=_dp_dict['_DesignParameterName'])
 
-                    # send design parameter info to element manager --> return: ast info or
-                    _designParameter = self._DesignParameter[module_name][id]
-                    _tmpmodule = None
-                else:
-                    if _dp_dict['_ElementName'] in self._DesignParameter['PMOSInINV']:
-                        _tmpmodule = 'PMOSInINV'
-                    elif _dp_dict['_ElementName'] in self._DesignParameter['NMOSInINV']:
-                        _tmpmodule = 'NMOSInINV'
-                    elif _dp_dict['_ElementName'] in self._DesignParameter['INV']:
-                        _tmpmodule = 'INV'
-                    else:
-                        _tmpmodule = 'else'
-
-                if _tmpmodule == 'PMOSInINV':
-                    for key in _dp_dict:
-                        self._DesignParameter['PMOSInINV'][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
-                    self._DesignParameter['PMOSInINV'][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
-
-                    # send design parameter info to element manager --> return: ast info or
-                    _designParameter = self._DesignParameter['PMOSInINV'][id]
-                elif _tmpmodule == 'NMOSInINV':
-                    for key in _dp_dict:
-                        self._DesignParameter['NMOSInINV'][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
-                    self._DesignParameter['NMOSInINV'][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
-
-                    # send design parameter info to element manager --> return: ast info or
-                    _designParameter = self._DesignParameter['NMOSInINV'][id]
-                elif _tmpmodule == 'INV':
-                    for key in _dp_dict:
-                        self._DesignParameter['INV'][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
-                    self._DesignParameter['INV'][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
-
-                    # send design parameter info to element manager --> return: ast info or
-                    _designParameter = self._DesignParameter['INV'][id]
-                elif _tmpmodule == 'else':
-                    for key in _dp_dict:
-                        self._DesignParameter[_dp_dict['_ElementName'][:-1]][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
-                    self._DesignParameter[_dp_dict['_ElementName'][:-1]][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
-
-                    # send design parameter info to element manager --> return: ast info or
-                    _designParameter = self._DesignParameter[_dp_dict['_ElementName'][:-1]][id]
-                else:
-                    for key in _dp_dict:
-                        self._DesignParameter[module_name][id]._setDesignParameterValue(_index=key,_value=_dp_dict[key])
-                    self._DesignParameter[module_name][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
-
-                    # send design parameter info to element manager --> return: ast info or
-                    _designParameter = self._DesignParameter[module_name][id]
-
+                # send design parameter info to element manager --> return: ast info or
+                _designParameter = self._DesignParameter[module_name][id]
                 _designConstraint = None
                 _designConstraint_id = None
                 if element_manager_update == True:
@@ -1854,13 +1808,15 @@ class QtProject:
                         tmp_ast, design_constraint_id = self._ElementManager.get_dpdict_return_ast(_dp_dict)
                         design_constraint_id = self._ElementManager.get_dc_id_by_dp_id(id)
                         if design_constraint_id:
-                            tmp_dict = self._update_ast(_ast=tmp_ast, module_name=module_name, id=design_constraint_id, element_manager_update=False)
+                            tmp_dict = self._update_ast(_ast=tmp_ast, module_name=module_name, id=design_constraint_id,
+                                                        element_manager_update=False)
                             _designConstraint = tmp_dict['constraint']
                             _designConstraint_id = tmp_dict['constraint_id']
                     except:
                         print('Constraint -> Parameter is not implemented')
 
-                output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': id, 'constraint_id': _designConstraint_id}
+                output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': id,
+                          'constraint_id': _designConstraint_id}
                 return output
             except:
                 return userDefineExceptions._UnkownError
