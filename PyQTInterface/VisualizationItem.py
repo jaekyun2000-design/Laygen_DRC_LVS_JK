@@ -161,6 +161,7 @@ class _RectBlock(QGraphicsRectItem):
 
 class _VisualizationItem(QGraphicsItemGroup):
     _subElementLayer = dict()
+    _compareLayer = dict()
     _Layer = LayerReader._LayerMapping
     for layer in _Layer:
         _subElementLayer[layer] = list()
@@ -376,7 +377,22 @@ class _VisualizationItem(QGraphicsItemGroup):
                 layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                 layer = layernum2name[str(blockTraits['_Layer'])]
 
-                self._subElementLayer[layer].append(self)
+                if self in self._compareLayer:
+                    if self._compareLayer[self] == layer:
+                        tmpLayer = None
+                    else:
+                        tmpLayer = self._compareLayer[self]
+                        self._compareLayer[self] = layer
+                else:
+                    tmpLayer = None
+                    self._compareLayer[self] = layer
+                    self._subElementLayer[layer].append(self)
+
+                if tmpLayer == None:
+                    pass
+                else:
+                    self._subElementLayer[tmpLayer].remove(self)
+                    self._subElementLayer[layer].append(self)
 
                 self.block.append(tmpBlock)
                 self.addToGroup(tmpBlock)
@@ -443,7 +459,22 @@ class _VisualizationItem(QGraphicsItemGroup):
                     layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                     layer = layernum2name[str(blockTraits['_Layer'])]
 
-                    self._subElementLayer[layer].append(self)
+                    if self in self._compareLayer:
+                        if self._compareLayer[self] == layer:
+                            tmpLayer = None
+                        else:
+                            tmpLayer = self._compareLayer[self]
+                            self._compareLayer[self] = layer
+                    else:
+                        tmpLayer = None
+                        self._compareLayer[self] = layer
+                        self._subElementLayer[layer].append(self)
+
+                    if tmpLayer == None:
+                        pass
+                    else:
+                        self._subElementLayer[tmpLayer].remove(self)
+                        self._subElementLayer[layer].append(self)
 
                     self.block.append(_RectBlock(blockTraits))  #Block Generation
                     self.block[i].setPos(Xmin*scaleValue,Ymin*scaleValue)
@@ -495,6 +526,8 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                     self.addToGroup(self.text)
 
+                    self._subElementLayer['text'].append(self)
+
                     # text = QPainter()
                     # aa = QRectF(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1],100,100)
                     # print(aa)
@@ -531,8 +564,26 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                         _point = QGraphicsTextItem('X')
                         _point.setDefaultTextColor(blockTraits['_Color'])
-                        _point.setFont(font)
-                        _point.setPos(blockTraits['_XYCoordinates'][0][0] - (4+fontSize*42/100), blockTraits['_XYCoordinates'][0][1] - (4+fontSize*64/100))
+                        _point_font = QFont('tmp2', 20)
+                        _point.setFont(_point_font)
+                        _point.setPos(blockTraits['_XYCoordinates'][0][0] - 12, blockTraits['_XYCoordinates'][0][1] - 17)
+
+                        if self in self._compareLayer:
+                            if self._compareLayer[self] == layer:
+                                tmpLayer = None
+                            else:
+                                tmpLayer = self._compareLayer[self]
+                                self._compareLayer[self] = layer
+                        else:
+                            tmpLayer = None
+                            self._compareLayer[self] = layer
+                            self._subElementLayer[layer].append(self)
+
+                        if tmpLayer == None:
+                            pass
+                        else:
+                            self._subElementLayer[tmpLayer].remove(self)
+                            self._subElementLayer[layer].append(self)
 
                         self.addToGroup(self.text)
                         self.addToGroup(_point)
