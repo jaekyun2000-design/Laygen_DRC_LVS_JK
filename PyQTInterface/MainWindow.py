@@ -96,6 +96,7 @@ class _MainWindow(QMainWindow):
         self._id_layer_mapping = dict()
         self.dvstate = False
         self._ElementManager = element_manager.ElementManager()
+        self.library_manager = generator_model_api
         self._VariableIDwithAST = variable_manager.Variable_IDwithAST()
 
     def initUI(self):
@@ -655,8 +656,10 @@ class _MainWindow(QMainWindow):
             topAST = element_ast.ElementTransformer().visit(topAST)
             topAST = variable_ast.VariableTransformer().visit(topAST)
             code = astunparse.unparse(topAST)
+            return code
             print(code)
         except:
+            traceback.print_exc()
             print("encoding fail")
 
     def runConstraint(self):

@@ -145,7 +145,7 @@ class ElementTransformer(ast.NodeTransformer):
         return tmp.body[0]
 
     def visit_Path(self,node):
-        sentence = f"{node.name} = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+        sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
 _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
         tmp = ast.parse(sentence)
         return tmp.body[0]
