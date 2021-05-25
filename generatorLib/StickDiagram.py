@@ -1,3 +1,5 @@
+import types
+
 from gds_editor_ver3 import gds_stream
 from gds_editor_ver3 import gds_structures
 from gds_editor_ver3 import gds_tags
@@ -34,6 +36,9 @@ class _StickDiagram:
             locals()[name] = library_manager.libraries[name]
 
         exec(code)
+        self._CalculateDesignParameter = types.MethodType(_CalculateDesignParameter, self)
+        self._CalculateDesignParameter()
+        # exec(code)
 
     def RoundupMinSnapSpacing(self, _DesignParameter=None, _MinSnapSpacing=None):
         if _DesignParameter ==None or _MinSnapSpacing ==None:

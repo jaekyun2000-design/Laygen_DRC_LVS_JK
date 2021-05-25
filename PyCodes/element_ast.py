@@ -168,7 +168,7 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
         return tmp.body
 
     def visit_Text(self, node):
-        sentence = f"self.{node.id} = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+        sentence = f"self.{node.name} = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
  _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Presentation = {node.pres}, _Reflect = {node.reflect}, _XYCoordinates = {node.XY},\
  _Mag = {node.magnitude}, _Angle = {node.angle}, _TEXT = '{node.text}')"
         print(sentence)

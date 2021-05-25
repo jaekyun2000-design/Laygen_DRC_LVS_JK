@@ -1778,7 +1778,8 @@ class QtProject:
             except:
                 return userDefineExceptions._UnkownError
 
-    def _update_design_dictionary(self, module_name: str, id: str, _dp_dict: dict, element_manager_update: bool = True) -> dict:
+    def _update_design_dictionary(self, module_name: str, id: str, _dp_dict: dict,
+                                  element_manager_update: bool = True) -> dict:
         # _createNewDesignParameter_by_dict(self, module_name, _dp_dict, element_manager_update=True):
         """
         :param module_name:  current module name
