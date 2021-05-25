@@ -249,8 +249,8 @@ class _MainWindow(QMainWindow):
 
         srefButtonL = QPushButton("SRefLoad",dockContentWidget1)
         srefButtonL.clicked.connect(self.loadSRefWindow)
-        srefButtonS = QPushButton("SRefSave",dockContentWidget1)
-        srefButtonS.clicked.connect(self.makeSRefWindow)
+        # srefButtonS = QPushButton("SRefSave",dockContentWidget1)
+        # srefButtonS.clicked.connect(self.makeSRefWindow)
 
         TextButton = QPushButton("Text",dockContentWidget1)
         TextButton.clicked.connect(self.makeTextWindow)
@@ -275,7 +275,7 @@ class _MainWindow(QMainWindow):
         vboxOnDock1.addWidget(boundaryButton)
         vboxOnDock1.addWidget(pathButton)
         vboxOnDock1.addWidget(srefButtonL)
-        vboxOnDock1.addWidget(srefButtonS)
+        # vboxOnDock1.addWidget(srefButtonS)
         vboxOnDock1.addWidget(TextButton)
         vboxOnDock1.addWidget(PinButton)
         vboxOnDock1.addWidget(FilterButton)
@@ -461,6 +461,9 @@ class _MainWindow(QMainWindow):
 
     def debug(self,name_list):
         print(name_list)
+
+    def variableTest(self, vdict):
+        print(vdict)
 
     def sref_debug_module(self):
         # tmpcell = {'INV': {'Sub1': {'Sub2': {'PMOS': None}, 'NMOS': None,}, 'NMOS': None, 'PMOS': None}}
@@ -739,23 +742,32 @@ class _MainWindow(QMainWindow):
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Save DesignParameter Fail: Unknown")
             pass
 
-
     def loadSRefWindow(self):
-        scf = QFileDialog.getOpenFileName(self,'Load Design Parameter','./PyQTInterface/modules')
-        try:
-            _fileName=scf[0]
-            self._QTObj._qtProject._loadDesignParameterAsPickle(_file=_fileName)
-        except:
-            print("Save DesignParameter Failed")
-            self.dockContentWidget4ForLoggingMessage._WarningMessage("Save DesignParameter Fail: Unknown")
+        self.ls = SetupWindow._LoadSRefWindow()
+        self.ls.show()
+        self.ls.send_DesignConstraint_signal.connect(self.createNewConstraint)
+        self.ls.send_destroy_signal.connect(self.delete_obj)
+        # self.ls.send_TextSetup_signal.connect(self.updateGraphicItem)
+        # self.ls.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
+        # self.ls.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
+        # self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)
 
-            #################DesignParameter Load ######################
-        for module in self._QTObj._qtProject._DesignParameter:
-            for id in self._QTObj._qtProject._DesignParameter[module]:
-                visualItem = self.createVisualItemfromDesignParameter(self._QTObj._qtProject._DesignParameter[module][id])
-                self.updateGraphicItem(visualItem)
-
-        self.dockContentWidget4ForLoggingMessage._InfoMessage("Project Load Done")
+    # def loadSRefWindowlegacy(self):
+    #     scf = QFileDialog.getOpenFileName(self,'Load Design Parameter','./PyQTInterface/modules')
+    #     try:
+    #         _fileName=scf[0]
+    #         self._QTObj._qtProject._loadDesignParameterAsPickle(_file=_fileName)
+    #     except:
+    #         print("Save DesignParameter Failed")
+    #         self.dockContentWidget4ForLoggingMessage._WarningMessage("Save DesignParameter Fail: Unknown")
+    #
+    #         #################DesignParameter Load ######################
+    #     for module in self._QTObj._qtProject._DesignParameter:
+    #         for id in self._QTObj._qtProject._DesignParameter[module]:
+    #             visualItem = self.createVisualItemfromDesignParameter(self._QTObj._qtProject._DesignParameter[module][id])
+    #             self.updateGraphicItem(visualItem)
+    #
+    #     self.dockContentWidget4ForLoggingMessage._InfoMessage("Project Load Done")
 
     def makeTextWindow(self):
         self.txtw = SetupWindow._TextSetupWindow()
@@ -785,6 +797,7 @@ class _MainWindow(QMainWindow):
         self.dv = variableWindow._DesignVariableManagerWindow(self.visualItemDict)
         self.dvstate = True
         self.dv.show()
+        self.dv.send_variable_siganl.connect(self.variableTest)
         self.dv.send_changedData_signal.connect(self.createNewConstraintAST)
         self.dv.send_destroy_signal.connect(self.delete_obj)
 
@@ -827,6 +840,8 @@ class _MainWindow(QMainWindow):
             del self.txtw
         if obj == 'pinw':
             del self.pinw
+        if obj == 'ls':
+            del self.ls
         self.scene.itemListClickIgnore(False)
 
     def updateGraphicItem(self,graphicItem):

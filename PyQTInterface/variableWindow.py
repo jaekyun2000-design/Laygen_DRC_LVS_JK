@@ -237,7 +237,7 @@ class CustomQTableView(QTableView): ### QAbstractItemView class inherited
 class _DesignVariableManagerWindow(QWidget):
 
     send_destroy_signal = pyqtSignal(str)
-    send_vid_name_signal = pyqtSignal(list)
+    send_variable_siganl = pyqtSignal(dict)
     send_changedData_signal = pyqtSignal("PyQt_PyObject", str, dict)
     elementDict = dict()
 
@@ -263,7 +263,7 @@ class _DesignVariableManagerWindow(QWidget):
             item1.setTextAlignment(Qt.AlignCenter)
             item1.setEditable(False)
             item2 = QStandardItem(self.variableDict[key]['value'])
-            item2.setEditable(False)
+            # item2.setEditable(False)
             item2.setTextAlignment(Qt.AlignCenter)
 
             self.model.appendRow(item1)
@@ -368,6 +368,18 @@ class _DesignVariableManagerWindow(QWidget):
     def check_clicked(self):
         print('varDict:',self.variableDict)
         print('idDict:',self.idDict)
+        if self.selectedItem == None:
+            self.msg = QMessageBox()
+            self.msg.setText("Nothing selected")
+            self.msg.show()
+        else:
+            vid = self.idDict[self.selectedItem]['vid']
+            tmpdict = dict()
+            tmpdict[vid] = self.variableDict[vid]
+
+            self.send_variable_siganl.emit(tmpdict)
+
+            self.selectedItem = None
 
     def edit_clicked(self):
         if self.selectedItem == None:
@@ -401,7 +413,7 @@ class _DesignVariableManagerWindow(QWidget):
         _name, _value = variable_info_list[0], variable_info_list[1]
         name, value = QStandardItem(_name), QStandardItem(_value)
         name.setEditable(False)
-        value.setEditable(False)
+        # value.setEditable(False)
         name.setTextAlignment(Qt.AlignCenter)
         value.setTextAlignment(Qt.AlignCenter)
 
@@ -426,12 +438,12 @@ class _DesignVariableManagerWindow(QWidget):
 
         self.table.resizeRowsToContents()
 
-    # def itemChanged(self, item):
-    #     row = item.index().row()
-    #     _item = self.model.item(row).text()
-    #     if _item in self.idDict:
-    #         vid = self.idDict[_item]['vid']
-    #         self.variableDict[vid]['value'] = item.text()
+    def itemChanged(self, item):
+        row = item.index().row()
+        _item = self.model.item(row).text()
+        if _item in self.idDict:
+            vid = self.idDict[_item]['vid']
+            self.variableDict[vid]['value'] = item.text()
 
     def itemClicked(self, item):
         _item = self.model.item(item.row()).text()
@@ -450,7 +462,6 @@ class _DesignVariableManagerWindow(QWidget):
 class _createNewDesignVariable(QWidget):
 
     send_variable_signal = pyqtSignal(list, str)
-    send_enterkey_signal = pyqtSignal()
     variableDict = dict()
     idDict = dict()
 
@@ -468,8 +479,6 @@ class _createNewDesignVariable(QWidget):
         okButton.clicked.connect(self.ok_clicked)
         cancelButton = QPushButton("Cancel", self)
         cancelButton.clicked.connect(self.cancel_clicked)
-
-        self.send_enterkey_signal.connect(self.ok_clicked)
 
         button = QHBoxLayout()
         button.addStretch(2)
@@ -497,13 +506,19 @@ class _createNewDesignVariable(QWidget):
         self.setLayout(vbox)
 
     def keyPressEvent(self, QKeyEvent):
-        if QKeyEvent.key() == 16777220 or QKeyEvent.key() == 16777221:
-            self.send_enterkey_signal.emit()
+        if QKeyEvent.key() == Qt.Key_Enter or QKeyEvent.key() == Qt.Key_Return:
+            self.ok_clicked()
 
     def ok_clicked(self):
-        self.addDVtodict(self.name.text(), type='value', value=self.value.text())
-        self.send_variable_signal.emit([self.name.text(), self.value.text()], self.add)
-        self.destroy()
+        if self.name.text() == '':
+            self.warning = QMessageBox()
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.setText("Invalid Name")
+            self.warning.show()
+        else:
+            self.addDVtodict(self.name.text(), type='value', value=self.value.text())
+            self.send_variable_signal.emit([self.name.text(), self.value.text()], self.add)
+            self.destroy()
 
     def cancel_clicked(self):
         self.destroy()
@@ -540,7 +555,6 @@ class _createNewDesignVariable(QWidget):
 class _editDesignVariable(QWidget):
 
     send_DV_signal = pyqtSignal(list, str)
-    send_enterkey_signal = pyqtSignal()
 
     def __init__(self, address, vid, DV, value):
         super().__init__()
@@ -565,8 +579,6 @@ class _editDesignVariable(QWidget):
         okButton.clicked.connect(self.ok_clicked)
         cancelButton = QPushButton("Cancel", self)
         cancelButton.clicked.connect(self.cancel_clicked)
-
-        self.send_enterkey_signal.connect(self.ok_clicked)
 
         button = QHBoxLayout()
         button.addStretch(2)
@@ -594,24 +606,30 @@ class _editDesignVariable(QWidget):
         self.setLayout(vbox)
 
     def keyPressEvent(self, QKeyEvent):
-        if QKeyEvent.key() == 16777220 or QKeyEvent.key() == 16777221:
-            self.send_enterkey_signal.emit()
+        if QKeyEvent.key() == Qt.Key_Enter or QKeyEvent.key() == Qt.Key_Return:
+            self.ok_clicked()
 
     def ok_clicked(self):
-        self.variableDict[self.vid]['DV'] = self.name.text()
-        self.variableDict[self.vid]['value'] = self.value.text()
-
-        test_list = [self.name.text(), self.value.text()]
-
-        self.send_DV_signal.emit(test_list, 'edit')
-
-        if self.name.text() in self.idDict:
-            self.idDict[self.name.text()] = self.idDict[self.DV]
+        if self.name.text() == '':
+            self.warning = QMessageBox()
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.setText("Invalid Name")
+            self.warning.show()
         else:
-            self.idDict[self.name.text()] = self.idDict[self.DV]
-            del self.idDict[self.DV]
+            self.variableDict[self.vid]['DV'] = self.name.text()
+            self.variableDict[self.vid]['value'] = self.value.text()
 
-        self.destroy()
+            test_list = [self.name.text(), self.value.text()]
+
+            self.send_DV_signal.emit(test_list, 'edit')
+
+            if self.name.text() in self.idDict:
+                self.idDict[self.name.text()] = self.idDict[self.DV]
+            else:
+                self.idDict[self.name.text()] = self.idDict[self.DV]
+                del self.idDict[self.DV]
+
+            self.destroy()
 
     def cancel_clicked(self):
         self.destroy()
