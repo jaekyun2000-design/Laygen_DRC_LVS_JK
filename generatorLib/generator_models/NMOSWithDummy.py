@@ -204,12 +204,12 @@ class _NMOS(StickDiagram._StickDiagram):
         tmp=[]
         _LengthNMOSBtwMet1 = _DRCObj.DRCPolygateMinSpace(_DRCObj._CoMinWidth + 2 * _DRCObj._PolygateMinSpace2Co) + self._DesignParameter['_POLayer']['_XWidth']
         if (_NMOSNumberofGate % 2)==0:
-            for i in range(0, _NMOSNumberofGate / 2 + 1):
+            for i in range(0, _NMOSNumberofGate // 2 + 1):
                 #_XYCenter=[self._XYCoordinateNMOS[0] -  self._NumberOfNMOSGate / 2 * self._LengthBtwMet1 + i * self._LengthBtwMet1, self._XYCoordinateNMOS[1]]
                 tmp.append([_XYCoordinateOfNMOS[0][0] -  _NMOSNumberofGate / 2 \
                                                                                        * _LengthNMOSBtwMet1 + i * 2 * _LengthNMOSBtwMet1, _XYCoordinateOfNMOS[0][1]])
         elif (_NMOSNumberofGate % 2)==1:
-            for i in range(0,(_NMOSNumberofGate - 1) / 2 + 1 ):
+            for i in range(0,(_NMOSNumberofGate - 1) // 2 + 1 ):
                 #_XYCenter=[self._XYCoordinateNMOS[0] - (  (self._NumberOfNMOSGate + 1) / 2 - 0.5) * self._LengthBtwMet1 + i * self._LengthBtwMet1, self._XYCoordinateNMOS[1]]
                 tmp.append([_XYCoordinateOfNMOS[0][0] - (  (_NMOSNumberofGate + 1) / 2 - 0.5) \
                                                                                        * _LengthNMOSBtwMet1 + i * 2 * _LengthNMOSBtwMet1, _XYCoordinateOfNMOS[0][1]])
@@ -221,12 +221,12 @@ class _NMOS(StickDiagram._StickDiagram):
         tmp=[]
         _LengthNMOSBtwMet1 = _DRCObj.DRCPolygateMinSpace(_DRCObj._CoMinWidth + 2 * _DRCObj._PolygateMinSpace2Co) + self._DesignParameter['_POLayer']['_XWidth']
         if (_NMOSNumberofGate % 2)==0:
-            for i in range(0, _NMOSNumberofGate / 2 ):
+            for i in range(0, _NMOSNumberofGate // 2 ):
                 # _XYCenter=[self._XYCoordinateNMOS[0] -  self._NumberOfNMOSGate / 2 * self._LengthBtwMet1 + i * self._LengthBtwMet1, self._XYCoordinateNMOS[1]]
                 tmp.append([_XYCoordinateOfNMOS[0][0] - _NMOSNumberofGate / 2 \
                                                                                        * _LengthNMOSBtwMet1 + ( i * 2 + 1) * _LengthNMOSBtwMet1, _XYCoordinateOfNMOS[0][1]])
         elif (_NMOSNumberofGate % 2)==1:
-            for i in range(0, (_NMOSNumberofGate - 1) / 2 + 1):
+            for i in range(0, (_NMOSNumberofGate - 1) // 2 + 1):
                 # _XYCenter=[self._XYCoordinateNMOS[0] - (  (self._NumberOfNMOSGate + 1) / 2 - 0.5) * self._LengthBtwMet1 + i * self._LengthBtwMet1, self._XYCoordinateNMOS[1]]
                 tmp.append([_XYCoordinateOfNMOS[0][0] - ((_NMOSNumberofGate + 1) / 2 - 0.5)\
                                                                                        * _LengthNMOSBtwMet1 + ( i * 2 + 1 ) * _LengthNMOSBtwMet1, _XYCoordinateOfNMOS[0][1]])
