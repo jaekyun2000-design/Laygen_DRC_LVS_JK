@@ -450,6 +450,7 @@ class _DesignVariableManagerWindow(QWidget):
 class _createNewDesignVariable(QWidget):
 
     send_variable_signal = pyqtSignal(list, str)
+    send_enterkey_signal = pyqtSignal()
     variableDict = dict()
     idDict = dict()
 
@@ -467,6 +468,8 @@ class _createNewDesignVariable(QWidget):
         okButton.clicked.connect(self.ok_clicked)
         cancelButton = QPushButton("Cancel", self)
         cancelButton.clicked.connect(self.cancel_clicked)
+
+        self.send_enterkey_signal.connect(self.ok_clicked)
 
         button = QHBoxLayout()
         button.addStretch(2)
@@ -492,6 +495,10 @@ class _createNewDesignVariable(QWidget):
         vbox.addLayout(button)
 
         self.setLayout(vbox)
+
+    def keyPressEvent(self, QKeyEvent):
+        if QKeyEvent.key() == 16777220 or QKeyEvent.key() == 16777221:
+            self.send_enterkey_signal.emit()
 
     def ok_clicked(self):
         self.addDVtodict(self.name.text(), type='value', value=self.value.text())
@@ -533,6 +540,7 @@ class _createNewDesignVariable(QWidget):
 class _editDesignVariable(QWidget):
 
     send_DV_signal = pyqtSignal(list, str)
+    send_enterkey_signal = pyqtSignal()
 
     def __init__(self, address, vid, DV, value):
         super().__init__()
@@ -558,6 +566,8 @@ class _editDesignVariable(QWidget):
         cancelButton = QPushButton("Cancel", self)
         cancelButton.clicked.connect(self.cancel_clicked)
 
+        self.send_enterkey_signal.connect(self.ok_clicked)
+
         button = QHBoxLayout()
         button.addStretch(2)
         button.addWidget(okButton)
@@ -582,6 +592,10 @@ class _editDesignVariable(QWidget):
         vbox.addLayout(button)
 
         self.setLayout(vbox)
+
+    def keyPressEvent(self, QKeyEvent):
+        if QKeyEvent.key() == 16777220 or QKeyEvent.key() == 16777221:
+            self.send_enterkey_signal.emit()
 
     def ok_clicked(self):
         self.variableDict[self.vid]['DV'] = self.name.text()
