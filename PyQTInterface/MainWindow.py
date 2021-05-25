@@ -3,8 +3,10 @@ import sys
 import os
 import traceback
 
+import PyCodes.file_save
+
 try:
-    sys.path.append('..\VariableSuggestion-git')
+    sys.path.append('./powertool')
     import topAPI
 except:
     traceback.print_exc()
@@ -886,7 +888,7 @@ class _MainWindow(QMainWindow):
         self.npw.show()
         self.npw.send_Name_signal.connect(self._QTObj._createProject)
 
-    def loadProject(self):
+    def loadProjectOriginal(self):
         scf = QFileDialog.getOpenFileName(self,'Load Project','./PyQTInterface/Project/')
 
         try:
@@ -919,6 +921,27 @@ class _MainWindow(QMainWindow):
             print("Load Project Failed")
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Load Project Fail: Unknown")
             pass
+    def loadProject(self):
+        scf = QFileDialog.getOpenFileName(self,'Load Project','./PyQTInterface/Project/')
+
+        try:
+            cm = self._CurrentModuleName
+            _fileName=scf[0]
+            self._QTObj._loadProject(_name=_fileName)
+
+            self._QTObj._qtProject.tmp_save_file.load_from_constraint_tree_info(self, self._QTObj._qtProject._DesignConstraint)
+            top_module = self._QTObj._qtProject.tmp_save_file.top_module
+            for id_name, qt_parameter in self._QTObj._qtProject._DesignParameter[top_module].items():
+                vs_item = self.createVisualItemfromDesignParameter(qt_parameter)
+                self.updateGraphicItem(vs_item)
+            self.dockContentWidget4ForLoggingMessage._InfoMessage("Project Load Done")
+
+
+        except:
+            traceback.print_exc()
+            print("Load Project Failed")
+            self.dockContentWidget4ForLoggingMessage._WarningMessage("Load Project Fail: Unknown")
+            pass
 
 
     def saveProject(self):
@@ -928,15 +951,29 @@ class _MainWindow(QMainWindow):
             _fileName=scf[0] + ".bin"
 
             # fileName=_fileName.split('/')[-1]
-            self.updateXYCoordinatesForDisplay()
+            # self.updateXYCoordinatesForDisplay()
+            self._QTObj._qtProject.tmp_save_file = PyCodes.file_save.FileSaveFormat()
+            self._QTObj._qtProject.tmp_save_file.save_from_qt_interface(self)
             self._QTObj._saveProject(_name=_fileName)
+
+            # ######WIP for save whole project#####
+            # import json
+            # json.dump(self,open('./test.json','w'),indent=4, default=self.json_serialize_dump_obs)
+
             print("Project saved")
         except:
+            traceback.print_exc()
             print("Save Project Failed")
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Save Project Fail: Unknown")
             pass
 
         # self._QTObj._saveProject()
+
+    @staticmethod
+    def json_serialize_dump_obs(obj):
+        if hasattr(obj,"json_dump_obj"):
+            return obj.json_dump_obj()
+        return obj
 
     def newModule(self):
         if self._QTObj._qtProject == None:

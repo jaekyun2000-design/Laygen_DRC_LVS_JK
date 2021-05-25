@@ -1776,6 +1776,7 @@ class QtProject:
                 output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': designID, 'constraint_id': _designConstraint_id}
                 return output
             except:
+                traceback.print_exc()
                 return userDefineExceptions._UnkownError
 
     def _update_design_dictionary(self, module_name: str, id: str, _dp_dict: dict,

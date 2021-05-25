@@ -629,3 +629,4 @@ class _VisualizationItem(QGraphicsItemGroup):
         x = self.pos().x()
         y = self.pos().y()
         self._ItemTraits['_XYCoordinates'] = [[int(x),int(y)]]
+
