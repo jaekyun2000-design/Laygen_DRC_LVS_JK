@@ -684,6 +684,193 @@ class _SRefSetupWindow(QWidget):
             self.destroy()
             self.send_Destroy_signal.emit('sw')
 
+class _LoadSRefWindow(QWidget):
+
+    send_DesignConstraint_signal = pyqtSignal(ast.AST)
+    send_destroy_signal = pyqtSignal(str)
+
+    def __init__(self):
+        super().__init__()
+        self.paramDict = dict()
+        self.initUI()
+
+    # def __init__(self,_AST = None, _STMT = None, _ASTapi = None):
+    #     super().__init__()
+    #     if _ASTapi == None:
+    #         self._ASTapi = ASTmodule._Custom_AST_API()
+    #     else:
+    #         self._ASTapi = _ASTapi
+    #
+    #     self.initUI()
+    #
+    #     if _AST == None:        #This is for editing created AST.       AST --> STMT
+    #         self._AST = None
+    #     else:
+    #         self._AST = _AST
+    #         #self.updateUIvalue()       #AST to STMT convert fuunction before excute updateUIvalue
+    #
+    #     if _STMT == None:
+    #         self._STMT = []
+    #     else:
+    #         self._STMT = _STMT
+    #         self.updateUIvalue()
+
+    def initUI(self):
+        self.name = QLabel("name")
+        self.library = QLabel("library")
+        self.class_name = QLabel("className")
+        self.XY = QLabel("XY")
+        self.cal_fcn = QLabel("calculate_fcn")
+
+        self.pars = QLabel("\nPARAMETERS")
+
+        self.name_input = QLineEdit()
+        self.library_input = QComboBox()
+        self.class_name_input = QLineEdit()
+        self.XY_input = QLineEdit()
+        self.cal_fcn_input = QComboBox()
+
+        self.library_input.addItems(generator_model_api.class_dict.keys())
+        self.class_name_input.setText(generator_model_api.class_name_dict[self.library_input.currentText()])
+        self.cal_fcn_input.addItems(generator_model_api.class_function_dict[self.library_input.currentText()])
+
+        self.class_name_input.setEnabled(False)
+        pars_font = QFont('tmp',10)
+        self.pars.setFont(pars_font)
+        self.pars.setAlignment(Qt.AlignCenter)
+
+        self.library_input.currentIndexChanged.connect(self.updateClassName)
+        self.library_input.currentIndexChanged.connect(self.updatecalfcn)
+        self.cal_fcn_input.currentIndexChanged.connect(self.updateparameter)
+
+        okButton = QPushButton("OK",self)
+        cancelButton = QPushButton("Cancel",self)
+
+        okButton.clicked.connect(self.on_buttonBox_accepted)
+        cancelButton.clicked.connect(self.cancel_button_accepted)
+
+        self.setupVboxColumn1 = QVBoxLayout()
+        self.setupVboxColumn2 = QVBoxLayout()
+        setupHBox1 = QHBoxLayout()
+        setupHBox2 = QHBoxLayout()
+
+        self.setupVboxColumn1.addWidget(self.name)
+        self.setupVboxColumn1.addWidget(self.library)
+        self.setupVboxColumn1.addWidget(self.class_name)
+        self.setupVboxColumn1.addWidget(self.XY)
+        self.setupVboxColumn1.addWidget(self.cal_fcn)
+
+        self.setupVboxColumn2.addWidget(self.name_input)
+        self.setupVboxColumn2.addWidget(self.library_input)
+        self.setupVboxColumn2.addWidget(self.class_name_input)
+        self.setupVboxColumn2.addWidget(self.XY_input)
+        self.setupVboxColumn2.addWidget(self.cal_fcn_input)
+
+        self.parVBox1 = QVBoxLayout()
+        self.parVBox2 = QVBoxLayout()
+
+        par_name = []
+        par_value = []
+        par_list = generator_model_api.class_function_dict[self.library_input.currentText()][self.cal_fcn_input.currentText()]
+        for idx in range(len(par_list)):
+            par_name.append(par_list[idx].name)
+            par_value.append(par_list[idx].default)
+
+            self.parVBox1.addWidget(QLabel(par_name[-1]))
+            self.parVBox2.addWidget(QLineEdit(str(par_value[-1])))
+
+        setupHBox1.addLayout(self.setupVboxColumn1)
+        setupHBox1.addLayout(self.setupVboxColumn2)
+        setupHBox2.addLayout(self.parVBox1)
+        setupHBox2.addLayout(self.parVBox2)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(2)
+        hbox.addWidget(okButton)
+        hbox.addWidget(cancelButton)
+
+        vbox = QVBoxLayout()
+        vbox.addStretch(1)
+        vbox.addLayout(setupHBox1)
+        vbox.addWidget(self.pars)
+        vbox.addLayout(setupHBox2)
+        vbox.addStretch(3)
+        vbox.addLayout(hbox)
+
+        self.setLayout(vbox)
+
+        self.setWindowTitle('LoadSRef Window')
+        self.setGeometry(300,300,500,500)
+        self.show()
+
+    def updateClassName(self):
+        self.class_name_input.setText(generator_model_api.class_name_dict[self.library_input.currentText()])
+
+    def updatecalfcn(self):
+        self.cal_fcn_input.clear()
+        self.cal_fcn_input.addItems(generator_model_api.class_function_dict[self.library_input.currentText()])
+
+    def updateparameter(self):
+        while self.parVBox1.count() != 0:
+            tmp = self.parVBox1.takeAt(0).widget()
+            tmp.setParent(None)
+            del tmp
+            tmp = self.parVBox2.takeAt(0).widget()
+            tmp.setParent(None)
+            self.parVBox2.removeWidget(tmp)
+            del tmp
+
+        par_name = []
+        par_value = []
+        self.paramDict = dict()
+
+        if self.cal_fcn_input.currentText() == "":
+            pass
+        else:
+            par_list = generator_model_api.class_function_dict[self.library_input.currentText()][self.cal_fcn_input.currentText()]
+            for idx in range(len(par_list)):
+                par_name.append(par_list[idx].name)
+                par_value.append(par_list[idx].default)
+
+                self.parVBox1.addWidget(QLabel(par_name[-1]))
+                self.parVBox2.addWidget(QLineEdit(str(par_value[-1])))
+
+                self.paramDict[par_name[-1]] = par_value[-1]
+
+    def DetermineCoordinateWithMouse(self, _MouseEvent):
+        self.XY_input.setText(str(_MouseEvent.scenePos().toPoint().x()) + ',' + str(_MouseEvent.scenePos().toPoint().y()))
+
+    def on_buttonBox_accepted(self):
+        tmpAST = element_ast.Sref()
+        for key in element_ast.Sref._fields:
+            if key == 'name':
+                tmpAST.__dict__[key] = self.name_input
+            elif key == 'library':
+                tmpAST.__dict__[key] = self.library_input
+            elif key == 'className':
+                tmpAST.__dict__[key] = self.class_name_input
+            elif key == 'XY':
+                tmpAST.__dict__[key] = self.XY_input
+            elif key == 'calculate_fcn':
+                tmpAST.__dict__[key] = self.cal_fcn_input
+            elif key == 'parameters':
+                tmpAST.__dict__[key] = self.paramDict
+
+        print(tmpAST)
+        self.send_DesignConstraint_signal.emit(tmpAST)
+        self.destroy()
+
+    def cancel_button_accepted(self):
+        self.destroy()
+
+    def keyPressEvent(self, QKeyEvent):
+        if QKeyEvent.key() == Qt.Key_Return or QKeyEvent.key() == Qt.Key_Enter:
+            self.on_buttonBox_accepted()
+            self.send_destroy_signal.emit('ls')
+        elif QKeyEvent.key() == Qt.Key_Escape:
+            self.destroy()
+            self.send_destroy_signal.emit('ls')
+
 class _TextSetupWindow(QWidget):
 
     send_TextSetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)

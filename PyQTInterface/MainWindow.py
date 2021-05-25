@@ -746,6 +746,7 @@ class _MainWindow(QMainWindow):
         self.ls = SetupWindow._LoadSRefWindow()
         self.ls.show()
         self.ls.send_DesignConstraint_signal.connect(self.createNewConstraint)
+        self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)
         self.ls.send_destroy_signal.connect(self.delete_obj)
         # self.ls.send_TextSetup_signal.connect(self.updateGraphicItem)
         # self.ls.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
