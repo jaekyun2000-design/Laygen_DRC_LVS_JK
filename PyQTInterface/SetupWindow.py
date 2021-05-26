@@ -21,7 +21,7 @@ from PyCodes import EnvForClientSetUp
 from PyCodes import QTInterfaceWithAST
 
 from generatorLib import generator_model_api
-
+import traceback
 import re, ast, time, sys
 
 debugFlag = True
@@ -2601,6 +2601,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             self.send_UpdateDesignConstraintID_signal.emit(itemID,motherID)
 
         except:
+            traceback.print_exc()
             print("Value Update Fail!")
 
     def update_constraint_by_id(self, id):
