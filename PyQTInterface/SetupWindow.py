@@ -691,6 +691,7 @@ class _LoadSRefWindow(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.par_valueForLineEdit = []
         self.paramDict = dict()
         self.initUI()
 
@@ -769,15 +770,18 @@ class _LoadSRefWindow(QWidget):
         self.parVBox1 = QVBoxLayout()
         self.parVBox2 = QVBoxLayout()
 
-        par_name = []
-        par_value = []
+        self.par_name = []
+        self.par_value = []
         par_list = generator_model_api.class_function_dict[self.library_input.currentText()][self.cal_fcn_input.currentText()]
         for idx in range(len(par_list)):
-            par_name.append(par_list[idx].name)
-            par_value.append(par_list[idx].default)
+            self.par_name.append(par_list[idx].name)
+            self.par_value.append(par_list[idx].default)
 
-            self.parVBox1.addWidget(QLabel(par_name[-1]))
-            self.parVBox2.addWidget(QLineEdit(str(par_value[-1])))
+            self.par_valueForLineEdit.append(QLineEdit())
+            self.par_valueForLineEdit[-1].setText(str(self.par_value[-1]))
+
+            self.parVBox1.addWidget(QLabel(self.par_name[-1]))
+            self.parVBox2.addWidget(self.par_valueForLineEdit[-1])
 
         setupHBox1.addLayout(self.setupVboxColumn1)
         setupHBox1.addLayout(self.setupVboxColumn2)
@@ -820,27 +824,29 @@ class _LoadSRefWindow(QWidget):
             self.parVBox2.removeWidget(tmp)
             del tmp
 
-        par_name = []
-        par_value = []
-        self.paramDict = dict()
+        self.par_valueForLineEdit = []
 
         if self.cal_fcn_input.currentText() == "":
             pass
         else:
             par_list = generator_model_api.class_function_dict[self.library_input.currentText()][self.cal_fcn_input.currentText()]
             for idx in range(len(par_list)):
-                par_name.append(par_list[idx].name)
-                par_value.append(par_list[idx].default)
+                self.par_name.append(par_list[idx].name)
+                self.par_value.append(par_list[idx].default)
 
-                self.parVBox1.addWidget(QLabel(par_name[-1]))
-                self.parVBox2.addWidget(QLineEdit(str(par_value[-1])))
+                self.par_valueForLineEdit.append(QLineEdit())
+                self.par_valueForLineEdit[-1].setText(str(self.par_value[-1]))
 
-                self.paramDict[par_name[-1]] = par_value[-1]
+                self.parVBox1.addWidget(QLabel(self.par_name[-1]))
+                self.parVBox2.addWidget(self.par_valueForLineEdit[-1])
 
     def DetermineCoordinateWithMouse(self, _MouseEvent):
         self.XY_input.setText(str(_MouseEvent.scenePos().toPoint().x()) + ',' + str(_MouseEvent.scenePos().toPoint().y()))
 
     def on_buttonBox_accepted(self):
+        for idx in range(len(self.par_valueForLineEdit)):
+            self.paramDict[self.par_name[idx]] = self.par_valueForLineEdit[idx].text()
+
         tmpAST = element_ast.Sref()
         for key in element_ast.Sref._fields:
             if key == 'name':
@@ -856,7 +862,8 @@ class _LoadSRefWindow(QWidget):
             elif key == 'parameters':
                 tmpAST.__dict__[key] = self.paramDict
 
-        print(tmpAST)
+        print(tmpAST['Type'])
+
         self.send_DesignConstraint_signal.emit(tmpAST)
         self.destroy()
 
