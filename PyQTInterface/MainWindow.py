@@ -1464,14 +1464,11 @@ class _MainWindow(QMainWindow):
         """
         _VariableID = list(_changedVariableInfo.keys())[0]
         _VariableName = _changedVariableInfo[_VariableID]['DV']
-        print("###############################################################")
-        print("           Argument Variable ast Modification Start            ")
-        print("###############################################################")
-
         ############ Orignal Value Extraction from _vid Info #####################
         try:
             """
             check whether Add mode called this function. Unless, continue
+            기존에 담겨 있는 값이 있어야만 아래 구문이 실행되고, 그렇지 않으면 오류 발생되도록
             """
             _originalName = self._VariableIDwithAST.variableIDwithASTDict[_VariableID].name
         except:
@@ -1480,25 +1477,33 @@ class _MainWindow(QMainWindow):
             """
             return
         ######################## Constraint(AST) Edition ##########################
+        print("###############################################################")
+        print("           Argument Variable ast Modification Start            ")
+        print("###############################################################")
         _Constraints = self._QTObj._qtProject._DesignConstraint
         moduleName = list(_Constraints.values())[0]
         for _, module in moduleName.items():
-            module._ast.name = _VariableName
-            try:  # Case when changed Item is in the left dockWidget(3)
-                _changedItem = self.dockContentWidget3.model.findItems(module._id, column=1)[0]
-                _changedItemIndex = self.dockContentWidget3.model.indexFromItem(_changedItem)
-                self.dockContentWidget3.refreshItem(_changedItemIndex)
-            except:  # Case when changed Item is in the right dockWidget(3_2)
-                try:
-                    _changedItem = self.dockContentWidget3_2.model.findItems(module._id, column=1)[0]
-                    _changedItemIndex = self.dockContentWidget3_2.model.indexFromItem(_changedItem)
-                    self.dockContentWidget3_2.refreshItem(_changedItemIndex)
-                except:
-                    raise NotImplementedError
-                    return
-            print("###############################################################")
-            print("           Argument Variable ast Modification Done             ")
-            print("###############################################################")
+            if (module._ast.name == _originalName):
+                module._ast.name = _VariableName
+                print(f" Modifying Constraint name:\n {_originalName} -> {_VariableName}, VID : {_VariableID}")
+                try:  # Case when changed Item is in the left dockWidget(3)
+                    _changedItem = self.dockContentWidget3.model.findItems(module._id, column=1)[0]
+                    _changedItemIndex = self.dockContentWidget3.model.indexFromItem(_changedItem)
+                    self.dockContentWidget3.refreshItem(_changedItemIndex)
+                except:  # Case when changed Item is in the right dockWidget(3_2)
+                    try:
+                        _changedItem = self.dockContentWidget3_2.model.findItems(module._id, column=1)[0]
+                        _changedItemIndex = self.dockContentWidget3_2.model.indexFromItem(_changedItem)
+                        self.dockContentWidget3_2.refreshItem(_changedItemIndex)
+                    except:
+                        raise NotImplementedError
+                        return
+
+                print("###############################################################")
+                print("           Argument Variable ast Modification Done             ")
+                print("###############################################################")
+                break
+
 
     def createVariableConstraint(self, _VariableInfo):
         """

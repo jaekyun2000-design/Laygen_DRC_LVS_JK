@@ -360,8 +360,8 @@ class _DesignVariableManagerWindow(QWidget):
         self.destroy()
 
     def check_clicked(self):
-        print('varDict:', self.variableDict)
-        print('idDict:', self.idDict)
+        # print('varDict:', self.variableDict)
+        # print('idDict:', self.idDict)
         if self.selectedItem == None:
             self.msg = QMessageBox()
             self.msg.setText("Nothing selected")
