@@ -798,7 +798,7 @@ class _MainWindow(QMainWindow):
         self.dvstate = True
         self.dv.show()
         self.dv.send_variable_siganl.connect(self.createNewConstraintAST)
-        self.dv.send_changedData_signal.connect(self.createNewConstraintAST)
+        self.dv.send_changedData_signal.connect(self.updateVariableConstraint)
         self.dv.send_destroy_signal.connect(self.delete_obj)
 
     def makeConstraintWindow(self):
@@ -1453,11 +1453,57 @@ class _MainWindow(QMainWindow):
                 self.warning.setText("Syntax Error")
                 self.warning.show()
                 self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: Source Code syntax error")
-
-    def createVariableConstraint(self, _changedVariableInfo):
+    def updateVariableConstraint(self,_changedVariableInfo):
         """
-        Creates Variable AST when button clicked
-        :param _changedVariableInfo: { vid: {name = '', value = ''}}
+        This function should only implemented by changing original data.
+        'Add' button inside Variable window will temporarily call this function, which will be rejected @ try, except
+        statement.
+        :param _changedVariableInfo: {'_vid of changing var' : { 'DV' : name, 'value': value }
+        :return:
+        Minsu Kim
+        """
+        _VariableID = list(_changedVariableInfo.keys())[0]
+        _VariableName = _changedVariableInfo[_VariableID]['DV']
+        print("###############################################################")
+        print("           Argument Variable ast Modification Start            ")
+        print("###############################################################")
+
+        ############ Orignal Value Extraction from _vid Info #####################
+        try:
+            """
+            check whether Add mode called this function. Unless, continue
+            """
+            _originalName = self._VariableIDwithAST.variableIDwithASTDict[_VariableID].name
+        except:
+            """
+            If Add mode called this function, there is no Constraint to be updated: reject
+            """
+            return
+        ######################## Constraint(AST) Edition ##########################
+        _Constraints = self._QTObj._qtProject._DesignConstraint
+        moduleName = list(_Constraints.values())[0]
+        for _, module in moduleName.items():
+            module._ast.name = _VariableName
+            try:  # Case when changed Item is in the left dockWidget(3)
+                _changedItem = self.dockContentWidget3.model.findItems(module._id, column=1)[0]
+                _changedItemIndex = self.dockContentWidget3.model.indexFromItem(_changedItem)
+                self.dockContentWidget3.refreshItem(_changedItemIndex)
+            except:  # Case when changed Item is in the right dockWidget(3_2)
+                try:
+                    _changedItem = self.dockContentWidget3_2.model.findItems(module._id, column=1)[0]
+                    _changedItemIndex = self.dockContentWidget3_2.model.indexFromItem(_changedItem)
+                    self.dockContentWidget3_2.refreshItem(_changedItemIndex)
+                except:
+                    raise NotImplementedError
+                    return
+            print("###############################################################")
+            print("           Argument Variable ast Modification Done             ")
+            print("###############################################################")
+
+    def createVariableConstraint(self, _VariableInfo):
+        """
+        Creates / Updates Variable AST when button clicked
+        :param _VariableInfo: { vid: {name = '', value = ''}}
         :return:
         """
         if self._QTObj._qtProject == None:
@@ -1470,23 +1516,25 @@ class _MainWindow(QMainWindow):
             self.warning.setText("There is No Module")
             self.warning.show()
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: There is no Module")
-        else:       # create ArgumentVariable AST
+        else:       # create / update ArgumentVariable AST
+            _VariableID = list(_VariableInfo.keys())[0]
+            _VariableName = _VariableInfo[_VariableID]['DV']
             print("###############################################################")
             print("             Argument Variable ast creation Start              ")
             print("###############################################################")
+
             _ASTForVariable = ASTmodule._Custom_AST_API()
             _ASTtype = 'ArgumentVariable'
             _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
-            _changedVariableID = list(_changedVariableInfo.keys())[0]
-            _changedVariableName = _changedVariableInfo[_changedVariableID]['DV']
-            print(f"AST INFO: \n ID = {_changedVariableID}, NAME = {_changedVariableName}")
+
+            print(f"AST INFO: \n ID = {_VariableID}, NAME = {_VariableName}")
             try:
-                if (_changedVariableName == '' or None):
+                if (_VariableName == '' or None):
                     print("Invalid Name input")
                     raise NotImplementedError
                 else:
-                    _ASTobj.__dict__['name'] = _changedVariableName
-                    self._VariableIDwithAST.variableIDwithASTDict[_changedVariableID] = _ASTobj
+                    _ASTobj.__dict__['name'] = _VariableName
+                    self._VariableIDwithAST.variableIDwithASTDict[_VariableID] = _ASTobj
                     design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
                                                                       module_name=self._CurrentModuleName, _ast=_ASTobj)
                     self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
@@ -1499,12 +1547,10 @@ class _MainWindow(QMainWindow):
                 print("Argument Variable AST Creation failed")
 
 
-    def createNewConstraintAST(self,_input):    # Input : _AST format(AST) or dict format(Variabledict)
+    def createNewConstraintAST(self,_input):
         """
         Creates / Modifies Constraints(AST)
-        :param _AST:
-        :param _vid:
-        :param _changedVariableDict:
+        :param _AST : AST or variable dictionary (type; AST or dict)
         :return:
         """
         if self._QTObj._qtProject == None:
@@ -1519,7 +1565,7 @@ class _MainWindow(QMainWindow):
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: There is no Module")
         else:
             if type(_input) != dict:    # input is AST type
-                design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= _AST)
+                design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= _input)
                 self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
                                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
                 # self._VariableIDwithAST.variableIDwithASTDict[_vid] = _AST
@@ -1542,34 +1588,7 @@ class _MainWindow(QMainWindow):
                 else:
                     print(" AST or Variable Info needed!")
 
-                # _vid in self._VariableIDwithAST.variableIDwithASTDict.keys():    # AST Edit Mode
-                # ############ Orignal Value Extraction from _vid Info #####################
-                # _originalName = self._VariableIDwithAST.variableIDwithASTDict[_vid].name
-                # _originalValue = self._VariableIDwithAST.variableIDwithASTDict[_vid].value
-                #
-                # ######################## Constraint(AST) Edition ##########################
-                # _Constraints = self._QTObj._qtProject._DesignConstraint
-                # moduleName = list(_Constraints.values())[0]
-                # for _, module in moduleName.items():
-                #     if module._ast.name == _originalName:
-                #         module._ast.name = _changedVariableDict['name']
-                #         module._ast.value = _changedVariableDict['value']
-                #         try:    # Case when changed Item is in the left dockWidget(3)
-                #             _changedItem = self.dockContentWidget3.model.findItems(module._id, column = 1)[0]
-                #             _changedItemIndex = self.dockContentWidget3.model.indexFromItem(_changedItem)
-                #             self.dockContentWidget3.refreshItem(_changedItemIndex)
-                #         except:                   # Case when changed Item is in the right dockWidget(3_2)
-                #             try:
-                #                 _changedItem = self.dockContentWidget3_2.model.findItems(module._id, column=1)[0]
-                #                 _changedItemIndex = self.dockContentWidget3_2.model.indexFromItem(_changedItem)
-                #                 self.dockContentWidget3_2.refreshItem(_changedItemIndex)
-                #             except:
-                #                 raise NotImplementedError
-                #                 return
-                #
-                #         print("###############################################################")
-                #         print("               CUSTOM Variable ast Modification Done           ")
-                #         print("###############################################################")
+
 
 
 

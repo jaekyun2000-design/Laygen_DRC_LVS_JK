@@ -238,7 +238,7 @@ class _DesignVariableManagerWindow(QWidget):
 
     send_destroy_signal = pyqtSignal(str)
     send_variable_siganl = pyqtSignal(dict)
-    send_changedData_signal = pyqtSignal("PyQt_PyObject", str, dict)
+    send_changedData_signal = pyqtSignal(dict)
     elementDict = dict()
 
     def __init__(self, itemDict):
@@ -313,9 +313,8 @@ class _DesignVariableManagerWindow(QWidget):
 
     def data_changed(self, inclusive_index):
         """
-        This function is created by Minsu Kim in order to receive the signal from CustomQTableView object,
-         and then emitting signal to MainWindow serially
-        :return: void (signal emission with created AST)
+        This function is created by Minsu Kim in order to receive the signal from CustomQTableView object
+        When Variable is changed, Update should be done in Constraint window as well
         """
         _index = inclusive_index[0]
         _nameindex = _index.siblingAtColumn(0)
@@ -324,15 +323,15 @@ class _DesignVariableManagerWindow(QWidget):
         _valueitemid = _valueindex.data()
         _nameitemid = _nameindex.data()
 
-        _changedvariabledict = dict(name=_nameitemid, value=_valueitemid)
-        # for _vid, _varInfo in self.variableDict.items():
-        #     _varName = list(_varInfo.values())[0]
-        #     if (_changedvariabledict['name'].find(_varName)) != -1:
-        #         _vidOfChangedVar = _vid
-        #
-        # print("###############################################################")
-        # print("       CUSTOM Variable ast creation / Modification Start       ")
-        # print("###############################################################")
+        _changedvariabledict = dict(DV=_nameitemid, value=_valueitemid)
+        for _vid, _varInfo in self.variableDict.items():
+            _varName = list(_varInfo.values())[0]
+            if (_changedvariabledict['DV'].find(_varName)) != -1:
+                _vidOfChangedVar = _vid
+        _VarDictWithID = dict()
+        _VarDictWithID[_vidOfChangedVar] = _changedvariabledict
+        self.send_changedData_signal.emit(_VarDictWithID)
+
         # _ASTForVariable = ASTmodule._Custom_AST_API()
         # _ASTtype = 'LogicExpression'
         # _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
