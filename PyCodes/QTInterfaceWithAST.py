@@ -2589,6 +2589,7 @@ class QtInterFace:
                     pickle.dump(self._qtProject, testPickleFile)
                 testPickleFile.close()
             except:
+                traceback.print_exc()
                 return userDefineExceptions._UnkownError
 
     def _loadProject(self, _name="defaultProjectName.bin"):

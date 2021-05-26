@@ -4,7 +4,7 @@ from PyCodes import QTInterfaceWithAST
 import re
 import copy
 
-print("***************Constraint Template file load Start")
+print("*********************Constraint Template file load Start")
 
 class _TemplateManageWidget(QWidget):
 
@@ -1052,7 +1052,7 @@ templateDict['WhileTrue'] = dict(
 #         _function = function
 #     )
 # )
-print("******************Constraint Template file load Complete")
+print("************************Constraint Template file load Complete")
 
 
 

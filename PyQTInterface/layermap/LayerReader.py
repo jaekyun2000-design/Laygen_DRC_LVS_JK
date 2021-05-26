@@ -91,6 +91,17 @@ def _LayerNumber2CommonLayerName(_LayerMapping):
             layerName = _LayerMapping[_LayerCommonName][2]
             _LayerNum2Name[i] = _LayerCommonName
     return _LayerNum2Name
+
+def _LayerNumber2UnifiedLayerName(_LayerMapping):
+
+    _LayerNum2Name = dict()
+
+    for _LayerCommonName in _LayerMapping:
+        if _LayerMapping[_LayerCommonName][1] == 0:
+            i = str(_LayerMapping[_LayerCommonName][0])
+            layerName = _LayerCommonName
+            _LayerNum2Name[i] = layerName
+    return _LayerNum2Name
 #######################
 # load layers
 #
@@ -933,5 +944,6 @@ elif _Technology == '350nm':
 
 _LayerMapFile.close()
 
+_LayerName_unified = _LayerNumber2UnifiedLayerName(_LayerMapping)
 
 print("******Layer Map file load Complete")

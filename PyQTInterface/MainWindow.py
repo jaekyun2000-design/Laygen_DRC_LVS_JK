@@ -104,7 +104,7 @@ class _MainWindow(QMainWindow):
 
     def initUI(self):
 
-        print("*********************Initializing Graphic Interface Start")
+        print("***************************Initializing Graphic Interface Start")
 
         ################# MAIN WINDOW setting ####################
         self.setWindowTitle("S2S GUI PROJECT")
@@ -457,7 +457,7 @@ class _MainWindow(QMainWindow):
     #         #     brush = QBrush(QColor(50,50,50))
     #         #     painter.fillPath(path,brush)
     #         #     self.scene.addPath(path)
-        print("************************Initializing Graphic Interface Complete")
+        print("******************************Initializing Graphic Interface Complete")
 
     # def threading_test(self,count):
 
@@ -928,12 +928,13 @@ class _MainWindow(QMainWindow):
             cm = self._CurrentModuleName
             _fileName=scf[0]
             self._QTObj._loadProject(_name=_fileName)
-
-            self._QTObj._qtProject.tmp_save_file.load_from_constraint_tree_info(self, self._QTObj._qtProject._DesignConstraint)
+            self._QTObj._qtProject.tmp_save_file.load_qt_interface(self,self._QTObj._qtProject._DesignConstraint)
+            # self._QTObj._qtProject.tmp_save_file.load_from_constraint_tree_info(self, self._QTObj._qtProject._DesignConstraint)
             top_module = self._QTObj._qtProject.tmp_save_file.top_module
-            for id_name, qt_parameter in self._QTObj._qtProject._DesignParameter[top_module].items():
-                vs_item = self.createVisualItemfromDesignParameter(qt_parameter)
-                self.updateGraphicItem(vs_item)
+            if 'top_module' in self._QTObj._qtProject._DesignParameter:
+                for id_name, qt_parameter in self._QTObj._qtProject._DesignParameter[top_module].items():
+                    vs_item = self.createVisualItemfromDesignParameter(qt_parameter)
+                    self.updateGraphicItem(vs_item)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Project Load Done")
 
 
@@ -948,7 +949,10 @@ class _MainWindow(QMainWindow):
         scf = QFileDialog.getSaveFileName(self,'Save Project','./PyQTInterface/Project/')
 
         try:
-            _fileName=scf[0] + ".bin"
+            if scf[0][-4:] != '.bin':
+                _fileName = scf[0] + ".bin"
+            else:
+                _fileName = scf[0]
 
             # fileName=_fileName.split('/')[-1]
             # self.updateXYCoordinatesForDisplay()

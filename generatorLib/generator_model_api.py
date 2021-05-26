@@ -2,7 +2,7 @@ import glob, os, sys, platform
 import sys, inspect
 
 sys.path.append('./generatorLib/generator_models')
-print("*********************Generator Library Loading Start")
+print("*********Generator Library Loading Start")
 
 generator_list = []
 class_dict = dict()
@@ -36,4 +36,4 @@ for generator in glob.iglob('./generatorLib/generator_models/*.py'):
 
 
 
-print("************************Generator Library Loading Complete")
+print("************Generator Library Loading Complete")

@@ -4,7 +4,7 @@ import re
 import os
 from PyQt5.QtGui import QColor
 
-print("*********Display information file load Start")
+print("***************Display information file load Start")
 _Technology='065nm'
 _HomeDirectory = os.getcwd()
 _DisplayDict = dict()
@@ -58,4 +58,4 @@ with open(_DRFfile,'rb',0) as drf:
         # print(line)
 
 
-print("************Display information file load Complete")
+print("******************Display information file load Complete")
