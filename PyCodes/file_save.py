@@ -5,6 +5,7 @@ class FileSaveFormat:
         self.id_items_for_edit = []
         self.id_items_for_run = []
         self.user_variables = []
+        self.user_variables_ids = []
 
     def save_from_qt_interface(self, main_window):
         self.top_module = main_window._CurrentModuleName
@@ -24,6 +25,8 @@ class FileSaveFormat:
     def save_user_variable_info(self,main_window):
         # self.user_variables = list(main_window.dv.variableDict.values())
         self.user_variables = main_window.dv.variableDict
+        self.user_variables_ids = main_window.dv.idDict
+        #TODO id save
 
     def load_qt_interface(self,main_window, _DesignConstraint):
         main_window._CurrentModuleName = self.top_module
@@ -45,6 +48,7 @@ class FileSaveFormat:
         from PyQTInterface import variableWindow
         # tmp = variableWindow._createNewDesignVariable()
         variableWindow._createNewDesignVariable.variableDict = self.user_variables
+        variableWindow._createNewDesignVariable.idDict = self.user_variables_ids
         if 'user_variables' not in self.__dict__:
             warnings.warn("There is no user_variables window information.")
             return

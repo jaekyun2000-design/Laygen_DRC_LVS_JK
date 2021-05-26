@@ -931,7 +931,7 @@ class _MainWindow(QMainWindow):
             self._QTObj._qtProject.tmp_save_file.load_qt_interface(self,self._QTObj._qtProject._DesignConstraint)
             # self._QTObj._qtProject.tmp_save_file.load_from_constraint_tree_info(self, self._QTObj._qtProject._DesignConstraint)
             top_module = self._QTObj._qtProject.tmp_save_file.top_module
-            if 'top_module' in self._QTObj._qtProject._DesignParameter:
+            if top_module in self._QTObj._qtProject._DesignParameter:
                 for id_name, qt_parameter in self._QTObj._qtProject._DesignParameter[top_module].items():
                     vs_item = self.createVisualItemfromDesignParameter(qt_parameter)
                     self.updateGraphicItem(vs_item)

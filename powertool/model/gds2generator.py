@@ -43,7 +43,11 @@ class GDS2Generator():
         self.class_name = project._CurrentModuleName
         #TODO library manager should be added later., library manger will add sys path and pass the class names.
         self.libraries = project.library_manager
-        self.user_variables = project.dv.variableDict.values()
+        if 'dv' in project.__dict__:
+            self.user_variables = project.dv.variableDict.values()
+        else:
+            from PyQTInterface import variableWindow
+            self.user_variables = variableWindow._createNewDesignVariable.variableDict.values()
         print('debugPoint')
 
         pass

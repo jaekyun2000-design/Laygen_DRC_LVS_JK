@@ -7,6 +7,7 @@ from gds_editor_ver3 import gds_record
 from gds_editor_ver3 import gds_elements
 from datetime import datetime, MINYEAR
 from gds_editor_ver3 import user_define_exceptions
+import gds_editor_ver3
 #
 # import gds_editor_ver3.gds_stream
 # import gds_editor_ver3.gds_structures
