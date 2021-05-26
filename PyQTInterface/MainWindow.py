@@ -1464,6 +1464,7 @@ class _MainWindow(QMainWindow):
         """
         _VariableID = list(_changedVariableInfo.keys())[0]
         _VariableName = _changedVariableInfo[_VariableID]['DV']
+        _VariableValue = _changedVariableInfo[_VariableID]['value']
         ############ Orignal Value Extraction from _vid Info #####################
         try:
             """
@@ -1482,14 +1483,16 @@ class _MainWindow(QMainWindow):
         print("###############################################################")
         _Constraints = self._QTObj._qtProject._DesignConstraint
         moduleName = list(_Constraints.values())[0]
+        print(f" Modifying Constraint name:\n {_originalName} -> {_VariableName}, VID : {_VariableID}")
+        # Constraint update
         for _, module in moduleName.items():
             if (module._ast.name == _originalName):
-                module._ast.name = _VariableName
-                print(f" Modifying Constraint name:\n {_originalName} -> {_VariableName}, VID : {_VariableID}")
+                module._ast.name = _VariableName    # Automatically change information inside VariableDictwithAST Object
                 try:  # Case when changed Item is in the left dockWidget(3)
                     _changedItem = self.dockContentWidget3.model.findItems(module._id, column=1)[0]
                     _changedItemIndex = self.dockContentWidget3.model.indexFromItem(_changedItem)
                     self.dockContentWidget3.refreshItem(_changedItemIndex)
+
                 except:  # Case when changed Item is in the right dockWidget(3_2)
                     try:
                         _changedItem = self.dockContentWidget3_2.model.findItems(module._id, column=1)[0]
@@ -1498,10 +1501,11 @@ class _MainWindow(QMainWindow):
                     except:
                         raise NotImplementedError
                         return
-
+                print(" Constraint Update Done ")
                 print("###############################################################")
                 print("           Argument Variable ast Modification Done             ")
                 print("###############################################################")
+
                 break
 
 

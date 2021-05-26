@@ -319,36 +319,19 @@ class _DesignVariableManagerWindow(QWidget):
         _index = inclusive_index[0]
         _nameindex = _index.siblingAtColumn(0)
         _valueindex = _index.siblingAtColumn(1)
-
         _valueitemid = _valueindex.data()
         _nameitemid = _nameindex.data()
-
         _changedvariabledict = dict(DV=_nameitemid, value=_valueitemid)
+
         for _vid, _varInfo in self.variableDict.items():
             _varName = list(_varInfo.values())[0]
-            if (_changedvariabledict['DV'].find(_varName)) != -1:
+            if (_changedvariabledict['DV'] == _varName):
                 _vidOfChangedVar = _vid
+                break
+
         _VarDictWithID = dict()
         _VarDictWithID[_vidOfChangedVar] = _changedvariabledict
         self.send_changedData_signal.emit(_VarDictWithID)
-
-        # _ASTForVariable = ASTmodule._Custom_AST_API()
-        # _ASTtype = 'LogicExpression'
-        # _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
-        #
-        # try:
-        #     if (_changedvariabledict['name'] == '' or None):
-        #         raise NotImplementedError
-        #     else:
-        #         _ASTobj.__dict__['name'] = _changedvariabledict['name']
-        #         _ASTobj.__dict__['value'] = _changedvariabledict['value']
-        #
-        #         self.send_changedData_signal.emit(_ASTobj,_vidOfChangedVar, _changedvariabledict)
-        #
-        # except:
-        #     print("Value Initialization Fail")
-        #     print("There is no Input")
-
 
     def add_clicked(self):
         self.addWidget = _createNewDesignVariable()
@@ -610,6 +593,14 @@ class _editDesignVariable(QWidget):
             self.warning.setText("Invalid Name")
             self.warning.show()
         else:
+            for _vid, info in self.variableDict.items():
+                if info['DV'] == self.name.text():
+                    self.warning = QMessageBox()
+                    self.warning.setIcon(QMessageBox.Warning)
+                    self.warning.setText("This Name Already Exists")
+                    self.warning.show()
+                    return
+
             self.variableDict[self.vid]['DV'] = self.name.text()
             self.variableDict[self.vid]['value'] = self.value.text()
 
