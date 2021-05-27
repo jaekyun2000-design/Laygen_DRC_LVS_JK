@@ -238,7 +238,7 @@ class _DesignVariableManagerWindow(QWidget):
 
     send_destroy_signal = pyqtSignal(str)
     send_variable_siganl = pyqtSignal(dict)
-    send_changedData_signal = pyqtSignal("PyQt_PyObject", str, dict)
+    send_changedData_signal = pyqtSignal(dict)
     elementDict = dict()
 
     def __init__(self, itemDict):
@@ -313,48 +313,25 @@ class _DesignVariableManagerWindow(QWidget):
 
     def data_changed(self, inclusive_index):
         """
-        This function is created by Minsu Kim in order to receive the signal from CustomQTableView object,
-         and then emitting signal to MainWindow serially
-        :return: void (signal emission with created AST)
+        This function is created by Minsu Kim in order to receive the signal from CustomQTableView object
+        When Variable is changed, Update should be done in Constraint window as well
         """
         _index = inclusive_index[0]
         _nameindex = _index.siblingAtColumn(0)
         _valueindex = _index.siblingAtColumn(1)
-
         _valueitemid = _valueindex.data()
         _nameitemid = _nameindex.data()
+        _changedvariabledict = dict(DV=_nameitemid, value=_valueitemid)
 
-        _changedvariabledict = dict(name=_nameitemid, value=_valueitemid)
         for _vid, _varInfo in self.variableDict.items():
             _varName = list(_varInfo.values())[0]
-            if (_changedvariabledict['name'].find(_varName)) != -1:
+            if (_changedvariabledict['DV'] == _varName):
                 _vidOfChangedVar = _vid
+                break
 
-        print("###############################################################")
-        print("       CUSTOM Variable ast creation / Modification Start       ")
-        print("###############################################################")
-        _ASTForVariable = ASTmodule._Custom_AST_API()
-        _ASTtype = 'LogicExpression'
-        _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
-
-        try:
-            if (_changedvariabledict['name'] == '' or None):
-                raise NotImplementedError
-            else:
-                _ASTobj.__dict__['name'] = _changedvariabledict['name']
-                _ASTobj.__dict__['value'] = _changedvariabledict['value']
-
-                self.send_changedData_signal.emit(_ASTobj,_vidOfChangedVar, _changedvariabledict)
-
-        except:
-            print("Value Initialization Fail")
-            print("There is no Input")
-
-
-
-
-
-        # TODO later,,, multiple changed case:
+        _VarDictWithID = dict()
+        _VarDictWithID[_vidOfChangedVar] = _changedvariabledict
+        self.send_changedData_signal.emit(_VarDictWithID)
 
     def add_clicked(self):
         self.addWidget = _createNewDesignVariable()
@@ -366,8 +343,8 @@ class _DesignVariableManagerWindow(QWidget):
         self.destroy()
 
     def check_clicked(self):
-        print('varDict:',self.variableDict)
-        print('idDict:',self.idDict)
+        # print('varDict:', self.variableDict)
+        # print('idDict:', self.idDict)
         if self.selectedItem == None:
             self.msg = QMessageBox()
             self.msg.setText("Nothing selected")
@@ -616,6 +593,14 @@ class _editDesignVariable(QWidget):
             self.warning.setText("Invalid Name")
             self.warning.show()
         else:
+            for _vid, info in self.variableDict.items():
+                if info['DV'] == self.name.text():
+                    self.warning = QMessageBox()
+                    self.warning.setIcon(QMessageBox.Warning)
+                    self.warning.setText("This Name Already Exists")
+                    self.warning.show()
+                    return
+
             self.variableDict[self.vid]['DV'] = self.name.text()
             self.variableDict[self.vid]['value'] = self.value.text()
 

@@ -26,11 +26,11 @@ class GDS2Generator():
         self.root_cell = None
         # self.layer_num2name = LayerReader._LayerNumber2LayerName(LayerReader._LayerMapping)
 
-        if debug:
-            self.inv_gen = GDS2Generator(False)
-            self.inv_gen.load_gds('G:\OneDrive - postech.ac.kr\GeneratorAutomation\VariableSuggestion-git\INV2.gds')
-            self.inv_gen.get_cell_names()
-            self.inv_gen.set_root_cell('INV')
+        # if debug:
+        #     self.inv_gen = GDS2Generator(False)
+        #     self.inv_gen.load_gds('G:\OneDrive - postech.ac.kr\GeneratorAutomation\VariableSuggestion-git\INV2.gds')
+        #     self.inv_gen.get_cell_names()
+        #     self.inv_gen.set_root_cell('INV')
 
     def save_as_pickle(self,file_name):
         with open(file_name, 'wb') as f:
