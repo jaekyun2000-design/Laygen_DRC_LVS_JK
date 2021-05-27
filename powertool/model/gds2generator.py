@@ -1,4 +1,5 @@
 import astunparse
+import PyCodes
 from gds_editor_ver3 import gds_stream
 from PyQTInterface.layermap import LayerReader
 from generatorLib import StickDiagram, DesignParameters
@@ -34,6 +35,93 @@ class GDS2Generator():
     def save_as_pickle(self,file_name):
         with open(file_name, 'wb') as f:
             pickle.dump(self,f)
+
+    def code_generation_for_subcell(self, _ast=None):
+        from PyCodes import element_ast
+        # debug_sref_ast = element_ast.Sref()
+        # debug_sref_ast.name = 'testcell'
+        # debug_sref_ast.library = 'NMOSWithDummy'
+        # debug_sref_ast.className = '_NMOS'
+        # debug_sref_ast.XY = [[0,0]]
+        # debug_sref_ast.calculate_fcn = '_CalculateNMOSDesignParameter'
+        # debug_sref_ast.parameters = dict(
+        #     _NMOSNumberofGate=3, _NMOSChannelWidth=400, _NMOSChannellength=60, _NMOSDummy=False
+        # )
+        # debug_sref_ast = element_ast.Sref()
+        # debug_sref_ast.name = 'inv'
+        # debug_sref_ast.library = 'Inverter'
+        # debug_sref_ast.className = '_Inverter'
+        # debug_sref_ast.XY = [[0,0]]
+        # debug_sref_ast.calculate_fcn = '_CalculateDesignParameter'
+        # debug_sref_ast.parameters = dict(
+        #     _Finger=5, _ChannelWidth=400, _ChannelLength=60,
+        #     _NPRatio=2, _VDD2VSSHeight=None, _Dummy=False
+        # )
+
+
+        target_ast = debug_sref_ast
+        target_cell_name = target_ast.name
+        # target_ast = _ast
+        self.code = f'_Name="{self.class_name}"\n'
+        target_ast = element_ast.ElementTransformer().visit(target_ast)
+        self.code += astunparse.unparse(target_ast)
+        self.root_cell = StickDiagram._StickDiagram()
+        self.root_cell._DesignParameter = dict()
+        self.root_cell._DesignParameter['_Name'] = StickDiagram._StickDiagram()._NameDeclaration(self.class_name)
+        self.root_cell._DesignParameter['_GDSFile'] = StickDiagram._StickDiagram()._GDSObjDeclaration()
+        self.root_cell.exec_pass(self.code,generator_model_api)
+
+        _ModelStructure = dict()
+        element_name_stactk = list(self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.keys())
+        element_stack = list(self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.values())
+        model_structure_stack = [_ModelStructure] * len(element_name_stactk)
+        while model_structure_stack:
+            model_structure = model_structure_stack.pop(0)
+            element_name = element_name_stactk.pop(0)
+            element = element_stack.pop(0)
+
+            if element['_DesignParametertype'] == 4 or element['_DesignParametertype'] == 5:
+                continue
+            elif element['_DesignParametertype'] == 3:
+                model_structure[element_name] = PyCodes.QTInterfaceWithAST.QtDesignParameter()
+                model_structure[element_name]._DesignParameter = element
+                model_structure[element_name]._DesignParameter['_ModelStructure'] = dict()
+
+                sub_element_names = list(element['_DesignObj']._DesignParameter.keys())
+                sub_elements = list(element['_DesignObj']._DesignParameter.values())
+                sub_model_structures = [ model_structure[element_name]._DesignParameter['_ModelStructure'] ]*len(sub_element_names)
+                element_name_stactk.extend(sub_element_names)
+                element_stack.extend(sub_elements)
+                model_structure_stack.extend(sub_model_structures)
+            else:
+                model_structure[element_name] = PyCodes.QTInterfaceWithAST.QtDesignParameter()
+                model_structure[element_name]._DesignParameter = element
+                if '_ElementName' not in model_structure[element_name]._DesignParameter:
+                    model_structure[element_name]._DesignParameter['_ElementName'] = element_name
+        return _ModelStructure
+
+        # for element_name, element in self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.items():
+        #     if element['_DesignParametertype'] == 5 or element['_DesignParametertype'] == 4:
+        #         continue
+        #     elif element['_DesignParametertype'] == 1 or element['_DesignParametertype'] == 2:
+        #         _ModelStructure[element_name] = PyCodes.QTInterfaceWithAST.QtDesignParameter()
+        #         _ModelStructure[element_name]._DesignParameter = element
+        #         if '_ElementName' not in _ModelStructure[element_name]._DesignParameter:
+        #             _ModelStructure[element_name]._DesignParameter['_ElementName'] = element_name
+        #         _ModelStructure[element_name]._DesignParameter['_id'] = element_name # not sure
+        #     elif element['_DesignParametertype'] == 3:
+        #         _ModelStructure[element_name] = PyCodes.QTInterfaceWithAST.QtDesignParameter()
+        #         _ModelStructure[element_name]._DesignParameter = element
+        #         _ModelStructure[element_name]._DesignParameter['_ModelStructure'] = run_same_thing()
+        breakpoint()
+
+
+
+
+
+
+        # Qtdp['dpName == subcellName'] = QtDesignParameter()
+        # Qtdp['dpName']._DesignParameter = subcell_designParameter with subcell_DP['_ModelStructure']= Model Structure , ModelStructure is dict of QtDP
 
     def load_qt_project(self,project):
         """

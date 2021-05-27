@@ -35,10 +35,8 @@ class _StickDiagram:
     def exec_pass(self,code, library_manager):
         for name in library_manager.class_name_dict:
             locals()[name] = library_manager.libraries[name]
-
         exec(code)
-        self._CalculateDesignParameter = types.MethodType(_CalculateDesignParameter, self)
-        self._CalculateDesignParameter()
+
         # exec(code)
 
     def RoundupMinSnapSpacing(self, _DesignParameter=None, _MinSnapSpacing=None):

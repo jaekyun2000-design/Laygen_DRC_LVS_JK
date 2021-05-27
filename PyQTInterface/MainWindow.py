@@ -418,7 +418,7 @@ class _MainWindow(QMainWindow):
         self.ConstraintTemplateButton.clicked.connect(self.makeTemplateWindow)
         # self.parsetreeEasyRun.clicked.connect(self.easyRun)
         self.variableCallButton.clicked.connect(self.variableListUpdate)
-        self.sref_debug.clicked.connect(self.sref_debug_module)
+        self.sref_debug.clicked.connect(self.runConstraint_for_subcell)
 
 
         ################ Logging Message Dock Widget setting ####################
@@ -701,6 +701,20 @@ class _MainWindow(QMainWindow):
         except:
             traceback.print_exc()
             print("Run fail")
+
+    def runConstraint_for_subcell(self, _ast):
+        try:
+            gds2gen = topAPI.gds2generator.GDS2Generator(False)
+            gds2gen.class_name = self._CurrentModuleName
+            _Model_Structure = gds2gen.code_generation_for_subcell()
+            return _Model_Structure
+            # _ast.name
+            # breakpoint()
+            # return gds2gen.root_cell._DesignParameter[_ast.name]['_DesignObj']._DesignParameter
+            # print('debug')
+        except:
+            traceback.print_exc()
+
 
     def checkNameDuplication(self,checkItem):
         name = checkItem._ItemTraits['_ElementName']
