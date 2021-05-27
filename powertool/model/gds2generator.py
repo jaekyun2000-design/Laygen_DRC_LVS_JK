@@ -104,7 +104,7 @@ class GDS2Generator():
                 model_structure[element_name]._DesignParameter = element
                 if '_ElementName' not in model_structure[element_name]._DesignParameter:
                     model_structure[element_name]._DesignParameter['_ElementName'] = element_name
-        return self.root_cell._DesignParameter[element_name]
+        return self.root_cell._DesignParameter[target_cell_name]
         # return _ModelStructure
 
         # for element_name, element in self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.items():
