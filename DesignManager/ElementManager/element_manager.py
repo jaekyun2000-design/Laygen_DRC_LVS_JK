@@ -104,7 +104,6 @@ class ElementManager:
                         tmpAST.__dict__[key] = dp_dict['_TEXT'].decode()
                     except:
                         tmpAST.__dict__[key] = dp_dict['_TEXT']
-
         else:
             return None, None
 

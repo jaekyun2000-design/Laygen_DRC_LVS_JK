@@ -686,7 +686,7 @@ class _SRefSetupWindow(QWidget):
 
 class _LoadSRefWindow(QWidget):
 
-    send_DesignConstraint_signal = pyqtSignal(ast.AST)
+    send_DesignConstraint_signal = pyqtSignal("PyQt_PyObject")
     send_destroy_signal = pyqtSignal(str)
 
     def __init__(self):
@@ -850,19 +850,18 @@ class _LoadSRefWindow(QWidget):
         tmpAST = element_ast.Sref()
         for key in element_ast.Sref._fields:
             if key == 'name':
-                tmpAST.__dict__[key] = self.name_input
+                tmpAST.__dict__[key] = self.name_input.text()
             elif key == 'library':
-                tmpAST.__dict__[key] = self.library_input
+                tmpAST.__dict__[key] = self.library_input.currentText()
             elif key == 'className':
-                tmpAST.__dict__[key] = self.class_name_input
+                tmpAST.__dict__[key] = self.class_name_input.text()
             elif key == 'XY':
-                tmpAST.__dict__[key] = self.XY_input
+                tmpAST.__dict__[key] = self.XY_input.text()
             elif key == 'calculate_fcn':
-                tmpAST.__dict__[key] = self.cal_fcn_input
+                tmpAST.__dict__[key] = self.cal_fcn_input.currentText()
             elif key == 'parameters':
                 tmpAST.__dict__[key] = self.paramDict
 
-        print(tmpAST['Type'])
 
         self.send_DesignConstraint_signal.emit(tmpAST)
         self.destroy()

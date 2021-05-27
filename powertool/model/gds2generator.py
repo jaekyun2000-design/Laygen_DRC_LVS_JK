@@ -59,17 +59,22 @@ class GDS2Generator():
         # )
 
 
-        target_ast = debug_sref_ast
+        # target_ast = debug_sref_ast
+        target_ast = _ast
         target_cell_name = target_ast.name
-        # target_ast = _ast
-        self.code = f'_Name="{self.class_name}"\n'
+        self.code = f'_Name="{target_cell_name}"\n'
         target_ast = element_ast.ElementTransformer().visit(target_ast)
         self.code += astunparse.unparse(target_ast)
         self.root_cell = StickDiagram._StickDiagram()
         self.root_cell._DesignParameter = dict()
-        self.root_cell._DesignParameter['_Name'] = StickDiagram._StickDiagram()._NameDeclaration(self.class_name)
+        self.root_cell._DesignParameter['_Name'] = StickDiagram._StickDiagram()._NameDeclaration(target_cell_name)
         self.root_cell._DesignParameter['_GDSFile'] = StickDiagram._StickDiagram()._GDSObjDeclaration()
-        self.root_cell.exec_pass(self.code,generator_model_api)
+        try:
+            self.root_cell.exec_pass(self.code,generator_model_api)
+        except:
+            traceback.print_exc()
+            warnings.warn("Invalid parameters.")
+            return None
 
         _ModelStructure = dict()
         element_name_stactk = list(self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.keys())

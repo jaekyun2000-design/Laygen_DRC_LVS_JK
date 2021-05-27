@@ -38,11 +38,6 @@ class _PMOS(StickDiagram._StickDiagram):
         if _Name != None:
             self._DesignParameter['_Name']['_Name']=_Name
 
-
-
-
-
-
     def _CalculatePMOSDesignParameter(self, _PMOSNumberofGate=None, _PMOSChannelWidth=None, _PMOSChannellength=None, _PMOSDummy=False ):
         print('#########################################################################################################')
         print('                                    {}  PMOSContact Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name']))

@@ -2,7 +2,7 @@ import ast
 import astunparse
 
 custom_ast_list = ['GeneratorVariable', 'LogicExpression', 'ElementArray','DynamicElementArray','Distance',
-                   'ArgumentVariable', 'LogicExpression']
+                   'ArgumentVariable', 'LogicExpression', 'XYCoordinate']
 
 class GeneratorVariable(ast.AST):
     def __init__(self, *args, **kwargs):
@@ -22,6 +22,12 @@ class LogicExpression(GeneratorVariable):
     _fields = (
         'name',     # str
         'value',    # str
+    )
+class XYCoordinate(GeneratorVariable):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'list',      # str
     )
 
 class ArgumentVariable(GeneratorVariable):

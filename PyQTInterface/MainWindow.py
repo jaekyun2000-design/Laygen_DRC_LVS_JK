@@ -758,7 +758,7 @@ class _MainWindow(QMainWindow):
     def loadSRefWindow(self):
         self.ls = SetupWindow._LoadSRefWindow()
         self.ls.show()
-        self.ls.send_DesignConstraint_signal.connect(self.createNewConstraint)
+        self.ls.send_DesignConstraint_signal.connect(self.srefUpdate)
         self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)
         self.ls.send_destroy_signal.connect(self.delete_obj)
         # self.ls.send_TextSetup_signal.connect(self.updateGraphicItem)
@@ -1015,6 +1015,14 @@ class _MainWindow(QMainWindow):
         self.mw.send_ModuleName_signal.connect(self.updateModule)
 
     # def create
+    def srefUpdate(self, _AST):
+        gds2gen = topAPI.gds2generator.GDS2Generator(True)
+        _modelStructureFromAST = gds2gen.code_generation_for_subcell(_AST)
+        tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(_AST)
+
+        print("AAAAAAA")
+
+
 
     def loadGDS(self):
         scf = QFileDialog.getOpenFileName(self,'Load GDS','./PyQTInterface/GDSFile')
@@ -1604,6 +1612,10 @@ class _MainWindow(QMainWindow):
                 if (_input) != None:
                     _targetVid = list(_input.keys())[0]
                     if _targetVid in list(self._VariableIDwithAST.variableIDwithASTDict.keys()):
+                        self.warning = QMessageBox()
+                        self.warning.setIcon(QMessageBox.Warning)
+                        self.warning.setText("Target Variable already exists as a constraint")
+                        self.warning.show()
                         print("Target Variable already exists as a constraint")
                         return
                     else:
