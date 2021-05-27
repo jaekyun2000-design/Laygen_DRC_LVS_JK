@@ -1048,11 +1048,52 @@ class _MainWindow(QMainWindow):
 
     # def create
     def srefUpdate(self, _AST):
+        _moduleName = self._CurrentModuleName
         gds2gen = topAPI.gds2generator.GDS2Generator(True)
-        _modelStructureFromAST = gds2gen.code_generation_for_subcell(_AST)
+        _dp = gds2gen.code_generation_for_subcell(_AST)
         tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(_AST)
+        if len(self._QTObj._qtProject._DesignParameter) == 0:
+            self._QTObj._qtProject._DesignParameter[_moduleName] = dict()
+            _newParameterID = self._CurrentModuleName + str(0)
+            _tmpQtDpObj = QTInterfaceWithAST.QtDesignParameter(_id=_newParameterID,
+                                                     _type= 3,
+                                                    _ParentName=_moduleName,
+                                                    _ElementName= None)
+            self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID] = _tmpQtDpObj
+        else:
+            _designParameterID = self._QTObj._qtProject._getDesignConstraintId(_moduleName)
+            _newParameterID = (_moduleName + str(_designParameterID))
+            _tmpQtDpObj = QTInterfaceWithAST.QtDesignParameter(_id=_newParameterID,
+                                                     _type= 3,
+                                                    _ParentName=_moduleName,
+                                                    _ElementName= None)
+            self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID] = _tmpQtDpObj
 
-        print("AAAAAAA")
+        self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter = tmp_dp_dict
+        self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_id'] = _newParameterID
+        self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_DesignObj'] = _dp['_DesignObj']
+        self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_ElementName'] = _newParameterID
+        self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_XYCoordinates'] = _dp['_XYCoordinates']
+        self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_ModelStructure'] = _dp['_ModelStructure']
+        _module = self._QTObj._qtProject._DesignParameter[_moduleName]
+        design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                          module_name=_moduleName,
+                                                          _ast=_AST, element_manager_update=False)
+        self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                         _parentName=_moduleName,
+                                                         _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+        self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=_newParameterID, dc_id=design_dict['constraint_id'])
+        sref_vi = VisualizationItem._VisualizationItem()
+        sref_vi.updateDesignParameter(_module[_newParameterID])
+        self.scene.addItem(sref_vi)
+        self.visualItemDict[_module[_newParameterID]._id] = sref_vi
+
+        self._layerItem = sref_vi.returnLayerDict()
+
+        self.dockContentWidget1_2.updateLayerList(self._layerItem)
+        print("DEBUG")
+
+
 
 
 
