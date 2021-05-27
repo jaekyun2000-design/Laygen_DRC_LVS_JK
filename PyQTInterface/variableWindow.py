@@ -357,21 +357,18 @@ class _DesignVariableManagerWindow(QWidget):
         self.destroy()
 
     def check_clicked(self):
-        print(self.filterList)
-        print('varDict:', self.variableDict)
-        print('idDict:', self.idDict)
-        # if self.selectedItem == None:
-        #     self.msg = QMessageBox()
-        #     self.msg.setText("Nothing selected")
-        #     self.msg.show()
-        # else:
-        #     vid = self.idDict[self.selectedItem]['vid']
-        #     tmpdict = dict()
-        #     tmpdict[vid] = self.variableDict[vid]
-        #
-        #     self.send_variable_siganl.emit(tmpdict)
-        #
-        #     self.selectedItem = None
+        if self.selectedItem == None:
+            self.msg = QMessageBox()
+            self.msg.setText("Nothing selected")
+            self.msg.show()
+        else:
+            vid = self.idDict[self.selectedItem]['vid']
+            tmpdict = dict()
+            tmpdict[vid] = self.variableDict[vid]
+
+            self.send_variable_siganl.emit(tmpdict)
+
+            self.selectedItem = None
 
     def edit_clicked(self):
         if self.selectedItem == None:
