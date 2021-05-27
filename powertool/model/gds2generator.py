@@ -76,7 +76,8 @@ class GDS2Generator():
             warnings.warn("Invalid parameters.")
             return None
 
-        _ModelStructure = dict()
+        self.root_cell._DesignParameter[target_cell_name]['_ModelStructure'] = dict()
+        _ModelStructure = self.root_cell._DesignParameter[target_cell_name]['_ModelStructure']
         element_name_stactk = list(self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.keys())
         element_stack = list(self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.values())
         model_structure_stack = [_ModelStructure] * len(element_name_stactk)
@@ -103,7 +104,8 @@ class GDS2Generator():
                 model_structure[element_name]._DesignParameter = element
                 if '_ElementName' not in model_structure[element_name]._DesignParameter:
                     model_structure[element_name]._DesignParameter['_ElementName'] = element_name
-        return _ModelStructure
+        return self.root_cell._DesignParameter[element_name]
+        # return _ModelStructure
 
         # for element_name, element in self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.items():
         #     if element['_DesignParametertype'] == 5 or element['_DesignParametertype'] == 4:
