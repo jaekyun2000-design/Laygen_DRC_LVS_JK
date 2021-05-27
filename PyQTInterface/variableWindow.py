@@ -320,7 +320,7 @@ class _DesignVariableManagerWindow(QWidget):
         self.table.horizontalHeader().setDefaultSectionSize(127)
         self.table.resizeRowsToContents()
 
-        # self.model.itemChanged.connect(self.itemChanged)
+        self.model.itemChanged.connect(self.itemChanged)
         self.lineEditInput.textChanged.connect(self.filterVariables)
         self.table.clicked.connect(self.itemClicked)
         self.table.send_dataChanged_signal.connect(self.data_changed)
