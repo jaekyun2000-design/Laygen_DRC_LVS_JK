@@ -862,8 +862,6 @@ class _LoadSRefWindow(QWidget):
             elif key == 'parameters':
                 tmpAST.__dict__[key] = self.paramDict
 
-        print(tmpAST['Type'])
-
         self.send_DesignConstraint_signal.emit(tmpAST)
         self.destroy()
 

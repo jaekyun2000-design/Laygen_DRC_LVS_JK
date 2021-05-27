@@ -236,7 +236,7 @@ class _MainWindow(QMainWindow):
 
 
         ################# Right Dock Widget setting ####################
-        dockWidget1 = QDockWidget()
+        dockWidget1 = QDockWidget("Element")
         dockWidget1.setMaximumHeight(400)
         dockWidget1_1 = QDockWidget("Layer")
         layoutWidget = QWidget()
@@ -260,16 +260,22 @@ class _MainWindow(QMainWindow):
         PinButton = QPushButton("Pin",dockContentWidget1)
         PinButton.clicked.connect(self.makePinWindow)
 
-        FilterButton = QPushButton("Filter",dockContentWidget1)
-        FilterButton.clicked.connect(self.makeFilterWindow)
-
-        VariableButton = QPushButton("Variable",dockContentWidget1)
-        VariableButton.clicked.connect(self.makeVariableWindow)
+        # FilterButton = QPushButton("Filter",dockContentWidget1)
+        # FilterButton.clicked.connect(self.makeFilterWindow)
+        #
+        # VariableButton = QPushButton("Variable",dockContentWidget1)
+        # VariableButton.clicked.connect(self.makeVariableWindow)
 
         ElemntClickCheckBox = QCheckBox("Element",dockContentWidget1)
         SrefClickCheckBox = QCheckBox("Sref",dockContentWidget1)
         VariableClickCheckBox = QCheckBox("Variable",dockContentWidget1)
 
+        ########## Second tab ############
+        self.dv = variableWindow._DesignVariableManagerWindow(dict())
+        self.dvstate = True
+        self.dv.send_variable_siganl.connect(self.createNewConstraintAST)
+        self.dv.send_changedData_signal.connect(self.updateVariableConstraint)
+        self.dv.send_destroy_signal.connect(self.delete_obj)
 
         vboxOnDock1 = QVBoxLayout()             # Layout For Button Widget
 
@@ -280,8 +286,8 @@ class _MainWindow(QMainWindow):
         # vboxOnDock1.addWidget(srefButtonS)
         vboxOnDock1.addWidget(TextButton)
         vboxOnDock1.addWidget(PinButton)
-        vboxOnDock1.addWidget(FilterButton)
-        vboxOnDock1.addWidget(VariableButton)
+        # vboxOnDock1.addWidget(FilterButton)
+        # vboxOnDock1.addWidget(VariableButton)
         vboxOnDock1.addStretch(2)
         hboxOnDock1 = QHBoxLayout()
         hboxOnDock1.addWidget(ElemntClickCheckBox)
@@ -299,9 +305,34 @@ class _MainWindow(QMainWindow):
         layoutWidget.setLayout(gridOnDock1)
         dockWidget1.setWidget(layoutWidget)
 
-        self.addDockWidget(Qt.RightDockWidgetArea,dockWidget1)
+        # self.addDockWidget(Qt.RightDockWidgetArea,dockWidget1_1)
+        # self.addDockWidget(Qt.RightDockWidgetArea,dockWidget1)
         dockWidget1_1.setWidget(self.dockContentWidget1_2)
-        self.addDockWidget(Qt.RightDockWidgetArea,dockWidget1_1)
+
+        # self.doctWidget_tab1 = QDockWidget("Layers")
+        # unified_widget = QWidget()
+        # v_layout_widget = QVBoxLayout()
+        # v_layout_widget.addWidget(dockWidget1_1)
+        # v_layout_widget.addWidget(dockWidget1)
+        # unified_widget.setLayout(v_layout_widget)
+        # self.doctWidget_tab1.setWidget(unified_widget)
+        # self.addDockWidget(Qt.RightDockWidgetArea,self.doctWidget_tab1)
+        # # self.addDockWidget(Qt.RightDockWidgetArea,dockWidget1_1)
+        #
+        # dockWidget_tab2 = QDockWidget("Variable")
+        # dockWidget_tab2.setWidget(self.dv)
+        # self.addDockWidget(Qt.RightDockWidgetArea, dockWidget_tab2)
+
+        dockWidget_tab3 = QDockWidget("Variable")
+        dockWidget_tab3.setWidget(self.dv)
+
+        self.addDockWidget(Qt.RightDockWidgetArea, dockWidget1)
+        self.addDockWidget(Qt.RightDockWidgetArea, dockWidget1_1)
+        self.addDockWidget(Qt.RightDockWidgetArea, dockWidget_tab3)
+
+        self.tabifyDockWidget(dockWidget1, dockWidget1_1)
+        self.tabifyDockWidget(dockWidget1_1, dockWidget_tab3)
+
 
         ################# Left Dock Widget setting ####################
         dockWidget2 = QDockWidget("Design List")
@@ -803,17 +834,18 @@ class _MainWindow(QMainWindow):
         self.scene.send_xyCoordinate_signal.connect(self.pinw.DetermineCoordinateWithMouse)
         self.pinw.send_Destroy_signal.connect(self.delete_obj)
 
-    def makeFilterWindow(self):
-        self.fw = FilterPractice._FilterWindow()
-        self.fw.show()
-
-    def makeVariableWindow(self):
-        self.dv = variableWindow._DesignVariableManagerWindow(self.visualItemDict)
-        self.dvstate = True
-        self.dv.show()
-        self.dv.send_variable_siganl.connect(self.createNewConstraintAST)
-        self.dv.send_changedData_signal.connect(self.updateVariableConstraint)
-        self.dv.send_destroy_signal.connect(self.delete_obj)
+    # def makeFilterWindow(self):
+    #     # self.fw = FilterPractice._FilterWindow()
+    #     self.fw = variableWindow._TmpClass(self.visualItemDict)
+    #     self.fw.show()
+    #
+    # def makeVariableWindow(self):
+    #     self.dv = variableWindow._DesignVariableManagerWindow(self.visualItemDict)
+    #     self.dvstate = True
+    #     self.dv.show()
+    #     self.dv.send_variable_siganl.connect(self.createNewConstraintAST)
+    #     self.dv.send_changedData_signal.connect(self.updateVariableConstraint)
+    #     self.dv.send_destroy_signal.connect(self.delete_obj)
 
     def makeConstraintWindow(self):
         self.cw = SetupWindow._ConstraintSetupWindow()
