@@ -1703,12 +1703,15 @@ class QtProject:
         return output
 
     def _update_design(self, design_type: str, module_name: str, id: str, _ast: ast.AST=None, dp_dict: dict=None) -> dict:
-        if design_type == 'parameter':
-            output = self._update_design_dictionary(module_name=module_name, id=id, _dp_dict=dp_dict)
-        elif design_type == 'constraint':
-            output = self._update_ast(module_name=module_name, id=id, _ast=_ast)
+        try:
+            if design_type == 'parameter':
+                output = self._update_design_dictionary(module_name=module_name, id=id, _dp_dict=dp_dict)
+            elif design_type == 'constraint':
+                output = self._update_ast(module_name=module_name, id=id, _ast=_ast)
 
-        return output
+            return output
+        except:
+            traceback.print_exc()
 
     def _createNewDesignParameter(self, _id=None, _type=None, _ParentName=None, _ElementName=None):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
@@ -1797,8 +1800,7 @@ class QtProject:
             try:
                 for key in _dp_dict:
                     self._DesignParameter[module_name][id]._setDesignParameterValue(_index=key, _value=_dp_dict[key])
-                self._DesignParameter[module_name][id]._setDesignParameterName(
-                    _DesignParameterName=_dp_dict['_DesignParameterName'])
+                self._DesignParameter[module_name][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
 
                 # send design parameter info to element manager --> return: ast info or
                 _designParameter = self._DesignParameter[module_name][id]
@@ -1820,6 +1822,7 @@ class QtProject:
                           'constraint_id': _designConstraint_id}
                 return output
             except:
+                traceback.print_exc()
                 return userDefineExceptions._UnkownError
 
     def _deleteDesignParameter(self, _id=None, _ParentName=None):

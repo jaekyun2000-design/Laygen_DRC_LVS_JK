@@ -255,8 +255,12 @@ class _DesignVariableManagerWindow(QWidget):
         self.model = QStandardItemModel()
         self.model.setHorizontalHeaderLabels(['Name', 'Value'])
 
+        labelInput = QLabel('Input :')
+        self.lineEditInput = QLineEdit()
+
         self.variableDict = _createNewDesignVariable().variableDict
         self.idDict = _createNewDesignVariable().idDict
+        self.filterList = list(self.idDict.keys())
 
         for key in self.variableDict:
             item1 = QStandardItem(self.variableDict[key]['DV'])
@@ -267,7 +271,7 @@ class _DesignVariableManagerWindow(QWidget):
             item2.setTextAlignment(Qt.AlignCenter)
 
             self.model.appendRow(item1)
-            self.model.setItem(self.model.rowCount()-1,1,item2)
+            self.model.setItem(self.model.rowCount() - 1, 1, item2)
 
         addButton = QPushButton("Add", self)
         addButton.clicked.connect(self.add_clicked)
@@ -279,6 +283,11 @@ class _DesignVariableManagerWindow(QWidget):
         deleteButton.clicked.connect(self.delete_clicked)
         quitButton = QPushButton("Quit", self)
         quitButton.clicked.connect(self.quit_clicked)
+
+        userInput = QHBoxLayout()
+
+        userInput.addWidget(labelInput)
+        userInput.addWidget(self.lineEditInput)
 
         button = QVBoxLayout()
 
@@ -299,7 +308,11 @@ class _DesignVariableManagerWindow(QWidget):
 
         self.table.setModel(self.model)
 
+        self.completer = QCompleter(self.filterList)
+        self.lineEditInput.setCompleter(self.completer)
+
         self.arrangeWindow = QVBoxLayout()
+        self.arrangeWindow.addLayout(userInput)
         self.arrangeWindow.addWidget(self.table)
         self.arrangeWindow.addLayout(button)
 
@@ -307,8 +320,9 @@ class _DesignVariableManagerWindow(QWidget):
         self.table.horizontalHeader().setDefaultSectionSize(127)
         self.table.resizeRowsToContents()
 
-        # self.model.itemChanged.connect(self.itemChanged)
-        self.table.clicked.connect(self. itemClicked)
+        self.model.itemChanged.connect(self.itemChanged)
+        self.lineEditInput.textChanged.connect(self.filterVariables)
+        self.table.clicked.connect(self.itemClicked)
         self.table.send_dataChanged_signal.connect(self.data_changed)
 
     def data_changed(self, inclusive_index):
@@ -343,8 +357,6 @@ class _DesignVariableManagerWindow(QWidget):
         self.destroy()
 
     def check_clicked(self):
-        # print('varDict:', self.variableDict)
-        # print('idDict:', self.idDict)
         if self.selectedItem == None:
             self.msg = QMessageBox()
             self.msg.setText("Nothing selected")
@@ -397,7 +409,7 @@ class _DesignVariableManagerWindow(QWidget):
         if _name in self.idDict:
             if _type == 'add':
                 self.model.appendRow(name)
-                self.model.setItem(self.model.rowCount()-1,1,value)
+                self.model.setItem(self.model.rowCount() - 1, 1, value)
             elif _type == 'edit':
                 self.model.setItem(self.selectedRow, 1, value)
             elif _type == 'delete':
@@ -411,8 +423,11 @@ class _DesignVariableManagerWindow(QWidget):
                 self.model.setItem(self.selectedRow, 0, name)
             else:
                 self.model.appendRow(name)
-                self.model.setItem(self.model.rowCount()-1,1,value)
+                self.model.setItem(self.model.rowCount() - 1, 1, value)
 
+        self.filterList = list(self.idDict.keys())
+        self.completer = QCompleter(self.filterList)
+        self.lineEditInput.setCompleter(self.completer)
         self.table.resizeRowsToContents()
 
     def itemChanged(self, item):
@@ -434,6 +449,24 @@ class _DesignVariableManagerWindow(QWidget):
     def manageElements(self, id, elements):
         self.elementDict[id] = elements
         # print(self.elementDict)
+
+    def filterVariables(self):
+        self.model.clear()
+        self.model.setHorizontalHeaderLabels(['Name', 'Value'])
+
+        for variableName in self.idDict:
+            if self.lineEditInput.text() in variableName:
+                key = self.idDict[variableName]['vid']
+                item1 = QStandardItem(self.variableDict[key]['DV'])
+                item1.setTextAlignment(Qt.AlignCenter)
+                item1.setEditable(False)
+                item2 = QStandardItem(self.variableDict[key]['value'])
+                # item2.setEditable(False)
+                item2.setTextAlignment(Qt.AlignCenter)
+
+                self.model.appendRow(item1)
+                self.model.setItem(self.model.rowCount() - 1, 1, item2)
+        self.table.resizeRowsToContents()
 
 
 class _createNewDesignVariable(QWidget):
