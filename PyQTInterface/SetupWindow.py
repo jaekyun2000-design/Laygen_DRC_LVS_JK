@@ -2642,8 +2642,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Key] = StringValue
 
     def updateDesignConstraintWithList(self,Module,Id,Field,Idx,StringValue):
-        # self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = [float(value) for value in StringValue.split(',')]
-        self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = StringValue.split(',')
+        self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = [float(value) for value in StringValue.split(',')]
+        # self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = StringValue.split(',')
 
     def remove_item(self, ID):
         """
