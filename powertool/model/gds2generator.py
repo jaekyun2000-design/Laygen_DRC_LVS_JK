@@ -113,6 +113,18 @@ class GDS2Generator():
         #             model_structure[element_name]._DesignParameter['_ElementName'] = element_name
         # return self.root_cell._DesignParameter[target_cell_name]
 
+    def load_qt_id_info(self, project, constraint_ids):
+        self.element_manager = project._QTObj._qtProject._ElementManager
+        dp_id_list = [self.element_manager.get_dp_id_by_dc_id(constraint_id) for constraint_id in constraint_ids]
+
+        self.dp_name_to_dp_id = dict()
+        for dp_id in dp_id_list:
+            if dp_id == None:
+                continue
+            name = project._QTObj._qtProject._DesignParameter[self.class_name][dp_id]._ElementName
+            self.dp_name_to_dp_id[name] = dp_id
+
+
     def get_updated_designParameters(self):
         self.cell_dp_dict[self.class_name] = StickDiagram._StickDiagram()
         self.root_cell = self.cell_dp_dict[self.class_name]
@@ -129,6 +141,8 @@ class GDS2Generator():
             if dp_name == '_Name' or dp_name == '_GDSFile':
                 continue
             dp_dictionary[dp_name] = self.build_model_structure(dp_name)
+            dp_dictionary[dp_name]['_id'] = self.dp_name_to_dp_id[dp_name]
+
 
         return dp_dictionary
 
@@ -219,6 +233,7 @@ class GDS2Generator():
                 _Angle=copy.deepcopy(element._DesignParameter['_Angle']),
                 _ElementName= copy.deepcopy(element._DesignParameter['_ElementName'])
             )[0]
+            structure._DesignParameter[element_name]['_id'] = element._id
             structure._DesignParameter[element_name]['_DesignObj'] = StickDiagram._StickDiagram()
             structure._DesignParameter[element_name]['_DesignObj']._DesignParameter = dict(
                 _Name = StickDiagram._StickDiagram()._NameDeclaration(element_name),

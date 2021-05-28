@@ -721,18 +721,6 @@ class _MainWindow(QMainWindow):
             traceback.print_exc()
             print("encoding fail")
 
-    def runConstraint_for_update(self):
-        try:
-            gds2gen = topAPI.gds2generator.GDS2Generator(False)
-            gds2gen.load_qt_project(self)
-            gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
-            # gds2gen.set_root_cell(self._CurrentModuleName)
-            # gds2gen.run_qt_constraint_ast()
-            dp_dict = gds2gen.get_updated_designParameters()
-            print('debug')
-        except :
-            traceback.print_exc()
-
     def visibleCandidate(self, state):
         constraint_names_can = self.dockContentWidget3_2.model.findItems('', Qt.MatchContains, 1)
         constraint_ids_can = [item.text() for item in constraint_names_can]
@@ -815,6 +803,21 @@ class _MainWindow(QMainWindow):
             # print('debug')
         except:
             traceback.print_exc()
+
+    def runConstraint_for_update(self):
+        try:
+            gds2gen = topAPI.gds2generator.GDS2Generator(False)
+            gds2gen.load_qt_project(self)
+            gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
+            constraint_ids = [item.text() for item in self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)]
+            gds2gen.load_qt_id_info(self, constraint_ids)
+            # gds2gen.set_root_cell(self._CurrentModuleName)
+            # gds2gen.run_qt_constraint_ast()
+            dp_dict = gds2gen.get_updated_designParameters()
+            print('debug')
+        except :
+            traceback.print_exc()
+
 
     def checkNameDuplication(self,checkItem):
         name = checkItem._ItemTraits['_ElementName']
@@ -952,6 +955,8 @@ class _MainWindow(QMainWindow):
             del self.bw
         if obj == 'pw':
             del self.pw
+        if obj == 'dv':
+            del self.dv
         if obj == 'txtw':
             del self.txtw
         if obj == 'pinw':
@@ -1049,9 +1054,6 @@ class _MainWindow(QMainWindow):
                     vs_item = self.createVisualItemfromDesignParameter(qt_parameter)
                     self.updateGraphicItem(vs_item)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Project Load Done")
-
-            self._layerItem = vs_item.returnLayerDict()
-            self.dockContentWidget1_2.updateLayerList(self._layerItem)
 
 
         except:
