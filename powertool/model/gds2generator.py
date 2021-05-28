@@ -80,9 +80,63 @@ class GDS2Generator():
             warnings.warn("Invalid parameters.")
             return None
 
+        return self.build_model_structure(target_cell_name)
+        # self.root_cell._DesignParameter[target_cell_name]['_ModelStructure'] = dict()
+        # _ModelStructure = self.root_cell._DesignParameter[target_cell_name]['_ModelStructure']
+        # element_name_stactk = list(self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.keys())
+        # element_stack = list(self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.values())
+        # model_structure_stack = [_ModelStructure] * len(element_name_stactk)
+        # while model_structure_stack:
+        #     model_structure = model_structure_stack.pop(0)
+        #     element_name = element_name_stactk.pop(0)
+        #     element = element_stack.pop(0)
+        #
+        #     if element['_DesignParametertype'] == 4 or element['_DesignParametertype'] == 5:
+        #         continue
+        #     elif element['_DesignParametertype'] == 3:
+        #         model_structure[element_name] = PyCodes.QTInterfaceWithAST.QtDesignParameter()
+        #         model_structure[element_name]._DesignParameter = element
+        #         model_structure[element_name]._DesignParameter['_ModelStructure'] = dict()
+        #         model_structure[element_name]._type = 3
+        #
+        #         sub_element_names = list(element['_DesignObj']._DesignParameter.keys())
+        #         sub_elements = list(element['_DesignObj']._DesignParameter.values())
+        #         sub_model_structures = [ model_structure[element_name]._DesignParameter['_ModelStructure'] ]*len(sub_element_names)
+        #         element_name_stactk.extend(sub_element_names)
+        #         element_stack.extend(sub_elements)
+        #         model_structure_stack.extend(sub_model_structures)
+        #     else:
+        #         model_structure[element_name] = PyCodes.QTInterfaceWithAST.QtDesignParameter()
+        #         model_structure[element_name]._DesignParameter = element
+        #         model_structure[element_name]._type = element['_DesignParametertype']
+        #         if '_ElementName' not in model_structure[element_name]._DesignParameter:
+        #             model_structure[element_name]._DesignParameter['_ElementName'] = element_name
+        # return self.root_cell._DesignParameter[target_cell_name]
+
+    def get_updated_designParameters(self):
+        self.cell_dp_dict[self.class_name] = StickDiagram._StickDiagram()
+        self.root_cell = self.cell_dp_dict[self.class_name]
+        self.cell_dp_dict[self.class_name]._DesignParameter = dict()
+        self.cell_dp_dict[self.class_name]._DesignParameter['_Name'] = StickDiagram._StickDiagram()._NameDeclaration(
+            self.class_name)
+        self.cell_dp_dict[self.class_name]._DesignParameter[
+            '_GDSFile'] = StickDiagram._StickDiagram()._GDSObjDeclaration()
+
+        self.run_qt_constraint_ast()
+
+        dp_dictionary = dict()
+        for dp_name in self.root_cell._DesignParameter:
+            if dp_name == '_Name' or dp_name == '_GDSFile':
+                continue
+            dp_dictionary[dp_name] = self.build_model_structure(dp_name)
+
+        return dp_dictionary
+
+    def build_model_structure(self, target_cell_name):
         self.root_cell._DesignParameter[target_cell_name]['_ModelStructure'] = dict()
         _ModelStructure = self.root_cell._DesignParameter[target_cell_name]['_ModelStructure']
-        element_name_stactk = list(self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.keys())
+        element_name_stactk = list(
+            self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.keys())
         element_stack = list(self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.values())
         model_structure_stack = [_ModelStructure] * len(element_name_stactk)
         while model_structure_stack:
@@ -100,7 +154,8 @@ class GDS2Generator():
 
                 sub_element_names = list(element['_DesignObj']._DesignParameter.keys())
                 sub_elements = list(element['_DesignObj']._DesignParameter.values())
-                sub_model_structures = [ model_structure[element_name]._DesignParameter['_ModelStructure'] ]*len(sub_element_names)
+                sub_model_structures = [model_structure[element_name]._DesignParameter['_ModelStructure']] * len(
+                    sub_element_names)
                 element_name_stactk.extend(sub_element_names)
                 element_stack.extend(sub_elements)
                 model_structure_stack.extend(sub_model_structures)
@@ -111,30 +166,7 @@ class GDS2Generator():
                 if '_ElementName' not in model_structure[element_name]._DesignParameter:
                     model_structure[element_name]._DesignParameter['_ElementName'] = element_name
         return self.root_cell._DesignParameter[target_cell_name]
-        # return _ModelStructure
 
-        # for element_name, element in self.root_cell._DesignParameter[target_cell_name]['_DesignObj']._DesignParameter.items():
-        #     if element['_DesignParametertype'] == 5 or element['_DesignParametertype'] == 4:
-        #         continue
-        #     elif element['_DesignParametertype'] == 1 or element['_DesignParametertype'] == 2:
-        #         _ModelStructure[element_name] = PyCodes.QTInterfaceWithAST.QtDesignParameter()
-        #         _ModelStructure[element_name]._DesignParameter = element
-        #         if '_ElementName' not in _ModelStructure[element_name]._DesignParameter:
-        #             _ModelStructure[element_name]._DesignParameter['_ElementName'] = element_name
-        #         _ModelStructure[element_name]._DesignParameter['_id'] = element_name # not sure
-        #     elif element['_DesignParametertype'] == 3:
-        #         _ModelStructure[element_name] = PyCodes.QTInterfaceWithAST.QtDesignParameter()
-        #         _ModelStructure[element_name]._DesignParameter = element
-        #         _ModelStructure[element_name]._DesignParameter['_ModelStructure'] = run_same_thing()
-        breakpoint()
-
-
-
-
-
-
-        # Qtdp['dpName == subcellName'] = QtDesignParameter()
-        # Qtdp['dpName']._DesignParameter = subcell_designParameter with subcell_DP['_ModelStructure']= Model Structure , ModelStructure is dict of QtDP
 
     def load_qt_project(self,project):
         """

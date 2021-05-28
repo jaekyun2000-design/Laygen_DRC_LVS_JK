@@ -129,6 +129,7 @@ class _MainWindow(QMainWindow):
         DebugAction = QAction("Debug constraint",self)
         EncodeAction = QAction("Encode constraint",self)
         RunGDSAction = QAction("Run constraint",self)
+        UpdateGDSAction = QAction("Update constraint",self)
 
         newAction.setShortcut('Ctrl+N')
         newAction.triggered.connect(self.newProject)
@@ -148,6 +149,9 @@ class _MainWindow(QMainWindow):
         RunGDSAction.setShortcut('Ctrl+R')
         RunGDSAction.triggered.connect(self.runConstraint)
 
+        UpdateGDSAction.setShortcut('Ctrl+U')
+        UpdateGDSAction.triggered.connect(self.runConstraint_for_update)
+
 
 
         menubar = self.menuBar()
@@ -159,6 +163,7 @@ class _MainWindow(QMainWindow):
         fileMenu.addAction(DebugAction)
         fileMenu.addAction(EncodeAction)
         fileMenu.addAction(RunGDSAction)
+        fileMenu.addAction(UpdateGDSAction)
 
         #Second Menu#
         self.statusBar().showMessage("No Module")
@@ -740,6 +745,18 @@ class _MainWindow(QMainWindow):
             # return gds2gen.root_cell._DesignParameter[_ast.name]['_DesignObj']._DesignParameter
             # print('debug')
         except:
+            traceback.print_exc()
+
+    def runConstraint_for_update(self):
+        try:
+            gds2gen = topAPI.gds2generator.GDS2Generator(False)
+            gds2gen.load_qt_project(self)
+            gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
+            # gds2gen.set_root_cell(self._CurrentModuleName)
+            # gds2gen.run_qt_constraint_ast()
+            dp_dict = gds2gen.get_updated_designParameters()
+            print('debug')
+        except :
             traceback.print_exc()
 
 
