@@ -344,11 +344,6 @@ class _DesignVariableManagerWindow(QWidget):
                 self.send_changedData_signal.emit(_VarDictWithID)
                 break
 
-
-
-
-
-
     def add_clicked(self):
         self.addWidget = _createNewDesignVariable()
         self.addWidget.show()

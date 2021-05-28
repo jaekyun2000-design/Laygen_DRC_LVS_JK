@@ -82,7 +82,8 @@ class _MainWindow(QMainWindow):
     send_progressMinimum_signal = pyqtSignal(int)
     send_progressValue_signal = pyqtSignal(int)
     send_callThread_signal = pyqtSignal()
-
+    send_visibleGenState_signal = pyqtSignal(int, list)
+    send_visibleCanState_signal = pyqtSignal(int, list)
 
     def __init__(self):
         super(_MainWindow, self).__init__()
@@ -275,6 +276,17 @@ class _MainWindow(QMainWindow):
         SrefClickCheckBox = QCheckBox("Sref",dockContentWidget1)
         VariableClickCheckBox = QCheckBox("Variable",dockContentWidget1)
 
+        GeneratorCheckBox = QCheckBox("Generator", dockContentWidget1)
+        GeneratorCheckBox.setCheckState(2)
+        self.send_visibleGenState_signal.connect(self.dockContentWidget1_2.visibleGenState)
+        GeneratorCheckBox.stateChanged.connect(self.visibleGenerator)
+
+        CandidateCheckBox = QCheckBox("Candidate", dockContentWidget1)
+        CandidateCheckBox.setCheckState(2)
+        self.send_visibleCanState_signal.connect(self.dockContentWidget1_2.visibleCanState)
+        CandidateCheckBox.stateChanged.connect(self.visibleCandidate)
+
+
         ########## Second tab ############
         self.dv = variableWindow._DesignVariableManagerWindow(dict())
         self.dvstate = True
@@ -294,10 +306,15 @@ class _MainWindow(QMainWindow):
         # vboxOnDock1.addWidget(VariableButton)
         vboxOnDock1.addStretch(2)
         hboxOnDock1 = QHBoxLayout()
+        hboxOnDock2 = QHBoxLayout()
         hboxOnDock1.addWidget(ElemntClickCheckBox)
         hboxOnDock1.addWidget(SrefClickCheckBox)
         hboxOnDock1.addWidget(VariableClickCheckBox)
+        hboxOnDock2.addWidget(GeneratorCheckBox)
+        hboxOnDock2.addStretch(2)
+        hboxOnDock2.addWidget(CandidateCheckBox)
         vboxOnDock1.addLayout(hboxOnDock1)
+        vboxOnDock1.addLayout(hboxOnDock2)
         vboxOnDock1.addStretch(10)
 
         dockContentWidget1.setLayout(vboxOnDock1)
@@ -355,8 +372,8 @@ class _MainWindow(QMainWindow):
         ################# Bottom Dock Widget setting ####################
         dockWidget3 = QDockWidget("Design Constraint")
         layoutWidget = QWidget()
-        self.dockContentWidget3 = SetupWindow._ConstraintTreeViewWidgetAST("Hierarchy")
-        self.dockContentWidget3_2 = SetupWindow._ConstraintTreeViewWidgetAST("Floating")
+        self.dockContentWidget3 = SetupWindow._ConstraintTreeViewWidgetAST("Generator")
+        self.dockContentWidget3_2 = SetupWindow._ConstraintTreeViewWidgetAST("Candidate")
 
         self.sendDownButton = QPushButton()
         self.sendDownButton.setIcon(QCommonStyle().standardIcon(QStyle.SP_ArrowDown))
@@ -704,6 +721,58 @@ class _MainWindow(QMainWindow):
             traceback.print_exc()
             print("encoding fail")
 
+    def runConstraint_for_update(self):
+        try:
+            gds2gen = topAPI.gds2generator.GDS2Generator(False)
+            gds2gen.load_qt_project(self)
+            gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
+            # gds2gen.set_root_cell(self._CurrentModuleName)
+            # gds2gen.run_qt_constraint_ast()
+            dp_dict = gds2gen.get_updated_designParameters()
+            print('debug')
+        except :
+            traceback.print_exc()
+
+    def visibleCandidate(self, state):
+        constraint_names_can = self.dockContentWidget3_2.model.findItems('', Qt.MatchContains, 1)
+        constraint_ids_can = [item.text() for item in constraint_names_can]
+        vi_can = []
+        viList = []
+
+        for layer in self._layerItem:
+            vi_can.extend(self._layerItem[layer])
+
+        for visualItem in vi_can:
+            for idx in range(len(constraint_ids_can)):
+                if constraint_ids_can[idx] == visualItem._id:
+                    viList.append(visualItem)
+                    if state == 0:
+                        visualItem.setVisible(False)
+                    elif state == 2:
+                        visualItem.setVisible(True)
+
+        self.send_visibleCanState_signal.emit(state, viList)
+
+    def visibleGenerator(self, state):
+        constraint_names_gen = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
+        constraint_ids_gen = [item.text() for item in constraint_names_gen]
+        vi_gen = []
+        viList = []
+
+        for layer in self._layerItem:
+            vi_gen.extend(self._layerItem[layer])
+
+        for idx in range(len(constraint_ids_gen)):
+            for visualItem in vi_gen:
+                if constraint_ids_gen[idx] == visualItem._id:
+                    viList.append(visualItem)
+                    if state == 0:
+                        visualItem.setVisible(False)
+                    elif state == 2:
+                        visualItem.setVisible(True)
+
+        self.send_visibleGenState_signal.emit(state, viList)
+
     def runConstraint(self):
         try:
             if user_setup.GDS2GEN is False:
@@ -746,19 +815,6 @@ class _MainWindow(QMainWindow):
             # print('debug')
         except:
             traceback.print_exc()
-
-    def runConstraint_for_update(self):
-        try:
-            gds2gen = topAPI.gds2generator.GDS2Generator(False)
-            gds2gen.load_qt_project(self)
-            gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
-            # gds2gen.set_root_cell(self._CurrentModuleName)
-            # gds2gen.run_qt_constraint_ast()
-            dp_dict = gds2gen.get_updated_designParameters()
-            print('debug')
-        except :
-            traceback.print_exc()
-
 
     def checkNameDuplication(self,checkItem):
         name = checkItem._ItemTraits['_ElementName']
@@ -896,8 +952,6 @@ class _MainWindow(QMainWindow):
             del self.bw
         if obj == 'pw':
             del self.pw
-        if obj == 'dv':
-            del self.dv
         if obj == 'txtw':
             del self.txtw
         if obj == 'pinw':
@@ -995,6 +1049,9 @@ class _MainWindow(QMainWindow):
                     vs_item = self.createVisualItemfromDesignParameter(qt_parameter)
                     self.updateGraphicItem(vs_item)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Project Load Done")
+
+            self._layerItem = vs_item.returnLayerDict()
+            self.dockContentWidget1_2.updateLayerList(self._layerItem)
 
 
         except:
