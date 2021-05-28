@@ -626,13 +626,15 @@ class _editDesignVariable(QWidget):
             self.warning.setText("Invalid Name")
             self.warning.show()
         else:
-            # for _vid, info in self.variableDict.items():
-            #     if info['DV'] == self.name.text():  # If Target name already exists in variable window: reject
-            #         self.warning = QMessageBox()
-            #         self.warning.setIcon(QMessageBox.Warning)
-            #         self.warning.setText("This Name Already Exists")
-            #         self.warning.show()
-            #         return
+            for _vid, info in self.variableDict.items():
+                if _vid == self.vid:
+                    pass
+                elif info['DV'] == self.name.text():  # If Target name already exists in variable window: reject
+                    self.warning = QMessageBox()
+                    self.warning.setIcon(QMessageBox.Warning)
+                    self.warning.setText("This Name Already Exists")
+                    self.warning.show()
+                    return
 
             self.variableDict[self.vid]['DV'] = self.name.text()
             self.variableDict[self.vid]['value'] = self.value.text()
