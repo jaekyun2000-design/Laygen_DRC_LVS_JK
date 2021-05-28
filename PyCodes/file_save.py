@@ -49,6 +49,8 @@ class FileSaveFormat:
         # tmp = variableWindow._createNewDesignVariable()
         variableWindow._createNewDesignVariable.variableDict = self.user_variables
         variableWindow._createNewDesignVariable.idDict = self.user_variables_ids
+        main_window.dv.variableDict = self.user_variables
+        main_window.dv.idDict = self.user_variables_ids
         variable_info_lists = [ [variable['DV'], variable['value']] for variable in self.user_variables.values()]
         for variable_info_list in variable_info_lists:
             main_window.dv.updateList(variable_info_list,'add')
