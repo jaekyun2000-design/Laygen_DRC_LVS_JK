@@ -829,6 +829,8 @@ class _LoadSRefWindow(QWidget):
         if self.cal_fcn_input.currentText() == "":
             pass
         else:
+            self.par_name = []
+            self.par_value = []
             par_list = generator_model_api.class_function_dict[self.library_input.currentText()][self.cal_fcn_input.currentText()]
             for idx in range(len(par_list)):
                 self.par_name.append(par_list[idx].name)
