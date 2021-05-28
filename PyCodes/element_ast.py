@@ -152,7 +152,7 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
         return tmp.body[0]
 
     def visit_Sref(self,node):
-        if node.XY.find(',') == -1:
+        if (type(node.XY) == list) or node.XY.find(',') == -1:
             parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
             sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}("\
                        f"_Name = '{node.name}In{{}}'.format(_Name)), _XYCoordinates = {node.XY})[0]\n"

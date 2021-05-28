@@ -1057,9 +1057,9 @@ class _MainWindow(QMainWindow):
         gds2gen = topAPI.gds2generator.GDS2Generator(True)
         _dp = gds2gen.code_generation_for_subcell(_AST)
         tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(_AST)
-        print("#####################################################################################")
-        print(f"             CUSTOM SREF DP / DC / VisualItem Creation Start                        ")
-        print("#####################################################################################")
+        print("########################################################################################")
+        print(f"                CUSTOM SREF DP / DC / VisualItem Creation Start                        ")
+        print("########################################################################################")
         if len(self._QTObj._qtProject._DesignParameter) == 0:
             self._QTObj._qtProject._DesignParameter[_moduleName] = dict()
             _newParameterID = self._CurrentModuleName + str(0)
@@ -1091,9 +1091,9 @@ class _MainWindow(QMainWindow):
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_ModelStructure'] = _dp['_ModelStructure']
         except:
             self.dockContentWidget4ForLoggingMessage._InfoMessage(" Not enough Parameters Given!")
-            print("#####################################################################################")
-            print(f"             CUSTOM SREF DP / DC / VisualItem Creation Fail!                        ")
-            print("#####################################################################################")
+            print("########################################################################################")
+            print(f"                CUSTOM SREF DP / DC / VisualItem Creation Fail!                        ")
+            print("########################################################################################")
             return
         _module = self._QTObj._qtProject._DesignParameter[_moduleName]
         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
