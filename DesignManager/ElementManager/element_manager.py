@@ -185,8 +185,6 @@ class ElementManager:
                 elif key == '_Ignore':
                     tmpDP[key] = None
                 elif key == '_ElementName':
-                    tmpDP[key] = None
-                elif key == '_ElementName':
                     tmpDP[key] = ast.__dict__['name']
                 pass
 

@@ -275,7 +275,6 @@ class _MainWindow(QMainWindow):
         self.dvstate = True
         self.dv.send_variable_siganl.connect(self.createNewConstraintAST)
         self.dv.send_changedData_signal.connect(self.updateVariableConstraint)
-        self.dv.send_destroy_signal.connect(self.delete_obj)
 
         vboxOnDock1 = QVBoxLayout()             # Layout For Button Widget
 
