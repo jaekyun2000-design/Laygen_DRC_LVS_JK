@@ -336,16 +336,19 @@ class _DesignVariableManagerWindow(QWidget):
         _valueitemid = _valueindex.data()
         _nameitemid = _nameindex.data()
         _changedvariabledict = dict(DV=_nameitemid, value=_valueitemid)
-
         for _vid, _varInfo in self.variableDict.items():
             _varName = list(_varInfo.values())[0]
             if (_changedvariabledict['DV'] == _varName):
                 _vidOfChangedVar = _vid
+                _VarDictWithID = dict()
+                _VarDictWithID[_vidOfChangedVar] = _changedvariabledict
+                self.send_changedData_signal.emit(_VarDictWithID)
                 break
 
-        _VarDictWithID = dict()
-        _VarDictWithID[_vidOfChangedVar] = _changedvariabledict
-        self.send_changedData_signal.emit(_VarDictWithID)
+
+
+
+
 
     def add_clicked(self):
         self.addWidget = _createNewDesignVariable()
