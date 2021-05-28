@@ -236,7 +236,6 @@ class CustomQTableView(QTableView): ### QAbstractItemView class inherited
 
 class _DesignVariableManagerWindow(QWidget):
 
-    send_destroy_signal = pyqtSignal(str)
     send_variable_siganl = pyqtSignal(dict)
     send_changedData_signal = pyqtSignal(dict)
     elementDict = dict()
@@ -281,8 +280,8 @@ class _DesignVariableManagerWindow(QWidget):
         editButton.clicked.connect(self.edit_clicked)
         deleteButton = QPushButton("Delete", self)
         deleteButton.clicked.connect(self.delete_clicked)
-        quitButton = QPushButton("Quit", self)
-        quitButton.clicked.connect(self.quit_clicked)
+        sendButton = QPushButton("Send", self)
+        sendButton.clicked.connect(self.send_clicked)
 
         userInput = QHBoxLayout()
 
@@ -301,7 +300,7 @@ class _DesignVariableManagerWindow(QWidget):
         button2 = QHBoxLayout()
         button2.addWidget(deleteButton)
         button2.addStretch(2)
-        button2.addWidget(quitButton)
+        button2.addWidget(sendButton)
 
         button.addLayout(button1)
         button.addLayout(button2)
@@ -352,23 +351,9 @@ class _DesignVariableManagerWindow(QWidget):
         self.addWidget.show()
         self.addWidget.send_variable_signal.connect(self.updateList)
 
-    def quit_clicked(self):
-        self.send_destroy_signal.emit('dv')
-        self.destroy()
-
     def check_clicked(self):
-        if self.selectedItem == None:
-            self.msg = QMessageBox()
-            self.msg.setText("Nothing selected")
-            self.msg.show()
-        else:
-            vid = self.idDict[self.selectedItem]['vid']
-            tmpdict = dict()
-            tmpdict[vid] = self.variableDict[vid]
-
-            self.send_variable_siganl.emit(tmpdict)
-
-            self.selectedItem = None
+        print('variableDict:', self.variableDict)
+        print('idDict:', self.idDict)
 
     def edit_clicked(self):
         if self.selectedItem == None:
@@ -396,6 +381,20 @@ class _DesignVariableManagerWindow(QWidget):
             del self.variableDict[vid]
 
             self.updateList([DV, None], 'delete')
+            self.selectedItem = None
+
+    def send_clicked(self):
+        if self.selectedItem == None:
+            self.msg = QMessageBox()
+            self.msg.setText("Nothing selected")
+            self.msg.show()
+        else:
+            vid = self.idDict[self.selectedItem]['vid']
+            tmpdict = dict()
+            tmpdict[vid] = self.variableDict[vid]
+
+            self.send_variable_siganl.emit(tmpdict)
+
             self.selectedItem = None
 
     def updateList(self, variable_info_list, _type=None):
