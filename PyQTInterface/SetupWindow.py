@@ -2582,7 +2582,12 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                     grandParentModuleName = re.sub(r'\d','',grandparentID)
                     fieldItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(0))
                     field = fieldItem.text()
-                    self.updateDesignConstraintWithDict(Module=grandParentModuleName,Id=grandparentID,Field=field,Key=placeHolder,StringValue=value)
+                    if type(self._DesignConstraintFromQTobj[grandParentModuleName][grandparentID]._ast.__dict__[field]) == dict:
+                        self.updateDesignConstraintWithDict(Module=grandParentModuleName,Id=grandparentID,Field=field,Key=placeHolder,StringValue=value)
+                    else:
+                        idx = itemIDitem.row()
+                        self.updateDesignConstraintWithList(Module=grandParentModuleName, Id=grandparentID, Field=field,
+                                                            Idx=idx, StringValue=value)
                 else:
                     self.updateDesginConstraintWithSTR(Module=motherModuleName,Id=motherID,Field =placeHolder ,StringValue=value)
 
@@ -2635,6 +2640,10 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
     def updateDesignConstraintWithDict(self,Module,Id,Field,Key,StringValue):
         self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Key] = StringValue
+
+    def updateDesignConstraintWithList(self,Module,Id,Field,Idx,StringValue):
+        # self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = [float(value) for value in StringValue.split(',')]
+        self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = StringValue.split(',')
 
     def remove_item(self, ID):
         """
