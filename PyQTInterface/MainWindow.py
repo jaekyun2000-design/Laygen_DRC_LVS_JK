@@ -752,6 +752,8 @@ class _MainWindow(QMainWindow):
             gds2gen = topAPI.gds2generator.GDS2Generator(False)
             gds2gen.load_qt_project(self)
             gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
+            constraint_ids = [item.text() for item in self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)]
+            gds2gen.load_qt_id_info(self, constraint_ids)
             # gds2gen.set_root_cell(self._CurrentModuleName)
             # gds2gen.run_qt_constraint_ast()
             dp_dict = gds2gen.get_updated_designParameters()
