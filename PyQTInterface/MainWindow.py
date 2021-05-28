@@ -1048,10 +1048,18 @@ class _MainWindow(QMainWindow):
 
     # def create
     def srefUpdate(self, _AST):
+        """
+        Get Sref AST -> Create DP w/ ModelStructure -> Create Constraint -> Create Visual Item
+        :param _AST: sref _AST which is made via 'SrefLoad' widget window
+        :return: None
+        """
         _moduleName = self._CurrentModuleName
         gds2gen = topAPI.gds2generator.GDS2Generator(True)
         _dp = gds2gen.code_generation_for_subcell(_AST)
         tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(_AST)
+        print("#####################################################################################")
+        print(f"             CUSTOM SREF DP / DC / VisualItem Creation Start                        ")
+        print("#####################################################################################")
         if len(self._QTObj._qtProject._DesignParameter) == 0:
             self._QTObj._qtProject._DesignParameter[_moduleName] = dict()
             _newParameterID = self._CurrentModuleName + str(0)
@@ -1060,6 +1068,9 @@ class _MainWindow(QMainWindow):
                                                     _ParentName=_moduleName,
                                                     _ElementName= None)
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID] = _tmpQtDpObj
+            print("*************************************************************************************")
+            print(f" No existing DesignParameters: New DesignParameter creation with Name: {_moduleName}")
+            print("*************************************************************************************")
         else:
             _designParameterID = self._QTObj._qtProject._getDesignConstraintId(_moduleName)
             _newParameterID = (_moduleName + str(_designParameterID))
@@ -1068,13 +1079,22 @@ class _MainWindow(QMainWindow):
                                                     _ParentName=_moduleName,
                                                     _ElementName= None)
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID] = _tmpQtDpObj
-
-        self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter = tmp_dp_dict
-        self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_id'] = _newParameterID
-        self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_DesignObj'] = _dp['_DesignObj']
-        self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_ElementName'] = _newParameterID
-        self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_XYCoordinates'] = _dp['_XYCoordinates']
-        self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_ModelStructure'] = _dp['_ModelStructure']
+            print("****************************************************************************************")
+            print(f" Append to Existing DesignParameters: DesignParameter creation with Name: {_moduleName}")
+            print("****************************************************************************************")
+        try:
+            self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter = tmp_dp_dict
+            self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_id'] = _newParameterID
+            self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_DesignObj'] = _dp['_DesignObj']
+            self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_ElementName'] = _newParameterID
+            self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_XYCoordinates'] = _dp['_XYCoordinates']
+            self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_ModelStructure'] = _dp['_ModelStructure']
+        except:
+            self.dockContentWidget4ForLoggingMessage._InfoMessage(" Not enough Parameters Given!")
+            print("#####################################################################################")
+            print(f"             CUSTOM SREF DP / DC / VisualItem Creation Fail!                        ")
+            print("#####################################################################################")
+            return
         _module = self._QTObj._qtProject._DesignParameter[_moduleName]
         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
                                                           module_name=_moduleName,
@@ -1091,7 +1111,9 @@ class _MainWindow(QMainWindow):
         self._layerItem = sref_vi.returnLayerDict()
 
         self.dockContentWidget1_2.updateLayerList(self._layerItem)
-        print("DEBUG")
+        print("#####################################################################################")
+        print(f"               CUSTOM SREF DP / DC / VisualItem Creation Done                       ")
+        print("#####################################################################################")
 
 
 

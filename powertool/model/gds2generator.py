@@ -62,6 +62,10 @@ class GDS2Generator():
         # target_ast = debug_sref_ast
         target_ast = _ast
         target_cell_name = target_ast.name
+        if (target_ast.name == '' or None) or (target_ast.XY == '' or None):
+            print(" Invalid Name or Coordinates")
+            return
+
         self.code = f'_Name="{target_cell_name}"\n'
         target_ast = element_ast.ElementTransformer().visit(target_ast)
         self.code += astunparse.unparse(target_ast)
