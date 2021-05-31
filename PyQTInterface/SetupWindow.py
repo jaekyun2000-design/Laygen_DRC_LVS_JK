@@ -697,15 +697,6 @@ class _LoadSRefWindow(QWidget):
         self.initUI()
 
         if SRefElement is None:
-            self._DesignParameter = dict(
-                    _ElementName = None,
-                    _DesignParametertype = 3,
-                    _DesignLibraryName = None,
-                    _className = None,
-                    _XYCoordinates = [],
-                    _CalculateFcn = None,
-                    _ParamDict = dict()
-                )
             self.create = True
             self.visualItem = VisualizationItem._VisualizationItem()
         else:
@@ -809,24 +800,10 @@ class _LoadSRefWindow(QWidget):
         self.class_name_input.setText(self._DesignParameter['className'])
         self.XY_input.setText(str(self._DesignParameter['XY'][0][0])+','+str(self._DesignParameter['XY'][0][1]))
         self.cal_fcn_input.setCurrentText(self._DesignParameter['calculate_fcn'])
-
-
-
-
-        # self.width_input.setText(str(self._DesignParameter['_Width']))
-        # if type(self._DesignParameter['_Layer']) == int:
-        #     layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-        #     _tmplayer = layernum2name[str(self._DesignParameter['_Layer'])]
-        #     layerIndex = self.layer_input.findText(_tmplayer)
-        # else:
-        #     layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
-        # if layerIndex != -1:
-        #     self.layer_input.setCurrentIndex(layerIndex)
-        # for i in range(len(self._DesignParameter['_XYCoordinates'][0])):
-        #     CurrentEditPointNum = len(self.XYdictForLineEdit)-2
-        #     displayString= str(self._DesignParameter['_XYCoordinates'][0][i][0])+','+ str(self._DesignParameter['_XYCoordinates'][0][i][1])
-        #     self.XYdictForLineEdit[CurrentEditPointNum].setText(displayString)
-        #     self.UpdateXYwidget()
+        i = 0
+        for value in self._DesignParameter['parameters'].values():
+            self.par_valueForLineEdit[i].setText(value)
+            i += 1
 
     def updateClassName(self):
         self.class_name_input.setText(generator_model_api.class_name_dict[self.library_input.currentText()])
@@ -885,20 +862,15 @@ class _LoadSRefWindow(QWidget):
                 tmpAST.__dict__[key] = self.cal_fcn_input.currentText()
             elif key == 'parameters':
                 tmpAST.__dict__[key] = self.paramDict
-            else:
-                tmpAST.__dict__[key] = self._DesignParameter[key]
 
-        self._DesignParameter['_ElementName'] = self.name_input.text()
-        self._DesignParameter['_DesignLibraryName'] = self.library_input.currentText()
-        self._DesignParameter['_ClassName'] = self.class_name_input.text()
-        self._DesignParameter['_XYCoordinates'] = [[float(i) for i in self.XY_input.text().split(',')]]
-        self._DesignParameter['_CalculateFcn'] = self.cal_fcn_input.currentText()
-        self._DesignParameter['_ParamDict'] = self.paramDict
-
-        if self.create:
-            self.send_DesignConstraint_signal.emit(tmpAST)
-        else:
-            self.send_DesignConstraint_signal.emit(self._DesignParameter)
+        if not self.create:
+            tmpAST._id = self._DesignParameter['_id']
+        self.send_DesignConstraint_signal.emit(tmpAST)
+        # if self.create:
+        #     self.send_DesignConstraint_signal.emit(tmpAST)
+        # else:
+        #     tmpAST._id = self._DesignParameter['_id']
+        #     self.send_DesignConstraint_signal.emit(self._DesignParameter)
 
         self.destroy()
 
@@ -998,7 +970,9 @@ class _TextSetupWindow(QWidget):
 
 
     def updateUI(self):
-        pass
+        self.text_input.setText(self._DesignParameter['_TEXT'])
+        self.width_input.setText(str(self._DesignParameter['_Width']))
+        self.XY_input[0].setText(str(self._DesignParameter['_XYCoordinates'][0][0])+','+str(self._DesignParameter['_XYCoordinates'][0][1]))
 
     def cancel_button_accepted(self):
         self.destroy()
@@ -2445,8 +2419,13 @@ class _SelectedDesignListWidget(QListWidget):
         elif modifyingObject._ItemTraits['_DesignParametertype'] == 3:
             self.sw = _LoadSRefWindow(modifyingObject)
             self.sw.show()
-            self.sw.send_DesignConstraint_signal.connect(self.send_UpdateDesignParameter_signal)
+            self.sw.send_DesignConstraint_signal.connect(self.send_UpdateDesignAST_signal)
             self.sw.send_destroy_signal.connect(self.sw.close)
+        elif modifyingObject._ItemTraits['_DesignParametertype'] == 8:
+            self.txtw = _TextSetupWindow(modifyingObject)
+            self.txtw.show()
+            self.txtw.send_TextDesign_signal.connect(self.send_UpdateDesignParameter_signal)
+            self.txtw.send_Destroy_signal.connect(self.txtw.close)
 
     def DeliveryItem(self):
         try:

@@ -362,7 +362,7 @@ class _MainWindow(QMainWindow):
 
         self.scene.send_itemList_signal.connect(self.dockContentWidget2.UpdateCustomItem)       # Show the clicked items list
         self.dockContentWidget2.send_UpdateDesignParameter_signal.connect(self.updateDesignParameter)
-        self.dockContentWidget2.send_UpdateDesignAST_signal.connect(self.update)
+        self.dockContentWidget2.send_UpdateDesignAST_signal.connect(self.srefUpdate)
         self.dockContentWidget2.send_parameterIDList_signal.connect(self.parameterToTemplateHandler)
         self.dockContentWidget2.send_deleteItem_signal.connect(self.deleteDesignParameter)
 
