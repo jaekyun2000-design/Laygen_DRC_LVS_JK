@@ -2492,6 +2492,19 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.EditMode = False
         self.setAnimated(True)
 
+        self.setContextMenuPolicy(Qt.CustomContextMenu)
+
+        ########## context #########
+        self.customContextMenuRequested.connect(self.custom_context)
+
+        self.context_menu_for_list = QMenu(self)
+        add_blank_row_action = QAction("Append row", self.context_menu_for_list)
+        reset_list_action = QAction("Reset", self.context_menu_for_list)
+        self.context_menu_for_list.addActions([add_blank_row_action,reset_list_action])
+
+        self.context_menu_for_dict = QMenu(self)
+        add_blank_row_dict_action = QAction("Append row", self.context_menu_for_dict)
+        self.context_menu_for_dict.addActions([add_blank_row_dict_action])
         #########WIP tb for combobox#########
         # index = self.model.index(0,0,QModelIndex())
         # self.model.setData(index,"a")
@@ -2500,7 +2513,6 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         # self.show()
         # self.model.appendRow([QStandardItem('aa'),QStandardItem('aa'),QStandardItem('aa')])
         # self.openPersistentEditor(self.model.index(0,4))
-
 
     def initUI(self,type):
         self.model = _ConstraintModel()
@@ -2959,6 +2971,20 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.mouseDoubleClickEvent(topLeft)
         # self.refreshItem(topLeft)
 
+    def custom_context(self, point : QPoint):
+        try:
+            idx = self.indexAt(point)
+            if idx.isValid():
+                type_item = self.model.itemFromIndex(idx.siblingAtColumn(2))
+                if "list" in type_item.text():
+                    self.context_menu_for_list.exec_(self.viewport().mapToGlobal(point))
+                if "dict" in type_item.text():
+                    self.context_menu_for_dict.exec_(self.viewport().mapToGlobal(point))
+        except:
+            traceback.print_exc()
+            pass
+
+
 
 class _ConstraintModel(QStandardItemModel):
     def __init__(self):
@@ -3260,7 +3286,11 @@ class _ConstraintModel(QStandardItemModel):
             #     print("Mother Item: ",motherItem.text())
 
             for field in _AST._fields:
-                childVariable = _AST.__dict__[field]
+                if field in _AST.__dict__:
+                    childVariable = _AST.__dict__[field]
+                else:
+                    _AST.__dict__[field] = None
+                    childVariable = None
                 if type(childVariable) == None:
                     continue
                 if childVariable == None:   # <Child is None>
@@ -3429,6 +3459,7 @@ class _ConstraintModel(QStandardItemModel):
         self.setItem(0,1,item4)
         item2.appendRow([QStandardItem("hi"),QStandardItem("test")])
         item2.appendRow([QStandardItem("hello"),QStandardItem("te3st")])
+
 
 
 class QtTextEditLogger(logging.Handler):
