@@ -298,9 +298,12 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.warning.setText("Invalid Design Value")
                 self.warning.setIcon(QMessageBox.Warning)
         elif self._ItemTraits['_DesignParametertype'] == 3:
-            self._ItemTraits['_DesignParameterRef'] = _DesignParameter['_ModelStructure']
-            self._ItemTraits['_Reflect'] = _DesignParameter['_Reflect']
-            self._ItemTraits['_Angle'] = _DesignParameter['_Angle']
+            try:
+                self._ItemTraits['_DesignParameterRef'] = _DesignParameter['_ModelStructure']
+                self._ItemTraits['_Reflect'] = _DesignParameter['_Reflect']
+                self._ItemTraits['_Angle'] = _DesignParameter['_Angle']
+            except:
+                pass
             # for key in _DesignParameter['_ModelStructure']:
             #     self._ItemTraits['_VisualizationItems'].append(_DesignParameter['_ModelStructure'][key])
         elif self._ItemTraits['_DesignParametertype'] == 8:

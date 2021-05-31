@@ -689,32 +689,28 @@ class _LoadSRefWindow(QWidget):
     send_DesignConstraint_signal = pyqtSignal("PyQt_PyObject")
     send_destroy_signal = pyqtSignal(str)
 
-    def __init__(self):
+    def __init__(self, SRefElement = None, create=False):
         super().__init__()
+        self.create = create
         self.par_valueForLineEdit = []
         self.paramDict = dict()
         self.initUI()
 
-    # def __init__(self,_AST = None, _STMT = None, _ASTapi = None):
-    #     super().__init__()
-    #     if _ASTapi == None:
-    #         self._ASTapi = ASTmodule._Custom_AST_API()
-    #     else:
-    #         self._ASTapi = _ASTapi
-    #
-    #     self.initUI()
-    #
-    #     if _AST == None:        #This is for editing created AST.       AST --> STMT
-    #         self._AST = None
-    #     else:
-    #         self._AST = _AST
-    #         #self.updateUIvalue()       #AST to STMT convert fuunction before excute updateUIvalue
-    #
-    #     if _STMT == None:
-    #         self._STMT = []
-    #     else:
-    #         self._STMT = _STMT
-    #         self.updateUIvalue()
+        if SRefElement is None:
+            self._DesignParameter = dict(
+                    _ElementName = None,
+                    _DesignParametertype = 3,
+                    _DesignLibraryName = None,
+                    _className = None,
+                    _XYCoordinates = [],
+                    _CalculateFcn = None,
+                    _ParamDict = dict()
+                )
+            self.create = True
+            self.visualItem = VisualizationItem._VisualizationItem()
+        else:
+            self._DesignParameter = SRefElement._ItemTraits
+            self.updateUI()
 
     def initUI(self):
         self.name = QLabel("name")
@@ -807,6 +803,31 @@ class _LoadSRefWindow(QWidget):
         self.setGeometry(300,300,500,500)
         self.show()
 
+    def updateUI(self):
+        self.name_input.setText(self._DesignParameter['name'])
+        self.library_input.setCurrentText(self._DesignParameter['library'])
+        self.class_name_input.setText(self._DesignParameter['className'])
+        self.XY_input.setText(str(self._DesignParameter['XY'][0][0])+','+str(self._DesignParameter['XY'][0][1]))
+        self.cal_fcn_input.setCurrentText(self._DesignParameter['calculate_fcn'])
+
+
+
+
+        # self.width_input.setText(str(self._DesignParameter['_Width']))
+        # if type(self._DesignParameter['_Layer']) == int:
+        #     layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+        #     _tmplayer = layernum2name[str(self._DesignParameter['_Layer'])]
+        #     layerIndex = self.layer_input.findText(_tmplayer)
+        # else:
+        #     layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
+        # if layerIndex != -1:
+        #     self.layer_input.setCurrentIndex(layerIndex)
+        # for i in range(len(self._DesignParameter['_XYCoordinates'][0])):
+        #     CurrentEditPointNum = len(self.XYdictForLineEdit)-2
+        #     displayString= str(self._DesignParameter['_XYCoordinates'][0][i][0])+','+ str(self._DesignParameter['_XYCoordinates'][0][i][1])
+        #     self.XYdictForLineEdit[CurrentEditPointNum].setText(displayString)
+        #     self.UpdateXYwidget()
+
     def updateClassName(self):
         self.class_name_input.setText(generator_model_api.class_name_dict[self.library_input.currentText()])
 
@@ -864,9 +885,21 @@ class _LoadSRefWindow(QWidget):
                 tmpAST.__dict__[key] = self.cal_fcn_input.currentText()
             elif key == 'parameters':
                 tmpAST.__dict__[key] = self.paramDict
+            else:
+                tmpAST.__dict__[key] = self._DesignParameter[key]
 
+        self._DesignParameter['_ElementName'] = self.name_input.text()
+        self._DesignParameter['_DesignLibraryName'] = self.library_input.currentText()
+        self._DesignParameter['_ClassName'] = self.class_name_input.text()
+        self._DesignParameter['_XYCoordinates'] = [[float(i) for i in self.XY_input.text().split(',')]]
+        self._DesignParameter['_CalculateFcn'] = self.cal_fcn_input.currentText()
+        self._DesignParameter['_ParamDict'] = self.paramDict
 
-        self.send_DesignConstraint_signal.emit(tmpAST)
+        if self.create:
+            self.send_DesignConstraint_signal.emit(tmpAST)
+        else:
+            self.send_DesignConstraint_signal.emit(self._DesignParameter)
+
         self.destroy()
 
     def cancel_button_accepted(self):
@@ -2330,6 +2363,7 @@ class _ConstraintSetupWindowPyCode(QWidget):
 class _SelectedDesignListWidget(QListWidget):
 
     send_UpdateDesignParameter_signal = pyqtSignal(dict)
+    send_UpdateDesignAST_signal = pyqtSignal("PyQt_PyObject")
     send_parameterIDList_signal = pyqtSignal(list,int)
     send_deleteItem_signal = pyqtSignal(str)
     # send_Up
@@ -2409,7 +2443,10 @@ class _SelectedDesignListWidget(QListWidget):
             self.pw.send_PathDesign_signal.connect(self.send_UpdateDesignParameter_signal)
             self.pw.send_Destroy_signal.connect(self.pw.close)
         elif modifyingObject._ItemTraits['_DesignParametertype'] == 3:
-            pass
+            self.sw = _LoadSRefWindow(modifyingObject)
+            self.sw.show()
+            self.sw.send_DesignConstraint_signal.connect(self.send_UpdateDesignParameter_signal)
+            self.sw.send_destroy_signal.connect(self.sw.close)
 
     def DeliveryItem(self):
         try:

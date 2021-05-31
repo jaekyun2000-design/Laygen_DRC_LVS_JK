@@ -362,6 +362,7 @@ class _MainWindow(QMainWindow):
 
         self.scene.send_itemList_signal.connect(self.dockContentWidget2.UpdateCustomItem)       # Show the clicked items list
         self.dockContentWidget2.send_UpdateDesignParameter_signal.connect(self.updateDesignParameter)
+        self.dockContentWidget2.send_UpdateDesignAST_signal.connect(self.update)
         self.dockContentWidget2.send_parameterIDList_signal.connect(self.parameterToTemplateHandler)
         self.dockContentWidget2.send_deleteItem_signal.connect(self.deleteDesignParameter)
 
@@ -1142,7 +1143,7 @@ class _MainWindow(QMainWindow):
             _tmpQtDpObj = QTInterfaceWithAST.QtDesignParameter(_id=_newParameterID,
                                                      _type= 3,
                                                     _ParentName=_moduleName,
-                                                    _ElementName= None)
+                                                    _ElementName= tmp_dp_dict['name'])
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID] = _tmpQtDpObj
             print("*************************************************************************************")
             print(f" No existing DesignParameters: New DesignParameter creation with Name: {_moduleName}")
@@ -1153,7 +1154,7 @@ class _MainWindow(QMainWindow):
             _tmpQtDpObj = QTInterfaceWithAST.QtDesignParameter(_id=_newParameterID,
                                                      _type= 3,
                                                     _ParentName=_moduleName,
-                                                    _ElementName= None)
+                                                    _ElementName= tmp_dp_dict['name'])
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID] = _tmpQtDpObj
             print("****************************************************************************************")
             print(f" Append to Existing DesignParameters: DesignParameter creation with Name: {_moduleName}")
@@ -1162,7 +1163,8 @@ class _MainWindow(QMainWindow):
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter = tmp_dp_dict
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_id'] = _newParameterID
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_DesignObj'] = _dp['_DesignObj']
-            self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_ElementName'] = _newParameterID
+            self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_DesignParametertype'] = 3
+            # self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_ElementName'] = _newParameterID
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_XYCoordinates'] = _dp['_XYCoordinates']
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_ModelStructure'] = _dp['_ModelStructure']
         except:
