@@ -866,7 +866,7 @@ class _MainWindow(QMainWindow):
     def loadSRefWindow(self):
         self.ls = SetupWindow._LoadSRefWindow()
         self.ls.show()
-        self.ls.send_DesignConstraint_signal.connect(self.srefUpdate)
+        self.ls.send_DesignConstraint_signal.connect(self.srefCreate)
         self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)
         self.ls.send_destroy_signal.connect(self.delete_obj)
         # self.ls.send_TextSetup_signal.connect(self.updateGraphicItem)
@@ -1124,7 +1124,7 @@ class _MainWindow(QMainWindow):
         self.mw.send_ModuleName_signal.connect(self.updateModule)
 
     # def create
-    def srefUpdate(self, _AST):
+    def srefCreate(self, _AST):
         """
         Get Sref AST -> Create DP w/ ModelStructure -> Create Constraint -> Create Visual Item
         :param _AST: sref _AST which is made via 'SrefLoad' widget window
@@ -1193,8 +1193,39 @@ class _MainWindow(QMainWindow):
         print(f"               CUSTOM SREF DP / DC / VisualItem Creation Done                       ")
         print("#####################################################################################")
 
+    def srefUpdate(self, _DesignConstraint):
+        """
+        Get Sref AST -> Create DP w/ ModelStructure -> Create Constraint -> Create Visual Item
+        :param _AST: sref _AST which is made via 'SrefLoad' widget window
+        :return: None
+        """
+        print("########################################################################################")
+        print(f"                CUSTOM SREF DP / DC / VisualItem Update Start                        ")
+        print("########################################################################################")
 
+        dc_id = _DesignConstraint._id
+        module = self.get_id_return_module(id, "_DesignConstraint")
+        gds2gen = topAPI.gds2generator.GDS2Generator(False)
+        _dp = gds2gen.code_generation_for_subcell(_DesignConstraint._ast)
+        tmp_dp_dict , _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(_DesignConstraint._ast)
+        dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
 
+        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_DesignObj'] = _dp['_DesignObj']
+        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_ElementName'] = tmp_dp_dict['name']
+        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_XYCoordinates'] = _dp['_XYCoordinates']
+        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_ModelStructure'] = _dp['_ModelStructure']
+
+        print("****************************************************************************************")
+        print(f" Update Existing DesignParameters: DesignParameter creation with Name: {dp_id}")
+        print("****************************************************************************************")
+
+        sref_vi = VisualizationItem._VisualizationItem()
+        sref_vi.updateDesignParameter(self._QTObj._qtProject._DesignParameter[module][dp_id])
+        self.scene.addItem(sref_vi)
+        self.visualItemDict[dp_id] = sref_vi
+        self._layerItem = sref_vi.returnLayerDict()
+
+        self.dockContentWidget1_2.updateLayerList(self._layerItem)
 
 
     def loadGDS(self):

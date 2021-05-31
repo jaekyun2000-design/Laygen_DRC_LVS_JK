@@ -155,27 +155,17 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
         if (type(node.XY) == list) or node.XY.find(',') == -1:
             parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
             sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}("\
-                       f"_Name = '{node.name}In{{}}'.format(_Name)), _XYCoordinates = {node.XY})[0]\n"
-            # sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(_DesignParameter = " \
-            #            f"dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))," \
-            #            f"_Name = '{node.name}In{{}}'.format(_Name)), _XYCoordinates = {node.XY})[0]\n"
-            sentence +=f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" +parameter_sentence + "))"
-            # sentence +=f"self._DesignParameter['{node.name}']['_DesignObj']._CalculateDesignParameter(**dict(" +parameter_sentence + "))"
-                       # f"self._DesignParameter['{node.name}']['_DesignObj']._CalculateDesignParameter(**{node.parameters})"
-                       # f" dict( dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))," \
-                       # f" ** {node.parameters})" \
+                       f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
+            sentence +=f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" +parameter_sentence + "))\n"
+            sentence +=f"self._DesignParameter['{node.name}]['_XYCoordinates'] = {node.XY}"
+
         else:
             parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
             sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(" \
-                       f"_Name = '{node.name}In{{}}'.format(_Name)), _XYCoordinates = [[{node.XY}]])[0]\n"
-            # sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(_DesignParameter = " \
-            #            f"dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))," \
-            #            f"_Name = '{node.name}In{{}}'.format(_Name)), _XYCoordinates = {node.XY})[0]\n"
-            sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))"
-            # sentence +=f"self._DesignParameter['{node.name}']['_DesignObj']._CalculateDesignParameter(**dict(" +parameter_sentence + "))"
-            # f"self._DesignParameter['{node.name}']['_DesignObj']._CalculateDesignParameter(**{node.parameters})"
-            # f" dict( dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))," \
-            # f" ** {node.parameters})" \
+                       f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
+            sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
+            sentence += f"self._DesignParameter['{node.name}]['_XYCoordinates'] = [[{node.XY}]]"
+
 
         tmp = ast.parse(sentence)
         return tmp.body
