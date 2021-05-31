@@ -899,7 +899,6 @@ class _TextSetupWindow(QWidget):
         if TextElement == None:
             self.visualItem = VisualizationItem._VisualizationItem()
             self._DesignParameter = dict(
-                _id = None,
                 _ElementName = None,
                 _DesignParametertype = 8,
                 _Layer = 'text',
@@ -1042,7 +1041,6 @@ class _PinSetupWindow(QWidget):
         if PinElement == None:
             self.visualItem = VisualizationItem._VisualizationItem()
             self._DesignParameter = dict(
-                _id = None,
                 _ElementName = None,
                 _DesignParametertype = 8,
                 _Layer = None,
@@ -1124,7 +1122,9 @@ class _PinSetupWindow(QWidget):
 
 
     def updateUI(self):
-        pass
+        self.text_input.setText(self._DesignParameter['_TEXT'])
+        self.width_input.setText(str(self._DesignParameter['_Width']))
+        self.XY_input[0].setText(str(self._DesignParameter['_XYCoordinates'][0][0])+','+str(self._DesignParameter['_XYCoordinates'][0][1]))
 
     def cancel_button_accepted(self):
         self.destroy()
@@ -2422,10 +2422,16 @@ class _SelectedDesignListWidget(QListWidget):
             self.sw.send_DesignConstraint_signal.connect(self.send_UpdateDesignAST_signal)
             self.sw.send_destroy_signal.connect(self.sw.close)
         elif modifyingObject._ItemTraits['_DesignParametertype'] == 8:
-            self.txtw = _TextSetupWindow(modifyingObject)
-            self.txtw.show()
-            self.txtw.send_TextDesign_signal.connect(self.send_UpdateDesignParameter_signal)
-            self.txtw.send_Destroy_signal.connect(self.txtw.close)
+            if modifyingObject._ItemTraits['_Layer'] == 'text':
+                self.txtw = _TextSetupWindow(modifyingObject)
+                self.txtw.show()
+                self.txtw.send_TextDesign_signal.connect(self.send_UpdateDesignParameter_signal)
+                self.txtw.send_Destroy_signal.connect(self.txtw.close)
+            else:
+                self.pinw = _PinSetupWindow(modifyingObject)
+                self.pinw.show()
+                self.pinw.send_PinDesign_signal.connect(self.send_UpdateDesignParameter_signal)
+                self.pinw.send_Destroy_signal.connect(self.pinw.close)
 
     def DeliveryItem(self):
         try:

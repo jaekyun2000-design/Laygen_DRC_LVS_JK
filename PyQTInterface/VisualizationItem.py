@@ -530,6 +530,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self.text.setPos(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1])
                     self.text.setTransform(QTransform(1,0,0,-1,0,0))
 
+                    self.block.append(self.text)
                     self.addToGroup(self.text)
 
                     self._subElementLayer['text'].append(self)
@@ -591,6 +592,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                             self._subElementLayer[tmpLayer].remove(self)
                             self._subElementLayer[layer].append(self)
 
+                        self.block.append(self.text)
+                        self.block.append(_point)
                         self.addToGroup(self.text)
                         self.addToGroup(_point)
 
