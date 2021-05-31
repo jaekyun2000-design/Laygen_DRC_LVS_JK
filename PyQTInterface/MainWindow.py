@@ -2,6 +2,7 @@ import ast
 import sys
 import os
 import traceback
+import warnings
 
 import PyCodes.file_save
 
@@ -371,11 +372,11 @@ class _MainWindow(QMainWindow):
         self.sendLeftButton.clicked.connect(self.dockContentWidget3_2.checkSend)
         #self.dockContentWidget3_2.send_SendSTMT_signal.connect(self.dockContentWidget3.receiveConstraintSTMT)
         self.dockContentWidget3_2.send_SendID_signal.connect(self.dockContentWidget3.receiveConstraintID)
-        self.dockContentWidget3_2.send_RecieveDone_signal.connect(self.dockContentWidget3.removeCurrentIndexItem)
+        self.dockContentWidget3_2.send_ReceiveDone_signal.connect(self.dockContentWidget3.removeCurrentIndexItem)
         self.dockContentWidget3_2.send_SendCopyConstraint_signal.connect(self.constraintToTemplateHandler)
         self.dockContentWidget3_2.send_UpdateDesignConstraintID_signal.connect(self.get_constraint_update_design)
         self.dockContentWidget3_2.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate2)
-        self.dockContentWidget3_2.send_RequesteDesignConstraint_signal.connect(self.constraintConvey)
+        self.dockContentWidget3_2.send_RequestDesignConstraint_signal.connect(self.constraintConvey)
         self.dockContentWidget3_2.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
 
 
@@ -384,12 +385,12 @@ class _MainWindow(QMainWindow):
         self.sendRightButton.clicked.connect(self.dockContentWidget3.checkSend)
         #self.dockContentWidget3.send_SendSTMT_signal.connect(self.dockContentWidget3_2.receiveConstraintSTMT)
         self.dockContentWidget3.send_SendID_signal.connect(self.dockContentWidget3_2.receiveConstraintID)
-        self.dockContentWidget3.send_RecieveDone_signal.connect(self.dockContentWidget3_2.removeCurrentIndexItem)
+        self.dockContentWidget3.send_ReceiveDone_signal.connect(self.dockContentWidget3_2.removeCurrentIndexItem)
         self.dockContentWidget3.send_RootDesignConstraint_signal.connect(self.setRootConstraint)
         self.dockContentWidget3.send_SendCopyConstraint_signal.connect(self.constraintToTemplateHandler)
         self.dockContentWidget3.send_UpdateDesignConstraintID_signal.connect(self.get_constraint_update_design)
         self.dockContentWidget3.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate1)
-        self.dockContentWidget3.send_RequesteDesignConstraint_signal.connect(self.constraintConvey)
+        self.dockContentWidget3.send_RequestDesignConstraint_signal.connect(self.constraintConvey)
         self.dockContentWidget3.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
 
         vboxLayout = QVBoxLayout()
@@ -1420,9 +1421,14 @@ class _MainWindow(QMainWindow):
         :param delete_dp:
         :return:
         """
+        i = 0
         dc_module = dc_id[:-1]
         while not dc_module in self._QTObj._qtProject._DesignConstraint:
             dc_module = dc_module[:-1]
+            i += 1
+            if i > 500:
+                warnings.warn(f'Invalid dc_id : {dc_id}.')
+                return None
 
         self.dockContentWidget3.remove_item(dc_id)
         self.dockContentWidget3_2.remove_item(dc_id)
@@ -1746,18 +1752,21 @@ class _MainWindow(QMainWindow):
 
     def constraintUpdate1(self, updateDict):
         _id = updateDict['_id']
-        _Module = re.sub('[0-9]+', '', _id)
+        _Module = self.get_id_return_module(_id,'_DesignConstraint')
+        # _Module = re.sub('[0-9]+', '', _id)
 
         for key in updateDict:
             if type(updateDict[key]) == list:       #If UpdateDict[key] is compound stmt.
                 for i, stmtID in enumerate(updateDict[key]):
-                    tmpModule = re.sub('[0-9]+', '', stmtID)
+                    tmpModule = self.get_id_return_module(stmtID,'_DesignConstraint')
+                    # tmpModule = re.sub('[0-9]+', '', stmtID)
                     astObj = self._QTObj._qtProject._DesignConstraint[tmpModule][stmtID]._ast
                     updateDict[key][i] = astObj
             else:  # It could be simple stmt or just value
                 tmpID = updateDict[key]
                 try:  # Simple Stmt Case
-                    tmpModule = re.sub('[0-9]+', '', tmpID)
+                    tmpModule = self.get_id_return_module(tmpID,'_DesignConstraint')
+                    # tmpModule = re.sub('[0-9]+', '', tmpID)
                     updateDict[key] = self._QTObj._qtProject._DesignConstraint[tmpModule][tmpID]._ast
                 except:  # Just value case
                     print('debug, key = {}, module = {}, id = {}'.format(key, tmpModule, tmpID))
@@ -1769,18 +1778,21 @@ class _MainWindow(QMainWindow):
 
     def constraintUpdate2(self, updateDict):
         _id = updateDict['_id']
-        _Module = re.sub('[0-9]+', '', _id)
+        _Module = self.get_id_return_module(_id, '_DesignConstraint')
+        # _Module = re.sub('[0-9]+', '', _id)
 
         for key in updateDict:
             if type(updateDict[key]) == list:       #If UpdateDict[key] is compound stmt.
                 for i, stmtID in enumerate(updateDict[key]):
-                    tmpModule = re.sub('[0-9]+', '', stmtID)
+                    tmpModule = self.get_id_return_module(stmtID, '_DesignConstraint')
+                    # tmpModule = re.sub('[0-9]+', '', stmtID)
                     astObj = self._QTObj._qtProject._DesignConstraint[tmpModule][stmtID]._ast
                     updateDict[key][i] = astObj
             else:   # It could be simple stmt or just value
                 tmpID = updateDict[key]
                 try:    # Simple Stmt Case
-                    tmpModule = re.sub('[0-9]+', '', tmpID)
+                    tmpModule = self.get_id_return_module(tmpID, '_DesignConstraint')
+                    # tmpModule = re.sub('[0-9]+', '', tmpID)
                     updateDict[key] = self._QTObj._qtProject._DesignConstraint[tmpModule][tmpID]._ast
                 except: # Just value case
                     print('debug, key = {}, module = {}, id = {}'.format(key,tmpModule,tmpID))

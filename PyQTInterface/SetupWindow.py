@@ -858,7 +858,8 @@ class _LoadSRefWindow(QWidget):
             elif key == 'className':
                 tmpAST.__dict__[key] = self.class_name_input.text()
             elif key == 'XY':
-                tmpAST.__dict__[key] = self.XY_input.text()
+                # tmpAST.__dict__[key] = self.XY_input.text()
+                tmpAST.__dict__[key] = [[float(i) for i in self.XY_input.text().split(',')]]
             elif key == 'calculate_fcn':
                 tmpAST.__dict__[key] = self.cal_fcn_input.currentText()
             elif key == 'parameters':
@@ -2470,8 +2471,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_SendID_signal = pyqtSignal(str)
     send_SendCopyConstraint_signal = pyqtSignal(QTInterfaceWithAST.QtDesinConstraint)
     send_RootDesignConstraint_signal = pyqtSignal(str)
-    send_RecieveDone_signal = pyqtSignal()
-    send_RequesteDesignConstraint_signal = pyqtSignal()
+    send_ReceiveDone_signal = pyqtSignal()
+    send_RequestDesignConstraint_signal = pyqtSignal()
     # send_deleteID_signal = pyqtSignal(str)
     send_deleteConstraint_signal = pyqtSignal(str)
 
@@ -2752,7 +2753,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     def receiveConstraintID(self,_id):
             _module = re.sub(r'\d','',_id)
             if _module not in self._DesignConstraintFromQTobj:
-                self.send_RequesteDesignConstraint_signal.emit()
+                self.send_RequestDesignConstraint_signal.emit()
 #            if _module in self._DesignConstraintFromQTobj:
 #                if _id in self._DesignConstraintFromQTobj[_module]:
 #                    _updateFlag = True
@@ -2765,7 +2766,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             if self.currentIndex().row() == -1:                 # Not selected any target parent constraint
                 #self.createNewConstraintSTMTList([_STMT],_idToSTMTdict)
                 self.createNewConstraintAST(_id=_id,_parentName=_module,_DesignConstraint=self._DesignConstraintFromQTobj)
-                self.send_RecieveDone_signal.emit()
+                self.send_ReceiveDone_signal.emit()
                 self.send_RootDesignConstraint_signal.emit(_id)
             else:
                 ####### At first check whether it is possible to modify or not ####### (In case of Constraint itself, you cannot modify!! only parsetrees are possible to modify
@@ -2785,7 +2786,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                     motherId = motherIdItem.text()
                     motherModule = re.sub(r'\d','',motherId)
                     if motherModule not in self._DesignConstraintFromQTobj:
-                        self.send_RequesteDesignConstraint_signal.emit()
+                        self.send_RequestDesignConstraint_signal.emit()
                     placeHolder = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0)).text()
                     self.updateDesginConstraintWithSTR(Module=motherModule, Id=motherId, Field=placeHolder, StringValue=_id)
                     #_itemType = self._DesignConstraintFromQTobj[motherModule][motherId]._ast[placeHolder]._type
@@ -2798,7 +2799,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 try:
                     self.refreshItem(index)
                     print("debug:receiveDone")
-                    self.send_RecieveDone_signal.emit()
+                    self.send_ReceiveDone_signal.emit()
                 except:
                     import traceback
                     traceback.print_exc()
@@ -2812,7 +2813,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         indexID = indexIDItem.text()
         value = valueItem.text()
         tmpModuel =  re.sub(r'\d','',indexID)
-        self.send_RequesteDesignConstraint_signal.emit()
+        self.send_RequestDesignConstraint_signal.emit()
 
         if tmpModuel in self._DesignConstraintFromQTobj:                #Constraint Case -> expand subhierarchy
             if indexID in self._DesignConstraintFromQTobj[tmpModuel]:
@@ -2876,10 +2877,23 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 if (itemName in self.itemToDesignConstraintDict) == True:
                     return
         elif QKeyEvent.key() == Qt.Key_Delete:  # If delete key pushed, 'deleteConstraint_signal' sent to MainWindow
-            self.removeFlag = True
-            selectedItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
-            id = selectedItem.text()  # Constraint ID of corresponding item
-            self.send_deleteConstraint_signal.emit(id)
+            try:
+                self.removeFlag = True
+                selectedItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
+                id = selectedItem.text()  # Constraint ID of corresponding item
+                if id != "":
+                    self.send_deleteConstraint_signal.emit(id)
+                else:
+                    parent_item = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
+                    parent_id = parent_item.text()
+                    if parent_id != "":
+                        self.send_deleteConstraint_signal.emit(parent_id)
+                    else:
+                        grandparent_item = self.model.itemFromIndex(self.currentIndex().parent().parent().siblingAtColumn(1))
+                        grandparent_id = grandparent_item.text()
+                        self.send_deleteConstraint_signal.emit(grandparent_id)
+            except:
+                traceback.print_exc()
         elif QKeyEvent.key() == Qt.Key_C:
             if self.currentIndex().isValid() ==False:
                 return
@@ -3249,6 +3263,13 @@ class _ConstraintModel(QStandardItemModel):
                     _constraintRealType = str(type(childVariable))
                     _constraintValue = '*'
                 else:
+                    # if _placeholder == 'XY':
+                    #     _id = ''
+                    #     _constraintRealType = list
+                    #     _constraintValue = '*'
+                    #
+                    #
+                    # else:
                     ##check wether it is constriant!
                     try:
 
