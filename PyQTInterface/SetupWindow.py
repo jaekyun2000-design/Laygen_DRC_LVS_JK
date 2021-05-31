@@ -2887,11 +2887,27 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                     parent_item = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
                     parent_id = parent_item.text()
                     if parent_id != "":
-                        self.send_deleteConstraint_signal.emit(parent_id)
+                        module = get_id_return_module(parent_id,'_DesignConstraint',self._DesignConstraintFromQTobj)
+                        field_item = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0))
+                        field = field_item.text()
+                        del self._DesignConstraintFromQTobj[module][parent_id]._ast.__dict__[field]
+                        self.refreshItem(self.model.indexFromItem(parent_item))
                     else:
+                        ### double list or dictionary ###
                         grandparent_item = self.model.itemFromIndex(self.currentIndex().parent().parent().siblingAtColumn(1))
                         grandparent_id = grandparent_item.text()
-                        self.send_deleteConstraint_signal.emit(grandparent_id)
+                        module = get_id_return_module(grandparent_id, '_DesignConstraint',self._DesignConstraintFromQTobj)
+                        field_item = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(0))
+                        field = field_item.text()
+                        current_item = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0))
+                        key_value = current_item.text()
+                        if key_value != '': # dictionary case
+                            del self._DesignConstraintFromQTobj[module][grandparent_id]._ast.__dict__[field][key_value]
+                        else:
+                            row = current_item.row()
+                            del self._DesignConstraintFromQTobj[module][grandparent_id]._ast.__dict__[field][row]
+                        self.refreshItem(self.model.indexFromItem(parent_item))
+
             except:
                 traceback.print_exc()
         elif QKeyEvent.key() == Qt.Key_C:
@@ -2937,6 +2953,11 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
     def update_design_by_module_id(self,_designConstraint,moudle,id):
         pass
+
+    def dataChanged(self, topLeft, bottomRight, roles) -> None:
+        super().dataChanged(topLeft, bottomRight, roles)
+        self.mouseDoubleClickEvent(topLeft)
+        # self.refreshItem(topLeft)
 
 
 class _ConstraintModel(QStandardItemModel):

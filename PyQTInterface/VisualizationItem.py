@@ -370,7 +370,7 @@ class _VisualizationItem(QGraphicsItemGroup):
             del _Layer2Name
             self.block=[]
 
-            if self._ItemTraits['_DesignParametertype'] is 1:                              # Boundary Case
+            if self._ItemTraits['_DesignParametertype'] == 1:                              # Boundary Case
                 tmpBlock = _RectBlock()
                 tmpBlock.updateTraits(blockTraits)
                 tmpBlock.setPos(_XYCoordinatesPair[0] - blockTraits['_Width']/2,_XYCoordinatesPair[1] - blockTraits['_Height']/2)
@@ -400,7 +400,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
 
 
-            elif self._ItemTraits['_DesignParametertype'] is 2:                            # Path Case
+            elif self._ItemTraits['_DesignParametertype'] == 2:                            # Path Case
                 for i in range(0,len(_XYCoordinatesPair[0])-1):
                     if float(_XYCoordinatesPair[0][i][0]) == float(_XYCoordinatesPair[0][i+1][0]):          #Vertical Case
                         Xmin = _XYCoordinatesPair[0][i][0] - self._ItemTraits['_Width']/2
@@ -409,7 +409,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                         Ymax = max(_XYCoordinatesPair[0][i][1],_XYCoordinatesPair[0][i+1][1])
                         Ywidth = Ymax - Ymin
 
-                        if len(_XYCoordinatesPair[0]) is 2:                                                    #Only One Block Case
+                        if len(_XYCoordinatesPair[0]) == 2:                                                    #Only One Block Case
                             pass
                         elif i is 0:                                                                                        #There are more than 2 segments and First Block Case
                             if _XYCoordinatesPair[0][i][1] < _XYCoordinatesPair[0][i+1][1]:          #UpWard Case
@@ -435,7 +435,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                         Xmax = max(_XYCoordinatesPair[0][i][0],_XYCoordinatesPair[0][i+1][0])
                         Xwidth = Xmax - Xmin
 
-                        if len(_XYCoordinatesPair[0]) is 2:                                                    #Only One Block Case
+                        if len(_XYCoordinatesPair[0]) == 2:                                                    #Only One Block Case
                             pass
                         elif i is 0:                                                                                        #There are more than 2 segments and First Block Case
                             if _XYCoordinatesPair[0][i][0] < _XYCoordinatesPair[0][i+1][0]:          #Path to Right Case
@@ -481,7 +481,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self.block[i].setPos(Xmin*scaleValue,Ymin*scaleValue)
                     self.addToGroup(self.block[i])
 
-            elif self._ItemTraits['_DesignParametertype'] is 3:                #SRef Case
+            elif self._ItemTraits['_DesignParametertype'] == 3:                #SRef Case
                 for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
                     sub_element_vi = _VisualizationItem()
                     sub_element_vi.updateDesignParameter(sub_element_dp)
@@ -511,7 +511,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                 self._subElementLayer['SRef'].append(self)
 
-            elif self._ItemTraits['_DesignParametertype'] is 8:                #Text Case
+            elif self._ItemTraits['_DesignParametertype'] == 8:                #Text Case
                 if blockTraits['_Layer'] == 127:
                     try:
                         self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
@@ -602,11 +602,11 @@ class _VisualizationItem(QGraphicsItemGroup):
         return self._subElementLayer
 
     def returnItem(self):
-        if self._ItemTraits['_DesignParametertype'] is "Boundary":
+        if self._ItemTraits['_DesignParametertype'] == "Boundary":
             return self._BlockGroup
-        elif self._ItemTraits['_DesignParametertype'] is "Path":
+        elif self._ItemTraits['_DesignParametertype'] == "Path":
             pass
-        elif self._ItemTraits['_DesignParametertype'] is "SRef":
+        elif self._ItemTraits['_DesignParametertype'] == "SRef":
             pass
         else:
             print("WARNING2: Unvalid DataType Return Request!")
