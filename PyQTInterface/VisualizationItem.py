@@ -160,11 +160,12 @@ class _RectBlock(QGraphicsRectItem):
 
 
 class _VisualizationItem(QGraphicsItemGroup):
-    _subElementLayer = dict()
     _compareLayer = dict()
     _Layer = LayerReader._LayerMapping
+    _subElementLayer = dict()
     for layer in _Layer:
         _subElementLayer[layer] = list()
+    _subElementLayer['SRef'] = list()
 
     def __init__(self,_ItemTraits=None):
         super().__init__()
@@ -507,6 +508,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                             rot = 360 - self._ItemTraits['_Angle']
                             sub_element_vi.setRotation(rot)
                     self.addToGroup(sub_element_vi)
+
+                self._subElementLayer['SRef'].append(self)
 
             elif self._ItemTraits['_DesignParametertype'] is 8:                #Text Case
                 if blockTraits['_Layer'] == 127:

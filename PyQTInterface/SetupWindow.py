@@ -2476,8 +2476,6 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     # send_deleteID_signal = pyqtSignal(str)
     send_deleteConstraint_signal = pyqtSignal(str)
 
-
-
     originalKeyPress = QTreeView.keyPressEvent
 
     def __init__(self,type):
@@ -2506,16 +2504,18 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
     def initUI(self,type):
         self.model = _ConstraintModel()
-        if type == "Hierarchy":
-            self.model.setHeaderData(0,Qt.Horizontal,"Constraint Container(Hierarchy)")
+        if type == "Generator":
+            self.model.setHeaderData(0,Qt.Horizontal,"Constraint Container (Generator)")
         else:
-            self.model.setHeaderData(0,Qt.Horizontal,"Constraint Container(Floating)")
+            self.model.setHeaderData(0,Qt.Horizontal,"Constraint Container (Candidate)")
         self.model.setHeaderData(1,Qt.Horizontal,"Constraint ID")
         self.model.setHeaderData(2,Qt.Horizontal,"Constraint Type")
         self.model.setHeaderData(3,Qt.Horizontal,"Value")
         self.model.setHeaderData(4,Qt.Horizontal,"fcn_type")
 
         self.setModel(self.model)
+
+        self.resizeColumnToContents(0)
 
         self.debugType = type
 
