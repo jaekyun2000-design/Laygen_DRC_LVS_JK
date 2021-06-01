@@ -816,7 +816,23 @@ class _MainWindow(QMainWindow):
             # gds2gen.set_root_cell(self._CurrentModuleName)
             # gds2gen.run_qt_constraint_ast()
             dp_dict = gds2gen.get_updated_designParameters()
-            print('debug')
+            current_dpdict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
+
+            for _dpName, _qtdp in current_dpdict.items():
+                for _newdpName, _newqtdp in dp_dict.items():
+                    if _dpName == _newqtdp['_id']:
+                        _qtdp._DesignParameter['_DesignObj'] = _newqtdp['_DesignObj']
+                        _qtdp._DesignParameter['_XYCoordinates'] = _newqtdp['_XYCoordinates']
+                        _qtdp._DesignParameter['_Reflect'] = _newqtdp['_Reflect']
+                        _qtdp._DesignParameter['_Angle'] = _newqtdp['_Angle']
+                        _qtdp._DesignParameter['_Ignore'] = _newqtdp['_Ignore']
+                        _qtdp._DesignParameter['_ModelStructure'] = _newqtdp['_ModelStructure']
+                        self.updateDesignParameter(_qtdp._DesignParameter)
+                    else:
+                        pass
+
+            print(dp_dict)
+
         except :
             traceback.print_exc()
 
@@ -1234,6 +1250,7 @@ class _MainWindow(QMainWindow):
         self._layerItem = sref_vi.returnLayerDict()
 
         self.dockContentWidget1_2.updateLayerList(self._layerItem)
+
 
 
     def loadGDS(self):
