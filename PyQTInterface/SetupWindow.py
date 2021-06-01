@@ -2528,6 +2528,11 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.context_menu_for_dict = QMenu(self)
         add_blank_row_dict_action = QAction("Append row", self.context_menu_for_dict)
         self.context_menu_for_dict.addActions([add_blank_row_dict_action])
+
+
+        add_blank_row_action.triggered.connect(self.append_row)
+        add_blank_row_dict_action.triggered.connect(self.append_row)
+
         #########WIP tb for combobox#########
         # index = self.model.index(0,0,QModelIndex())
         # self.model.setData(index,"a")
@@ -2678,6 +2683,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Key] = StringValue
 
     def updateDesignConstraintWithList(self,Module,Id,Field,Idx,StringValue):
+        if Idx <= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field]):
+            self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append(None)
+
         try:
             self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = [float(value) for value in StringValue.split(',')]
         except:
@@ -3009,6 +3017,12 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         except:
             traceback.print_exc()
             pass
+
+    def append_row(self):
+        current_item = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0))
+        current_item.appendRow([QStandardItem(),QStandardItem(),QStandardItem(),QStandardItem()])
+        print("what happend?")
+
 
 
 

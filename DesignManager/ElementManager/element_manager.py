@@ -164,7 +164,8 @@ class ElementManager:
             tmpDP = dict()
             for key in ast._fields:
                 if key == 'name':
-                    tmpDP[key] = ast.__dict__['name']
+                    tmpDP['_ElementName'] = ast.__dict__['name']
+                    # tmpDP[key] = ast.__dict__['name']
                 elif key == 'library':
                     tmpDP[key] = ast.__dict__['library']
                 elif key == 'className':

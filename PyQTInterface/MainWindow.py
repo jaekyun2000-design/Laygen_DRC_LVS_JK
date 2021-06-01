@@ -1065,9 +1065,11 @@ class _MainWindow(QMainWindow):
             pass
 
 
-    def saveProject(self):
-        scf = QFileDialog.getSaveFileName(self,'Save Project','./PyQTInterface/Project/')
-
+    def saveProject(self, _fileName=None):
+        if _fileName == None:
+            scf = QFileDialog.getSaveFileName(self,'Save Project','./PyQTInterface/Project/')
+        else:
+            scf = [_fileName]
         try:
             if scf[0][-4:] != '.bin':
                 _fileName = scf[0] + ".bin"
@@ -1143,7 +1145,7 @@ class _MainWindow(QMainWindow):
             _tmpQtDpObj = QTInterfaceWithAST.QtDesignParameter(_id=_newParameterID,
                                                      _type= 3,
                                                     _ParentName=_moduleName,
-                                                    _ElementName= tmp_dp_dict['name'])
+                                                    _ElementName= tmp_dp_dict['_ElementName'])
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID] = _tmpQtDpObj
             print("*************************************************************************************")
             print(f" No existing DesignParameters: New DesignParameter creation with Name: {_moduleName}")
@@ -1154,7 +1156,7 @@ class _MainWindow(QMainWindow):
             _tmpQtDpObj = QTInterfaceWithAST.QtDesignParameter(_id=_newParameterID,
                                                      _type= 3,
                                                     _ParentName=_moduleName,
-                                                    _ElementName= tmp_dp_dict['name'])
+                                                    _ElementName= tmp_dp_dict['_ElementName'])
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID] = _tmpQtDpObj
             print("****************************************************************************************")
             print(f" Append to Existing DesignParameters: DesignParameter creation with Name: {_moduleName}")
@@ -1211,7 +1213,7 @@ class _MainWindow(QMainWindow):
         dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
 
         self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_DesignObj'] = _dp['_DesignObj']
-        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_ElementName'] = tmp_dp_dict['name']
+        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_ElementName'] = tmp_dp_dict['_ElementName']
         self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_XYCoordinates'] = _dp['_XYCoordinates']
         self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_ModelStructure'] = _dp['_ModelStructure']
 
@@ -2507,13 +2509,35 @@ class _VersatileWindow(QWidget):
 #
 #         self.send_Text_signal.emit(self.text())
 
+def custom_excepthook(exctype, value, traceback):
+    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
+    print(exctype, value, traceback)
+    sys._execepthook(exctype, value, traceback)
 
 
 
 
 if __name__ == '__main__':
+    sys._excepthook = sys.excepthook
+    sys.excepthook = custom_excepthook
 
     app = QApplication(sys.argv)
     ex = _MainWindow()
-    sys.exit(app.exec_())
+    try:
+        app.exec_()
+    except:
+        print("something wrong")
+    # sys.exit(app.exec_())
+
 
