@@ -171,7 +171,7 @@ class ElementManager:
                 elif key == 'className':
                     tmpDP[key] = ast.__dict__['className']
                 elif key == 'XY':
-                    tmpDP[key] = ast.__dict__['XY']
+                    tmpDP['_XYCoordinates'] = ast.__dict__['XY']
                 elif key == 'calculate_fcn':
                     tmpDP[key] = ast.__dict__['calculate_fcn']
                 elif key == 'parameters':

@@ -2516,6 +2516,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.EditMode = False
         self.setAnimated(True)
 
+        self.setSelectionMode(QAbstractItemView.MultiSelection)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
 
         ########## context #########
@@ -2529,6 +2530,11 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.context_menu_for_dict = QMenu(self)
         add_blank_row_dict_action = QAction("Append row", self.context_menu_for_dict)
         self.context_menu_for_dict.addActions([add_blank_row_dict_action])
+
+        self.context_menu_for_plain_item = QMenu(self)
+        insert_above_action = QAction("Insert above", self.context_menu_for_plain_item)
+        insert_below_action = QAction("Insert below", self.context_menu_for_plain_item)
+        # self.context_menu_for_plain_item.addAction
 
 
         add_blank_row_action.triggered.connect(self.append_row)
@@ -2684,8 +2690,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Key] = StringValue
 
     def updateDesignConstraintWithList(self,Module,Id,Field,Idx,StringValue):
-        if Idx <= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field]):
-            self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append(None)
+        # if Idx <= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field]):
+        #     self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append(None)
 
         try:
             self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = [float(value) for value in StringValue.split(',')]
