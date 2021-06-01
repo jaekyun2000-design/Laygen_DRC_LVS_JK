@@ -1193,7 +1193,7 @@ class _MainWindow(QMainWindow):
         print(f"               CUSTOM SREF DP / DC / VisualItem Creation Done                       ")
         print("#####################################################################################")
 
-    def srefUpdate(self, _DesignConstraint):
+    def srefUpdate(self, ast_with_id):
         """
         Get Sref AST -> Create DP w/ ModelStructure -> Create Constraint -> Create Visual Item
         :param _AST: sref _AST which is made via 'SrefLoad' widget window
@@ -1203,11 +1203,11 @@ class _MainWindow(QMainWindow):
         print(f"                CUSTOM SREF DP / DC / VisualItem Update Start                        ")
         print("########################################################################################")
 
-        dc_id = _DesignConstraint._id
-        module = self.get_id_return_module(id, "_DesignConstraint")
+        dc_id = ast_with_id._id
+        module = self.get_id_return_module(dc_id, "_DesignConstraint")
         gds2gen = topAPI.gds2generator.GDS2Generator(False)
-        _dp = gds2gen.code_generation_for_subcell(_DesignConstraint._ast)
-        tmp_dp_dict , _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(_DesignConstraint._ast)
+        _dp = gds2gen.code_generation_for_subcell(ast_with_id)
+        tmp_dp_dict , _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(ast_with_id)
         dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
 
         self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_DesignObj'] = _dp['_DesignObj']
@@ -1222,6 +1222,7 @@ class _MainWindow(QMainWindow):
         sref_vi = VisualizationItem._VisualizationItem()
         sref_vi.updateDesignParameter(self._QTObj._qtProject._DesignParameter[module][dp_id])
         self.scene.addItem(sref_vi)
+        self.scene.removeItem(self.visualItemDict[dp_id])
         self.visualItemDict[dp_id] = sref_vi
         self._layerItem = sref_vi.returnLayerDict()
 
