@@ -141,7 +141,9 @@ class GDS2Generator():
             if dp_name == '_Name' or dp_name == '_GDSFile':
                 continue
             dp_dictionary[dp_name] = self.build_model_structure(dp_name)
-            dp_dictionary[dp_name]['_id'] = self.dp_name_to_dp_id[dp_name]
+            temp = self.dp_name_to_dp_id[dp_name]
+            dp_dictionary[dp_name]['_id'] = temp
+            print("debug")
 
 
         return dp_dictionary
