@@ -171,7 +171,8 @@ class _BoundarySetupWindow(QWidget):
                 try:
                     X = int(XY.text().split(',')[0])
                     Y = int(XY.text().split(',')[1])
-                    self._DesignParameter['_XYCoordinates']=[[X+float(self.width_input.text())/2,Y+float(self.height_input.text())/2]]
+                    # self._DesignParameter['_XYCoordinates']=[[X+float(self.width_input.text())/2,Y+float(self.height_input.text())/2]]
+                    self._DesignParameter['_XYCoordinates']=[[X,Y]]
                     # self._DesignParameter['_XYCoordinatesForDisplay'] = [[X,Y]]
                 except:
                     self.warning = QMessageBox()

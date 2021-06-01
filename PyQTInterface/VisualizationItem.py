@@ -238,26 +238,26 @@ class _VisualizationItem(QGraphicsItemGroup):
     def updateDesignParameter(self,QtDesignParameter):
         self._id = QtDesignParameter._id
         self._type = QtDesignParameter._type
-        try:
-            oldVersionSupportForXYCoordinatesForDisplay = QtDesignParameter._XYCoordinatesForDisplay
-        except:
-            QtDesignParameter._XYCoordinatesForDisplay = []
-        if QtDesignParameter._XYCoordinatesForDisplay == [] or QtDesignParameter._XYCoordinatesForDisplay == None:
-            if QtDesignParameter._DesignParameter['_XYCoordinates']:
-                QtDesignParameter._XYCoordinatesForDisplay = QtDesignParameter._DesignParameter['_XYCoordinates']
-            else:
-                QtDesignParameter._XYCoordinatesForDisplay = [[0,0]]
+        # try:
+        #     oldVersionSupportForXYCoordinatesForDisplay = QtDesignParameter._XYCoordinatesForDisplay
+        # except:
+        #     QtDesignParameter._XYCoordinatesForDisplay = []
+        # if QtDesignParameter._XYCoordinatesForDisplay == [] or QtDesignParameter._XYCoordinatesForDisplay == None:
+        #     if QtDesignParameter._DesignParameter['_XYCoordinates']:
+        #         QtDesignParameter._XYCoordinatesForDisplay = QtDesignParameter._DesignParameter['_XYCoordinates']
+        #     else:
+        #         QtDesignParameter._XYCoordinatesForDisplay = [[0,0]]
 
 
 
         if self._type == 1:
             self._ItemTraits['_XYCoordinates'] = QtDesignParameter._DesignParameter['_XYCoordinates']
         elif self._type == 2:
-            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
+            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._DesignParameter['_XYCoordinates']
         elif self._type == 3:
-            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
+            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._DesignParameter['_XYCoordinates']
         elif self._type == 8:
-            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._XYCoordinatesForDisplay
+            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._DesignParameter['_XYCoordinates']
 
         if QtDesignParameter._ElementName == None:
             QtDesignParameter._ElementName = QtDesignParameter._id
