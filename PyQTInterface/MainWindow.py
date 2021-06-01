@@ -1216,6 +1216,11 @@ class _MainWindow(QMainWindow):
         self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_ElementName'] = tmp_dp_dict['_ElementName']
         self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_XYCoordinates'] = _dp['_XYCoordinates']
         self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_ModelStructure'] = _dp['_ModelStructure']
+        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['library'] = tmp_dp_dict['library']
+        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['className'] = tmp_dp_dict['className']
+        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['XY'] = tmp_dp_dict['XY']
+        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['calculate_fcn'] = tmp_dp_dict['calculate_fcn']
+        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['parameters'] = tmp_dp_dict['parameters']
 
         print("****************************************************************************************")
         print(f" Update Existing DesignParameters: DesignParameter creation with Name: {dp_id}")
