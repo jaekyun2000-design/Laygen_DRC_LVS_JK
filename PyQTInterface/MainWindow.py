@@ -1300,10 +1300,10 @@ class _MainWindow(QMainWindow):
                     for key, value in flattening_dict.items():
                         findHint = _newCellName.find(key)
                         if findHint != -1:
-                            topcell[_newConstraintID]._DesignParameter['_DesignLibraryName'] = value
-                            _className = generator_model_api.class_name_dict[_element._DesignParameter['_DesignLibraryName']]
-                            topcell[_newConstraintID]._DesignParameter['_className'] =_className
-                            topcell[_newConstraintID]._DesignParameter['_Parameters'] = \
+                            topcell[_newConstraintID]._DesignParameter['library'] = value
+                            _className = generator_model_api.class_name_dict[_element._DesignParameter['library']]
+                            topcell[_newConstraintID]._DesignParameter['className'] =_className
+                            topcell[_newConstraintID]._DesignParameter['parameters'] = \
                                 generator_model_api.class_dict[value]._ParametersForDesignCalculation
 
 

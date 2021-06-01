@@ -57,15 +57,15 @@ class ElementManager:
                 if key == 'name':
                     tmpAST.__dict__[key] = dp_dict['_ElementName']
                 elif key == 'library':
-                    tmpAST.__dict__[key] = dp_dict['_DesignLibraryName']
+                    tmpAST.__dict__[key] = dp_dict['library']
                 elif key == 'className':
-                    tmpAST.__dict__[key] = dp_dict['_className']
+                    tmpAST.__dict__[key] = dp_dict['className']
                 elif key == 'XY':
                     tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]
                 elif key == 'calculate_fcn':
-                    tmpAST.__dict__[key] = list(generator_model_api.class_function_dict[dp_dict['_DesignLibraryName']].keys())[0]
+                    tmpAST.__dict__[key] = list(generator_model_api.class_function_dict[dp_dict['library']].keys())[0]
                 elif key == 'parameters':
-                    tmpAST.__dict__[key] = dp_dict['_Parameters']
+                    tmpAST.__dict__[key] = dp_dict['parameters']
 
 
         elif dp_dict['_DesignParametertype'] == 'element array':  #EA

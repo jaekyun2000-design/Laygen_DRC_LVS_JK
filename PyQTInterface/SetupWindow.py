@@ -796,14 +796,15 @@ class _LoadSRefWindow(QWidget):
         self.show()
 
     def updateUI(self):
-        self.name_input.setText(self._DesignParameter['name'])
+        self.name_input.setText(self._DesignParameter['_ElementName'])
         self.library_input.setCurrentText(self._DesignParameter['library'])
         self.class_name_input.setText(self._DesignParameter['className'])
-        self.XY_input.setText(str(self._DesignParameter['XY'][0][0])+','+str(self._DesignParameter['XY'][0][1]))
-        self.cal_fcn_input.setCurrentText(self._DesignParameter['calculate_fcn'])
+        self.XY_input.setText(str(self._DesignParameter['_XYCoordinates'][0][0])+','+str(self._DesignParameter['_XYCoordinates'][0][1]))
+        if 'calculate_fcn' in self._DesignParameter.keys():
+            self.cal_fcn_input.setCurrentText(self._DesignParameter['calculate_fcn'])
         i = 0
         for value in self._DesignParameter['parameters'].values():
-            self.par_valueForLineEdit[i].setText(value)
+            self.par_valueForLineEdit[i].setText(str(value))
             i += 1
 
     def updateClassName(self):
