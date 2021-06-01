@@ -827,7 +827,15 @@ class _MainWindow(QMainWindow):
                         _qtdp._DesignParameter['_Angle'] = _newqtdp['_Angle']
                         _qtdp._DesignParameter['_Ignore'] = _newqtdp['_Ignore']
                         _qtdp._DesignParameter['_ModelStructure'] = _newqtdp['_ModelStructure']
-                        self.updateDesignParameter(_qtdp._DesignParameter)
+                        sref_vi = VisualizationItem._VisualizationItem()
+                        sref_vi.updateDesignParameter(_qtdp)
+                        self.scene.addItem(sref_vi)
+                        self.scene.removeItem(self.visualItemDict[_qtdp._DesignParameter['_id']])
+                        self.visualItemDict[_qtdp._DesignParameter['_id']] = sref_vi
+                        self._layerItem = sref_vi.returnLayerDict()
+
+                        self.dockContentWidget1_2.updateLayerList(self._layerItem)
+                        # self.updateDesignParameter(_qtdp._DesignParameter)
                     else:
                         pass
 
@@ -1372,8 +1380,6 @@ class _MainWindow(QMainWindow):
                     sref_vi.updateDesignParameter(topcell[_newConstraintID])
                     self.scene.addItem(sref_vi)
                     self.visualItemDict[topcell[_newConstraintID]._id] = sref_vi
-                    # self.vi = VisualizationItem._VisualizationItem()
-                    # self.vi.updateDesignParameter(topcell[_newConstraintID])
 
                     self._layerItem = sref_vi.returnLayerDict()
 
