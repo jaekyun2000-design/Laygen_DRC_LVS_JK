@@ -159,7 +159,9 @@ class _BoundarySetupWindow(QWidget):
         # self.
 
     def cancel_button_accepted(self):
+        self.send_Destroy_signal.emit('bw')
         self.destroy()
+
     def on_buttonBox_accepted(self):
         for XY in self.XYdictForLineEdit:
             if not XY.text():
@@ -368,6 +370,18 @@ class _PathSetupWindow(QWidget):
 
 
     def cancel_button_accepted(self):
+        self._DesignParameter = dict(
+                    _ElementName = None,
+                    _Layer = None,
+                    _DesignParametertype = 2,
+                    _XYCoordinates = [],
+                    _Width = None,
+                    _Height = None,
+                    _Color = None,
+                    _ItemRef = None, #Reference Of VisualizationItem
+                )
+        self.visualItem.updateTraits(self._DesignParameter)
+        self.send_Destroy_signal.emit('pw')
         self.destroy()
 
     def on_buttonBox_accepted(self):
@@ -412,6 +426,17 @@ class _PathSetupWindow(QWidget):
             self.on_buttonBox_accepted()
             self.send_Destroy_signal.emit('pw')
         elif QKeyEvent.key() == Qt.Key_Escape:
+            self._DesignParameter = dict(
+                        _ElementName = None,
+                        _Layer = None,
+                        _DesignParametertype = 2,
+                        _XYCoordinates = [],
+                        _Width = None,
+                        _Height = None,
+                        _Color = None,
+                        _ItemRef = None, #Reference Of VisualizationItem
+                    )
+            self.visualItem.updateTraits(self._DesignParameter)
             self.destroy()
             self.send_Destroy_signal.emit('pw')
 
