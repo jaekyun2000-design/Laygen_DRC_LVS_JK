@@ -224,11 +224,11 @@ class _BoundarySetupWindow(QWidget):
                 origin = [(self.tmpXYCoordinates[-1][0]+self.tmpXYCoordinates[-2][0])/2,(self.tmpXYCoordinates[-1][1]+self.tmpXYCoordinates[-2][1])/2]
                 self.tmpXYCoordinates.pop(0)
 
-                self._DesignParameter['_Width'] = xdistance
-                self._DesignParameter['_Height'] = ydistance
+                self._DesignParameter['_XWidth'] = xdistance
+                self._DesignParameter['_YWidth'] = ydistance
                 self._DesignParameter['_XYCoordinates'] = [origin]
-                self.width_input.setText(str(self._DesignParameter['_Width']))
-                self.height_input.setText(str(self._DesignParameter['_Height']))
+                self.width_input.setText(str(self._DesignParameter['_XWidth']))
+                self.height_input.setText(str(self._DesignParameter['_YWidth']))
                 self.XYdictForLineEdit[0].setText(str(origin[0])+','+str(origin[1]))
 
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
@@ -246,12 +246,12 @@ class _BoundarySetupWindow(QWidget):
 
     def mouseTracking(self, event):
         if self.mouse is not None and self.click < 2:
-            self.xdistance = abs(self.mouse.x() - event.scenePos().x())
-            self.ydistance = abs(self.mouse.y() - event.scenePos().y())
-            self.origin = [(self.mouse.x()+event.scenePos().x())/2, (self.mouse.y()+event.scenePos().y())/2]
-            self._DesignParameter['_Width'] = self.xdistance
-            self._DesignParameter['_Height'] = self.ydistance
-            self._DesignParameter['_XYCoordinates'] = [self.origin]
+            xdistance = abs(self.mouse.x() - event.scenePos().x())
+            ydistance = abs(self.mouse.y() - event.scenePos().y())
+            origin = [(self.mouse.x()+event.scenePos().x())/2, (self.mouse.y()+event.scenePos().y())/2]
+            self._DesignParameter['_XWidth'] = xdistance
+            self._DesignParameter['_YWidth'] = ydistance
+            self._DesignParameter['_XYCoordinates'] = [origin]
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
             self.visualItem.updateTraits(self._DesignParameter)
             self.send_BoundarySetup_signal.emit(self.visualItem)
@@ -509,15 +509,21 @@ class _PathSetupWindow(QWidget):
 
     def mouseTracking(self, event):
         if self.mouse is not None and self.click < 2:
-            self.xdistance = abs(self.mouse.x() - event.scenePos().x())
-            self.ydistance = abs(self.mouse.y() - event.scenePos().y())
-            self.origin = [(self.mouse.x()+event.scenePos().x())/2, (self.mouse.y()+event.scenePos().y())/2]
-            self._DesignParameter['_Width'] = self.xdistance
-            self._DesignParameter['_Height'] = self.ydistance
-            self._DesignParameter['_XYCoordinates'] = [self.origin]
+            if len(self._DesignParameter['_XYCoordinates']) == 0:
+                self._DesignParameter['_XYCoordinates'].append([[self.mouse.scenePos().toPoint().x(), self.mouse.scenePos().toPoint().y()]])
+            else:
+                xdistance = abs(event.scenePos().x() - self._DesignParameter['_XYCoordinates'][0][-1][0])
+                ydistance = abs(event.scenePos().y() - self._DesignParameter['_XYCoordinates'][0][-1][1])
+
+                if xdistance < ydistance:
+                    self._DesignParameter['_XYCoordinates'][0].append([self._DesignParameter['_XYCoordinates'][0][-1][0], event.scenePos().toPoint().y()])
+                else:
+                    self._DesignParameter['_XYCoordinates'][0].append([event.scenePos().toPoint().x(), self._DesignParameter['_XYCoordinates'][0][-1][1]])
+
+            self._DesignParameter['_Width'] = self.width_input.text()
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
             self.visualItem.updateTraits(self._DesignParameter)
-            self.send_BoundarySetup_signal.emit(self.visualItem)
+            self.send_PathSetup_signal.emit(self.visualItem)
 
     def clickCount(self, _MouseEvent):
         self.mouse = _MouseEvent.scenePos()

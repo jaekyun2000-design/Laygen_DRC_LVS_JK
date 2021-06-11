@@ -879,6 +879,7 @@ class _MainWindow(QMainWindow):
         self.pw.send_Destroy_signal.connect(self.delete_obj)
         self.scene.send_xyCoordinate_signal.connect(self.pw.AddPathPointWithMouse)
         self.scene.send_xyCoordinate_signal.connect(self.pw.clickCount)                          # Mouse Interaction connect
+        self.scene.send_mouse_move_signal.connect(self.pw.mouseTracking)
 
     def makeSRefWindow(self):
         scf = QFileDialog.getSaveFileName(self,'Save Design Parameter','./PyQTInterface/modules')

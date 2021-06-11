@@ -275,7 +275,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
         for key in _DesignParameter.keys():                      #set itemTrait on Object)
             if key == "_XYCoordinates":    # DesignParameter's XYcoordinate is for real xy coordinates,,,
-                self._ItemTraits['_XYCoordinates'] = _DesignParameter[key]                   # Itemtrait's XY coordinate matches QtDesignParameter's XYCoordinatesForDisplay
+                self._ItemTraits['_XYCoordinates'] = _DesignParameter[key]                 # Itemtrait's XY coordinate matches QtDesignParameter's XYCoordinatesForDisplay
             elif key == "_ElementName":
                 self._ElementName = _DesignParameter[key]
             else:
@@ -283,8 +283,8 @@ class _VisualizationItem(QGraphicsItemGroup):
 
         if self._ItemTraits['_DesignParametertype'] == 1:           # Boundary
             try:
-                self._ItemTraits['_Width'] = int(self._ItemTraits['_Width'])
-                self._ItemTraits['_Height'] = int(self._ItemTraits['_Height'])
+                self._ItemTraits['_Width'] = int(self._ItemTraits['_XWidth'])
+                self._ItemTraits['_Height'] = int(self._ItemTraits['_YWidth'])
             except:
                 self.warning = QMessageBox()
                 self.warning.setText("Invalid Design Value")
