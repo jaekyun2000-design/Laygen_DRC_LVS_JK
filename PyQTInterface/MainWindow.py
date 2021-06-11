@@ -859,11 +859,13 @@ class _MainWindow(QMainWindow):
     def makeBoundaryWindow(self):
         self.bw = SetupWindow._BoundarySetupWindow()
         self.bw.show()
-        # self.bw.send_BoundarySetup_signal.connect(self.updateGraphicItem)
+        self.bw.send_BoundarySetup_signal.connect(self.updateGraphicItem)
         self.bw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
         self.bw.send_BoundaryDesign_signal.connect(self.createNewDesignParameter)
         self.bw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
         self.scene.send_xyCoordinate_signal.connect(self.bw.AddBoundaryPointWithMouse)
+        self.scene.send_xyCoordinate_signal.connect(self.bw.test)
+        self.scene.send_mouse_move_signal.connect(self.bw.mouseTracking)
         self.bw.send_Destroy_signal.connect(self.delete_obj)
 
 
@@ -2224,6 +2226,7 @@ class _CustomScene(QGraphicsScene):
     send_moveDone_signal = pyqtSignal()
     send_deleteItem_signal = pyqtSignal(str)
     send_module_name_list_signal = pyqtSignal(list)
+    send_mouse_move_signal = pyqtSignal(QGraphicsSceneMouseEvent)
 
     viewList = []
 
@@ -2418,6 +2421,7 @@ class _CustomScene(QGraphicsScene):
         if self.moveFlag is True:
             self.send_move_signal.emit(delta)
         self.oldPos = QGraphicsSceneMouseEvent.scenePos()
+        self.send_mouse_move_signal.emit(QGraphicsSceneMouseEvent)
 
     def itemListClickIgnore(self,flag):
         self.listIgnoreFlag = flag

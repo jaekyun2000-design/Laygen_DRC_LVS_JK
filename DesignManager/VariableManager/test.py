@@ -8,6 +8,7 @@ class MyWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.setGeometry(30,30,600,400)
+        self.progress = 0
         self.begin = QPoint()
         self.end = QPoint()
         # print(self.end.x())
@@ -24,13 +25,19 @@ class MyWidget(QWidget):
     def mousePressEvent(self, event):
         print(self.end.x())
         print(self.end.y())
-        if self.end.x() == 0 and self.end.y() == 0:
+        if self.end.x() == 0 and self.end.y() == 0 and self.progress == 0:
             self.begin = event.pos()
             self.end = event.pos()
             self.setMouseTracking(True)
+        elif self.progress == 1:
+            self.begin = event.pos()
+            self.end = event.pos()
+            self.setMouseTracking(True)
+            self.progress = 0
         else:
             self.end = event.pos()
             self.setMouseTracking(False)
+            self.progress = 1
         self.update()
 
     def mouseMoveEvent(self, event):

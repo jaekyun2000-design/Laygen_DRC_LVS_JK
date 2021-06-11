@@ -36,6 +36,8 @@ class _BoundarySetupWindow(QWidget):
 
     def __init__(self,BoundaryElement= None):
         super().__init__()
+        self.mouse = None
+        self.click = 0
         self.initUI()
 
         if BoundaryElement == None:
@@ -208,29 +210,30 @@ class _BoundarySetupWindow(QWidget):
         pass
 
     def AddBoundaryPointWithMouse(self,_MouseEvent):
-        ##### When Click the point, adjust x,y locations #####
-        if len(self.tmpXYCoordinates) == 0:
-            self.tmpXYCoordinates.append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()])
+        if self.click < 2:
+            ##### When Click the point, adjust x,y locations #####
+            if len(self.tmpXYCoordinates) == 0:
+                self.tmpXYCoordinates.append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()])
 
-        else:
-            self.tmpXYCoordinates.append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()])
+            else:
+                self.tmpXYCoordinates.append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()])
 
-            xdistance = abs(self.tmpXYCoordinates[-1][0] - self.tmpXYCoordinates[-2][0])
-            ydistance = abs(self.tmpXYCoordinates[-1][1] - self.tmpXYCoordinates[-2][1])
-            origin = [(self.tmpXYCoordinates[-1][0]+self.tmpXYCoordinates[-2][0])/2,(self.tmpXYCoordinates[-1][1]+self.tmpXYCoordinates[-2][1])/2]
-            self.tmpXYCoordinates.pop(0)
+                xdistance = abs(self.tmpXYCoordinates[-1][0] - self.tmpXYCoordinates[-2][0])
+                ydistance = abs(self.tmpXYCoordinates[-1][1] - self.tmpXYCoordinates[-2][1])
+                origin = [(self.tmpXYCoordinates[-1][0]+self.tmpXYCoordinates[-2][0])/2,(self.tmpXYCoordinates[-1][1]+self.tmpXYCoordinates[-2][1])/2]
+                self.tmpXYCoordinates.pop(0)
 
-            self._DesignParameter['_Width'] = xdistance
-            self._DesignParameter['_Height'] = ydistance
-            self._DesignParameter['_XYCoordinates'] = [origin]
-            self.width_input.setText(str(self._DesignParameter['_Width']))
-            self.height_input.setText(str(self._DesignParameter['_Height']))
-            self.XYdictForLineEdit[0].setText(str(origin[0])+','+str(origin[1]))
+                self._DesignParameter['_Width'] = xdistance
+                self._DesignParameter['_Height'] = ydistance
+                self._DesignParameter['_XYCoordinates'] = [origin]
+                self.width_input.setText(str(self._DesignParameter['_Width']))
+                self.height_input.setText(str(self._DesignParameter['_Height']))
+                self.XYdictForLineEdit[0].setText(str(origin[0])+','+str(origin[1]))
 
-        self._DesignParameter['_Layer'] = self.layer_input.currentText()
+            self._DesignParameter['_Layer'] = self.layer_input.currentText()
 
-        self.visualItem.updateTraits(self._DesignParameter)
-        self.send_BoundarySetup_signal.emit(self.visualItem)
+            self.visualItem.updateTraits(self._DesignParameter)
+            self.send_BoundarySetup_signal.emit(self.visualItem)
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
@@ -240,6 +243,21 @@ class _BoundarySetupWindow(QWidget):
             self.destroy()
             self.send_Destroy_signal.emit('bw')
 
+    def mouseTracking(self, event):
+        if self.mouse is not None and self.click < 2:
+            self.xdistance = abs(self.mouse.x() - event.scenePos().x())
+            self.ydistance = abs(self.mouse.y() - event.scenePos().y())
+            self.origin = [(self.mouse.x()+event.scenePos().x())/2, (self.mouse.y()+event.scenePos().y())/2]
+            self._DesignParameter['_Width'] = self.xdistance
+            self._DesignParameter['_Height'] = self.ydistance
+            self._DesignParameter['_XYCoordinates'] = [self.origin]
+            self._DesignParameter['_Layer'] = self.layer_input.currentText()
+            self.visualItem.updateTraits(self._DesignParameter)
+            self.send_BoundarySetup_signal.emit(self.visualItem)
+
+    def test(self, _MouseEvent):
+        self.mouse = _MouseEvent.scenePos()
+        self.click += 1
 
 class _PathSetupWindow(QWidget):
 
