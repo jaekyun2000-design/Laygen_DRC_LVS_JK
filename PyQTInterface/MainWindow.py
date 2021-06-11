@@ -864,7 +864,7 @@ class _MainWindow(QMainWindow):
         self.bw.send_BoundaryDesign_signal.connect(self.createNewDesignParameter)
         self.bw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
         self.scene.send_xyCoordinate_signal.connect(self.bw.AddBoundaryPointWithMouse)
-        self.scene.send_xyCoordinate_signal.connect(self.bw.test)
+        self.scene.send_xyCoordinate_signal.connect(self.bw.clickCount)
         self.scene.send_mouse_move_signal.connect(self.bw.mouseTracking)
         self.bw.send_Destroy_signal.connect(self.delete_obj)
 
@@ -877,7 +877,8 @@ class _MainWindow(QMainWindow):
         self.pw.send_PathDesign_signal.connect(self.createNewDesignParameter)
         self.pw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
         self.pw.send_Destroy_signal.connect(self.delete_obj)
-        self.scene.send_xyCoordinate_signal.connect(self.pw.AddPathPointWithMouse)                          # Mouse Interaction connect
+        self.scene.send_xyCoordinate_signal.connect(self.pw.AddPathPointWithMouse)
+        self.scene.send_xyCoordinate_signal.connect(self.pw.clickCount)                          # Mouse Interaction connect
 
     def makeSRefWindow(self):
         scf = QFileDialog.getSaveFileName(self,'Save Design Parameter','./PyQTInterface/modules')

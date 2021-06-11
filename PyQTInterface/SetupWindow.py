@@ -190,6 +190,7 @@ class _BoundarySetupWindow(QWidget):
             self._DesignParameter['_XWidth'] = float(self.width_input.text())
             self._DesignParameter['_YWidth'] = float(self.height_input.text())
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
+            self.send_DestroyTmpVisual_signal.emit(self.visualItem)
             self.send_BoundaryDesign_signal.emit(self._DesignParameter)
             self.destroy()
 
@@ -255,7 +256,7 @@ class _BoundarySetupWindow(QWidget):
             self.visualItem.updateTraits(self._DesignParameter)
             self.send_BoundarySetup_signal.emit(self.visualItem)
 
-    def test(self, _MouseEvent):
+    def clickCount(self, _MouseEvent):
         self.mouse = _MouseEvent.scenePos()
         self.click += 1
 
@@ -269,6 +270,8 @@ class _PathSetupWindow(QWidget):
 
     def __init__(self, PathElement = None):
         super().__init__()
+        self.mouse = None
+        self.click = 0
         self.initUI()
 
         if PathElement is None:
@@ -493,9 +496,6 @@ class _PathSetupWindow(QWidget):
             self.warning.setText("Invalid Parameter Input")
             self.warning.show()
 
-
-
-
     def UpdateXYwidget(self):
         CurrentPointNum = len(self.XYdictForLineEdit)
         NewPointNum = CurrentPointNum + 1
@@ -506,6 +506,22 @@ class _PathSetupWindow(QWidget):
 
         self.setupVboxColumn1.addWidget(self.XYdictForLabel[-1])
         self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[-1])
+
+    def mouseTracking(self, event):
+        if self.mouse is not None and self.click < 2:
+            self.xdistance = abs(self.mouse.x() - event.scenePos().x())
+            self.ydistance = abs(self.mouse.y() - event.scenePos().y())
+            self.origin = [(self.mouse.x()+event.scenePos().x())/2, (self.mouse.y()+event.scenePos().y())/2]
+            self._DesignParameter['_Width'] = self.xdistance
+            self._DesignParameter['_Height'] = self.ydistance
+            self._DesignParameter['_XYCoordinates'] = [self.origin]
+            self._DesignParameter['_Layer'] = self.layer_input.currentText()
+            self.visualItem.updateTraits(self._DesignParameter)
+            self.send_BoundarySetup_signal.emit(self.visualItem)
+
+    def clickCount(self, _MouseEvent):
+        self.mouse = _MouseEvent.scenePos()
+        self.click += 1
 
 class _SRefSetupWindowOG(QWidget):
 
