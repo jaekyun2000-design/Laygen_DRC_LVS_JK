@@ -287,8 +287,9 @@ class _PathSetupWindow(QWidget):
                     _ItemRef = None, #Reference Of VisualizationItem
 
                 )
-            self.tmpDP = copy.deepcopy(self._DesignParameter)
             self.visualItem = VisualizationItem._VisualizationItem()
+            self.tmpVI = VisualizationItem._VisualizationItem()
+            self.tmpDP = copy.deepcopy(self._DesignParameter)
         else:
             # self.visualItem = PathElement
             self.visualItem = VisualizationItem._VisualizationItem()
@@ -511,21 +512,31 @@ class _PathSetupWindow(QWidget):
 
     def mouseTracking(self, event):
         if self.mouse is not None:
-            xdistance = abs(self.mouse.x() - event.scenePos().x())
-            ydistance = abs(self.mouse.y() - event.scenePos().y())
+            if self.click == 0:
+                xdistance = abs(self.mouse.x() - event.scenePos().x())
+                ydistance = abs(self.mouse.y() - event.scenePos().y())
 
-            if xdistance < ydistance:
-                self.tmpDP['_XYCoordinates'] = [[[self.mouse.x(),self.mouse.y()],[self.mouse.x(),event.scenePos().y()]]]
+                if xdistance < ydistance:
+                    self.tmpDP['_XYCoordinates'] = [[[self.mouse.x(),self.mouse.y()],[self.mouse.x(),event.scenePos().y()]]]
+                else:
+                    self.tmpDP['_XYCoordinates'] = [[[self.mouse.x(),self.mouse.y()],[event.scenePos().x(),self.mouse.y()]]]
             else:
-                self.tmpDP['_XYCoordinates'] = [[[self.mouse.x(),self.mouse.y()],[event.scenePos().x(),self.mouse.y()]]]
+                xdistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][0] - event.scenePos().x())
+                ydistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][1] - event.scenePos().y())
+
+                if xdistance < ydistance:
+                    self.tmpDP['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],event.scenePos().y()]]]
+                else:
+                    self.tmpDP['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[event.scenePos().x(),self._DesignParameter['_XYCoordinates'][0][-1][1]]]]
 
             self.tmpDP['_Width'] = self.width_input.text()
             self.tmpDP['_Layer'] = self.layer_input.currentText()
-            self.visualItem.updateTraits(self.tmpDP)
-            self.send_PathSetup_signal.emit(self.visualItem)
+            self.tmpVI.updateTraits(self.tmpDP)
+            self.send_PathSetup_signal.emit(self.tmpVI)
 
     def clickCount(self, _MouseEvent):
         self.mouse = _MouseEvent.scenePos()
+        self.click += 1
 
 class _SRefSetupWindowOG(QWidget):
 
