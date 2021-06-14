@@ -79,3 +79,19 @@ class VariableVisualItem(QGraphicsItemGroup):
                 # painter.setBackgroundMode(Qt.OpaqueMode)
         else:
             painter.beginNativePainting()
+
+
+    def test(self, item):
+        boolean = item.Centervariable.isVisible()
+        if boolean == False:
+            item.Xvariable.setVisible(True)
+            item.Yvariable.setVisible(True)
+            item.Centervariable.setVisible(True)
+        else:
+            item.Xvariable.setVisible(False)
+            item.Yvariable.setVisible(False)
+            item.Centervariable.setVisible(False)
+            item.setSelected(True)
+
+
+
