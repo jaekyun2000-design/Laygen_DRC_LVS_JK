@@ -414,13 +414,13 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                         if len(_XYCoordinatesPair[0]) == 2:                                                    #Only One Block Case
                             pass
-                        elif i is 0:                                                                                        #There are more than 2 segments and First Block Case
+                        elif i == 0:                                                                                        #There are more than 2 segments and First Block Case
                             if _XYCoordinatesPair[0][i][1] < _XYCoordinatesPair[0][i+1][1]:          #UpWard Case
                                 Ywidth -= self._ItemTraits['_Width']/2
                             elif _XYCoordinatesPair[0][i][1] > _XYCoordinatesPair[0][i+1][1]:        #DownWard Case
                                 Ymin += self._ItemTraits['_Width']/2
                                 Ywidth -= self._ItemTraits['_Width']/2
-                        elif i is len(_XYCoordinatesPair)-2:                                                #Last Block Case
+                        elif i == len(_XYCoordinatesPair)-2:                                                #Last Block Case
                             if _XYCoordinatesPair[0][i][1] < _XYCoordinatesPair[0][i+1][1]:          #UpWard Case
                                 Ymin -= self._ItemTraits['_Width']/2
                                 Ywidth += self._ItemTraits['_Width']/2

@@ -2562,10 +2562,13 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_RootDesignConstraint_signal = pyqtSignal(str)
     send_ReceiveDone_signal = pyqtSignal()
     send_RequestDesignConstraint_signal = pyqtSignal()
+    send_RequestElementManger_signal = pyqtSignal()
     # send_deleteID_signal = pyqtSignal(str)
     send_deleteConstraint_signal = pyqtSignal(str)
 
     originalKeyPress = QTreeView.keyPressEvent
+
+    _ElementMangerFromQTobj = None
 
     def __init__(self,type):
         super().__init__()
@@ -2581,7 +2584,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.EditMode = False
         self.setAnimated(True)
 
-        self.setSelectionMode(QAbstractItemView.MultiSelection)
+        # self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
 
         ########## context #########
@@ -3094,6 +3097,32 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         current_item = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0))
         current_item.appendRow([QStandardItem(),QStandardItem(),QStandardItem(),QStandardItem()])
         print("what happend?")
+
+    def get_dp_highlight_dc(self,dp_id_list,_):
+        """
+        :param dp_id_list: design_parameter_list
+        :param _: not use (trigger signal return dp_di_list and type, but this slot does not use type.
+        :return:
+        """
+        self.selectionModel().clearSelection()
+
+        self.send_RequestElementManger_signal.emit()
+        dc_id_list = [self._ElementMangerFromQTobj.get_dc_id_by_dp_id(_id) for _id in dp_id_list]
+        constraint_names_item = self.model.findItems('', Qt.MatchContains, 1)
+        selection_model = QItemSelectionModel(self.model)
+        for item in constraint_names_item:
+            if item.text() in dc_id_list:
+                try:
+                    selected_item_idx = self.model.indexFromItem(item)
+                    # self.selectionModel().select(selected_item_idx,QItemSelectionModel.Rows, QItemSelectionModel.Select)
+                    self.selectionModel().select(selected_item_idx,QItemSelectionModel.Rows | QItemSelectionModel.Select)
+                    self.scrollTo(selected_item_idx)
+                except:
+                    traceback.print_exc()
+
+
+        # constraint_ids = [item.text() for item in constraint_names]
+
 
 
 

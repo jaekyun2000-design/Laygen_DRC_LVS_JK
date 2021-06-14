@@ -396,6 +396,8 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate2)
         self.dockContentWidget3_2.send_RequestDesignConstraint_signal.connect(self.constraintConvey)
         self.dockContentWidget3_2.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
+        self.dockContentWidget3_2.send_RequestElementManger_signal.connect(self.convey_element_manager)
+        self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3_2.get_dp_highlight_dc)
 
 
 
@@ -410,6 +412,8 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate1)
         self.dockContentWidget3.send_RequestDesignConstraint_signal.connect(self.constraintConvey)
         self.dockContentWidget3.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
+        self.dockContentWidget3.send_RequestElementManger_signal.connect(self.convey_element_manager)
+        self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3.get_dp_highlight_dc)
 
         vboxLayout = QVBoxLayout()
         vboxLayout.addWidget(self.sendDownButton)
@@ -1093,11 +1097,11 @@ class _MainWindow(QMainWindow):
             pass
 
 
-    def saveProject(self, _fileName=None):
-        if _fileName == None:
-            scf = QFileDialog.getSaveFileName(self,'Save Project','./PyQTInterface/Project/')
-        else:
-            scf = [_fileName]
+    def saveProject(self):
+        # if _fileName == None:
+        scf = QFileDialog.getSaveFileName(self,'Save Project','./PyQTInterface/Project/')
+        # else:
+        #     scf = [_fileName]
         try:
             if scf[0][-4:] != '.bin':
                 _fileName = scf[0] + ".bin"
@@ -1875,6 +1879,9 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3._DesignConstraintFromQTobj = self._QTObj._qtProject._DesignConstraint
         self.dockContentWidget3_2._DesignConstraintFromQTobj = self._QTObj._qtProject._DesignConstraint
 
+    def convey_element_manager(self):
+        SetupWindow._ConstraintTreeViewWidgetAST._ElementMangerFromQTobj = self._QTObj._qtProject._ElementManager
+
     def constraintUpdate1(self, updateDict):
         _id = updateDict['_id']
         _Module = self.get_id_return_module(_id,'_DesignConstraint')
@@ -2028,12 +2035,15 @@ class _MainWindow(QMainWindow):
             pass
 
     def parameterToTemplateHandler(self,designParameterItemIDList,type):
+        if type == 5:
+            return
         designParameterList = list()
         for id in designParameterItemIDList:
-            # module = re.sub('[0-9]+', '',id)
-            module = id[:-1]
-            while not module in self._QTObj._qtProject._DesignParameter:
-                module = module[:-1]
+            module = self.get_id_return_module(id,'_DesignParameter')
+            # # module = re.sub('[0-9]+', '',id)
+            # module = id[:-1]
+            # while not module in self._QTObj._qtProject._DesignParameter:
+            #     module = module[:-1]
             designParameterList.append(self._QTObj._qtProject._DesignParameter[module][id]._DesignParameter)
         templatetmp = template._Template()
         try:
@@ -2395,6 +2405,14 @@ class _CustomScene(QGraphicsScene):
                     continue
                 parameterIDList.append(item._ItemTraits['_id'])
             self.send_parameterIDList_signal.emit(parameterIDList,4)
+        elif QKeyEvent.key() == Qt.Key_H: #variable Call with XYCoordinates DesignParameter
+            itemList = self.selectedItems()
+            parameterIDList = list()
+            for item in itemList:
+                if type(item) == VisualizationItem._RectBlock:
+                    continue
+                parameterIDList.append(item._ItemTraits['_id'])
+            self.send_parameterIDList_signal.emit(parameterIDList,5)
         elif QKeyEvent.key() == Qt.Key_Escape:
             print("selectionClear")
             self.clearSelection()
@@ -2545,20 +2563,9 @@ class _VersatileWindow(QWidget):
 
 def custom_excepthook(exctype, value, traceback):
     print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
-    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
     print(exctype, value, traceback)
-    sys._execepthook(exctype, value, traceback)
-
+    sys._excepthook(exctype, value, traceback)
+    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
 
 
 
