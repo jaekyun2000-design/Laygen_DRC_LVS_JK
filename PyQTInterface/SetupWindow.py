@@ -16,6 +16,7 @@ from PyCodes import ASTmodule
 from PyCodes import element_ast
 
 import logging
+import copy
 from PyCodes import userDefineExceptions
 from PyCodes import EnvForClientSetUp
 from PyCodes import QTInterfaceWithAST
@@ -287,6 +288,8 @@ class _PathSetupWindow(QWidget):
 
                 )
             self.visualItem = VisualizationItem._VisualizationItem()
+            self.tmpVI = VisualizationItem._VisualizationItem()
+            self.tmpDP = copy.deepcopy(self._DesignParameter)
         else:
             # self.visualItem = PathElement
             self.visualItem = VisualizationItem._VisualizationItem()
@@ -508,22 +511,28 @@ class _PathSetupWindow(QWidget):
         self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[-1])
 
     def mouseTracking(self, event):
-        if self.mouse is not None and self.click < 2:
-            if len(self._DesignParameter['_XYCoordinates']) == 0:
-                self._DesignParameter['_XYCoordinates'].append([[self.mouse.scenePos().toPoint().x(), self.mouse.scenePos().toPoint().y()]])
-            else:
-                xdistance = abs(event.scenePos().x() - self._DesignParameter['_XYCoordinates'][0][-1][0])
-                ydistance = abs(event.scenePos().y() - self._DesignParameter['_XYCoordinates'][0][-1][1])
+        if self.mouse is not None:
+            if self.click == 0:
+                xdistance = abs(self.mouse.x() - event.scenePos().x())
+                ydistance = abs(self.mouse.y() - event.scenePos().y())
 
                 if xdistance < ydistance:
-                    self._DesignParameter['_XYCoordinates'][0].append([self._DesignParameter['_XYCoordinates'][0][-1][0], event.scenePos().toPoint().y()])
+                    self.tmpDP['_XYCoordinates'] = [[[self.mouse.x(),self.mouse.y()],[self.mouse.x(),event.scenePos().y()]]]
                 else:
-                    self._DesignParameter['_XYCoordinates'][0].append([event.scenePos().toPoint().x(), self._DesignParameter['_XYCoordinates'][0][-1][1]])
+                    self.tmpDP['_XYCoordinates'] = [[[self.mouse.x(),self.mouse.y()],[event.scenePos().x(),self.mouse.y()]]]
+            else:
+                xdistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][0] - event.scenePos().x())
+                ydistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][1] - event.scenePos().y())
 
-            self._DesignParameter['_Width'] = self.width_input.text()
-            self._DesignParameter['_Layer'] = self.layer_input.currentText()
-            self.visualItem.updateTraits(self._DesignParameter)
-            self.send_PathSetup_signal.emit(self.visualItem)
+                if xdistance < ydistance:
+                    self.tmpDP['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],event.scenePos().y()]]]
+                else:
+                    self.tmpDP['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[event.scenePos().x(),self._DesignParameter['_XYCoordinates'][0][-1][1]]]]
+
+            self.tmpDP['_Width'] = self.width_input.text()
+            self.tmpDP['_Layer'] = self.layer_input.currentText()
+            self.tmpVI.updateTraits(self.tmpDP)
+            self.send_PathSetup_signal.emit(self.tmpVI)
 
     def clickCount(self, _MouseEvent):
         self.mouse = _MouseEvent.scenePos()
