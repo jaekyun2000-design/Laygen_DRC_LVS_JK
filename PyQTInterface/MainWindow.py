@@ -2026,6 +2026,9 @@ class _MainWindow(QMainWindow):
         '''
         def parse_constraint_to_get_value(_ast):
             variable_visitor = element_ast.VariableNameVisitor()
+            if '_type' not in _ast.__dict__:
+                _ast._type = ASTmodule._getASTtype(_ast)
+
             if _ast._type == 'Boundary':
                 for _field in _ast._fields:
                     if _field == 'name' or _field == 'layer':
