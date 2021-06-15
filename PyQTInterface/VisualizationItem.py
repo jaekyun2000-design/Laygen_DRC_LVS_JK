@@ -527,7 +527,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                 for self.idx in range(len(self._ItemTraits['_XYCoordinates'][0])):
                     if self.idx == 0:
-                        self.tmpXY = QGraphicsTextItem('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]) + '\n' + str(self._ItemTraits['variable_info']['width']))
+                        self.tmpXY = QGraphicsTextItem('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]) + '\nwidth: ' + str(self._ItemTraits['variable_info']['width']))
                     else:
                         self.tmpXY = QGraphicsTextItem('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]))
 
@@ -699,7 +699,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.block.remove(self.replaceXY)
 
                 if self.idx == 0:
-                    self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]) + '\n' + str(_ast.width))
+                    self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]) + '\nwidth: ' + str(_ast.width))
                 else:
                     self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]))
 
@@ -734,10 +734,10 @@ class _VisualizationItem(QGraphicsItemGroup):
             self.heightVariable.setFont(font)
             self.XYVariable.setFont(font)
 
-            self.widthVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0],
+            self.widthVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0]-6,
                                       self._ItemTraits['_XYCoordinates'][0][1] - self._ItemTraits['_Height'] / 2 + 20)
             self.heightVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0] + self._ItemTraits['_Width'] / 2 - 20,
-                                       self._ItemTraits['_XYCoordinates'][0][1])
+                                       self._ItemTraits['_XYCoordinates'][0][1]+10)
             self.XYVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0]-6, self._ItemTraits['_XYCoordinates'][0][1]+10)
 
             self.widthVariable.setDefaultTextColor(Qt.GlobalColor.red)
