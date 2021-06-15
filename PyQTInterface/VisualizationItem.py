@@ -198,7 +198,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                 variable_info = dict(
                                     XY = None,
                                     width = None,
-                                    height = None
+                                    height = None,
+                                    parameters = None
                                 )
             )
             self.block = []
@@ -229,14 +230,17 @@ class _VisualizationItem(QGraphicsItemGroup):
         elif self._type == 2:
             main_path = QPainterPath()
             for i, block in enumerate(self.block):
-                tmp_rect = block.rect()
-                tmp_rect.translate(block.pos())
-                points = [tmp_rect.topLeft(),tmp_rect.bottomLeft(),tmp_rect.bottomRight(),tmp_rect.topRight()]
-                # if DEBUG:
-                #     print(f'points: {points}')
-                poly = QPolygonF(points)
-                main_path.addPolygon(poly)
-                main_path.closeSubpath()
+                try:
+                    tmp_rect = block.rect()
+                    tmp_rect.translate(block.pos())
+                    points = [tmp_rect.topLeft(),tmp_rect.bottomLeft(),tmp_rect.bottomRight(),tmp_rect.topRight()]
+                    # if DEBUG:
+                    #     print(f'points: {points}')
+                    poly = QPolygonF(points)
+                    main_path.addPolygon(poly)
+                    main_path.closeSubpath()
+                except:
+                    pass
             return main_path
         else:
             return super().shape()
@@ -303,6 +307,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.warning = QMessageBox()
                 self.warning.setText("Invalid Design Value")
                 self.warning.setIcon(QMessageBox.Warning)
+                return
         elif self._ItemTraits['_DesignParametertype'] == 3:
             try:
                 self._ItemTraits['_DesignParameterRef'] = _DesignParameter['_ModelStructure']
@@ -415,44 +420,16 @@ class _VisualizationItem(QGraphicsItemGroup):
                         elif field == 'height':
                             self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Height'])
 
-                self.Xvariable = QGraphicsTextItem(self._ItemTraits['variable_info']['width'])
-                self.Yvariable = QGraphicsTextItem(self._ItemTraits['variable_info']['height'])
-                self.Centervariable = QGraphicsTextItem('*' + self._ItemTraits['variable_info']['XY'])
+                self.widthVariable = QGraphicsTextItem(self._ItemTraits['variable_info']['width'])
+                self.heightVariable = QGraphicsTextItem(self._ItemTraits['variable_info']['height'])
+                self.XYVariable = QGraphicsTextItem('*' + self._ItemTraits['variable_info']['XY'])
 
-                fontSize = 10
-                font = QFont('tmp', fontSize)
-                font.setBold(True)
-
-                self.Xvariable.setFont(font)
-                self.Yvariable.setFont(font)
-                self.Centervariable.setFont(font)
-
-                self.Xvariable.setPos(self._ItemTraits['_XYCoordinates'][0][0], self._ItemTraits['_XYCoordinates'][0][1]-self._ItemTraits['_Height']/2+20)
-                self.Yvariable.setPos(self._ItemTraits['_XYCoordinates'][0][0]+self._ItemTraits['_Width']/2-20, self._ItemTraits['_XYCoordinates'][0][1])
-                self.Centervariable.setPos(self._ItemTraits['_XYCoordinates'][0][0], self._ItemTraits['_XYCoordinates'][0][1])
-
-                self.Xvariable.setDefaultTextColor(Qt.GlobalColor.red)
-                self.Yvariable.setDefaultTextColor(Qt.GlobalColor.red)
-                self.Centervariable.setDefaultTextColor(Qt.GlobalColor.red)
-
-                self.Xvariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
-                self.Yvariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
-                self.Centervariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
-
-                self.Xvariable.setVisible(False)
-                self.Yvariable.setVisible(False)
-                self.Centervariable.setVisible(False)
+                self.setVariable(type='Boundary')
 
                 ############################ Variable Visualization End ############################
 
                 self.block.append(tmpBlock)
-                self.block.append(self.Xvariable)
-                self.block.append(self.Yvariable)
-                self.block.append(self.Centervariable)
                 self.addToGroup(tmpBlock)
-                self.addToGroup(self.Xvariable)
-                self.addToGroup(self.Yvariable)
-                self.addToGroup(self.Centervariable)
 
 
 
@@ -473,7 +450,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                             elif _XYCoordinatesPair[0][i][1] > _XYCoordinatesPair[0][i+1][1]:        #DownWard Case
                                 Ymin += self._ItemTraits['_Width']/2
                                 Ywidth -= self._ItemTraits['_Width']/2
-                        elif i == len(_XYCoordinatesPair)-2:                                                #Last Block Case
+                        elif i == len(_XYCoordinatesPair[0])-2:                                                #Last Block Case
                             if _XYCoordinatesPair[0][i][1] < _XYCoordinatesPair[0][i+1][1]:          #UpWard Case
                                 Ymin -= self._ItemTraits['_Width']/2
                                 Ywidth += self._ItemTraits['_Width']/2
@@ -499,7 +476,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                             elif _XYCoordinatesPair[0][i][0] > _XYCoordinatesPair[0][i+1][0]:        #Path to Left Case
                                 Xwidth -= self._ItemTraits['_Width']/2
                                 Xmin += self._ItemTraits['_Width']/2
-                        elif i is len(_XYCoordinatesPair)-2:
+                        elif i is len(_XYCoordinatesPair[0])-2:
                             if _XYCoordinatesPair[0][i][0] < _XYCoordinatesPair[0][i+1][0]:          #Path to Right Case
                                 Xmin -= self._ItemTraits['_Width']/2
                                 Xwidth += self._ItemTraits['_Width']/2
@@ -537,6 +514,27 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self.block[i].setPos(Xmin*scaleValue,Ymin*scaleValue)
                     self.addToGroup(self.block[i])
 
+                ############################ Variable Visualization Start ############################
+                self.XYVariable = list()
+                self._ItemTraits['variable_info']['XY'] = list()
+
+                for field in self._ItemTraits['variable_info']:
+                    if type(self._ItemTraits['variable_info'][field]) is not str:
+                        if field == 'XY':
+                            self._ItemTraits['variable_info'][field] = self._ItemTraits['_XYCoordinates']
+                        elif field == 'width':
+                            self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
+
+                for self.idx in range(len(self._ItemTraits['_XYCoordinates'][0])):
+                    if self.idx == 0:
+                        self.tmpXY = QGraphicsTextItem('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]) + '\n' + str(self._ItemTraits['variable_info']['width']))
+                    else:
+                        self.tmpXY = QGraphicsTextItem('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]))
+
+                    self.setVariable(type='Path')
+
+                ############################ Variable Visualization End ############################
+
             elif self._ItemTraits['_DesignParametertype'] == 3:                #SRef Case
                 for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
                     sub_element_vi = _VisualizationItem()
@@ -564,6 +562,24 @@ class _VisualizationItem(QGraphicsItemGroup):
                             rot = 360 - self._ItemTraits['_Angle']
                             sub_element_vi.setRotation(rot)
                     self.addToGroup(sub_element_vi)
+
+                ############################ Variable Visualization Start ############################
+
+                for field in self._ItemTraits['variable_info']:
+                    if type(self._ItemTraits['variable_info'][field]) is not str:
+                        if field == 'XY':
+                            self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
+                        elif field == 'parameters':
+                            self._ItemTraits['variable_info'][field] = str(self._ItemTraits['parameters'])
+
+                tmpParam = str(self._ItemTraits['variable_info']['parameters']).replace(',', ',\n')
+
+                self.XYVariable = QGraphicsTextItem('*' + self._ItemTraits['variable_info']['XY'])
+                self.paramVariable = QGraphicsTextItem(tmpParam)
+
+                self.setVariable(type='Sref')
+
+                ############################ Variable Visualization End ############################
 
                 self._subElementLayer['SRef'].append(self)
 
@@ -657,8 +673,127 @@ class _VisualizationItem(QGraphicsItemGroup):
             # print(self._subElementLayer)
             # self.send_subelementlayer_signal.emit(self._subElementLayer)
 
+    def update_dc_variable_info(self, _ast):
+        if _ast._type == 'Boundary':
+            self.widthVariable.setVisible(False)
+            self.heightVariable.setVisible(False)
+            self.XYVariable.setVisible(False)
+
+            self.block.remove(self.widthVariable)
+            self.block.remove(self.heightVariable)
+            self.block.remove(self.XYVariable)
+
+            self.widthVariable = QGraphicsTextItem(str(_ast.width))
+            self.heightVariable = QGraphicsTextItem(str(_ast.height))
+            self.XYVariable = QGraphicsTextItem('*' + str(_ast.XY))
+
+            self.setVariable(_ast._type)
+
+        elif _ast._type == 'Path':
+            replaceXYVariable = self.XYVariable
+            self.XYVariable = list()
+            for self.idx in range(len(self._ItemTraits['_XYCoordinates'][0])):
+                self.replaceXY = replaceXYVariable[self.idx]
+                self.replaceXY.setVisible(False)
+
+                self.block.remove(self.replaceXY)
+
+                if self.idx == 0:
+                    self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]) + '\n' + str(_ast.width))
+                else:
+                    self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]))
+
+                self.setVariable(_ast._type)
+
+        elif _ast._type == 'Sref':
+            self.XYVariable.setVisible(False)
+            self.paramVariable.setVisible(False)
+
+            self.block.remove(self.XYVariable)
+            self.block.remove(self.paramVariable)
+
+            tmpParam = str(_ast.parameters).replace(',', ',\n')
+
+            self.XYVariable = QGraphicsTextItem('*' + str(_ast.XY))
+            self.paramVariable = QGraphicsTextItem(tmpParam)
+
+            self.setVariable(_ast._type)
+
     def returnLayerDict(self):
         return self._subElementLayer
+
+    def setVariable(self, type=None):
+        fontSize = 10
+        font = QFont('tmp', fontSize)
+        font.setBold(True)
+
+        if type == None:
+            pass
+        elif type == 'Boundary':
+            self.widthVariable.setFont(font)
+            self.heightVariable.setFont(font)
+            self.XYVariable.setFont(font)
+
+            self.widthVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0],
+                                      self._ItemTraits['_XYCoordinates'][0][1] - self._ItemTraits['_Height'] / 2 + 20)
+            self.heightVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0] + self._ItemTraits['_Width'] / 2 - 20,
+                                       self._ItemTraits['_XYCoordinates'][0][1])
+            self.XYVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0]-6, self._ItemTraits['_XYCoordinates'][0][1]+10)
+
+            self.widthVariable.setDefaultTextColor(Qt.GlobalColor.red)
+            self.heightVariable.setDefaultTextColor(Qt.GlobalColor.red)
+            self.XYVariable.setDefaultTextColor(Qt.GlobalColor.red)
+
+            self.widthVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+            self.heightVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+            self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+
+            self.widthVariable.setVisible(False)
+            self.heightVariable.setVisible(False)
+            self.XYVariable.setVisible(False)
+
+            self.block.append(self.widthVariable)
+            self.block.append(self.heightVariable)
+            self.block.append(self.XYVariable)
+            self.addToGroup(self.widthVariable)
+            self.addToGroup(self.heightVariable)
+            self.addToGroup(self.XYVariable)
+
+        elif type == 'Path':
+            self.tmpXY.setFont(font)
+
+            self.tmpXY.setPos(self._ItemTraits['_XYCoordinates'][0][self.idx][0]-6, self._ItemTraits['_XYCoordinates'][0][self.idx][1]+10)
+
+            self.tmpXY.setDefaultTextColor(Qt.GlobalColor.red)
+
+            self.tmpXY.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+
+            self.tmpXY.setVisible(False)
+
+            self.XYVariable.append(self.tmpXY)
+            self.block.append(self.tmpXY)
+            self.addToGroup(self.tmpXY)
+
+        elif type == 'Sref':
+            self.XYVariable.setFont(font)
+            self.paramVariable.setFont(font)
+
+            self.XYVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0]-6, self._ItemTraits['_XYCoordinates'][0][1]+10)
+            self.paramVariable.setPos(self.boundingRect().bottomLeft().x() + 20, self.boundingRect().bottomLeft().y() - 20)
+
+            self.XYVariable.setDefaultTextColor(Qt.GlobalColor.red)
+            self.paramVariable.setDefaultTextColor(Qt.GlobalColor.red)
+
+            self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+            self.paramVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+
+            self.XYVariable.setVisible(False)
+            self.paramVariable.setVisible(False)
+
+            self.block.append(self.XYVariable)
+            self.block.append(self.paramVariable)
+            self.addToGroup(self.XYVariable)
+            self.addToGroup(self.paramVariable)
 
     def returnItem(self):
         if self._ItemTraits['_DesignParametertype'] == "Boundary":
