@@ -2185,17 +2185,20 @@ class _CustomView(QGraphicsView):
     # def dropEvent(self, event) -> None:
     #     super
     def contextMenuEvent(self, event) -> None:
+        constraint_create_array = QAction("create array", self)
         variable_create_array = QAction("create array variable", self)
         variable_create_distance = QAction("create distance variable", self)
         variable_create_enclosure = QAction("create enclousre variable", self)
         variable_create_connect = QAction("create connect variable", self)
 
         menu = QMenu(self)
+        menu.addAction(constraint_create_array)
         menu.addAction(variable_create_array)
         menu.addAction(variable_create_distance)
         menu.addAction(variable_create_enclosure)
         menu.addAction(variable_create_connect)
 
+        constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('c_array'))
         variable_create_array.triggered.connect(lambda tmp: self.variable_emit('array'))
         variable_create_distance.triggered.connect(lambda tmp: self.variable_emit('distance'))
         variable_create_enclosure.triggered.connect(lambda tmp: self.variable_emit('enclosure'))
@@ -2205,7 +2208,9 @@ class _CustomView(QGraphicsView):
         menu.exec(event.globalPos())
 
     def variable_emit(self, type):
-        if type == 'array':
+        if type == 'c_array':
+            self.variable_signal.emit('c_array')
+        elif type == 'array':
             self.variable_signal.emit('element array')
         elif type == 'distance':
             self.variable_signal.emit('distance')

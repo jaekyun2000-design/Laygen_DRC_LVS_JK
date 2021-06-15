@@ -3124,7 +3124,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 try:
                     selected_item_idx = self.model.indexFromItem(item)
                     # self.selectionModel().select(selected_item_idx,QItemSelectionModel.Rows, QItemSelectionModel.Select)
-                    self.selectionModel().select(selected_item_idx,QItemSelectionModel.Rows | QItemSelectionModel.Select)
+                    self.selectionModel().select(selected_item_idx,
+                                                 QItemSelectionModel.Rows | QItemSelectionModel.Select | QItemSelectionModel.Current)
+                    self.setCurrentIndex(selected_item_idx)
                     self.scrollTo(selected_item_idx)
                 except:
                     traceback.print_exc()
