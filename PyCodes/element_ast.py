@@ -74,6 +74,16 @@ class Text(ElementNode):
         'text'  # int or str
     )
 
+class VariableNameVisitor(ast.NodeVisitor):
+    def __init__(self):
+        super(VariableNameVisitor, self).__init__()
+        self.variable_name_list = []
+
+    def visit_Name(self, node):
+        self.variable_name_list.append(node.id)
+
+
+
 class GeneratorTransformer(ast.NodeTransformer):
     def visit_Generator(self,node):
         return ast.copy_location(

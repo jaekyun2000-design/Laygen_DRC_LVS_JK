@@ -2578,6 +2578,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_ReceiveDone_signal = pyqtSignal()
     send_RequestDesignConstraint_signal = pyqtSignal()
     send_RequestElementManger_signal = pyqtSignal()
+    send_DataChanged_signal = pyqtSignal(str)
     # send_deleteID_signal = pyqtSignal(str)
     send_deleteConstraint_signal = pyqtSignal(str)
 
@@ -3090,10 +3091,22 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     def update_design_by_module_id(self,_designConstraint,moudle,id):
         pass
 
-    def dataChanged(self, topLeft, bottomRight, roles) -> None:
+    def dataChanged(self, topLeft:QModelIndex, bottomRight:QModelIndex, roles) -> None:
         super().dataChanged(topLeft, bottomRight, roles)
         self.mouseDoubleClickEvent(topLeft)
         # self.refreshItem(topLeft)
+        id_item = self.model.itemFromIndex(topLeft.siblingAtColumn(1))
+        id = id_item.text()
+        recursive_count = 0
+        while '' == id or id is None:
+            tmp_idx = self.model.indexFromItem(id_item).parent().siblingAtColumn(1)
+            id_item = self.model.itemFromIndex(tmp_idx)
+            id = id_item.text()
+            recursive_count += 1
+            if recursive_count > 9:
+                raise Exception("Invalid ID.")
+        self.send_DataChanged_signal.emit(id)
+
 
     def custom_context(self, point : QPoint):
         try:
@@ -3139,6 +3152,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
 
         # constraint_ids = [item.text() for item in constraint_names]
+
+
+
 
 
 

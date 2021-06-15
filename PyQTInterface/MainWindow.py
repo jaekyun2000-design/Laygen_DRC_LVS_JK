@@ -399,6 +399,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_RequestDesignConstraint_signal.connect(self.constraintConvey)
         self.dockContentWidget3_2.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
         self.dockContentWidget3_2.send_RequestElementManger_signal.connect(self.convey_element_manager)
+        self.dockContentWidget3_2.send_DataChanged_signal.connect(self.constraint_data_changed)
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3_2.get_dp_highlight_dc)
 
 
@@ -415,6 +416,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3.send_RequestDesignConstraint_signal.connect(self.constraintConvey)
         self.dockContentWidget3.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
         self.dockContentWidget3.send_RequestElementManger_signal.connect(self.convey_element_manager)
+        self.dockContentWidget3.send_DataChanged_signal.connect(self.constraint_data_changed)
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3.get_dp_highlight_dc)
 
         vboxLayout = QVBoxLayout()
@@ -2015,6 +2017,50 @@ class _MainWindow(QMainWindow):
             print("Load Constraint Failed")
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Save DesignConstraint Fail: Unknown")
             pass
+
+    def constraint_data_changed(self, constraint_id):
+        '''
+        This function is called when items in Design Constraint are changed.
+        :param constraint_id: changed constraint id
+        :return: None
+        '''
+        def parse_constraint_to_get_value(_ast):
+            variable_visitor = element_ast.VariableNameVisitor()
+            if _ast._type == 'Boundary':
+                for _field in _ast._fields:
+                    if _field == 'name' or _field == 'layer':
+                        continue
+                    tmp_ast = ast.parse(str(_ast.__dict__[_field]))
+                    variable_visitor.visit(tmp_ast)
+
+            elif _ast._type == 'Path':
+                for _field in _ast._fields:
+                    if _field == 'name' or _field == 'layer':
+                        continue
+                    tmp_ast = ast.parse(str(_ast.__dict__[_field]))
+                    variable_visitor.visit(tmp_ast)
+
+            elif _ast._type == 'Sref':
+                for _field in _ast._fields:
+                    if _field == 'name' or _field == 'library' or _field == 'className' or _field == 'calculate_fcn':
+                        continue
+                    if _field == 'parameters':
+                        for parm_string in _ast.parameters.values():
+                            tmp_ast = ast.parse(str(parm_string))
+                            variable_visitor.visit(tmp_ast)
+                    else:
+                        tmp_ast = ast.parse(str(_ast.__dict__[_field]))
+                        variable_visitor.visit(tmp_ast)
+
+            variable_name_set = set(variable_visitor.variable_name_list)
+            return list(variable_name_set)
+
+        changed_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(constraint_id)
+        if changed_dp_id:
+            module_name = self.get_id_return_module(constraint_id,'_DesignConstraint')
+            used_variable_list = parse_constraint_to_get_value(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
+            # self.visualItemDict[changed_dp_id].update_dc_variable_info(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
+            print(used_variable_list)
 
     def makeTemplateWindow(self):
         self.tw = template._TemplateManageWidget(template.templateDict)
