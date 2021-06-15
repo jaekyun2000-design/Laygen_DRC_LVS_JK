@@ -163,6 +163,7 @@ class _BoundarySetupWindow(QWidget):
 
     def cancel_button_accepted(self):
         self.send_Destroy_signal.emit('bw')
+        self.send_DestroyTmpVisual_signal.emit(self.visualItem)
         self.destroy()
 
     def on_buttonBox_accepted(self):
@@ -242,6 +243,7 @@ class _BoundarySetupWindow(QWidget):
             self.on_buttonBox_accepted()
             self.send_Destroy_signal.emit('bw')
         elif QKeyEvent.key() == Qt.Key_Escape:
+            self.send_DestroyTmpVisual_signal.emit(self.visualItem)
             self.destroy()
             self.send_Destroy_signal.emit('bw')
 
@@ -255,6 +257,7 @@ class _BoundarySetupWindow(QWidget):
             self._DesignParameter['_XYCoordinates'] = [origin]
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
             self.visualItem.updateTraits(self._DesignParameter)
+            self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
             self.send_BoundarySetup_signal.emit(self.visualItem)
 
     def clickCount(self, _MouseEvent):
@@ -434,6 +437,7 @@ class _PathSetupWindow(QWidget):
 
             pass
             self.send_DestroyTmpVisual_signal.emit(self.visualItem)
+            self.send_DestroyTmpVisual_signal.emit(self.tmpVI)
             self.send_PathDesign_signal.emit(self._DesignParameter)
             self.destroy()
             self.send_Destroy_signal.emit('pw')
@@ -461,6 +465,7 @@ class _PathSetupWindow(QWidget):
                         _ItemRef = None, #Reference Of VisualizationItem
                     )
             self.visualItem.updateTraits(self._DesignParameter)
+            self.send_DestroyTmpVisual_signal.emit(self.tmpVI)
             self.destroy()
             self.send_Destroy_signal.emit('pw')
 
@@ -533,6 +538,7 @@ class _PathSetupWindow(QWidget):
             self.tmpDP['_Layer'] = self.layer_input.currentText()
             self.tmpVI.updateTraits(self.tmpDP)
             self.send_PathSetup_signal.emit(self.tmpVI)
+            self.tmpVI.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
 
     def clickCount(self, _MouseEvent):
         self.mouse = _MouseEvent.scenePos()

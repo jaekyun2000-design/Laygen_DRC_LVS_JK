@@ -202,6 +202,7 @@ class _MainWindow(QMainWindow):
         ################# Graphics View, Scene setting ####################
         self.scene = _CustomScene()
         graphicView = _CustomView()
+        self.variableVisual = VariableVisualItem.VariableVisualItem()
         graphicView.setScene(self.scene)
         graphicView.setRubberBandSelectionMode(Qt.ContainsItemShape)
         graphicView.setDragMode(QGraphicsView.RubberBandDrag)
@@ -221,6 +222,7 @@ class _MainWindow(QMainWindow):
         self.scene.send_parameterIDList_signal.connect(self.parameterToTemplateHandler)
         self.scene.send_deleteItem_signal.connect(self.deleteDesignParameter)
         self.scene.selectionChanged.connect(self.scene.send_item_list)
+        self.scene.send_show_variable_signal.connect(self.variableVisual.test)
         # self.scene.send_debug_signal.connect(self.sceneDebug)
 
         # if DEBUG:
@@ -2244,6 +2246,7 @@ class _CustomScene(QGraphicsScene):
     send_deleteItem_signal = pyqtSignal(str)
     send_module_name_list_signal = pyqtSignal(list)
     send_mouse_move_signal = pyqtSignal(QGraphicsSceneMouseEvent)
+    send_show_variable_signal = pyqtSignal(QGraphicsItem)
 
     viewList = []
 
@@ -2418,6 +2421,10 @@ class _CustomScene(QGraphicsScene):
                     continue
                 parameterIDList.append(item._ItemTraits['_id'])
             self.send_parameterIDList_signal.emit(parameterIDList,5)
+        elif QKeyEvent.key() == Qt.Key_Q: #variable Call with XYCoordinates DesignParameter
+            itemList = self.selectedItems()
+            for item in itemList:
+                self.send_show_variable_signal.emit(item)
         elif QKeyEvent.key() == Qt.Key_Escape:
             print("selectionClear")
             self.clearSelection()

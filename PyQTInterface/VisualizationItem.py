@@ -193,7 +193,13 @@ class _VisualizationItem(QGraphicsItemGroup):
                 _Angle = None,
                 _Color = None,
                 _DesignParameterRef=None,   #Reference of Design Parameter
-                _VisualizationItems = []    #This is for SRef!!
+                _VisualizationItems = [],    #This is for SRef!!
+
+                variable_info = dict(
+                                    XY = None,
+                                    width = None,
+                                    height = None
+                                )
             )
             self.block = []
             # self._BlockGroup = None,
@@ -398,8 +404,55 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self._subElementLayer[tmpLayer].remove(self)
                     self._subElementLayer[layer].append(self)
 
+                ############################ Variable Visualization Start ############################
+
+                for field in self._ItemTraits['variable_info']:
+                    if type(self._ItemTraits['variable_info'][field]) is not str:
+                        if field == 'XY':
+                            self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
+                        elif field == 'width':
+                            self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
+                        elif field == 'height':
+                            self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Height'])
+
+                self.Xvariable = QGraphicsTextItem(self._ItemTraits['variable_info']['width'])
+                self.Yvariable = QGraphicsTextItem(self._ItemTraits['variable_info']['height'])
+                self.Centervariable = QGraphicsTextItem('*' + self._ItemTraits['variable_info']['XY'])
+
+                fontSize = 10
+                font = QFont('tmp', fontSize)
+                font.setBold(True)
+
+                self.Xvariable.setFont(font)
+                self.Yvariable.setFont(font)
+                self.Centervariable.setFont(font)
+
+                self.Xvariable.setPos(self._ItemTraits['_XYCoordinates'][0][0], self._ItemTraits['_XYCoordinates'][0][1]-self._ItemTraits['_Height']/2+20)
+                self.Yvariable.setPos(self._ItemTraits['_XYCoordinates'][0][0]+self._ItemTraits['_Width']/2-20, self._ItemTraits['_XYCoordinates'][0][1])
+                self.Centervariable.setPos(self._ItemTraits['_XYCoordinates'][0][0], self._ItemTraits['_XYCoordinates'][0][1])
+
+                self.Xvariable.setDefaultTextColor(Qt.GlobalColor.red)
+                self.Yvariable.setDefaultTextColor(Qt.GlobalColor.red)
+                self.Centervariable.setDefaultTextColor(Qt.GlobalColor.red)
+
+                self.Xvariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+                self.Yvariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+                self.Centervariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+
+                self.Xvariable.setVisible(False)
+                self.Yvariable.setVisible(False)
+                self.Centervariable.setVisible(False)
+
+                ############################ Variable Visualization End ############################
+
                 self.block.append(tmpBlock)
+                self.block.append(self.Xvariable)
+                self.block.append(self.Yvariable)
+                self.block.append(self.Centervariable)
                 self.addToGroup(tmpBlock)
+                self.addToGroup(self.Xvariable)
+                self.addToGroup(self.Yvariable)
+                self.addToGroup(self.Centervariable)
 
 
 
