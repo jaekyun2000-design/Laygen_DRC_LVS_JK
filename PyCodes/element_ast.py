@@ -147,6 +147,28 @@ class GeneratorTransformer(ast.NodeTransformer):
 
 class ElementTransformer(ast.NodeTransformer):
 
+    def xy_syntax_checker(self,node):
+        if 'XY' in node.__dict__:
+            if type(node.XY) == list:
+                if type(node.XY[0]) == list:
+                    return 'list'
+                elif type(node.XY[0]) == str:
+                    if node.XY[0].find(',') == -1:
+                        return 'list'
+                    else:
+                        return 'variable'
+                else:
+                    return 'ast'
+            elif type(node.XY) == str:
+                if node.XY.find(',') == -1:
+                    return 'list'
+                else:
+                    return 'variable'
+            else:
+                return 'ast'
+        else:
+            return None
+
     def visit_Boundary(self,node):
         sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
                   _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY},\
@@ -162,19 +184,42 @@ _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {
         return tmp.body[0]
 
     def visit_Sref(self,node):
-        if (type(node.XY) == list) or node.XY.find(',') == -1:
-            parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
+        syntax = self.xy_syntax_checker(node)
+        print(f'debug: {syntax}')
+        parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
+
+        if syntax == 'list':
             sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}("\
                        f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
             sentence +=f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" +parameter_sentence + "))\n"
             sentence +=f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}"
 
-        else:
-            parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
+        elif syntax == 'variable': # need to check
             sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(" \
                        f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
             sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
             sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = [[{node.XY}]]"
+
+        elif syntax == 'ast':
+            node.XY = astunparse.unparse(node.XY).replace('\n','')
+            sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(" \
+                       f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
+            sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}"
+
+        # if (type(node.XY) == list) or node.XY.find(',') == -1:
+        #     parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
+        #     sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}("\
+        #                f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
+        #     sentence +=f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" +parameter_sentence + "))\n"
+        #     sentence +=f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}"
+        #
+        # else:
+        #     parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
+        #     sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(" \
+        #                f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
+        #     sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
+        #     sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = [[{node.XY}]]"
 
 
         tmp = ast.parse(sentence)

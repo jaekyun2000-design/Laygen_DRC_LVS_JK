@@ -2044,10 +2044,12 @@ class _MainWindow(QMainWindow):
                 for _field in _ast._fields:
                     if _field == 'name' or _field == 'library' or _field == 'className' or _field == 'calculate_fcn':
                         continue
-                    if _field == 'parameters':
+                    elif _field == 'parameters':
                         for parm_string in _ast.parameters.values():
                             tmp_ast = ast.parse(str(parm_string))
                             variable_visitor.visit(tmp_ast)
+                    elif _field == 'XY':
+                        print('Not Support XY yet')
                     else:
                         tmp_ast = ast.parse(str(_ast.__dict__[_field]))
                         variable_visitor.visit(tmp_ast)
@@ -2061,6 +2063,7 @@ class _MainWindow(QMainWindow):
             used_variable_list = parse_constraint_to_get_value(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
             # self.visualItemDict[changed_dp_id].update_dc_variable_info(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
             print(used_variable_list)
+
 
     def makeTemplateWindow(self):
         self.tw = template._TemplateManageWidget(template.templateDict)

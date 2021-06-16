@@ -2910,7 +2910,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 #######Case2: If it is constraint. < cannot change>
                 constraintItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
                 constraintName = constraintItem.text()
-                constraintModule = re.sub(r'\d','',constraintName)
+                constraintModule = get_id_return_module(constraintName, '_DesignConstraint',
+                                                        self._DesignConstraintFromQTobj)
                 if constraintModule in self._DesignConstraintFromQTobj:
                     print("It isn't allowed to change constraint")
                     self.warning = QMessageBox()
@@ -4025,7 +4026,12 @@ def get_id_return_module(id : str, type : str, moduleDict):
     :return:
     """
     module = id
+    candidate = re.sub(r'\d', '', id)
+    iteration =0
     while 1:
         module = module[:-1]
+        iteration += 1
         if module in moduleDict:
             return module
+        if iteration >100:
+            return candidate
