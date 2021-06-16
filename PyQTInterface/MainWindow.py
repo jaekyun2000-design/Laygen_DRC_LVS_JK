@@ -222,7 +222,7 @@ class _MainWindow(QMainWindow):
         self.scene.send_parameterIDList_signal.connect(self.parameterToTemplateHandler)
         self.scene.send_deleteItem_signal.connect(self.deleteDesignParameter)
         self.scene.selectionChanged.connect(self.scene.send_item_list)
-        self.scene.send_show_variable_signal.connect(self.variableVisual.test)
+        self.scene.send_show_variable_signal.connect(self.variableVisual.toggleVariableVisualization)
         # self.scene.send_debug_signal.connect(self.sceneDebug)
 
         # if DEBUG:
@@ -2026,6 +2026,9 @@ class _MainWindow(QMainWindow):
         '''
         def parse_constraint_to_get_value(_ast):
             variable_visitor = element_ast.VariableNameVisitor()
+            if '_type' not in _ast.__dict__:
+                _ast._type = ASTmodule._getASTtype(_ast)
+
             if _ast._type == 'Boundary':
                 for _field in _ast._fields:
                     if _field == 'name' or _field == 'layer':
@@ -2061,7 +2064,7 @@ class _MainWindow(QMainWindow):
         if changed_dp_id:
             module_name = self.get_id_return_module(constraint_id,'_DesignConstraint')
             used_variable_list = parse_constraint_to_get_value(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
-            # self.visualItemDict[changed_dp_id].update_dc_variable_info(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
+            self.visualItemDict[changed_dp_id].update_dc_variable_info(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
             print(used_variable_list)
 
 

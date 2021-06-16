@@ -192,7 +192,10 @@ class _BoundarySetupWindow(QWidget):
             self._DesignParameter['_XWidth'] = float(self.width_input.text())
             self._DesignParameter['_YWidth'] = float(self.height_input.text())
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
-            self.send_DestroyTmpVisual_signal.emit(self.visualItem)
+            try:
+                self.send_DestroyTmpVisual_signal.emit(self.visualItem)
+            except:
+                pass
             self.send_BoundaryDesign_signal.emit(self._DesignParameter)
             self.destroy()
 
@@ -437,7 +440,10 @@ class _PathSetupWindow(QWidget):
 
             pass
             self.send_DestroyTmpVisual_signal.emit(self.visualItem)
-            self.send_DestroyTmpVisual_signal.emit(self.tmpVI)
+            try:
+                self.send_DestroyTmpVisual_signal.emit(self.tmpVI)
+            except:
+                pass
             self.send_PathDesign_signal.emit(self._DesignParameter)
             self.destroy()
             self.send_Destroy_signal.emit('pw')

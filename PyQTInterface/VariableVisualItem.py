@@ -81,17 +81,38 @@ class VariableVisualItem(QGraphicsItemGroup):
             painter.beginNativePainting()
 
 
-    def test(self, item):
-        boolean = item.Centervariable.isVisible()
-        if boolean == False:
-            item.Xvariable.setVisible(True)
-            item.Yvariable.setVisible(True)
-            item.Centervariable.setVisible(True)
-        else:
-            item.Xvariable.setVisible(False)
-            item.Yvariable.setVisible(False)
-            item.Centervariable.setVisible(False)
-            item.setSelected(True)
+    def toggleVariableVisualization(self, item):
+        if item._type == 1:
+            boolean = item.XYVariable.isVisible()
+            if boolean == False:
+                item.widthVariable.setVisible(True)
+                item.heightVariable.setVisible(True)
+                item.XYVariable.setVisible(True)
+            else:
+                item.widthVariable.setVisible(False)
+                item.heightVariable.setVisible(False)
+                item.XYVariable.setVisible(False)
+                item.setSelected(True)
+
+        elif item._type == 2:
+            boolean = item.XYVariable[0].isVisible()
+            if boolean == False:
+                for XY in item.XYVariable:
+                    XY.setVisible(True)
+            else:
+                for XY in item.XYVariable:
+                    XY.setVisible(False)
+                item.setSelected(True)
+
+        elif item._type == 3:
+            boolean = item.XYVariable.isVisible()
+            if boolean == False:
+                item.XYVariable.setVisible(True)
+                item.paramVariable.setVisible(True)
+            else:
+                item.XYVariable.setVisible(False)
+                item.paramVariable.setVisible(False)
+                item.setSelected(True)
 
 
 
