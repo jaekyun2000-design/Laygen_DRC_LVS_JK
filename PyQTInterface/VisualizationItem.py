@@ -412,13 +412,12 @@ class _VisualizationItem(QGraphicsItemGroup):
                 ############################ Variable Visualization Start ############################
 
                 for field in self._ItemTraits['variable_info']:
-                    if type(self._ItemTraits['variable_info'][field]) is not str:
-                        if field == 'XY':
-                            self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
-                        elif field == 'width':
-                            self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
-                        elif field == 'height':
-                            self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Height'])
+                    if field == 'XY':
+                        self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
+                    elif field == 'width':
+                        self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
+                    elif field == 'height':
+                        self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Height'])
 
                 self.widthVariable = QGraphicsTextItem(self._ItemTraits['variable_info']['width'])
                 self.heightVariable = QGraphicsTextItem(self._ItemTraits['variable_info']['height'])
@@ -519,11 +518,10 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self._ItemTraits['variable_info']['XY'] = list()
 
                 for field in self._ItemTraits['variable_info']:
-                    if type(self._ItemTraits['variable_info'][field]) is not str:
-                        if field == 'XY':
-                            self._ItemTraits['variable_info'][field] = self._ItemTraits['_XYCoordinates']
-                        elif field == 'width':
-                            self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
+                    if field == 'XY':
+                        self._ItemTraits['variable_info'][field] = self._ItemTraits['_XYCoordinates']
+                    elif field == 'width':
+                        self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
 
                 for self.idx in range(len(self._ItemTraits['_XYCoordinates'][0])):
                     if self.idx == 0:
@@ -566,11 +564,10 @@ class _VisualizationItem(QGraphicsItemGroup):
                 ############################ Variable Visualization Start ############################
 
                 for field in self._ItemTraits['variable_info']:
-                    if type(self._ItemTraits['variable_info'][field]) is not str:
-                        if field == 'XY':
-                            self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
-                        elif field == 'parameters':
-                            self._ItemTraits['variable_info'][field] = str(self._ItemTraits['parameters'])
+                    if field == 'XY':
+                        self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
+                    elif field == 'parameters':
+                        self._ItemTraits['variable_info'][field] = str(self._ItemTraits['parameters'])
 
                 tmpParam = str(self._ItemTraits['variable_info']['parameters']).replace(',', ',\n')
 
@@ -699,9 +696,15 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.block.remove(self.replaceXY)
 
                 if self.idx == 0:
-                    self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]) + '\nwidth: ' + str(_ast.width))
+                    if _ast.XY is not None:
+                        self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]) + '\nwidth: ' + str(_ast.width))
+                    else:
+                        self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY) + '\nwidth: ' + str(_ast.width))
                 else:
-                    self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]))
+                    if _ast.XY is not None:
+                        self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]))
+                    else:
+                        self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY) + '\nwidth: ' + str(_ast.width))
 
                 self.setVariable(_ast._type)
 
@@ -748,9 +751,9 @@ class _VisualizationItem(QGraphicsItemGroup):
             self.heightVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
             self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-            self.widthVariable.setVisible(False)
-            self.heightVariable.setVisible(False)
-            self.XYVariable.setVisible(False)
+            # self.widthVariable.setVisible(False)
+            # self.heightVariable.setVisible(False)
+            # self.XYVariable.setVisible(False)
 
             self.widthVariable.setZValue(1)
             self.heightVariable.setZValue(1)
@@ -772,7 +775,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
             self.tmpXY.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-            self.tmpXY.setVisible(False)
+            # self.tmpXY.setVisible(False)
 
             self.tmpXY.setZValue(1)
 
