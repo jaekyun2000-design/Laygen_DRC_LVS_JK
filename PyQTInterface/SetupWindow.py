@@ -3049,7 +3049,12 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                             del self._DesignConstraintFromQTobj[module][grandparent_id]._ast.__dict__[field][key_value]
                         else:
                             row = current_item.row()
-                            del self._DesignConstraintFromQTobj[module][grandparent_id]._ast.__dict__[field][row]
+                            type = self._DesignConstraintFromQTobj[module][grandparent_id]._ast._type
+                            if field == 'XY' and type == 'Path':
+                                if row == len(self._DesignConstraintFromQTobj[module][grandparent_id]._ast.__dict__[field][0]) - 1:
+                                    del self._DesignConstraintFromQTobj[module][grandparent_id]._ast.__dict__[field][0][row]
+                            else:
+                                del self._DesignConstraintFromQTobj[module][grandparent_id]._ast.__dict__[field][row]
                         self.refreshItem(self.model.indexFromItem(parent_item))
 
             except:
