@@ -888,6 +888,7 @@ class _MainWindow(QMainWindow):
         self.scene.send_xyCoordinate_signal.connect(self.pw.AddPathPointWithMouse)
         self.scene.send_xyCoordinate_signal.connect(self.pw.clickCount)                          # Mouse Interaction connect
         self.scene.send_mouse_move_signal.connect(self.pw.mouseTracking)
+        self.scene.send_doubleclick_signal.connect(self.pw.quitCreate)
 
     def makeSRefWindow(self):
         scf = QFileDialog.getSaveFileName(self,'Save Design Parameter','./PyQTInterface/modules')
@@ -2309,6 +2310,7 @@ class _CustomScene(QGraphicsScene):
     send_module_name_list_signal = pyqtSignal(list)
     send_mouse_move_signal = pyqtSignal(QGraphicsSceneMouseEvent)
     send_show_variable_signal = pyqtSignal(QGraphicsItem)
+    send_doubleclick_signal = pyqtSignal(bool)
 
     viewList = []
 
@@ -2516,6 +2518,9 @@ class _CustomScene(QGraphicsScene):
             self.send_move_signal.emit(delta)
         self.oldPos = QGraphicsSceneMouseEvent.scenePos()
         self.send_mouse_move_signal.emit(QGraphicsSceneMouseEvent)
+
+    def mouseDoubleClickEvent(self, event: 'QGraphicsSceneMouseEvent') -> None:
+        self.send_doubleclick_signal.emit(True)
 
     def itemListClickIgnore(self,flag):
         self.listIgnoreFlag = flag
