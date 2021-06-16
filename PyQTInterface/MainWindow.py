@@ -42,6 +42,7 @@ from PyQTInterface import VisualizationItem
 from PyQTInterface import VariableVisualItem
 from PyQTInterface import variableWindow
 from PyQTInterface import list_manager
+from PyQTInterface import calculator
 
 from generatorLib import generator_model_api
 
@@ -103,6 +104,7 @@ class _MainWindow(QMainWindow):
         self._ElementManager = element_manager.ElementManager()
         self.library_manager = generator_model_api
         self._VariableIDwithAST = variable_manager.Variable_IDwithAST()
+        self.gloabal_clipboard = QGuiApplication.clipboard()
 
     def initUI(self):
 
@@ -207,7 +209,7 @@ class _MainWindow(QMainWindow):
         graphicView.setRubberBandSelectionMode(Qt.ContainsItemShape)
         graphicView.setDragMode(QGraphicsView.RubberBandDrag)
         graphicView.setAcceptDrops(True)
-        graphicView.name_list_signal.connect(self.debug)
+        graphicView.name_list_signal.connect(self.save_clipboard)
         self.scene.send_module_name_list_signal.connect(graphicView.name_out_fcn)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
         # self.scene.setMinimumRenderSize(5)
@@ -480,7 +482,7 @@ class _MainWindow(QMainWindow):
         self.ConstraintTemplateButton.clicked.connect(self.makeTemplateWindow)
         # self.parsetreeEasyRun.clicked.connect(self.easyRun)
         self.variableCallButton.clicked.connect(self.variableListUpdate)
-        self.sref_debug.clicked.connect(self.runConstraint_for_subcell)
+        self.sref_debug.clicked.connect(self.clipboard_test)
 
 
         ################ Logging Message Dock Widget setting ####################
@@ -525,6 +527,15 @@ class _MainWindow(QMainWindow):
 
     def debug(self,name_list):
         print(name_list)
+
+    def clipboard_test(self):
+        self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
+        self.calculator_window.show()
+
+    def save_clipboard(self,save_target):
+        if type(save_target) == list:
+            print(save_target)
+            self.gloabal_clipboard.setText(str(save_target[1:]))
 
     def sref_debug_module(self):
         # tmpcell = {'INV': {'Sub1': {'Sub2': {'PMOS': None}, 'NMOS': None,}, 'NMOS': None, 'PMOS': None}}
@@ -801,18 +812,6 @@ class _MainWindow(QMainWindow):
             traceback.print_exc()
             print("Run fail")
 
-    def runConstraint_for_subcell(self, _ast):
-        try:
-            gds2gen = topAPI.gds2generator.GDS2Generator(False)
-            gds2gen.class_name = self._CurrentModuleName
-            _Model_Structure = gds2gen.code_generation_for_subcell()
-            return _Model_Structure
-            # _ast.name
-            # breakpoint()
-            # return gds2gen.root_cell._DesignParameter[_ast.name]['_DesignObj']._DesignParameter
-            # print('debug')
-        except:
-            traceback.print_exc()
 
     def runConstraint_for_update(self):
         try:
