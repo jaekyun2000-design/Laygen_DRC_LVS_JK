@@ -172,6 +172,8 @@ class GDS2Generator():
                 model_structure[element_name]._DesignParameter = element
                 model_structure[element_name]._DesignParameter['_ModelStructure'] = dict()
                 model_structure[element_name]._type = 3
+                model_structure[element_name]._ElementName = element_name
+
 
                 sub_element_names = list(element['_DesignObj']._DesignParameter.keys())
                 sub_elements = list(element['_DesignObj']._DesignParameter.values())
@@ -184,7 +186,10 @@ class GDS2Generator():
                 model_structure[element_name] = PyCodes.QTInterfaceWithAST.QtDesignParameter()
                 model_structure[element_name]._DesignParameter = element
                 model_structure[element_name]._type = element['_DesignParametertype']
+                model_structure[element_name]._ElementName = element_name
                 if '_ElementName' not in model_structure[element_name]._DesignParameter:
+                    model_structure[element_name]._DesignParameter['_ElementName'] = element_name
+                if model_structure[element_name]._DesignParameter['_ElementName'] is None:
                     model_structure[element_name]._DesignParameter['_ElementName'] = element_name
         return self.root_cell._DesignParameter[target_cell_name]
 
