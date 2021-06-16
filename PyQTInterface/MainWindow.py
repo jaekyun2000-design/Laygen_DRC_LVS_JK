@@ -297,6 +297,7 @@ class _MainWindow(QMainWindow):
         self.dvstate = True
         self.dv.send_variable_siganl.connect(self.createNewConstraintAST)
         self.dv.send_changedData_signal.connect(self.updateVariableConstraint)
+        self.dv.selected_variable_item_id_signal.connect(self.highlightVI)
 
         vboxOnDock1 = QVBoxLayout()             # Layout For Button Widget
 
@@ -2075,8 +2076,23 @@ class _MainWindow(QMainWindow):
             module_name = self.get_id_return_module(constraint_id,'_DesignConstraint')
             used_variable_list = parse_constraint_to_get_value(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
             self.visualItemDict[changed_dp_id].update_dc_variable_info(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
-            print(used_variable_list)
+            # print(used_variable_list)
 
+            for var in used_variable_list:
+                if var in self.dv.idDict:
+                    self.dv.idDict[var]['id'].append(changed_dp_id)
+                else:
+                    self.cv = variableWindow._createNewDesignVariable()
+                    self.cv.send_variable_signal.connect(self.dv.updateList)
+                    self.cv.addDVtodict(var, 'id', changed_dp_id)
+                    self.cv.send_variable_signal.emit([var, ''], 'add')
+
+    def highlightVI(self, _idlist):
+        for item in self.visualItemDict:
+            self.visualItemDict[item].setSelected(False)
+        for _id in _idlist:
+            self.visualItemDict[_id].setFlag(QGraphicsItemGroup.ItemIsSelectable, True)
+            self.visualItemDict[_id].setSelected(True)
 
     def makeTemplateWindow(self):
         self.tw = template._TemplateManageWidget(template.templateDict)

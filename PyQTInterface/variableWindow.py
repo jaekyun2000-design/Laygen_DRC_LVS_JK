@@ -238,6 +238,7 @@ class _DesignVariableManagerWindow(QWidget):
 
     send_variable_siganl = pyqtSignal(dict)
     send_changedData_signal = pyqtSignal(dict)
+    selected_variable_item_id_signal = pyqtSignal(list)
     elementDict = dict()
 
     def __init__(self, itemDict):
@@ -439,9 +440,7 @@ class _DesignVariableManagerWindow(QWidget):
         self.selectedRow = item.row()
         self.selectedItem = _item
         _idlist = self.idDict[_item]['id']
-        for i in range(len(_idlist)):
-            # print(self.elementDict[_idlist[i]])
-            self.itemDict[self.elementDict[_idlist[i]][0]].setSelected(True)
+        self.selected_variable_item_id_signal.emit(_idlist)
 
     def manageElements(self, id, elements):
         self.elementDict[id] = elements
@@ -555,9 +554,6 @@ class _createNewDesignVariable(QWidget):
             self.warning.setIcon(QMessageBox.Warning)
             self.warning.setText("This variable already exists")
             self.warning.show()
-
-        # print('varDict:',self.variableDict)
-        # print('idDict:',self.idDict)
 
 class _editDesignVariable(QWidget):
 
