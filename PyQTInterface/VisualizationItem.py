@@ -699,9 +699,15 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.block.remove(self.replaceXY)
 
                 if self.idx == 0:
-                    self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]) + '\nwidth: ' + str(_ast.width))
+                    if _ast.XY is not None:
+                        self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]) + '\nwidth: ' + str(_ast.width))
+                    else:
+                        self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY) + '\nwidth: ' + str(_ast.width))
                 else:
-                    self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]))
+                    if _ast.XY is not None:
+                        self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]))
+                    else:
+                        self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY) + '\nwidth: ' + str(_ast.width))
 
                 self.setVariable(_ast._type)
 

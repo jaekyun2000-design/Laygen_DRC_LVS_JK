@@ -1669,8 +1669,18 @@ class _MainWindow(QMainWindow):
                                                                 _ast=self._QTObj._qtProject._DesignConstraint[module][
                                                                     mother_id]._ast, id=mother_id)
             if design_dict['parameter']:
-                visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
-                self.updateGraphicItem(visualItem)
+                if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 1:
+                    if design_dict['parameter']._DesignParameter['_XWidth'] == None or design_dict['parameter']._DesignParameter['_YWidth'] == None or design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
+                            pass
+                elif design_dict['parameter']._DesignParameter['_DesignParametertype'] == 2:
+                    if design_dict['parameter']._DesignParameter['_Width'] == None or design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
+                        pass
+                elif design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
+                    if design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
+                        pass
+                else:
+                    visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
+                    self.updateGraphicItem(visualItem)
 
     def deliveryDesignParameter(self):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()
