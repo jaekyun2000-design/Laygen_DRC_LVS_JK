@@ -2788,6 +2788,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         #     self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append(None)
 
         try:
+            print(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx])
             self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = [float(value) for value in StringValue.split(',')]
         except:
             self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = StringValue

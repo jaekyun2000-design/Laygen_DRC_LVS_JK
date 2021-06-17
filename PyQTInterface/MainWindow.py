@@ -823,27 +823,47 @@ class _MainWindow(QMainWindow):
             gds2gen.load_qt_id_info(self, constraint_ids)
             # gds2gen.set_root_cell(self._CurrentModuleName)
             # gds2gen.run_qt_constraint_ast()
-            dp_dict = gds2gen.get_updated_designParameters()
-            current_dpdict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
+            dp_dict = gds2gen.get_updated_designParameters()                                    # New Info
+            current_dpdict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]   # Unchanged target Info
 
             for _dpName, _qtdp in current_dpdict.items():
                 for _newdpName, _newqtdp in dp_dict.items():
-                    if _dpName == _newqtdp['_id']:
-                        _qtdp._DesignParameter['_DesignObj'] = _newqtdp['_DesignObj']
-                        _qtdp._DesignParameter['_XYCoordinates'] = _newqtdp['_XYCoordinates']
-                        _qtdp._DesignParameter['_Reflect'] = _newqtdp['_Reflect']
-                        _qtdp._DesignParameter['_Angle'] = _newqtdp['_Angle']
-                        _qtdp._DesignParameter['_Ignore'] = _newqtdp['_Ignore']
-                        _qtdp._DesignParameter['_ModelStructure'] = _newqtdp['_ModelStructure']
-                        sref_vi = VisualizationItem._VisualizationItem()
-                        sref_vi.updateDesignParameter(_qtdp)
-                        self.scene.addItem(sref_vi)
-                        self.scene.removeItem(self.visualItemDict[_qtdp._DesignParameter['_id']])
-                        self.visualItemDict[_qtdp._DesignParameter['_id']] = sref_vi
-                        self._layerItem = sref_vi.returnLayerDict()
+                    if _dpName == _newqtdp['_id']:          # Match Whether Updated Item corresponds to existing qtDesignParameter
+                        if _qtdp._DesignParameter['_DesignParametertype'] == 1:
+                            _qtdp._DesignParameter['_XYCoordinates'] = _newqtdp['_XYCoordinates']
+                            _qtdp._DesignParameter['_Layer'] = LayerReader._LayerName_unified[str(_newqtdp['_Layer'])]
+                            _qtdp._DesignParameter['_XWidth'] = _newqtdp['_XWidth']
+                            _qtdp._DesignParameter['_YWidth'] = _newqtdp['_YWidth']
+                            _qtdp._DesignParameter['_Datatype'] = _newqtdp['_Datatype']
+                            # _qtdp._DesignParameter['_Reflect'] = _newqtdp['_Reflect']
+                            # _qtdp._DesignParameter['_Angle'] = _newqtdp['_Angle']
+                            _qtdp._DesignParameter['_Ignore'] = _newqtdp['_Ignore']
+                            self.updateDesignParameter(_qtdp._DesignParameter)
 
-                        self.dockContentWidget1_2.updateLayerList(self._layerItem)
-                        # self.updateDesignParameter(_qtdp._DesignParameter)
+                        elif _qtdp._DesignParameter['_DesignParametertype'] == 2:
+                            _qtdp._DesignParameter['_XYCoordinates'] = _newqtdp['_XYCoordinates']
+                            _qtdp._DesignParameter['_Layer'] = LayerReader._LayerName_unified[str(_newqtdp['_Layer'])]
+                            _qtdp._DesignParameter['_Width'] = _newqtdp['_Width']
+                            _qtdp._DesignParameter['_Datatype'] = _newqtdp['_Datatype']
+                            _qtdp._DesignParameter['_Ignore'] = _newqtdp['_Ignore']
+                            self.updateDesignParameter(_qtdp._DesignParameter)
+
+                        elif _qtdp._DesignParameter['_DesignParametertype'] == 3:
+                            _qtdp._DesignParameter['_DesignObj'] = _newqtdp['_DesignObj']
+                            _qtdp._DesignParameter['_XYCoordinates'] = _newqtdp['_XYCoordinates']
+                            _qtdp._DesignParameter['_Reflect'] = _newqtdp['_Reflect']
+                            _qtdp._DesignParameter['_Angle'] = _newqtdp['_Angle']
+                            _qtdp._DesignParameter['_Ignore'] = _newqtdp['_Ignore']
+                            _qtdp._DesignParameter['_ModelStructure'] = _newqtdp['_ModelStructure']
+                            sref_vi = VisualizationItem._VisualizationItem()
+                            sref_vi.updateDesignParameter(_qtdp)
+                            self.scene.addItem(sref_vi)
+                            self.scene.removeItem(self.visualItemDict[_qtdp._DesignParameter['_id']])
+                            self.visualItemDict[_qtdp._DesignParameter['_id']] = sref_vi
+                            self._layerItem = sref_vi.returnLayerDict()
+                            self.dockContentWidget1_2.updateLayerList(self._layerItem)
+
+                        break
                     else:
                         pass
 
@@ -1272,8 +1292,6 @@ class _MainWindow(QMainWindow):
 
         self.dockContentWidget1_2.updateLayerList(self._layerItem)
 
-
-
     def loadGDS(self):
         scf = QFileDialog.getOpenFileName(self,'Load GDS','./PyQTInterface/GDSFile')
         _fileName=scf[0]
@@ -1402,27 +1420,6 @@ class _MainWindow(QMainWindow):
                     #     print(sref_vi.returnLayerDict()['PIMP'][i]._ItemTraits)
 
             print("############################ Cell DP, DC, VISUALITEM CREATION DONE ################################")
-
-    # def loadPy(self):
-    #     self.loadWorker = ThreaderForProgress.loadPyWorker()
-    #     self.loadWorker.loadPy(contentWidget=self.dockContentWidget3_2,_QTobj=self._QTObj,_CurrentModuleName= self._CurrentModuleName)
-    #
-    # def aloadPy(self):
-    #     self.qpd = SetupWindow._Progress()
-    #     self.qpd.show()
-    #
-    # def bloadPy(self,_fileName):
-    #
-    #     self.dockContentWidget4ForLoggingMessage._InfoMessage("Convert Pysource to AST.")
-    #     _none, _id = self._QTObj._qtProject._loadConstraintsFromPySource(_file=_fileName, _topModuleName=self._CurrentModuleName)
-    #     self.dockContentWidget4ForLoggingMessage._InfoMessage("Conversion Done!")
-    #
-    #     self.dockContentWidget4ForLoggingMessage._InfoMessage("Convert DC to TreeView")
-    #     self.dockContentWidget3_2.createNewConstraintAST(_id=_id, _parentName=self._CurrentModuleName, _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-    #     self.dockContentWidget4ForLoggingMessage._InfoMessage("Conversion Done!")
-
-
-
 
     def loadPy(self):
         scf = QFileDialog.getOpenFileName(self, 'Load SourceCode', './sourceCode')
