@@ -1,5 +1,7 @@
 import sys
 import os
+import traceback
+
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from PyQt5.QtWidgets import *
@@ -260,7 +262,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         #         QtDesignParameter._XYCoordinatesForDisplay = [[0,0]]
 
 
-        if type(QtDesignParameter._DesignParameter['_XYCoordinates'][0]) == list:
+        if not QtDesignParameter._DesignParameter['_XYCoordinates'] or type(QtDesignParameter._DesignParameter['_XYCoordinates'][0]) == list:
             if self._type == 1:
                 self._ItemTraits['_XYCoordinates'] = copy.deepcopy(QtDesignParameter._DesignParameter['_XYCoordinates'])
             elif self._type == 2:
@@ -362,7 +364,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.blockGeneration()
                 self.setPos(0,0)
         except:
-            pass
+            traceback.print_exc()
 
     def updateDesignObj(self,visualItem):
         self._ItemTraits['_VisualizationItems'].append(visualItem)

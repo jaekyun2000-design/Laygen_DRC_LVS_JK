@@ -154,10 +154,15 @@ class ElementTransformer(ast.NodeTransformer):
                 if type(node.XY) != list:
                     return None  ## 기본적으로 모든 value는 list 안에 들어가 있음
                 else:
-                    if type(node.XY[0][0]) == list:
-                        return 'list'
-                    elif type(node.XY[0][0]) == str:
+                    if type(node.XY[0]) == str:
                         return 'string'
+                    elif type(node.XY[0]) == list:
+                        if type(node.XY[0][0]) == list:
+                            return 'list'
+                        elif type(node.XY[0][0]) == str:
+                            return 'string'
+                        else:
+                            return 'ast'
                     else:
                         return 'ast'
         else:
