@@ -444,12 +444,14 @@ class _PathSetupWindow(QWidget):
             try:
                 self.send_DestroyTmpVisual_signal.emit(self.tmpVI)
             except:
+                traceback.print_exc()
                 pass
             self.send_PathDesign_signal.emit(self._DesignParameter)
             self.destroy()
             self.send_Destroy_signal.emit('pw')
             pass
         except:
+            traceback.print_exc()
             self.warning = QMessageBox()
             self.warning.setIcon(QMessageBox.Warning)
             self.warning.setText("Invalid Name")
@@ -2786,7 +2788,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     def updateDesignConstraintWithList(self,Module,Id,Field,Idx,StringValue):
         # if Idx <= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field]):
         #     self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append(None)
-
+        if StringValue == "*":
+            return
         try:
             print(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx])
             self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = [float(value) for value in StringValue.split(',')]
@@ -2972,15 +2975,31 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         #elif indexID == "" or indexID == None:                    #If refresh Item is parsetree and it has at least one child constraint
         elif value == "*":
             indexTypeItem = self.model.itemFromIndex(itemIndex.siblingAtColumn(0))
-            type = indexTypeItem.text()
+            _key = indexTypeItem.text()
             motherIndex = itemIndex.parent().siblingAtColumn(1)
+
+            """
+            Check Triple list case or not (Path case.)
+            """
             motherItem = self.model.itemFromIndex(motherIndex)
             motherName = motherItem.text()
-            # motherModule = re.sub(r'\d','',motherName)
-            motherModule = get_id_return_module(id=motherName, type='_DesignConstraint', moduleDict=self._DesignConstraintFromQTobj)
-            _ast = self._DesignConstraintFromQTobj[motherModule][motherName]._ast
 
-            self.model.readParseTreeForMultiChildren(motherItem=indexTypeItem,_AST=_ast ,key=type)
+            if motherName == '':
+                grandparent_nameitem = self.model.itemFromIndex(motherIndex.parent().siblingAtColumn(1))
+                grandparent_item = self.model.itemFromIndex(motherIndex.parent().siblingAtColumn(0))
+                grandparent_name = grandparent_nameitem.text()
+                grandparent_module = get_id_return_module(id=grandparent_name, type='_DesignConstraint', moduleDict=self._DesignConstraintFromQTobj)
+                _ast = self._DesignConstraintFromQTobj[grandparent_module][grandparent_name]._ast
+                mother_item_for_key = self.model.itemFromIndex(motherIndex.siblingAtColumn(0))
+                _key = mother_item_for_key.text()
+                motherItem = self.model.itemFromIndex(itemIndex.siblingAtColumn(0))
+                self.model.readParseTreeForGrandChildren(grandparent_item=grandparent_item,mother_item=motherItem,_AST=_ast,key=_key)
+
+            else:
+                motherModule = get_id_return_module(id=motherName, type='_DesignConstraint', moduleDict=self._DesignConstraintFromQTobj)
+                _ast = self._DesignConstraintFromQTobj[motherModule][motherName]._ast
+
+                self.model.readParseTreeForMultiChildren(motherItem=indexTypeItem,_AST=_ast ,key=_key)
 
 
             # updateConstraint = self.itemToDesignConstraintDict[indexItemName]
@@ -3548,7 +3567,7 @@ class _ConstraintModel(QStandardItemModel):
                 # tmpA.appendRow([QStandardItem("hi"),QStandardItem("test")])
                 motherItem.appendRow([tmpA, tmpB, tmpC, tmpD, QStandardItem()])
 
-    def readParseTreeForMultiChildren(self,motherItem=None,_AST = None,key=None):
+    def readParseTreeForMultiChildren(self,motherItem=None,_AST = None,key=None,grandparentItem=None):
         checkChild = self.findChildrenWithText(motherItem,key,column=0)   #If Constraint has child constraint, then show Constraint Name for Child constraint.
 
         if key not in _AST.__dict__:
@@ -3579,12 +3598,14 @@ class _ConstraintModel(QStandardItemModel):
                     tmpD = QStandardItem(tmpD)
                     motherItem.appendRow([QStandardItem(), QStandardItem(), tmpC, tmpD])
                 else:
-                    for child_child_AST in childAST:
-                        print("Doubled-list case display")
-                        tmpC = QStandardItem(str(type(child_child_AST)))
-                        tmpD = str(child_child_AST[0]) + ',' + str(child_child_AST[1])
-                        tmpD = QStandardItem(tmpD)
-                        motherItem.appendRow([QStandardItem(), QStandardItem(), tmpC, tmpD])
+                    tmpC = QStandardItem(str(type(childAST)))
+                    motherItem.appendRow([QStandardItem(''),QStandardItem(''),tmpC, QStandardItem('*')])
+                    # for child_child_AST in childAST:
+                    #     print("Doubled-list case display")
+                    #     tmpC = QStandardItem(str(type(child_child_AST)))
+                    #     tmpD = str(child_child_AST[0]) + ',' + str(child_child_AST[1])
+                    #     tmpD = QStandardItem(tmpD)
+                    #     motherItem.appendRow([QStandardItem(), QStandardItem(), tmpC, tmpD])
             elif type(childAST) == str:
                 tmpA = QStandardItem(childAST)
                 tmpD = QStandardItem(str(_AST.__dict__[key][childAST]))
@@ -3601,6 +3622,47 @@ class _ConstraintModel(QStandardItemModel):
                 tmpA = QStandardItem(_type)
                 tmpB = QStandardItem(childASTid)
                 motherItem.appendRow([tmpA,tmpB,QStandardItem(_type),QStandardItem()])
+
+    def readParseTreeForGrandChildren(self,grandparent_item=None,mother_item=None, _AST = None,key=None):
+        if key not in _AST.__dict__:
+            return
+
+        for row in range(0,mother_item.rowCount()):
+            print(mother_item.rowCount())
+            mother_item.removeRow(0)
+
+        for childAST in _AST.__dict__[key]:   #### childConstraint is item in list!
+            if type(childAST) == list:
+                if type(childAST[0]) != list:   #Boundary case
+                    print("List case display")
+                    tmpC = QStandardItem(str(type(childAST)))
+                    tmpD = str(childAST[0]) + ',' + str(childAST[1])
+                    tmpD = QStandardItem(tmpD)
+                    mother_item.appendRow([QStandardItem(), QStandardItem(), tmpC, tmpD])
+                else:
+                    for child_child_AST in childAST:
+                        print("Doubled-list case display")
+                        tmpC = QStandardItem(str(type(child_child_AST)))
+                        tmpD = str(child_child_AST[0]) + ',' + str(child_child_AST[1])
+                        tmpD = QStandardItem(tmpD)
+                        mother_item.appendRow([QStandardItem(), QStandardItem(), tmpC, tmpD])
+            elif type(childAST) == str:
+                tmpA = QStandardItem(childAST)
+                tmpD = QStandardItem(str(_AST.__dict__[key][childAST]))
+                mother_item.appendRow([tmpA, QStandardItem(), QStandardItem(), tmpD])
+            else:
+                childASTid = childAST._id
+                _type = childAST._type
+
+                if self.findChildrenWithName(mother_item,childASTid) != None:
+                    print("duplication Detect!")
+                    print("duplication Item text",self.findChildrenWithName(mother_item,childASTid).text())
+                    continue
+
+                tmpA = QStandardItem(_type)
+                tmpB = QStandardItem(childASTid)
+                mother_item.appendRow([tmpA,tmpB,QStandardItem(_type),QStandardItem()])
+
 
     def findChildrenWithText(self,parentItem,key,column=None):
         if column == None:
