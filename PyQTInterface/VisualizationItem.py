@@ -260,15 +260,15 @@ class _VisualizationItem(QGraphicsItemGroup):
         #         QtDesignParameter._XYCoordinatesForDisplay = [[0,0]]
 
 
-
-        if self._type == 1:
-            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._DesignParameter['_XYCoordinates']
-        elif self._type == 2:
-            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._DesignParameter['_XYCoordinates']
-        elif self._type == 3:
-            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._DesignParameter['_XYCoordinates']
-        elif self._type == 8:
-            self._ItemTraits['_XYCoordinates'] = QtDesignParameter._DesignParameter['_XYCoordinates']
+        if type(QtDesignParameter._DesignParameter['_XYCoordinates'][0]) == list:
+            if self._type == 1:
+                self._ItemTraits['_XYCoordinates'] = copy.deepcopy(QtDesignParameter._DesignParameter['_XYCoordinates'])
+            elif self._type == 2:
+                self._ItemTraits['_XYCoordinates'] = copy.deepcopy(QtDesignParameter._DesignParameter['_XYCoordinates'])
+            elif self._type == 3:
+                self._ItemTraits['_XYCoordinates'] = copy.deepcopy(QtDesignParameter._DesignParameter['_XYCoordinates'])
+            elif self._type == 8:
+                self._ItemTraits['_XYCoordinates'] = copy.deepcopy(QtDesignParameter._DesignParameter['_XYCoordinates'])
 
         if QtDesignParameter._ElementName == None:
             QtDesignParameter._ElementName = QtDesignParameter._id
@@ -290,10 +290,13 @@ class _VisualizationItem(QGraphicsItemGroup):
             '''
             if type(_DesignParameter[key]) == str:
                 if key not in ['className', 'text', 'calculate_fcn', '_id', 'id', 'library', '_ElementName', '_Layer']:
-                    continue
+                    try:
+                        int(_DesignParameter[key])
+                    except:
+                        continue
 
             if key == "_XYCoordinates":    # DesignParameter's XYcoordinate is for real xy coordinates,,,
-                self._ItemTraits['_XYCoordinates'] = _DesignParameter[key]                 # Itemtrait's XY coordinate matches QtDesignParameter's XYCoordinatesForDisplay
+                self._ItemTraits['_XYCoordinates'] = copy.deepcopy(_DesignParameter[key])                 # Itemtrait's XY coordinate matches QtDesignParameter's XYCoordinatesForDisplay
             elif key == "_ElementName":
                 self._ElementName = _DesignParameter[key]
             else:
@@ -806,8 +809,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
                 self.paramVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-                self.XYVariable.setVisible(False)
-                self.paramVariable.setVisible(False)
+                # self.XYVariable.setVisible(False)
+                # self.paramVariable.setVisible(False)
 
                 self.XYVariable.setZValue(1)
                 self.paramVariable.setZValue(1)
