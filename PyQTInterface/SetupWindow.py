@@ -2804,11 +2804,19 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         #     self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append(None)
         if StringValue == "*":
             return
-        try:
-            print(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx])
-            self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = [float(value) for value in StringValue.split(',')]
-        except:
+
+        if ',' in StringValue:
+            try:
+                self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = [float(value) for value in StringValue.split(',')]
+            except:
+                self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = '[' + StringValue + ']'
+        else:
             self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = StringValue
+        # try:
+        #     print(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx])
+        #     self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = [float(value) for value in StringValue.split(',')]
+        # except:
+        #     self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = StringValue
         # self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = StringValue.split(',')
 
     def updateDesignConstraintWithList_grandchild(self,Module,Id,Field,idx1,idx2,StringValue):
@@ -3010,7 +3018,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             motherItem = self.model.itemFromIndex(motherIndex)
             motherName = motherItem.text()
 
-            if motherName == '':
+            mother_container_name = self.model.itemFromIndex(motherIndex.siblingAtColumn(0)).text()
+            if mother_container_name == '':
                 grandparent_nameitem = self.model.itemFromIndex(motherIndex.parent().siblingAtColumn(1))
                 grandparent_item = self.model.itemFromIndex(motherIndex.parent().siblingAtColumn(0))
                 grandparent_name = grandparent_nameitem.text()
