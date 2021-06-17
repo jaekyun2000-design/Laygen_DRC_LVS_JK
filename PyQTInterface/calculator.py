@@ -26,6 +26,7 @@ class ExpressionCalculator(QWidget):
         self.display.setReadOnly(True)
         self.display.setAlignment(Qt.AlignRight|Qt.AlignTop)
         self.display.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+        self.equationList = list()
 
 
         font = self.display.font()
@@ -37,6 +38,8 @@ class ExpressionCalculator(QWidget):
         self.digit_buttons = []
         for i in range(10):
             self.digit_buttons.append(self.create_button(f'{i}', self.digit_clicked))
+        self.digit_buttons.append(self.create_button('+/-', self.digit_clicked))
+        self.digit_buttons.append(self.create_button('.', self.digit_clicked))
         self.top_buttons = self.create_button('━', self.geo_clicked ,'top')
         self.right_buttons = self.create_button('┃', self.geo_clicked, 'right')
         self.left_buttons = self.create_button('┃', self.geo_clicked, 'left')
@@ -56,6 +59,8 @@ class ExpressionCalculator(QWidget):
         self.mul = self.create_button('*',self.arithmetic_clicked)
         self.div = self.create_button('/',self.arithmetic_clicked)
 
+        self.backspace = self.create_button('<-',self.delete_clicked)
+
         """
         option layout
         """
@@ -67,6 +72,7 @@ class ExpressionCalculator(QWidget):
         self.y_button = self.create_radio_button('Y',self.xy_reference_clicked)
         self.xy_button = self.create_radio_button('XY',self.xy_reference_clicked)
         self.x_button.setChecked(True)
+
         toggling_group_layout.addWidget(self.x_button)
         toggling_group_layout.addWidget(self.y_button)
         toggling_group_layout.addWidget(self.xy_button)
@@ -86,13 +92,18 @@ class ExpressionCalculator(QWidget):
         main_layout = QGridLayout()
         # main_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         dl_size = 5
-        main_layout.addWidget(self.display, 0, 0, dl_size, 7)
+        main_layout.addWidget(self.display, 0, 0, dl_size, 6)
+        main_layout.addWidget(self.backspace, 0, 6, dl_size, 1)
         # main_layout.addWidget(self.display, 1, 8)
 
         for i in range(10):
-            row = ((9-i) / 3)+dl_size
-            col = ((i-1) % 3)+3
-            main_layout.addWidget(self.digit_buttons[i], row, col)
+            if i is not 0:
+                row = ((9-i) / 3)+dl_size
+                col = ((i-1) % 3)+3
+                main_layout.addWidget(self.digit_buttons[i], row, col)
+            main_layout.addWidget(self.digit_buttons[10], dl_size+3, 3)
+            main_layout.addWidget(self.digit_buttons[0], dl_size+3, 4)
+            main_layout.addWidget(self.digit_buttons[11], dl_size+3, 5)
         main_layout.addWidget(self.top_buttons,dl_size,1)
         main_layout.addWidget(self.bottom_buttons,dl_size+2,1)
         main_layout.addWidget(self.left_buttons,dl_size+1,0)
@@ -165,8 +176,10 @@ class ExpressionCalculator(QWidget):
             if self.value_flag:
                 print(f'len!!={len(self.value_str)}')
                 self.display.setText(self.display.text()[:-len(self.value_str)] + calc_expression)
+                self.equationList[-1] = calc_expression
             else:
                 self.display.setText(self.display.text() + calc_expression)
+                self.equationList.append(calc_expression)
 
             self.value_flag = True
             self.value_str = calc_expression
@@ -174,6 +187,7 @@ class ExpressionCalculator(QWidget):
             self.digit_flag = False
             self.show()
             self.waiting = False
+            print(self.equationList)
 
     def create_radio_button(self, text, slot_fcn, name=None):
         button = QRadioButton(text)
@@ -185,16 +199,104 @@ class ExpressionCalculator(QWidget):
     def arithmetic_clicked(self):
         clicked_button = self.sender()
         arith_sign = clicked_button.text()
+        display = str()
 
         if self.value_flag:
-            self.display.setText(self.display.text() + arith_sign)
+            if self.equationList[-1][-1] == '.':
+                self.equationList[-1] = self.equationList[-1][:-1]
+            self.equationList.append(arith_sign)
             self.arithmetic_flag = True
         elif self.arithmetic_flag:
-            self.display.setText(self.display.text()[:-1] + arith_sign)
+            self.equationList[-1] = arith_sign
         else:
             return
         self.value_flag = False
         self.digit_flag = False
+
+        for text in self.equationList:
+            display += text
+        self.display.setText(display)
+        # clicked_button = self.sender()
+        # arith_sign = clicked_button.text()
+        #
+        # if self.value_flag:
+        #     self.display.setText(self.display.text() + arith_sign)
+        #     self.equationList.append(arith_sign)
+        #     self.arithmetic_flag = True
+        # elif self.arithmetic_flag:
+        #     self.display.setText(self.display.text()[:-1] + arith_sign)
+        #     self.equationList[-1] = arith_sign
+        # else:
+        #     return
+        # self.value_flag = False
+        # self.digit_flag = False
+
+    def delete_clicked(self):
+        if len(self.equationList) is not 0:
+            display = str()
+
+            isDigit = False
+            for num in range(10):
+                if self.equationList[-1][-1] == str(num):
+                    isDigit = True
+
+            if isDigit or self.equationList[-1][-1] == '.':
+                if len(self.equationList[-1]) == 1:
+                    del self.equationList[-1]
+                    self.value_flag = False
+                    self.digit_flag = False
+                    self.arithmetic_flag = True
+                elif self.equationList[-1] == '0.':
+                    del self.equationList[-1]
+                    self.value_flag = False
+                    self.digit_flag = False
+                    self.arithmetic_flag = True
+                else:
+                    last = self.equationList[-1][:-1]
+                    self.equationList[-1] = last
+                    self.value_flag = True
+                    self.digit_flag = True
+                    self.arithmetic_flag = False
+            elif self.equationList[-1][0:2] == '(-':
+                if len(self.equationList[-1]) == 4:
+                    del self.equationList[-1]
+                    self.value_flag = False
+                    self.digit_flag = False
+                    self.arithmetic_flag = True
+                else:
+                    last = self.equationList[-1][:-2] + self.equationList[-1][-1]
+                    self.equationList[-1] = last
+                    self.value_flag = True
+                    self.digit_flag = True
+                    self.arithmetic_flag = False
+            else:
+                if self.equationList[-1] == '+' or self.equationList[-1] == '-' or self.equationList[-1] == '*' or self.equationList[-1] == '/':
+                    del self.equationList[-1]
+                    for num in range(10):
+                        if self.equationList[-1][-1] == str(num):
+                            isDigit = True
+                    if isDigit or self.equationList[-1][0:2] == '(-':
+                        self.value_flag = True
+                        self.digit_flag = True
+                        self.arithmetic_flag = False
+                    else:
+                        self.value_flag = True
+                        self.digit_flag = False
+                        self.arithmetic_flag = False
+                else:
+                    del self.equationList[-1]
+                    self.value_flag = True
+                    self.digit_flag = True
+                    self.arithmetic_flag = False
+
+            if len(self.equationList) is 0:
+                    self.value_flag = False
+                    self.digit_flag = False
+                    self.arithmetic_flag = False
+
+            for text in self.equationList:
+                display += text
+            self.display.setText(display)
 
     def showXWindow(self):
         self.XWindow.addItem(self.display.text())
@@ -208,50 +310,184 @@ class ExpressionCalculator(QWidget):
         self.XYWindow.addItem(self.display.text())
         self.display.clear()
 
-
     def digit_clicked(self):
         clicked_button = self.sender()
-        digit_value = str(int(clicked_button.text()))
-
-        if self.digit_flag:
-            self.display.setText(self.display.text() + digit_value)
-            self.value_str += digit_value
-        else:
-            if self.value_flag:
-                self.display.setText(self.display.text()[:-len(self.value_str)] + digit_value)
+        display = str()
+        if clicked_button.text() == '+/-':
+            if len(self.equationList) == 0:
+                pass
+            elif len(self.equationList) == 1:
+                if self.equationList[-1][0] == '-':
+                    self.equationList[-1] = self.equationList[-1][1:]
+                else:
+                    self.equationList[-1] = '-' + self.equationList[-1]
             else:
-                self.display.setText(self.display.text() + digit_value)
-            self.value_flag = True
-            self.value_str = digit_value
-            self.digit_flag = True
+                if self.value_flag:
+                    if self.equationList[-2] == '+':
+                        self.equationList[-2] = '-'
+                    elif self.equationList[-2] == '-':
+                        self.equationList[-2] = '+'
+                    elif self.equationList[-2] == '*' or self.equationList[-2] == '/':
+                        if self.equationList[-1][0:2] == '(-':
+                            self.equationList[-1] = self.equationList[-1][2:-1]
+                        else:
+                            self.equationList[-1] = '(-' + self.equationList[-1] + ')'
+
+        else:
+            digit_value = str(clicked_button.text())
+
+            if self.digit_flag:
+                if digit_value == '.':
+                    if '.' in self.equationList[-1]:
+                        pass
+                    else:
+                        if self.equationList[-1][0:2] == '(-':
+                            self.equationList[-1] = self.equationList[-1][:-1] + digit_value + self.equationList[-1][-1]
+                        else:
+                            self.equationList[-1] = self.equationList[-1] + digit_value
+                else:
+                    if self.equationList[-1] == '0':
+                        self.equationList[-1] = digit_value
+                    else:
+                        if self.equationList[-1][0:2] == '(-':
+                            self.equationList[-1] = self.equationList[-1][:-1] + digit_value + self.equationList[-1][-1]
+                        else:
+                            self.equationList[-1] = self.equationList[-1] + digit_value
+
+                self.value_flag = True
+                self.digit_flag = True
+                self.arithmetic_flag = False
+            else:
+                if self.value_flag:
+                    pass
+                else:
+                    if digit_value == '.':
+                        self.equationList.append('0.')
+                    else:
+                        self.equationList.append(digit_value)
+
+                    self.value_flag = True
+                    self.digit_flag = True
+                    self.arithmetic_flag = False
+
+        for text in self.equationList:
+            display += text
+        self.display.setText(display)
+
+        # clicked_button = self.sender()
+        # if clicked_button.text() == '+/-':
+        #     if len(self.value_str) < len(self.display.text()):
+        #         if self.value_flag:
+        #             if self.display.text()[-len(self.value_str)-1] == '+':
+        #                 self.display.setText(self.display.text()[:-len(self.value_str)-1] + '-' + self.display.text()[-len(self.value_str):])
+        #             elif self.display.text()[-len(self.value_str)-1] == '-':
+        #                 self.display.setText(self.display.text()[:-len(self.value_str)-1] + '+' + self.display.text()[-len(self.value_str):])
+        #             elif self.display.text()[-len(self.value_str):-len(self.value_str)+2] == '(-':
+        #                 self.display.setText(self.display.text()[:-len(self.value_str)] + self.display.text()[-len(self.value_str)+2:-1])
+        #                 self.value_str = self.value_str[2:-1]
+        #             elif self.display.text()[-len(self.value_str)-1] == '*':
+        #                 self.display.setText(self.display.text()[:-len(self.value_str)] + '(-' + self.display.text()[-len(self.value_str):] + ')')
+        #                 self.value_str = '(-' + self.value_str + ')'
+        #             elif self.display.text()[-len(self.value_str)-1] == '/':
+        #                 self.display.setText(self.display.text()[:-len(self.value_str)] + '(-' + self.display.text()[-len(self.value_str):] + ')')
+        #                 self.value_str = '(-' + self.value_str + ')'
+        #         else:
+        #             pass
+        #         self.value_flag = True
+        #         self.digit_flag = True
+        #
+        #     elif len(self.value_str) == len(self.display.text()):
+        #         if len(self.display.text()) is not 0:
+        #             if self.display.text()[0] is not '-':
+        #                 self.display.setText('-' + self.display.text())
+        #                 self.value_str = '-' + self.value_str
+        #             else:
+        #                 self.display.setText(self.display.text()[1:])
+        #                 self.value_str = self.value_str[:1]
+        #
+        #
+        # else:
+        #     digit_value = str(clicked_button.text())
+        #
+        #     if self.digit_flag:
+        #         self.display.setText(self.display.text() + digit_value)
+        #         self.value_str += digit_value
+        #         self.equationList[-1] = self.value_str
+        #     else:
+        #         if self.value_flag:
+        #             self.display.setText(self.display.text()[:-len(self.value_str)] + digit_value)
+        #             self.equationList[-1] = digit_value
+        #         else:
+        #             self.display.setText(self.display.text() + digit_value)
+        #             self.equationList.append(digit_value)
+        #         self.value_flag = True
+        #         self.value_str = digit_value
+        #         self.digit_flag = True
 
     def geo_clicked(self):
         clicked_button = self.sender()
         geo_text = clicked_button.objectName()
         hierarchy_list = self.parsing_clipboard()
+        display = str()
+
         if type(hierarchy_list) == Exception:
             return None
         calc_expression = geo_text + f'({hierarchy_list})'
         if self.value_flag:
             print(f'len!!={len(self.value_str)}')
-            self.display.setText(self.display.text()[:-len(self.value_str)] + calc_expression)
+            self.equationList[-1] = calc_expression
         else:
-            self.display.setText(self.display.text() + calc_expression)
+            self.equationList.append(calc_expression)
         self.value_flag = True
-        self.value_str = calc_expression
         self.arithmetic_flag = False
         self.digit_flag = False
+
+        for text in self.equationList:
+            display += text
+        self.display.setText(display)
+
+        # clicked_button = self.sender()
+        # geo_text = clicked_button.objectName()
+        # hierarchy_list = self.parsing_clipboard()
+        # if type(hierarchy_list) == Exception:
+        #     return None
+        # calc_expression = geo_text + f'({hierarchy_list})'
+        # if self.value_flag:
+        #     print(f'len!!={len(self.value_str)}')
+        #     self.display.setText(self.display.text()[:-len(self.value_str)] + calc_expression)
+        #     self.equationList[-1] = calc_expression
+        # else:
+        #     self.display.setText(self.display.text() + calc_expression)
+        #     self.equationList.append(calc_expression)
+        # self.value_flag = True
+        # self.value_str = calc_expression
+        # self.arithmetic_flag = False
+        # self.digit_flag = False
 
     def xy_reference_clicked(self):
         pass
 
     def send_clicked(self):
-        if self.x_button.isChecked() is True:
-            self.showXWindow()
-        elif self.y_button.isChecked() is True:
-            self.showYWindow()
-        elif self.xy_button.isChecked() is True:
-            self.showXYWindow()
+        if len(self.equationList) is not 0:
+            if self.arithmetic_flag:
+                self.warning = QMessageBox()
+                self.warning.setIcon(QMessageBox.Warning)
+                self.warning.setText("Incomplete Equation")
+                self.warning.show()
+            else:
+                if self.equationList[-1][-1] == '.':
+                    self.display.setText(self.display.text()[:-1])
+                self.equationList.clear()
+                self.value_flag = False
+                self.digit_flag = False
+                self.arithmetic_flag = False
+
+                if self.x_button.isChecked() is True:
+                    self.showXWindow()
+                elif self.y_button.isChecked() is True:
+                    self.showYWindow()
+                elif self.xy_button.isChecked() is True:
+                    self.showXYWindow()
 
     def parsing_clipboard(self):
         try:
