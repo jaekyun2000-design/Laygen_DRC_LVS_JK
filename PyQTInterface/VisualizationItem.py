@@ -284,6 +284,13 @@ class _VisualizationItem(QGraphicsItemGroup):
             pass
 
         for key in _DesignParameter.keys():                      #set itemTrait on Object)
+            '''
+            invalid key skipping for visual item
+            '''
+            if type(_DesignParameter[key]) == str:
+                if key not in ['className', 'text', 'calculate_fcn', '_id', 'id', 'library', '_ElementName', '_Layer']:
+                    continue
+
             if key == "_XYCoordinates":    # DesignParameter's XYcoordinate is for real xy coordinates,,,
                 self._ItemTraits['_XYCoordinates'] = _DesignParameter[key]                 # Itemtrait's XY coordinate matches QtDesignParameter's XYCoordinatesForDisplay
             elif key == "_ElementName":
