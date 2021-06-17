@@ -531,6 +531,7 @@ class _MainWindow(QMainWindow):
 
     def clipboard_test(self):
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
+        self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
         self.calculator_window.show()
 
     def save_clipboard(self,save_target):
@@ -2515,8 +2516,7 @@ class _CustomScene(QGraphicsScene):
             itemList = self.selectedItems()
             for item in itemList:
                 try:
-                    if item._ItemTraits['_DesignParametertype'] != 3:
-                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']])
+                    self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']])
                 except:
                     pass
 

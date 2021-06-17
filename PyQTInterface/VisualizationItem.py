@@ -180,6 +180,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         self._SimplifyFlag = False
         self._multipleBlockFlag = False
         self._subSrefVisualItem = None
+        self._NoVariableFlag = False
         if _ItemTraits is None:
             self._ItemTraits = dict(
                 _ElementName = None,
@@ -536,6 +537,7 @@ class _VisualizationItem(QGraphicsItemGroup):
             elif self._ItemTraits['_DesignParametertype'] == 3:                #SRef Case
                 for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
                     sub_element_vi = _VisualizationItem()
+                    sub_element_vi._NoVariableFlag = True
                     sub_element_vi.updateDesignParameter(sub_element_dp)
                     sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
                     sub_element_vi.setPos(self._ItemTraits['_XYCoordinates'][0][0], self._ItemTraits['_XYCoordinates'][0][1])
@@ -726,86 +728,87 @@ class _VisualizationItem(QGraphicsItemGroup):
         return self._subElementLayer
 
     def setVariable(self, type=None):
-        fontSize = 10
-        font = QFont('tmp', fontSize)
-        font.setBold(True)
+        if self._NoVariableFlag == False:
+            fontSize = 10
+            font = QFont('tmp', fontSize)
+            font.setBold(True)
 
-        if type == None:
-            pass
-        elif type == 'Boundary':
-            self.widthVariable.setFont(font)
-            self.heightVariable.setFont(font)
-            self.XYVariable.setFont(font)
+            if type == None:
+                pass
+            elif type == 'Boundary':
+                self.widthVariable.setFont(font)
+                self.heightVariable.setFont(font)
+                self.XYVariable.setFont(font)
 
-            self.widthVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0]-6,
-                                      self._ItemTraits['_XYCoordinates'][0][1] - self._ItemTraits['_Height'] / 2 + 20)
-            self.heightVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0] + self._ItemTraits['_Width'] / 2 - 20,
-                                       self._ItemTraits['_XYCoordinates'][0][1]+10)
-            self.XYVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0]-6, self._ItemTraits['_XYCoordinates'][0][1]+10)
+                self.widthVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0]-6,
+                                          self._ItemTraits['_XYCoordinates'][0][1] - self._ItemTraits['_Height'] / 2 + 20)
+                self.heightVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0] + self._ItemTraits['_Width'] / 2 - 20,
+                                           self._ItemTraits['_XYCoordinates'][0][1]+10)
+                self.XYVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0]-6, self._ItemTraits['_XYCoordinates'][0][1]+10)
 
-            self.widthVariable.setDefaultTextColor(Qt.GlobalColor.red)
-            self.heightVariable.setDefaultTextColor(Qt.GlobalColor.red)
-            self.XYVariable.setDefaultTextColor(Qt.GlobalColor.red)
+                self.widthVariable.setDefaultTextColor(Qt.GlobalColor.red)
+                self.heightVariable.setDefaultTextColor(Qt.GlobalColor.red)
+                self.XYVariable.setDefaultTextColor(Qt.GlobalColor.red)
 
-            self.widthVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
-            self.heightVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
-            self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+                self.widthVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+                self.heightVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+                self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-            # self.widthVariable.setVisible(False)
-            # self.heightVariable.setVisible(False)
-            # self.XYVariable.setVisible(False)
+                # self.widthVariable.setVisible(False)
+                # self.heightVariable.setVisible(False)
+                # self.XYVariable.setVisible(False)
 
-            self.widthVariable.setZValue(1)
-            self.heightVariable.setZValue(1)
-            self.XYVariable.setZValue(1)
+                self.widthVariable.setZValue(1)
+                self.heightVariable.setZValue(1)
+                self.XYVariable.setZValue(1)
 
-            self.block.append(self.widthVariable)
-            self.block.append(self.heightVariable)
-            self.block.append(self.XYVariable)
-            self.addToGroup(self.widthVariable)
-            self.addToGroup(self.heightVariable)
-            self.addToGroup(self.XYVariable)
+                self.block.append(self.widthVariable)
+                self.block.append(self.heightVariable)
+                self.block.append(self.XYVariable)
+                self.addToGroup(self.widthVariable)
+                self.addToGroup(self.heightVariable)
+                self.addToGroup(self.XYVariable)
 
-        elif type == 'Path':
-            self.tmpXY.setFont(font)
+            elif type == 'Path':
+                self.tmpXY.setFont(font)
 
-            self.tmpXY.setPos(self._ItemTraits['_XYCoordinates'][0][self.idx][0]-6, self._ItemTraits['_XYCoordinates'][0][self.idx][1]+10)
+                self.tmpXY.setPos(self._ItemTraits['_XYCoordinates'][0][self.idx][0]-6, self._ItemTraits['_XYCoordinates'][0][self.idx][1]+10)
 
-            self.tmpXY.setDefaultTextColor(Qt.GlobalColor.red)
+                self.tmpXY.setDefaultTextColor(Qt.GlobalColor.red)
 
-            self.tmpXY.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+                self.tmpXY.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-            # self.tmpXY.setVisible(False)
+                # self.tmpXY.setVisible(False)
 
-            self.tmpXY.setZValue(1)
+                self.tmpXY.setZValue(1)
 
-            self.XYVariable.append(self.tmpXY)
-            self.block.append(self.tmpXY)
-            self.addToGroup(self.tmpXY)
+                self.XYVariable.append(self.tmpXY)
+                self.block.append(self.tmpXY)
+                self.addToGroup(self.tmpXY)
 
-        elif type == 'Sref':
-            self.XYVariable.setFont(font)
-            self.paramVariable.setFont(font)
+            elif type == 'Sref':
+                self.XYVariable.setFont(font)
+                self.paramVariable.setFont(font)
 
-            self.XYVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0]-6, self._ItemTraits['_XYCoordinates'][0][1]+10)
-            self.paramVariable.setPos(self.boundingRect().bottomLeft().x() + 20, self.boundingRect().bottomLeft().y() - 20)
+                self.XYVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0]-6, self._ItemTraits['_XYCoordinates'][0][1]+10)
+                self.paramVariable.setPos(self.boundingRect().bottomLeft().x() + 20, self.boundingRect().bottomLeft().y() - 20)
 
-            self.XYVariable.setDefaultTextColor(Qt.GlobalColor.red)
-            self.paramVariable.setDefaultTextColor(Qt.GlobalColor.red)
+                self.XYVariable.setDefaultTextColor(Qt.GlobalColor.red)
+                self.paramVariable.setDefaultTextColor(Qt.GlobalColor.red)
 
-            self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
-            self.paramVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+                self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+                self.paramVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-            self.XYVariable.setVisible(False)
-            self.paramVariable.setVisible(False)
+                self.XYVariable.setVisible(False)
+                self.paramVariable.setVisible(False)
 
-            self.XYVariable.setZValue(1)
-            self.paramVariable.setZValue(1)
+                self.XYVariable.setZValue(1)
+                self.paramVariable.setZValue(1)
 
-            self.block.append(self.XYVariable)
-            self.block.append(self.paramVariable)
-            self.addToGroup(self.XYVariable)
-            self.addToGroup(self.paramVariable)
+                self.block.append(self.XYVariable)
+                self.block.append(self.paramVariable)
+                self.addToGroup(self.XYVariable)
+                self.addToGroup(self.paramVariable)
 
     def returnItem(self):
         if self._ItemTraits['_DesignParametertype'] == "Boundary":

@@ -15,6 +15,7 @@ class ExpressionCalculator(QWidget):
         self.value_str = ''
 
         self.digit_flag=False
+        self.waiting = False
 
         self.arithmetic_flag=False
         self.arithmetic_str = ''
@@ -47,6 +48,7 @@ class ExpressionCalculator(QWidget):
         self.right_bot_buttons = self.create_button('┛',self.geo_clicked, 'rb')
 
         self.width_button = self.create_button('width',self.geo_clicked,'width')
+        self.click_button = self.create_button('click',self.click_clicked,'click')
         self.height_button = self.create_button('height',self.geo_clicked,'height')
 
         self.plus = self.create_button('+',self.arithmetic_clicked)
@@ -61,13 +63,13 @@ class ExpressionCalculator(QWidget):
         toggling_group_layout = QHBoxLayout()
         option_box_layout = QHBoxLayout()
 
-        x_button = self.create_radio_button('X',self.xy_reference_clicked)
-        y_button = self.create_radio_button('Y',self.xy_reference_clicked)
-        xy_button = self.create_radio_button('XY',self.xy_reference_clicked)
-        x_button.setChecked(True)
-        toggling_group_layout.addWidget(x_button)
-        toggling_group_layout.addWidget(y_button)
-        toggling_group_layout.addWidget(xy_button)
+        self.x_button = self.create_radio_button('X',self.xy_reference_clicked)
+        self.y_button = self.create_radio_button('Y',self.xy_reference_clicked)
+        self.xy_button = self.create_radio_button('XY',self.xy_reference_clicked)
+        self.x_button.setChecked(True)
+        toggling_group_layout.addWidget(self.x_button)
+        toggling_group_layout.addWidget(self.y_button)
+        toggling_group_layout.addWidget(self.xy_button)
         self.xy_reference_toggling_group.setLayout(toggling_group_layout)
 
         export_button = self.create_button('EXPORT',self.send_clicked)
@@ -102,6 +104,7 @@ class ExpressionCalculator(QWidget):
         main_layout.addWidget(self.right_bot_buttons,dl_size+2,2)
 
         main_layout.addWidget(self.width_button,dl_size+3,0)
+        main_layout.addWidget(self.click_button,dl_size+3,1)
         main_layout.addWidget(self.height_button,dl_size+3,2)
 
         main_layout.addWidget(self.div,dl_size,6)
@@ -125,6 +128,18 @@ class ExpressionCalculator(QWidget):
         top_layout.setStretchFactor(option_box_layout,0)
         top_layout.addLayout(main_layout)
 
+        self.XWindow = QListWidget()
+        self.YWindow = QListWidget()
+        self.XYWindow = QListWidget()
+        H_layout1 = QHBoxLayout()
+        H_layout2 = QHBoxLayout()
+
+        H_layout1.addWidget(self.YWindow)
+        H_layout1.addSpacing(283)
+        H_layout2.addWidget(self.XYWindow)
+        H_layout2.addWidget(self.XWindow)
+        top_layout.addLayout(H_layout1)
+        top_layout.addLayout(H_layout2)
 
         # self.setLayout(main_layout)
         self.setLayout(top_layout)
@@ -138,6 +153,27 @@ class ExpressionCalculator(QWidget):
         if name is not None:
             button.setObjectName(name)
         return button
+
+    def click_clicked(self):
+        self.hide()
+        self.waiting = True
+
+    def waitForClick(self, event):
+        if self.waiting == True:
+            calc_expression = '['+str(event.scenePos().x())+','+str(event.scenePos().y())+']'
+
+            if self.value_flag:
+                print(f'len!!={len(self.value_str)}')
+                self.display.setText(self.display.text()[:-len(self.value_str)] + calc_expression)
+            else:
+                self.display.setText(self.display.text() + calc_expression)
+
+            self.value_flag = True
+            self.value_str = calc_expression
+            self.arithmetic_flag = False
+            self.digit_flag = False
+            self.show()
+            self.waiting = False
 
     def create_radio_button(self, text, slot_fcn, name=None):
         button = QRadioButton(text)
@@ -160,6 +196,17 @@ class ExpressionCalculator(QWidget):
         self.value_flag = False
         self.digit_flag = False
 
+    def showXWindow(self):
+        self.XWindow.addItem(self.display.text())
+        self.display.clear()
+
+    def showYWindow(self):
+        self.YWindow.addItem(self.display.text())
+        self.display.clear()
+
+    def showXYWindow(self):
+        self.XYWindow.addItem(self.display.text())
+        self.display.clear()
 
 
     def digit_clicked(self):
@@ -199,7 +246,12 @@ class ExpressionCalculator(QWidget):
         pass
 
     def send_clicked(self):
-        pass
+        if self.x_button.isChecked() is True:
+            self.showXWindow()
+        elif self.y_button.isChecked() is True:
+            self.showYWindow()
+        elif self.xy_button.isChecked() is True:
+            self.showXYWindow()
 
     def parsing_clipboard(self):
         try:
