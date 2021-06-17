@@ -105,6 +105,7 @@ class _MainWindow(QMainWindow):
         self.library_manager = generator_model_api
         self._VariableIDwithAST = variable_manager.Variable_IDwithAST()
         self.gloabal_clipboard = QGuiApplication.clipboard()
+        self.variable_store_list = list()
 
     def initUI(self):
 
@@ -2074,7 +2075,9 @@ class _MainWindow(QMainWindow):
             module_name = self.get_id_return_module(constraint_id,'_DesignConstraint')
             used_variable_list = parse_constraint_to_get_value(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
             self.visualItemDict[changed_dp_id].update_dc_variable_info(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
-            # print(used_variable_list)
+
+            old_variable_list = list(set(self.variable_store_list) - set(used_variable_list))
+            self.variable_store_list = used_variable_list
 
             for var in used_variable_list:
                 if var in self.dv.idDict:
@@ -2084,6 +2087,9 @@ class _MainWindow(QMainWindow):
                     self.cv.send_variable_signal.connect(self.dv.updateList)
                     self.cv.addDVtodict(var, 'id', changed_dp_id)
                     self.cv.send_variable_signal.emit([var, ''], 'add')
+
+            for old_var in old_variable_list:
+                self.dv.idDict[old_var]['id'].remove(changed_dp_id)
 
     def highlightVI(self, _idlist):
         for item in self.visualItemDict:
