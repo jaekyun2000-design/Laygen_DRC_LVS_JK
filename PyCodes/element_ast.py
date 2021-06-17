@@ -1,6 +1,6 @@
 import ast
 import astunparse
-
+from PyCodes import ASTmodule
 # listTypeData = ['Lib','tb','PlaceDef','RouteDef','DRCDef','Iteration','P_R']
 custom_ast_list = ['Generator','Sref','Boundary','Path']
 #--start constants--
@@ -148,38 +148,91 @@ class GeneratorTransformer(ast.NodeTransformer):
 class ElementTransformer(ast.NodeTransformer):
 
     def xy_syntax_checker(self,node):
-        if 'XY' in node.__dict__:
-            if type(node.XY) == list:
-                if type(node.XY[0]) == list:
-                    return 'list'
-                elif type(node.XY[0]) == str:
-                    if node.XY[0].find(',') == -1:
-                        return 'list'
+        node._type = ASTmodule._getASTtype(node)
+        if node._type == 'Path':
+            if 'XY' in node.__dict__:
+                if type(node.XY) != list:
+                    return None  ## 기본적으로 모든 value는 list 안에 들어가 있음
+                else:
+                    if type(node.XY[0]) == str:
+                        return 'string'
+                    elif type(node.XY[0]) == list:
+                        if type(node.XY[0][0]) == list:
+                            return 'list'
+                        elif type(node.XY[0][0]) == str:
+                            return 'string'
+                        else:
+                            return 'ast'
                     else:
-                        return 'variable'
-                else:
-                    return 'ast'
-            elif type(node.XY) == str:
-                if node.XY.find(',') == -1:
-                    return 'list'
-                else:
-                    return 'variable'
-            else:
-                return 'ast'
+                        return 'ast'
         else:
-            return None
+            if 'XY' in node.__dict__:
+                if type(node.XY) != list:
+                    return None  ## 기본적으로 모든 value는 list 안에 들어가 있음
+                else:
+                    if type(node.XY[0]) == list:
+                        return 'list'
+                    elif type(node.XY[0]) == str:
+                        return 'string'
+                    else:
+                        return 'ast'
+        #
+        # if 'XY' in node.__dict__:
+        #     if type(node.XY) == list:
+        #         if type(node.XY[0]) == list:
+        #             return 'list'
+        #         elif type(node.XY[0]) == str:
+        #             if node.XY[0].find(',') == -1:
+        #                 return 'list'
+        #             else:
+        #                 return 'variable'
+        #         else:
+        #             return 'ast'
+        #     elif type(node.XY) == str:
+        #         if node.XY.find(',') == -1:
+        #             return 'list'
+        #         else:
+        #             return 'variable'
+        #     else:
+        #         return 'ast'
+        # else:
+        #     return None
 
     def visit_Boundary(self,node):
-        sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-                  _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY},\
-                  _XWidth = {node.width}, _YWidth = {node.height})"
+        syntax = self.xy_syntax_checker(node)
+
+        if syntax == 'list' or syntax == 'str':
+            node.XY = str(node.XY).replace("'","")
+            sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+                      _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY},\
+                      _XWidth = {node.width}, _YWidth = {node.height})"
+        # elif syntax == 'str':
+        #     sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+        #                           _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY},\
+        #                           _XWidth = {node.width}, _YWidth = {node.height})"
+        elif syntax == 'ast':
+            node.XY = astunparse.unparse(node.XY).replace('\n', '')
+            sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+                                              _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY},\
+                                              _XWidth = {node.width}, _YWidth = {node.height})"
         # print(sentence)
         tmp = ast.parse(sentence)
         return tmp.body[0]
 
     def visit_Path(self,node):
-        sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-_Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
+        syntax = self.xy_syntax_checker(node)
+
+        if syntax == 'list' or syntax == 'str':
+            node.XY = str(node.XY).replace("'", "")
+            sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
+        # elif syntax == 'str':
+        #     sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+        #                _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
+        elif syntax == 'ast':
+            node.XY = astunparse.unparse(node.XY).replace('\n', '')
+            sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
         tmp = ast.parse(sentence)
         return tmp.body[0]
 

@@ -2806,10 +2806,13 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             return
 
         if ',' in StringValue:
+            if Idx >= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field]):
+                self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append(None)
             try:
                 self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = [float(value) for value in StringValue.split(',')]
             except:
-                self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = '[' + StringValue + ']'
+                # self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = '[' + StringValue + ']'
+                self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = [value for value in StringValue.split(',')]
         else:
             self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = StringValue
         # try:
@@ -2824,10 +2827,16 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         #     self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append(None)
         if StringValue == "*":
             return
-        try:
-            print(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1][idx2])
-            self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1][idx2] = [float(value) for value in StringValue.split(',')]
-        except:
+        if ',' in StringValue:
+            if idx1 >= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field]):
+                self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append([])
+            if idx2 >= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1]):
+                self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1].append(None)
+            try:
+                self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1][idx2] = [float(value) for value in StringValue.split(',')]
+            except:
+                self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1][idx2] = [value for value in StringValue.split(',')]
+        else:
             self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1][idx2] = StringValue
         # self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = StringValue.split(',')
 
@@ -3018,7 +3027,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             motherItem = self.model.itemFromIndex(motherIndex)
             motherName = motherItem.text()
 
-            mother_container_name = self.model.itemFromIndex(motherIndex.siblingAtColumn(0)).text()
+            mother_container_name = self.model.itemFromIndex(motherIndex.siblingAtColumn(1)).text()
             if mother_container_name == '':
                 grandparent_nameitem = self.model.itemFromIndex(motherIndex.parent().siblingAtColumn(1))
                 grandparent_item = self.model.itemFromIndex(motherIndex.parent().siblingAtColumn(0))
@@ -3643,7 +3652,11 @@ class _ConstraintModel(QStandardItemModel):
                     #     motherItem.appendRow([QStandardItem(), QStandardItem(), tmpC, tmpD])
             elif type(childAST) == str:
                 tmpA = QStandardItem(childAST)
-                tmpD = QStandardItem(str(_AST.__dict__[key][childAST]))
+                if type(_AST.__dict__[key]) == dict:
+                    tmpD = QStandardItem(str(_AST.__dict__[key][childAST]))
+                elif type(_AST.__dict__[key]) == list:
+                    pass
+                    # tmpD = QStandardItem(str(_AST.__dict__[key][]))
                 motherItem.appendRow([tmpA, QStandardItem(), QStandardItem(), tmpD])
             else:
                 childASTid = childAST._id
