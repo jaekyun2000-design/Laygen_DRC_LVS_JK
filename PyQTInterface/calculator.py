@@ -535,14 +535,14 @@ class ExpressionCalculator(QWidget):
             if function == 'lt' or function == 'rt' or function == 'top':
                 result = result + f", {code}['_XYCoordinates'][0][1] + {code}['_YWidth']/2]"
             elif function == 'left' or function == 'right' or function == 'center':
-                result = result + f", {code}['_XYCoordinates'][0][1]"
+                result = result + f", {code}['_XYCoordinates'][0][1]]"
             elif function == 'lb' or function == 'rb' or function == 'bottom':
                 result = result + f", {code}['_XYCoordinates'][0][0] - {code}['_YWidth']/2]"
             else:  # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag}_Y for Debugging")
                 pass
         print(f"Re-Expressed Element: \n{result}")
-        return result
+        return f"{result}"
 
         # if function == 'lt':
         #     if XYFlag == 'X':
@@ -589,9 +589,13 @@ class ExpressionCalculator(QWidget):
                     if isFunction != None:
                         re_expressed_element = self.expressionTransformer(self.equationList[i], XYFlag = XYFlag)
                         self.equationList[i] = re_expressed_element
+                        # TODO: XY 모드일 때 list + list 꼴이 아닌 zip 함수로 X, Y 값 각각 요소로 더하도록 코드 짜기
                     else:
                         pass
-                FinalCode = ' '.join(self.equationList)
+                if XYFlag != 'XY':
+                    FinalCode = ' '.join(self.equationList)
+                else:
+                    pass
                 print(f"Final Code: \n {FinalCode}")
                 self.equationList.clear()
 
