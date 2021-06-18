@@ -840,7 +840,7 @@ class _MainWindow(QMainWindow):
                             # _qtdp._DesignParameter['_Reflect'] = _newqtdp['_Reflect']
                             # _qtdp._DesignParameter['_Angle'] = _newqtdp['_Angle']
                             _qtdp._DesignParameter['_Ignore'] = _newqtdp['_Ignore']
-                            self.updateDesignParameter(_qtdp._DesignParameter)
+                            self.updateDesignParameter(_qtdp._DesignParameter, False)
 
                         elif _qtdp._DesignParameter['_DesignParametertype'] == 2:
                             _qtdp._DesignParameter['_XYCoordinates'] = _newqtdp['_XYCoordinates']
@@ -848,7 +848,7 @@ class _MainWindow(QMainWindow):
                             _qtdp._DesignParameter['_Width'] = _newqtdp['_Width']
                             _qtdp._DesignParameter['_Datatype'] = _newqtdp['_Datatype']
                             _qtdp._DesignParameter['_Ignore'] = _newqtdp['_Ignore']
-                            self.updateDesignParameter(_qtdp._DesignParameter)
+                            self.updateDesignParameter(_qtdp._DesignParameter, False)
 
                         elif _qtdp._DesignParameter['_DesignParametertype'] == 3:
                             _qtdp._DesignParameter['_DesignObj'] = _newqtdp['_DesignObj']
@@ -858,7 +858,7 @@ class _MainWindow(QMainWindow):
                             _qtdp._DesignParameter['_Ignore'] = _newqtdp['_Ignore']
                             _qtdp._DesignParameter['_ModelStructure'] = _newqtdp['_ModelStructure']
                             sref_vi = VisualizationItem._VisualizationItem()
-                            sref_vi.updateDesignParameter(_qtdp)
+                            sref_vi.updateDesignParameter(_qtdp, False)
                             self.scene.addItem(sref_vi)
                             self.scene.removeItem(self.visualItemDict[_qtdp._DesignParameter['_id']])
                             self.visualItemDict[_qtdp._DesignParameter['_id']] = sref_vi
@@ -1630,7 +1630,7 @@ class _MainWindow(QMainWindow):
             return self.visualItemDict[id]
         return None
 
-    def updateDesignParameter(self,_DesignParameter):
+    def updateDesignParameter(self,_DesignParameter, element_manager_update = True):
         _ID = _DesignParameter['_id']
         _Module = _ID[:-1]
         while (_Module in self._QTObj._qtProject._DesignParameter) == False:
@@ -1648,10 +1648,11 @@ class _MainWindow(QMainWindow):
         self.updateGraphicItem(visualItem)
 
         design_dict = self._QTObj._qtProject._update_design(design_type='parameter', module_name=self._CurrentModuleName,
-                                                          dp_dict=_DesignParameter, id=_ID)
+                                                          dp_dict=_DesignParameter, id=_ID, element_manager_update =element_manager_update)
 
-        self.dockContentWidget3_2.update_constraint_by_id(design_dict['constraint_id'])
-        self.dockContentWidget3.update_constraint_by_id(design_dict['constraint_id'])
+        if design_dict['constraint_id']:
+            self.dockContentWidget3_2.update_constraint_by_id(design_dict['constraint_id'])
+            self.dockContentWidget3.update_constraint_by_id(design_dict['constraint_id'])
 
     def get_constraint_update_design(self, id, mother_id):
         if id:

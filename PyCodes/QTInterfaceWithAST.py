@@ -1702,12 +1702,12 @@ class QtProject:
 
         return output
 
-    def _update_design(self, design_type: str, module_name: str, id: str, _ast: ast.AST=None, dp_dict: dict=None) -> dict:
+    def _update_design(self, design_type: str, module_name: str, id: str, _ast: ast.AST=None, dp_dict: dict=None, element_manager_update = True ) -> dict:
         try:
             if design_type == 'parameter':
-                output = self._update_design_dictionary(module_name=module_name, id=id, _dp_dict=dp_dict)
+                output = self._update_design_dictionary(module_name=module_name, id=id, _dp_dict=dp_dict, element_manager_update = element_manager_update)
             elif design_type == 'constraint':
-                output = self._update_ast(module_name=module_name, id=id, _ast=_ast)
+                output = self._update_ast(module_name=module_name, id=id, _ast=_ast, element_manager_update = element_manager_update)
 
             return output
         except:
