@@ -2,7 +2,7 @@
 
 # Required module
 ```sh
-$ pip install astunparse PyQt5
+$ pip install astunparse PyQt5 intervaltree sklearn matplotlib pandas
 ```
   
   
