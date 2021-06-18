@@ -6,6 +6,7 @@ class FileSaveFormat:
         self.id_items_for_run = []
         self.user_variables = []
         self.user_variables_ids = []
+        self.variable_store_list = []
 
     def save_from_qt_interface(self, main_window):
         self.top_module = main_window._CurrentModuleName
@@ -26,6 +27,7 @@ class FileSaveFormat:
         # self.user_variables = list(main_window.dv.variableDict.values())
         self.user_variables = main_window.dv.variableDict
         self.user_variables_ids = main_window.dv.idDict
+        self.variable_store_list = main_window.variable_store_list
         #TODO id save
 
     def load_qt_interface(self,main_window, _DesignConstraint):
@@ -46,14 +48,18 @@ class FileSaveFormat:
 
     def load_user_variable_info(self,main_window):
         from PyQTInterface import variableWindow
-        # tmp = variableWindow._createNewDesignVariable()
-        variableWindow._createNewDesignVariable.variableDict = self.user_variables
-        variableWindow._createNewDesignVariable.idDict = self.user_variables_ids
-        main_window.dv.variableDict = self.user_variables
-        main_window.dv.idDict = self.user_variables_ids
+        if 'user_variables' in self.__dict__:
+            variableWindow._createNewDesignVariable.variableDict = self.user_variables
+            main_window.dv.variableDict = self.user_variables
+        if 'user_variables_ids' in self.__dict__:
+            variableWindow._createNewDesignVariable.idDict = self.user_variables_ids
+            main_window.dv.idDict = self.user_variables_ids
+        if 'variable_store_list' in self.__dict__:
+            main_window.variable_store_list = self.variable_store_list
         variable_info_lists = [ [variable['DV'], variable['value']] for variable in self.user_variables.values()]
         for variable_info_list in variable_info_lists:
             main_window.dv.updateList(variable_info_list,'add')
+
         # main_window.dv.initUI()
         # main_window.dv.variableDict = self.user_variables_ids
         # main_window.dv.idDict = self.user_variables_ids
