@@ -4,7 +4,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import warnings
 import re
-
+import numpy as np
 
 class ExpressionCalculator(QWidget):
     def __init__(self,clipboard):
@@ -559,6 +559,7 @@ class ExpressionCalculator(QWidget):
 
     def send_clicked(self):
         XYFlag = None
+        cnt = 0
         if len(self.equationList) is not 0:
             if self.arithmetic_flag:
                 self.warning = QMessageBox()
@@ -583,19 +584,33 @@ class ExpressionCalculator(QWidget):
                     XYFlag = 'XY'
                     self.showXYWindow()
 
-
                 for i in range(len(self.equationList)):
                     isFunction = re.search('\(\[\'.*\'\]\)', self.equationList[i])
                     if isFunction != None:
                         re_expressed_element = self.expressionTransformer(self.equationList[i], XYFlag = XYFlag)
                         self.equationList[i] = re_expressed_element
-                        # TODO: XY 모드일 때 list + list 꼴이 아닌 zip 함수로 X, Y 값 각각 요소로 더하도록 코드 짜기
                     else:
                         pass
-                if XYFlag != 'XY':
-                    FinalCode = ' '.join(self.equationList)
-                else:
-                    pass
+                if XYFlag == 'XY':
+                    for i in range(len(self.equationList)):
+                        if type(self.equationList[i]) != list:
+                            self.equationList[i] = [self.equationList[i],self.equationList[i]]
+                    tmpCode = ' '.join(self.equationList)
+                    mul_div_list = re.sub('\+|-',tmpCode)
+                    mul_div_list_elements = mul_div_list.split()
+                    for i in range(len(mul_div_list_elements)):
+                        if mul_div_list_elements[i] == '*':
+                            product = np.multiply(mul_div_list_elements[i-1], mul_div_list_elements[i+1])
+                            self.equationList[i-1] = product
+                            self.equationList.remove(i)
+                            self.equationList.remove(i+1)
+                        elif mul_div_list_elements[i] == '/':
+                            quotient = np.divide(mul_div_list_elements[i-1], mul_div_list_elements[i+1])
+                            self.equationList[i-1] = quotient
+                            self.equationList.remove(i)
+                            self.equationList.remove(i+1)
+
+                FinalCode = ' '.join(self.equationList)
                 print(f"Final Code: \n {FinalCode}")
                 self.equationList.clear()
 
