@@ -2044,6 +2044,7 @@ class _MainWindow(QMainWindow):
                     if _field == 'name' or _field == 'layer':
                         continue
                     tmp_ast = ast.parse(str(_ast.__dict__[_field]))
+                    print()
                     variable_visitor.visit(tmp_ast)
 
             elif _ast._type == 'Path':
@@ -2062,7 +2063,10 @@ class _MainWindow(QMainWindow):
                             tmp_ast = ast.parse(str(parm_string))
                             variable_visitor.visit(tmp_ast)
                     elif _field == 'XY':
-                        print('Not Support XY yet')
+                        # if type(_ast.XY) == list and not _ast.XY:
+                        #     tmp
+                        tmp_ast = ast.parse(str(parm_string))
+                        variable_visitor.visit(tmp_ast)
                     else:
                         tmp_ast = ast.parse(str(_ast.__dict__[_field]))
                         variable_visitor.visit(tmp_ast)

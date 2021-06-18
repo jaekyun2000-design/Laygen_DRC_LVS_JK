@@ -82,6 +82,12 @@ class VariableNameVisitor(ast.NodeVisitor):
     def visit_Name(self, node):
         self.variable_name_list.append(node.id)
 
+    def visit_Constant(self, node):
+        if type(node.value) == str:
+            try:
+                int(node.value)
+            except:
+                self.variable_name_list.append(node.value)
 
 
 class GeneratorTransformer(ast.NodeTransformer):
@@ -201,7 +207,7 @@ class ElementTransformer(ast.NodeTransformer):
     def visit_Boundary(self,node):
         syntax = self.xy_syntax_checker(node)
 
-        if syntax == 'list' or syntax == 'str':
+        if syntax == 'list' or syntax == 'string':
             node.XY = str(node.XY).replace("'","")
             sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY},\
@@ -222,7 +228,7 @@ class ElementTransformer(ast.NodeTransformer):
     def visit_Path(self,node):
         syntax = self.xy_syntax_checker(node)
 
-        if syntax == 'list' or syntax == 'str':
+        if syntax == 'list' or syntax == 'string':
             node.XY = str(node.XY).replace("'", "")
             sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
                        _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
@@ -247,7 +253,7 @@ class ElementTransformer(ast.NodeTransformer):
             sentence +=f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" +parameter_sentence + "))\n"
             sentence +=f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}"
 
-        elif syntax == 'variable': # need to check
+        elif syntax == 'string': # need to check
             sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(" \
                        f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
             sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"

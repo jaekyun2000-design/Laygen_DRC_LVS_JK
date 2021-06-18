@@ -65,7 +65,19 @@ class VariableSetupWindow(QWidget):
         self.ui_list_a = []
         self.ui_list_b = []
         self.ui_list_c = []
-        if self.variable_type == 'element array':
+
+        if self.variable_type == 'c_array':
+            self.XY_source_ref = QLineEdit()
+            self.XY_target_ref = QLineEdit()
+            self.rule = QLineEdit()
+            self.elements_dict_for_Label = []
+            self.elements_dict_for_LineEdit = []
+            # self.elements_dict_for_LineEdit.append(QLineEdit())
+            # self.elements_dict_for_LineEdit.append(QLineEdit())
+            self.ui_list_a.extend(['XY_source_ref', 'XY_target_ref', 'Rule (Even, Odd or None)'])  # ,'Element1','Element2'])
+            self.ui_list_b.extend([self.XY_source_ref, self.XY_target_ref, self.rule])
+            # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
+        elif self.variable_type == 'element array':
             self.XY_base = QLineEdit()
             self.x_offset = QLineEdit()
             self.y_offset = QLineEdit()
