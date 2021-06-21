@@ -858,7 +858,7 @@ class _MainWindow(QMainWindow):
                             _qtdp._DesignParameter['_Ignore'] = _newqtdp['_Ignore']
                             _qtdp._DesignParameter['_ModelStructure'] = _newqtdp['_ModelStructure']
                             sref_vi = VisualizationItem._VisualizationItem()
-                            sref_vi.updateDesignParameter(_qtdp, False)
+                            sref_vi.updateDesignParameter(_qtdp)
                             self.scene.addItem(sref_vi)
                             self.scene.removeItem(self.visualItemDict[_qtdp._DesignParameter['_id']])
                             self.visualItemDict[_qtdp._DesignParameter['_id']] = sref_vi
@@ -2042,6 +2042,9 @@ class _MainWindow(QMainWindow):
 
             if _ast._type == 'Boundary':
                 for _field in _ast._fields:
+                    if type(_ast.__dict__[_field]) == list and len(_ast.__dict__[_field]) > 0:
+                        if '_ast' in str(type(_ast.__dict__[_field][0])):
+                            continue
                     if _field == 'name' or _field == 'layer':
                         continue
                     tmp_ast = ast.parse(str(_ast.__dict__[_field]))
@@ -2050,6 +2053,9 @@ class _MainWindow(QMainWindow):
 
             elif _ast._type == 'Path':
                 for _field in _ast._fields:
+                    if type(_ast.__dict__[_field]) == list and len(_ast.__dict__[_field]) > 0:
+                        if '_ast' in str(type(_ast.__dict__[_field][0])):
+                            continue
                     if _field == 'name' or _field == 'layer':
                         continue
                     tmp_ast = ast.parse(str(_ast.__dict__[_field]))
@@ -2057,17 +2063,20 @@ class _MainWindow(QMainWindow):
 
             elif _ast._type == 'Sref':
                 for _field in _ast._fields:
+                    if type(_ast.__dict__[_field]) == list and len(_ast.__dict__[_field]) > 0:
+                        if '_ast' in str(type(_ast.__dict__[_field][0])):
+                            continue
                     if _field == 'name' or _field == 'library' or _field == 'className' or _field == 'calculate_fcn':
                         continue
                     elif _field == 'parameters':
                         for parm_string in _ast.parameters.values():
                             tmp_ast = ast.parse(str(parm_string))
                             variable_visitor.visit(tmp_ast)
-                    elif _field == 'XY':
-                        # if type(_ast.XY) == list and not _ast.XY:
-                        #     tmp
-                        tmp_ast = ast.parse(str(parm_string))
-                        variable_visitor.visit(tmp_ast)
+                    # elif _field == 'XY':
+                    #     # if type(_ast.XY) == list and not _ast.XY:
+                    #     #     tmp
+                    #     tmp_ast = ast.parse(str(_ast.__dict__[_field]))
+                    #     variable_visitor.visit(tmp_ast)
                     else:
                         tmp_ast = ast.parse(str(_ast.__dict__[_field]))
                         variable_visitor.visit(tmp_ast)
@@ -2093,8 +2102,11 @@ class _MainWindow(QMainWindow):
                     self.cv.addDVtodict(var, 'id', changed_dp_id)
                     self.cv.send_variable_signal.emit([var, ''], 'add')
 
+            #TODO Debug:
+            # 보기에 old_variable_list가 정확하지 않아보임.. a라는 boundary에 변수 수정하다가, b 라는 path 변수 수정하면 날라감
             for old_var in old_variable_list:
-                self.dv.idDict[old_var]['id'].remove(changed_dp_id)
+                if changed_dp_id in self.dv.idDict[old_var]['id']:
+                    self.dv.idDict[old_var]['id'].remove(changed_dp_id)
 
     def highlightVI(self, _idlist):
         for item in self.visualItemDict:
