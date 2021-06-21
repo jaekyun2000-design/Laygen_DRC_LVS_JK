@@ -4,6 +4,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import warnings
 import re
+import copy
+# import numpy as np
 import os
 
 
@@ -144,9 +146,9 @@ class ExpressionCalculator(QWidget):
         self.XWindow = QListWidget()
         self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/X.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
         self.YWindow = QListWidget()
-        self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/Y.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
+        self.YWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/Y.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
         self.XYWindow = QListWidget()
-        self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
+        self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
         H_layout1 = QHBoxLayout()
         H_layout2 = QHBoxLayout()
 
@@ -526,24 +528,25 @@ class ExpressionCalculator(QWidget):
         elif XYFlag == 'XY':
         # X Input first
             if function == 'lt' or function == 'left' or function == 'lb':
-                result = f"[{code}['_XYCoordinates'][0][0] - {code}['_XWidth']/2"
+                result = f"{code}['_XYCoordinates'][0][0] - {code}['_XWidth']/2"
             elif function == function == 'top' or function == 'bottom' or function == 'center':
-                result = f"[{code}['_XYCoordinates'][0][0]"
+                result = f"{code}['_XYCoordinates'][0][0]"
             elif function == 'rt' or function == 'right' or function == 'rb':
-                result = f"[{code}['_XYCoordinates'][0][0] + {code}['_XWidth']/2"
+                result = f"{code}['_XYCoordinates'][0][0] + {code}['_XWidth']/2"
             else:   # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag}_X for Debugging")
                 pass
         # Y input afterwards
             if function == 'lt' or function == 'rt' or function == 'top':
-                result = result + f", {code}['_XYCoordinates'][0][1] + {code}['_YWidth']/2]"
+                result = result + f", {code}['_XYCoordinates'][0][1] + {code}['_YWidth']/2"
             elif function == 'left' or function == 'right' or function == 'center':
-                result = result + f", {code}['_XYCoordinates'][0][1]]"
+                result = result + f", {code}['_XYCoordinates'][0][1]"
             elif function == 'lb' or function == 'rb' or function == 'bottom':
-                result = result + f", {code}['_XYCoordinates'][0][0] - {code}['_YWidth']/2]"
+                result = result + f", {code}['_XYCoordinates'][0][0] - {code}['_YWidth']/2"
             else:  # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag}_Y for Debugging")
                 pass
+            result = re.split(',', result)
         print(f"Re-Expressed Element: \n{result}")
         return result
 
@@ -594,26 +597,43 @@ class ExpressionCalculator(QWidget):
                         self.equationList[i] = re_expressed_element
                     else:
                         pass
-                if XYFlag == 'XY':
-                    for i in range(len(self.equationList)):
-                        if type(self.equationList[i]) != list:
-                            self.equationList[i] = [self.equationList[i],self.equationList[i]]
-                    tmpCode = ' '.join(self.equationList)
-                    mul_div_list = re.sub('\+|-',tmpCode)
-                    mul_div_list_elements = mul_div_list.split()
-                    for i in range(len(mul_div_list_elements)):
-                        if mul_div_list_elements[i] == '*':
-                            product = np.multiply(mul_div_list_elements[i-1], mul_div_list_elements[i+1])
-                            self.equationList[i-1] = product
-                            self.equationList.remove(i)
-                            self.equationList.remove(i+1)
-                        elif mul_div_list_elements[i] == '/':
-                            quotient = np.divide(mul_div_list_elements[i-1], mul_div_list_elements[i+1])
-                            self.equationList[i-1] = quotient
-                            self.equationList.remove(i)
-                            self.equationList.remove(i+1)
+                if XYFlag != 'XY':
+                    FinalCode = ' '.join(self.equationList)
+                elif XYFlag == 'XY':
+                    # X_calc
+                    x_list = copy.deepcopy(self.equationList)
+                    for i in range(len(x_list)):
+                        if type(x_list[i]) == list:
+                            x_list[i] = x_list[i][0]
+                    # Y_calc
+                    y_list = copy.deepcopy(self.equationList)
+                    for i in range(len(y_list)):
+                        if type(y_list[i]) == list:
+                            y_list[i] = y_list[i][1]
+                    X_expression = ' '.join(x_list)
+                    Y_expression = ' '.join(y_list)
+                    FinalCode = list()
+                    FinalCode.append(X_expression)
+                    FinalCode.append(Y_expression)
 
-                FinalCode = ' '.join(self.equationList)
+                    # for i in range(len(self.equationList)):
+                    #     if type(self.equationList[i]) != list:
+                    #         self.equationList[i] = [self.equationList[i],self.equationList[i]]
+                    # tmpCode = ' '.join(self.equationList)
+                    # mul_div_list = re.sub('\+|-',tmpCode)
+                    # mul_div_list_elements = mul_div_list.split()
+                    # for i in range(len(mul_div_list_elements)):
+                    #     if mul_div_list_elements[i] == '*':
+                    #         product = np.multiply(mul_div_list_elements[i-1], mul_div_list_elements[i+1])
+                    #         self.equationList[i-1] = product
+                    #         self.equationList.remove(i)
+                    #         self.equationList.remove(i+1)
+                    #     elif mul_div_list_elements[i] == '/':
+                    #         quotient = np.divide(mul_div_list_elements[i-1], mul_div_list_elements[i+1])
+                    #         self.equationList[i-1] = quotient
+                    #         self.equationList.remove(i)
+                    #         self.equationList.remove(i+1)
+
                 print(f"Final Code: \n {FinalCode}")
                 self.equationList.clear()
 

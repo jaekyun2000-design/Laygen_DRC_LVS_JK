@@ -495,7 +495,7 @@ class ElementTransformer(ast.NodeTransformer):
 if __name__ == '__main__':
     a = Boundary()
     b = Path()
-    c = Sref()
+    # c = Sref()
     d = Text()
 
     a.name = 'AdditionalMetal1Layer'
@@ -509,10 +509,10 @@ if __name__ == '__main__':
     b.XY = 'XYcenter'
     b.width = 200
 
-    c.name = 'NMOS'
-    c.library = 'NMOSWithDummy'
-    c.className = '_NMOS'
-    c.XY = [[0,0]]
+    # c.name = 'NMOS'
+    # c.library = 'NMOSWithDummy'
+    # c.className = '_NMOS'
+    # c.XY = [[0,0]]
 
     d.id = 'textname'
     d.layer = 'METAL1PIN'
@@ -525,7 +525,8 @@ if __name__ == '__main__':
 
     ef = ElementTransformer().visit_Boundary(a)
     pt = ElementTransformer().visit_Path(b)
-    st = ElementTransformer().visit_Sref(c)
+    # st = ElementTransformer().visit_Sref(c)
+    print("DEBUG")
 
     # ab= MacroSubscript(
     #     id = 'list1',
