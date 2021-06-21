@@ -144,9 +144,9 @@ class ExpressionCalculator(QWidget):
         self.XWindow = QListWidget()
         self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/X.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
         self.YWindow = QListWidget()
-        self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/Y.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
+        self.YWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/Y.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
         self.XYWindow = QListWidget()
-        self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
+        self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
         H_layout1 = QHBoxLayout()
         H_layout2 = QHBoxLayout()
 
