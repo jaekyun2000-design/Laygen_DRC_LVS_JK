@@ -4,6 +4,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import warnings
 import re
+import os
 
 
 class ExpressionCalculator(QWidget):
@@ -135,14 +136,17 @@ class ExpressionCalculator(QWidget):
             main_layout.setColumnStretch(c,1)
 
         top_layout = QVBoxLayout()
-        top_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+        # top_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         top_layout.addLayout(option_box_layout)
         top_layout.setStretchFactor(option_box_layout,0)
         top_layout.addLayout(main_layout)
 
         self.XWindow = QListWidget()
+        self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/X.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
         self.YWindow = QListWidget()
+        self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/Y.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
         self.XYWindow = QListWidget()
+        self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
         H_layout1 = QHBoxLayout()
         H_layout2 = QHBoxLayout()
 
@@ -188,7 +192,6 @@ class ExpressionCalculator(QWidget):
             self.digit_flag = False
             self.show()
             self.waiting = False
-            print(self.equationList)
 
     def create_radio_button(self, text, slot_fcn, name=None):
         button = QRadioButton(text)
