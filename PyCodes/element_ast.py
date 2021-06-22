@@ -2,7 +2,7 @@ import ast
 import astunparse
 from PyCodes import ASTmodule
 # listTypeData = ['Lib','tb','PlaceDef','RouteDef','DRCDef','Iteration','P_R']
-custom_ast_list = ['Generator','Sref','Boundary','Path']
+custom_ast_list = ['Generator','Sref','Boundary','Path', 'Text']
 #--start constants--
 
 class Generator(ast.AST):

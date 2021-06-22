@@ -62,3 +62,7 @@ class Manage_DV_by_id(QObject):
 class Variable_IDwithAST:
     def __init__(self):
         self.variableIDwithASTDict =dict()
+
+class DummyConstraints:
+    def __init__(self):
+        self.XYDict = dict()

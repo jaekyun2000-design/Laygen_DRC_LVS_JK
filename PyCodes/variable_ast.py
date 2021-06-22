@@ -4,6 +4,8 @@ import astunparse
 custom_ast_list = ['GeneratorVariable', 'LogicExpression', 'ElementArray','DynamicElementArray','Distance',
                    'ArgumentVariable', 'LogicExpression', 'XYCoordinate']
 
+
+
 class GeneratorVariable(ast.AST):
     def __init__(self, *args, **kwargs):
         pass
@@ -24,10 +26,11 @@ class LogicExpression(GeneratorVariable):
         'value',    # str
     )
 class XYCoordinate(GeneratorVariable):
+
     def __init__(self, *args, **kwargs):
         super().__init__()
     _fields = (
-        'list',      # str
+        'id',     #str
     )
 
 class ArgumentVariable(GeneratorVariable):
@@ -77,6 +80,7 @@ class Distance(GeneratorVariable):
     )
 
 class VariableTransformer(ast.NodeTransformer):
+
     def visit_ElementArray(self,node):
         if type(node.XY) ==str:
             sentence = f"for (i, element) in enumerate({node.elements}):\
@@ -98,6 +102,11 @@ class VariableTransformer(ast.NodeTransformer):
         sentence = f"{node.name} = None"
         tmp = ast.parse(sentence)
         return tmp.body
+
+    def visit_XYCoordinate(self, node):
+
+        pass
+
 
 if __name__ == '__main__':
     ea = ElementArray()

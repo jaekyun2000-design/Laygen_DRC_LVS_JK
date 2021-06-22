@@ -10,7 +10,8 @@ import os
 
 
 class ExpressionCalculator(QWidget):
-    send_expression_signal =  pyqtSignal(dict)
+    # send_expression_signal =  pyqtSignal(dict)
+    send_XYCreated_signal = pyqtSignal(str, dict)
     def __init__(self,clipboard):
         # super(ExpressionCalculator, self).__init__()
         super().__init__()
@@ -603,7 +604,6 @@ class ExpressionCalculator(QWidget):
                     XYFlag = 'XY'
                     self.showXYWindow()
 
-
                 for i in range(len(self.equationList)):
                     isFunction = re.search('\(\[\'.*\'\]\)', self.equationList[i])
                     if isFunction != None:
@@ -630,24 +630,6 @@ class ExpressionCalculator(QWidget):
                     FinalCode.append(X_expression)
                     FinalCode.append(Y_expression)
 
-                    # for i in range(len(self.equationList)):
-                    #     if type(self.equationList[i]) != list:
-                    #         self.equationList[i] = [self.equationList[i],self.equationList[i]]
-                    # tmpCode = ' '.join(self.equationList)
-                    # mul_div_list = re.sub('\+|-',tmpCode)
-                    # mul_div_list_elements = mul_div_list.split()
-                    # for i in range(len(mul_div_list_elements)):
-                    #     if mul_div_list_elements[i] == '*':
-                    #         product = np.multiply(mul_div_list_elements[i-1], mul_div_list_elements[i+1])
-                    #         self.equationList[i-1] = product
-                    #         self.equationList.remove(i)
-                    #         self.equationList.remove(i+1)
-                    #     elif mul_div_list_elements[i] == '/':
-                    #         quotient = np.divide(mul_div_list_elements[i-1], mul_div_list_elements[i+1])
-                    #         self.equationList[i-1] = quotient
-                    #         self.equationList.remove(i)
-                    #         self.equationList.remove(i+1)
-
                 print(f"Final Code: \n {FinalCode}")
                 self.equationList.clear()
 
@@ -655,7 +637,6 @@ class ExpressionCalculator(QWidget):
             self.display.setText("Nothing In Here")
 
     def export_clicked(self):
-        self.send_expression_signal.connect(self.temp)
         output = dict()
         XList = list()
         YList = list()
@@ -671,7 +652,7 @@ class ExpressionCalculator(QWidget):
             XYList.append(self.XYWindow.currentItem().text())
         output = {'X':XList, 'Y':YList, 'XY':XYList}
         # print(output)
-        self.send_expression_signal.emit(output)
+        self.send_XYCreated_signal.emit('XYCoordinate', output)
 
 
     def parsing_clipboard(self):
@@ -689,5 +670,5 @@ class ExpressionCalculator(QWidget):
             print(self.clipboard.text())
         return Exception("No selected layer")
 
-    def temp(self, _dict):
-        print(_dict)
+
+

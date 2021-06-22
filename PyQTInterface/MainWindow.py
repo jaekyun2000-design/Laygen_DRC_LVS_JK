@@ -104,6 +104,7 @@ class _MainWindow(QMainWindow):
         self._ElementManager = element_manager.ElementManager()
         self.library_manager = generator_model_api
         self._VariableIDwithAST = variable_manager.Variable_IDwithAST()
+        self._DummyConstraints = variable_manager.DummyConstraints()
         self.gloabal_clipboard = QGuiApplication.clipboard()
         self.variable_store_list = list()
 
@@ -533,6 +534,7 @@ class _MainWindow(QMainWindow):
     def clipboard_test(self):
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
         self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
+        self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
         self.calculator_window.show()
 
     def save_clipboard(self,save_target):
@@ -737,6 +739,7 @@ class _MainWindow(QMainWindow):
             topAST = ast.Module()
             topAST.body = [self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids]
             topAST = element_ast.ElementTransformer().visit(topAST)
+            # variable_ast.VariableTransformer.infoDict = self._DummyConstraints.XYDict
             topAST = variable_ast.VariableTransformer().visit(topAST)
             code = astunparse.unparse(topAST)
             return code
@@ -1738,6 +1741,7 @@ class _MainWindow(QMainWindow):
                 self.warning.setText("Syntax Error")
                 self.warning.show()
                 self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: Source Code syntax error")
+
     def updateVariableConstraint(self,_changedVariableInfo):
         """
         This function should only implemented by changing original data.
@@ -1793,6 +1797,53 @@ class _MainWindow(QMainWindow):
 
                 break
 
+    def createDummyConstraint(self, type, info_dict):
+        """
+        For Constraints that do not contain any detailed info
+        XY Coordinates, Loops, ... etc.
+        :return:
+        """
+        if self._QTObj._qtProject == None:
+            self.warning = QMessageBox()
+            self.warning.setText("There is no Project")
+            self.warning.show()
+            self.dockContentWidget4ForLoggingMessage._WarningMessage(
+                "Create DesignConstraint Fail: There is no Project")
+        elif self._CurrentModuleName is None:
+            self.warning = QMessageBox()
+            self.warning.setText("There is No Module")
+            self.warning.show()
+            self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: There is no Module")
+        else:
+            if type == 'XYCoordinate':
+                try:
+                    print("###############################################################")
+                    print("               XYCoordinate ast creation Start                 ")
+                    print("###############################################################")
+                    _ASTForVariable = ASTmodule._Custom_AST_API()
+                    _ASTtype = type
+                    _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
+
+                    _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(self._CurrentModuleName)
+                    _newConstraintID = (self._CurrentModuleName + str(_designConstraintID))
+
+                    _ASTobj.__dict__['id'] = _newConstraintID
+                    self._DummyConstraints.XYDict[_newConstraintID] = info_dict
+                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                      module_name=self._CurrentModuleName, _ast=_ASTobj)
+                    self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                     _parentName=self._CurrentModuleName,
+                                                                     _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+
+                    print("###############################################################")
+                    print("                XYCoordinate ast creation Done                 ")
+                    print("###############################################################")
+                except:
+                    print("###############################################################")
+                    print("                XYCoordinate ast creation Failed               ")
+                    print("###############################################################")
+                else:
+                    pass
 
     def createVariableConstraint(self, _VariableInfo):
         """
@@ -1860,8 +1911,7 @@ class _MainWindow(QMainWindow):
         else:
             if type(_input) != dict:    # input is AST type
                 design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= _input)
-                self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
-                                                                 _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+
                 # self._VariableIDwithAST.variableIDwithASTDict[_vid] = _AST
                 try:
                     if design_dict['parameter']:
@@ -1885,10 +1935,6 @@ class _MainWindow(QMainWindow):
                         self.createVariableConstraint(_input)
                 else:
                     print(" AST or Variable Info needed!")
-
-
-
-
 
     def constraintConvey(self):
         self.dockContentWidget3._DesignConstraintFromQTobj = self._QTObj._qtProject._DesignConstraint

@@ -3233,13 +3233,6 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
         # constraint_ids = [item.text() for item in constraint_names]
 
-
-
-
-
-
-
-
 class _ConstraintModel(QStandardItemModel):
     def __init__(self):
         QStandardItemModel.__init__(self)
@@ -3760,8 +3753,6 @@ class _ConstraintModel(QStandardItemModel):
         self.setItem(0,1,item4)
         item2.appendRow([QStandardItem("hi"),QStandardItem("test")])
         item2.appendRow([QStandardItem("hello"),QStandardItem("te3st")])
-
-
 
 class QtTextEditLogger(logging.Handler):
     def __init__(self, parent):
