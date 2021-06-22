@@ -10,6 +10,7 @@ import os
 
 
 class ExpressionCalculator(QWidget):
+    send_expression_signal =  pyqtSignal(dict)
     def __init__(self,clipboard):
         # super(ExpressionCalculator, self).__init__()
         super().__init__()
@@ -86,9 +87,11 @@ class ExpressionCalculator(QWidget):
         toggling_group_layout.addWidget(self.xy_button)
         self.xy_reference_toggling_group.setLayout(toggling_group_layout)
 
-        export_button = self.create_button('EXPORT',self.send_clicked, size_constraint=dict(height=35))
+        add_button = self.create_button('ADD',self.send_clicked, size_constraint=dict(height=35))
+        export_button = self.create_button('EXPORT',self.export_clicked, size_constraint=dict(height=35))
 
         option_box_layout.addWidget(self.xy_reference_toggling_group)
+        option_box_layout.addWidget(add_button)
         option_box_layout.addWidget(export_button)
         # option_box_layout.SetMaximumSize(50)
         option_box_layout.setSizeConstraint(QLayout.SetMaximumSize & QLayout.SizeConstraint.SetFixedSize)
@@ -651,6 +654,26 @@ class ExpressionCalculator(QWidget):
         else:
             self.display.setText("Nothing In Here")
 
+    def export_clicked(self):
+        self.send_expression_signal.connect(self.temp)
+        output = dict()
+        XList = list()
+        YList = list()
+        XYList = list()
+        for i_x in range(self.XWindow.count()):
+            self.XWindow.setCurrentRow(i_x)
+            XList.append(self.XWindow.currentItem().text())
+        for i_y in range(self.YWindow.count()):
+            self.YWindow.setCurrentRow(i_y)
+            YList.append(self.YWindow.currentItem().text())
+        for i_xy in range(self.XYWindow.count()):
+            self.XYWindow.setCurrentRow(i_xy)
+            XYList.append(self.XYWindow.currentItem().text())
+        output = {'X':XList, 'Y':YList, 'XY':XYList}
+        # print(output)
+        self.send_expression_signal.emit(output)
+
+
     def parsing_clipboard(self):
         try:
             print(self.clipboard.text())
@@ -666,3 +689,5 @@ class ExpressionCalculator(QWidget):
             print(self.clipboard.text())
         return Exception("No selected layer")
 
+    def temp(self, _dict):
+        print(_dict)
