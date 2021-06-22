@@ -26,10 +26,14 @@ class ExpressionCalculator(QWidget):
         ########################
 
         self.clipboard = clipboard
-        self.display= QLineEdit('')
+        self.display= QTextEdit('')
         self.display.setReadOnly(True)
         self.display.setAlignment(Qt.AlignRight|Qt.AlignTop)
         self.display.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+        # self.display.setMinimumHeight(80)
+        # print(self.display.layoutDirection())
+        # # self.display.setLayoutDirection(Qt.RightToLeft)
+        # print(self.display.layoutDirection())
         self.equationList = list()
 
 
@@ -82,10 +86,12 @@ class ExpressionCalculator(QWidget):
         toggling_group_layout.addWidget(self.xy_button)
         self.xy_reference_toggling_group.setLayout(toggling_group_layout)
 
-        export_button = self.create_button('EXPORT',self.send_clicked)
+        export_button = self.create_button('EXPORT',self.send_clicked, size_constraint=dict(height=35))
 
         option_box_layout.addWidget(self.xy_reference_toggling_group)
         option_box_layout.addWidget(export_button)
+        # option_box_layout.SetMaximumSize(50)
+        option_box_layout.setSizeConstraint(QLayout.SetMaximumSize & QLayout.SizeConstraint.SetFixedSize)
         # option_box_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
 
         """
@@ -164,12 +170,17 @@ class ExpressionCalculator(QWidget):
         self.setWindowTitle('Expression Calculator')
         self.show()
 
-    def create_button(self,text, slot_fcn, name=None):
+    def create_button(self,text, slot_fcn, name=None, size_constraint = None):
         button = QPushButton(text)
         button.clicked.connect(slot_fcn)
         button.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
         if name is not None:
             button.setObjectName(name)
+        if size_constraint and type(size_constraint) == dict:
+            if 'height' in size_constraint:
+                button.setMaximumHeight(size_constraint['height'])
+            # if 'width' in size_constraint:
+            #     button.setMaximumWidth(size_constraint['width'])
         return button
 
     def click_clicked(self):
@@ -182,10 +193,10 @@ class ExpressionCalculator(QWidget):
 
             if self.value_flag:
                 print(f'len!!={len(self.value_str)}')
-                self.display.setText(self.display.text()[:-len(self.value_str)] + calc_expression)
+                self.display.setText(self.display.toPlainText()[:-len(self.value_str)] + calc_expression)
                 self.equationList[-1] = calc_expression
             else:
-                self.display.setText(self.display.text() + calc_expression)
+                self.display.setText(self.display.toPlainText() + calc_expression)
                 self.equationList.append(calc_expression)
 
             self.value_flag = True
@@ -305,15 +316,15 @@ class ExpressionCalculator(QWidget):
             self.display.setText(display)
 
     def showXWindow(self):
-        self.XWindow.addItem(self.display.text())
+        self.XWindow.addItem(self.display.toPlainText())
         self.display.clear()
 
     def showYWindow(self):
-        self.YWindow.addItem(self.display.text())
+        self.YWindow.addItem(self.display.toPlainText())
         self.display.clear()
 
     def showXYWindow(self):
-        self.XYWindow.addItem(self.display.text())
+        self.XYWindow.addItem(self.display.toPlainText())
         self.display.clear()
 
     def digit_clicked(self):
@@ -573,7 +584,7 @@ class ExpressionCalculator(QWidget):
                 self.warning.show()
             else:
                 if self.equationList[-1][-1] == '.':
-                    self.display.setText(self.display.text()[:-1])
+                    self.display.setText(self.display.toPlainText()[:-1])
                 # self.equationList.clear()
                 self.value_flag = False
                 self.digit_flag = False
@@ -636,6 +647,9 @@ class ExpressionCalculator(QWidget):
 
                 print(f"Final Code: \n {FinalCode}")
                 self.equationList.clear()
+
+        else:
+            self.display.setText("Nothing In Here")
 
     def parsing_clipboard(self):
         try:

@@ -183,6 +183,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         self._multipleBlockFlag = False
         self._subSrefVisualItem = None
         self._NoVariableFlag = False
+        self._IndexFlag = False
         if _ItemTraits is None:
             self._ItemTraits = dict(
                 _ElementName = None,
@@ -821,6 +822,13 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.block.append(self.paramVariable)
                 self.addToGroup(self.XYVariable)
                 self.addToGroup(self.paramVariable)
+
+    def setIndex(self, idx):
+        self.XYVariable.setVisible(False)
+        self.block.remove(self.XYVariable)
+        self.XYVariable = QGraphicsTextItem(str(idx))
+        self.setVariable('Boundary')
+
 
     def returnItem(self):
         if self._ItemTraits['_DesignParametertype'] == "Boundary":

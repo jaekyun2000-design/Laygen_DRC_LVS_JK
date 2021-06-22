@@ -2528,13 +2528,37 @@ class _CustomScene(QGraphicsScene):
         elif QKeyEvent.key() == Qt.Key_Escape:
             print("selectionClear")
             self.clearSelection()
-        elif QKeyEvent.key() == Qt.Key_I:
+        elif QKeyEvent.key() == Qt.Key_P:
             itemList = self.selectedItems()
             for item in itemList:
                 if item._ItemTraits['_DesignParametertype'] == 3:
                     subElement = item._ItemTraits['_ElementName']
                     structure_dict = self.copyItem(item)
                     self.newWindow(structure_dict, subElement)
+        elif QKeyEvent.key() == Qt.Key_I:
+            itemList = self.selectedItems()
+            for item in itemList:
+                index = len(item._ItemTraits['_XYCoordinates'])
+                if item._ItemTraits['_DesignParametertype'] == 1:
+                    if index is not 1:
+                        subElement = item._ItemTraits['_ElementName']
+                        structure_dict = self.splitItem(item, index)
+                        self.newWindow(structure_dict, subElement)
+                        print(structure_dict)
+                elif item._ItemTraits['_DesignParametertype'] == 2:
+                    print('not yet')
+                    # if index is not 1:
+                    #     subElement = item._ItemTraits['_ElementName']
+                    #     structure_dict = self.splitItem(item, index)
+                    #     self.newWindow(structure_dict, subElement)
+                    #     print(structure_dict)
+                elif item._ItemTraits['_DesignParametertype'] == 3:
+                    print('not yet')
+                    # if index is not 1:
+                    #     subElement = item._ItemTraits['_ElementName']
+                    #     structure_dict = self.splitItem(item, index)
+                    #     self.newWindow(structure_dict, subElement)
+                    #     print(structure_dict)
         elif QKeyEvent.key() == Qt.Key_O:
             itemList = self.selectedItems()
             for item in itemList:
@@ -2573,9 +2597,12 @@ class _CustomScene(QGraphicsScene):
         dummy = _CustomScene(axis=False)
         dummy.send_module_name_list_signal.connect(self.viewList[-1].name_out_fcn)
         for key, value in structure_dict.items():
-            DP = VisualizationItem._VisualizationItem()
-            DP.updateDesignParameter(value)
-            DP.setToolTip(key)
+            try:
+                DP = VisualizationItem._VisualizationItem()
+                DP.updateDesignParameter(value)
+                DP.setToolTip(key)
+            except:
+                DP = value
             dummy.addItem(DP)
 
         self.viewList[-1].setScene(dummy)
@@ -2591,6 +2618,21 @@ class _CustomScene(QGraphicsScene):
         structure_dict = dict()
         for key, value in item._ItemTraits['_DesignParameterRef'].items():
             structure_dict[key] = value
+        return structure_dict
+
+    def splitItem(self, item, index):
+        structure_dict = dict()
+        for i in range(index):
+            tmpTraits = copy.deepcopy(item._ItemTraits)
+            tmpTraits['_ElementName'] = item._ItemTraits['_ElementName'] + f'[{i}]'
+            tmpTraits['_XYCoordinates'] = [item._ItemTraits['_XYCoordinates'][i]]
+            indexitem = VisualizationItem._VisualizationItem(tmpTraits)
+            indexitem.setIndex(i)
+            # indexitem.updateTraits(item)
+            key = tmpTraits['_ElementName']
+            structure_dict[key] = indexitem
+            # for key, value in item._ItemTraits['_DesignParameterRef'].items():
+            #     structure_dict[key] = value
         return structure_dict
 
 class _VersatileWindow(QWidget):
