@@ -687,6 +687,14 @@ class _VisualizationItem(QGraphicsItemGroup):
 
     def update_dc_variable_info(self, _ast):
         if _ast._type == 'Boundary':
+            for field in self._ItemTraits['variable_info']:
+                if field == 'XY':
+                    self._ItemTraits['variable_info'][field] = str(_ast.XY)
+                elif field == 'width':
+                    self._ItemTraits['variable_info'][field] = str(_ast.width)
+                elif field == 'height':
+                    self._ItemTraits['variable_info'][field] = str(_ast.height)
+
             self.widthVariable.setVisible(False)
             self.heightVariable.setVisible(False)
             self.XYVariable.setVisible(False)
@@ -702,6 +710,11 @@ class _VisualizationItem(QGraphicsItemGroup):
             self.setVariable(_ast._type)
 
         elif _ast._type == 'Path':
+            for field in self._ItemTraits['variable_info']:
+                if field == 'XY':
+                    self._ItemTraits['variable_info'][field] = _ast.XY
+                elif field == 'width':
+                    self._ItemTraits['variable_info'][field] = str(_ast.width)
             replaceXYVariable = self.XYVariable
             self.XYVariable = list()
             for self.idx in range(len(self._ItemTraits['_XYCoordinates'][0])):
@@ -724,6 +737,11 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.setVariable(_ast._type)
 
         elif _ast._type == 'Sref':
+            for field in self._ItemTraits['variable_info']:
+                if field == 'XY':
+                    self._ItemTraits['variable_info'][field] = _ast.XY
+                elif field == 'parameters':
+                    self._ItemTraits['variable_info'][field] = _ast.parameters
             self.XYVariable.setVisible(False)
             self.paramVariable.setVisible(False)
 
