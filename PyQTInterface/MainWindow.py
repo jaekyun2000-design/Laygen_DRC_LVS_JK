@@ -738,15 +738,41 @@ class _MainWindow(QMainWindow):
             constraint_ids = [item.text() for item in constraint_names]
             topAST = ast.Module()
             topAST.body = [self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids]
+
+            # TODO: XYCoordinate AST 한번에 처리하는 것이 더 좋은가
+            for i in range(len(constraint_ids)):
+                if constraint_ids[i] in list(self._DummyConstraints.XYDict.keys()):
+                    topAST = variable_ast.IrregularTransformer(self._DummyConstraints.XYDict[constraint_ids[i]]).visit(topAST)
+
+
             topAST = element_ast.ElementTransformer().visit(topAST)
             # variable_ast.VariableTransformer.infoDict = self._DummyConstraints.XYDict
             topAST = variable_ast.VariableTransformer().visit(topAST)
             code = astunparse.unparse(topAST)
+
             return code
             print(code)
         except:
             traceback.print_exc()
             print("encoding fail")
+
+    # def createAdditionalCode(self):
+    #     modules = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName]
+    #     for _, module in modules.items():
+    #         if module._type == 'XYCoordinate':
+    #             coordinateInfo = self._DummyConstraints.XYDict[module._id]
+    #             for key, value in coordinateInfo.items():
+    #                 if key == 'X':
+    #                     Xelements = re.split('',value)
+    #                     print("Debug")
+    #
+    #                 elif key == 'Y':
+    #                     Yelements = re.split(value)
+    #                     print("Debug")
+    #
+    #                 elif key == 'XY':
+    #                     XYelements = re.split(value)
+    #                     print("Debug")
 
     def visibleCandidate(self, state):
         constraint_names_can = self.dockContentWidget3_2.model.findItems('', Qt.MatchContains, 1)
@@ -823,6 +849,7 @@ class _MainWindow(QMainWindow):
         try:
             gds2gen = topAPI.gds2generator.GDS2Generator(False)
             gds2gen.load_qt_project(self)
+            gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter, self._CurrentModuleName)
             gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
             constraint_ids = [item.text() for item in self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)]
             gds2gen.load_qt_id_info(self, constraint_ids)

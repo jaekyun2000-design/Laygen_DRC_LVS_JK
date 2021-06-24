@@ -64,10 +64,10 @@ class ExpressionCalculator(QWidget):
         self.click_button = self.create_button('click',self.click_clicked,'click')
         self.height_button = self.create_button('height',self.geo_clicked,'height')
 
-        self.plus = self.create_button('+',self.arithmetic_clicked)
-        self.minus = self.create_button('-',self.arithmetic_clicked)
-        self.mul = self.create_button('*',self.arithmetic_clicked)
-        self.div = self.create_button('/',self.arithmetic_clicked)
+        self.plus = self.create_button(' + ',self.arithmetic_clicked)
+        self.minus = self.create_button(' - ',self.arithmetic_clicked)
+        self.mul = self.create_button(' * ',self.arithmetic_clicked)
+        self.div = self.create_button(' / ',self.arithmetic_clicked)
 
         self.backspace = self.create_button('<-',self.delete_clicked)
 
@@ -334,7 +334,7 @@ class ExpressionCalculator(QWidget):
     def digit_clicked(self):
         clicked_button = self.sender()
         display = str()
-        if clicked_button.text() == '+/-':
+        if clicked_button.text() == ' +/- ':
             if len(self.equationList) == 0:
                 pass
             elif len(self.equationList) == 1:
@@ -453,7 +453,7 @@ class ExpressionCalculator(QWidget):
 
         if type(hierarchy_list) == Exception:
             return None
-        calc_expression = geo_text + f'({hierarchy_list})'
+        calc_expression = geo_text + f'({hierarchy_list})'.replace(" ","")
         if self.value_flag:
             print(f'len!!={len(self.value_str)}')
             self.equationList[-1] = calc_expression
@@ -487,83 +487,6 @@ class ExpressionCalculator(QWidget):
 
     def xy_reference_clicked(self):
         pass
-    def expressionTransformer(self, expression, XYFlag):
-        """
-        :param expression: code to be re-expressed
-        :param XYFlag: Which mode is checked?
-        :return: re-expressed code
-        """
-        function = expression[0:2]
-        if function == 'to':
-            function = 'top'
-        elif function == 'bo':
-            function = 'bottom'
-        elif function == 'le':
-            function = 'left'
-        elif function == 'ri':
-            function = 'right'
-        elif function == 'ce':
-            function = 'center'
-        elif function == 'wi':
-            function = 'width'
-        elif function == 'he':
-            function = 'height'
-
-        operands = re.split(',', re.sub(f'{function}|\(|\'|\)|\[|]', "", expression))
-        code = 'self.'                  # Code Always Starts with 'self.' string
-        layer = operands[-1]
-        objects = operands[0: len(operands)-1]
-        for i in range(len(objects)):           # append code from the start
-            code = code + f"_DesignParameter['{objects[i]}']['_DesignObj']."
-        code = code + f"_DesignParameter['{layer}']"
-        if function == 'width':
-            result = code + '[\'_XWidth\']'
-        elif function == 'height':
-            result = code + '[\'_YWidth\']'
-
-        if XYFlag == 'X':
-            if function == 'lt' or function == 'left' or function == 'lb':
-                result = f"{code}['_XYCoordinates'][0][0] - {code}['_XWidth']/2"
-            elif function == 'top' or function == 'bottom' or function == 'center':
-                result = f"{code}['_XYCoordinates'][0][0]"
-            elif function == 'rt' or function == 'right' or function == 'rb':
-                result = f"{code}['_XYCoordinates'][0][0] + {code}['_XWidth']/2"
-            else:   # Width or Height case
-                print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag} for Debugging")
-        elif XYFlag == 'Y':
-            if function == 'lt' or function == 'rt' or function == 'top':
-                result = f"{code}['_XYCoordinates'][0][1] + {code}['_YWidth']/2"
-            elif function == function == 'left' or function == 'right' or function == 'center':
-                result = f"{code}['_XYCoordinates'][0][1]"
-            elif function == function == 'lb' or function == 'rb' or function == 'bottom':
-                result = f"{code}['_XYCoordinates'][0][0] - {code}['_YWidth']/2"
-            else:   # Width or Height case
-                print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag} for Debugging")
-                pass
-        elif XYFlag == 'XY':
-        # X Input first
-            if function == 'lt' or function == 'left' or function == 'lb':
-                result = f"{code}['_XYCoordinates'][0][0] - {code}['_XWidth']/2"
-            elif function == function == 'top' or function == 'bottom' or function == 'center':
-                result = f"{code}['_XYCoordinates'][0][0]"
-            elif function == 'rt' or function == 'right' or function == 'rb':
-                result = f"{code}['_XYCoordinates'][0][0] + {code}['_XWidth']/2"
-            else:   # Width or Height case
-                print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag}_X for Debugging")
-                pass
-        # Y input afterwards
-            if function == 'lt' or function == 'rt' or function == 'top':
-                result = result + f", {code}['_XYCoordinates'][0][1] + {code}['_YWidth']/2"
-            elif function == 'left' or function == 'right' or function == 'center':
-                result = result + f", {code}['_XYCoordinates'][0][1]"
-            elif function == 'lb' or function == 'rb' or function == 'bottom':
-                result = result + f", {code}['_XYCoordinates'][0][0] - {code}['_YWidth']/2"
-            else:  # Width or Height case
-                print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag}_Y for Debugging")
-                pass
-            result = re.split(',', result)
-        print(f"Re-Expressed Element: \n{result}")
-        return result
 
         # if function == 'lt':
         #     if XYFlag == 'X':
@@ -596,41 +519,13 @@ class ExpressionCalculator(QWidget):
 
                 if self.x_button.isChecked() is True:
                     self.showXWindow()
-                    XYFlag = 'X'
+                    # XYFlag = 'X'
                 elif self.y_button.isChecked() is True:
                     self.showYWindow()
-                    XYFlag = 'Y'
+                    # XYFlag = 'Y'
                 elif self.xy_button.isChecked() is True:
-                    XYFlag = 'XY'
+                    # XYFlag = 'XY'
                     self.showXYWindow()
-
-                for i in range(len(self.equationList)):
-                    isFunction = re.search('\(\[\'.*\'\]\)', self.equationList[i])
-                    if isFunction != None:
-                        re_expressed_element = self.expressionTransformer(self.equationList[i], XYFlag = XYFlag)
-                        self.equationList[i] = re_expressed_element
-                    else:
-                        pass
-                if XYFlag != 'XY':
-                    FinalCode = ' '.join(self.equationList)
-                elif XYFlag == 'XY':
-                    # X_calc
-                    x_list = copy.deepcopy(self.equationList)
-                    for i in range(len(x_list)):
-                        if type(x_list[i]) == list:
-                            x_list[i] = x_list[i][0]
-                    # Y_calc
-                    y_list = copy.deepcopy(self.equationList)
-                    for i in range(len(y_list)):
-                        if type(y_list[i]) == list:
-                            y_list[i] = y_list[i][1]
-                    X_expression = ' '.join(x_list)
-                    Y_expression = ' '.join(y_list)
-                    FinalCode = list()
-                    FinalCode.append(X_expression)
-                    FinalCode.append(Y_expression)
-
-                print(f"Final Code: \n {FinalCode}")
                 self.equationList.clear()
 
         else:
