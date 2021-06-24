@@ -155,7 +155,7 @@ class IrregularTransformer(ast.NodeTransformer):
 
         if final_x_value == None or final_y_value == None:
             print("X field and Y field both should not be empty")
-            return
+            raise Exception("X field and Y field both should not be empty")
 
         sentence = []
         sentence.append(final_x_value)

@@ -547,6 +547,15 @@ class ExpressionCalculator(QWidget):
             XYList.append(self.XYWindow.currentItem().text())
         output = {'X':XList, 'Y':YList, 'XY':XYList}
         # print(output)
+
+        if not XYList:
+            if XList and YList:
+                pass
+            else:
+                self.warning = QMessageBox()
+                self.warning.setText("X field and Y field both should not be empty")
+                self.warning.show()
+                return
         self.send_XYCreated_signal.emit('XYCoordinate', output)
 
 
