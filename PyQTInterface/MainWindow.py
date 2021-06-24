@@ -2159,12 +2159,23 @@ class _MainWindow(QMainWindow):
 
         changed_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(constraint_id)
         if changed_dp_id:
+            old_variable_dict = copy.deepcopy(self.visualItemDict[changed_dp_id]._ItemTraits['variable_info'])
             module_name = self.get_id_return_module(constraint_id,'_DesignConstraint')
             used_variable_list = parse_constraint_to_get_value(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
             self.visualItemDict[changed_dp_id].update_dc_variable_info(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
 
-            old_variable_list = list(set(self.variable_store_list) - set(used_variable_list))
-            self.variable_store_list = used_variable_list
+            # erased_variable_list = list(set(old_variable_list)-set(used_variable_list))
+            current_variable_dict = self.visualItemDict[changed_dp_id]._ItemTraits['variable_info']
+            tmpList=list()
+
+            for key in old_variable_dict:
+                if old_variable_dict[key] == current_variable_dict[key]:
+                    pass
+                else:
+                    tmpList.append(old_variable_dict[key])
+            # old_variable_list = list(set(self.variable_store_list) - set(used_variable_list))
+            # self.variable_store_list = used_variable_list
+            # print( self.visualItemDict[changed_dp_id]._ItemTraits['variable_info'])
 
             for var in used_variable_list:
                 if var in self.dv.idDict:
@@ -2177,9 +2188,10 @@ class _MainWindow(QMainWindow):
 
             #TODO Debug:
             # 보기에 old_variable_list가 정확하지 않아보임.. a라는 boundary에 변수 수정하다가, b 라는 path 변수 수정하면 날라감
-            for old_var in old_variable_list:
-                if changed_dp_id in self.dv.idDict[old_var]['id']:
-                    self.dv.idDict[old_var]['id'].remove(changed_dp_id)
+            for var in tmpList:
+                if var in self.dv.idDict:
+                    if changed_dp_id in self.dv.idDict[var]['id']:
+                        self.dv.idDict[var]['id'].remove(changed_dp_id)
 
     def highlightVI(self, _idlist):
         for item in self.visualItemDict:
