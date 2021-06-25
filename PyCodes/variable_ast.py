@@ -96,7 +96,8 @@ class IrregularTransformer(ast.NodeTransformer):
         final_x_value = None
         final_y_value = None
 
-        for XYFlag, elements in self._id_to_data_dict.items():
+        # for XYFlag, elements in self._id_to_data_dict.items():
+        for XYFlag, elements in self._id_to_data_dict.XYDict[_id].items():
             for j in range(len(elements)):
                 expression = elements[j]
                 operands_with_operators_list = re.split(' ', expression)
@@ -160,7 +161,7 @@ class IrregularTransformer(ast.NodeTransformer):
         sentence = []
         sentence.append(final_x_value)
         sentence.append(final_y_value)
-        sentence = '['+final_x_value+','+final_y_value+']'
+        sentence = '[['+final_x_value+','+final_y_value+']]'
         # sentence = f"'{sentence}'"
         # return list(sentence)
         # print(sentence)

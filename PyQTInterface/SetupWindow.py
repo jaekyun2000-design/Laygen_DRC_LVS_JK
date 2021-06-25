@@ -2804,10 +2804,13 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         #     self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append(None)
         if StringValue == "*":
             return
-
+        if self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field] == None:
+            self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field] = []
+        if Idx >= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field]):
+            self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append(None)
         if ',' in StringValue:
-            if Idx >= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field]):
-                self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append(None)
+            # if Idx >= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field]):
+            #     self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append(None)
             try:
                 self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Idx] = [float(value) for value in StringValue.split(',')]
             except:
@@ -2827,11 +2830,17 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         #     self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append(None)
         if StringValue == "*":
             return
+        if self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field] == None:
+            self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field] = []
+        if idx1 >= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field]):
+            self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append([])
+        if idx2 >= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1]):
+            self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1].append(None)
         if ',' in StringValue:
-            if idx1 >= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field]):
-                self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append([])
-            if idx2 >= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1]):
-                self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1].append(None)
+            # if idx1 >= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field]):
+            #     self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field].append([])
+            # if idx2 >= len(self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1]):
+            #     self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1].append(None)
             try:
                 self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][idx1][idx2] = [float(value) for value in StringValue.split(',')]
             except:

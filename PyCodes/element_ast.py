@@ -1,4 +1,7 @@
 import ast
+import copy
+import warnings
+
 import astunparse
 from PyCodes import ASTmodule
 # listTypeData = ['Lib','tb','PlaceDef','RouteDef','DRCDef','Iteration','P_R']
@@ -182,44 +185,46 @@ class ElementTransformer(ast.NodeTransformer):
                         return 'string'
                     else:
                         return 'ast'
-        #
-        # if 'XY' in node.__dict__:
-        #     if type(node.XY) == list:
-        #         if type(node.XY[0]) == list:
-        #             return 'list'
-        #         elif type(node.XY[0]) == str:
-        #             if node.XY[0].find(',') == -1:
-        #                 return 'list'
-        #             else:
-        #                 return 'variable'
-        #         else:
-        #             return 'ast'
-        #     elif type(node.XY) == str:
-        #         if node.XY.find(',') == -1:
-        #             return 'list'
-        #         else:
-        #             return 'variable'
-        #     else:
-        #         return 'ast'
-        # else:
-        #     return None
+
+    def xy_string_syntax_corrector(self,node):
+        tmp_xy = copy.deepcopy(node.xy)
+        if type(tmp_xy) != list:
+            warnings.warn("Invalid xy detected")
+        for i, level1_element in enumerate(tmp_xy):
+            if type(level1_element) == str: # input is variable
+                pass                        # ex) [ 'var1']
+            elif type(level1_element) == list:
+                for j, level2_element in enumerate(level1_element):
+                    for k, level3_element in enumerate(level2_element):
+                        if type(level3_element) == str:
+                            tmp_xy[i][j][k] = level3_element.replace("'","\\'").replace('"','\\"')
+                        elif type(level3_element) == list:
+                            for l, level4_element in enumerate(level3_element):
+                                tmp_xy[i][j][k][l] = level4_element.replace("'","\\'").replace('"','\\"')
+            elif '_ast' in str(node.__class__):                           # input is ast
+                pass
+            else:
+                pass
+        return tmp_xy
+
 
     def visit_Boundary(self,node):
         syntax = self.xy_syntax_checker(node)
 
-        if syntax == 'list' or syntax == 'string':
-            node.XY = str(node.XY).replace("'","")
+        if syntax == 'list' :#or syntax == 'string':
+            tmp_xy = str(node.XY).replace("'","")
             sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-                      _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY},\
+                      _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {tmp_xy},\
                       _XWidth = {node.width}, _YWidth = {node.height})"
-        # elif syntax == 'str':
-        #     sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-        #                           _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY},\
-        #                           _XWidth = {node.width}, _YWidth = {node.height})"
-        elif syntax == 'ast':
-            node.XY = astunparse.unparse(node.XY).replace('\n', '')
+        elif syntax == 'string':
+            tmp_xy = str(node.XY[0]).replace("'","")
             sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-                                              _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY},\
+                                  _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {tmp_xy},\
+                                  _XWidth = {node.width}, _YWidth = {node.height})"
+        elif syntax == 'ast':
+            tmp_xy = astunparse.unparse(node.XY).replace('\n', '')
+            sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+                                              _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {tmp_xy},\
                                               _XWidth = {node.width}, _YWidth = {node.height})"
         # print(sentence)
         tmp = ast.parse(sentence)
@@ -229,9 +234,9 @@ class ElementTransformer(ast.NodeTransformer):
         syntax = self.xy_syntax_checker(node)
 
         if syntax == 'list' or syntax == 'string':
-            node.XY = str(node.XY).replace("'", "")
+            tmp_xy = str(node.XY).replace("'", "")
             sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
+                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {tmp_xy}, _Width = {node.width})"
         # elif syntax == 'str':
         #     sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
         #                _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
@@ -248,23 +253,25 @@ class ElementTransformer(ast.NodeTransformer):
         parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
 
         if syntax == 'list':
+            tmp_xy = str(node.XY).replace("'", "")
             sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}("\
                        f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
             sentence +=f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" +parameter_sentence + "))\n"
-            sentence +=f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}"
+            sentence +=f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}"
 
         elif syntax == 'string': # need to check
+            tmp_xy = str(node.XY).replace("'", "")
             sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(" \
                        f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
             sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
-            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = [[{node.XY}]]"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = [[{tmp_xy}]]"
 
         elif syntax == 'ast':
-            node.XY = astunparse.unparse(node.XY).replace('\n','')
+            tmp_xy = astunparse.unparse(node.XY).replace('\n','')
             sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(" \
                        f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
             sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
-            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}"
 
         # if (type(node.XY) == list) or node.XY.find(',') == -1:
         #     parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])

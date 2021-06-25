@@ -7,12 +7,14 @@ class FileSaveFormat:
         self.user_variables = []
         self.user_variables_ids = []
         self.variable_store_list = []
+        self._DummyConstraints = None
 
     def save_from_qt_interface(self, main_window):
         self.top_module = main_window._CurrentModuleName
         self.save_constraint_tree_info(main_window)
         if 'dv' in main_window.__dict__:
             self.save_user_variable_info(main_window)
+        self.save_extra_ast_info(main_window)
 
 
     def save_constraint_tree_info(self,main_window):
@@ -30,10 +32,14 @@ class FileSaveFormat:
         self.variable_store_list = main_window.variable_store_list
         #TODO id save
 
+    def save_extra_ast_info(self,main_window):
+        self._DummyConstraints = main_window._DummyConstraints
+
     def load_qt_interface(self,main_window, _DesignConstraint):
         main_window._CurrentModuleName = self.top_module
         self.load_from_constraint_tree_info(main_window, _DesignConstraint)
         self.load_user_variable_info(main_window)
+        self.load_extra_ast_info(main_window)
 
     def load_from_constraint_tree_info(self,main_window, _DesignConstraint):
         if 'id_items_for_run' not in self.__dict__:
@@ -72,3 +78,8 @@ class FileSaveFormat:
 
         # for variable_dict in self.user_variables.values():
         #     main_window.dv.updateList(list(variable_dict.values()), _type='add')
+
+    def load_extra_ast_info(self,main_window):
+        if '_DummyConstraints' in self.__dict__:
+            if self._DummyConstraints:
+                main_window._DummyConstraints = self._DummyConstraints
