@@ -1830,7 +1830,7 @@ class _MainWindow(QMainWindow):
 
                 break
 
-    def createDummyConstraint(self, type, info_dict):
+    def createDummyConstraint(self, type_for_dc, info_dict):
         """
         For Constraints that do not contain any detailed info
         XY Coordinates, Loops, ... etc.
@@ -1848,13 +1848,13 @@ class _MainWindow(QMainWindow):
             self.warning.show()
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: There is no Module")
         else:
-            if type == 'XYCoordinate':
+            if type_for_dc == 'XYCoordinate':
                 try:
                     print("###############################################################")
                     print("               XYCoordinate ast creation Start                 ")
                     print("###############################################################")
                     _ASTForVariable = ASTmodule._Custom_AST_API()
-                    _ASTtype = type
+                    _ASTtype = type_for_dc
                     _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
 
                     _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(self._CurrentModuleName)
@@ -1876,8 +1876,29 @@ class _MainWindow(QMainWindow):
                     print("###############################################################")
                     print("                XYCoordinate ast creation Failed               ")
                     print("###############################################################")
-                else:
-                    pass
+
+            elif type_for_dc == 'XYCoordinate_for_path_row':
+                _ASTForVariable = ASTmodule._Custom_AST_API()
+                _ASTtype = 'XYCoordinate'
+                _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
+
+                _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(self._CurrentModuleName)
+                _newConstraintID = (self._CurrentModuleName + str(_designConstraintID))
+
+                _ASTobj.id = _newConstraintID
+                self._DummyConstraints.XYDict[_newConstraintID] = info_dict
+                self.calculator_window.send_path_row_xy_signal.emit(info_dict, _newConstraintID)
+                design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                  module_name=self._CurrentModuleName, _ast=_ASTobj)
+
+            elif type_for_dc == 'XYCoordinate_for_path':
+                pass
+
+
+            else:
+                warnings.warn("Not Valid type")
+
+
 
     def createVariableConstraint(self, _VariableInfo):
         """
@@ -2460,75 +2481,86 @@ class _CustomScene(QGraphicsScene):
         self.itemList = list()
         self.nslist = list()
 
+        self.point_items_memory = []
+
     def getNonselectableLayerList(self, _layerlist):
         self.nslist = _layerlist
 
     def mousePressEvent(self, event):
-        _RectBlock_list = list()
-        # for i in range(len(self.items(event.scenePos()))):
-        #     if i%2 == 1:
-        #         _RectBlock_list.append(self.items(event.scenePos())[i])
-        #     else:
-        #         pass
-        for layer in self.nslist:
-            if layer in self.itemList:
-                self.itemList.remove(layer)
 
-        if len(self.selectedItems()) != 0:
-            selected = self.selectedItems()
-            for i in range(len(selected)):
-                self.itemList.append(selected[i])
-                selected[i].setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
-        else:
-            for i in range(len(self.itemList)):
-                self.itemList[i].setFlag(QGraphicsItemGroup.ItemIsSelectable, True)
-            self.itemList.clear()
-
-
-
-
-        # if event.button() == Qt.LeftButton:
-        #     for i in range(len(_RectBlock_list)):
-        #         # _RectBlock_list[i].mousePressEvent(event)
-        #         # _RectBlock_list[i].setSelected(True)
-        #         if _RectBlock_list[i].isSelected():
-        #             _RectBlock_list[i].setSelected(False)
-        #             try:
-        #                 _RectBlock_list[i+1].setSelected(True)
-        #                 break
-        #             except:
-        #                 pass
-                        # _RectBlock_list[0].setSelected(True)
-
-        # self.selectionChanged.emit()
-
-        # if event.button() == Qt.RightButton:
-        #     print('return')
-        #     return
-        # super(self).mousePressEvent(event)
-        # itemList = self.items(event.scenePos(),Qt.IntersectsItemShape)
-        # for item in itemList:
-        #     print(f'click{item}item')
-        #     item.setSelected(True)
-        # self.send_debug_signal.emit()
-        # if self.listIgnoreFlag is True:
-        #     pass
-        # else:
-        #     # itemList = self.items(event.scenePos())
-        #     # itemList = self.items(event.scenePos(),Qt.IntersectsItemShape)
-        #     # if DEBUG:
-        #     #     print("MousePressDebug")
-        #     #     print(itemList)
-        #     # self.send_itemList_signal.emit(itemList)                  #Temporary stop, Unstable (I need to find DesignParameterWith Id, without Module Name
-        self.send_xyCoordinate_signal.emit(event)
-        if self.moveFlag is True:
-            self.moveFlag = False
-            self.send_moveDone_signal.emit()
-            print("moveDone emmit")
-        else:
-            # self.oldPos = event.scenePos()
-            pass
         super().mousePressEvent(event)
+
+        # def masking(items):
+        #     masked_output = []
+        #     for item in items:
+        #         if type(item) == VisualizationItem._VisualizationItem:
+        #             masked_output.append(item)
+        #     return masked_output
+        #
+        # items = self.items(event.scenePos())
+        # items = masking(items)
+        #
+        # if not self.point_items_memory:
+        #     print('No Memory!')
+        #     print(items)
+        #     self.point_items_memory = items
+        #     return
+        # if set(self.point_items_memory) == set(items):
+        #     print('Same point!')
+        #     selected_item = self.selectedItems()[0]
+        #     if selected_item in items:
+        #         idx = items.index(selected_item)
+        #     else:
+        #         print('not selected')
+        #         idx = 0
+        #         items[idx].grabMouse()
+        #         items[idx].setSelected(True)
+        #         return
+        #     if len(items) == 1:
+        #         return
+        #     if idx+1 == len(items):
+        #         print('idx out')
+        #         map(lambda item: item.ungrabMouse(), items)
+        #         # items[idx].ungrabMouse()
+        #     else:
+        #         print(f'idx={idx}')
+        #         items[idx].ungrabMouse()
+        #         items[idx+1].grabMouse()
+        # else:
+        #     print('New point')
+        #     self.point_items_memory = items
+        #     return
+
+
+        # _RectBlock_list = list()
+        #
+        # for layer in self.nslist:
+        #     if layer in self.itemList:
+        #         self.itemList.remove(layer)
+        #
+        # if len(self.selectedItems()) != 0:
+        #     selected = self.selectedItems()
+        #     for i in range(len(selected)):
+        #         self.itemList.append(selected[i])
+        #         # selected[i].setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
+        #         selected[i].setSelected(False)
+        # else:
+        #     for i in range(len(self.itemList)):
+        #         # self.itemList[i].setFlag(QGraphicsItemGroup.ItemIsSelectable, True)
+        #         self.itemList[i].setSelected(True)
+        #     self.itemList.clear()
+        #
+        # self.send_xyCoordinate_signal.emit(event)
+        # if self.moveFlag is True:
+        #     self.moveFlag = False
+        #     self.send_moveDone_signal.emit()
+        #     print("moveDone emmit")
+        # else:
+        #     # self.oldPos = event.scenePos()
+        #     pass
+        # super().mousePressEvent(event)
+
+
 
     def send_item_list(self):
         itemList = self.selectedItems()
