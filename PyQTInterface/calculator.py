@@ -92,10 +92,12 @@ class ExpressionCalculator(QWidget):
         self.xy_reference_toggling_group.setLayout(toggling_group_layout)
 
         add_button = self.create_button('ADD',self.send_clicked, size_constraint=dict(height=35))
+        edit_button = self.create_button('EDIT',self.edit_clicked, size_constraint=dict(height=35))
         export_button = self.create_button('EXPORT',self.export_clicked, size_constraint=dict(height=35))
 
         option_box_layout.addWidget(self.xy_reference_toggling_group)
         option_box_layout.addWidget(add_button)
+        option_box_layout.addWidget(edit_button)
         option_box_layout.addWidget(export_button)
         # option_box_layout.SetMaximumSize(50)
         option_box_layout.setSizeConstraint(QLayout.SetMaximumSize & QLayout.SizeConstraint.SetFixedSize)
@@ -158,10 +160,13 @@ class ExpressionCalculator(QWidget):
 
         self.XWindow = QListWidget()
         self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/X.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
+        self.XWindow.itemClicked.connect(self.XitemClicked)
         self.YWindow = QListWidget()
         self.YWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/Y.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
+        self.YWindow.itemClicked.connect(self.YitemClicked)
         self.XYWindow = QListWidget()
         self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
+        self.XYWindow.itemClicked.connect(self.XYitemClicked)
         self.presetWindow = QListWidget()
         self.presetWindow.itemClicked.connect(self.presetClicked)
         for _id in self.presetDict.keys():
@@ -186,15 +191,33 @@ class ExpressionCalculator(QWidget):
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Delete:
-            if self.x_button.isChecked() is True:
-                rowX = self.XWindow.currentRow()
+            for itemX in self.XWindow.selectedItems():
+                rowX = self.XWindow.row(itemX)
                 self.XWindow.takeItem(rowX)
-            elif self.y_button.isChecked() is True:
-                rowY = self.YWindow.currentRow()
+            for itemY in self.YWindow.selectedItems():
+                rowY = self.YWindow.row(itemY)
                 self.YWindow.takeItem(rowY)
-            elif self.xy_button.isChecked() is True:
-                rowXY = self.XYWindow.currentRow()
+            for itemXY in self.XYWindow.selectedItems():
+                rowXY = self.XYWindow.row(itemXY)
                 self.XYWindow.takeItem(rowXY)
+
+    def XitemClicked(self):
+        if self.YWindow.currentItem():
+            self.YWindow.currentItem().setSelected(False)
+        if self.XYWindow.currentItem():
+            self.XYWindow.currentItem().setSelected(False)
+
+    def YitemClicked(self):
+        if self.XWindow.currentItem():
+            self.XWindow.currentItem().setSelected(False)
+        if self.XYWindow.currentItem():
+            self.XYWindow.currentItem().setSelected(False)
+
+    def XYitemClicked(self):
+        if self.XWindow.currentItem():
+            self.XWindow.currentItem().setSelected(False)
+        if self.YWindow.currentItem():
+            self.YWindow.currentItem().setSelected(False)
 
 
     def create_button(self,text, slot_fcn, name=None, size_constraint = None):
@@ -560,6 +583,25 @@ class ExpressionCalculator(QWidget):
         else:
             self.display.setText("Nothing In Here")
 
+    def edit_clicked(self):
+        if self.presetWindow.currentItem():
+            _id = self.presetWindow.currentItem().text()
+            XList = list()
+            YList = list()
+            XYList = list()
+            for i_x in range(self.XWindow.count()):
+                self.XWindow.setCurrentRow(i_x)
+                XList.append(self.XWindow.currentItem().text())
+            for i_y in range(self.YWindow.count()):
+                self.YWindow.setCurrentRow(i_y)
+                YList.append(self.YWindow.currentItem().text())
+            for i_xy in range(self.XYWindow.count()):
+                self.XYWindow.setCurrentRow(i_xy)
+                XYList.append(self.XYWindow.currentItem().text())
+            self.presetDict[_id]['X'] = XList
+            self.presetDict[_id]['Y'] = YList
+            self.presetDict[_id]['XY'] = XYList
+
     def export_clicked(self):
         output = dict()
         XList = list()
@@ -615,10 +657,13 @@ class ExpressionCalculator(QWidget):
         XYList = self.presetDict[_id]['XY']
 
         for x in XList:
+            self.XWindow.clear()
             self.XWindow.addItem(x)
         for y in YList:
+            self.YWindow.clear()
             self.YWindow.addItem(y)
         for xy in XYList:
+            self.XYWindow.clear()
             self.XYWindow.addItem(xy)
 
 
