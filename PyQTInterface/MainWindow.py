@@ -2689,6 +2689,7 @@ class _CustomScene(QGraphicsScene):
         for key, value in structure_dict.items():
             try:
                 DP = VisualizationItem._VisualizationItem()
+                DP._NoVariableFlag = True
                 DP.updateDesignParameter(value)
                 DP.setToolTip(key)
             except:
