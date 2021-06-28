@@ -537,6 +537,7 @@ class _MainWindow(QMainWindow):
 
     def clipboard_test(self):
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
+        self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.test)
         self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
         self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
         self.calculator_window.show()
@@ -1861,6 +1862,7 @@ class _MainWindow(QMainWindow):
 
                     _ASTobj.__dict__['id'] = _newConstraintID
                     self._DummyConstraints.XYDict[_newConstraintID] = info_dict
+                    self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
                     design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
                                                                       module_name=self._CurrentModuleName, _ast=_ASTobj)
                     self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],

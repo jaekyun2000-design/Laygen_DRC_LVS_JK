@@ -12,6 +12,9 @@ import os
 class ExpressionCalculator(QWidget):
     # send_expression_signal =  pyqtSignal(dict)
     send_XYCreated_signal = pyqtSignal(str, dict)
+    send_dummyconstraints_signal = pyqtSignal(dict, str)
+    presetDict = dict()
+
     def __init__(self,clipboard):
         # super(ExpressionCalculator, self).__init__()
         super().__init__()
@@ -159,15 +162,22 @@ class ExpressionCalculator(QWidget):
         self.YWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/Y.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
         self.XYWindow = QListWidget()
         self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
+        self.presetWindow = QListWidget()
+        self.presetWindow.itemClicked.connect(self.presetClicked)
+        for _id in self.presetDict.keys():
+            self.presetWindow.addItem(_id)
         H_layout1 = QHBoxLayout()
         H_layout2 = QHBoxLayout()
+        H_layout3 = QHBoxLayout()
 
         H_layout1.addWidget(self.YWindow)
         H_layout1.addSpacing(283)
         H_layout2.addWidget(self.XYWindow)
         H_layout2.addWidget(self.XWindow)
+        H_layout3.addWidget(self.presetWindow)
         top_layout.addLayout(H_layout1)
         top_layout.addLayout(H_layout2)
+        top_layout.addLayout(H_layout3)
 
         # self.setLayout(main_layout)
         self.setLayout(top_layout)
@@ -592,6 +602,25 @@ class ExpressionCalculator(QWidget):
         if self.clipboard.text():
             print(self.clipboard.text())
         return Exception("No selected layer")
+
+    def test(self, dict, _id):
+        self.presetDict[_id] = dict
+        self.presetWindow.addItem(_id)
+        print(self.presetDict)
+
+    def presetClicked(self):
+        _id = self.presetWindow.currentItem().text()
+        XList = self.presetDict[_id]['X']
+        YList = self.presetDict[_id]['Y']
+        XYList = self.presetDict[_id]['XY']
+
+        for x in XList:
+            self.XWindow.addItem(x)
+        for y in YList:
+            self.YWindow.addItem(y)
+        for xy in XYList:
+            self.XYWindow.addItem(xy)
+
 
 
 
