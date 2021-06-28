@@ -1,3 +1,5 @@
+import ast
+
 from PyCodes import element_ast, variable_ast
 from PyCodes import ASTmodule
 from PyCodes import userDefineExceptions
@@ -8,7 +10,7 @@ class ElementManager:
     def __init__(self):
         self.elementParameterDict = dict()
         self.elementConstraintDict = dict()
-
+        self.variable_finding_walker = element_ast.VariableNameVisitor()
         self.dp_id_to_dc_id = dict()
         self.dc_id_to_dp_id = dict()
 
@@ -114,10 +116,38 @@ class ElementManager:
             constraint_id = None
         return tmpAST , constraint_id
 
+    def discriminate_variable(self, key, ast):
+        if key == '_XYCoordinates':
+            key = 'XY'
+        elif key == '_XWidth' or key =='_Width':
+            key = 'width'
+        elif key == '_YWidth':
+            key = 'height'
+
+        if '_ast' in str(type(ast.__dict__[key])):
+            return True
+        elif type(ast.__dict__[key]) == list:
+            for sub_dp_value in ast.__dict__[key]:
+                if '_ast' in str(type(sub_dp_value)):
+                    return True
+                if type(sub_dp_value) == str:
+                    tmp_ast = ast.parse(sub_dp_value)
+                    self.variable_finding_walker.visit(tmp_ast)
+                    if self.variable_finding_walker.variable_name_list:
+                        self.variable_finding_walker.variable_name_list = []
+                        return True
+            return False
+
+
     def get_ast_return_dpdict(self, ast):
         if ASTmodule._getASTtype(ast) == 'Boundary':
             tmpDP = dict()
             for key in KeyManager._Boundarykey.keys():
+                #Invalid case -> not return (like variable expression)
+                #DP only accept determinstic data
+                if key in ['_XYCoordinates', '_XWidth', '_YWidth']:
+                    if self.discriminate_variable(key,ast):
+                        return None, None
                 if key == '_Layer':
                     tmpDP[key] = ast.__dict__['layer']
                 elif key == '_DesignParametertype':
@@ -143,6 +173,10 @@ class ElementManager:
         elif ASTmodule._getASTtype(ast) == 'Path':
             tmpDP = dict()
             for key in KeyManager._Pathkey.keys():
+                if key in ['_XYCoordinates', '_Width']:
+                    if self.discriminate_variable(key,ast):
+                        return None, None
+
                 if key == '_ElementName':
                     tmpDP[key] = ast.__dict__['name']
                 elif key == '_Layer':
@@ -153,8 +187,6 @@ class ElementManager:
                     tmpDP[key] = ast.__dict__['XY']
                 elif key == '_Width':
                     tmpDP[key] = ast.__dict__['width']
-                elif key == '_Height':
-                    tmpDP[key] = None
                 elif key == '_Color':
                     tmpDP[key] = None
                 elif key == '_ItemRef':
@@ -163,6 +195,10 @@ class ElementManager:
         elif ASTmodule._getASTtype(ast) == 'Sref':
             tmpDP = dict()
             for key in ast._fields:
+                if key in ['XY']:
+                    if self.discriminate_variable(key,ast):
+                        return None, None
+
                 if key == 'name':
                     tmpDP['_ElementName'] = ast.__dict__['name']
                     # tmpDP[key] = ast.__dict__['name']
@@ -214,6 +250,9 @@ class ElementManager:
             # 'text'  # int or str
             tmpDP = dict()
             for key in KeyManager._Textkey.keys():
+                if key in ['_XYCoordinates']:
+                    if self.discriminate_variable(key,ast):
+                        return None, None
 
                 if key == '_id':
                     tmpDP[key] = ast.__dict__['id']
@@ -362,6 +401,9 @@ class KeyManager():
         _Ignore=None,
         _ElementName=None
         )
+
+
+
 
 # if __name__ == '__main__':
 #     a = ElementManager()
