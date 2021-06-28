@@ -3112,6 +3112,10 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                         field_item = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0))
                         field = field_item.text()
                         del self._DesignConstraintFromQTobj[module][parent_id]._ast.__dict__[field]
+                        ## if sub-constraint has children rows... ##
+                        selected_item_col_zero = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0))
+                        for row in range(0,selected_item_col_zero.rowCount()):
+                            selected_item_col_zero.removeRow(0)
                         self.refreshItem(self.model.indexFromItem(parent_item))
                     else:
                         ### double list or dictionary ###
