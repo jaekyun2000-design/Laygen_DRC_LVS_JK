@@ -448,7 +448,7 @@ class _MainWindow(QMainWindow):
         self.ConstraintTemplateButton = QPushButton("Template")
         # self.parsetreeEasyRun = QPushButton("easyRun")
         self.variableCallButton = QPushButton("variableCall")
-        self.sref_debug = QPushButton("sref_debug")
+        self.sref_debug = QPushButton("XYCalculator")
 
         VBoxForPeriButton.addStretch(3)
         # VBoxForPeriButton.addWidget(self.createConstraintButton)
