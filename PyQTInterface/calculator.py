@@ -174,6 +174,19 @@ class ExpressionCalculator(QWidget):
         self.setWindowTitle('Expression Calculator')
         self.show()
 
+    def keyPressEvent(self, QKeyEvent):
+        if QKeyEvent.key() == Qt.Key_Delete:
+            if self.x_button.isChecked() is True:
+                rowX = self.XWindow.currentRow()
+                self.XWindow.takeItem(rowX)
+            elif self.y_button.isChecked() is True:
+                rowY = self.YWindow.currentRow()
+                self.YWindow.takeItem(rowY)
+            elif self.xy_button.isChecked() is True:
+                rowXY = self.XYWindow.currentRow()
+                self.XYWindow.takeItem(rowXY)
+
+
     def create_button(self,text, slot_fcn, name=None, size_constraint = None):
         button = QPushButton(text)
         button.clicked.connect(slot_fcn)
@@ -193,15 +206,21 @@ class ExpressionCalculator(QWidget):
 
     def waitForClick(self, event):
         if self.waiting == True:
+            display = str()
             calc_expression = '['+str(event.scenePos().x())+','+str(event.scenePos().y())+']'
 
             if self.value_flag:
                 print(f'len!!={len(self.value_str)}')
-                self.display.setText(self.display.toPlainText()[:-len(self.value_str)] + calc_expression)
+                # self.equationList
+                # self.display.setText(self.display.toPlainText()[:-len(self.value_str)] + calc_expression)
                 self.equationList[-1] = calc_expression
             else:
-                self.display.setText(self.display.toPlainText() + calc_expression)
+                # self.display.setText(self.display.toPlainText() + calc_expression)
                 self.equationList.append(calc_expression)
+
+            for text in self.equationList:
+                display += text
+            self.display.setText(display)
 
             self.value_flag = True
             self.value_str = calc_expression
@@ -380,7 +399,7 @@ class ExpressionCalculator(QWidget):
                 self.arithmetic_flag = False
             else:
                 if self.value_flag:
-                    pass
+                    self.equationList[-1] = digit_value
                 else:
                     if digit_value == '.':
                         self.equationList.append('0.')
