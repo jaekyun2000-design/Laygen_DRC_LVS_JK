@@ -13,6 +13,7 @@ class ExpressionCalculator(QWidget):
     # send_expression_signal =  pyqtSignal(dict)
     send_XYCreated_signal = pyqtSignal(str, dict)
     send_dummyconstraints_signal = pyqtSignal(dict, str)
+    send_path_row_xy_signal = pyqtSignal(dict, str)
     presetDict = dict()
 
     def __init__(self,clipboard):
@@ -94,11 +95,13 @@ class ExpressionCalculator(QWidget):
         add_button = self.create_button('ADD',self.send_clicked, size_constraint=dict(height=35))
         edit_button = self.create_button('EDIT',self.edit_clicked, size_constraint=dict(height=35))
         export_button = self.create_button('EXPORT',self.export_clicked, size_constraint=dict(height=35))
+        export_path_button = self.create_button('EXPORT FOR PATH',self.export_path_clicked, size_constraint=dict(height=35))
 
         option_box_layout.addWidget(self.xy_reference_toggling_group)
         option_box_layout.addWidget(add_button)
         option_box_layout.addWidget(edit_button)
         option_box_layout.addWidget(export_button)
+        option_box_layout.addWidget(export_path_button)
         # option_box_layout.SetMaximumSize(50)
         option_box_layout.setSizeConstraint(QLayout.SetMaximumSize & QLayout.SizeConstraint.SetFixedSize)
         # option_box_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
@@ -602,7 +605,7 @@ class ExpressionCalculator(QWidget):
             self.presetDict[_id]['Y'] = YList
             self.presetDict[_id]['XY'] = XYList
 
-    def export_clicked(self):
+    def export_clicked(self, export_type = False):
         output = dict()
         XList = list()
         YList = list()
@@ -627,8 +630,26 @@ class ExpressionCalculator(QWidget):
                 self.warning.setText("X field and Y field both should not be empty")
                 self.warning.show()
                 return
-        self.send_XYCreated_signal.emit('XYCoordinate', output)
 
+        self.XWindow.clear()
+        self.YWindow.clear()
+        self.XYWindow.clear()
+
+        if export_type == False:
+            self.send_XYCreated_signal.emit('XYCoordinate', output)
+        else:
+            self.send_XYCreated_signal.emit(export_type, output)
+
+    def export_path_clicked(self):
+        if 'pw' not in self.__dict__:
+            self.pw = PathWindow(self)
+            self.pw.show()
+            self.send_path_row_xy_signal.connect(self.pw.create_row)
+
+        self.export_clicked('XYCoordinate_for_path_row')
+
+    def getPathInfo(self, idDict):
+        self.send_XYCreated_signal.emit('XYCoordinate_for_path', idDict)
 
     def parsing_clipboard(self):
         try:
@@ -656,16 +677,102 @@ class ExpressionCalculator(QWidget):
         YList = self.presetDict[_id]['Y']
         XYList = self.presetDict[_id]['XY']
 
+        self.XWindow.clear()
+        self.YWindow.clear()
+        self.XYWindow.clear()
+
         for x in XList:
-            self.XWindow.clear()
             self.XWindow.addItem(x)
         for y in YList:
-            self.YWindow.clear()
             self.YWindow.addItem(y)
         for xy in XYList:
-            self.XYWindow.clear()
             self.XYWindow.addItem(xy)
 
 
+class PathWindow(QWidget):
+    send_output_signal = pyqtSignal(dict)
+
+    def __init__(self, address):
+        super().__init__()
+        self.address = address
+        self.initUI()
+
+    def initUI(self):
+        exportButton = QPushButton("Export", self)
+        cancelButton = QPushButton("Cancel", self)
+
+        exportButton.clicked.connect(self.exportButton_accepted)
+        cancelButton.clicked.connect(self.cancelButton_accepted)
+
+        self.XYdictForLineEdit = []
+        self.XYdictForLabel = []
+
+        self.XYdictForLabel.append(QLabel("XY1"))
+        self.XYdictForLabel.append(QLabel("XY2"))
+
+        self.XYdictForLineEdit.append(QLineEdit())
+        self.XYdictForLineEdit.append(QLineEdit())
+        self.XYdictForLineEdit[0].setReadOnly(True)
+        self.XYdictForLineEdit[1].setReadOnly(True)
 
 
+        self.setupVboxColumn1 = QVBoxLayout()
+        self.setupVboxColumn2 = QVBoxLayout()
+        setupBox = QHBoxLayout()
+
+        self.setupVboxColumn1.addWidget(self.XYdictForLabel[0])
+        self.setupVboxColumn1.addWidget(self.XYdictForLabel[1])
+
+        self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[0])
+        self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[1])
+
+        setupBox.addLayout(self.setupVboxColumn1)
+        setupBox.addLayout(self.setupVboxColumn2)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(2)
+        hbox.addWidget(exportButton)
+        hbox.addWidget(cancelButton)
+
+        vbox = QVBoxLayout()
+        vbox.addStretch(1)
+        vbox.addLayout(setupBox)
+        vbox.addStretch(3)
+        vbox.addLayout(hbox)
+        # vbox.addStretch(1)
+
+        self.setLayout(vbox)
+
+        self.setWindowTitle('Path Setup Window')
+        self.setGeometry(300, 300, 500, 500)
+        self.show()
+
+    def create_row(self, constraint_dict, _id):
+        CurrentEditPointNum = len(self.XYdictForLineEdit) - 2
+        self.XYdictForLineEdit[CurrentEditPointNum].setText(_id)
+        self.UpdateXYwidget()
+
+    def exportButton_accepted(self):
+        output = dict(XYidlist=list())
+        self.send_output_signal.connect(self.address.getPathInfo)
+
+        for idx in range(len(self.XYdictForLineEdit)-2):
+            output['XYidlist'].append(self.XYdictForLineEdit[idx].text())
+
+        self.send_output_signal.emit(output)
+        self.destroy()
+
+    def cancelButton_accepted(self):
+        self.destroy()
+
+    def UpdateXYwidget(self):
+        CurrentPointNum = len(self.XYdictForLineEdit)
+        NewPointNum = CurrentPointNum + 1
+        LabelText = "XY" + str(NewPointNum)
+
+        self.XYdictForLabel.append(QLabel(LabelText))
+        self.XYdictForLineEdit.append(QLineEdit())
+
+        self.setupVboxColumn1.addWidget(self.XYdictForLabel[-1])
+        self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[-1])
+        self.XYdictForLineEdit[-1].setReadOnly(True)
