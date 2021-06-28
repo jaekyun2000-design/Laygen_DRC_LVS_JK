@@ -338,17 +338,17 @@ class ExpressionCalculator(QWidget):
             if len(self.equationList) == 0:
                 pass
             elif len(self.equationList) == 1:
-                if self.equationList[-1][0] == '-':
+                if self.equationList[-1][0] == ' - ':
                     self.equationList[-1] = self.equationList[-1][1:]
                 else:
-                    self.equationList[-1] = '-' + self.equationList[-1]
+                    self.equationList[-1] = ' - ' + self.equationList[-1]
             else:
                 if self.value_flag:
-                    if self.equationList[-2] == '+':
-                        self.equationList[-2] = '-'
-                    elif self.equationList[-2] == '-':
-                        self.equationList[-2] = '+'
-                    elif self.equationList[-2] == '*' or self.equationList[-2] == '/':
+                    if self.equationList[-2] == ' + ':
+                        self.equationList[-2] = ' - '
+                    elif self.equationList[-2] == ' - ':
+                        self.equationList[-2] = ' + '
+                    elif self.equationList[-2] == ' * ' or self.equationList[-2] == ' / ':
                         if self.equationList[-1][0:2] == '(-':
                             self.equationList[-1] = self.equationList[-1][2:-1]
                         else:

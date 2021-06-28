@@ -754,9 +754,9 @@ class _MainWindow(QMainWindow):
             # variable_ast.VariableTransformer.infoDict = self._DummyConstraints.XYDict
             topAST = variable_ast.VariableTransformer().visit(topAST)
             code = astunparse.unparse(topAST)
+            print(code)
 
             return code
-            print(code)
         except:
             traceback.print_exc()
             print("encoding fail")

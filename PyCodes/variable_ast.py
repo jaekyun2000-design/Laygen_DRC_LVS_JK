@@ -221,7 +221,7 @@ class IrregularTransformer(ast.NodeTransformer):
             elif function == function == 'left' or function == 'right' or function == 'center':
                 result = f"{code}['_XYCoordinates'][0][1]"
             elif function == function == 'lb' or function == 'rb' or function == 'bottom':
-                result = f"{code}['_XYCoordinates'][0][0] - {code}['_YWidth']/2"
+                result = f"{code}['_XYCoordinates'][0][1] - {code}['_YWidth']/2"
             else:   # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag} for Debugging")
                 pass
@@ -241,7 +241,7 @@ class IrregularTransformer(ast.NodeTransformer):
             elif function == 'left' or function == 'right' or function == 'center':
                 result = result + f", {code}['_XYCoordinates'][0][1]"
             elif function == 'lb' or function == 'rb' or function == 'bottom':
-                result = result + f", {code}['_XYCoordinates'][0][0] - {code}['_YWidth']/2"
+                result = result + f", {code}['_XYCoordinates'][0][1] - {code}['_YWidth']/2"
             else:  # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag}_Y for Debugging")
             if (function != 'width') & (function != 'height'):
