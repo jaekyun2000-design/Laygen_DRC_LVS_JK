@@ -193,14 +193,24 @@ class IrregularTransformer(ast.NodeTransformer):
         tmp_string = re.sub('\(|\'|\)|\[|]',"", expression)
         tmp_string = tmp_string[len(function):]
         operands = re.split(',', tmp_string)
-        # operands = re.split(',', re.sub(f'{function}|\(|\'|\)|\[|]', "", expression))
-        # TODO Variable 이름에 function sequence가 들어갔을 때 어떻게 제거하지 않고 두느냐
+
         code = 'self.'                  # Code Always Starts with 'self.' string
+        offsets = []
         layer = operands[-1]
         objects = operands[0: len(operands)-1]
         for i in range(len(objects)):           # append code from the start
             code = code + f"_DesignParameter['{objects[i]}']['_DesignObj']."
+            offsets.append(code[:-15] + '[\'_XYCoordinates\']')
+
         code = code + f"_DesignParameter['{layer}']"
+
+        offset_x = ''
+        offset_y = ''
+        offset_xy = None
+        for i in range(len(offsets)):
+            offset_x += offsets[i] + '[0][0]'
+            offset_y += offsets[i] + '[0][1]'
+
         if function == 'width':
             result = code + '[\'_XWidth\']'
         elif function == 'height':
@@ -208,40 +218,40 @@ class IrregularTransformer(ast.NodeTransformer):
 
         if XYFlag == 'X':
             if function == 'lt' or function == 'left' or function == 'lb':
-                result = f"{code}['_XYCoordinates'][0][0] - {code}['_XWidth']/2"
+                result = offset_x + '+' + f"{code}['_XYCoordinates'][0][0] - {code}['_XWidth']/2"
             elif function == 'top' or function == 'bottom' or function == 'center':
-                result = f"{code}['_XYCoordinates'][0][0]"
+                result = offset_x + '+' + f"{code}['_XYCoordinates'][0][0]"
             elif function == 'rt' or function == 'right' or function == 'rb':
-                result = f"{code}['_XYCoordinates'][0][0] + {code}['_XWidth']/2"
+                result = offset_x + '+' + f"{code}['_XYCoordinates'][0][0] + {code}['_XWidth']/2"
             else:   # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag} for Debugging")
         elif XYFlag == 'Y':
             if function == 'lt' or function == 'rt' or function == 'top':
-                result = f"{code}['_XYCoordinates'][0][1] + {code}['_YWidth']/2"
+                result = offset_y + '+' + f"{code}['_XYCoordinates'][0][1] + {code}['_YWidth']/2"
             elif function == function == 'left' or function == 'right' or function == 'center':
-                result = f"{code}['_XYCoordinates'][0][1]"
+                result = offset_y + '+' + f"{code}['_XYCoordinates'][0][1]"
             elif function == function == 'lb' or function == 'rb' or function == 'bottom':
-                result = f"{code}['_XYCoordinates'][0][1] - {code}['_YWidth']/2"
+                result = offset_y + '+' + f"{code}['_XYCoordinates'][0][1] - {code}['_YWidth']/2"
             else:   # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag} for Debugging")
                 pass
         elif XYFlag == 'XY':
         # X Input first
             if function == 'lt' or function == 'left' or function == 'lb':
-                result = f"{code}['_XYCoordinates'][0][0] - {code}['_XWidth']/2"
+                result = offset_x + '+' + f"{code}['_XYCoordinates'][0][0] - {code}['_XWidth']/2"
             elif function == function == 'top' or function == 'bottom' or function == 'center':
-                result = f"{code}['_XYCoordinates'][0][0]"
+                result = offset_x + '+' + f"{code}['_XYCoordinates'][0][0]"
             elif function == 'rt' or function == 'right' or function == 'rb':
-                result = f"{code}['_XYCoordinates'][0][0] + {code}['_XWidth']/2"
+                result = offset_x + '+' + f"{code}['_XYCoordinates'][0][0] + {code}['_XWidth']/2"
             else:   # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag}_X for Debugging")
         # Y input afterwards
             if function == 'lt' or function == 'rt' or function == 'top':
-                result = result + f", {code}['_XYCoordinates'][0][1] + {code}['_YWidth']/2"
+                result = result + f", {offset_y} + {code}['_XYCoordinates'][0][1] + {code}['_YWidth']/2"
             elif function == 'left' or function == 'right' or function == 'center':
-                result = result + f", {code}['_XYCoordinates'][0][1]"
+                result = result + f", {offset_y} + {code}['_XYCoordinates'][0][1]"
             elif function == 'lb' or function == 'rb' or function == 'bottom':
-                result = result + f", {code}['_XYCoordinates'][0][1] - {code}['_YWidth']/2"
+                result = result + f", {offset_y} + {code}['_XYCoordinates'][0][1] - {code}['_YWidth']/2"
             else:  # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag}_Y for Debugging")
             if (function != 'width') & (function != 'height'):
