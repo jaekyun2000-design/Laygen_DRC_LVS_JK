@@ -334,7 +334,7 @@ class ExpressionCalculator(QWidget):
     def digit_clicked(self):
         clicked_button = self.sender()
         display = str()
-        if clicked_button.text() == ' +/- ':
+        if clicked_button.text() == '+/-':
             if len(self.equationList) == 0:
                 pass
             elif len(self.equationList) == 1:

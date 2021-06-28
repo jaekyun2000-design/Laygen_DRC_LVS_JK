@@ -190,7 +190,10 @@ class IrregularTransformer(ast.NodeTransformer):
         elif function == 'he':
             function = 'height'
 
-        operands = re.split(',', re.sub(f'{function}|\(|\'|\)|\[|]', "", expression))
+        tmp_string = re.sub('\(|\'|\)|\[|]',"", expression)
+        tmp_string = tmp_string[len(function):]
+        operands = re.split(',', tmp_string)
+        # operands = re.split(',', re.sub(f'{function}|\(|\'|\)|\[|]', "", expression))
         # TODO Variable 이름에 function sequence가 들어갔을 때 어떻게 제거하지 않고 두느냐
         code = 'self.'                  # Code Always Starts with 'self.' string
         layer = operands[-1]
