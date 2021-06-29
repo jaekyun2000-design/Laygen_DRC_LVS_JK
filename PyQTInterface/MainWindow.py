@@ -742,7 +742,7 @@ class _MainWindow(QMainWindow):
             constraint_names = self.dockContentWidget3.model.findItems('',Qt.MatchContains,1)
             constraint_ids = [item.text() for item in constraint_names]
             topAST = ast.Module()
-            topAST.body = [self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids]
+            topAST.body = copy.deepcopy([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
 
             # # TODO: XYCoordinate AST 한번에 처리하는 것이 더 좋은가
             # for i in range(len(constraint_ids)):
@@ -1830,7 +1830,7 @@ class _MainWindow(QMainWindow):
 
                 break
 
-    def createDummyConstraint(self, type_for_dc, info_dict):
+    def createDummyConstraint(self, type_for_dc:str, info_dict:dict):
         """
         For Constraints that do not contain any detailed info
         XY Coordinates, Loops, ... etc.
@@ -1860,7 +1860,9 @@ class _MainWindow(QMainWindow):
                     _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(self._CurrentModuleName)
                     _newConstraintID = (self._CurrentModuleName + str(_designConstraintID))
 
-                    _ASTobj.__dict__['id'] = _newConstraintID
+                    _ASTobj.id = _newConstraintID
+                    _ASTobj._id = _newConstraintID
+                    _ASTobj._type = 'XYCoordinate'
                     self._DummyConstraints.XYDict[_newConstraintID] = info_dict
                     self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
                     design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
@@ -1886,6 +1888,8 @@ class _MainWindow(QMainWindow):
                 _newConstraintID = (self._CurrentModuleName + str(_designConstraintID))
 
                 _ASTobj.id = _newConstraintID
+                _ASTobj._id = _newConstraintID
+                _ASTobj._type = 'XYCoordinate'
                 self._DummyConstraints.XYDict[_newConstraintID] = info_dict
                 self.calculator_window.send_path_row_xy_signal.emit(info_dict, _newConstraintID)
                 design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
@@ -2216,10 +2220,17 @@ class _MainWindow(QMainWindow):
 
             #TODO Debug:
             # 보기에 old_variable_list가 정확하지 않아보임.. a라는 boundary에 변수 수정하다가, b 라는 path 변수 수정하면 날라감
-            for var in tmpList:
-                if var in self.dv.idDict:
-                    if changed_dp_id in self.dv.idDict[var]['id']:
-                        self.dv.idDict[var]['id'].remove(changed_dp_id)
+            try:
+                for var in tmpList:
+                    if var in self.dv.idDict:
+                        if changed_dp_id in self.dv.idDict[var]['id']:
+                            self.dv.idDict[var]['id'].remove(changed_dp_id)
+            except:
+                traceback.print_exc()
+                #TODO
+                # 여기 디버그좀 부탁함당
+                # 가끔씩 unhashable type: 'list' 라고 if var in tmpList 구문에서 떠요.
+                
 
     def highlightVI(self, _idlist):
         for item in self.visualItemDict:
