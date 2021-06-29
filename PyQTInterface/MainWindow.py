@@ -258,7 +258,8 @@ class _MainWindow(QMainWindow):
         dockWidget1_1 = QDockWidget("Layer")
         layoutWidget = QWidget()
         dockContentWidget1 = QWidget()
-        self.dockContentWidget1_2 = list_manager._ManageList()
+        # self.dockContentWidget1_2 = list_manager._ManageList()
+        self.dockContentWidget1_2 = list_manager.LayerManager()
 
         boundaryButton = QPushButton("Boundary")
         boundaryButton.clicked.connect(self.makeBoundaryWindow)
@@ -289,12 +290,12 @@ class _MainWindow(QMainWindow):
 
         GeneratorCheckBox = QCheckBox("Generator", dockContentWidget1)
         GeneratorCheckBox.setCheckState(2)
-        self.send_visibleGenState_signal.connect(self.dockContentWidget1_2.visibleGenState)
+        self.send_visibleGenState_signal.connect(self.dockContentWidget1_2.layer_table_widget.visibleGenState)
         GeneratorCheckBox.stateChanged.connect(self.visibleGenerator)
 
         CandidateCheckBox = QCheckBox("Candidate", dockContentWidget1)
         CandidateCheckBox.setCheckState(2)
-        self.send_visibleCanState_signal.connect(self.dockContentWidget1_2.visibleCanState)
+        self.send_visibleCanState_signal.connect(self.dockContentWidget1_2.layer_table_widget.visibleCanState)
         CandidateCheckBox.stateChanged.connect(self.visibleCandidate)
 
 
@@ -899,7 +900,7 @@ class _MainWindow(QMainWindow):
                             self.scene.removeItem(self.visualItemDict[_qtdp._DesignParameter['_id']])
                             self.visualItemDict[_qtdp._DesignParameter['_id']] = sref_vi
                             self._layerItem = sref_vi.returnLayerDict()
-                            self.dockContentWidget1_2.updateLayerList(self._layerItem)
+                            self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
 
                         break
                     else:
@@ -1285,7 +1286,7 @@ class _MainWindow(QMainWindow):
 
         self._layerItem = sref_vi.returnLayerDict()
 
-        self.dockContentWidget1_2.updateLayerList(self._layerItem)
+        self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
         print("#####################################################################################")
         print(f"               CUSTOM SREF DP / DC / VisualItem Creation Done                       ")
         print("#####################################################################################")
@@ -1328,7 +1329,7 @@ class _MainWindow(QMainWindow):
         self.visualItemDict[dp_id] = sref_vi
         self._layerItem = sref_vi.returnLayerDict()
 
-        self.dockContentWidget1_2.updateLayerList(self._layerItem)
+        self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
 
     def loadGDS(self):
         scf = QFileDialog.getOpenFileName(self,'Load GDS','./PyQTInterface/GDSFile')
@@ -1452,7 +1453,7 @@ class _MainWindow(QMainWindow):
 
                     self._layerItem = sref_vi.returnLayerDict()
 
-                self.dockContentWidget1_2.updateLayerList(self._layerItem)
+                self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
 
                     # for i in range(len(sref_vi.returnLayerDict()['PIMP'])):
                     #     print(sref_vi.returnLayerDict()['PIMP'][i]._ItemTraits)
@@ -1541,8 +1542,8 @@ class _MainWindow(QMainWindow):
             vi = VisualizationItem._VisualizationItem()
             self._layerItem = vi.returnLayerDict()
 
-            self.dockContentWidget1_2.send_listInLayer_signal.connect(self.scene.getNonselectableLayerList)
-            self.dockContentWidget1_2.updateLayerList(self._layerItem)
+            self.dockContentWidget1_2.layer_table_widget.send_listInLayer_signal.connect(self.scene.getNonselectableLayerList)
+            self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
 
             try:
                 if design_dict['constraint']:

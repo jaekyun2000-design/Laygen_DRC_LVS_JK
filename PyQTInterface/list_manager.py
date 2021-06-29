@@ -4,13 +4,40 @@ from PyQTInterface.layermap import LayerReader
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, Qt
 
 import traceback
 
 # layer_visible_flag_dict = dict()
 # for layer in LayerReader._LayerMapping:
 #     layer_visible_flag_dict[layer] = True
+
+class LayerManager(QWidget):
+    def __init__(self):
+        super(LayerManager, self).__init__()
+        self.layer_table_widget = _ManageList()
+        self.initUI()
+
+    def initUI(self):
+        top_layout = QVBoxLayout()
+        selection_layout = QHBoxLayout()
+        visible_all_button = QPushButton("A-Visible")
+        visible_none_button = QPushButton("N-Visible")
+        clickable_all_button = QPushButton("A-Clickable")
+        clickable_none_button = QPushButton("N-Clickable")
+        selection_layout.addWidget(visible_all_button)
+        selection_layout.addWidget(visible_none_button)
+        selection_layout.addWidget(clickable_all_button)
+        selection_layout.addWidget(clickable_none_button)
+
+        visible_all_button.clicked.connect(self.layer_table_widget.macro_check)
+        visible_none_button.clicked.connect(self.layer_table_widget.macro_check)
+        clickable_all_button.clicked.connect(self.layer_table_widget.macro_check)
+        clickable_none_button.clicked.connect(self.layer_table_widget.macro_check)
+
+        top_layout.addLayout(selection_layout)
+        top_layout.addWidget(self.layer_table_widget)
+        self.setLayout(top_layout)
 
 class _ManageList(QTableView):
 
@@ -172,3 +199,30 @@ class _ManageList(QTableView):
                             continue
         except:
             traceback.print_exc()
+
+    def macro_check(self):
+        # purpose: str, mode: bool
+        sender_text = self.sender().text()
+        if sender_text[0] == 'A':
+            mode = 'on'
+        else:
+            mode = 'off'
+
+        if sender_text[2] == 'V':
+            purpose = 'Visible'
+        else:
+            purpose = 'Clickable'
+
+        if purpose == 'Visible':
+            col = 1
+        elif purpose == 'Clickable':
+            col = 2
+
+        if mode == 'on':
+            state= Qt.Checked
+        elif mode == 'off':
+            state= Qt.Unchecked
+
+        for row in range(0, self.model.rowCount()):
+            self.model.item(row,col).setCheckState(state)
+
