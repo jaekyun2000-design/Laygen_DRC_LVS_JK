@@ -93,15 +93,20 @@ class _RectBlock(QGraphicsRectItem):
 
         # print(self.zValue())
 
-        if self.isSelected() or self.hover:
+        if self.isSelected():
             # self._BlockTraits["_Color"].setAlphaF(1)
             # self.setZValue(self.zValue()*10000)
             # print("HighLighted",self.zValue())
-            pen.setStyle(Qt.DashLine)
+            pen.setStyle(Qt.SolidLine)
             # pen.setColor(self._BlockTraits["_Outline"])
             pen.setColor(Qt.GlobalColor.black)
             pen.setWidth(5)
             # self.setZValue(1)
+        elif self.hover:
+            pen.setStyle(Qt.DotLine)
+            pen.setColor(Qt.GlobalColor.darkCyan)
+            pen.setWidth(5)
+            self.setZValue(1)
         else:
             self.setZValue(self._BlockTraits['_Layer']/1000)
 
