@@ -2801,8 +2801,8 @@ class _CustomScene(QGraphicsScene):
         super().keyPressEvent(QKeyEvent)
 
             #signal Out!! with DesignaParameterItems
-
     def mouseMoveEvent(self, QGraphicsSceneMouseEvent):
+        super(_CustomScene, self).mouseMoveEvent(QGraphicsSceneMouseEvent)
         delta = QPointF(QGraphicsSceneMouseEvent.scenePos()-self.oldPos)
         if self.moveFlag is True:
             self.send_move_signal.emit(delta)

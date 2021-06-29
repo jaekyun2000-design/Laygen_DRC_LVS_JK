@@ -28,6 +28,7 @@ class _RectBlock(QGraphicsRectItem):
     def __init__(self,_BlockTraits=None):
         super().__init__()
         self.setFlag(QGraphicsItem.ItemIsSelectable, False)
+        self.hover = False
         # self.setFlag(QGraphicsItem.ItemIsSelectable,False)
         if _BlockTraits is None:
             self._BlockTraits = dict(
@@ -92,7 +93,7 @@ class _RectBlock(QGraphicsRectItem):
 
         # print(self.zValue())
 
-        if self.isSelected():
+        if self.isSelected() or self.hover:
             # self._BlockTraits["_Color"].setAlphaF(1)
             # self.setZValue(self.zValue()*10000)
             # print("HighLighted",self.zValue())
@@ -178,6 +179,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         self._id = None
         self._type = None
         self.setFlag(QGraphicsItemGroup.ItemIsSelectable,True)
+        self.setAcceptHoverEvents(True)
         # self._XYCoordinatesForDisplay = []
         self._clickFlag = True
         self._isInHierarchy = False
@@ -894,3 +896,23 @@ class _VisualizationItem(QGraphicsItemGroup):
 
     def save_zvalue_in_memory(self):
         self.z_value_memory = self.zValue()
+
+    def set_hover_flag(self, hover:bool):
+        for block in self.childItems():
+            if type(block) == _VisualizationItem:
+                block.set_hover_flag(hover)
+            else:
+                block.hover = hover
+
+    def hoverEnterEvent(self, event: 'QGraphicsSceneHoverEvent') -> None:
+        super(_VisualizationItem, self).hoverEnterEvent(event)
+        # for block in self.block:
+        #     block.hover = True
+        self.set_hover_flag(True)
+        self.update()
+
+    def hoverLeaveEvent(self, event: 'QGraphicsSceneHoverEvent') -> None:
+        super(_VisualizationItem, self).hoverLeaveEvent(event)
+        self.set_hover_flag(False)
+        # for block in self.block:
+        #     block.hover = False
