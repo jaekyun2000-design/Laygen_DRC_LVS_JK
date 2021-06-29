@@ -89,6 +89,8 @@ class _ManageList(QTableView):
     def itemChanged(self, item):
         try:
             layer = self.model.item(item.index().row()).text()
+            if layer not in self._usedlayer:
+                return
             Visualitem = self._usedlayer[layer]
 
             if self.visibleCanControl == False and self.visibleGenControl == False:
