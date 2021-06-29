@@ -100,7 +100,7 @@ class _RectBlock(QGraphicsRectItem):
             # pen.setColor(self._BlockTraits["_Outline"])
             pen.setColor(Qt.GlobalColor.black)
             pen.setWidth(5)
-            self.setZValue(1)
+            # self.setZValue(1)
         else:
             self.setZValue(self._BlockTraits['_Layer']/1000)
 
@@ -159,6 +159,9 @@ class _RectBlock(QGraphicsRectItem):
             self.warning.setText("There is no matching QT Color profile")
             print("Color Traits Error")
             self.warning.show()
+
+    def restore_zvalue(self):
+        self.setZValue(self._BlockTraits['_Layer'] / 1000)
 
 
 class _VisualizationItem(QGraphicsItemGroup):
@@ -227,6 +230,11 @@ class _VisualizationItem(QGraphicsItemGroup):
     #     if self._subSrefVisualItem != None:
     #         self._subSrefVisualItem.paint(painter, option, widget)
     #     pass
+    def restore_zvalue(self):
+
+        self.setZValue(0)
+        # for block in self.block:
+        #     block.restore_zvalue()
 
     def shape(self):
         if self._type == 1:
@@ -611,7 +619,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self.text.setPos(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1])
                     self.text.setTransform(QTransform(1,0,0,-1,0,0))
 
-                    self.block.append(self.text)
+                    # self.block.append(self.text)
                     self.addToGroup(self.text)
 
                     self._subElementLayer['text'].append(self)
@@ -673,8 +681,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                             self._subElementLayer[tmpLayer].remove(self)
                             self._subElementLayer[layer].append(self)
 
-                        self.block.append(self.text)
-                        self.block.append(_point)
+                        # self.block.append(self.text)
+                        # self.block.append(_point)
                         self.addToGroup(self.text)
                         self.addToGroup(_point)
 
@@ -793,9 +801,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.heightVariable.setZValue(1)
                 self.XYVariable.setZValue(1)
 
-                self.block.append(self.widthVariable)
-                self.block.append(self.heightVariable)
-                self.block.append(self.XYVariable)
+                # self.block.append(self.widthVariable)
+                # self.block.append(self.heightVariable)
+                # self.block.append(self.XYVariable)
                 self.addToGroup(self.widthVariable)
                 self.addToGroup(self.heightVariable)
                 self.addToGroup(self.XYVariable)
@@ -814,7 +822,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.tmpXY.setZValue(1)
 
                 self.XYVariable.append(self.tmpXY)
-                self.block.append(self.tmpXY)
+                # self.block.append(self.tmpXY)
                 self.addToGroup(self.tmpXY)
 
             elif type == 'Sref':
@@ -836,8 +844,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.XYVariable.setZValue(1)
                 self.paramVariable.setZValue(1)
 
-                self.block.append(self.XYVariable)
-                self.block.append(self.paramVariable)
+                # self.block.append(self.XYVariable)
+                # self.block.append(self.paramVariable)
                 self.addToGroup(self.XYVariable)
                 self.addToGroup(self.paramVariable)
 
@@ -880,3 +888,9 @@ class _VisualizationItem(QGraphicsItemGroup):
         y = self.pos().y()
         self._ItemTraits['_XYCoordinates'] = [[int(x),int(y)]]
 
+    def mousePressEvent(self, event: 'QGraphicsSceneMouseEvent') -> None:
+        if self.isSelected():
+            self.setSelected(False)
+
+    def save_zvalue_in_memory(self):
+        self.z_value_memory = self.zValue()

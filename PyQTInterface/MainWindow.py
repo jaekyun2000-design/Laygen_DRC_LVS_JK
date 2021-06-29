@@ -2472,6 +2472,7 @@ class _CustomScene(QGraphicsScene):
     send_mouse_move_signal = pyqtSignal(QGraphicsSceneMouseEvent)
     send_show_variable_signal = pyqtSignal(QGraphicsItem)
     send_doubleclick_signal = pyqtSignal(bool)
+    send_item_clicked_signal = pyqtSignal(VisualizationItem._VisualizationItem)
 
     viewList = []
 
@@ -2494,11 +2495,62 @@ class _CustomScene(QGraphicsScene):
         self.nslist = list()
 
         self.point_items_memory = []
+        self.selected_item_in_memory = None
 
     def getNonselectableLayerList(self, _layerlist):
         self.nslist = _layerlist
 
     def mousePressEvent(self, event):
+        def masking(items):
+            masked_output = []
+            for item in items:
+                if type(item) == VisualizationItem._VisualizationItem:
+                    if not item.parentItem():
+                        masked_output.append(item)
+            return masked_output
+
+        items = self.items(event.scenePos())
+        items = masking(items)
+
+        if not self.point_items_memory:
+            print('No items in memory!')
+            print(items)
+            self.point_items_memory = items
+
+        if self.point_items_memory:
+            print(f'1)There is items in memory: {[item._id for item in self.point_items_memory]}')
+            if set(items) == set(self.point_items_memory):
+                if self.selectedItems():
+                    if len(self.selectedItems()) >1:
+                        super(_CustomScene, self).mousePressEvent(event)
+                        return
+                    print(f'2)before_selected_item :{self.selectedItems()[0]._id}')
+                    before_selected_item = self.selectedItems()[0]
+                    if before_selected_item in self.point_items_memory:
+                        idx = self.point_items_memory.index(before_selected_item)
+                    else:
+                        super(_CustomScene, self).mousePressEvent(event)
+                        return
+                else:
+                    idx = -1
+                if idx+1 == len(self.point_items_memory):
+                    print(f'3)idx_overflow :{idx}')
+                    self.point_items_memory[idx].restore_zvalue()
+                    self.point_items_memory[0].save_zvalue_in_memory()
+                    self.point_items_memory[0].setZValue(10)
+                else:
+                    print(f'3)idx_not_overflow :{idx}')
+                    print(f'3-info) z_values : {[item.zValue() for item in self.point_items_memory]}')
+                    self.point_items_memory[idx].restore_zvalue()
+                    self.point_items_memory[idx+1].save_zvalue_in_memory()
+                    self.point_items_memory[idx+1].setZValue(10)
+            else:
+                if items:
+                    print(f'4)new point : {items[0]._id}')
+                else:
+                    print(f'4)clear')
+                map(lambda item: item.restore_zvalue(), self.point_items_memory)
+                self.point_items_memory = items
 
         super().mousePressEvent(event)
 
@@ -2572,7 +2624,48 @@ class _CustomScene(QGraphicsScene):
         #     pass
         # super().mousePressEvent(event)
 
-
+    # def mouseReleaseEvent(self, event: 'QGraphicsSceneMouseEvent') -> None:
+    #     super(_CustomScene, self).mouseReleaseEvent(event)
+    #     def masking(items):
+    #         masked_output = []
+    #         for item in items:
+    #             if type(item) == VisualizationItem._VisualizationItem:
+    #                 masked_output.append(item)
+    #         return masked_output
+    #
+    #     items = self.items(event.scenePos())
+    #     items = masking(items)
+    #
+    #     if not self.point_items_memory:
+    #         print('No Memory!')
+    #         print(items)
+    #         self.point_items_memory = items
+    #         return
+    #     if set(self.point_items_memory) == set(items):
+    #         print('Same point!')
+    #         # selected_item = self.selectedItems()[0]
+    #         selected_item = self.selected_item_in_memory
+    #         if selected_item in items:
+    #             idx = items.index(selected_item)
+    #         else:
+    #             print('not selected')
+    #             idx = 0
+    #             items[idx].setSelected(True)
+    #             return
+    #         if len(items) == 1:
+    #             return
+    #         if idx+1 == len(items):
+    #             print('idx out')
+    #             map(lambda item: item.setSelected(False), items)
+    #             # items[idx].ungrabMouse()
+    #         else:
+    #             print(f'idx={idx}')
+    #             items[idx].setSelected(False)
+    #             items[idx+1].setSelected(True)
+    #     else:
+    #         print('New point')
+    #         self.point_items_memory = items
+    #         return
 
     def send_item_list(self):
         itemList = self.selectedItems()
