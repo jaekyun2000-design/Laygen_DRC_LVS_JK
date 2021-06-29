@@ -619,7 +619,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self.text.setPos(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1])
                     self.text.setTransform(QTransform(1,0,0,-1,0,0))
 
-                    # self.block.append(self.text)
+                    self.block.append(self.text)
                     self.addToGroup(self.text)
 
                     self._subElementLayer['text'].append(self)
@@ -681,8 +681,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                             self._subElementLayer[tmpLayer].remove(self)
                             self._subElementLayer[layer].append(self)
 
-                        # self.block.append(self.text)
-                        # self.block.append(_point)
+                        self.block.append(self.text)
+                        self.block.append(_point)
                         self.addToGroup(self.text)
                         self.addToGroup(_point)
 
@@ -801,9 +801,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.heightVariable.setZValue(1)
                 self.XYVariable.setZValue(1)
 
-                # self.block.append(self.widthVariable)
-                # self.block.append(self.heightVariable)
-                # self.block.append(self.XYVariable)
+                self.block.append(self.widthVariable)
+                self.block.append(self.heightVariable)
+                self.block.append(self.XYVariable)
                 self.addToGroup(self.widthVariable)
                 self.addToGroup(self.heightVariable)
                 self.addToGroup(self.XYVariable)
@@ -822,7 +822,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.tmpXY.setZValue(1)
 
                 self.XYVariable.append(self.tmpXY)
-                # self.block.append(self.tmpXY)
+                self.block.append(self.tmpXY)
                 self.addToGroup(self.tmpXY)
 
             elif type == 'Sref':
@@ -844,8 +844,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.XYVariable.setZValue(1)
                 self.paramVariable.setZValue(1)
 
-                # self.block.append(self.XYVariable)
-                # self.block.append(self.paramVariable)
+                self.block.append(self.XYVariable)
+                self.block.append(self.paramVariable)
                 self.addToGroup(self.XYVariable)
                 self.addToGroup(self.paramVariable)
 
