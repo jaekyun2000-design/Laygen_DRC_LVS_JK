@@ -2501,6 +2501,7 @@ class _CustomScene(QGraphicsScene):
         self.nslist = _layerlist
 
     def mousePressEvent(self, event):
+        self.send_xyCoordinate_signal.emit(event)
         def masking(items):
             masked_output = []
             for item in items:
