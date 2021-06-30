@@ -2560,6 +2560,17 @@ class _CustomScene(QGraphicsScene):
             self.point_items_memory = items
         super().mousePressEvent(event)
 
+    # def mouseReleaseEvent(self, event: 'QGraphicsSceneMouseEvent') -> None:
+    #     super().mouseReleaseEvent(event)
+    #     # if self.mouseGrabberItem():
+    #     idx = self.point_items_memory.index(self.selectedItems()[0])
+    #     print(f'idx:{idx}')
+    #     if idx+1 == len(self.point_items_memory):
+    #         self.point_items_memory[idx].hoverLeaveEvent(QGraphicsSceneHoverEvent)
+    #         self.point_items_memory[0].hoverEnterEvent(QGraphicsSceneHoverEvent)
+    #     else:
+    #         self.point_items_memory[idx].hoverLeaveEvent(QGraphicsSceneHoverEvent)
+    #         self.point_items_memory[idx+1].hoverEnterEvent(QGraphicsSceneHoverEvent)
         # def masking(items):
         #     masked_output = []
         #     for item in items:
@@ -2672,6 +2683,23 @@ class _CustomScene(QGraphicsScene):
     #         print('New point')
     #         self.point_items_memory = items
     #         return
+    # def event(self, event: QEvent) -> bool:
+    #     if event.type() == QEvent.GraphicsSceneMouseRelease:
+    #         print('nice!')
+    #         grab_item = self.mouseGrabberItem()
+    #         if grab_item :
+    #             hover_event = QHoverEvent(QEvent.GraphicsSceneHoverEnter,event.pos(),event)
+    #             idx = self.point_items_memory.index(grab_item)
+    #             if idx+1 == len(self.point_items_memory):
+    #                 self.point_items_memory[0].hoverEnterEvent(event)
+    #             else:
+    #                 self.point_items_memory[idx+1].hoverEnterEvent(event)
+    #             return True
+    #         else:
+    #             super(_CustomScene, self).event(event)
+    #     else:
+    #         return super(_CustomScene, self).event(event)
+            
 
     def send_item_list(self):
         itemList = self.selectedItems()
