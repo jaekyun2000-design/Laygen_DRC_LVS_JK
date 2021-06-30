@@ -2512,18 +2512,21 @@ class _CustomScene(QGraphicsScene):
             return masked_output
 
         items = self.items(event.scenePos())
+        # for item in items:
+        #     if '_id' in item.__dict__:
+        #         print(f'0)Items before masking {item._id}')
         items = masking(items)
 
         if not self.point_items_memory:
             print('No items in memory!')
             print(items)
-            self.point_items_memory = items
+            # self.point_items_memory = items
 
         if self.point_items_memory:
             print(f'1)There is items in memory: {[item._id for item in self.point_items_memory]}')
             if set(items) == set(self.point_items_memory):
                 if self.selectedItems():
-                    if len(self.selectedItems()) >1:
+                    if len(self.selectedItems()) > 1:
                         super(_CustomScene, self).mousePressEvent(event)
                         return
                     print(f'2)before_selected_item :{self.selectedItems()[0]._id}')
@@ -2553,7 +2556,8 @@ class _CustomScene(QGraphicsScene):
                     print(f'4)clear')
                 map(lambda item: item.restore_zvalue(), self.point_items_memory)
                 self.point_items_memory = items
-
+        else:
+            self.point_items_memory = items
         super().mousePressEvent(event)
 
         # def masking(items):
