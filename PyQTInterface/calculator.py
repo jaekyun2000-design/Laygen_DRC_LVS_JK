@@ -646,10 +646,10 @@ class ExpressionCalculator(QWidget):
             self.pw.show()
             self.send_path_row_xy_signal.connect(self.pw.create_row)
 
-        self.export_clicked('XYCoordinate_for_path_row')
+        self.export_clicked('PathXY_row')
 
     def getPathInfo(self, idDict):
-        self.send_XYCreated_signal.emit('XYCoordinate_for_path', idDict)
+        self.send_XYCreated_signal.emit('PathXY', idDict)
 
     def parsing_clipboard(self):
         try:

@@ -1880,7 +1880,7 @@ class _MainWindow(QMainWindow):
                     print("                XYCoordinate ast creation Failed               ")
                     print("###############################################################")
 
-            elif type_for_dc == 'XYCoordinate_for_path_row':
+            elif type_for_dc == 'PathXY_row':
                 _ASTForVariable = ASTmodule._Custom_AST_API()
                 _ASTtype = 'XYCoordinate'
                 _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
@@ -1897,7 +1897,36 @@ class _MainWindow(QMainWindow):
                 design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
                                                                   module_name=self._CurrentModuleName, _ast=_ASTobj)
 
-            elif type_for_dc == 'XYCoordinate_for_path':
+            elif type_for_dc == 'PathXY':
+                try:
+                    print("###############################################################")
+                    print("          PathXY ast creation Start             ")
+                    print("###############################################################")
+                    _ASTForVariable = ASTmodule._Custom_AST_API()
+                    _ASTtype = type_for_dc
+                    _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
+
+                    _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(self._CurrentModuleName)
+                    _newConstraintID = (self._CurrentModuleName + str(_designConstraintID))
+
+                    _ASTobj.id = _newConstraintID
+                    _ASTobj._id = _newConstraintID
+                    _ASTobj._type = 'PathXY'
+                    self._DummyConstraints.XYPathDict[_newConstraintID] = info_dict
+                    self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
+                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                      module_name=self._CurrentModuleName, _ast=_ASTobj)
+                    self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                     _parentName=self._CurrentModuleName,
+                                                                     _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+
+                    print("###############################################################")
+                    print("           PathXY ast creation Done             ")
+                    print("###############################################################")
+                except:
+                    print("###############################################################")
+                    print("           PathXY ast creation Failed           ")
+                    print("###############################################################")
                 pass
 
 
@@ -2232,7 +2261,7 @@ class _MainWindow(QMainWindow):
                 #TODO
                 # 여기 디버그좀 부탁함당
                 # 가끔씩 unhashable type: 'list' 라고 if var in tmpList 구문에서 떠요.
-                
+
 
     def highlightVI(self, _idlist):
         for item in self.visualItemDict:
@@ -2805,6 +2834,7 @@ class _CustomScene(QGraphicsScene):
         super().keyPressEvent(QKeyEvent)
 
             #signal Out!! with DesignaParameterItems
+
     def mouseMoveEvent(self, QGraphicsSceneMouseEvent):
         super(_CustomScene, self).mouseMoveEvent(QGraphicsSceneMouseEvent)
         delta = QPointF(QGraphicsSceneMouseEvent.scenePos()-self.oldPos)

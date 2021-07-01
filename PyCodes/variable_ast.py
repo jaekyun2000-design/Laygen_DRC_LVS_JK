@@ -4,7 +4,7 @@ import re
 import copy
 
 custom_ast_list = ['GeneratorVariable', 'LogicExpression', 'ElementArray','DynamicElementArray','Distance',
-                   'ArgumentVariable', 'LogicExpression', 'XYCoordinate']
+                   'ArgumentVariable', 'LogicExpression', 'XYCoordinate', 'PathXY']
 
 
 
@@ -28,11 +28,18 @@ class LogicExpression(GeneratorVariable):
         'value',    # str
     )
 class XYCoordinate(GeneratorVariable):
-
     def __init__(self, *args, **kwargs):
         super().__init__()
     _fields = (
         'id',     #str
+    )
+
+class PathXY(GeneratorVariable):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+
+    _fields = (
+        'id',  # str
     )
 
 class ArgumentVariable(GeneratorVariable):
@@ -88,7 +95,7 @@ class IrregularTransformer(ast.NodeTransformer):
         self._id_to_data_dict = _id_to_data_dict
 
     def visit_XYCoordinate(self,node):
-        _id = node._id
+        _id = node.id
         tmpDict = dict()
         tmpDict['X'] = []
         tmpDict['Y'] = []
@@ -162,11 +169,32 @@ class IrregularTransformer(ast.NodeTransformer):
         sentence.append(final_x_value)
         sentence.append(final_y_value)
         sentence = '[['+final_x_value+','+final_y_value+']]'
-        # sentence = f"'{sentence}'"
-        # return list(sentence)
-        # print(sentence)
         tmp = ast.parse(sentence)
         return tmp.body
+
+    def visit_PathXY(self, node):
+        _id = node.id
+        sentence = '['
+        for _, elementIdList in self._id_to_data_dict.XYPathDict[_id].items():
+            for i in range(len(elementIdList)):
+                tmp_node = XYCoordinate()
+                tmp_node.id = elementIdList[i]
+                tmp_code_ast = self.visit_XYCoordinate(tmp_node)
+                tmp_code = astunparse.unparse(tmp_code_ast)
+                tmp_code = tmp_code[2:-2]
+                sentence = sentence + tmp_code + ',\n'
+                del tmp_node
+        sentence = sentence[:-2] + ']'
+        final_tripleList = '[' +sentence+ ']'
+        tmp = ast.parse(final_tripleList)
+        return tmp.body
+
+        #     code = self.visit_XYCoordinate(self,)
+        #     print('a')
+        #     tmp_node = XYCoordinate(_id=element_id)
+        #     code = self.visit_XYCoordinate(tmp_node)
+        #     del tmp_node
+
 
     def expressionTransformer(self, expression, XYFlag):
         """
@@ -258,6 +286,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 result = re.split(',', result)
         print(f"Re-Expressed Element: \n{result}")
         return result
+
 
 
 class VariableTransformer(ast.NodeTransformer):

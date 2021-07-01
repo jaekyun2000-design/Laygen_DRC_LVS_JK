@@ -66,3 +66,4 @@ class Variable_IDwithAST:
 class DummyConstraints:
     def __init__(self):
         self.XYDict = dict()
+        self.XYPathDict = dict()
