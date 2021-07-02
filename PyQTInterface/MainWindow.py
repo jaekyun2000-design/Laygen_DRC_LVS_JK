@@ -538,7 +538,7 @@ class _MainWindow(QMainWindow):
 
     def clipboard_test(self):
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
-        self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.test)
+        self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.storePreset)
         self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
         self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
         self.calculator_window.show()
