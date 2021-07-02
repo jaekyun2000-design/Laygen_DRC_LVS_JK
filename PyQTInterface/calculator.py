@@ -203,6 +203,60 @@ class ExpressionCalculator(QWidget):
             for itemXY in self.XYWindow.selectedItems():
                 rowXY = self.XYWindow.row(itemXY)
                 self.XYWindow.takeItem(rowXY)
+        elif QKeyEvent.text() == 'q':
+            self.geo_clicked(clicked=self.left_top_buttons)
+        elif QKeyEvent.text() == 'w':
+            self.geo_clicked(clicked=self.top_buttons)
+        elif QKeyEvent.text() == 'e':
+            self.geo_clicked(clicked=self.right_top_buttons)
+        elif QKeyEvent.text() == 'a':
+            self.geo_clicked(clicked=self.left_buttons)
+        elif QKeyEvent.text() == 's':
+            self.geo_clicked(clicked=self.center_buttons)
+        elif QKeyEvent.text() == 'd':
+            self.geo_clicked(clicked=self.right_buttons)
+        elif QKeyEvent.text() == 'z':
+            self.geo_clicked(clicked=self.left_bot_buttons)
+        elif QKeyEvent.text() == 'x':
+            self.geo_clicked(clicked=self.bottom_buttons)
+        elif QKeyEvent.text() == 'c':
+            self.geo_clicked(clicked=self.right_bot_buttons)
+        elif QKeyEvent.text() == 'W':
+            self.geo_clicked(clicked=self.width_button)
+        elif QKeyEvent.text() == 'H':
+            self.geo_clicked(clicked=self.height_button)
+        elif QKeyEvent.text() == '1':
+            self.digit_clicked(clicked=self.digit_buttons[1])
+        elif QKeyEvent.text() == '2':
+            self.digit_clicked(clicked=self.digit_buttons[2])
+        elif QKeyEvent.text() == '3':
+            self.digit_clicked(clicked=self.digit_buttons[3])
+        elif QKeyEvent.text() == '4':
+            self.digit_clicked(clicked=self.digit_buttons[4])
+        elif QKeyEvent.text() == '5':
+            self.digit_clicked(clicked=self.digit_buttons[5])
+        elif QKeyEvent.text() == '6':
+            self.digit_clicked(clicked=self.digit_buttons[6])
+        elif QKeyEvent.text() == '7':
+            self.digit_clicked(clicked=self.digit_buttons[7])
+        elif QKeyEvent.text() == '8':
+            self.digit_clicked(clicked=self.digit_buttons[8])
+        elif QKeyEvent.text() == '9':
+            self.digit_clicked(clicked=self.digit_buttons[9])
+        elif QKeyEvent.text() == '0':
+            self.digit_clicked(clicked=self.digit_buttons[0])
+        elif QKeyEvent.text() == '+':
+            self.arithmetic_clicked(clicked=self.plus)
+        elif QKeyEvent.text() == '-':
+            self.arithmetic_clicked(clicked=self.minus)
+        elif QKeyEvent.text() == '*':
+            self.arithmetic_clicked(clicked=self.mul)
+        elif QKeyEvent.text() == '/':
+            self.arithmetic_clicked(clicked=self.div)
+
+        print(QKeyEvent.text())
+
+
 
     def XitemClicked(self):
         if self.YWindow.currentItem():
@@ -272,8 +326,11 @@ class ExpressionCalculator(QWidget):
             button.setObjectName(name)
         return button
 
-    def arithmetic_clicked(self):
-        clicked_button = self.sender()
+    def arithmetic_clicked(self,  clicked= None):
+        if clicked:
+            clicked_button = clicked
+        else:
+            clicked_button = self.sender()
         arith_sign = clicked_button.text()
         display = str()
 
@@ -386,8 +443,11 @@ class ExpressionCalculator(QWidget):
         self.XYWindow.addItem(self.display.toPlainText())
         self.display.clear()
 
-    def digit_clicked(self):
-        clicked_button = self.sender()
+    def digit_clicked(self,  clicked= None):
+        if clicked:
+            clicked_button = clicked
+        else:
+            clicked_button = self.sender()
         display = str()
         if clicked_button.text() == '+/-':
             if len(self.equationList) == 0:
@@ -500,8 +560,11 @@ class ExpressionCalculator(QWidget):
         #         self.value_str = digit_value
         #         self.digit_flag = True
 
-    def geo_clicked(self):
-        clicked_button = self.sender()
+    def geo_clicked(self, clicked= None):
+        if clicked:
+            clicked_button = clicked
+        else:
+            clicked_button = self.sender()
         geo_text = clicked_button.objectName()
         hierarchy_list = self.parsing_clipboard()
         display = str()
@@ -669,7 +732,7 @@ class ExpressionCalculator(QWidget):
             print(self.clipboard.text())
         return Exception("No selected layer")
 
-    def test(self, dict, _id):
+    def storePreset(self, dict, _id):
         self.presetDict[_id] = dict
         self.presetWindow.addItem(_id)
         print(self.presetDict)

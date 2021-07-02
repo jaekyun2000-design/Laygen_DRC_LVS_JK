@@ -243,18 +243,18 @@ class _VisualizationItem(QGraphicsItemGroup):
         #     block.restore_zvalue()
 
     def shape(self):
-        if self._type == 1:
-            # return super().shape()
-            main_path = QPainterPath()
-            for i, block in enumerate(self.block):
-                if type(block) != _RectBlock:
-                    continue
-                else:
-                    tmp_rect = block.rect()
-                    tmp_rect.translate(block.pos())
-                    main_path.addRect(tmp_rect)
-            return main_path
-        elif self._type == 2:
+        # if self._type == 1:
+        #     # return super().shape()
+        #     main_path = QPainterPath()
+        #     for i, block in enumerate(self.block):
+        #         if type(block) != _RectBlock:
+        #             continue
+        #         else:
+        #             tmp_rect = block.rect()
+        #             tmp_rect.translate(block.pos())
+        #             main_path.addRect(tmp_rect)
+        #     return main_path
+        if self._type == 1 or self._type == 2:
             main_path = QPainterPath()
             for i, block in enumerate(self.block):
                 try:
