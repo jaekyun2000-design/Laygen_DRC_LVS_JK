@@ -243,7 +243,7 @@ class ElementTransformer(ast.NodeTransformer):
         elif syntax == 'ast':
             tmp_xy = astunparse.unparse(node.XY).replace('\n', '')
             sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
+                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {tmp_xy}, _Width = {node.width})"
         tmp = ast.parse(sentence)
         return tmp.body[0]
 

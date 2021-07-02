@@ -2563,8 +2563,9 @@ class _CustomScene(QGraphicsScene):
                     if before_selected_item in self.point_items_memory:
                         idx = self.point_items_memory.index(before_selected_item)
                     else:
-                        super(_CustomScene, self).mousePressEvent(event)
-                        return
+                        idx = -1
+                        # super(_CustomScene, self).mousePressEvent(event)
+                        # return
                 else:
                     idx = -1
                 if idx+1 == len(self.point_items_memory):
@@ -2727,6 +2728,8 @@ class _CustomScene(QGraphicsScene):
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Delete:
+            # if self.parent():
+            #     warnings.warn("You cannot delete at sub-window level.")
             deletionItems = self.selectedItems()
             for deleteItem in deletionItems:
                 # self.removeItem(deleteItem)
