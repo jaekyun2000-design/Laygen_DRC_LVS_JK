@@ -193,6 +193,8 @@ class IrregularTransformer(ast.NodeTransformer):
         tmpDict = dict()
         tmpDict['X'] = []
         tmpDict['Y'] = []
+        final_x_value = None
+        final_y_value = None
         for XYFlag, elements in self._id_to_data_dict.ExpressionDict[_id].items():
             if len(elements) == 0:
                 pass
@@ -220,7 +222,7 @@ class IrregularTransformer(ast.NodeTransformer):
                     final_x_value = tmpDict['X'][i]
                 else:
                     final_x_value = tmpDict['X'][i] + ' + ' + final_x_value
-                    sentence = final_x_value
+            sentence = final_x_value
         else:
 
             for j in range(len(tmpDict['Y'])):
@@ -228,7 +230,7 @@ class IrregularTransformer(ast.NodeTransformer):
                     final_y_value = tmpDict['Y'][j]
                 else:
                     final_y_value = tmpDict['Y'][j] + ' + ' + final_y_value
-                    sentence = final_y_value
+            sentence = final_y_value
         tmp = ast.parse(sentence)
         return tmp.body
 
