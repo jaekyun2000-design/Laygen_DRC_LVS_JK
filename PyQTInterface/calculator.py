@@ -610,6 +610,7 @@ class ExpressionCalculator(QWidget):
         XList = list()
         YList = list()
         XYList = list()
+        LEFlag = False
         for i_x in range(self.XWindow.count()):
             self.XWindow.setCurrentRow(i_x)
             XList.append(self.XWindow.currentItem().text())
@@ -625,18 +626,20 @@ class ExpressionCalculator(QWidget):
         if not XYList:
             if XList and YList:
                 pass
-            else:
-                self.warning = QMessageBox()
-                self.warning.setText("X field and Y field both should not be empty")
-                self.warning.show()
-                return
+            elif XList:
+                self.send_XYCreated_signal.emit('LogicExpression', output)
+                LEFlag = True
+            elif YList:
+                self.send_XYCreated_signal.emit('LogicExpression', output)
+                LEFlag = True
 
         self.XWindow.clear()
         self.YWindow.clear()
         self.XYWindow.clear()
 
         if export_type == False:
-            self.send_XYCreated_signal.emit('XYCoordinate', output)
+            if LEFlag == False:
+                self.send_XYCreated_signal.emit('XYCoordinate', output)
         else:
             self.send_XYCreated_signal.emit(export_type, output)
 

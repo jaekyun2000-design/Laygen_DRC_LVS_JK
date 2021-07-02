@@ -4,7 +4,7 @@ import re
 import copy
 
 custom_ast_list = ['GeneratorVariable', 'LogicExpression', 'ElementArray','DynamicElementArray','Distance',
-                   'ArgumentVariable', 'LogicExpression', 'XYCoordinate', 'PathXY']
+                   'ArgumentVariable', 'XYCoordinate', 'PathXY']
 
 
 
@@ -19,13 +19,12 @@ class LogicExpression(GeneratorVariable):
     """
     LogicExpression class:
     Variable declaration with initial deterministic value
-    Usage: 'name' = 'logic expression'
+    Usage: 'logic expression'
     """
     def __init__(self, *args, **kwargs):
         super().__init__()
     _fields = (
-        'name',     # str
-        'value',    # str
+        'id',    # str
     )
 class XYCoordinate(GeneratorVariable):
     def __init__(self, *args, **kwargs):
@@ -189,11 +188,50 @@ class IrregularTransformer(ast.NodeTransformer):
         tmp = ast.parse(final_tripleList)
         return tmp.body
 
-        #     code = self.visit_XYCoordinate(self,)
-        #     print('a')
-        #     tmp_node = XYCoordinate(_id=element_id)
-        #     code = self.visit_XYCoordinate(tmp_node)
-        #     del tmp_node
+    def visit_LogicExpression(self,node):
+        _id = node.id
+        tmpDict = dict()
+        tmpDict['X'] = []
+        tmpDict['Y'] = []
+        for XYFlag, elements in self._id_to_data_dict.ExpressionDict[_id].items():
+            if len(elements) == 0:
+                pass
+            else:
+                for i in range(len(elements)):
+                    expression = elements[i]
+                    operands_with_operators_list = re.split(' ', expression)
+                    for i in range(len(operands_with_operators_list)):
+                        isFunction = re.search('\(\[\'.*\'\]\)', operands_with_operators_list[i])
+                        if isFunction != None:
+                            re_expressed_element = self.expressionTransformer(operands_with_operators_list[i],
+                                                                              XYFlag=XYFlag)
+                            operands_with_operators_list[i] = re_expressed_element
+                        else:
+                            pass
+                    if XYFlag == 'XY':
+                        continue
+                    else:
+                        intermediateCode = ' '.join(operands_with_operators_list)
+                        tmpDict[XYFlag].append(intermediateCode)
+
+        if len(tmpDict['X']) != 0:
+            for i in range(len(tmpDict['X'])):
+                if final_x_value == None:
+                    final_x_value = tmpDict['X'][i]
+                else:
+                    final_x_value = tmpDict['X'][i] + ' + ' + final_x_value
+                    sentence = final_x_value
+        else:
+
+            for j in range(len(tmpDict['Y'])):
+                if final_y_value == None:
+                    final_y_value = tmpDict['Y'][j]
+                else:
+                    final_y_value = tmpDict['Y'][j] + ' + ' + final_y_value
+                    sentence = final_y_value
+        tmp = ast.parse(sentence)
+        return tmp.body
+
 
 
     def expressionTransformer(self, expression, XYFlag):
@@ -298,12 +336,6 @@ class VariableTransformer(ast.NodeTransformer):
         else:
             sentence = f"for (i, element) in enumerate({node.elements}):\
             \tself._DesignParameter[element]['_XYCoordinates'] = [({node.XY[0][0]} + (i * {node.x_space_distance})), ({node.XY[0][1]} + (i * {node.y_space_distance}))]"
-        # print(sentence)
-        tmp = ast.parse(sentence)
-        return tmp.body
-
-    def visit_LogicExpression(self,node):
-        sentence = f"{node.name} = {node.value}"
         # print(sentence)
         tmp = ast.parse(sentence)
         return tmp.body
