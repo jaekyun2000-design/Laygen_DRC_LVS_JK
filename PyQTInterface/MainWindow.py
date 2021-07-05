@@ -2473,6 +2473,8 @@ class _CustomView(QGraphicsView):
         variable_create_distance = QAction("create distance variable", self)
         variable_create_enclosure = QAction("create enclousre variable", self)
         variable_create_connect = QAction("create connect variable", self)
+        visual_ungroup = QAction("ungroup multiple xy index cells", self)
+        visual_ungroup.setShortcut('Ctrl+G')
 
         menu = QMenu(self)
         menu.addAction(constraint_create_array)
@@ -2480,12 +2482,14 @@ class _CustomView(QGraphicsView):
         menu.addAction(variable_create_distance)
         menu.addAction(variable_create_enclosure)
         menu.addAction(variable_create_connect)
+        menu.addAction(visual_ungroup)
 
         constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('c_array'))
         variable_create_array.triggered.connect(lambda tmp: self.variable_emit('array'))
         variable_create_distance.triggered.connect(lambda tmp: self.variable_emit('distance'))
         variable_create_enclosure.triggered.connect(lambda tmp: self.variable_emit('enclosure'))
         variable_create_connect.triggered.connect(lambda tmp: self.variable_emit('connect'))
+        visual_ungroup.triggered.connect(self.scene().ungroup_indexed_item)
 
 
         menu.exec(event.globalPos())
@@ -2501,6 +2505,8 @@ class _CustomView(QGraphicsView):
             self.variable_signal.emit('enclosure')
         elif type == 'connect':
             self.variable_signal.emit('connect')
+        # elif type == 'ungroup':
+        #     self.variable_signal.emit('ungroup')
 
 
     def dragEnterEvent(self, event) -> None:
@@ -2602,7 +2608,7 @@ class _CustomScene(QGraphicsScene):
                     self.point_items_memory[0].setZValue(10)
                 else:
                     print(f'3)idx_not_overflow :{idx}')
-                    print(f'3-info) z_values : {[item.zValue() for item in self.point_items_memory]}')
+                    print(f'3-info) b_z_values : {[item.zValue() for item in self.point_items_memory]}')
                     self.point_items_memory[idx].restore_zvalue()
                     self.point_items_memory[idx+1].save_zvalue_in_memory()
                     self.point_items_memory[idx+1].setZValue(10)
@@ -2930,6 +2936,25 @@ class _CustomScene(QGraphicsScene):
             # for key, value in item._ItemTraits['_DesignParameterRef'].items():
             #     structure_dict[key] = value
         return structure_dict
+
+    def ungroup_indexed_item(self):
+        for item in self.selectedItems():
+            if type(item) == VisualizationItem._VisualizationItem:
+                if len(item._ItemTraits['_XYCoordinates']) > 1:
+                    map(lambda child: child.setFlag(QGraphicsItem.ItemIsSelectable, True), item.childItems())
+                    for child in item.childItems():
+                        tmp_vs_item = child.independent_from_group()
+                        self.addItem(tmp_vs_item)
+                    # map(lambda child: child.independent_from_group(self), item.childItems())
+                    self.removeItem(item)
+                    # self.destroyItemGroup(item)
+
+                    # item.setVisible(False)
+                    # for child in item.childItems():
+                    #     item.removeFromGroup(child)
+                else:
+                    print('Only one index exist.')
+                    print(item._ItemTraits['_XYCoordinates'])
 
 class _VersatileWindow(QWidget):
     send_Name_signal = pyqtSignal(str)

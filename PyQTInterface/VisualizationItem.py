@@ -106,7 +106,7 @@ class _RectBlock(QGraphicsRectItem):
             pen.setStyle(Qt.DotLine)
             pen.setColor(Qt.GlobalColor.darkCyan)
             pen.setWidth(5)
-            self.setZValue(1)
+            # self.setZValue(1)
         else:
             self.setZValue(self._BlockTraits['_Layer']/1000)
 
@@ -168,6 +168,14 @@ class _RectBlock(QGraphicsRectItem):
     def restore_zvalue(self):
         self.setZValue(self._BlockTraits['_Layer'] / 1000)
 
+    def independent_from_group(self):
+        self.original_parent = self.parentItem()
+        tmp_parent_item = _VisualizationItem()
+        tmp_parent_item._ItemTraits = self.original_parent._ItemTraits
+        self.original_parent.removeFromGroup(self)
+        tmp_parent_item.addToGroup(self)
+
+        return tmp_parent_item
 
 class _VisualizationItem(QGraphicsItemGroup):
     _compareLayer = dict()
@@ -218,6 +226,7 @@ class _VisualizationItem(QGraphicsItemGroup):
             self.block = []
             # self._BlockGroup = None,
         else:
+            self.block = []
             self._ItemTraits = _ItemTraits
             if self._ItemTraits['_DesignParametertype'] == 1:
                 for xyPairs in self._ItemTraits['_XYCoordinates']:
@@ -436,7 +445,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
             del _Layer
             del _Layer2Name
-            self.block=[]
+            # self.block=[]
 
             if self._ItemTraits['_DesignParametertype'] == 1:                              # Boundary Case
                 tmpBlock = _RectBlock()
