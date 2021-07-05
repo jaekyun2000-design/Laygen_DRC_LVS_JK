@@ -278,6 +278,9 @@ class _MainWindow(QMainWindow):
         PinButton = QPushButton("Pin",dockContentWidget1)
         PinButton.clicked.connect(self.makePinWindow)
 
+        TestButton = QPushButton("Test",dockContentWidget1)
+        TestButton.clicked.connect(self.makeTest)
+
         # FilterButton = QPushButton("Filter",dockContentWidget1)
         # FilterButton.clicked.connect(self.makeFilterWindow)
         #
@@ -533,9 +536,6 @@ class _MainWindow(QMainWindow):
 
     # def threading_test(self,count):
 
-    def debug(self,name_list):
-        print(name_list)
-
     def clipboard_test(self):
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
         self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.storePreset)
@@ -543,9 +543,10 @@ class _MainWindow(QMainWindow):
         self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
         self.calculator_window.show()
 
-    def save_clipboard(self,save_target):
+    def save_clipboard(self,save_target,_):
         if type(save_target) == list:
             print(save_target)
+            print(_)
             self.gloabal_clipboard.setText(str(save_target[1:]))
 
     def sref_debug_module(self):
@@ -1006,6 +1007,52 @@ class _MainWindow(QMainWindow):
         self.pinw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
         self.scene.send_xyCoordinate_signal.connect(self.pinw.DetermineCoordinateWithMouse)
         self.pinw.send_Destroy_signal.connect(self.delete_obj)
+
+    def makeTest(self):
+        testTrait = dict(
+                _ElementName = 'qwe',
+                _Layer = 'PIMP',
+
+                _DesignParametertype = 2,
+                _XYCoordinates = [[[-100,100],[-100,-100]],[[100,100],[100,-100]]],
+                _Width = 30,
+                _Height = None,
+                _Reflect = None,
+                _Angle = None,
+                _Color = None,
+                _DesignParameterRef=None,   #Reference of Design Parameter
+                _VisualizationItems = [],    #This is for SRef!!
+                _Index = None,
+
+                variable_info = dict(
+                                    XY = None,
+                                    width = None,
+                                    height = None,
+                                    parameters = None
+                                )
+        )
+        BtestTrait = dict(
+                _Layer='PIMP',
+                _DesignParametertype = 1,
+                _XYCoordinates = [[-100,100],[-100,-100]],
+                _XWidth = 30,
+                _YWidth = 30,
+                _Ignore = None,
+                _ElementName = 'qwe'
+        )
+        PtestTrait = dict(
+            _ElementName='qwe',
+            _Layer='PIMP',
+            _DesignParametertype=2,
+            _XYCoordinates=[[[-100,100],[-100,-100],[-50,-100],[-50,100]],[[100,100],[100,-100],[150,-100],[150,100]]],
+            _Width=30,
+            _Height=None,
+            _Color=None,
+            _ItemRef=None,  # Reference Of VisualizationItem
+        )
+        # self.pathTest = VisualizationItem._VisualizationItem(testTrait)
+        self.createNewDesignParameter(PtestTrait)
+
 
     # def makeFilterWindow(self):
     #     # self.fw = FilterPractice._FilterWindow()
@@ -2431,13 +2478,13 @@ class _MainWindow(QMainWindow):
 class _CustomView(QGraphicsView):
     variable_signal = pyqtSignal(str)
     nameout_signal = pyqtSignal(str)
-    name_list_signal = pyqtSignal(list)
+    name_list_signal = pyqtSignal(list, list)
 
     def __init__(self):
         super(_CustomView, self).__init__()
         self.show()
         self.setMouseTracking(True)
-        self.modulename=None
+        self.getModule=None
 
     def wheelEvent(self, QWheelEvent):
         zoomInFactor = 1.25
@@ -2519,9 +2566,17 @@ class _CustomView(QGraphicsView):
         event.proposedAction()
         super(self).dropEvent(event)
 
-    def name_out_fcn(self,name_list):
-        name_list.insert(0,self.modulename)
-        self.name_list_signal.emit(name_list)
+    def name_out_fcn(self,name_list,index_list):
+        if self.getModule == None:
+            name_list.insert(0,None)
+            index_list.insert(0,None)
+        else:
+            name_list.insert(0,self.getModule._ItemTraits['_ElementName'])
+            if self.getModule._ItemTraits['_DesignParametertype'] == 1:
+                index_list.insert(0,self.getModule.block[0]._BlockTraits['_Index'])
+            else:
+                index_list.insert(0,self.getModule._ItemTraits['_Index'])
+        self.name_list_signal.emit(name_list,index_list)
 
 class _CustomScene(QGraphicsScene):
     send_debug_signal = pyqtSignal()
@@ -2531,7 +2586,7 @@ class _CustomScene(QGraphicsScene):
     send_move_signal = pyqtSignal(QPointF)
     send_moveDone_signal = pyqtSignal()
     send_deleteItem_signal = pyqtSignal(str)
-    send_module_name_list_signal = pyqtSignal(list)
+    send_module_name_list_signal = pyqtSignal(list, list)
     send_mouse_move_signal = pyqtSignal(QGraphicsSceneMouseEvent)
     send_show_variable_signal = pyqtSignal(QGraphicsItem)
     send_doubleclick_signal = pyqtSignal(bool)
@@ -2831,22 +2886,26 @@ class _CustomScene(QGraphicsScene):
         elif QKeyEvent.key() == Qt.Key_P:
             itemList = self.selectedItems()
             for item in itemList:
+                if item._ItemTraits['_DesignParametertype'] == 2:
+                    self.ungroup_indexed_item()
                 if item._ItemTraits['_DesignParametertype'] == 3:
-                    subElement = item._ItemTraits['_ElementName']
                     structure_dict = self.copyItem(item)
-                    self.newWindow(structure_dict, subElement)
+                    self.newWindow(structure_dict, item)
         elif QKeyEvent.key() == Qt.Key_I:
             itemList = self.selectedItems()
             for item in itemList:
-                index = len(item._ItemTraits['_XYCoordinates'])
+                # index = len(item._ItemTraits['_XYCoordinates'])
                 if item._ItemTraits['_DesignParametertype'] == 1:
-                    if index is not 1:
-                        subElement = item._ItemTraits['_ElementName']
-                        structure_dict = self.splitItem(item, index)
-                        self.newWindow(structure_dict, subElement)
-                        print(structure_dict)
+                    self.ungroup_indexed_item()
+                    # if index is not 1:
+                    #     subElement = item._ItemTraits['_ElementName']
+                        # structure_dict = self.splitItem(item, index)
+                        # self.newWindow(structure_dict, subElement)
+                        # print(structure_dict)
                 elif item._ItemTraits['_DesignParametertype'] == 2:
                     print('not yet')
+                    print(item)
+                    self.ungroup_indexed_item()
                     # if index is not 1:
                     #     subElement = item._ItemTraits['_ElementName']
                     #     structure_dict = self.splitItem(item, index)
@@ -2863,7 +2922,7 @@ class _CustomScene(QGraphicsScene):
             itemList = self.selectedItems()
             for item in itemList:
                 try:
-                    self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']])
+                    self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0]._BlockTraits['_Index']])
                 except:
                     pass
 
@@ -2885,11 +2944,11 @@ class _CustomScene(QGraphicsScene):
     def itemListClickIgnore(self,flag):
         self.listIgnoreFlag = flag
 
-    def newWindow(self, structure_dict, subElementName):
+    def newWindow(self, structure_dict, subItem):
 
         self.viewList.append(_CustomView())
-        self.viewList[-1].setWindowTitle(subElementName)
-        self.viewList[-1].modulename = subElementName
+        self.viewList[-1].setWindowTitle(subItem._ItemTraits['_ElementName'])
+        self.viewList[-1].getModule = subItem
         self.viewList[-1].nameout_signal.connect(self.receive_module_name)
         self.viewList[-1].name_list_signal.connect(self.receive_module_name)
 
@@ -2911,10 +2970,10 @@ class _CustomScene(QGraphicsScene):
         self.viewList[-1].setGeometry(200,200,1200,800)
         self.viewList[-1].show()
 
-    def receive_module_name(self,name_list):
+    def receive_module_name(self,name_list,index_list):
         if type(name_list) == str:
             name_list = [name_list]
-        self.send_module_name_list_signal.emit(name_list)
+        self.send_module_name_list_signal.emit(name_list,index_list)
 
     def copyItem(self, item):
         structure_dict = dict()
@@ -2922,9 +2981,9 @@ class _CustomScene(QGraphicsScene):
             structure_dict[key] = value
         return structure_dict
 
-    def splitItem(self, item, index):
+    def splitItem(self, item):
         structure_dict = dict()
-        for i in range(index):
+        for i in range(len(item._ItemTraits['_XYCoordinates'])):
             tmpTraits = copy.deepcopy(item._ItemTraits)
             tmpTraits['_ElementName'] = item._ItemTraits['_ElementName'] + f'[{i}]'
             tmpTraits['_XYCoordinates'] = [item._ItemTraits['_XYCoordinates'][i]]
@@ -2938,14 +2997,40 @@ class _CustomScene(QGraphicsScene):
         return structure_dict
 
     def ungroup_indexed_item(self):
+        test = list()
         for item in self.selectedItems():
             if type(item) == VisualizationItem._VisualizationItem:
                 if len(item._ItemTraits['_XYCoordinates']) > 1:
-                    map(lambda child: child.setFlag(QGraphicsItem.ItemIsSelectable, True), item.childItems())
-                    for child in item.childItems():
-                        tmp_vs_item = child.independent_from_group()
-                        self.addItem(tmp_vs_item)
-                    # map(lambda child: child.independent_from_group(self), item.childItems())
+                    if item._ItemTraits['_DesignParametertype'] == 1:
+                        # map(lambda child: child.setFlag(QGraphicsItem.ItemIsSelectable, True), item.childItems())
+                        for child in item.childItems():
+                            if type(child) == VisualizationItem._RectBlock:
+                                tmp_vs_item = child.independent_from_group()
+                                self.addItem(tmp_vs_item)
+                                test.append(child)
+                        # map(lambda child: child.independent_from_group(self), item.childItems())
+                    elif item._ItemTraits['_DesignParametertype'] == 2:
+                        count = len(item._ItemTraits['_XYCoordinates'][0])
+                        block = count-1
+                        x = 0
+                        for child in item.childItems():
+                            if type(child) == VisualizationItem._RectBlock:
+                                if x is 0:
+                                    tmp_vs_item = child.independent_path_from_group()
+                                    x += 1
+                                else:
+                                    tmp_vs_item = child.independent_path_from_group(tmp_vs_item)
+                                    x += 1
+                                    if x == block:
+                                        x = 0
+                                self.addItem(tmp_vs_item)
+                                test.append(child)
+
+                    #     # map(lambda child: child.setFlag(QGraphicsItem.ItemIsSelectable, True), item.childItems())
+                    #     tmp_vs_item = item.independent_from_group()
+                    #     self.addItem(tmp_vs_item)
+                    #     test.append(child)
+                        # map(lambda child: child.independent_from_group(self), item.childItems())
                     self.removeItem(item)
                     # self.destroyItemGroup(item)
 

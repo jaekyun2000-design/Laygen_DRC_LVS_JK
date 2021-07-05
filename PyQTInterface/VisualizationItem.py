@@ -35,6 +35,7 @@ class _RectBlock(QGraphicsRectItem):
                 _Layer = None,
                 _LayerName = None,
                 _XYCoordinates = None,
+                _Index = None,
 
                 _Width = None,
                 _Height = None,
@@ -172,6 +173,20 @@ class _RectBlock(QGraphicsRectItem):
         self.original_parent = self.parentItem()
         tmp_parent_item = _VisualizationItem()
         tmp_parent_item._ItemTraits = self.original_parent._ItemTraits
+        tmp_parent_item.block.append(self)
+        self.original_parent.removeFromGroup(self)
+        tmp_parent_item.addToGroup(self)
+
+        return tmp_parent_item
+
+    def independent_path_from_group(self, tmp_parent_item=None):
+        self.original_parent = self.parentItem()
+        if tmp_parent_item:
+            pass
+        else:
+            tmp_parent_item = _VisualizationItem()
+            tmp_parent_item._ItemTraits = self.original_parent._ItemTraits
+        tmp_parent_item.block.append(self)
         self.original_parent.removeFromGroup(self)
         tmp_parent_item.addToGroup(self)
 
@@ -215,6 +230,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 _Color = None,
                 _DesignParameterRef=None,   #Reference of Design Parameter
                 _VisualizationItems = [],    #This is for SRef!!
+                _Index = None,
 
                 variable_info = dict(
                                     XY = None,
@@ -229,12 +245,14 @@ class _VisualizationItem(QGraphicsItemGroup):
             self.block = []
             self._ItemTraits = _ItemTraits
             if self._ItemTraits['_DesignParametertype'] == 1:
-                for xyPairs in self._ItemTraits['_XYCoordinates']:
-                    self.blockGeneration(xyPairs)
+                for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+                    self.blockGeneration(xyPairs, idx)
             elif self._ItemTraits['_DesignParametertype'] == 2:
-                self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+                for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+                    self.blockGeneration(xyPairs, idx)
             elif self._ItemTraits['_DesignParametertype'] == 3:
-                self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+                for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+                    self.blockGeneration(xyPairs, idx)
             elif self._ItemTraits['_DesignParametertype'] == 8:
                 self.blockGeneration(self._ItemTraits['_XYCoordinates'])
             else:
@@ -394,16 +412,18 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.removeFromGroup(self.block[i])
             if self._ItemTraits['_DesignParametertype'] == 1:
                 self.block = []
-                for xyPairs in self._ItemTraits['_XYCoordinates']:
-                    self.blockGeneration(xyPairs)
+                for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+                    self.blockGeneration(xyPairs, idx)
                 self.setPos(0,0)
             elif self._ItemTraits['_DesignParametertype'] == 2:
                 self.block = []
-                self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+                for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+                    self.blockGeneration(xyPairs, idx)
                 self.setPos(0,0)
             elif self._ItemTraits['_DesignParametertype'] == 3:
                 self.block = []
-                self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+                for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+                    self.blockGeneration(xyPairs, idx)
                 self.setPos(0,0)
             elif self._ItemTraits['_DesignParametertype'] == 8:
                 self.block = []
@@ -426,7 +446,7 @@ class _VisualizationItem(QGraphicsItemGroup):
             self.addToGroup(item)
 
 
-    def blockGeneration(self,_XYCoordinatesPair=None):                                  #This creates visual Block (which maps boundary or Path Item)
+    def blockGeneration(self,_XYCoordinatesPair=None, idx=None):                                  #This creates visual Block (which maps boundary or Path Item)
             blockTraits = copy.deepcopy(self._ItemTraits)
 
             _Layer = LayerReader._LayerMapping                      #Layer and Color Mapping
@@ -451,6 +471,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 tmpBlock = _RectBlock()
                 tmpBlock.updateTraits(blockTraits)
                 tmpBlock.setPos(_XYCoordinatesPair[0] - blockTraits['_Width']/2,_XYCoordinatesPair[1] - blockTraits['_Height']/2)
+                tmpBlock._BlockTraits['_Index'] = idx
 
                 layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                 layer = layernum2name[str(blockTraits['_Layer'])]
@@ -472,6 +493,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self._subElementLayer[tmpLayer].remove(self)
                     self._subElementLayer[layer].append(self)
 
+                self.block.append(tmpBlock)
+                self.addToGroup(tmpBlock)
+
                 ############################ Variable Visualization Start ############################
 
                 for field in self._ItemTraits['variable_info']:
@@ -490,64 +514,61 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                 ############################ Variable Visualization End ############################
 
-                self.block.append(tmpBlock)
-                self.addToGroup(tmpBlock)
-
 
 
             elif self._ItemTraits['_DesignParametertype'] == 2:                            # Path Case
-                for i in range(0,len(_XYCoordinatesPair[0])-1):
-                    if float(_XYCoordinatesPair[0][i][0]) == float(_XYCoordinatesPair[0][i+1][0]):          #Vertical Case
-                        Xmin = _XYCoordinatesPair[0][i][0] - self._ItemTraits['_Width']/2
+                for i in range(0,len(_XYCoordinatesPair)-1):
+                    if float(_XYCoordinatesPair[i][0]) == float(_XYCoordinatesPair[i+1][0]):          #Vertical Case
+                        Xmin = _XYCoordinatesPair[i][0] - self._ItemTraits['_Width']/2
                         Xwidth = self._ItemTraits['_Width']
-                        Ymin = min(_XYCoordinatesPair[0][i][1],_XYCoordinatesPair[0][i+1][1])
-                        Ymax = max(_XYCoordinatesPair[0][i][1],_XYCoordinatesPair[0][i+1][1])
+                        Ymin = min(_XYCoordinatesPair[i][1],_XYCoordinatesPair[i+1][1])
+                        Ymax = max(_XYCoordinatesPair[i][1],_XYCoordinatesPair[i+1][1])
                         Ywidth = Ymax - Ymin
 
-                        if len(_XYCoordinatesPair[0]) == 2:                                                    #Only One Block Case
+                        if len(_XYCoordinatesPair) == 2:                                                    #Only One Block Case
                             pass
                         elif i == 0:                                                                                        #There are more than 2 segments and First Block Case
-                            if _XYCoordinatesPair[0][i][1] < _XYCoordinatesPair[0][i+1][1]:          #UpWard Case
+                            if _XYCoordinatesPair[i][1] < _XYCoordinatesPair[i+1][1]:          #UpWard Case
                                 Ywidth -= self._ItemTraits['_Width']/2
-                            elif _XYCoordinatesPair[0][i][1] > _XYCoordinatesPair[0][i+1][1]:        #DownWard Case
+                            elif _XYCoordinatesPair[i][1] > _XYCoordinatesPair[i+1][1]:        #DownWard Case
                                 Ymin += self._ItemTraits['_Width']/2
                                 Ywidth -= self._ItemTraits['_Width']/2
                         elif i == len(_XYCoordinatesPair[0])-2:                                                #Last Block Case
-                            if _XYCoordinatesPair[0][i][1] < _XYCoordinatesPair[0][i+1][1]:          #UpWard Case
+                            if _XYCoordinatesPair[i][1] < _XYCoordinatesPair[i+1][1]:          #UpWard Case
                                 Ymin -= self._ItemTraits['_Width']/2
                                 Ywidth += self._ItemTraits['_Width']/2
-                            elif _XYCoordinatesPair[0][i][1] > _XYCoordinatesPair[0][i+1][1]:        #DownWard Case
+                            elif _XYCoordinatesPair[i][1] > _XYCoordinatesPair[i+1][1]:        #DownWard Case
                                 Ywidth += self._ItemTraits['_Width']/2
                         else:                                                                                               #Interim Block Case
-                            if _XYCoordinatesPair[0][i][1] < _XYCoordinatesPair[0][i+1][1]:          #UpWard Case
+                            if _XYCoordinatesPair[i][1] < _XYCoordinatesPair[i+1][1]:          #UpWard Case
                                 Ymin -= self._ItemTraits['_Width']/2
-                            elif _XYCoordinatesPair[0][i][1] > _XYCoordinatesPair[0][i+1][1]:        #DownWard Case
+                            elif _XYCoordinatesPair[i][1] > _XYCoordinatesPair[i+1][1]:        #DownWard Case
                                 Ymin += self._ItemTraits['_Width']/2
                     else:                                                                                                #Horizontal Case
-                        Ymin = _XYCoordinatesPair[0][i][1] - self._ItemTraits['_Width']/2
+                        Ymin = _XYCoordinatesPair[i][1] - self._ItemTraits['_Width']/2
                         Ywidth = self._ItemTraits['_Width']
-                        Xmin = min(_XYCoordinatesPair[0][i][0],_XYCoordinatesPair[0][i+1][0])
-                        Xmax = max(_XYCoordinatesPair[0][i][0],_XYCoordinatesPair[0][i+1][0])
+                        Xmin = min(_XYCoordinatesPair[i][0],_XYCoordinatesPair[i+1][0])
+                        Xmax = max(_XYCoordinatesPair[i][0],_XYCoordinatesPair[i+1][0])
                         Xwidth = Xmax - Xmin
 
-                        if len(_XYCoordinatesPair[0]) == 2:                                                    #Only One Block Case
+                        if len(_XYCoordinatesPair) == 2:                                                    #Only One Block Case
                             pass
                         elif i is 0:                                                                                        #There are more than 2 segments and First Block Case
-                            if _XYCoordinatesPair[0][i][0] < _XYCoordinatesPair[0][i+1][0]:          #Path to Right Case
+                            if _XYCoordinatesPair[i][0] < _XYCoordinatesPair[i+1][0]:          #Path to Right Case
                                 Xwidth -= self._ItemTraits['_Width']/2
-                            elif _XYCoordinatesPair[0][i][0] > _XYCoordinatesPair[0][i+1][0]:        #Path to Left Case
+                            elif _XYCoordinatesPair[i][0] > _XYCoordinatesPair[i+1][0]:        #Path to Left Case
                                 Xwidth -= self._ItemTraits['_Width']/2
                                 Xmin += self._ItemTraits['_Width']/2
-                        elif i is len(_XYCoordinatesPair[0])-2:
-                            if _XYCoordinatesPair[0][i][0] < _XYCoordinatesPair[0][i+1][0]:          #Path to Right Case
+                        elif i is len(_XYCoordinatesPair)-2:
+                            if _XYCoordinatesPair[i][0] < _XYCoordinatesPair[i+1][0]:          #Path to Right Case
                                 Xmin -= self._ItemTraits['_Width']/2
                                 Xwidth += self._ItemTraits['_Width']/2
-                            elif _XYCoordinatesPair[0][i][0] > _XYCoordinatesPair[0][i+1][0]:        #Path to Left Case
+                            elif _XYCoordinatesPair[i][0] > _XYCoordinatesPair[i+1][0]:        #Path to Left Case
                                 Xwidth += self._ItemTraits['_Width']/2
                         else:
-                            if _XYCoordinatesPair[0][i][0] < _XYCoordinatesPair[0][i+1][0]:          #Path to Right Case
+                            if _XYCoordinatesPair[i][0] < _XYCoordinatesPair[i+1][0]:          #Path to Right Case
                                 Xmin -= self._ItemTraits['_Width']/2
-                            elif _XYCoordinatesPair[0][i][0] > _XYCoordinatesPair[0][i+1][0]:        #Path to Left Case
+                            elif _XYCoordinatesPair[i][0] > _XYCoordinatesPair[i+1][0]:        #Path to Left Case
                                 Xmin += self._ItemTraits['_Width']/2
                     blockTraits['_Width'] = Xwidth
                     blockTraits['_Height'] = Ywidth
@@ -572,9 +593,11 @@ class _VisualizationItem(QGraphicsItemGroup):
                         self._subElementLayer[tmpLayer].remove(self)
                         self._subElementLayer[layer].append(self)
 
+                    self._ItemTraits['_Index'] = idx
+                    blockTraits['_Index'] = i
                     self.block.append(_RectBlock(blockTraits))  #Block Generation
-                    self.block[i].setPos(Xmin*scaleValue,Ymin*scaleValue)
-                    self.addToGroup(self.block[i])
+                    self.block[-1].setPos(Xmin*scaleValue,Ymin*scaleValue)
+                    self.addToGroup(self.block[-1])
 
                 ############################ Variable Visualization Start ############################
                 self.XYVariable = list()
@@ -597,12 +620,13 @@ class _VisualizationItem(QGraphicsItemGroup):
                 ############################ Variable Visualization End ############################
 
             elif self._ItemTraits['_DesignParametertype'] == 3:                #SRef Case
+                self._ItemTraits['_Index'] = idx
                 for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
                     sub_element_vi = _VisualizationItem()
                     sub_element_vi._NoVariableFlag = True
                     sub_element_vi.updateDesignParameter(sub_element_dp)
                     sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
-                    sub_element_vi.setPos(self._ItemTraits['_XYCoordinates'][0][0], self._ItemTraits['_XYCoordinates'][0][1])
+                    sub_element_vi.setPos(_XYCoordinatesPair[0], _XYCoordinatesPair[1])
 
                     layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                     if sub_element_vi._ItemTraits['_Layer'] == None:
@@ -955,6 +979,13 @@ class _VisualizationItem(QGraphicsItemGroup):
         self.set_hover_flag(False)
         # for block in self.block:
         #     block.hover = False
+
+    def independent_from_group(self):
+        self.original_parent = self.parentItem()
+        # tmp_parent_item = _VisualizationItem()
+        # tmp_parent_item._ItemTraits = self.original_parent._ItemTraits
+        self.original_parent.removeFromGroup(self)
+        return self
 
 class QGraphicsTextItemWObounding(QGraphicsTextItem):
     # pass
