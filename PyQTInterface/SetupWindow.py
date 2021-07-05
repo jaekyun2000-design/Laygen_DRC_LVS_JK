@@ -2593,6 +2593,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_DataChanged_signal = pyqtSignal(str)
     # send_deleteID_signal = pyqtSignal(str)
     send_deleteConstraint_signal = pyqtSignal(str)
+    send_dummy_ast_id_signal = pyqtSignal(str)
 
     originalKeyPress = QTreeView.keyPressEvent
 
@@ -2632,9 +2633,14 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         insert_below_action = QAction("Insert below", self.context_menu_for_plain_item)
         # self.context_menu_for_plain_item.addAction
 
+        self.context_menu_for_xy = QMenu(self)
+        browse_expression_action = QAction("View expression", self.context_menu_for_xy)
+        self.context_menu_for_xy.addActions([browse_expression_action])
+
 
         add_blank_row_action.triggered.connect(self.append_row)
         add_blank_row_dict_action.triggered.connect(self.append_row)
+        browse_expression_action.triggered.connect(self.browse_expression)
 
         #########WIP tb for combobox#########
         # index = self.model.index(0,0,QModelIndex())
@@ -3206,9 +3212,17 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             idx = self.indexAt(point)
             if idx.isValid():
                 type_item = self.model.itemFromIndex(idx.siblingAtColumn(2))
-                if "list" in type_item.text():
+
+                if type_item.text() == 'XYCoordinate':
+                    self.context_menu_for_xy.exec_(self.viewport().mapToGlobal(point))
+                elif "str" in type_item.text():
+                    if idx.parent():
+                        parent_type_item = self.model.itemFromIndex(idx.parent().siblingAtColumn(2))
+                        if parent_type_item.text() == 'XYCoordinate':
+                            self.context_menu_for_xy.exec_(self.viewport().mapToGlobal(point))
+                elif "list" in type_item.text():
                     self.context_menu_for_list.exec_(self.viewport().mapToGlobal(point))
-                if "dict" in type_item.text():
+                elif "dict" in type_item.text():
                     self.context_menu_for_dict.exec_(self.viewport().mapToGlobal(point))
         except:
             traceback.print_exc()
@@ -3218,6 +3232,15 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         current_item = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0))
         current_item.appendRow([QStandardItem(),QStandardItem(),QStandardItem(),QStandardItem()])
         print("what happend?")
+
+    def browse_expression(self):
+        current_item =self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
+        if current_item.text() != None:
+            self.send_dummy_ast_id_signal.emit(current_item.text())
+        else:
+            parent_item = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
+            self.send_dummy_ast_id_signal.emit(parent_item.text())
+
 
     def get_dp_highlight_dc(self,dp_id_list,_):
         """

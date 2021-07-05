@@ -28,6 +28,7 @@ class _RectBlock(QGraphicsRectItem):
     def __init__(self,_BlockTraits=None):
         super().__init__()
         self.setFlag(QGraphicsItem.ItemIsSelectable, False)
+        self.hover = False
         # self.setFlag(QGraphicsItem.ItemIsSelectable,False)
         if _BlockTraits is None:
             self._BlockTraits = dict(
@@ -96,11 +97,16 @@ class _RectBlock(QGraphicsRectItem):
             # self._BlockTraits["_Color"].setAlphaF(1)
             # self.setZValue(self.zValue()*10000)
             # print("HighLighted",self.zValue())
-            pen.setStyle(Qt.DashLine)
+            pen.setStyle(Qt.SolidLine)
             # pen.setColor(self._BlockTraits["_Outline"])
             pen.setColor(Qt.GlobalColor.black)
             pen.setWidth(5)
             # self.setZValue(1)
+        elif self.hover:
+            pen.setStyle(Qt.DotLine)
+            pen.setColor(Qt.GlobalColor.darkCyan)
+            pen.setWidth(5)
+            self.setZValue(1)
         else:
             self.setZValue(self._BlockTraits['_Layer']/1000)
 
@@ -148,7 +154,6 @@ class _RectBlock(QGraphicsRectItem):
 
         painter.drawRect(self.rect())
 
-
     def layerName2paintTrait(self):
 
         try:
@@ -178,6 +183,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         self._id = None
         self._type = None
         self.setFlag(QGraphicsItemGroup.ItemIsSelectable,True)
+        self.setAcceptHoverEvents(True)
         # self._XYCoordinatesForDisplay = []
         self._clickFlag = True
         self._isInHierarchy = False
@@ -237,12 +243,24 @@ class _VisualizationItem(QGraphicsItemGroup):
         #     block.restore_zvalue()
 
     def shape(self):
-        if self._type == 1:
-            return super().shape()
-        elif self._type == 2:
+        # if self._type == 1:
+        #     # return super().shape()
+        #     main_path = QPainterPath()
+        #     for i, block in enumerate(self.block):
+        #         if type(block) != _RectBlock:
+        #             continue
+        #         else:
+        #             tmp_rect = block.rect()
+        #             tmp_rect.translate(block.pos())
+        #             main_path.addRect(tmp_rect)
+        #     return main_path
+        if self._type == 1 or self._type == 2:
             main_path = QPainterPath()
             for i, block in enumerate(self.block):
                 try:
+                    if type(block) != _RectBlock:
+                        # print(f'block! {type(block)}')
+                        continue
                     tmp_rect = block.rect()
                     tmp_rect.translate(block.pos())
                     points = [tmp_rect.topLeft(),tmp_rect.bottomLeft(),tmp_rect.bottomRight(),tmp_rect.topRight()]
@@ -253,6 +271,20 @@ class _VisualizationItem(QGraphicsItemGroup):
                     main_path.closeSubpath()
                 except:
                     pass
+            return main_path
+        elif self._type == 3:
+            main_path = QPainterPath()
+            for block in self.childItems():
+                if type(block) != _RectBlock and type(block) != _VisualizationItem:
+                    continue
+                else:
+                    tmp_path = block.shape()
+                    tmp_path.translate(block.pos())
+                    main_path.addPath(tmp_path)
+                    main_path.closeSubpath()
+            # path_item = QGraphicsPathItem(main_path)
+            # path_item.setPen(QPen(Qt.GlobalColor.red,3,Qt.SolidLine))
+            # self.addToGroup(path_item)
             return main_path
         else:
             return super().shape()
@@ -441,9 +473,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                     elif field == 'height':
                         self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Height'])
 
-                self.widthVariable = QGraphicsTextItem(self._ItemTraits['variable_info']['width'])
-                self.heightVariable = QGraphicsTextItem(self._ItemTraits['variable_info']['height'])
-                self.XYVariable = QGraphicsTextItem('*' + self._ItemTraits['variable_info']['XY'])
+                self.widthVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['width'])
+                self.heightVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['height'])
+                self.XYVariable = QGraphicsTextItemWObounding('*' + self._ItemTraits['variable_info']['XY'])
 
                 self.setVariable(type='Boundary')
 
@@ -547,9 +579,9 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                 for self.idx in range(len(self._ItemTraits['_XYCoordinates'][0])):
                     if self.idx == 0:
-                        self.tmpXY = QGraphicsTextItem('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]) + '\nwidth: ' + str(self._ItemTraits['variable_info']['width']))
+                        self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]) + '\nwidth: ' + str(self._ItemTraits['variable_info']['width']))
                     else:
-                        self.tmpXY = QGraphicsTextItem('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]))
+                        self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]))
 
                     self.setVariable(type='Path')
 
@@ -594,8 +626,8 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                 tmpParam = str(self._ItemTraits['variable_info']['parameters']).replace(',', ',\n')
 
-                self.XYVariable = QGraphicsTextItem('*' + self._ItemTraits['variable_info']['XY'])
-                self.paramVariable = QGraphicsTextItem(tmpParam)
+                self.XYVariable = QGraphicsTextItemWObounding('*' + self._ItemTraits['variable_info']['XY'])
+                self.paramVariable = QGraphicsTextItemWObounding(tmpParam)
 
                 self.setVariable(type='Sref')
 
@@ -711,9 +743,9 @@ class _VisualizationItem(QGraphicsItemGroup):
             self.block.remove(self.heightVariable)
             self.block.remove(self.XYVariable)
 
-            self.widthVariable = QGraphicsTextItem(str(_ast.width))
-            self.heightVariable = QGraphicsTextItem(str(_ast.height))
-            self.XYVariable = QGraphicsTextItem('*' + str(_ast.XY))
+            self.widthVariable = QGraphicsTextItemWObounding(str(_ast.width))
+            self.heightVariable = QGraphicsTextItemWObounding(str(_ast.height))
+            self.XYVariable = QGraphicsTextItemWObounding('*' + str(_ast.XY))
 
             self.setVariable(_ast._type)
 
@@ -733,14 +765,14 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                 if self.idx == 0:
                     if _ast.XY is not None:
-                        self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]) + '\nwidth: ' + str(_ast.width))
+                        self.tmpXY = QGraphicsTextItemWObounding('*' + str(_ast.XY[0][self.idx]) + '\nwidth: ' + str(_ast.width))
                     else:
-                        self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY) + '\nwidth: ' + str(_ast.width))
+                        self.tmpXY = QGraphicsTextItemWObounding('*' + str(_ast.XY) + '\nwidth: ' + str(_ast.width))
                 else:
                     if _ast.XY is not None:
-                        self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY[0][self.idx]))
+                        self.tmpXY = QGraphicsTextItemWObounding('*' + str(_ast.XY[0][self.idx]))
                     else:
-                        self.tmpXY = QGraphicsTextItem('*' + str(_ast.XY) + '\nwidth: ' + str(_ast.width))
+                        self.tmpXY = QGraphicsTextItemWObounding('*' + str(_ast.XY) + '\nwidth: ' + str(_ast.width))
 
                 self.setVariable(_ast._type)
 
@@ -758,8 +790,8 @@ class _VisualizationItem(QGraphicsItemGroup):
 
             tmpParam = str(_ast.parameters).replace(',', ',\n')
 
-            self.XYVariable = QGraphicsTextItem('*' + str(_ast.XY))
-            self.paramVariable = QGraphicsTextItem(tmpParam)
+            self.XYVariable = QGraphicsTextItemWObounding('*' + str(_ast.XY))
+            self.paramVariable = QGraphicsTextItemWObounding(tmpParam)
 
             self.setVariable(_ast._type)
 
@@ -852,7 +884,7 @@ class _VisualizationItem(QGraphicsItemGroup):
     def setIndex(self, idx):
         self.XYVariable.setVisible(False)
         self.block.remove(self.XYVariable)
-        self.XYVariable = QGraphicsTextItem(str(idx))
+        self.XYVariable = QGraphicsTextItemWObounding(str(idx))
         self.setVariable('Boundary')
 
 
@@ -894,3 +926,31 @@ class _VisualizationItem(QGraphicsItemGroup):
 
     def save_zvalue_in_memory(self):
         self.z_value_memory = self.zValue()
+
+    def set_hover_flag(self, hover:bool):
+        for block in self.childItems():
+            if type(block) == _VisualizationItem:
+                block.set_hover_flag(hover)
+            else:
+                block.hover = hover
+
+    def hoverEnterEvent(self, event: 'QGraphicsSceneHoverEvent') -> None:
+        super(_VisualizationItem, self).hoverEnterEvent(event)
+        # for block in self.block:
+        #     block.hover = True
+        self.set_hover_flag(True)
+        self.update()
+
+    def hoverLeaveEvent(self, event: 'QGraphicsSceneHoverEvent') -> None:
+        super(_VisualizationItem, self).hoverLeaveEvent(event)
+        self.set_hover_flag(False)
+        # for block in self.block:
+        #     block.hover = False
+
+class QGraphicsTextItemWObounding(QGraphicsTextItem):
+    # pass
+    def shape(self):
+        return QPainterPath()
+
+    # def boundingRect(self) -> QRectF:
+    #     return QRect(0,0,0,0)

@@ -538,7 +538,7 @@ class _MainWindow(QMainWindow):
 
     def clipboard_test(self):
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
-        self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.test)
+        self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.storePreset)
         self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
         self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
         self.calculator_window.show()
@@ -1880,7 +1880,7 @@ class _MainWindow(QMainWindow):
                     print("                XYCoordinate ast creation Failed               ")
                     print("###############################################################")
 
-            elif type_for_dc == 'XYCoordinate_for_path_row':
+            elif type_for_dc == 'PathXY_row':
                 _ASTForVariable = ASTmodule._Custom_AST_API()
                 _ASTtype = 'XYCoordinate'
                 _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
@@ -1897,10 +1897,66 @@ class _MainWindow(QMainWindow):
                 design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
                                                                   module_name=self._CurrentModuleName, _ast=_ASTobj)
 
-            elif type_for_dc == 'XYCoordinate_for_path':
+            elif type_for_dc == 'PathXY':
+                try:
+                    print("###############################################################")
+                    print("                  PathXY ast creation Start                    ")
+                    print("###############################################################")
+                    _ASTForVariable = ASTmodule._Custom_AST_API()
+                    _ASTtype = type_for_dc
+                    _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
+
+                    _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(self._CurrentModuleName)
+                    _newConstraintID = (self._CurrentModuleName + str(_designConstraintID))
+
+                    _ASTobj.id = _newConstraintID
+                    _ASTobj._id = _newConstraintID
+                    _ASTobj._type = 'PathXY'
+                    self._DummyConstraints.XYPathDict[_newConstraintID] = info_dict
+                    self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
+                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                      module_name=self._CurrentModuleName, _ast=_ASTobj)
+                    self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                     _parentName=self._CurrentModuleName,
+                                                                     _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+
+                    print("###############################################################")
+                    print("                   PathXY ast creation Done                    ")
+                    print("###############################################################")
+                except:
+                    print("###############################################################")
+                    print("                   PathXY ast creation Failed                  ")
+                    print("###############################################################")
                 pass
+            elif type_for_dc == 'LogicExpression':
+                try:
+                    print("###############################################################")
+                    print("             LogicExpression ast creation Start                ")
+                    print("###############################################################")
+                    _ASTForVariable = ASTmodule._Custom_AST_API()
+                    _ASTtype = type_for_dc
+                    _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
 
+                    _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(self._CurrentModuleName)
+                    _newConstraintID = (self._CurrentModuleName + str(_designConstraintID))
 
+                    _ASTobj.id = _newConstraintID
+                    _ASTobj._type = 'LogicExpression'
+                    self._DummyConstraints.ExpressionDict[_newConstraintID] = info_dict
+                    self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
+                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                      module_name=self._CurrentModuleName, _ast=_ASTobj)
+                    self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                     _parentName=self._CurrentModuleName,
+                                                                     _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+
+                    print("###############################################################")
+                    print("              LogicExpression ast creation Done                ")
+                    print("###############################################################")
+                except:
+                    print("###############################################################")
+                    print("              LogicExpression ast creation Failed              ")
+                    print("###############################################################")
             else:
                 warnings.warn("Not Valid type")
 
@@ -2232,7 +2288,7 @@ class _MainWindow(QMainWindow):
                 #TODO
                 # 여기 디버그좀 부탁함당
                 # 가끔씩 unhashable type: 'list' 라고 if var in tmpList 구문에서 떠요.
-                
+
 
     def highlightVI(self, _idlist):
         for item in self.visualItemDict:
@@ -2512,18 +2568,21 @@ class _CustomScene(QGraphicsScene):
             return masked_output
 
         items = self.items(event.scenePos())
+        # for item in items:
+        #     if '_id' in item.__dict__:
+        #         print(f'0)Items before masking {item._id}')
         items = masking(items)
 
         if not self.point_items_memory:
             print('No items in memory!')
             print(items)
-            self.point_items_memory = items
+            # self.point_items_memory = items
 
         if self.point_items_memory:
             print(f'1)There is items in memory: {[item._id for item in self.point_items_memory]}')
             if set(items) == set(self.point_items_memory):
                 if self.selectedItems():
-                    if len(self.selectedItems()) >1:
+                    if len(self.selectedItems()) > 1:
                         super(_CustomScene, self).mousePressEvent(event)
                         return
                     print(f'2)before_selected_item :{self.selectedItems()[0]._id}')
@@ -2531,8 +2590,9 @@ class _CustomScene(QGraphicsScene):
                     if before_selected_item in self.point_items_memory:
                         idx = self.point_items_memory.index(before_selected_item)
                     else:
-                        super(_CustomScene, self).mousePressEvent(event)
-                        return
+                        idx = -1
+                        # super(_CustomScene, self).mousePressEvent(event)
+                        # return
                 else:
                     idx = -1
                 if idx+1 == len(self.point_items_memory):
@@ -2553,7 +2613,8 @@ class _CustomScene(QGraphicsScene):
                     print(f'4)clear')
                 map(lambda item: item.restore_zvalue(), self.point_items_memory)
                 self.point_items_memory = items
-
+        else:
+            self.point_items_memory = items
         super().mousePressEvent(event)
 
         # def masking(items):
@@ -2694,6 +2755,8 @@ class _CustomScene(QGraphicsScene):
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Delete:
+            # if self.parent():
+            #     warnings.warn("You cannot delete at sub-window level.")
             deletionItems = self.selectedItems()
             for deleteItem in deletionItems:
                 # self.removeItem(deleteItem)
@@ -2803,6 +2866,7 @@ class _CustomScene(QGraphicsScene):
             #signal Out!! with DesignaParameterItems
 
     def mouseMoveEvent(self, QGraphicsSceneMouseEvent):
+        super(_CustomScene, self).mouseMoveEvent(QGraphicsSceneMouseEvent)
         delta = QPointF(QGraphicsSceneMouseEvent.scenePos()-self.oldPos)
         if self.moveFlag is True:
             self.send_move_signal.emit(delta)
