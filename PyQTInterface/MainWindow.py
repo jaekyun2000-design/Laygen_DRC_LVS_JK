@@ -112,6 +112,7 @@ class _MainWindow(QMainWindow):
         self.gloabal_clipboard = QGuiApplication.clipboard()
         self.variable_store_list = list()
 
+
     def initUI(self):
 
         print("***************************Initializing Graphic Interface Start")
@@ -219,6 +220,7 @@ class _MainWindow(QMainWindow):
         self.scene.send_module_name_list_signal.connect(graphicView.name_out_fcn)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
         # self.scene.setMinimumRenderSize(5)
+        graphicView.centerOn(QPointF(300,-165))
         self.setCentralWidget(graphicView)
         self.scene.setBackgroundBrush(QBrush(Qt.white))
         graphicView.scale(1,-1)
@@ -538,6 +540,8 @@ class _MainWindow(QMainWindow):
 
     def clipboard_test(self):
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
+        self.dockContentWidget3.send_dummy_ast_id_signal.connect(self.calculator_window.getXY)
+        self.dockContentWidget3_2.send_dummy_ast_id_signal.connect(self.calculator_window.getXY)
         self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.storePreset)
         self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
         self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
@@ -2505,6 +2509,29 @@ class _CustomView(QGraphicsView):
         delta = newPosition - oldPosition
         self.translate(delta.x(),delta.y())
 
+    def keyPressEvent(self, QKeyEvent):
+        if QKeyEvent.key() == Qt.Key_F:
+            every_item = self.scene().items()
+            tmp_group_item = QGraphicsItemGroup()
+            for item in every_item:
+                if type(item) == VisualizationItem._VisualizationItem:
+                    if item._subCellFlag:
+                        pass
+                    else:
+                        tmp_group_item.addToGroup(item)
+            # map(lambda item: tmp_group_item.addToGroup(item), every_item)
+            print(tmp_group_item.childItems())
+            self.scene().addItem(tmp_group_item)
+            self.fitInView(tmp_group_item,Qt.KeepAspectRatio)
+            self.scene().destroyItemGroup(tmp_group_item)
+            del tmp_group_item
+            # self.fitInView(self.scene().ghost_group_item,Qt.KeepAspectRatio)
+        elif QKeyEvent.key() == Qt.Key_Z:
+            self.fitInView(QRectF(-650,-345,1300,690))
+            # self.centerOn(QPointF(0,0))
+
+        super().keyPressEvent(QKeyEvent)
+
     def mousePressEvent(self, event) -> None:
         if event.button() == Qt.RightButton:
             # print('return')
@@ -2614,6 +2641,19 @@ class _CustomScene(QGraphicsScene):
 
         self.point_items_memory = []
         self.selected_item_in_memory = None
+        # self.ghost_group_item = QGraphicsItemGroup()
+        # self.ghost_group_item.setFlag(f)
+        # self.addItem(self.ghost_group_item)
+
+    # def addItem(self, item: QGraphicsItem) -> None:
+    #     super(_CustomScene, self).addItem(item)
+    #     if item != self.ghost_group_item:
+    #         self.ghost_group_item.addToGroup(item)
+    #
+    # def removeItem(self, item: QGraphicsItem) -> None:
+    #     super(_CustomScene, self).removeItem(item)
+    #     if item != self.ghost_group_item:
+    #         self.ghost_group_item.removeFromGroup(item)
 
     def getNonselectableLayerList(self, _layerlist):
         self.nslist = _layerlist

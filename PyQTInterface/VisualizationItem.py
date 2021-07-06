@@ -214,6 +214,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         self._multipleBlockFlag = False
         self._subSrefVisualItem = None
         self._NoVariableFlag = False
+        self._subCellFlag = False
         self._IndexFlag = False
         self._PathUngroupedFlag = False
         self.index = None
@@ -625,6 +626,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
                     sub_element_vi = _VisualizationItem()
                     sub_element_vi._NoVariableFlag = True
+                    sub_element_vi._subCellFlag = True
                     sub_element_vi.updateDesignParameter(sub_element_dp)
                     sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
                     sub_element_vi.setPos(_XYCoordinatesPair[0], _XYCoordinatesPair[1])
@@ -636,18 +638,20 @@ class _VisualizationItem(QGraphicsItemGroup):
                         layer = layernum2name[str(sub_element_vi._ItemTraits['_Layer'])]
                         self._subElementLayer[layer].append(sub_element_vi)
 
-                    if self._ItemTraits['_Reflect'] == None and self._ItemTraits['_Angle'] == None:
-                        pass
-                    elif self._ItemTraits['_Reflect'] == [0, 0, 0]:
-                        rot = self._ItemTraits['_Angle']
-                        sub_element_vi.setRotation(rot)
-                    elif self._ItemTraits['_Reflect'] == [1, 0, 0]:
-                        sub_element_vi.setTransform(QTransform(1,0,0,-1,0,0))
-                        if self._ItemTraits['_Angle'] == None:
+                    if sub_element_vi._ItemTraits['_DesignParametertype'] is not 8:
+                        if self._ItemTraits['_Reflect'] == None and self._ItemTraits['_Angle'] == None:
                             pass
-                        else:
-                            rot = 360 - self._ItemTraits['_Angle']
+                        elif self._ItemTraits['_Reflect'] == [0, 0, 0]:
+                            rot = self._ItemTraits['_Angle']
                             sub_element_vi.setRotation(rot)
+                        elif self._ItemTraits['_Reflect'] == [1, 0, 0]:
+                            sub_element_vi.setTransform(QTransform(1,0,0,-1,0,0))
+                            if self._ItemTraits['_Angle'] == None:
+                                pass
+                            else:
+                                rot = 360 - self._ItemTraits['_Angle']
+                                sub_element_vi.setRotation(rot)
+
                     self.addToGroup(sub_element_vi)
 
                 ############################ Variable Visualization Start ############################

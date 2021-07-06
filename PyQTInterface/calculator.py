@@ -203,6 +203,8 @@ class ExpressionCalculator(QWidget):
             for itemXY in self.XYWindow.selectedItems():
                 rowXY = self.XYWindow.row(itemXY)
                 self.XYWindow.takeItem(rowXY)
+        elif QKeyEvent.key() == Qt.Key_Backspace:
+            self.delete_clicked()
         elif QKeyEvent.text() == 'q':
             self.geo_clicked(clicked=self.left_top_buttons)
         elif QKeyEvent.text() == 'w':
@@ -254,9 +256,12 @@ class ExpressionCalculator(QWidget):
         elif QKeyEvent.text() == '/':
             self.arithmetic_clicked(clicked=self.div)
 
-        print(QKeyEvent.text())
-
-
+    def getXY(self, XY_id):
+        if XY_id in self.presetDict:
+            for i in range(self.presetWindow.count()):
+                if self.presetWindow.item(i).text() == XY_id:
+                    self.presetWindow.setCurrentRow(i)
+            self.presetClicked()
 
     def XitemClicked(self):
         if self.YWindow.currentItem():
