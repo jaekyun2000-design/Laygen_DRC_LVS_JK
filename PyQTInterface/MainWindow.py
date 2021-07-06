@@ -2573,9 +2573,9 @@ class _CustomView(QGraphicsView):
         else:
             name_list.insert(0,self.getModule._ItemTraits['_ElementName'])
             if self.getModule._ItemTraits['_DesignParametertype'] == 1:
-                index_list.insert(0,self.getModule.block[0]._BlockTraits['_Index'])
+                index_list.insert(0,self.getModule.block[0].index)
             else:
-                index_list.insert(0,self.getModule._ItemTraits['_Index'])
+                index_list.insert(0,self.getModule.index)
         self.name_list_signal.emit(name_list,index_list)
 
 class _CustomScene(QGraphicsScene):
@@ -2886,8 +2886,6 @@ class _CustomScene(QGraphicsScene):
         elif QKeyEvent.key() == Qt.Key_P:
             itemList = self.selectedItems()
             for item in itemList:
-                if item._ItemTraits['_DesignParametertype'] == 2:
-                    self.ungroup_indexed_item()
                 if item._ItemTraits['_DesignParametertype'] == 3:
                     structure_dict = self.copyItem(item)
                     self.newWindow(structure_dict, item)
@@ -2922,7 +2920,7 @@ class _CustomScene(QGraphicsScene):
             itemList = self.selectedItems()
             for item in itemList:
                 try:
-                    self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0]._BlockTraits['_Index']])
+                    self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0].index])
                 except:
                     pass
 
@@ -2997,49 +2995,50 @@ class _CustomScene(QGraphicsScene):
         return structure_dict
 
     def ungroup_indexed_item(self):
-        test = list()
         for item in self.selectedItems():
             if type(item) == VisualizationItem._VisualizationItem:
-                if len(item._ItemTraits['_XYCoordinates']) > 1:
+                if item._PathUngroupedFlag or (len(item._ItemTraits['_XYCoordinates']) is 1 and item._ItemTraits['_DesignParametertype'] == 2):
+                    if len(item.block) is not 1:
+                        for child in item.childItems():
+                            if type(child) == VisualizationItem._RectBlock:
+                                tmp_vs_item = child.independent_from_group()
+                                self.addItem(tmp_vs_item)
+
+                            self.removeItem(item)
+                elif len(item._ItemTraits['_XYCoordinates']) > 1:
                     if item._ItemTraits['_DesignParametertype'] == 1:
                         # map(lambda child: child.setFlag(QGraphicsItem.ItemIsSelectable, True), item.childItems())
                         for child in item.childItems():
                             if type(child) == VisualizationItem._RectBlock:
                                 tmp_vs_item = child.independent_from_group()
                                 self.addItem(tmp_vs_item)
-                                test.append(child)
                         # map(lambda child: child.independent_from_group(self), item.childItems())
                     elif item._ItemTraits['_DesignParametertype'] == 2:
-                        count = len(item._ItemTraits['_XYCoordinates'][0])
-                        block = count-1
-                        x = 0
-                        for child in item.childItems():
-                            if type(child) == VisualizationItem._RectBlock:
-                                if x is 0:
-                                    tmp_vs_item = child.independent_path_from_group()
-                                    x += 1
-                                else:
+                        rect_counts_for_connected_path = [len(xy) - 1 for xy in item._ItemTraits['_XYCoordinates']]
+                        for idx, rect_count in enumerate(rect_counts_for_connected_path):
+                            print(rect_counts_for_connected_path)
+                            tmp_vs_item = None
+                            rect_count = rect_counts_for_connected_path.pop(0)
+                            count = 0
+                            print(item.childItems())
+                            for child in item.childItems():
+                                if type(child) == VisualizationItem._RectBlock:
                                     tmp_vs_item = child.independent_path_from_group(tmp_vs_item)
-                                    x += 1
-                                    if x == block:
-                                        x = 0
-                                self.addItem(tmp_vs_item)
-                                test.append(child)
+                                    count += 1
+                                    if count == rect_count:
+                                        self.addItem(tmp_vs_item)
+                                        tmp_vs_item._PathUngroupedFlag = True
+                                        count = 0
+                                        tmp_vs_item = None
+                                        if rect_counts_for_connected_path:
+                                            rect_count = rect_counts_for_connected_path.pop(0)
 
-                    #     # map(lambda child: child.setFlag(QGraphicsItem.ItemIsSelectable, True), item.childItems())
-                    #     tmp_vs_item = item.independent_from_group()
-                    #     self.addItem(tmp_vs_item)
-                    #     test.append(child)
-                        # map(lambda child: child.independent_from_group(self), item.childItems())
                     self.removeItem(item)
-                    # self.destroyItemGroup(item)
 
-                    # item.setVisible(False)
-                    # for child in item.childItems():
-                    #     item.removeFromGroup(child)
                 else:
                     print('Only one index exist.')
                     print(item._ItemTraits['_XYCoordinates'])
+
 
 class _VersatileWindow(QWidget):
     send_Name_signal = pyqtSignal(str)

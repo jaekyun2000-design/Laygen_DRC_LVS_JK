@@ -485,7 +485,7 @@ class _StickDiagram:
 
     def _SrefElementDeclaration(self, _DesignObj=None, _XYCoordinates=[], _Reflect=None, _Angle=None, _ElementName = None):
 
-        return dict(_DesignParametertype=3,_DesignObj=_DesignObj, _XYCoordinates=_XYCoordinates, _Reflect=None, _Angle=None, _Ignore=None, _ElementName = _ElementName),
+        return dict(_DesignParametertype=3,_DesignObj=_DesignObj, _XYCoordinates=_XYCoordinates, _Reflect=_Reflect, _Angle=_Angle, _Ignore=None, _ElementName = _ElementName),
 
     def _NameDeclaration(self,_Name= None ):
 

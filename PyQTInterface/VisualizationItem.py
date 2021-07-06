@@ -29,14 +29,13 @@ class _RectBlock(QGraphicsRectItem):
         super().__init__()
         self.setFlag(QGraphicsItem.ItemIsSelectable, False)
         self.hover = False
+        self.index = None
         # self.setFlag(QGraphicsItem.ItemIsSelectable,False)
         if _BlockTraits is None:
             self._BlockTraits = dict(
                 _Layer = None,
                 _LayerName = None,
                 _XYCoordinates = None,
-                _Index = None,
-
                 _Width = None,
                 _Height = None,
                 _Color = None,
@@ -216,6 +215,8 @@ class _VisualizationItem(QGraphicsItemGroup):
         self._subSrefVisualItem = None
         self._NoVariableFlag = False
         self._IndexFlag = False
+        self._PathUngroupedFlag = False
+        self.index = None
         if _ItemTraits is None:
             self._ItemTraits = dict(
                 _ElementName = None,
@@ -230,8 +231,6 @@ class _VisualizationItem(QGraphicsItemGroup):
                 _Color = None,
                 _DesignParameterRef=None,   #Reference of Design Parameter
                 _VisualizationItems = [],    #This is for SRef!!
-                _Index = None,
-
                 variable_info = dict(
                                     XY = None,
                                     width = None,
@@ -471,7 +470,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 tmpBlock = _RectBlock()
                 tmpBlock.updateTraits(blockTraits)
                 tmpBlock.setPos(_XYCoordinatesPair[0] - blockTraits['_Width']/2,_XYCoordinatesPair[1] - blockTraits['_Height']/2)
-                tmpBlock._BlockTraits['_Index'] = idx
+                tmpBlock.index = [idx]
 
                 layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                 layer = layernum2name[str(blockTraits['_Layer'])]
@@ -593,9 +592,11 @@ class _VisualizationItem(QGraphicsItemGroup):
                         self._subElementLayer[tmpLayer].remove(self)
                         self._subElementLayer[layer].append(self)
 
-                    self._ItemTraits['_Index'] = idx
-                    blockTraits['_Index'] = i
-                    self.block.append(_RectBlock(blockTraits))  #Block Generation
+                    self.index = idx
+                    block = _RectBlock(blockTraits)
+                    block.index = [idx, i]
+
+                    self.block.append(block)  #Block Generation
                     self.block[-1].setPos(Xmin*scaleValue,Ymin*scaleValue)
                     self.addToGroup(self.block[-1])
 
@@ -620,7 +621,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 ############################ Variable Visualization End ############################
 
             elif self._ItemTraits['_DesignParametertype'] == 3:                #SRef Case
-                self._ItemTraits['_Index'] = idx
+                self.index = idx
                 for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
                     sub_element_vi = _VisualizationItem()
                     sub_element_vi._NoVariableFlag = True
