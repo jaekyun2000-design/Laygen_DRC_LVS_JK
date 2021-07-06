@@ -3003,6 +3003,7 @@ class _CustomScene(QGraphicsScene):
                             if type(child) == VisualizationItem._RectBlock:
                                 tmp_vs_item = child.independent_from_group()
                                 self.addItem(tmp_vs_item)
+                                tmp_vs_item._PathUngroupedFlag = True
 
                             self.removeItem(item)
                 elif len(item._ItemTraits['_XYCoordinates']) > 1:
