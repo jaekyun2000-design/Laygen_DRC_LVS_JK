@@ -257,6 +257,7 @@ class ExpressionCalculator(QWidget):
             self.arithmetic_clicked(clicked=self.div)
 
     def getXY(self, XY_id):
+        self.show()
         if XY_id in self.presetDict:
             for i in range(self.presetWindow.count()):
                 if self.presetWindow.item(i).text() == XY_id:
