@@ -714,7 +714,7 @@ class ExpressionCalculator(QWidget):
 
     def export_path_clicked(self):
         if 'pw' not in self.__dict__:
-            self.pw = PathWindow(self)
+            self.pw = PathWindow(address=self)
             self.pw.show()
             self.send_path_row_xy_signal.connect(self.pw.create_row)
 
@@ -722,6 +722,7 @@ class ExpressionCalculator(QWidget):
 
     def getPathInfo(self, idDict):
         self.send_XYCreated_signal.emit('PathXY', idDict)
+        del self.pw
 
     def parsing_clipboard(self):
         try:
@@ -745,29 +746,36 @@ class ExpressionCalculator(QWidget):
 
     def presetClicked(self):
         _id = self.presetWindow.currentItem().text()
-        XList = self.presetDict[_id]['X']
-        YList = self.presetDict[_id]['Y']
-        XYList = self.presetDict[_id]['XY']
+        if 'XYidlist' in self.presetDict[_id]:
+            self.pw = PathWindow(address=self, idlist=self.presetDict[_id]['XYidlist'])
+            self.send_path_row_xy_signal.connect(self.pw.create_row)
+        else:
+            XList = self.presetDict[_id]['X']
+            YList = self.presetDict[_id]['Y']
+            XYList = self.presetDict[_id]['XY']
 
-        self.XWindow.clear()
-        self.YWindow.clear()
-        self.XYWindow.clear()
+            self.XWindow.clear()
+            self.YWindow.clear()
+            self.XYWindow.clear()
 
-        for x in XList:
-            self.XWindow.addItem(x)
-        for y in YList:
-            self.YWindow.addItem(y)
-        for xy in XYList:
-            self.XYWindow.addItem(xy)
+            for x in XList:
+                self.XWindow.addItem(x)
+            for y in YList:
+                self.YWindow.addItem(y)
+            for xy in XYList:
+                self.XYWindow.addItem(xy)
 
 
 class PathWindow(QWidget):
     send_output_signal = pyqtSignal(dict)
 
-    def __init__(self, address):
+    def __init__(self, address=None, idlist=None):
         super().__init__()
         self.address = address
         self.initUI()
+        if idlist:
+            self.idlist = idlist
+            self.updateUI()
 
     def initUI(self):
         exportButton = QPushButton("Export", self)
@@ -786,7 +794,6 @@ class PathWindow(QWidget):
         self.XYdictForLineEdit.append(QLineEdit())
         self.XYdictForLineEdit[0].setReadOnly(True)
         self.XYdictForLineEdit[1].setReadOnly(True)
-
 
         self.setupVboxColumn1 = QVBoxLayout()
         self.setupVboxColumn2 = QVBoxLayout()
@@ -818,6 +825,13 @@ class PathWindow(QWidget):
         self.setWindowTitle('Path Setup Window')
         self.setGeometry(300, 300, 500, 500)
         self.show()
+
+    def updateUI(self):
+        for i in range(len(self.idlist)):
+            CurrentEditPointNum = len(self.XYdictForLineEdit) - 2
+            displayString= str(self.idlist[i])
+            self.XYdictForLineEdit[CurrentEditPointNum].setText(displayString)
+            self.UpdateXYwidget()
 
     def create_row(self, constraint_dict, _id):
         CurrentEditPointNum = len(self.XYdictForLineEdit) - 2

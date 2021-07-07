@@ -220,7 +220,7 @@ class _MainWindow(QMainWindow):
         self.scene.send_module_name_list_signal.connect(graphicView.name_out_fcn)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
         # self.scene.setMinimumRenderSize(5)
-        graphicView.centerOn(QPointF(300,-165))
+        graphicView.centerOn(QPointF(268,-165))
         self.setCentralWidget(graphicView)
         self.scene.setBackgroundBrush(QBrush(Qt.white))
         graphicView.scale(1,-1)
