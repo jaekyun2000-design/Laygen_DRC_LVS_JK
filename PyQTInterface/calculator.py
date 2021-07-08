@@ -42,6 +42,7 @@ class ExpressionCalculator(QWidget):
         # print(self.display.layoutDirection())
         self.equationList = list()
 
+        self.setFixedSize(580,800)
 
         font = self.display.font()
         font.setPointSize(font.pointSize()+8)
@@ -161,6 +162,10 @@ class ExpressionCalculator(QWidget):
         top_layout.setStretchFactor(option_box_layout,0)
         top_layout.addLayout(main_layout)
 
+        # DRC_layout = QGridLayout()
+        # DRCButton = QPushButton("DRC")
+        # DRC_layout.addWidget(DRCButton)
+
         self.XWindow = QListWidget()
         self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/X.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
         self.XWindow.itemClicked.connect(self.XitemClicked)
@@ -170,27 +175,86 @@ class ExpressionCalculator(QWidget):
         self.XYWindow = QListWidget()
         self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
         self.XYWindow.itemClicked.connect(self.XYitemClicked)
+        self.presetButton = QPushButton()
+        self.presetButton.setText('▶')
+        self.presetButton.setMaximumWidth(30)
         self.presetWindow = QListWidget()
         self.presetWindow.itemClicked.connect(self.presetClicked)
         for _id in self.presetDict.keys():
             self.presetWindow.addItem(_id)
+
+        self.DRCWindow = QListWidget()
+        self.DRCWindow.itemClicked.connect(self.DRC_click)
+
+        DRCButton = QPushButton("DRC")
+
+        hline1 = QFrame()
+        hline1.setFrameShape(QFrame.HLine)
+        presetText = QLabel('Preset')
+        presetText.setMaximumWidth(37)
+        hline2 = QFrame()
+        hline2.setFrameShape(QFrame.HLine)
+
         H_layout1 = QHBoxLayout()
+        V_layout1 = QVBoxLayout()
         H_layout2 = QHBoxLayout()
         H_layout3 = QHBoxLayout()
 
         H_layout1.addWidget(self.YWindow)
-        H_layout1.addSpacing(283)
+        H_layout1.addSpacing(202)
+        H_layout1.addLayout(V_layout1)
+        V_layout1.addWidget(DRCButton)
+        V_layout1.addSpacing(100)
         H_layout2.addWidget(self.XYWindow)
         H_layout2.addWidget(self.XWindow)
-        H_layout3.addWidget(self.presetWindow)
+
+        H_layout3.addWidget(self.presetButton)
+        H_layout3.addWidget(hline1)
+        H_layout3.addWidget(presetText)
+        H_layout3.addWidget(hline2)
+
         top_layout.addLayout(H_layout1)
         top_layout.addLayout(H_layout2)
         top_layout.addLayout(H_layout3)
+        top_layout.addWidget(self.presetWindow)
+
+        self.DRCWindow.setFixedWidth(200)
+        self.DRCWindow.hide()
+        self.presetWindow.setFixedHeight(200)
+        self.presetWindow.hide()
+
+        DRCButton.clicked.connect(self.ExtendDRCWidget)
+        self.presetButton.clicked.connect(self.ExtendPresetWidget)
 
         # self.setLayout(main_layout)
-        self.setLayout(top_layout)
+        top_DRC_layout = QHBoxLayout()
+        top_DRC_layout.addLayout(top_layout)
+        top_DRC_layout.addWidget(self.DRCWindow)
+
+        self.setLayout(top_DRC_layout)
         self.setWindowTitle('Expression Calculator')
         self.show()
+
+    def ExtendDRCWidget(self):
+        if self.DRCWindow.isHidden():
+            self.DRCWindow.show()
+            self.setFixedWidth(786)
+        else:
+            self.DRCWindow.hide()
+            self.setFixedWidth(580)
+
+    def ExtendPresetWidget(self):
+        if self.presetWindow.isHidden():
+            self.presetWindow.show()
+            self.presetButton.setText('▼')
+            self.setFixedHeight(1006)
+        else:
+            self.presetWindow.hide()
+            self.presetButton.setText('▶')
+            self.setFixedHeight(800)
+
+    def DRC_click(self):
+        pass
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Delete:
