@@ -4031,8 +4031,8 @@ class _FlatteningCell(QWidget):
         self.loop_obj = QEventLoop()
         self._hdict = _hierarchydict
         self.model = QTreeWidget()
-        self.model.setColumnCount(4)
-        self.model.setHeaderLabels(['Design Object', 'Cell Name', 'Flatten Option', 'Generator Name'])
+        self.model.setColumnCount(5)
+        self.model.setHeaderLabels(['Design Object', 'Cell Name', 'Flatten Option', 'Macro Cell', 'Generator Name'])
         self.itemlist = list()
         self.combolist = list(generator_model_api.class_dict.keys())
         self.initUI()
@@ -4071,9 +4071,12 @@ class _FlatteningCell(QWidget):
         for item in self.itemlist:
             if self.model.itemWidget(item, 2).checkState() == 2:
                 _flatten_dict[item.text(0) + '/' + item.text(1)] = None
+            elif self.model.itemWidget(item, 3).checkState() == 2:
+                _flatten_dict[item.text(0) + '/' + item.text(1)] = 'MacroCell'
             else:
-                _flatten_dict[item.text(0) + '/' + item.text(1)] = self.model.itemWidget(item, 3).currentText()
+                _flatten_dict[item.text(0) + '/' + item.text(1)] = self.model.itemWidget(item, 4).currentText()
 
+        print(_flatten_dict)
         return _flatten_dict
 
 
@@ -4105,13 +4108,17 @@ class _FlatteningCell(QWidget):
     def modifyBraches(self, item, cn):
         cell_name = QLabel(cn)
 
-        check = QCheckBox()
-        check.setText(item.text(1))
+        flattenCheck = QCheckBox()
+        flattenCheck.setText(item.text(1))
+
+        macroCheck = QCheckBox()
+        macroCheck.setText(item.text(1))
 
         combo = QComboBox()
         combo.addItems(self.combolist)
 
-        check.setText('OFF')
+        flattenCheck.setText('OFF')
+        macroCheck.setText('OFF')
         combo.setEnabled(True)
 
         if self.grouping:
@@ -4121,22 +4128,33 @@ class _FlatteningCell(QWidget):
             if module_index != -1:
                 combo.setCurrentIndex(module_index)
 
-        check.stateChanged.connect(self.ActivateCombobox)
+        flattenCheck.stateChanged.connect(self.ActivateCombobox)
+        macroCheck.stateChanged.connect(self.ActivateCombobox)
 
         # self.model.setItemWidget(item, 1, cell_name)
-        self.model.setItemWidget(item, 2, check)
-        self.model.setItemWidget(item, 3, combo)
+        self.model.setItemWidget(item, 2, flattenCheck)
+        self.model.setItemWidget(item, 3, macroCheck)
+        self.model.setItemWidget(item, 4, combo)
 
     def ActivateCombobox(self, state):
         item = self.model.currentItem()
-        siblingcheckbox = self.model.itemWidget(item, 2)
-        siblingcombobox = self.model.itemWidget(item, 3)
+        siblingFlattenCheckbox = self.model.itemWidget(item, 2)
+        siblingMacroCheckbox = self.model.itemWidget(item, 3)
+        siblingcombobox = self.model.itemWidget(item, 4)
 
-        if state == 2:
-            siblingcheckbox.setText('ON')
+        if siblingFlattenCheckbox.checkState() == 2:
+            siblingFlattenCheckbox.setText('ON')
+            siblingMacroCheckbox.setEnabled(False)
+            siblingcombobox.setEnabled(False)
+        elif siblingMacroCheckbox.checkState() == 2:
+            siblingMacroCheckbox.setText('ON')
+            siblingFlattenCheckbox.setEnabled(False)
             siblingcombobox.setEnabled(False)
         else:
-            siblingcheckbox.setText('OFF')
+            siblingFlattenCheckbox.setText('OFF')
+            siblingMacroCheckbox.setText('OFF')
+            siblingFlattenCheckbox.setEnabled(True)
+            siblingMacroCheckbox.setEnabled(True)
             siblingcombobox.setEnabled(True)
 
 class ComboDelegate(QItemDelegate):
