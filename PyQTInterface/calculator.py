@@ -42,7 +42,7 @@ class ExpressionCalculator(QWidget):
         # print(self.display.layoutDirection())
         self.equationList = list()
 
-        self.setFixedSize(580,800)
+        self.setFixedSize(786,800)
 
         font = self.display.font()
         font.setPointSize(font.pointSize()+8)
@@ -162,18 +162,14 @@ class ExpressionCalculator(QWidget):
         top_layout.setStretchFactor(option_box_layout,0)
         top_layout.addLayout(main_layout)
 
-        # DRC_layout = QGridLayout()
-        # DRCButton = QPushButton("DRC")
-        # DRC_layout.addWidget(DRCButton)
-
         self.XWindow = QListWidget()
-        self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/X.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
+        self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/X.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
         self.XWindow.itemClicked.connect(self.XitemClicked)
         self.YWindow = QListWidget()
-        self.YWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/Y.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
+        self.YWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/Y.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
         self.YWindow.itemClicked.connect(self.YitemClicked)
         self.XYWindow = QListWidget()
-        self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat;")
+        self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
         self.XYWindow.itemClicked.connect(self.XYitemClicked)
         self.presetButton = QPushButton()
         self.presetButton.setText('▶')
@@ -183,28 +179,36 @@ class ExpressionCalculator(QWidget):
         for _id in self.presetDict.keys():
             self.presetWindow.addItem(_id)
 
+        DRCText = QLabel('DRC List')
+        DRCText.setAlignment(Qt.AlignCenter)
         self.DRCWindow = QListWidget()
         self.DRCWindow.itemClicked.connect(self.DRC_click)
 
-        DRCButton = QPushButton("DRC")
+        # DRCButton = QPushButton("DRC")
 
         hline1 = QFrame()
         hline1.setFrameShape(QFrame.HLine)
         presetText = QLabel('Preset')
+        presetText.setAlignment(Qt.AlignCenter)
         presetText.setMaximumWidth(37)
         hline2 = QFrame()
         hline2.setFrameShape(QFrame.HLine)
 
+        vline = QFrame()
+        vline.setFrameShape(QFrame.VLine)
+        vline.setLineWidth(10)
+
         H_layout1 = QHBoxLayout()
-        V_layout1 = QVBoxLayout()
         H_layout2 = QHBoxLayout()
         H_layout3 = QHBoxLayout()
+        V_layout1 = QVBoxLayout()
 
         H_layout1.addWidget(self.YWindow)
-        H_layout1.addSpacing(202)
-        H_layout1.addLayout(V_layout1)
-        V_layout1.addWidget(DRCButton)
-        V_layout1.addSpacing(100)
+        H_layout1.addSpacing(282)
+        # H_layout1.addSpacing(202)
+        # H_layout1.addLayout(V_layout1)
+        # V_layout1.addWidget(DRCButton)
+        # V_layout1.addSpacing(100)
         H_layout2.addWidget(self.XYWindow)
         H_layout2.addWidget(self.XWindow)
 
@@ -213,35 +217,39 @@ class ExpressionCalculator(QWidget):
         H_layout3.addWidget(presetText)
         H_layout3.addWidget(hline2)
 
+        V_layout1.addWidget(DRCText)
+        V_layout1.addWidget(self.DRCWindow)
+
         top_layout.addLayout(H_layout1)
         top_layout.addLayout(H_layout2)
         top_layout.addLayout(H_layout3)
         top_layout.addWidget(self.presetWindow)
 
         self.DRCWindow.setFixedWidth(200)
-        self.DRCWindow.hide()
+        # self.DRCWindow.hide()
         self.presetWindow.setFixedHeight(200)
         self.presetWindow.hide()
 
-        DRCButton.clicked.connect(self.ExtendDRCWidget)
+        # DRCButton.clicked.connect(self.ExtendDRCWidget)
         self.presetButton.clicked.connect(self.ExtendPresetWidget)
 
         # self.setLayout(main_layout)
         top_DRC_layout = QHBoxLayout()
         top_DRC_layout.addLayout(top_layout)
-        top_DRC_layout.addWidget(self.DRCWindow)
+        top_DRC_layout.addWidget(vline)
+        top_DRC_layout.addLayout(V_layout1)
 
         self.setLayout(top_DRC_layout)
         self.setWindowTitle('Expression Calculator')
         self.show()
 
-    def ExtendDRCWidget(self):
-        if self.DRCWindow.isHidden():
-            self.DRCWindow.show()
-            self.setFixedWidth(786)
-        else:
-            self.DRCWindow.hide()
-            self.setFixedWidth(580)
+    # def ExtendDRCWidget(self):
+    #     if self.DRCWindow.isHidden():
+    #         self.DRCWindow.show()
+    #         self.setFixedWidth(786)
+    #     else:
+    #         self.DRCWindow.hide()
+    #         self.setFixedWidth(580)
 
     def ExtendPresetWidget(self):
         if self.presetWindow.isHidden():

@@ -2515,6 +2515,7 @@ class _CustomView(QGraphicsView):
             tmp_group_item = QGraphicsItemGroup()
             for item in every_item:
                 if type(item) == VisualizationItem._VisualizationItem:
+                    item.setSelected(False)
                     if item._subCellFlag:
                         pass
                     else:

@@ -3213,12 +3213,12 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             if idx.isValid():
                 type_item = self.model.itemFromIndex(idx.siblingAtColumn(2))
 
-                if type_item.text() == 'XYCoordinate':
+                if type_item.text() == 'XYCoordinate' or 'PathXY':
                     self.context_menu_for_xy.exec_(self.viewport().mapToGlobal(point))
                 elif "str" in type_item.text():
                     if idx.parent():
                         parent_type_item = self.model.itemFromIndex(idx.parent().siblingAtColumn(2))
-                        if parent_type_item.text() == 'XYCoordinate':
+                        if parent_type_item.text() == 'XYCoordinate' or 'PathXY':
                             self.context_menu_for_xy.exec_(self.viewport().mapToGlobal(point))
                 elif "list" in type_item.text():
                     self.context_menu_for_list.exec_(self.viewport().mapToGlobal(point))
