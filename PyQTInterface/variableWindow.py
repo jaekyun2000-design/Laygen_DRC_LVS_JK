@@ -7,6 +7,7 @@ from PyQt5.QtCore import *
 from PyQTInterface.layermap  import LayerReader
 from PyQTInterface  import VisualizationItem
 from PyQTInterface  import VariableVisualItem
+from PyQTInterface import calculator
 
 from PyCodes import ASTmodule
 from PyCodes import element_ast
@@ -19,6 +20,7 @@ from PyCodes import QTInterfaceWithAST
 from DesignManager.VariableManager import variable_manager
 
 import re, ast, time
+import os
 
 
 class VariableSetupWindow(QWidget):
@@ -69,13 +71,28 @@ class VariableSetupWindow(QWidget):
         if self.variable_type == 'c_array':
             self.XY_source_ref = QLineEdit()
             self.XY_target_ref = QLineEdit()
-            self.rule = QLineEdit()
+
+            hbox1 = QHBoxLayout()
+            hbox2 = QHBoxLayout()
+            cal_for_source = QPushButton()
+            cal_for_source.setIcon(QIcon(os.getcwd().replace("\\",'/') + "/Image/cal.png"))
+            cal_for_source.clicked.connect(self.showSourceCal)
+            cal_for_target = QPushButton()
+            cal_for_target.setIcon(QIcon(os.getcwd().replace("\\",'/') + "/Image/cal.png"))
+            cal_for_target.clicked.connect(self.showTargetCal)
+            hbox1.addWidget(self.XY_source_ref)
+            hbox1.addWidget(cal_for_source)
+            hbox2.addWidget(self.XY_target_ref)
+            hbox2.addWidget(cal_for_target)
+
+            self.rule = QComboBox()
+            self.rule.addItems(['None', 'Even', 'Odd'])
             self.elements_dict_for_Label = []
             self.elements_dict_for_LineEdit = []
             # self.elements_dict_for_LineEdit.append(QLineEdit())
             # self.elements_dict_for_LineEdit.append(QLineEdit())
             self.ui_list_a.extend(['XY_source_ref', 'XY_target_ref', 'Rule (Even, Odd or None)'])  # ,'Element1','Element2'])
-            self.ui_list_b.extend([self.XY_source_ref, self.XY_target_ref, self.rule])
+            self.ui_list_b.extend([hbox1, hbox2, self.rule])
             # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
         elif self.variable_type == 'element array':
             self.XY_base = QLineEdit()
@@ -105,7 +122,10 @@ class VariableSetupWindow(QWidget):
         for label in self.ui_list_a:
             self.setupVboxColumn1.addWidget(QLabel(label))
         for widget in self.ui_list_b:
-            self.setupVboxColumn2.addWidget(widget)
+            try:
+                self.setupVboxColumn2.addWidget(widget)
+            except:
+                self.setupVboxColumn2.addLayout(widget)
 
 
 
@@ -130,7 +150,6 @@ class VariableSetupWindow(QWidget):
         self.setGeometry(300,300,500,500)
         self.updateUI()
         self.show()
-
 
     def updateUI(self):
         # while self.setupVboxColumn1.count() != 1:               # original typed content delete
@@ -233,6 +252,23 @@ class VariableSetupWindow(QWidget):
                         break
         except:
             print("updateFail")
+
+    def showSourceCal(self):
+        self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='source')
+        self.cal.send_expression_signal.connect(self.exportedText)
+        self.cal.show()
+
+    def showTargetCal(self):
+        self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='target')
+        self.cal.send_expression_signal.connect(self.exportedText)
+        self.cal.show()
+
+    def exportedText(self, text, purpose):
+        if self.variable_type == 'c_array':
+            if purpose == 'source':
+                self.XY_source_ref.setText(text)
+            elif purpose == 'target':
+                self.XY_target_ref.setText(text)
 
 
 class CustomQTableView(QTableView): ### QAbstractItemView class inherited

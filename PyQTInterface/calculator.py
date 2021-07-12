@@ -934,3 +934,164 @@ class PathWindow(QWidget):
         self.setupVboxColumn1.addWidget(self.XYdictForLabel[-1])
         self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[-1])
         self.XYdictForLineEdit[-1].setReadOnly(True)
+
+class nine_key_calculator(QWidget):
+    send_expression_signal =  pyqtSignal(str, str)
+
+    def __init__(self,clipboard,purpose):
+        # super(ExpressionCalculator, self).__init__()
+        super().__init__()
+
+        ######state_flag#######
+        self.value_flag=False
+        self.value_str = ''
+        ########################
+
+        self.clipboard = clipboard
+        self.purpose = purpose
+        self.display= QTextEdit('')
+        self.display.setReadOnly(True)
+        self.display.setAlignment(Qt.AlignRight|Qt.AlignTop)
+        self.display.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+        self.display.setFixedHeight(50)
+        # self.display.setMinimumHeight(80)
+        # print(self.display.layoutDirection())
+        # # self.display.setLayoutDirection(Qt.RightToLeft)
+        # print(self.display.layoutDirection())
+        self.equationList = list()
+
+        font = self.display.font()
+        font.setPointSize(font.pointSize()+8)
+        self.display.setFont(font)
+        self.init_ui()
+
+    def init_ui(self):
+        self.top_buttons = self.create_button('━', self.geo_clicked ,'top')
+        self.right_buttons = self.create_button('┃', self.geo_clicked, 'right')
+        self.left_buttons = self.create_button('┃', self.geo_clicked, 'left')
+        self.bottom_buttons = self.create_button('━', self.geo_clicked, 'bottom')
+        self.center_buttons = self.create_button('*',self.geo_clicked, 'center')
+        self.left_top_buttons = self.create_button('┏',self.geo_clicked, 'lt')
+        self.right_top_buttons = self.create_button('┓',self.geo_clicked, 'rt')
+        self.left_bot_buttons = self.create_button('┗',self.geo_clicked, 'lb')
+        self.right_bot_buttons = self.create_button('┛',self.geo_clicked, 'rb')
+
+
+        self.backspace = self.create_button('<-',self.delete_clicked)
+
+        """
+        option layout
+        """
+        export_button = self.create_button('EXPORT',self.export_clicked)
+
+        """
+        main layout
+        """
+        main_layout = QGridLayout()
+
+        dl_size = 1
+        main_layout.addWidget(self.display, 0, 0, dl_size, 3)
+        main_layout.addWidget(self.backspace, 0, 3, dl_size, 1)
+
+        main_layout.addWidget(self.top_buttons,dl_size,1)
+        main_layout.addWidget(self.bottom_buttons,dl_size+2,1)
+        main_layout.addWidget(self.left_buttons,dl_size+1,0)
+        main_layout.addWidget(self.right_buttons,dl_size+1,2)
+        main_layout.addWidget(self.center_buttons,dl_size+1,1)
+        main_layout.addWidget(self.left_top_buttons,dl_size,0)
+        main_layout.addWidget(self.right_top_buttons,dl_size,2)
+        main_layout.addWidget(self.left_bot_buttons,dl_size+2,0)
+        main_layout.addWidget(self.right_bot_buttons,dl_size+2,2)
+
+        main_layout.addWidget(export_button, dl_size, 3, 3, 1)
+
+        self.setLayout(main_layout)
+        self.setWindowTitle(f'Nine-key Calculator f or {self.purpose}')
+        self.show()
+
+    def keyPressEvent(self, QKeyEvent):
+        if QKeyEvent.key() == Qt.Key_Backspace:
+            self.delete_clicked()
+        elif QKeyEvent.text() == 'q':
+            self.geo_clicked(clicked=self.left_top_buttons)
+        elif QKeyEvent.text() == 'w':
+            self.geo_clicked(clicked=self.top_buttons)
+        elif QKeyEvent.text() == 'e':
+            self.geo_clicked(clicked=self.right_top_buttons)
+        elif QKeyEvent.text() == 'a':
+            self.geo_clicked(clicked=self.left_buttons)
+        elif QKeyEvent.text() == 's':
+            self.geo_clicked(clicked=self.center_buttons)
+        elif QKeyEvent.text() == 'd':
+            self.geo_clicked(clicked=self.right_buttons)
+        elif QKeyEvent.text() == 'z':
+            self.geo_clicked(clicked=self.left_bot_buttons)
+        elif QKeyEvent.text() == 'x':
+            self.geo_clicked(clicked=self.bottom_buttons)
+        elif QKeyEvent.text() == 'c':
+            self.geo_clicked(clicked=self.right_bot_buttons)
+
+    def create_button(self,text, slot_fcn, name=None, size_constraint = None):
+        button = QPushButton(text)
+        button.clicked.connect(slot_fcn)
+        button.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+        if name is not None:
+            button.setObjectName(name)
+        if size_constraint and type(size_constraint) == dict:
+            if 'height' in size_constraint:
+                button.setMaximumHeight(size_constraint['height'])
+            # if 'width' in size_constraint:
+            #     button.setMaximumWidth(size_constraint['width'])
+        return button
+
+    def delete_clicked(self):
+        if len(self.equationList) is not 0:
+            display = str()
+
+            if len(self.equationList) is not 0:
+                del self.equationList[-1]
+
+            for text in self.equationList:
+                display += text
+            self.display.setText(display)
+
+    def geo_clicked(self, clicked= None):
+        if clicked:
+            clicked_button = clicked
+        else:
+            clicked_button = self.sender()
+        geo_text = clicked_button.objectName()
+        hierarchy_list = self.parsing_clipboard()
+        display = str()
+
+        if type(hierarchy_list) == Exception:
+            return None
+        calc_expression = geo_text + f'({hierarchy_list})'.replace(" ","")
+        if self.display.toPlainText() == '':
+            self.equationList.append(calc_expression)
+        else:
+            print(f'len!!={len(self.value_str)}')
+            self.equationList[-1] = calc_expression
+
+        for text in self.equationList:
+            display += text
+        self.display.setText(display)
+
+    def export_clicked(self):
+        self.send_expression_signal.emit(self.display.toPlainText(), self.purpose)
+        self.destroy()
+
+    def parsing_clipboard(self):
+        try:
+            print(self.clipboard.text())
+            hierarchy_name_list = eval(self.clipboard.text())
+            return hierarchy_name_list
+        except:
+            return self.abort_clipboard()
+
+    def abort_clipboard(self):
+        warnings.warn("You should select target layer first!")
+        #debug option#
+        if self.clipboard.text():
+            print(self.clipboard.text())
+        return Exception("No selected layer")
