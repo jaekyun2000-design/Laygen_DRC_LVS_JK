@@ -49,6 +49,7 @@ from PyQTInterface import list_manager
 from PyQTInterface import calculator
 
 from generatorLib import generator_model_api
+from generatorLib import DRC
 
 ##for easy debug##
 import json

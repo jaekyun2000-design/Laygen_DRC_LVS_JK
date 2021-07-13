@@ -747,11 +747,11 @@ class ExpressionCalculator(QWidget):
             self.presetDict[_id]['XY'] = XYList
 
     def export_clicked(self, export_type = False):
-        output = dict()
         XList = list()
         YList = list()
         XYList = list()
         LEFlag = False
+
         for i_x in range(self.XWindow.count()):
             self.XWindow.setCurrentRow(i_x)
             XList.append(self.XWindow.currentItem().text())
@@ -762,9 +762,8 @@ class ExpressionCalculator(QWidget):
             self.XYWindow.setCurrentRow(i_xy)
             XYList.append(self.XYWindow.currentItem().text())
         output = {'X':XList, 'Y':YList, 'XY':XYList}
-        # print(output)
 
-        if not XYList:
+        if not XYList and export_type == False:
             if XList and YList:
                 pass
             elif XList:
