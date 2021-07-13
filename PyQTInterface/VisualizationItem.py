@@ -217,6 +217,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         self._subCellFlag = False
         self._IndexFlag = False
         self._PathUngroupedFlag = False
+        self._CreateFlag = True
         self.index = None
         if _ItemTraits is None:
             self._ItemTraits = dict(
@@ -319,6 +320,7 @@ class _VisualizationItem(QGraphicsItemGroup):
     def updateDesignParameter(self,QtDesignParameter):
         self._id = QtDesignParameter._id
         self._type = QtDesignParameter._type
+        self._CreateFlag = False
         # try:
         #     oldVersionSupportForXYCoordinatesForDisplay = QtDesignParameter._XYCoordinatesForDisplay
         # except:
@@ -863,9 +865,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.heightVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
                 self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-                # self.widthVariable.setVisible(False)
-                # self.heightVariable.setVisible(False)
-                # self.XYVariable.setVisible(False)
+                self.widthVariable.setVisible(False)
+                self.heightVariable.setVisible(False)
+                self.XYVariable.setVisible(False)
 
                 self.widthVariable.setZValue(1)
                 self.heightVariable.setZValue(1)
@@ -887,7 +889,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                 self.tmpXY.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-                # self.tmpXY.setVisible(False)
+                self.tmpXY.setVisible(False)
 
                 self.tmpXY.setZValue(1)
 
@@ -908,8 +910,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
                 self.paramVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-                # self.XYVariable.setVisible(False)
-                # self.paramVariable.setVisible(False)
+                self.XYVariable.setVisible(False)
+                self.paramVariable.setVisible(False)
 
                 self.XYVariable.setZValue(1)
                 self.paramVariable.setZValue(1)

@@ -1122,6 +1122,11 @@ class _MainWindow(QMainWindow):
                 self.scene.update()
 
         # if not self.checkNameDuplication(graphicItem):
+        if graphicItem._CreateFlag is True:
+            for item in graphicItem.block:
+                if type(item) is VisualizationItem.QGraphicsTextItemWObounding:
+                    item.setVisible(True)
+
         self.scene.addItem(graphicItem)
         self.scene.send_move_signal.connect(graphicItem.move)
         self.scene.send_moveDone_signal.connect(graphicItem.moveUpdate)
@@ -2629,8 +2634,8 @@ class _CustomScene(QGraphicsScene):
         super().__init__()
         if axis:
             pen = QPen()
-            pen.setStyle(Qt.SolidLine)
-            pen.setColor(Qt.GlobalColor.red)
+            pen.setStyle(Qt.DashLine)
+            pen.setColor(Qt.GlobalColor.lightGray)
             pen.setCapStyle(Qt.RoundCap)
             pen.setWidth(3)
 

@@ -1005,7 +1005,7 @@ class nine_key_calculator(QWidget):
         main_layout.addWidget(export_button, dl_size, 3, 3, 1)
 
         self.setLayout(main_layout)
-        self.setWindowTitle(f'Nine-key Calculator f or {self.purpose}')
+        self.setWindowTitle(f'Nine-key Calculator for {self.purpose}')
         self.show()
 
     def keyPressEvent(self, QKeyEvent):
