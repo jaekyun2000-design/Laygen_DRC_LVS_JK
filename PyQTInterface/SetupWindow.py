@@ -2676,9 +2676,12 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             sref_item = self.model.item(rc,0)
             calculate_name_item = sref_item.child(4,4) #row=4 for calculate_fcn in Sref ast
             idx = self.model.indexFromItem(calculate_name_item).siblingAtColumn(4)
-            fcn_list = list(generator_model_api.class_function_dict[_DesignConstraint[_parentName][_id]._ast.library].keys())
-            combo_delegetor = ComboDelegate(self,fcn_list)
-            self.setItemDelegateForColumn(4,combo_delegetor)
+            if _DesignConstraint[_parentName][_id]._ast.library == 'MacroCell':
+                pass
+            else:
+                fcn_list = list(generator_model_api.class_function_dict[_DesignConstraint[_parentName][_id]._ast.library].keys())
+                combo_delegetor = ComboDelegate(self,fcn_list)
+                self.setItemDelegateForColumn(4,combo_delegetor)
             # idx = self.model.index(rc,3,QModelIndex())
             # self.model.appendRow([QStandardItem('aa')])
             # self.openPersistentEditor(self.model.index(rc,3))

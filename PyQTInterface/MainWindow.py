@@ -1448,12 +1448,14 @@ class _MainWindow(QMainWindow):
                         findHint = _newCellName.find(key)
                         if findHint != -1:
                             topcell[_newConstraintID]._DesignParameter['library'] = value
-                            _className = generator_model_api.class_name_dict[_element._DesignParameter['library']]
-                            topcell[_newConstraintID]._DesignParameter['className'] =_className
-                            topcell[_newConstraintID]._DesignParameter['parameters'] = \
-                                generator_model_api.class_dict[value]._ParametersForDesignCalculation
-
-
+                            if value != 'MacroCell':
+                                _className = generator_model_api.class_name_dict[_element._DesignParameter['library']]
+                                topcell[_newConstraintID]._DesignParameter['className'] =_className
+                                topcell[_newConstraintID]._DesignParameter['parameters'] = \
+                                    generator_model_api.class_dict[value]._ParametersForDesignCalculation
+                            else:
+                                topcell[_newConstraintID]._DesignParameter['className'] = 'Undefined'
+                                topcell[_newConstraintID]._DesignParameter['parameters'] = 'Undefined'
                             topcell[_newConstraintID]._ElementName = _newConstraintID
                             topcell[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
                             topcell[_newConstraintID]._DesignParameter['_ElementName'] = _newConstraintID
