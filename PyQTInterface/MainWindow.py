@@ -67,15 +67,6 @@ subnanoViewScale = 1  #
                       # 10 means: coordinates default unit is 10nm
 EasyDebugFileName = ''
 
-
-
-class _CustomSignals(QObject):
-    itemSelection = pyqtSignal()
-    itemSelectionDestroy = pyqtSignal()
-    xycoordinateSignal = pyqtSignal()
-
-
-
 class _MainWindow(QMainWindow):
 
     # def MACRO(self):
@@ -1559,6 +1550,7 @@ class _MainWindow(QMainWindow):
     def createVariable(self,type):
         selected_vis_items = self.scene.selectedItems()
         self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
+        self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
 
     def createVariableVisual(self, variableVisualItem):
@@ -2673,6 +2665,7 @@ class _CustomScene(QGraphicsScene):
             masked_output = []
             for item in items:
                 if type(item) == VisualizationItem._VisualizationItem:
+                    self.send_item_clicked_signal.emit(item)
                     if not item.parentItem():
                         masked_output.append(item)
             return masked_output
