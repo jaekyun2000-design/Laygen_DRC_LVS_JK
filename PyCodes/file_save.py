@@ -1,4 +1,6 @@
 import warnings
+from PyQTInterface import calculator
+
 class FileSaveFormat:
     def __init__(self):
         self.top_module = None
@@ -15,6 +17,8 @@ class FileSaveFormat:
         if 'dv' in main_window.__dict__:
             self.save_user_variable_info(main_window)
         self.save_extra_ast_info(main_window)
+        self.save_calculator_extra_info()
+
 
 
     def save_constraint_tree_info(self,main_window):
@@ -35,11 +39,15 @@ class FileSaveFormat:
     def save_extra_ast_info(self,main_window):
         self._DummyConstraints = main_window._DummyConstraints
 
+    def save_calculator_extra_info(self):
+        self.presetDict = calculator.ExpressionCalculator.presetDict
+
     def load_qt_interface(self,main_window, _DesignConstraint):
         main_window._CurrentModuleName = self.top_module
         self.load_from_constraint_tree_info(main_window, _DesignConstraint)
         self.load_user_variable_info(main_window)
         self.load_extra_ast_info(main_window)
+        self.load_calculator_extra_info()
 
     def load_from_constraint_tree_info(self,main_window, _DesignConstraint):
         if 'id_items_for_run' not in self.__dict__:
@@ -83,3 +91,6 @@ class FileSaveFormat:
         if '_DummyConstraints' in self.__dict__:
             if self._DummyConstraints:
                 main_window._DummyConstraints = self._DummyConstraints
+
+    def load_calculator_extra_info(self):
+        calculator.ExpressionCalculator.presetDict = self.presetDict
