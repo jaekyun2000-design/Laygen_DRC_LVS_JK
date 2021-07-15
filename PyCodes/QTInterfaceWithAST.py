@@ -27,8 +27,9 @@ from gds_editor_ver3 import gds_stream
 
 class QtDesignParameter:
     def __init__(self, _id=None, _type=None, _ParentName=None, _ItemTraits=None,
-                 _ElementName=None):  # _ParentName: module name, _ElementName: designParameter name
+                 _ElementName=None, _name=None):  # _ParentName: module name, _ElementName: designParameter name
         self._id = _id
+        self._name = _name
         self._type = _type  # boundary, path, sref, gdsObj
         self._ParentName = _ParentName
         if _ElementName == None:
@@ -1745,23 +1746,23 @@ class QtProject:
         else:
             try:
                 # create new design parameter
-                id_num = self._getDesignParameterId(module_name)
-                designID = (module_name + str(id_num))
-                self._createNewDesignParameter(_id=designID, _type=_dp_dict['_DesignParametertype'],
+                if '_ElementName' not in _dp_dict:
+                    id_num = self._getDesignParameterId(module_name)
+                    designID = (module_name + str(id_num))
+                    _dp_dict['_ElementName'] = designID
+                self._createNewDesignParameter(_id=_dp_dict['_ElementName'], _type=_dp_dict['_DesignParametertype'],
                                                _ParentName=module_name)
                 for key in _dp_dict:
-                    self._DesignParameter[module_name][designID]._setDesignParameterValue(_index=key,
+                    self._DesignParameter[module_name][_dp_dict['_ElementName']]._setDesignParameterValue(_index=key,
                                                                                                       _value=_dp_dict[
                                                                                                           key])
-                if '_ElementName' not in _dp_dict:
-                    _dp_dict['_ElementName'] = designID
-                self._DesignParameter[module_name][designID]._setDesignParameterName(
+                self._DesignParameter[module_name][_dp_dict['_ElementName']]._setDesignParameterName(
                     _ElementName=_dp_dict['_ElementName'])
-                self._UpdateXYCoordinateForDisplay(_id=designID, _ParentName=module_name)
+                self._UpdateXYCoordinateForDisplay(_id=_dp_dict['_ElementName'], _ParentName=module_name)
                 if _dp_dict['_DesignParametertype'] == 1:
-                    self._ConvertBoundaryXYExpression(_id=designID, _ParentName=module_name)
+                    self._ConvertBoundaryXYExpression(_id=_dp_dict['_ElementName'], _ParentName=module_name)
                 # send design parameter info to element manager --> return: ast info or
-                _designParameter = self._DesignParameter[module_name][designID]
+                _designParameter = self._DesignParameter[module_name][_dp_dict['_ElementName']]
                 _designConstraint = None
                 _designConstraint_id = None
                 if element_manager_update == True:
@@ -1772,11 +1773,11 @@ class QtProject:
                             _designConstraint = tmp_dict['constraint']
                             _designConstraint_id = tmp_dict['constraint_id']
                             # self._ElementManager.load_dp_dc(_designParameter, _designConstraint)
-                            self._ElementManager.load_dp_dc_id(dp_id=designID, dc_id=_designConstraint_id)
+                            self._ElementManager.load_dp_dc_id(dp_id=_dp_dict['_ElementName'], dc_id=_designConstraint_id)
                     except:
                         print('Constraint -> Parameter is not implemented')
 
-                output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': designID, 'constraint_id': _designConstraint_id}
+                output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': _dp_dict['_ElementName'], 'constraint_id': _designConstraint_id}
                 return output
             except:
                 traceback.print_exc()
@@ -1798,6 +1799,10 @@ class QtProject:
             return userDefineExceptions._InvalidInputError
         else:
             try:
+                if id != _dp_dict['_ElementName']:
+                    self._DesignParameter[module_name][_dp_dict['_ElementName']] = self._DesignParameter[module_name].pop(id)
+                    id = _dp_dict['_ElementName']
+
                 for key in _dp_dict:
                     self._DesignParameter[module_name][id]._setDesignParameterValue(_index=key, _value=_dp_dict[key])
                 self._DesignParameter[module_name][id]._setDesignParameterName(_ElementName=_dp_dict['_ElementName'])
