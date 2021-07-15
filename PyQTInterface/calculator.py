@@ -7,7 +7,7 @@ import re
 import copy
 # import numpy as np
 import os
-
+from generatorLib import drc_api
 
 class ExpressionCalculator(QWidget):
     # send_expression_signal =  pyqtSignal(dict)
@@ -182,6 +182,8 @@ class ExpressionCalculator(QWidget):
         DRCText = QLabel('DRC List')
         DRCText.setAlignment(Qt.AlignCenter)
         self.DRCWindow = QListWidget()
+        drc_dict = drc_api.drc_classified_dict
+
         self.DRCWindow.itemClicked.connect(self.DRC_click)
 
         # DRCButton = QPushButton("DRC")

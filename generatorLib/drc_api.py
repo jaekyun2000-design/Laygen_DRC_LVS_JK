@@ -2,7 +2,7 @@ import sys, inspect
 import re
 from generatorLib import DRC
 
-tmp = __import__('DRC')
+tmp = DRC
 class_members = inspect.getmembers(tmp, inspect.isclass)
 # elements = inspect.getmembers(tmp)
 drc_dict = dict()
@@ -34,5 +34,16 @@ for drcName, obj in drc_dict.items():
 
 
 # func_dict['DRCMETAL1MinSpace'](drc_dict['DRCMETAL1'](),None,None)
+drc_classified_dict['CONT'] = drc_classified_dict.pop('DRCCO')
+drc_classified_dict['NIMP'] = drc_classified_dict.pop('DRCNP')
+drc_classified_dict['NWELL'] = drc_classified_dict.pop('DRCNW')
+drc_classified_dict['PIMP'] = drc_classified_dict.pop('DRCPP')
+drc_classified_dict['DIFF'] = drc_classified_dict.pop('DRCOD')
+drc_classified_dict['RPO'] = drc_classified_dict.pop('DRCRPO')
+drc_classified_dict['POLY'] = drc_classified_dict.pop('DRCPOLYGATE')
+drc_classified_dict['METAL1'] = drc_classified_dict.pop('DRCMETAL1')
+drc_classified_dict['METALx'] = drc_classified_dict.pop('DRCMETALx')
 
-print('debug')
+
+print("debug")
+
