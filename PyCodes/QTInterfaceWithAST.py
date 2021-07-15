@@ -2582,7 +2582,7 @@ class QtProject:
 
 
 class QtInterFace:
-    def __init__(self, ):
+    def __init__(self):
         self._qtProject = None
 
     def _saveProject(self, _name="defaultProjectName.bin"):
