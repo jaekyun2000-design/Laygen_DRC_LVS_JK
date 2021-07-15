@@ -685,7 +685,8 @@ class ExpressionCalculator(QWidget):
         for idx in range(self.DRCWindow.topLevelItemCount()):
             self.DRCWindow.takeTopLevelItem(0)
 
-        self.DRCWindow.addTopLevelItem(self.DRCTreeItemDict[self.returnedLayer])
+        if self.returnedLayer in self.DRCTreeItemDict:
+            self.DRCWindow.addTopLevelItem(self.DRCTreeItemDict[self.returnedLayer])
         for layer in self.DRCTreeItemDict.keys():
             if layer != self.returnedLayer:
                 self.DRCWindow.addTopLevelItem(self.DRCTreeItemDict[layer])
