@@ -3039,8 +3039,8 @@ class _CustomScene(QGraphicsScene):
     def ungroup_indexed_item(self):
         for item in self.selectedItems():
             if type(item) == VisualizationItem._VisualizationItem:
-                if item._PathUngroupedFlag or (len(item._ItemTraits['_XYCoordinates']) is 1 and item._ItemTraits['_DesignParametertype'] == 2):
-                    if len(item.block) is not 1:
+                if item._PathUngroupedFlag or (len(item._ItemTraits['_XYCoordinates']) == 1 and item._ItemTraits['_DesignParametertype'] == 2):
+                    if len(item.block) != 1:
                         for child in item.childItems():
                             if type(child) == VisualizationItem._RectBlock:
                                 tmp_vs_item = child.independent_from_group()
