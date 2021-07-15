@@ -40,6 +40,7 @@ class VariableSetupWindow(QWidget):
         self.setFixedWidth(300)
         self.variable_type = variable_type
         self.vis_items= vis_items
+        self.itemList = list()
         self.initUI()
 
         if variable_obj == None:
@@ -70,7 +71,11 @@ class VariableSetupWindow(QWidget):
 
         if self.variable_type == 'c_array':
             self.XY_source_ref = QLineEdit()
+            self.XY_source_ref.setReadOnly(True)
             self.XY_target_ref = QLineEdit()
+            self.XY_target_ref.setReadOnly(True)
+
+            self.deleteItemList = QListWidget()
 
             hbox1 = QHBoxLayout()
             hbox2 = QHBoxLayout()
@@ -86,12 +91,12 @@ class VariableSetupWindow(QWidget):
             hbox2.addWidget(cal_for_target)
 
             self.rule = QComboBox()
-            self.rule.addItems(['None', 'Even', 'Odd'])
+            self.rule.addItems(['None', 'Even', 'Odd', 'Custom(손가락나으면 순규가 할 것)'])
             self.elements_dict_for_Label = []
             self.elements_dict_for_LineEdit = []
             # self.elements_dict_for_LineEdit.append(QLineEdit())
             # self.elements_dict_for_LineEdit.append(QLineEdit())
-            self.ui_list_a.extend(['XY_source_ref', 'XY_target_ref', 'Rule (Even, Odd or None)'])  # ,'Element1','Element2'])
+            self.ui_list_a.extend(['XY_source_ref', 'XY_target_ref', 'Rule'])  # ,'Element1','Element2'])
             self.ui_list_b.extend([hbox1, hbox2, self.rule])
             # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
         elif self.variable_type == 'element array':
@@ -141,6 +146,8 @@ class VariableSetupWindow(QWidget):
         vbox = QVBoxLayout()
         vbox.addStretch(1)
         vbox.addLayout(setupBox)
+        if self.variable_type == 'c_array':
+            vbox.addWidget(self.deleteItemList)
         vbox.addStretch(3)
         vbox.addLayout(hbox)
 
@@ -167,8 +174,18 @@ class VariableSetupWindow(QWidget):
         # self.addQLabel(strList)
         # self.addQLine(len(strList))
         #
+        if self.variable_type_widget.text() == "c_array":
+            for i, vis_item in enumerate(self.vis_items):
+                id = vis_item._id
+                self.itemList.append(id)
+                self.deleteItemList.addItem(id)
+                # self.elements_dict_for_Label.append(QLabel('Element '+str(i)))
+                # self.elements_dict_for_LineEdit.append(QLineEdit(id))
+                #
+                # self.setupVboxColumn1.addWidget(self.elements_dict_for_Label[-1])
+                # self.setupVboxColumn2.addWidget(self.elements_dict_for_LineEdit[-1])
 
-        if self.variable_type_widget.text() == "element array":
+        elif self.variable_type_widget.text() == "element array":
             for i, vis_item in enumerate(self.vis_items):
                 id = vis_item._id
                 self.elements_dict_for_Label.append(QLabel('Element '+str(i)))
@@ -182,6 +199,12 @@ class VariableSetupWindow(QWidget):
             # self.addQLabel(strList)
             # self.addQLine(len(strList))
 
+    def clickFromScene(self, item):
+        itemID = item._id
+        if itemID not in self.itemList:
+            self.deleteItemList.addItem(itemID)
+            self.itemList.append(itemID)
+
     def addQLabel(self,strList):
         for str in strList:
             self.setupVboxColumn1.addWidget(QLabel(str))
@@ -189,40 +212,51 @@ class VariableSetupWindow(QWidget):
         for i in range(0,num):
             self.setupVboxColumn2.addWidget(QLineEdit())
     def on_buttonBox_accepted(self):
+        if self.XY_source_ref.text() == '' or self.XY_target_ref.text() == '':
+            self.warning = QMessageBox()
+            self.warning.setText("Incomplete")
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.show()
+            return
+
         variable_vis_item = VariableVisualItem.VariableVisualItem()
         variable_vis_item.addToGroupFromList(self.vis_items)
         variable_info = dict()
 
-        self.XY_base_text = self.XY_base.text()
-        self.x_offset_text = self.x_offset.text()
-        self.y_offset_text = self.y_offset.text()
+        if self.variable_type == 'c_array':
+            print(self.XY_source_ref.text())
+            print(self.XY_target_ref.text())
+        else:
+            self.XY_base_text = self.XY_base.text()
+            self.x_offset_text = self.x_offset.text()
+            self.y_offset_text = self.y_offset.text()
 
-        if ',' in self.XY_base_text:
-            slicing = self.XY_base_text.find(',')
-            self.XY_base_text = [[float(self.XY_base_text[:slicing]), float(self.XY_base_text[slicing + 1:])]]
+            if ',' in self.XY_base_text:
+                slicing = self.XY_base_text.find(',')
+                self.XY_base_text = [[float(self.XY_base_text[:slicing]), float(self.XY_base_text[slicing + 1:])]]
 
-        try:
-            self.x_offset_text = float(self.x_offset.text())
-        except:
-            pass
+            try:
+                self.x_offset_text = float(self.x_offset.text())
+            except:
+                pass
 
-        try:
-            self.y_offset_text = float(self.y_offset.text())
-        except:
-            pass
+            try:
+                self.y_offset_text = float(self.y_offset.text())
+            except:
+                pass
 
-        self.ui_list_c.extend([self.XY_base_text, self.x_offset_text, self.y_offset_text])
+            self.ui_list_c.extend([self.XY_base_text, self.x_offset_text, self.y_offset_text])
 
-        for i, key in enumerate(self.ui_list_a):
-            variable_info[key] = self.ui_list_c[i]
-        if self.variable_type == 'element array':
-            tmp_list = []
-            for i in range(len(self.elements_dict_for_LineEdit)):
-                tmp_list.append(self.elements_dict_for_LineEdit[i].text())
-            variable_info['elements'] = tmp_list
-        variable_vis_item._DesignParametertype= self.variable_type
-        variable_vis_item.set_variable_info(variable_info)
-        self.send_variableVisual_signal.emit(variable_vis_item)
+            for i, key in enumerate(self.ui_list_a):
+                variable_info[key] = self.ui_list_c[i]
+            if self.variable_type == 'element array':
+                tmp_list = []
+                for i in range(len(self.elements_dict_for_LineEdit)):
+                    tmp_list.append(self.elements_dict_for_LineEdit[i].text())
+                variable_info['elements'] = tmp_list
+            variable_vis_item._DesignParametertype= self.variable_type
+            variable_vis_item.set_variable_info(variable_info)
+            self.send_variableVisual_signal.emit(variable_vis_item)
         self.destroy()
 
     def cancel_button_accepted(self):
@@ -235,6 +269,12 @@ class VariableSetupWindow(QWidget):
         elif QKeyEvent.key() == Qt.Key_Escape:
             self.destroy()
             self.send_Destroy_signal.emit('cw')
+        elif QKeyEvent.key() == Qt.Key_Delete:
+            for item in self.deleteItemList.selectedItems():
+                self.itemList.remove(item.text())
+                row = self.deleteItemList.row(item)
+                self.deleteItemList.takeItem(row)
+
     def updateUIvalue(self):
         try:
             type = self._ParseTree['_DesignParametertype']

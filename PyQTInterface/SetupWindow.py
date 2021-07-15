@@ -192,10 +192,12 @@ class _BoundarySetupWindow(QWidget):
             self._DesignParameter['_XWidth'] = float(self.width_input.text())
             self._DesignParameter['_YWidth'] = float(self.height_input.text())
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
+
             try:
                 self.send_DestroyTmpVisual_signal.emit(self.visualItem)
             except:
                 pass
+
             self.send_BoundaryDesign_signal.emit(self._DesignParameter)
             self.destroy()
 
