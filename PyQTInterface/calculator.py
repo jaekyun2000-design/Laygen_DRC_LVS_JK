@@ -42,6 +42,7 @@ class ExpressionCalculator(QWidget):
         # # self.display.setLayoutDirection(Qt.RightToLeft)
         # print(self.display.layoutDirection())
         self.equationList = list()
+        self.DRCTreeItemDict = dict()
         self.returnedLayer = None
 
         self.setFixedSize(786,800)
@@ -178,13 +179,21 @@ class ExpressionCalculator(QWidget):
         self.presetButton.setMaximumWidth(30)
         self.presetWindow = QListWidget()
         self.presetWindow.itemClicked.connect(self.presetClicked)
+        self.presetWindow.setDragDropMode(QAbstractItemView.InternalMove)
         for _id in self.presetDict.keys():
             self.presetWindow.addItem(_id)
 
         DRCText = QLabel('DRC List')
         DRCText.setAlignment(Qt.AlignCenter)
-        self.DRCWindow = QListWidget()
+        self.DRCWindow = QTreeWidget()
+        self.DRCWindow.setHeaderLabel('')
         drc_dict = drc_api.drc_classified_dict
+        for layer in drc_dict.keys():
+            top = QTreeWidgetItem([layer])
+            self.DRCTreeItemDict[layer] = top
+            for key in drc_dict[layer]:
+                 tmpItem = QTreeWidgetItem(top,[key])
+            self.DRCWindow.addTopLevelItem(top)
 
         self.DRCWindow.itemClicked.connect(self.DRC_click)
 
@@ -266,7 +275,8 @@ class ExpressionCalculator(QWidget):
             self.setFixedHeight(800)
 
     def DRC_click(self):
-        pass
+        if self.DRCWindow.currentItem().childCount() == 0:
+            print(self.DRCWindow.currentItem().text(0))
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Delete:
@@ -671,6 +681,37 @@ class ExpressionCalculator(QWidget):
         # Returned Layer Info conveyed @ this point
 
         print(self.returnedLayer)
+
+        for idx in range(self.DRCWindow.topLevelItemCount()):
+            self.DRCWindow.takeTopLevelItem(0)
+
+        self.DRCWindow.addTopLevelItem(self.DRCTreeItemDict[self.returnedLayer])
+        for layer in self.DRCTreeItemDict.keys():
+            if layer != self.returnedLayer:
+                self.DRCWindow.addTopLevelItem(self.DRCTreeItemDict[layer])
+
+        # for idx in range(self.DRCWindow.topLevelItemCount()):
+        #     if idx != top_idx:
+        #         self.DRCWindow.model().removeRow(idx)
+        #         self.DRCWindow.addTopLevelItem(self.DRCTreeItemDict[self.returnedLayer])
+
+        # # self.DRCWindow.setCurrentItem(self.DRCTreeItemDict[self.returnedLayer])
+        # delete_idx = self.DRCWindow.indexFromItem(self.DRCTreeItemDict[self.returnedLayer])
+        # parent_idx = self.DRCWindow.indexFromItem(self.DRCTreeItemDict[self.returnedLayer].parent())
+        # print(delete_idx.row())
+        # print(_idx.row())
+        # self.DRCWindow.model().moveRow(parent_idx,delete_idx.row(),parent_idx,0)
+        # # self.DRCWindow.model().removeRow(delete_idx.row())
+        # # print(self.DRCTreeItemDict[self.returnedLayer])
+        # # self.DRCWindow.insertTopLevelItem(0,self.DRCTreeItemDict[self.returnedLayer])
+        # # # self.DRCWindow.currentItem().setHidden(True)
+        # # # self.DRCWindow.takeTopLevelItem(0)
+        # #
+        # #
+        # #
+        # # self.DRCWindow.model().insertRow(0)
+        # # self.DRCWIndow.model().setObjectName()
+        # # self.DRCWindow.insertTopLevelItem(0,self.DRCTreeItemDict[self.returnedLayer])
 
         # clicked_button = self.sender()
         # geo_text = clicked_button.objectName()

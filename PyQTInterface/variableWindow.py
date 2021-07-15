@@ -34,12 +34,13 @@ class VariableSetupWindow(QWidget):
 
     send_variableVisual_signal = pyqtSignal(VariableVisualItem.VariableVisualItem)
 
-    def __init__(self,variable_type,vis_items=None,variable_obj=None):
+    def __init__(self,variable_type,vis_items=None,variable_obj=None,test=None):
         super().__init__()
         self.setMinimumHeight(500)
         self.setFixedWidth(300)
         self.variable_type = variable_type
         self.vis_items= vis_items
+        self._QTObj = test
         self.itemList = list()
         self.initUI()
 
@@ -72,6 +73,12 @@ class VariableSetupWindow(QWidget):
         if self.variable_type == 'c_array':
             self.XY_source_ref = QLineEdit()
             self.XY_source_ref.setReadOnly(True)
+            self.width_combo = QComboBox()
+            self.width_combo.addItems(['Auto', 'Custom'])
+            self.width_combo.currentTextChanged.connect(self.getWidth)
+            self.width_input = QLineEdit()
+            self.width_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            self.width_input.setReadOnly(True)
             self.XY_target_ref = QLineEdit()
             self.XY_target_ref.setReadOnly(True)
 
@@ -91,13 +98,19 @@ class VariableSetupWindow(QWidget):
             hbox2.addWidget(cal_for_target)
 
             self.rule = QComboBox()
-            self.rule.addItems(['None', 'Even', 'Odd', 'Custom(손가락나으면 순규가 할 것)'])
+            self.rule.addItems(['All', 'Even', 'Odd', 'Custom'])
+            self.rule.currentTextChanged.connect(self.getRule)
+
+            self.rule_input = QLineEdit()
+            self.rule_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            self.rule_input.setReadOnly(True)
+
             self.elements_dict_for_Label = []
             self.elements_dict_for_LineEdit = []
             # self.elements_dict_for_LineEdit.append(QLineEdit())
             # self.elements_dict_for_LineEdit.append(QLineEdit())
-            self.ui_list_a.extend(['XY_source_ref', 'XY_target_ref', 'Rule'])  # ,'Element1','Element2'])
-            self.ui_list_b.extend([hbox1, hbox2, self.rule])
+            self.ui_list_a.extend(['XY_source_ref', 'width', '', 'XY_target_ref', 'Rule', ''])  # ,'Element1','Element2'])
+            self.ui_list_b.extend([hbox1, self.width_combo, self.width_input, hbox2, self.rule, self.rule_input])
             # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
         elif self.variable_type == 'element array':
             self.XY_base = QLineEdit()
@@ -131,9 +144,6 @@ class VariableSetupWindow(QWidget):
                 self.setupVboxColumn2.addWidget(widget)
             except:
                 self.setupVboxColumn2.addLayout(widget)
-
-
-
 
         setupBox.addLayout(self.setupVboxColumn1)
         setupBox.addLayout(self.setupVboxColumn2)
@@ -199,6 +209,22 @@ class VariableSetupWindow(QWidget):
             # self.addQLabel(strList)
             # self.addQLine(len(strList))
 
+    def getWidth(self, text):
+        if text == 'Auto':
+            self.width_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            self.width_input.setReadOnly(True)
+        elif text == 'Custom':
+            self.width_input.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
+            self.width_input.setReadOnly(False)
+
+    def getRule(self, text):
+        if text == 'Custom':
+            self.rule_input.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
+            self.rule_input.setReadOnly(False)
+        else:
+            self.rule_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            self.rule_input.setReadOnly(True)
+
     def clickFromScene(self, item):
         itemID = item._id
         if itemID not in self.itemList:
@@ -224,6 +250,9 @@ class VariableSetupWindow(QWidget):
         variable_info = dict()
 
         if self.variable_type == 'c_array':
+            id = self.XY_source_ref.text()[self.XY_source_ref.text().find("'")+1:-3]
+            print(id)
+            print(self._QTObj)
             print(self.XY_source_ref.text())
             print(self.XY_target_ref.text())
         else:
