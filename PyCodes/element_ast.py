@@ -5,7 +5,7 @@ import warnings
 import astunparse
 from PyCodes import ASTmodule
 # listTypeData = ['Lib','tb','PlaceDef','RouteDef','DRCDef','Iteration','P_R']
-custom_ast_list = ['Generator','Sref','Boundary','Path', 'Text']
+custom_ast_list = ['Generator','Sref','Boundary','Path', 'Text', 'MacroCell']
 #--start constants--
 
 class Generator(ast.AST):
@@ -60,6 +60,15 @@ class Sref(ElementNode):
         'XY',       # double list or str
         'calculate_fcn',
         'parameters'
+    )
+
+class MacroCell(ElementNode):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'name',     # name str
+        'library',   # library module str
+        'XY',       # double list or str
     )
 
 class Text(ElementNode):

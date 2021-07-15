@@ -1444,14 +1444,11 @@ class _MainWindow(QMainWindow):
                         findHint = _newCellName.find(key)
                         if findHint != -1:
                             topcell[_newConstraintID]._DesignParameter['library'] = value
-                            if value != 'MacroCell':
+                            if value != 'MacroCell':    # case Sref
                                 _className = generator_model_api.class_name_dict[_element._DesignParameter['library']]
                                 topcell[_newConstraintID]._DesignParameter['className'] =_className
                                 topcell[_newConstraintID]._DesignParameter['parameters'] = \
                                     generator_model_api.class_dict[value]._ParametersForDesignCalculation
-                            else:
-                                topcell[_newConstraintID]._DesignParameter['className'] = 'Undefined'
-                                topcell[_newConstraintID]._DesignParameter['parameters'] = 'Undefined'
                             topcell[_newConstraintID]._ElementName = _newConstraintID
                             topcell[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
                             topcell[_newConstraintID]._DesignParameter['_ElementName'] = _newConstraintID
@@ -1464,7 +1461,7 @@ class _MainWindow(QMainWindow):
                             self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
                                                                              _parentName=topCellName,
                                                                              _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-                            tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
+                            # tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
                             self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=_newConstraintID, dc_id=design_dict['constraint_id'])
                             break
                         else:
