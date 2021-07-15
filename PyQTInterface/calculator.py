@@ -275,8 +275,20 @@ class ExpressionCalculator(QWidget):
             self.setFixedHeight(800)
 
     def DRC_click(self):
+        display = str()
         if self.DRCWindow.currentItem().childCount() == 0:
-            print(self.DRCWindow.currentItem().text(0))
+
+            if self.value_flag:
+                self.equationList[-1] = self.DRCWindow.currentItem().text(0)
+            else:
+                self.equationList.append(self.DRCWindow.currentItem().text(0))
+            self.value_flag = True
+            self.arithmetic_flag = False
+            self.digit_flag = False
+
+            for text in self.equationList:
+                display += text
+            self.display.setText(display)
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Delete:
