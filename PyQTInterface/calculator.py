@@ -120,7 +120,7 @@ class ExpressionCalculator(QWidget):
         # main_layout.addWidget(self.display, 1, 8)
 
         for i in range(10):
-            if i is not 0:
+            if i != 0:
                 row = ((9-i) / 3)+dl_size
                 col = ((i-1) % 3)+3
                 main_layout.addWidget(self.digit_buttons[i], row, col)
@@ -443,7 +443,7 @@ class ExpressionCalculator(QWidget):
         # self.digit_flag = False
 
     def delete_clicked(self):
-        if len(self.equationList) is not 0:
+        if len(self.equationList) != 0:
             display = str()
 
             isDigit = False
@@ -500,7 +500,7 @@ class ExpressionCalculator(QWidget):
                     self.digit_flag = True
                     self.arithmetic_flag = False
 
-            if len(self.equationList) is 0:
+            if len(self.equationList) ==0:
                     self.value_flag = False
                     self.digit_flag = False
                     self.arithmetic_flag = False
@@ -611,8 +611,8 @@ class ExpressionCalculator(QWidget):
         #         self.digit_flag = True
         #
         #     elif len(self.value_str) == len(self.display.text()):
-        #         if len(self.display.text()) is not 0:
-        #             if self.display.text()[0] is not '-':
+        #         if len(self.display.text()) != 0:
+        #             if self.display.text()[0] != '-':
         #                 self.display.setText('-' + self.display.text())
         #                 self.value_str = '-' + self.value_str
         #             else:
@@ -699,7 +699,7 @@ class ExpressionCalculator(QWidget):
 
     def send_clicked(self):
         XYFlag = None
-        if len(self.equationList) is not 0:
+        if len(self.equationList) != 0:
             if self.arithmetic_flag:
                 self.warning = QMessageBox()
                 self.warning.setIcon(QMessageBox.Warning)
@@ -713,13 +713,13 @@ class ExpressionCalculator(QWidget):
                 self.digit_flag = False
                 self.arithmetic_flag = False
 
-                if self.x_button.isChecked() is True:
+                if self.x_button.isChecked():
                     self.showXWindow()
                     # XYFlag = 'X'
-                elif self.y_button.isChecked() is True:
+                elif self.y_button.isChecked():
                     self.showYWindow()
                     # XYFlag = 'Y'
-                elif self.xy_button.isChecked() is True:
+                elif self.xy_button.isChecked():
                     # XYFlag = 'XY'
                     self.showXYWindow()
                 self.equationList.clear()
@@ -1044,10 +1044,10 @@ class nine_key_calculator(QWidget):
         return button
 
     def delete_clicked(self):
-        if len(self.equationList) is not 0:
+        if len(self.equationList) != 0:
             display = str()
 
-            if len(self.equationList) is not 0:
+            if len(self.equationList) != 0:
                 del self.equationList[-1]
 
             for text in self.equationList:
