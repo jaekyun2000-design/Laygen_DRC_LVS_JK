@@ -548,14 +548,20 @@ class _MainWindow(QMainWindow):
 
     def get_hierarchy_return_layer(self, hierarchy_list):
         module = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
-        for i in range(len(hierarchy_list)-1):
-            module = module[hierarchy_list[i]]._DesignParameter['_ModelStructure']
-        if module[hierarchy_list[-1]]._DesignParameter['_Layer']:
-            layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-            _layerCommonName = layernum2name[str(module[hierarchy_list[-1]]._DesignParameter['_Layer'])]
-            self.calculator_window.returnedLayer = _layerCommonName
+        layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+
+        if len(hierarchy_list) == 0:
+            return
+        elif len(hierarchy_list) == 1:
+            _layerCommonName = layernum2name[str(module[hierarchy_list[0]]._DesignParameter['_Layer'])]
         else:
-            pass
+            for i in range(len(hierarchy_list)-1):
+                module = module[hierarchy_list[i]]._DesignParameter['_ModelStructure']
+            if module[hierarchy_list[-1]]._DesignParameter['_Layer']:
+                _layerCommonName = layernum2name[str(module[hierarchy_list[-1]]._DesignParameter['_Layer'])]
+                self.calculator_window.returnedLayer = _layerCommonName
+            else:
+                pass
     def sref_debug_module(self):
         # tmpcell = {'INV': {'Sub1': {'Sub2': {'PMOS': None}, 'NMOS': None,}, 'NMOS': None, 'PMOS': None}}
         # # tmpcell = {'Gen1': {'Gen2-1': {'Gen3': None}, 'Gen2-2': None}}
