@@ -1558,8 +1558,15 @@ class _MainWindow(QMainWindow):
     def createVariable(self,type):
         selected_vis_items = self.scene.selectedItems()
         self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items,test=self._QTObj)
+        self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
+        self.vw.send_output_dict_signal.connect(self.create_variable)
         self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
+
+    def create_variable(self, variable_info_dict):
+        if variable_info_dict['type'] == 'c_array':
+            variable_info_dict
+            print(1)
 
     def createVariableVisual(self, variableVisualItem):
         design_dict = self._QTObj._qtProject._feed_design(design_type='parameter', module_name= self._CurrentModuleName, dp_dict= variableVisualItem.__dict__)

@@ -30,6 +30,7 @@ class VariableSetupWindow(QWidget):
     send_Destroy_signal = pyqtSignal(str)
     send_Warning_signal = pyqtSignal(str)
     send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+    send_output_dict_signal = pyqtSignal(dict)
 
 
     send_variableVisual_signal = pyqtSignal(VariableVisualItem.VariableVisualItem)
@@ -42,6 +43,7 @@ class VariableSetupWindow(QWidget):
         self.vis_items= vis_items
         self._QTObj = test
         self.itemList = list()
+        self.output_dict = dict()
         self.initUI()
 
         if variable_obj == None:
@@ -71,7 +73,9 @@ class VariableSetupWindow(QWidget):
         self.ui_list_c = []
 
         if self.variable_type == 'c_array':
+            self.output_dict['type'] = 'c_array'
             self.XY_source_ref = QLineEdit()
+            self.XY_source_ref.field_name = 'XY_source_ref'
             self.XY_source_ref.setReadOnly(True)
             self.width_combo = QComboBox()
             self.width_combo.addItems(['Auto', 'Custom'])
@@ -79,8 +83,11 @@ class VariableSetupWindow(QWidget):
             self.width_input = QLineEdit()
             self.width_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             self.width_input.setReadOnly(True)
+            self.XY_source_ref.textChanged.connect(self.update_output_dict)
             self.XY_target_ref = QLineEdit()
+            self.XY_target_ref.field_name = 'XY_target_ref'
             self.XY_target_ref.setReadOnly(True)
+            self.XY_target_ref.textChanged.connect(self.update_output_dict)
 
             self.deleteItemList = QListWidget()
 
@@ -98,6 +105,9 @@ class VariableSetupWindow(QWidget):
             hbox2.addWidget(cal_for_target)
 
             self.rule = QComboBox()
+            self.rule.addItems(['None', 'Even', 'Odd', 'Custom(손가락나으면 순규가 할 것)'])
+            self.rule.field_name = 'rule'
+            self.rule.currentTextChanged.connect(self.update_output_dict)
             self.rule.addItems(['All', 'Even', 'Odd', 'Custom'])
             self.rule.currentTextChanged.connect(self.getRule)
 
@@ -255,6 +265,7 @@ class VariableSetupWindow(QWidget):
             print(self._QTObj)
             print(self.XY_source_ref.text())
             print(self.XY_target_ref.text())
+            self.send_output_dict_signal.emit(self.output_dict)
         else:
             self.XY_base_text = self.XY_base.text()
             self.x_offset_text = self.x_offset.text()
@@ -338,6 +349,10 @@ class VariableSetupWindow(QWidget):
                 self.XY_source_ref.setText(text)
             elif purpose == 'target':
                 self.XY_target_ref.setText(text)
+
+    def update_output_dict(self,value:str):
+        field_name = self.sender().field_name
+        self.output_dict[field_name] = value
 
 
 class CustomQTableView(QTableView): ### QAbstractItemView class inherited
