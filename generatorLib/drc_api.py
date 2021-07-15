@@ -43,7 +43,4 @@ drc_classified_dict['RPO'] = drc_classified_dict.pop('DRCRPO')
 drc_classified_dict['POLY'] = drc_classified_dict.pop('DRCPOLYGATE')
 drc_classified_dict['METAL1'] = drc_classified_dict.pop('DRCMETAL1')
 drc_classified_dict['METALx'] = drc_classified_dict.pop('DRCMETALx')
-
-
-print("debug")
-
+del drc_classified_dict['DRC']

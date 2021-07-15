@@ -536,6 +536,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_dummy_ast_id_signal.connect(self.calculator_window.getXY)
         self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.storePreset)
         self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
+        self.calculator_window.returnLayer_signal.connect(self.get_hierarchy_return_layer)
         self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
         self.calculator_window.show()
 
@@ -545,6 +546,16 @@ class _MainWindow(QMainWindow):
             print(_)
             self.gloabal_clipboard.setText(str(save_target[1:]))
 
+    def get_hierarchy_return_layer(self, hierarchy_list):
+        module = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
+        for i in range(len(hierarchy_list)-1):
+            module = module[hierarchy_list[i]]._DesignParameter['_ModelStructure']
+        if module[hierarchy_list[-1]]._DesignParameter['_Layer']:
+            layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+            _layerCommonName = layernum2name[str(module[hierarchy_list[-1]]._DesignParameter['_Layer'])]
+            self.calculator_window.returnedLayer = _layerCommonName
+        else:
+            pass
     def sref_debug_module(self):
         # tmpcell = {'INV': {'Sub1': {'Sub2': {'PMOS': None}, 'NMOS': None,}, 'NMOS': None, 'PMOS': None}}
         # # tmpcell = {'Gen1': {'Gen2-1': {'Gen3': None}, 'Gen2-2': None}}
