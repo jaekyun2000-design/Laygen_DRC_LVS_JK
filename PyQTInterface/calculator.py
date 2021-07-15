@@ -14,6 +14,7 @@ class ExpressionCalculator(QWidget):
     send_XYCreated_signal = pyqtSignal(str, dict)
     send_dummyconstraints_signal = pyqtSignal(dict, str)
     send_path_row_xy_signal = pyqtSignal(dict, str)
+    returnLayer_signal = pyqtSignal(list)
     presetDict = dict()
 
     def __init__(self,clipboard):
@@ -41,6 +42,7 @@ class ExpressionCalculator(QWidget):
         # # self.display.setLayoutDirection(Qt.RightToLeft)
         # print(self.display.layoutDirection())
         self.equationList = list()
+        self.returnedLayer = None
 
         self.setFixedSize(786,800)
 
@@ -664,6 +666,11 @@ class ExpressionCalculator(QWidget):
         for text in self.equationList:
             display += text
         self.display.setText(display)
+
+        self.returnLayer_signal.emit(hierarchy_list)
+        # Returned Layer Info conveyed @ this point
+
+        print(self.returnedLayer)
 
         # clicked_button = self.sender()
         # geo_text = clicked_button.objectName()
