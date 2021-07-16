@@ -1741,16 +1741,12 @@ class _MainWindow(QMainWindow):
 
     def updateDesignParameter(self,_DesignParameter, element_manager_update = True):
 
-        # _ID = _DesignParameter['_id']
-        # _Module = _ID[:-1]
-        # while (_Module in self._QTObj._qtProject._DesignParameter) == False:
-        #     _Module = _Module[:-1]
         _ID = _DesignParameter['_id']
         _Module = self._CurrentModuleName
 
+        if _DesignParameter['_id'] != _DesignParameter['_ElementName']:
+            self.visualItemDict[_DesignParameter['_ElementName']] = self.visualItemDict.pop(_DesignParameter['_id'])
 
-        # _Module = re.sub('[0-9]+', '',_ID)
-        print(_Module)
 
         for key in _DesignParameter:
             self._QTObj._qtProject._DesignParameter[_Module][_ID]._setDesignParameterValue(_index = key, _value= _DesignParameter[key])
@@ -1758,11 +1754,11 @@ class _MainWindow(QMainWindow):
 
         # self._QTObj._qtProject._DesignParameter[_Module][_ID]._updateVisualItem()
         # visualItem = self._QTObj._qtProject._DesignParameter[_Module][_ID]._VisualizationItemObj
-        visualItem = self.updateVisualItemFromDesignParameter(self._QTObj._qtProject._DesignParameter[_Module][_ID])
-        self.updateGraphicItem(visualItem)
 
         design_dict = self._QTObj._qtProject._update_design(design_type='parameter', module_name=self._CurrentModuleName,
                                                           dp_dict=_DesignParameter, id=_ID, element_manager_update =element_manager_update)
+        visualItem = self.updateVisualItemFromDesignParameter(self._QTObj._qtProject._DesignParameter[_Module][_DesignParameter['_ElementName']])
+        self.updateGraphicItem(visualItem)
 
         if design_dict['constraint_id']:
             self.dockContentWidget3_2.update_constraint_by_id(design_dict['constraint_id'])

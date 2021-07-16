@@ -361,6 +361,11 @@ class ElementManager:
         else:
             return None
 
+    def change_dp_id(self,original_id, changed_id):
+        dc_id = self.dp_id_to_dc_id[original_id]
+        if dc_id:
+            self.dp_id_to_dc_id[changed_id] = self.dp_id_to_dc_id.pop(original_id)
+            self.dc_id_to_dp_id[dc_id] = changed_id
 
 class KeyManager():
     _Boundarykey = dict(

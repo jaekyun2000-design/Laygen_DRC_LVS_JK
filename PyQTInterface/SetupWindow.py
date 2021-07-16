@@ -2712,6 +2712,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         try:
             ###Step 1 update value#####################################
             itemIDitem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))     #ID
+            if not itemIDitem:
+                return
             itemID = itemIDitem.text()
             motherID = None
             moduleName = re.sub(r'\d','',itemID)

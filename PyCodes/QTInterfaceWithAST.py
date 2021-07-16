@@ -1800,8 +1800,10 @@ class QtProject:
         else:
             try:
                 if id != _dp_dict['_ElementName']:
+                    self._ElementManager.change_dp_id(id,_dp_dict['_ElementName'])
                     self._DesignParameter[module_name][_dp_dict['_ElementName']] = self._DesignParameter[module_name].pop(id)
                     id = _dp_dict['_ElementName']
+                    self._DesignParameter[module_name][id]._id = id
 
                 for key in _dp_dict:
                     self._DesignParameter[module_name][id]._setDesignParameterValue(_index=key, _value=_dp_dict[key])
