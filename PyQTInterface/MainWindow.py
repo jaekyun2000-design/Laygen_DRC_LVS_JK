@@ -1740,10 +1740,15 @@ class _MainWindow(QMainWindow):
         return None
 
     def updateDesignParameter(self,_DesignParameter, element_manager_update = True):
+
+        # _ID = _DesignParameter['_id']
+        # _Module = _ID[:-1]
+        # while (_Module in self._QTObj._qtProject._DesignParameter) == False:
+        #     _Module = _Module[:-1]
         _ID = _DesignParameter['_id']
-        _Module = _ID[:-1]
-        while (_Module in self._QTObj._qtProject._DesignParameter) == False:
-            _Module = _Module[:-1]
+        _Module = self._CurrentModuleName
+
+
         # _Module = re.sub('[0-9]+', '',_ID)
         print(_Module)
 
