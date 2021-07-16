@@ -83,11 +83,11 @@ class VariableSetupWindow(QWidget):
             self.width_input = QLineEdit()
             self.width_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             self.width_input.setReadOnly(True)
-            self.XY_source_ref.textChanged.connect(self.update_output_dict)
+            # self.XY_source_ref.textChanged.connect(self.update_output_dict)
             self.XY_target_ref = QLineEdit()
             self.XY_target_ref.field_name = 'XY_target_ref'
             self.XY_target_ref.setReadOnly(True)
-            self.XY_target_ref.textChanged.connect(self.update_output_dict)
+            # self.XY_target_ref.textChanged.connect(self.update_output_dict)
 
             self.deleteItemList = QListWidget()
 
@@ -105,9 +105,7 @@ class VariableSetupWindow(QWidget):
             hbox2.addWidget(cal_for_target)
 
             self.rule = QComboBox()
-            self.rule.addItems(['None', 'Even', 'Odd', 'Custom(손가락나으면 순규가 할 것)'])
             self.rule.field_name = 'rule'
-            self.rule.currentTextChanged.connect(self.update_output_dict)
             self.rule.addItems(['All', 'Even', 'Odd', 'Custom'])
             self.rule.currentTextChanged.connect(self.getRule)
 
@@ -236,10 +234,11 @@ class VariableSetupWindow(QWidget):
             self.rule_input.setReadOnly(True)
 
     def clickFromScene(self, item):
-        itemID = item._id
-        if itemID not in self.itemList:
-            self.deleteItemList.addItem(itemID)
-            self.itemList.append(itemID)
+        if 'cal' not in self.__dict__:
+            itemID = item._id
+            if itemID not in self.itemList:
+                self.deleteItemList.addItem(itemID)
+                self.itemList.append(itemID)
 
     def addQLabel(self,strList):
         for str in strList:
@@ -350,9 +349,7 @@ class VariableSetupWindow(QWidget):
             elif purpose == 'target':
                 self.XY_target_ref.setText(text)
 
-    def update_output_dict(self,value:str):
-        field_name = self.sender().field_name
-        self.output_dict[field_name] = value
+        del self.cal
 
 
 class CustomQTableView(QTableView): ### QAbstractItemView class inherited

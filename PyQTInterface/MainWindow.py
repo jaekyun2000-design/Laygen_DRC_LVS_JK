@@ -1564,7 +1564,7 @@ class _MainWindow(QMainWindow):
     def createVariable(self,type):
         selected_vis_items = self.scene.selectedItems()
         self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items,test=self._QTObj)
-        self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
+        # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
         self.vw.send_output_dict_signal.connect(self.create_variable)
         self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
