@@ -1767,31 +1767,37 @@ class _MainWindow(QMainWindow):
     def get_constraint_update_design(self, id, mother_id):
         if id:
             module = self.get_id_return_module(id,'_DesignConstraint')
+            original_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(id)
             design_dict = self._QTObj._qtProject._update_design(design_type='constraint', module_name=module,
                                                               _ast=self._QTObj._qtProject._DesignConstraint[module][id]._ast, id=id)
-            try:
+            if design_dict['parameter']:
+                if original_dp_id != design_dict['parameter_id']:
+                    self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
-                self.updateGraphicItem(visualItem)
-            except:
-                pass #exceptional case LATER ( not 1-to-1 matching constraint.... > cannot update visual item)
+                self.updateGraphicItem(visualItem)\
+            # else:
+            #     pass #exceptional case LATER ( not 1-to-1 matching constraint.... > cannot update visual item)
         if mother_id:
             module = self.get_id_return_module(mother_id, '_DesignConstraint')
+            original_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(mother_id)
             design_dict  = self._QTObj._qtProject._update_design(design_type='constraint', module_name=module,
                                                                 _ast=self._QTObj._qtProject._DesignConstraint[module][
                                                                     mother_id]._ast, id=mother_id)
             if design_dict['parameter']:
-                if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 1:
-                    if design_dict['parameter']._DesignParameter['_XWidth'] == None or design_dict['parameter']._DesignParameter['_YWidth'] == None or design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
-                            pass
-                elif design_dict['parameter']._DesignParameter['_DesignParametertype'] == 2:
-                    if design_dict['parameter']._DesignParameter['_Width'] == None or design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
-                        pass
-                elif design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
-                    if design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
-                        pass
-                else:
-                    visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
-                    self.updateGraphicItem(visualItem)
+                if original_dp_id != design_dict['parameter_id']:
+                    self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
+                # if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 1:
+                #     if design_dict['parameter']._DesignParameter['_XWidth'] == None or design_dict['parameter']._DesignParameter['_YWidth'] == None or design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
+                #             pass
+                # elif design_dict['parameter']._DesignParameter['_DesignParametertype'] == 2:
+                #     if design_dict['parameter']._DesignParameter['_Width'] == None or design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
+                #         pass
+                # elif design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
+                #     if design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
+                #         pass
+                # else:
+                visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
+                self.updateGraphicItem(visualItem)
 
     def deliveryDesignParameter(self):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()
