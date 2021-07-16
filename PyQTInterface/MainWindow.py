@@ -1732,10 +1732,13 @@ class _MainWindow(QMainWindow):
 
     def updateVisualItemFromDesignParameter(self,DesignParameter):
         id = DesignParameter._id
-        self.visualItemDict[id].updateTraits(DesignParameter._DesignParameter)
+        # self.visualItemDict[id].updateTraits(DesignParameter._DesignParameter)
 
         if id in self.visualItemDict:
             self.visualItemDict[id].updateTraits(DesignParameter._DesignParameter)
+            self.visualItemDict[id]._id = id
+            self.visualItemDict[id]._ItemTraits['_id'] = id
+            self.visualItemDict[id]._ItemTraits['_ElementName'] = id
             return self.visualItemDict[id]
         return None
 
