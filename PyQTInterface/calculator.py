@@ -918,29 +918,14 @@ class PathWindow(QWidget):
         exportButton.clicked.connect(self.exportButton_accepted)
         cancelButton.clicked.connect(self.cancelButton_accepted)
 
-        self.XYdictForLineEdit = []
-        self.XYdictForLabel = []
-
-        self.XYdictForLabel.append(QLabel("XY1"))
-        self.XYdictForLabel.append(QLabel("XY2"))
-
-        self.XYdictForLineEdit.append(QLineEdit())
-        self.XYdictForLineEdit.append(QLineEdit())
-        self.XYdictForLineEdit[0].setReadOnly(True)
-        self.XYdictForLineEdit[1].setReadOnly(True)
-
-        self.setupVboxColumn1 = QVBoxLayout()
-        self.setupVboxColumn2 = QVBoxLayout()
-        setupBox = QHBoxLayout()
-
-        self.setupVboxColumn1.addWidget(self.XYdictForLabel[0])
-        self.setupVboxColumn1.addWidget(self.XYdictForLabel[1])
-
-        self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[0])
-        self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[1])
-
-        setupBox.addLayout(self.setupVboxColumn1)
-        setupBox.addLayout(self.setupVboxColumn2)
+        self.XYCoordinateList = QTableWidget()
+        self.XYCoordinateList.setColumnCount(3)
+        self.XYCoordinateList.setHorizontalHeaderLabels(['ID', 'X', 'Y'])
+        self.XYCoordinateList.verticalHeader().setVisible(False)
+        self.XYCoordinateList.setColumnWidth(0,408)
+        self.XYCoordinateList.setColumnWidth(1,30)
+        self.XYCoordinateList.setColumnWidth(2,30)
+        # self.XYCoordinateList
 
         hbox = QHBoxLayout()
         hbox.addStretch(2)
@@ -948,11 +933,8 @@ class PathWindow(QWidget):
         hbox.addWidget(cancelButton)
 
         vbox = QVBoxLayout()
-        vbox.addStretch(1)
-        vbox.addLayout(setupBox)
-        vbox.addStretch(3)
+        vbox.addWidget(self.XYCoordinateList)
         vbox.addLayout(hbox)
-        # vbox.addStretch(1)
 
         self.setLayout(vbox)
 
@@ -962,22 +944,57 @@ class PathWindow(QWidget):
 
     def updateUI(self):
         for i in range(len(self.idlist)):
-            CurrentEditPointNum = len(self.XYdictForLineEdit) - 2
-            displayString= str(self.idlist[i])
-            self.XYdictForLineEdit[CurrentEditPointNum].setText(displayString)
-            self.UpdateXYwidget()
+            if self.idlist[i][1] == 0 and self.idlist[i][2] == 0:
+                tmpDict = {'X':[], 'Y':[], 'XY':[]}
+            elif self.idlist[i][1] == 2 and self.idlist[i][2] == 0:
+                tmpDict = {'X':[1], 'Y':[], 'XY':[]}
+            elif self.idlist[i][1] == 0 and self.idlist[i][2] == 2:
+                tmpDict = {'X':[], 'Y':[1], 'XY':[]}
+            elif self.idlist[i][1] == 2 and self.idlist[i][2] == 2:
+                tmpDict = {'X':[], 'Y':[], 'XY':[1]}
+            self.create_row(tmpDict,self.idlist[i][0])
 
     def create_row(self, constraint_dict, _id):
-        CurrentEditPointNum = len(self.XYdictForLineEdit) - 2
-        self.XYdictForLineEdit[CurrentEditPointNum].setText(_id)
-        self.UpdateXYwidget()
+        row = self.XYCoordinateList.rowCount()
+        self.XYCoordinateList.setRowCount(row+1)
+        IDtext = QTableWidgetItem(_id)
+        IDtext.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEnabled)
+        self.XYCoordinateList.setItem(row,0,IDtext)
+        Xcheck = QTableWidgetItem(_id)
+        Xcheck.setText('')
+        Xcheck.setFlags(Qt.ItemIsSelectable)
+        self.XYCoordinateList.setItem(row,1,Xcheck)
+        Ycheck = QTableWidgetItem(_id)
+        Ycheck.setText('')
+        Ycheck.setFlags(Qt.ItemIsSelectable)
+        self.XYCoordinateList.setItem(row,2,Ycheck)
+        if len(constraint_dict['XY']) == 0:
+            if len(constraint_dict['X']) != 0 and len(constraint_dict['Y']) != 0:
+                Xcheck.setCheckState(2)
+                Ycheck.setCheckState(2)
+            elif len(constraint_dict['X']) != 0 and len(constraint_dict['Y']) == 0:
+                Xcheck.setCheckState(2)
+                Ycheck.setCheckState(0)
+            elif len(constraint_dict['X']) == 0 and len(constraint_dict['Y']) != 0:
+                Xcheck.setCheckState(0)
+                Ycheck.setCheckState(2)
+            else:
+                Xcheck.setCheckState(0)
+                Ycheck.setCheckState(0)
+        else:
+            Xcheck.setCheckState(2)
+            Ycheck.setCheckState(2)
+
+        # CurrentEditPointNum = len(self.XYdictForLineEdit) - 2
+        # self.XYdictForLineEdit[CurrentEditPointNum].setText(_id)
+        # self.UpdateXYwidget()
 
     def exportButton_accepted(self):
         output = dict(XYidlist=list())
         self.send_output_signal.connect(self.address.getPathInfo)
-
-        for idx in range(len(self.XYdictForLineEdit)-2):
-            output['XYidlist'].append(self.XYdictForLineEdit[idx].text())
+        #
+        for idx in range(self.XYCoordinateList.rowCount()):
+            output['XYidlist'].append([self.XYCoordinateList.item(idx,0).text(), self.XYCoordinateList.item(idx,1).checkState(), self.XYCoordinateList.item(idx,2).checkState()])
 
         self.send_output_signal.emit(output)
         self.destroy()
@@ -985,17 +1002,17 @@ class PathWindow(QWidget):
     def cancelButton_accepted(self):
         self.destroy()
 
-    def UpdateXYwidget(self):
-        CurrentPointNum = len(self.XYdictForLineEdit)
-        NewPointNum = CurrentPointNum + 1
-        LabelText = "XY" + str(NewPointNum)
-
-        self.XYdictForLabel.append(QLabel(LabelText))
-        self.XYdictForLineEdit.append(QLineEdit())
-
-        self.setupVboxColumn1.addWidget(self.XYdictForLabel[-1])
-        self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[-1])
-        self.XYdictForLineEdit[-1].setReadOnly(True)
+    # def UpdateXYwidget(self):
+    #     CurrentPointNum = len(self.XYdictForLineEdit)
+    #     NewPointNum = CurrentPointNum + 1
+    #     LabelText = "XY" + str(NewPointNum)
+    #
+    #     self.XYdictForLabel.append(QLabel(LabelText))
+    #     self.XYdictForLineEdit.append(QLineEdit())
+    #
+    #     self.setupVboxColumn1.addWidget(self.XYdictForLabel[-1])
+    #     self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[-1])
+    #     self.XYdictForLineEdit[-1].setReadOnly(True)
 
 class nine_key_calculator(QWidget):
     send_expression_signal =  pyqtSignal(str, str)
