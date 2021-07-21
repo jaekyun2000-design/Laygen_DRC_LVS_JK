@@ -1782,8 +1782,11 @@ class _MainWindow(QMainWindow):
                 #     if design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
                 #         pass
                 # else:
+            try:
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
                 self.updateGraphicItem(visualItem)
+            except:
+                traceback.print_exc()
 
     def deliveryDesignParameter(self):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()
@@ -2317,8 +2320,10 @@ class _MainWindow(QMainWindow):
             old_variable_dict = copy.deepcopy(self.visualItemDict[changed_dp_id]._ItemTraits['variable_info'])
             module_name = self.get_id_return_module(constraint_id,'_DesignConstraint')
             used_variable_list = parse_constraint_to_get_value(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
-            self.visualItemDict[changed_dp_id].update_dc_variable_info(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
-
+            try:
+                self.visualItemDict[changed_dp_id].update_dc_variable_info(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
+            except:
+                traceback.print_exc()
             # erased_variable_list = list(set(old_variable_list)-set(used_variable_list))
             current_variable_dict = self.visualItemDict[changed_dp_id]._ItemTraits['variable_info']
             tmpList=list()

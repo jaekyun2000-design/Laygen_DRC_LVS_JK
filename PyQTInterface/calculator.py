@@ -857,8 +857,9 @@ class ExpressionCalculator(QWidget):
         아래에서 XYCoordinate constraint 생성하거나, 이미 LogicExpression이 만들어진 상태이면 무시,
         그리고 export_type이 PathXY_row인 경우 main으로 output 보내준다.
         """
+        row_count = self.pw.XYCoordinateList.rowCount()
         if export_type == 'PathXY_row':
-            if len(self.pw.XYdictForLineEdit) == 2:
+            if self.pw.XYCoordinateList.rowCount() == 0:
                 if not XYList:
                     if not (XList and YList):
                         self.warning = QMessageBox()
@@ -866,6 +867,7 @@ class ExpressionCalculator(QWidget):
                         self.warning.setText("First element for PathXY_row should be XYCoordinates")
                         self.warning.show()
                         self.pw.destroy()
+                        del self.pw
                         return
 
         if export_type == False:
