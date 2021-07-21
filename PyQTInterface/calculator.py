@@ -1010,7 +1010,11 @@ class PathWindow(QWidget):
         self.destroy()
 
     def cancelButton_accepted(self):
+        del self.address.pw
         self.destroy()
+
+    def closeEvent(self, QCloseEvent):
+        del self.address.pw
 
     # def UpdateXYwidget(self):
     #     CurrentPointNum = len(self.XYdictForLineEdit)
