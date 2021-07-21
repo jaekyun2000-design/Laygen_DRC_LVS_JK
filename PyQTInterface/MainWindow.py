@@ -272,9 +272,6 @@ class _MainWindow(QMainWindow):
         PinButton = QPushButton("Pin",dockContentWidget1)
         PinButton.clicked.connect(self.makePinWindow)
 
-        TestButton = QPushButton("Test",dockContentWidget1)
-        TestButton.clicked.connect(self.makeTest)
-
         # FilterButton = QPushButton("Filter",dockContentWidget1)
         # FilterButton.clicked.connect(self.makeFilterWindow)
         #
@@ -446,7 +443,7 @@ class _MainWindow(QMainWindow):
         self.ConstraintTemplateButton = QPushButton("Template")
         # self.parsetreeEasyRun = QPushButton("easyRun")
         self.variableCallButton = QPushButton("variableCall")
-        self.sref_debug = QPushButton("XYCalculator")
+        self.calculatorButton = QPushButton("XYCalculator")
 
         VBoxForPeriButton.addStretch(3)
         # VBoxForPeriButton.addWidget(self.createConstraintButton)
@@ -461,7 +458,7 @@ class _MainWindow(QMainWindow):
         VBoxForPeriButton.addWidget(self.ConstraintTemplateButton)
         # VBoxForPeriButton.addWidget(self.parsetreeEasyRun)
         VBoxForPeriButton.addWidget(self.variableCallButton)
-        VBoxForPeriButton.addWidget(self.sref_debug)
+        VBoxForPeriButton.addWidget(self.calculatorButton)
         VBoxForPeriButton.addStretch(3)
 
         # self.dockContentWidget3.setDragDropMode(self.dockContectWidget3.MyOwnDragDropMove)
@@ -487,7 +484,7 @@ class _MainWindow(QMainWindow):
         self.ConstraintTemplateButton.clicked.connect(self.makeTemplateWindow)
         # self.parsetreeEasyRun.clicked.connect(self.easyRun)
         self.variableCallButton.clicked.connect(self.variableListUpdate)
-        self.sref_debug.clicked.connect(self.clipboard_test)
+        self.calculatorButton.clicked.connect(self.calculator)
 
 
         ################ Logging Message Dock Widget setting ####################
@@ -530,7 +527,7 @@ class _MainWindow(QMainWindow):
 
     # def threading_test(self,count):
 
-    def clipboard_test(self):
+    def calculator(self):
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
         self.dockContentWidget3.send_dummy_ast_id_signal.connect(self.calculator_window.getXY)
         self.dockContentWidget3_2.send_dummy_ast_id_signal.connect(self.calculator_window.getXY)
@@ -1020,52 +1017,6 @@ class _MainWindow(QMainWindow):
         self.pinw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
         self.scene.send_xyCoordinate_signal.connect(self.pinw.DetermineCoordinateWithMouse)
         self.pinw.send_Destroy_signal.connect(self.delete_obj)
-
-    def makeTest(self):
-        testTrait = dict(
-                _ElementName = 'qwe',
-                _Layer = 'PIMP',
-
-                _DesignParametertype = 2,
-                _XYCoordinates = [[[-100,100],[-100,-100]],[[100,100],[100,-100]]],
-                _Width = 30,
-                _Height = None,
-                _Reflect = None,
-                _Angle = None,
-                _Color = None,
-                _DesignParameterRef=None,   #Reference of Design Parameter
-                _VisualizationItems = [],    #This is for SRef!!
-                _Index = None,
-
-                variable_info = dict(
-                                    XY = None,
-                                    width = None,
-                                    height = None,
-                                    parameters = None
-                                )
-        )
-        BtestTrait = dict(
-                _Layer='PIMP',
-                _DesignParametertype = 1,
-                _XYCoordinates = [[-100,100],[-100,-100]],
-                _XWidth = 30,
-                _YWidth = 30,
-                _Ignore = None,
-                _ElementName = 'qwe'
-        )
-        PtestTrait = dict(
-            _ElementName='qwe',
-            _Layer='PIMP',
-            _DesignParametertype=2,
-            _XYCoordinates=[[[-100,100],[-100,-100],[-50,-100],[-50,100]],[[100,100],[100,-100],[150,-100],[150,100]]],
-            _Width=30,
-            _Height=None,
-            _Color=None,
-            _ItemRef=None,  # Reference Of VisualizationItem
-        )
-        # self.pathTest = VisualizationItem._VisualizationItem(testTrait)
-        self.createNewDesignParameter(PtestTrait)
-
 
     # def makeFilterWindow(self):
     #     # self.fw = FilterPractice._FilterWindow()
