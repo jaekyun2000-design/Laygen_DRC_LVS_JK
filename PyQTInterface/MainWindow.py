@@ -195,6 +195,17 @@ class _MainWindow(QMainWindow):
         moduleMenu.addAction(loadPyCodeAction)
 
 
+        #Third Menu
+        auto_path_array_action = QAction("Inspect path array", self)
+
+        auto_path_array_action.setShortcut('Ctrl+1')
+        auto_path_array_action.triggered.connect(self.inspect_array)
+
+
+        automation_menu = menubar.addMenu("&Automation")
+        automation_menu.addAction(auto_path_array_action)
+
+
 
 
         # fileMenu.addAction(exitAction)
@@ -536,6 +547,17 @@ class _MainWindow(QMainWindow):
         self.calculator_window.returnLayer_signal.connect(self.get_hierarchy_return_layer)
         self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
         self.calculator_window.show()
+
+    def inspect_array(self):
+
+        print('debug')
+
+    def inspect_geometry(self):
+        target_cell = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
+        geo_search = topAPI.routing_geo_searching.GeometricField()
+        geo_search.xy_projection_to_main_coordinates_system_qt(target_cell)
+        geo_search.build_IST_qt(target_cell)
+        return geo_search
 
     def save_clipboard(self,save_target,_):
         if type(save_target) == list:
@@ -1513,6 +1535,16 @@ class _MainWindow(QMainWindow):
         self.qpd.show()
 
     def createVariable(self,type):
+        if type == 'auto_path':
+            selected_vis_items = self.scene.selectedItems()
+            vis_item = selected_vis_items[0]
+            id = vis_item._id
+            geo_field = self.inspect_geometry()
+            overlay_object = geo_field.search_intersection_qt(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][id])
+            print('connection info')
+            print(overlay_object[1:])
+            return
+
         selected_vis_items = self.scene.selectedItems()
         self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items,test=self._QTObj)
         # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
@@ -2526,6 +2558,7 @@ class _CustomView(QGraphicsView):
     #     super
     def contextMenuEvent(self, event) -> None:
         constraint_create_array = QAction("create array", self)
+        inspect_path_connection = QAction("create auto path", self)
         variable_create_array = QAction("create array variable", self)
         variable_create_distance = QAction("create distance variable", self)
         variable_create_enclosure = QAction("create enclousre variable", self)
@@ -2535,6 +2568,7 @@ class _CustomView(QGraphicsView):
 
         menu = QMenu(self)
         menu.addAction(constraint_create_array)
+        menu.addAction(inspect_path_connection)
         menu.addAction(variable_create_array)
         menu.addAction(variable_create_distance)
         menu.addAction(variable_create_enclosure)
@@ -2542,6 +2576,7 @@ class _CustomView(QGraphicsView):
         menu.addAction(visual_ungroup)
 
         constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('c_array'))
+        inspect_path_connection.triggered.connect(lambda tmp: self.variable_emit('auto_path'))
         variable_create_array.triggered.connect(lambda tmp: self.variable_emit('array'))
         variable_create_distance.triggered.connect(lambda tmp: self.variable_emit('distance'))
         variable_create_enclosure.triggered.connect(lambda tmp: self.variable_emit('enclosure'))
@@ -2554,6 +2589,8 @@ class _CustomView(QGraphicsView):
     def variable_emit(self, type):
         if type == 'c_array':
             self.variable_signal.emit('c_array')
+        if type == 'auto_path':
+            self.variable_signal.emit('auto_path')
         elif type == 'array':
             self.variable_signal.emit('element array')
         elif type == 'distance':

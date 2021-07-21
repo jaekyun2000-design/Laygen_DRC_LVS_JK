@@ -54,6 +54,45 @@ class GeometricField:
         self.interval_tree_by_layer = dict()
         self.stick_diagram = StickDiagram._StickDiagram()
 
+    def xy_projection_to_main_coordinates_system_qt(self,qt_designParameter):
+        for name, qt_dp in qt_designParameter.items():
+            self.qt_design_parameter_projection(qt_dp,[name])
+
+    def qt_design_parameter_projection(self, qt_dp, structure_hierarchy=[], reflect=tf_matrix.reflect_off, angle=tf_matrix.rotate_0, base_xy = [0,0]):
+        dp = qt_dp._DesignParameter
+        if dp['_DesignParametertype'] == 1:
+            for xy_pair in dp['_XYCoordinates']:
+                five_point_xy = self.stick_diagram.CenterCoordinateAndWidth2XYCoordinate(xy_pair,dp['_XWidth'],dp['_YWidth'])
+                # transformed_five_point_xy = [base_xy+angle.dot(reflect).dot(xy) for xy in five_point_xy]
+                transformed_five_point_xy = [base_xy+reflect.dot(angle).dot(xy) for xy in five_point_xy]
+                transformed_five_point_xy_ordered = self.stick_diagram.MinMaxXY2XYCoordinate(self.stick_diagram.XYCoordinate2MinMaxXY(transformed_five_point_xy))
+                if '_XYCoordinatesProjection' in dp:
+                    dp['_XYCoordinatesProjection'].append(transformed_five_point_xy_ordered)
+                else:
+                    dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_ordered]
+                # dp['_XYCoordinatesProjection'] = transformed_five_point_xy_ordered
+                dp['_Hierarchy'] = structure_hierarchy
+                # return base_xy + angle.dot(reflect).dot(xy_pair)
+
+        elif dp['_DesignParametertype'] == 3:
+            # structure_hierarchy.append(dp['_ElementName'])
+            base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][0])
+            sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect)
+            sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle)
+            # base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][0])
+            # sub_reflect = reflect.dot(convert_reflect_to_matrix(dp['_Reflect']))
+            # sub_angle = angle.dot(convert_angle_to_matrix(dp['_Angle']))
+            for name, sub_qt_dp in dp['_ModelStructure'].items():
+                sub_dp = sub_qt_dp._DesignParameter
+                if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 3:
+                    structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
+                    structure_hierarchy_tmp.append(name)
+                    self.qt_design_parameter_projection(sub_qt_dp,structure_hierarchy=structure_hierarchy_tmp, reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
+
+
+
+
+
     def xy_projection_to_main_coordinates_system(self,designParameter):
         for name, dp in designParameter.items():
             self.design_parameter_projection(dp,[name])
@@ -132,6 +171,20 @@ class GeometricField:
         # cv2.imshow('debug', img)
         # cv2.waitKey(0)
 
+
+    def build_IST_qt(self,qt_DesignParameter):
+        stack = [qt_dp_items[1] for qt_dp_items in qt_DesignParameter.items()]
+        while stack:
+            dp = stack.pop(0)._DesignParameter
+            if dp['_DesignParametertype'] == 1:
+                if dp['_Layer'] in self.interval_tree_by_layer:
+                    self.interval_tree_by_layer[dp['_Layer']].add_boundary_node(dp)
+                else:
+                    self.interval_tree_by_layer[dp['_Layer']] = IST(direction='horizontal')
+                    self.interval_tree_by_layer[dp['_Layer']].add_boundary_node(dp)
+            elif dp['_DesignParametertype'] == 3:
+                stack.extend([qt_dp_items[1] for qt_dp_items in dp['_ModelStructure'].items()])
+
     def build_IST(self,_DesignParameter):
         stack = [dp_items[1] for dp_items in _DesignParameter.items()]
         while stack:
@@ -145,6 +198,36 @@ class GeometricField:
             elif dp['_DesignParametertype'] == 3:
                 stack.extend([dp_items[1] for dp_items in dp['_DesignObj']._DesignParameter.items()])
 
+
+    def search_intersection_qt(self, qt_dp):
+        dp = qt_dp._DesignParameter
+        if dp['_Layer'] not in self.interval_tree_by_layer:
+            return None
+        if dp['_DesignParametertype'] == 1:
+            xy_points = dp['_XYCoordinatesProjection']
+            x_min, x_max, y_min, y_max = min([xy[0] for xy in xy_points]), max([xy[0] for xy in xy_points]), min([xy[1] for xy in xy_points]), max([xy[1] for xy in xy_points])
+        elif dp['_DesignParametertype'] == 2:
+            #TODO
+            #path case update
+            if len(dp['_XYCoordinates'][0]) != 2:
+                return None
+            # x_min, x_max, y_min, y_max = dp['_XYCoordinates'][0][0][0], dp['_XYCoordinates'][0][-1][0], dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1]
+            x_min, x_max, y_min, y_max = dp['_XYCoordinates'][0][0][0]-dp['_Width'], dp['_XYCoordinates'][0][0][0]+dp['_Width'], \
+                                         min(dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1]),\
+                                         max(dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1])
+
+        vertical_tree = IST(direction='vertical')
+        for x_intersection_dp in sorted(self.interval_tree_by_layer[dp['_Layer']][x_min:x_max+1]):
+            vertical_tree.add_boundary_node(boundary_dp=x_intersection_dp.data[0],idx= x_intersection_dp.data[1])
+
+        intersected_node = sorted(vertical_tree[y_min:y_max+1])
+        del vertical_tree
+
+        intersected_dp_hierarchy_names = [ [node.data[0]['_Hierarchy'], node.data[1]] for node in intersected_node ]
+        intersected_dp_hierarchy_names.insert(0,dp)
+
+
+        return intersected_dp_hierarchy_names
 
     def search_intersection(self, dp):
         if dp['_Layer'] not in self.interval_tree_by_layer:
