@@ -474,7 +474,7 @@ class ExpressionCalculator(QWidget):
 
             isDigit = False
             for num in range(10):
-                if self.equationList[-1][-1] == str(num):
+                if self.equationList[-1][0] == str(num):
                     isDigit = True
 
             if isDigit or self.equationList[-1][-1] == '.':
@@ -906,8 +906,12 @@ class ExpressionCalculator(QWidget):
         self.presetWindow.addItem(_id)
         print(self.presetDict)
 
-    def presetClicked(self):
-        _id = self.presetWindow.currentItem().text()
+    def presetClicked(self, dummy):
+        if type(dummy) == str:
+            _id = dummy
+        else:
+            _id = self.presetWindow.currentItem().text()
+
         if 'XYidlist' in self.presetDict[_id]:
             self.pw = PathWindow(address=self, idlist=self.presetDict[_id]['XYidlist'])
             self.send_path_row_xy_signal.connect(self.pw.create_row)
@@ -930,6 +934,7 @@ class ExpressionCalculator(QWidget):
 
 class PathWindow(QWidget):
     send_output_signal = pyqtSignal(dict)
+    send_clicked_item_name_signal = pyqtSignal(str)
 
     def __init__(self, address=None, idlist=None):
         super().__init__()
@@ -953,6 +958,8 @@ class PathWindow(QWidget):
         self.XYCoordinateList.setColumnWidth(0,408)
         self.XYCoordinateList.setColumnWidth(1,30)
         self.XYCoordinateList.setColumnWidth(2,30)
+        self.XYCoordinateList.itemClicked.connect(self.itemLoad)
+        self.send_clicked_item_name_signal.connect(self.address.presetClicked)
         # self.XYCoordinateList
 
         hbox = QHBoxLayout()
@@ -981,6 +988,9 @@ class PathWindow(QWidget):
             elif self.idlist[i][1] == 2 and self.idlist[i][2] == 2:
                 tmpDict = {'X':[], 'Y':[], 'XY':[1]}
             self.create_row(tmpDict,self.idlist[i][0])
+
+    def itemLoad(self, _clickedItem):
+        self.send_clicked_item_name_signal.emit(_clickedItem.text())
 
     def create_row(self, constraint_dict, _id):
         row = self.XYCoordinateList.rowCount()
@@ -1028,7 +1038,11 @@ class PathWindow(QWidget):
         self.destroy()
 
     def cancelButton_accepted(self):
+        del self.address.pw
         self.destroy()
+
+    def closeEvent(self, QCloseEvent):
+        del self.address.pw
 
     # def UpdateXYwidget(self):
     #     CurrentPointNum = len(self.XYdictForLineEdit)
