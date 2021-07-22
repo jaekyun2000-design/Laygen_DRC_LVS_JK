@@ -557,9 +557,23 @@ class _MainWindow(QMainWindow):
         cluster_model.delete_solo_element_group()
         groups_list = cluster_model.get_array_groups()
         groups_list2 = cluster_model.get_routing_groups()
+        self.tmp_widget = QListWidget()
+        self.tmp_widget.addItems([str(group) for group in groups_list])
+        self.tmp_widget.currentRowChanged.connect(self.inspect_array_test)
+        self.tmp_widget.show()
+        self.test_purpose_var = groups_list
+        self.log = []
         for group in groups_list:
             print(f'array candidate group: {group}')
         print('debug')
+
+    def inspect_array_test(self, row):
+        for id in self.log:
+            self.visualItemDict[id].setSelected(False)
+        for id in self.test_purpose_var[row]:
+            self.visualItemDict[id].setSelected(True)
+            self.log.append(id)
+        print(row)
 
     def inspect_geometry(self):
         target_cell = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
