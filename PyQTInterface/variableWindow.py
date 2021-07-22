@@ -174,7 +174,8 @@ class VariableSetupWindow(QWidget):
         self.setWindowTitle('Constarint Setup Window')
         self.setGeometry(300,300,500,500)
         self.updateUI()
-        self.show()
+        if self.vis_items is not None:
+            self.show()
 
     def updateUI(self):
         # while self.setupVboxColumn1.count() != 1:               # original typed content delete
@@ -193,10 +194,11 @@ class VariableSetupWindow(QWidget):
         # self.addQLine(len(strList))
         #
         if self.variable_type_widget.text() == "c_array":
-            for i, vis_item in enumerate(self.vis_items):
-                id = vis_item._id
-                self.itemList.append(id)
-                self.deleteItemList.addItem(id)
+            if self.vis_items is not None:
+                for i, vis_item in enumerate(self.vis_items):
+                    id = vis_item._id
+                    self.itemList.append(id)
+                    self.deleteItemList.addItem(id)
                 # self.elements_dict_for_Label.append(QLabel('Element '+str(i)))
                 # self.elements_dict_for_LineEdit.append(QLineEdit(id))
                 #
@@ -216,6 +218,22 @@ class VariableSetupWindow(QWidget):
             # strList = ["_pyCode"]
             # self.addQLabel(strList)
             # self.addQLine(len(strList))
+
+    def getArray(self, test):
+        input_text = test.text()
+        name_flag = False
+        _from = 0
+        _end = 0
+        for idx in range(len(input_text)):
+            if input_text[idx] == "'":
+                _end = idx
+                if name_flag:
+                    tmp_text = input_text[_from:_end]
+                    self.deleteItemList.addItem(tmp_text)
+                _from = idx+1
+                name_flag = not name_flag
+
+        self.show()
 
     def getWidth(self, text):
         if text == 'Auto':
@@ -259,9 +277,10 @@ class VariableSetupWindow(QWidget):
         variable_info = dict()
 
         if self.variable_type == 'c_array':
-            id = self.XY_source_ref.text()[self.XY_source_ref.text().find("'")+1:-3]
-            print(id)
+            dp_id = self.XY_source_ref.text()[self.XY_source_ref.text().find("'")+1:-3]
             print(self._QTObj)
+            dc_id = self._QTObj._qtProject._ElementManager.dp_id_to_dc_id[dp_id]
+            print(dc_id)
             print(self.XY_source_ref.text())
             print(self.XY_target_ref.text())
             self.send_output_dict_signal.emit(self.output_dict)
@@ -333,12 +352,12 @@ class VariableSetupWindow(QWidget):
             print("updateFail")
 
     def showSourceCal(self):
-        self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='source')
+        self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='source',address=self)
         self.cal.send_expression_signal.connect(self.exportedText)
         self.cal.show()
 
     def showTargetCal(self):
-        self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='target')
+        self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='target',address=self)
         self.cal.send_expression_signal.connect(self.exportedText)
         self.cal.show()
 

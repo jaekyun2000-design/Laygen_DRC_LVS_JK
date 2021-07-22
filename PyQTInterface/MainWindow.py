@@ -560,6 +560,8 @@ class _MainWindow(QMainWindow):
         self.tmp_widget = QListWidget()
         self.tmp_widget.addItems([str(group) for group in groups_list])
         self.tmp_widget.currentRowChanged.connect(self.inspect_array_test)
+        self.vw = variableWindow.VariableSetupWindow(variable_type="c_array",vis_items=None,test=self._QTObj)
+        self.tmp_widget.itemDoubleClicked.connect(self.vw.getArray)
         self.tmp_widget.show()
         self.test_purpose_var = groups_list
         self.log = []
@@ -1557,8 +1559,8 @@ class _MainWindow(QMainWindow):
         self.qpd.setWindowModality(Qt.WindowModal)
         self.qpd.show()
 
-    def createVariable(self,type):
-        if type == 'auto_path':
+    def createVariable(self,_type):
+        if _type == 'auto_path':
             selected_vis_items = self.scene.selectedItems()
             vis_item = selected_vis_items[0]
             id = vis_item._id
@@ -1569,7 +1571,7 @@ class _MainWindow(QMainWindow):
             return
 
         selected_vis_items = self.scene.selectedItems()
-        self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items,test=self._QTObj)
+        self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items,test=self._QTObj)
         # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
         self.vw.send_output_dict_signal.connect(self.create_variable)
         self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
