@@ -1031,7 +1031,7 @@ class PathWindow(QWidget):
 class nine_key_calculator(QWidget):
     send_expression_signal =  pyqtSignal(str, str)
 
-    def __init__(self,clipboard,purpose):
+    def __init__(self,clipboard,purpose,address):
         # super(ExpressionCalculator, self).__init__()
         super().__init__()
 
@@ -1042,6 +1042,7 @@ class nine_key_calculator(QWidget):
 
         self.clipboard = clipboard
         self.purpose = purpose
+        self.address = address
         self.display= QTextEdit('')
         self.display.setReadOnly(True)
         self.display.setAlignment(Qt.AlignRight|Qt.AlignTop)
@@ -1188,3 +1189,6 @@ class nine_key_calculator(QWidget):
         if self.clipboard.text():
             print(self.clipboard.text())
         return Exception("No selected layer")
+
+    def closeEvent(self, QCloseEvent):
+        del self.address.cal
