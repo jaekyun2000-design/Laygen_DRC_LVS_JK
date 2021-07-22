@@ -557,10 +557,11 @@ class _MainWindow(QMainWindow):
         cluster_model.delete_solo_element_group()
         groups_list = cluster_model.get_array_groups()
         groups_list2 = cluster_model.get_routing_groups()
+        print(groups_list2)
         self.tmp_widget = QListWidget()
         self.tmp_widget.addItems([str(group) for group in groups_list])
         self.tmp_widget.currentRowChanged.connect(self.inspect_array_test)
-        self.vw = variableWindow.VariableSetupWindow(variable_type="c_array",vis_items=None,test=self._QTObj)
+        self.vw = variableWindow.VariableSetupWindow(variable_type="c_array",vis_items=None,test=self._QTObj,ref_list=groups_list2)
         self.tmp_widget.itemDoubleClicked.connect(self.vw.getArray)
         self.tmp_widget.show()
         self.test_purpose_var = groups_list
@@ -597,7 +598,10 @@ class _MainWindow(QMainWindow):
         if len(hierarchy_list) == 0:
             return
         elif len(hierarchy_list) == 1:
-            _layerCommonName = layernum2name[str(module[hierarchy_list[0]]._DesignParameter['_Layer'])]
+            if type(module[hierarchy_list[0]]._DesignParameter['_Layer']) == int:
+                _layerCommonName = layernum2name[str(module[hierarchy_list[0]]._DesignParameter['_Layer'])]
+            else:
+                _layerCommonName = module[hierarchy_list[0]]._DesignParameter['_Layer']
         else:
             for i in range(len(hierarchy_list)-1):
                 module = module[hierarchy_list[i]]._DesignParameter['_ModelStructure']
@@ -606,6 +610,7 @@ class _MainWindow(QMainWindow):
                 self.calculator_window.returnedLayer = _layerCommonName
             else:
                 pass
+
     def sref_debug_module(self):
         # tmpcell = {'INV': {'Sub1': {'Sub2': {'PMOS': None}, 'NMOS': None,}, 'NMOS': None, 'PMOS': None}}
         # # tmpcell = {'Gen1': {'Gen2-1': {'Gen3': None}, 'Gen2-2': None}}
