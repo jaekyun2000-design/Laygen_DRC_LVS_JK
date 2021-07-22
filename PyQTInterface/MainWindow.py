@@ -549,8 +549,33 @@ class _MainWindow(QMainWindow):
         self.calculator_window.show()
 
     def inspect_array(self):
-
+        cluster_model = topAPI.clustering.determinstic_clustering(_qtDesignParameters=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        cluster_model.layer_matching()
+        cluster_model.build_layer_ist_qt()
+        cluster_model.intersection_matching_path()
+        # cluster_model.sref_matching()
+        cluster_model.delete_solo_element_group()
+        groups_list = cluster_model.get_array_groups()
+        groups_list2 = cluster_model.get_routing_groups()
+        self.tmp_widget = QListWidget()
+        self.tmp_widget.addItems([str(group) for group in groups_list])
+        self.tmp_widget.currentRowChanged.connect(self.inspect_array_test)
+        self.vw = variableWindow.VariableSetupWindow(variable_type="c_array",vis_items=None,test=self._QTObj)
+        self.tmp_widget.itemDoubleClicked.connect(self.vw.getArray)
+        self.tmp_widget.show()
+        self.test_purpose_var = groups_list
+        self.log = []
+        for group in groups_list:
+            print(f'array candidate group: {group}')
         print('debug')
+
+    def inspect_array_test(self, row):
+        for id in self.log:
+            self.visualItemDict[id].setSelected(False)
+        for id in self.test_purpose_var[row]:
+            self.visualItemDict[id].setSelected(True)
+            self.log.append(id)
+        print(row)
 
     def inspect_geometry(self):
         target_cell = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
@@ -1534,8 +1559,8 @@ class _MainWindow(QMainWindow):
         self.qpd.setWindowModality(Qt.WindowModal)
         self.qpd.show()
 
-    def createVariable(self,type):
-        if type == 'auto_path':
+    def createVariable(self,_type):
+        if _type == 'auto_path':
             selected_vis_items = self.scene.selectedItems()
             vis_item = selected_vis_items[0]
             id = vis_item._id
@@ -1546,7 +1571,7 @@ class _MainWindow(QMainWindow):
             return
 
         selected_vis_items = self.scene.selectedItems()
-        self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items,test=self._QTObj)
+        self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items,test=self._QTObj)
         # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
         self.vw.send_output_dict_signal.connect(self.create_variable)
         self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)

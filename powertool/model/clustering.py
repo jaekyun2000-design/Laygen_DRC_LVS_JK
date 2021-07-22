@@ -10,13 +10,14 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.manifold import MDS, LocallyLinearEmbedding
 from sklearn.decomposition import PCA
 
-from model import routing_geo_searching
+from powertool.model import routing_geo_searching
 
 import copy
 
 class clustering():
-    def __init__(self, _DesignParameters = None):
+    def __init__(self, _DesignParameters = None, _qtDesignParameters=None):
         self._DesignParameter = copy.deepcopy(_DesignParameters)
+        self._qtDesignParameters = copy.deepcopy(_qtDesignParameters)
         self.array_groups = []
         self.routing_groups = []
         self.geo_searching = routing_geo_searching.GeometricField()
@@ -32,6 +33,11 @@ class clustering():
         if '_GDSFile' in self._DesignParameter:
             del self._DesignParameter['_GDSFile']
 
+    def build_layer_ist_qt(self):
+        self.geo_searching.xy_projection_to_main_coordinates_system_qt(self._qtDesignParameters)
+        self.geo_searching.build_IST_qt(self._qtDesignParameters)
+        return self._qtDesignParameters
+
     def build_layer_ist(self):
         self.geo_searching.xy_projection_to_main_coordinates_system(self._DesignParameter)
         self.geo_searching.build_IST(self._DesignParameter)
@@ -40,14 +46,14 @@ class clustering():
     def delete_solo_element_group(self):
         delete_index_list = []
         for i, group in enumerate(self.array_groups):
-            if len(group) is 1:
+            if len(group) == 1:
                 delete_index_list.append(i)
         for idx in reversed(delete_index_list):
             del self.array_groups[idx]
 
         delete_index_list = []
         for i, group in enumerate(self.routing_groups):
-            if len(group) is 1 :
+            if len(group) == 1 :
                 delete_index_list.append(i)
         for idx in reversed(delete_index_list):
             del self.routing_groups[idx]
@@ -64,12 +70,33 @@ class clustering():
 
 
 class determinstic_clustering(clustering):
-    def __init__(self, _DesignParameters = None):
-        super().__init__(_DesignParameters)
+    def __init__(self, _DesignParameters = None, _qtDesignParameters=None):
+        if _qtDesignParameters:
+            _DesignParameters = dict()
+            for key, value in _qtDesignParameters.items():
+                _DesignParameters[key] = value._DesignParameter
+        super().__init__(_DesignParameters,_qtDesignParameters)
         self.layer_based_group = dict()
         self.design_obj_based_group = dict()
         self.pregrouping_by_layer()
+            # self.pregrouping_by_layer_qt()
         # self.layer_matching()
+
+    def pregrouping_by_layer_qt(self):
+        for key, qt_item in self._qtDesignParameters.items():
+            item = qt_item._DesignParameter
+            if item['_DesignParametertype'] == 1 or item['_DesignParametertype'] == 2:
+                layer_num = item['_Layer']
+                if layer_num in self.layer_based_group:
+                    self.layer_based_group[layer_num].append(key)
+                else:
+                    self.layer_based_group[layer_num] = [key]
+            elif item['_DesignParametertype'] == 3:
+                class_name = item['_DesignObj'].__class__.__name__
+                if class_name in self.design_obj_based_group:
+                    self.design_obj_based_group[class_name].append(key)
+                else:
+                    self.design_obj_based_group[class_name] = [key]
 
     def pregrouping_by_layer(self):
         for key, item in self._DesignParameter.items():
@@ -104,15 +131,15 @@ class determinstic_clustering(clustering):
                 else:
                     for i, tmp_group in enumerate(tmp_groups):
                         matching_num, design_type= self.compare_two_elements(tmp_group[0],layer_item_name)
-                        if design_type is 'boundary':
+                        if design_type == 'boundary':
                             if matching_num >= matching_num_of_boundary:
                                 tmp_groups[i].append(layer_item_name)
                                 break
-                        elif design_type is 'path':
+                        elif design_type == 'path':
                             if matching_num >= matching_num_of_path:
                                 tmp_groups[i].append(layer_item_name)
                                 break
-                        elif design_type is 'sref':
+                        elif design_type == 'sref':
                             if matching_num >= matching_num_of_sref:
                                 tmp_groups[i].append(layer_item_name)
                                 break
@@ -173,10 +200,23 @@ class determinstic_clustering(clustering):
     def compare_two_paths(self,path1_name, path2_name):
         if not len(self._DesignParameter[path1_name]['_XYCoordinates'][0]) == len(self._DesignParameter[path2_name]['_XYCoordinates'][0]):
             return -1
-        x1 = self._DesignParameter[path1_name]['_XYCoordinates'][0][0][0] == self._DesignParameter[path2_name]['_XYCoordinates'][0][0][0]
-        y1 = self._DesignParameter[path1_name]['_XYCoordinates'][0][0][1] == self._DesignParameter[path2_name]['_XYCoordinates'][0][0][1]
-        x2 = self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][0] == self._DesignParameter[path2_name]['_XYCoordinates'][0][-1][0]
-        y2 = self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][1] == self._DesignParameter[path2_name]['_XYCoordinates'][0][-1][1]
+        if self._DesignParameter[path1_name]['_XYCoordinates'][0][0][0] == self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][0]:
+            #vertical case
+            x1, x2 = 0, 0
+            y1 = self._DesignParameter[path1_name]['_XYCoordinates'][0][0][1] == self._DesignParameter[path2_name]['_XYCoordinates'][0][0][1]
+            y2 = self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][1] == \
+                 self._DesignParameter[path2_name]['_XYCoordinates'][0][-1][1]
+        else:
+            x1 = self._DesignParameter[path1_name]['_XYCoordinates'][0][0][0] == \
+                 self._DesignParameter[path2_name]['_XYCoordinates'][0][0][0]
+            x2 = self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][0] == \
+                 self._DesignParameter[path2_name]['_XYCoordinates'][0][-1][0]
+            y1, y2 = 0, 0
+
+        # x1 = self._DesignParameter[path1_name]['_XYCoordinates'][0][0][0] == self._DesignParameter[path2_name]['_XYCoordinates'][0][0][0]
+        # y1 = self._DesignParameter[path1_name]['_XYCoordinates'][0][0][1] == self._DesignParameter[path2_name]['_XYCoordinates'][0][0][1]
+        # x2 = self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][0] == self._DesignParameter[path2_name]['_XYCoordinates'][0][-1][0]
+        # y2 = self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][1] == self._DesignParameter[path2_name]['_XYCoordinates'][0][-1][1]
         width = self._DesignParameter[path1_name]['_Width'] == self._DesignParameter[path2_name]['_Width']
         return x1+y1+x2+y2+width
 
