@@ -94,7 +94,7 @@ class IrregularTransformer(ast.NodeTransformer):
         self._id_to_data_dict = _id_to_data_dict
 
     def visit_XYCoordinate(self,node):
-        _id = node.id
+        _id = node.id[0]
         tmpDict = dict()
         tmpDict['X'] = []
         tmpDict['Y'] = []
@@ -103,6 +103,7 @@ class IrregularTransformer(ast.NodeTransformer):
         final_y_value = None
 
         # for XYFlag, elements in self._id_to_data_dict.items():
+        # When PathXY transformer called this function,
         for XYFlag, elements in self._id_to_data_dict.XYDict[_id].items():
             for j in range(len(elements)):
                 expression = elements[j]
@@ -161,15 +162,23 @@ class IrregularTransformer(ast.NodeTransformer):
                     final_y_value = tmpDict['XY'][k][1] + ' + ' + final_y_value
 
         if final_x_value == None or final_y_value == None:
-            print("X field and Y field both should not be empty")
-            raise Exception("X field and Y field both should not be empty")
+            if final_x_value == None and final_y_value == None:
+                raise Exception("X and Y value both empty")
+            elif final_x_value == None:
+                final_x_value = self.old_x_value
+            elif final_y_value == None:
+                final_y_value = self.old_y_value
 
+        self.old_x_value = final_x_value
+        self.old_y_value = final_y_value
         sentence = []
         sentence.append(final_x_value)
         sentence.append(final_y_value)
         sentence = '[['+final_x_value+','+final_y_value+']]'
         tmp = ast.parse(sentence)
         return tmp.body
+
+
 
     def visit_PathXY(self, node):
         _id = node.id

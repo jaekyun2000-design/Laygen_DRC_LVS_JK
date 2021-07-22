@@ -557,7 +557,6 @@ class _MainWindow(QMainWindow):
         cluster_model.delete_solo_element_group()
         groups_list = cluster_model.get_array_groups()
         groups_list2 = cluster_model.get_routing_groups()
-        print(groups_list2)
         self.tmp_widget = QListWidget()
         self.tmp_widget.addItems([str(group) for group in groups_list])
         self.tmp_widget.currentRowChanged.connect(self.inspect_array_test)
@@ -598,10 +597,11 @@ class _MainWindow(QMainWindow):
         if len(hierarchy_list) == 0:
             return
         elif len(hierarchy_list) == 1:
-            if type(module[hierarchy_list[0]]._DesignParameter['_Layer']) == int:
-                _layerCommonName = layernum2name[str(module[hierarchy_list[0]]._DesignParameter['_Layer'])]
+            _layerInfo = module[hierarchy_list[0]]._DesignParameter['_Layer']
+            if type(_layerInfo) == int:
+                _layerCommonName = layernum2name[str(_layerInfo)]
             else:
-                _layerCommonName = module[hierarchy_list[0]]._DesignParameter['_Layer']
+                _layerCommonName = _layerInfo
         else:
             for i in range(len(hierarchy_list)-1):
                 module = module[hierarchy_list[i]]._DesignParameter['_ModelStructure']
@@ -1812,8 +1812,11 @@ class _MainWindow(QMainWindow):
                 #     if design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
                 #         pass
                 # else:
+            try:
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
                 self.updateGraphicItem(visualItem)
+            except:
+                traceback.print_exc()
 
     def deliveryDesignParameter(self):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()
@@ -2347,8 +2350,10 @@ class _MainWindow(QMainWindow):
             old_variable_dict = copy.deepcopy(self.visualItemDict[changed_dp_id]._ItemTraits['variable_info'])
             module_name = self.get_id_return_module(constraint_id,'_DesignConstraint')
             used_variable_list = parse_constraint_to_get_value(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
-            self.visualItemDict[changed_dp_id].update_dc_variable_info(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
-
+            try:
+                self.visualItemDict[changed_dp_id].update_dc_variable_info(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
+            except:
+                traceback.print_exc()
             # erased_variable_list = list(set(old_variable_list)-set(used_variable_list))
             current_variable_dict = self.visualItemDict[changed_dp_id]._ItemTraits['variable_info']
             tmpList=list()

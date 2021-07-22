@@ -815,6 +815,9 @@ class ExpressionCalculator(QWidget):
         XYList = list()
         LEFlag = False
 
+        """
+        Export For Path, 또는 Export 를 누르면 Add 되어 있는 모든 요소들을 가져온다.
+        """
         for i_x in range(self.XWindow.count()):
             self.XWindow.setCurrentRow(i_x)
             XList.append(self.XWindow.currentItem().text())
@@ -826,8 +829,19 @@ class ExpressionCalculator(QWidget):
             XYList.append(self.XYWindow.currentItem().text())
         output = {'X':XList, 'Y':YList, 'XY':XYList}
 
+        """
+        Export를 클릭해서 넘어온 경우에는 단일 좌표 생성 혹은 Logic Expression 생성이다.
+        Export For Path를 클릭해서 넘어온 경우에는 좌표를 append할 것이다.
+        """
+
+        """
+        1. LogicExpression 의 경우 XY 둘중 하나만 결과로 나올 경우이다.
+        """
         if not XYList and export_type == False:
             if XList and YList:
+                """
+                이 경우에는 X값과 Y값이 각각 있으니 XYCoordinate 생성하러 떠난다.
+                """
                 pass
             elif XList:
                 self.send_XYCreated_signal.emit('LogicExpression', output)
@@ -839,6 +853,22 @@ class ExpressionCalculator(QWidget):
         self.XWindow.clear()
         self.YWindow.clear()
         self.XYWindow.clear()
+        """
+        아래에서 XYCoordinate constraint 생성하거나, 이미 LogicExpression이 만들어진 상태이면 무시,
+        그리고 export_type이 PathXY_row인 경우 main으로 output 보내준다.
+        """
+        row_count = self.pw.XYCoordinateList.rowCount()
+        if export_type == 'PathXY_row':
+            if self.pw.XYCoordinateList.rowCount() == 0:
+                if not XYList:
+                    if not (XList and YList):
+                        self.warning = QMessageBox()
+                        self.warning.setIcon(QMessageBox.Warning)
+                        self.warning.setText("First element for PathXY_row should be XYCoordinates")
+                        self.warning.show()
+                        self.pw.destroy()
+                        del self.pw
+                        return
 
         if export_type == False:
             if LEFlag == False:
