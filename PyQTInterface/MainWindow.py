@@ -549,7 +549,16 @@ class _MainWindow(QMainWindow):
         self.calculator_window.show()
 
     def inspect_array(self):
-
+        cluster_model = topAPI.clustering.determinstic_clustering(_qtDesignParameters=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        cluster_model.layer_matching()
+        cluster_model.build_layer_ist_qt()
+        cluster_model.intersection_matching_path()
+        # cluster_model.sref_matching()
+        cluster_model.delete_solo_element_group()
+        groups_list = cluster_model.get_array_groups()
+        groups_list2 = cluster_model.get_routing_groups()
+        for group in groups_list:
+            print(f'array candidate group: {group}')
         print('debug')
 
     def inspect_geometry(self):
