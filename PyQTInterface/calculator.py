@@ -12,7 +12,6 @@ from generatorLib import drc_api
 class ExpressionCalculator(QWidget):
     # send_expression_signal =  pyqtSignal(dict)
     send_XYCreated_signal = pyqtSignal(str, dict)
-    send_equation_signal = pyqtSignal(list)
     send_dummyconstraints_signal = pyqtSignal(dict, str)
     send_path_row_xy_signal = pyqtSignal(dict, str)
     returnLayer_signal = pyqtSignal(list)
@@ -786,7 +785,6 @@ class ExpressionCalculator(QWidget):
                 elif self.xy_button.isChecked():
                     # XYFlag = 'XY'
                     self.showXYWindow()
-                self.send_equation_signal.emit(self.equationList)
                 self.equationList.clear()
 
         else:
