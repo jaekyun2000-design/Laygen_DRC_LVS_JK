@@ -77,18 +77,23 @@ class VariableSetupWindow(QWidget):
             self.output_dict['type'] = 'c_array'
             self.XY_source_ref = QLineEdit()
             self.XY_source_ref.field_name = 'XY_source_ref'
+            self.XY_source_ref.textChanged.connect(self.update_output_dict)
             self.XY_source_ref.setReadOnly(True)
             self.width_combo = QComboBox()
             self.width_combo.addItems(['Auto', 'Custom'])
+            self.width_combo.field_name = 'width'
             self.width_combo.currentTextChanged.connect(self.getWidth)
+            self.width_combo.currentTextChanged.connect(self.update_output_dict)
             self.width_input = QLineEdit()
             self.width_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             self.width_input.setReadOnly(True)
+            self.width_input.field_name = 'width'
+            self.width_input.textChanged.connect(self.update_output_dict)
             # self.XY_source_ref.textChanged.connect(self.update_output_dict)
             self.XY_target_ref = QLineEdit()
             self.XY_target_ref.field_name = 'XY_target_ref'
             self.XY_target_ref.setReadOnly(True)
-            # self.XY_target_ref.textChanged.connect(self.update_output_dict)
+            self.XY_target_ref.textChanged.connect(self.update_output_dict)
 
             self.deleteItemList = QListWidget()
 
@@ -109,10 +114,13 @@ class VariableSetupWindow(QWidget):
             self.rule.field_name = 'rule'
             self.rule.addItems(['All', 'Even', 'Odd', 'Custom'])
             self.rule.currentTextChanged.connect(self.getRule)
+            self.rule.currentTextChanged.connect(self.update_output_dict)
 
             self.rule_input = QLineEdit()
             self.rule_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             self.rule_input.setReadOnly(True)
+            self.rule_input.field_name = 'rule'
+            self.rule_input.textChanged.connect(self.update_output_dict)
 
             self.elements_dict_for_Label = []
             self.elements_dict_for_LineEdit = []
@@ -274,6 +282,12 @@ class VariableSetupWindow(QWidget):
     def addQLine(self,num):
         for i in range(0,num):
             self.setupVboxColumn2.addWidget(QLineEdit())
+
+    def update_output_dict(self, changed_text):
+        sender = self.sender()
+        key = sender.field_name
+        self.output_dict[key] = changed_text
+
     def on_buttonBox_accepted(self):
         if self.XY_source_ref.text() == '' or self.XY_target_ref.text() == '':
             self.warning = QMessageBox()
@@ -282,17 +296,17 @@ class VariableSetupWindow(QWidget):
             self.warning.show()
             return
 
-        variable_vis_item = VariableVisualItem.VariableVisualItem()
-        variable_vis_item.addToGroupFromList(self.vis_items)
-        variable_info = dict()
+        # variable_vis_item = VariableVisualItem.VariableVisualItem()
+        # variable_vis_item.addToGroupFromList(self.vis_items)
+        # variable_info = dict()
 
         if self.variable_type == 'c_array':
-            dp_id = self.XY_source_ref.text()[self.XY_source_ref.text().find("'")+1:-3]
-            dc_id = self._QTObj._qtProject._ElementManager.dp_id_to_dc_id[dp_id]
-            print(self.XY_source_ref.text().replace(dp_id,dc_id))
-            print(self.XY_target_ref.text().replace(dp_id,dc_id))
-            print(self.XY_source_ref.text())
-            print(self.XY_target_ref.text())
+            # dp_id = self.XY_source_ref.text()[self.XY_source_ref.text().find("'")+1:-3]
+            # dc_id = self._QTObj._qtProject._ElementManager.dp_id_to_dc_id[dp_id]
+            # print(self.XY_source_ref.text().replace(dp_id,dc_id))
+            # print(self.XY_target_ref.text().replace(dp_id,dc_id))
+            # print(self.XY_source_ref.text())
+            # print(self.XY_target_ref.text())
             self.send_output_dict_signal.emit(self.output_dict)
         else:
             self.XY_base_text = self.XY_base.text()

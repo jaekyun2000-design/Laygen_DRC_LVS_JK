@@ -1615,6 +1615,9 @@ class _MainWindow(QMainWindow):
 
     def create_variable(self, variable_info_dict):
         if variable_info_dict['type'] == 'c_array':
+            test_ast = variable_ast.PathArray()
+            xy_ref_ast = variable_ast.XYCoordinate()
+            xy_target_ast = variable_ast.XYCoordinate()
             variable_info_dict
             print(1)
 
