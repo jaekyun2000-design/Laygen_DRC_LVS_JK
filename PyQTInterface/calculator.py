@@ -675,7 +675,7 @@ class ExpressionCalculator(QWidget):
 
         if type(hierarchy_list) == Exception:
             return None
-        calc_expression = geo_text + f'({hierarchy_list})'.replace(" ","")
+        calc_expression = geo_text + f'({hierarchy_list})'.replace(" ","").replace("([", "(").replace("])", ")")
         if self.value_flag:
             print(f'len!!={len(self.value_str)}')
             self.equationList[-1] = calc_expression
