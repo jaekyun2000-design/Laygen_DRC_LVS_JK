@@ -593,9 +593,18 @@ class _MainWindow(QMainWindow):
 
     def save_clipboard(self,save_target,_):
         if type(save_target) == list:
+            new_list = list()
             print(save_target)
             print(_)
-            self.gloabal_clipboard.setText(str(save_target[1:]))
+            for idx in range(len(save_target)):
+                if idx != 0:
+                    if type(_[idx]) == int:
+                        tmp = save_target[idx] + '[' + str(_[idx]) + ']'
+                    else:
+                        tmp = save_target[idx] + str(_[idx])
+                    new_list.append(tmp)
+            print(new_list)
+            self.gloabal_clipboard.setText(str(new_list))
 
     def get_hierarchy_return_layer(self, hierarchy_list):
         module = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
