@@ -30,7 +30,8 @@ class XYCoordinate(GeneratorVariable):
     def __init__(self, *args, **kwargs):
         super().__init__()
     _fields = (
-        'id',     #str
+        'id',       # str
+        'index',    # str
     )
 
 class PathXY(GeneratorVariable):

@@ -584,10 +584,11 @@ class _MainWindow(QMainWindow):
         geo_search.build_IST_qt(target_cell)
         return geo_search
 
-    def save_clipboard(self,save_target,_):
+    def save_clipboard(self,save_target,index):
         if type(save_target) == list:
             print(save_target)
-            print(_)
+            self.index_for_coordinates = index
+            print(index)
             self.gloabal_clipboard.setText(str(save_target[1:]))
 
     def get_hierarchy_return_layer(self, hierarchy_list):
@@ -1960,6 +1961,7 @@ class _MainWindow(QMainWindow):
 
                     _ASTobj.id = _newConstraintID
                     _ASTobj._id = _newConstraintID
+                    _ASTobj.index = self.index_for_coordinates
                     _ASTobj._type = 'XYCoordinate'
                     self._DummyConstraints.XYDict[_newConstraintID] = info_dict
                     self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
