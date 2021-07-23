@@ -2587,6 +2587,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_SendASTDict_signal = pyqtSignal(list)
     send_SendSTMT_signal = pyqtSignal(dict)
     send_SendID_signal = pyqtSignal(str)
+    send_SendID_signal_highlight = pyqtSignal(str)
     send_SendCopyConstraint_signal = pyqtSignal(QTInterfaceWithAST.QtDesinConstraint)
     send_RootDesignConstraint_signal = pyqtSignal(str)
     send_ReceiveDone_signal = pyqtSignal()
@@ -2596,6 +2597,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     # send_deleteID_signal = pyqtSignal(str)
     send_deleteConstraint_signal = pyqtSignal(str)
     send_dummy_ast_id_signal = pyqtSignal(str)
+
 
     originalKeyPress = QTreeView.keyPressEvent
 
@@ -3164,6 +3166,10 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 print("copy!!")
         elif QKeyEvent.key() == Qt.Key_F5:
             self.resizeColumnToContents(0)
+        elif QKeyEvent.key() == Qt.Key_H:
+            id_item = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
+            id_string = id_item.text()
+            self.send_SendID_signal_highlight.emit(id_string)
 
         self.originalKeyPress(self,QKeyEvent)
 
@@ -3272,6 +3278,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                     self.scrollTo(selected_item_idx)
                 except:
                     traceback.print_exc()
+
+
 
 
         # constraint_ids = [item.text() for item in constraint_names]
