@@ -548,6 +548,7 @@ class _MainWindow(QMainWindow):
         self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
         self.calculator_window.returnLayer_signal.connect(self.get_hierarchy_return_layer)
         self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
+        # self.calculator_window.send_equation_signal.connect(self.XYDictManagement)
         self.calculator_window.show()
 
     def get_dc_highlight_dp(self,dc_id):
@@ -609,6 +610,9 @@ class _MainWindow(QMainWindow):
     def get_hierarchy_return_layer(self, hierarchy_list):
         module = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
         layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+        for i in range(len(hierarchy_list)):
+            element = re.sub("\[.\]","", hierarchy_list[i])
+            hierarchy_list[i] = element
 
         if len(hierarchy_list) == 0:
             return
@@ -1849,6 +1853,11 @@ class _MainWindow(QMainWindow):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()
         self.dockContentWidget3_2.receiveDesignParameter(deliveryParameter)
 
+    # def XYDictManagement(self, equation):
+    #     self.name_index_matching = dict()
+    #     self.name_index_matching[str(equation)] = self.index_for_coordinates
+
+
     def createNewConstraint(self,_ConstraintParameter):
         if self._QTObj._qtProject == None:
             self.warning=QMessageBox()
@@ -1990,6 +1999,7 @@ class _MainWindow(QMainWindow):
                     _ASTobj._id = _newConstraintID
                     _ASTobj._type = 'XYCoordinate'
                     self._DummyConstraints.XYDict[_newConstraintID] = info_dict
+                    self._DummyConstraints.XYDict[_newConstraintID]
                     self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
                     design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
                                                                       module_name=self._CurrentModuleName, _ast=_ASTobj)
