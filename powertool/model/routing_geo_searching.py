@@ -71,7 +71,10 @@ class GeometricField:
                 else:
                     dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_ordered]
                 # dp['_XYCoordinatesProjection'] = transformed_five_point_xy_ordered
-                dp['_Hierarchy'] = structure_hierarchy
+                if '_Hierarchy' in dp:
+                    dp['_Hierarchy'].append([structure_hierarchy])
+                else:
+                    dp['_Hierarchy'] = [structure_hierarchy]
                 # return base_xy + angle.dot(reflect).dot(xy_pair)
 
         elif dp['_DesignParametertype'] == 3:
@@ -113,7 +116,10 @@ class GeometricField:
                 else:
                     dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_ordered]
                 # dp['_XYCoordinatesProjection'] = transformed_five_point_xy_ordered
-                dp['_Hierarchy'] = structure_hierarchy
+                if '_Hierarchy' in dp:
+                    dp['_Hierarchy'].append([structure_hierarchy])
+                else:
+                    dp['_Hierarchy'] = [structure_hierarchy]
                 # return base_xy + angle.dot(reflect).dot(xy_pair)
 
         elif dp['_DesignParametertype'] == 3:
@@ -257,7 +263,7 @@ class GeometricField:
         intersected_node = sorted(vertical_tree[y_min:y_max+1])
         del vertical_tree
 
-        intersected_dp_hierarchy_names = [ [node.data[0]['_Hierarchy'], node.data[1]] for node in intersected_node ]
+        intersected_dp_hierarchy_names = [ [node.data[0]['_Hierarchy'][node.data[1]], node.data[1]] for node in intersected_node ]
         intersected_dp_hierarchy_names.insert(0,dp)
 
 
