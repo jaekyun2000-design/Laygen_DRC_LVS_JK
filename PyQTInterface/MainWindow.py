@@ -415,6 +415,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
         self.dockContentWidget3_2.send_RequestElementManger_signal.connect(self.convey_element_manager)
         self.dockContentWidget3_2.send_DataChanged_signal.connect(self.constraint_data_changed)
+        self.dockContentWidget3_2.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3_2.get_dp_highlight_dc)
 
 
@@ -432,6 +433,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
         self.dockContentWidget3.send_RequestElementManger_signal.connect(self.convey_element_manager)
         self.dockContentWidget3.send_DataChanged_signal.connect(self.constraint_data_changed)
+        self.dockContentWidget3.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3.get_dp_highlight_dc)
 
         vboxLayout = QVBoxLayout()
@@ -548,6 +550,11 @@ class _MainWindow(QMainWindow):
         self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
         self.calculator_window.show()
 
+    def get_dc_highlight_dp(self,dc_id):
+        dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
+        if dp_id:
+            self.visualItemDict[dp_id].setSelected(True)
+
     def inspect_array(self):
         cluster_model = topAPI.clustering.determinstic_clustering(_qtDesignParameters=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
         cluster_model.layer_matching()
@@ -560,7 +567,7 @@ class _MainWindow(QMainWindow):
         self.tmp_widget = QListWidget()
         self.tmp_widget.addItems([str(group) for group in groups_list])
         self.tmp_widget.currentRowChanged.connect(self.inspect_array_test)
-        self.vw = variableWindow.VariableSetupWindow(variable_type="c_array",vis_items=None,test=self._QTObj)
+        self.vw = variableWindow.VariableSetupWindow(variable_type="c_array",vis_items=None,test=self._QTObj,ref_list=groups_list2)
         self.tmp_widget.itemDoubleClicked.connect(self.vw.getArray)
         self.tmp_widget.show()
         self.test_purpose_var = groups_list
@@ -611,6 +618,7 @@ class _MainWindow(QMainWindow):
                 self.calculator_window.returnedLayer = _layerCommonName
             else:
                 pass
+
     def sref_debug_module(self):
         # tmpcell = {'INV': {'Sub1': {'Sub2': {'PMOS': None}, 'NMOS': None,}, 'NMOS': None, 'PMOS': None}}
         # # tmpcell = {'Gen1': {'Gen2-1': {'Gen3': None}, 'Gen2-2': None}}
@@ -1571,6 +1579,17 @@ class _MainWindow(QMainWindow):
             id = vis_item._id
             geo_field = self.inspect_geometry()
             overlay_object = geo_field.search_intersection_qt(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][id])
+            #
+            # for obj in overlay_object[1:]:
+            #     obj[0][0]
+            test= [obj[0][0] for obj in overlay_object[1:]]
+            self.log2 = []
+            for id in self.log2:
+                self.visualItemDict[id].setSelected(False)
+            for id in test:
+                self.visualItemDict[id].setSelected(True)
+                self.log2.append(id)
+
             print('connection info')
             print(overlay_object[1:])
             return

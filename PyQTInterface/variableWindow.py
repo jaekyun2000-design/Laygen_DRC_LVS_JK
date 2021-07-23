@@ -35,13 +35,14 @@ class VariableSetupWindow(QWidget):
 
     send_variableVisual_signal = pyqtSignal(VariableVisualItem.VariableVisualItem)
 
-    def __init__(self,variable_type,vis_items=None,variable_obj=None,test=None):
+    def __init__(self,variable_type,vis_items=None,variable_obj=None,test=None,ref_list=None):
         super().__init__()
         self.setMinimumHeight(500)
         self.setFixedWidth(300)
         self.variable_type = variable_type
         self.vis_items= vis_items
         self._QTObj = test
+        self.group_list = ref_list
         self.itemList = list()
         self.output_dict = dict()
         self.initUI()
@@ -220,8 +221,11 @@ class VariableSetupWindow(QWidget):
             # self.addQLine(len(strList))
 
     def getArray(self, test):
+        self.deleteItemList.clear()
         input_text = test.text()
         name_flag = False
+        source = ''
+        target = ''
         _from = 0
         _end = 0
         for idx in range(len(input_text)):
@@ -230,9 +234,15 @@ class VariableSetupWindow(QWidget):
                 if name_flag:
                     tmp_text = input_text[_from:_end]
                     self.deleteItemList.addItem(tmp_text)
+                    for jdx in range(len(self.group_list)):
+                        if tmp_text == self.group_list[jdx][0]['_id']:
+                            source = 'center(' + str(self.group_list[jdx][1][0]) + ')'
+                            target = 'center(' + str(self.group_list[jdx][2][0]) + ')'
                 _from = idx+1
                 name_flag = not name_flag
 
+        self.XY_source_ref.setText(source)
+        self.XY_target_ref.setText(target)
         self.show()
 
     def getWidth(self, text):
@@ -278,9 +288,9 @@ class VariableSetupWindow(QWidget):
 
         if self.variable_type == 'c_array':
             dp_id = self.XY_source_ref.text()[self.XY_source_ref.text().find("'")+1:-3]
-            print(self._QTObj)
             dc_id = self._QTObj._qtProject._ElementManager.dp_id_to_dc_id[dp_id]
-            print(dc_id)
+            print(self.XY_source_ref.text().replace(dp_id,dc_id))
+            print(self.XY_target_ref.text().replace(dp_id,dc_id))
             print(self.XY_source_ref.text())
             print(self.XY_target_ref.text())
             self.send_output_dict_signal.emit(self.output_dict)
