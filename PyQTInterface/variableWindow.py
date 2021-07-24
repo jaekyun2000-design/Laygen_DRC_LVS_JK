@@ -45,6 +45,7 @@ class VariableSetupWindow(QWidget):
         self.group_list = ref_list
         self.itemList = list()
         self.output_dict = dict()
+        self.relative_or_offset = 'relative'
         self.initUI()
 
         if variable_obj == None:
@@ -64,6 +65,12 @@ class VariableSetupWindow(QWidget):
             # self._DesignParameter = BoundaryElement._ItemTraits
             self.updateUI()
 
+    def button_image_change(self,checked):
+        sender = self.sender()
+        if checked:
+            sender.setIcon(QIcon(QPixmap('./image/ON.png')))
+        else:
+            sender.setIcon(QIcon(QPixmap('./image/OFF.png')))
 
     def initUI(self):
         self.variable_type_widget = QLabel(self.variable_type)
@@ -72,6 +79,16 @@ class VariableSetupWindow(QWidget):
         self.ui_list_a = []
         self.ui_list_b = []
         self.ui_list_c = []
+        self.relative_or_offset_button = QPushButton()
+        self.relative_or_offset_button.setIcon(QIcon(QPixmap('./image/ON.png')))
+        self.relative_or_offset_button.setIconSize(QSize(50,30))
+        self.relative_or_offset_button.setFlat(True)
+        self.relative_or_offset_button.setCheckable(True)
+        self.relative_or_offset_button.setChecked(True)
+        self.relative_or_offset_button.setAutoFillBackground(False)
+        self.relative_or_offset_button.toggled.connect(self.button_image_change)
+        self.relative_or_offset_button.setText("  Relative Expression  ")
+        # self.relative_or_offset_button.setAutoDefault(False)
 
         if self.variable_type == 'path_array':
             self.output_dict['type'] = 'path_array'
@@ -264,6 +281,7 @@ class VariableSetupWindow(QWidget):
         hbox.addWidget(cancelButton)
 
         vbox = QVBoxLayout()
+        vbox.addWidget(self.relative_or_offset_button)
         vbox.addStretch(1)
         vbox.addLayout(setupBox)
         # if self.variable_type == 'path_array':
