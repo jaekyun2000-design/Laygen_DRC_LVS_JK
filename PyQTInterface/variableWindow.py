@@ -35,13 +35,13 @@ class VariableSetupWindow(QWidget):
 
     send_variableVisual_signal = pyqtSignal(VariableVisualItem.VariableVisualItem)
 
-    def __init__(self,variable_type,vis_items=None,variable_obj=None,_QTObj=None,ref_list=None):
+    def __init__(self,variable_type,vis_items=None,variable_obj=None,_DP=None,ref_list=None,):
         super().__init__()
         self.setMinimumHeight(500)
         self.setFixedWidth(300)
         self.variable_type = variable_type
         self.vis_items= vis_items
-        self._QTObj = _QTObj
+        self._DesignParameter = _DP
         self.group_list = ref_list
         self.itemList = list()
         self.output_dict = dict()
@@ -89,7 +89,6 @@ class VariableSetupWindow(QWidget):
             self.width_input.setReadOnly(True)
             self.width_input.field_name = 'width'
             self.width_input.textChanged.connect(self.update_output_dict)
-            # self.XY_source_ref.textChanged.connect(self.update_output_dict)
             self.XY_target_ref = QLineEdit()
             self.XY_target_ref.field_name = 'XY_target_ref'
             self.XY_target_ref.setReadOnly(True)
@@ -187,6 +186,16 @@ class VariableSetupWindow(QWidget):
         if self.vis_items is not None:
             self.show()
 
+    def reset_ui(self,layout_item):
+        if layout_item:
+            sub_item = layout_item.takeAt(0)
+            if sub_item.layout():
+                self.reset_ui(sub_item)
+            if sub_item.widget():
+                sub_widget = sub_item.widget()
+                del sub_widget
+            del sub_item
+
     def updateUI(self):
         # while self.setupVboxColumn1.count() != 1:               # original typed content delete
         #     tmp = self.setupVboxColumn1.takeAt(1).widget()
@@ -216,13 +225,14 @@ class VariableSetupWindow(QWidget):
                 # self.setupVboxColumn2.addWidget(self.elements_dict_for_LineEdit[-1])
 
         elif self.variable_type_widget.text() == "element array":
-            for i, vis_item in enumerate(self.vis_items):
-                id = vis_item._id
-                self.elements_dict_for_Label.append(QLabel('Element '+str(i)))
-                self.elements_dict_for_LineEdit.append(QLineEdit(id))
+            if self.vis_items is not None:
+                for i, vis_item in enumerate(self.vis_items):
+                    id = vis_item._id
+                    self.elements_dict_for_Label.append(QLabel('Element '+str(i)))
+                    self.elements_dict_for_LineEdit.append(QLineEdit(id))
 
-                self.setupVboxColumn1.addWidget(self.elements_dict_for_Label[-1])
-                self.setupVboxColumn2.addWidget(self.elements_dict_for_LineEdit[-1])
+                    self.setupVboxColumn1.addWidget(self.elements_dict_for_Label[-1])
+                    self.setupVboxColumn2.addWidget(self.elements_dict_for_LineEdit[-1])
 
 
             # strList = ["_pyCode"]
@@ -230,29 +240,34 @@ class VariableSetupWindow(QWidget):
             # self.addQLine(len(strList))
 
     def getArray(self, array_list_item):
-        self.deleteItemList.clear()
-        input_text = array_list_item.text()
-        name_flag = False
-        source = ''
-        target = ''
-        _from = 0
-        _end = 0
-        for idx in range(len(input_text)):
-            if input_text[idx] == "'":
-                _end = idx
-                if name_flag:
-                    tmp_text = input_text[_from:_end]
-                    self.deleteItemList.addItem(tmp_text)
-                    for jdx in range(len(self.group_list)):
-                        if tmp_text == self.group_list[jdx][0]['_id']:
-                            source = 'center(' + str(self.group_list[jdx][1][0]) + ')'
-                            target = 'center(' + str(self.group_list[jdx][2][0]) + ')'
-                _from = idx+1
-                name_flag = not name_flag
+        if self.variable_type == 'path_array':
+            self.deleteItemList.clear()
+            input_text = array_list_item.text()
+            name_flag = False
+            source = ''
+            target = ''
+            _from = 0
+            _end = 0
+            for idx in range(len(input_text)):
+                if input_text[idx] == "'":
+                    _end = idx
+                    if name_flag:
+                        tmp_text = input_text[_from:_end]
+                        self.deleteItemList.addItem(tmp_text)
+                        for jdx in range(len(self.group_list)):
+                            if tmp_text == self.group_list[jdx][0]['_id']:
+                                source = 'center(' + str(self.group_list[jdx][1][0]) + ')'
+                                target = 'center(' + str(self.group_list[jdx][2][0]) + ')'
+                    _from = idx+1
+                    name_flag = not name_flag
 
-        self.XY_source_ref.setText(source)
-        self.XY_target_ref.setText(target)
-        self.show()
+            self.XY_source_ref.setText(source)
+            self.XY_target_ref.setText(target)
+            self.show()
+        else:
+            # self.variable_type = "element array"
+            # self.reset_ui(self.layout())
+            self.show()
 
     def getWidth(self, text):
         if text == 'Auto':
