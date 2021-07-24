@@ -73,8 +73,8 @@ class VariableSetupWindow(QWidget):
         self.ui_list_b = []
         self.ui_list_c = []
 
-        if self.variable_type == 'c_array':
-            self.output_dict['type'] = 'c_array'
+        if self.variable_type == 'path_array':
+            self.output_dict['type'] = 'path_array'
             self.XY_source_ref = QLineEdit()
             self.XY_source_ref.field_name = 'XY_source_ref'
             self.XY_source_ref.textChanged.connect(self.update_output_dict)
@@ -129,6 +129,7 @@ class VariableSetupWindow(QWidget):
             self.ui_list_a.extend(['XY_source_ref', 'width', '', 'XY_target_ref', 'Rule', ''])  # ,'Element1','Element2'])
             self.ui_list_b.extend([hbox1, self.width_combo, self.width_input, hbox2, self.rule, self.rule_input])
             # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
+        
         elif self.variable_type == 'element array':
             self.XY_base = QLineEdit()
             self.x_offset = QLineEdit()
@@ -173,7 +174,7 @@ class VariableSetupWindow(QWidget):
         vbox = QVBoxLayout()
         vbox.addStretch(1)
         vbox.addLayout(setupBox)
-        if self.variable_type == 'c_array':
+        if self.variable_type == 'path_array':
             vbox.addWidget(self.deleteItemList)
         vbox.addStretch(3)
         vbox.addLayout(hbox)
@@ -202,7 +203,7 @@ class VariableSetupWindow(QWidget):
         # self.addQLabel(strList)
         # self.addQLine(len(strList))
         #
-        if self.variable_type_widget.text() == "c_array":
+        if self.variable_type_widget.text() == "path_array":
             if self.vis_items is not None:
                 for i, vis_item in enumerate(self.vis_items):
                     id = vis_item._id
@@ -300,7 +301,7 @@ class VariableSetupWindow(QWidget):
         # variable_vis_item.addToGroupFromList(self.vis_items)
         # variable_info = dict()
 
-        if self.variable_type == 'c_array':
+        if self.variable_type == 'path_array':
             # dp_id = self.XY_source_ref.text()[self.XY_source_ref.text().find("'")+1:-3]
             # dc_id = self._QTObj._qtProject._ElementManager.dp_id_to_dc_id[dp_id]
             # print(self.XY_source_ref.text().replace(dp_id,dc_id))
@@ -386,7 +387,7 @@ class VariableSetupWindow(QWidget):
         self.cal.show()
 
     def exportedText(self, text, purpose):
-        if self.variable_type == 'c_array':
+        if self.variable_type == 'path_array':
             if purpose == 'source':
                 self.XY_source_ref.setText(text)
             elif purpose == 'target':

@@ -568,7 +568,7 @@ class _MainWindow(QMainWindow):
         self.tmp_widget = QListWidget()
         self.tmp_widget.addItems([str(group) for group in groups_list])
         self.tmp_widget.currentRowChanged.connect(self.inspect_array_test)
-        self.vw = variableWindow.VariableSetupWindow(variable_type="c_array",vis_items=None,_QTObj=self._QTObj,ref_list=groups_list2)
+        self.vw = variableWindow.VariableSetupWindow(variable_type="path_array",vis_items=None,_QTObj=self._QTObj,ref_list=groups_list2)
         self.tmp_widget.itemDoubleClicked.connect(self.vw.getArray)
         self.tmp_widget.show()
         self.test_purpose_var = groups_list
@@ -1614,7 +1614,7 @@ class _MainWindow(QMainWindow):
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
 
     def create_variable(self, variable_info_dict):
-        if variable_info_dict['type'] == 'c_array':
+        if variable_info_dict['type'] == 'path_array':
             test_ast = variable_ast.PathArray()
             xy_ref_ast = variable_ast.XYCoordinate()
             xy_target_ast = variable_ast.XYCoordinate()
@@ -2650,7 +2650,7 @@ class _CustomView(QGraphicsView):
         menu.addAction(variable_create_connect)
         menu.addAction(visual_ungroup)
 
-        constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('c_array'))
+        constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('path_array'))
         inspect_path_connection.triggered.connect(lambda tmp: self.variable_emit('auto_path'))
         variable_create_array.triggered.connect(lambda tmp: self.variable_emit('array'))
         variable_create_distance.triggered.connect(lambda tmp: self.variable_emit('distance'))
@@ -2662,8 +2662,8 @@ class _CustomView(QGraphicsView):
         menu.exec(event.globalPos())
 
     def variable_emit(self, type):
-        if type == 'c_array':
-            self.variable_signal.emit('c_array')
+        if type == 'path_array':
+            self.variable_signal.emit('path_array')
         if type == 'auto_path':
             self.variable_signal.emit('auto_path')
         elif type == 'array':
