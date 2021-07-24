@@ -583,14 +583,20 @@ class _MainWindow(QMainWindow):
     def show_inspect_array_widget(self, array_list_item):
 
         array_list = eval(array_list_item.text())
-        if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
+        if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
+            self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array", vis_items=None,
+                                                         _DP=self._QTObj._qtProject._DesignParameter[
+                                                             self._CurrentModuleName]
+                                                         , ref_list=self.connection_ref)
+            self.vw.getArray(array_list_item)
+        elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
             self.vw = variableWindow.VariableSetupWindow(variable_type="path_array", vis_items=None,
                                                          _DP=self._QTObj._qtProject._DesignParameter[
                                                              self._CurrentModuleName]
                                                          , ref_list=self.connection_ref)
             self.vw.getArray(array_list_item)
         else:
-            self.vw = variableWindow.VariableSetupWindow(variable_type="element array", vis_items=None,
+            self.vw = variableWindow.VariableSetupWindow(variable_type="sref_array", vis_items=None,
                                                          _DP=self._QTObj._qtProject._DesignParameter[
                                                              self._CurrentModuleName]
                                                          , ref_list=self.connection_ref)
