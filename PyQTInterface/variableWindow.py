@@ -312,49 +312,51 @@ class VariableSetupWindow(QWidget):
             self.warning.show()
             return
 
+        self.send_output_dict_signal(self.output_dict)
+
         # variable_vis_item = VariableVisualItem.VariableVisualItem()
         # variable_vis_item.addToGroupFromList(self.vis_items)
         # variable_info = dict()
 
-        if self.variable_type == 'path_array':
-            # dp_id = self.XY_source_ref.text()[self.XY_source_ref.text().find("'")+1:-3]
-            # dc_id = self._QTObj._qtProject._ElementManager.dp_id_to_dc_id[dp_id]
-            # print(self.XY_source_ref.text().replace(dp_id,dc_id))
-            # print(self.XY_target_ref.text().replace(dp_id,dc_id))
-            # print(self.XY_source_ref.text())
-            # print(self.XY_target_ref.text())
-            self.send_output_dict_signal.emit(self.output_dict)
-        else:
-            self.XY_base_text = self.XY_base.text()
-            self.x_offset_text = self.x_offset.text()
-            self.y_offset_text = self.y_offset.text()
-
-            if ',' in self.XY_base_text:
-                slicing = self.XY_base_text.find(',')
-                self.XY_base_text = [[float(self.XY_base_text[:slicing]), float(self.XY_base_text[slicing + 1:])]]
-
-            try:
-                self.x_offset_text = float(self.x_offset.text())
-            except:
-                pass
-
-            try:
-                self.y_offset_text = float(self.y_offset.text())
-            except:
-                pass
-
-            self.ui_list_c.extend([self.XY_base_text, self.x_offset_text, self.y_offset_text])
-
-            for i, key in enumerate(self.ui_list_a):
-                variable_info[key] = self.ui_list_c[i]
-            if self.variable_type == 'element array':
-                tmp_list = []
-                for i in range(len(self.elements_dict_for_LineEdit)):
-                    tmp_list.append(self.elements_dict_for_LineEdit[i].text())
-                variable_info['elements'] = tmp_list
-            variable_vis_item._DesignParametertype= self.variable_type
-            variable_vis_item.set_variable_info(variable_info)
-            self.send_variableVisual_signal.emit(variable_vis_item)
+        # if self.variable_type == 'path_array':
+        #     # dp_id = self.XY_source_ref.text()[self.XY_source_ref.text().find("'")+1:-3]
+        #     # dc_id = self._QTObj._qtProject._ElementManager.dp_id_to_dc_id[dp_id]
+        #     # print(self.XY_source_ref.text().replace(dp_id,dc_id))
+        #     # print(self.XY_target_ref.text().replace(dp_id,dc_id))
+        #     # print(self.XY_source_ref.text())
+        #     # print(self.XY_target_ref.text())
+        #     self.send_output_dict_signal.emit(self.output_dict)
+        # else:
+        #     self.XY_base_text = self.XY_base.text()
+        #     self.x_offset_text = self.x_offset.text()
+        #     self.y_offset_text = self.y_offset.text()
+        #
+        #     if ',' in self.XY_base_text:
+        #         slicing = self.XY_base_text.find(',')
+        #         self.XY_base_text = [[float(self.XY_base_text[:slicing]), float(self.XY_base_text[slicing + 1:])]]
+        #
+        #     try:
+        #         self.x_offset_text = float(self.x_offset.text())
+        #     except:
+        #         pass
+        #
+        #     try:
+        #         self.y_offset_text = float(self.y_offset.text())
+        #     except:
+        #         pass
+        #
+        #     self.ui_list_c.extend([self.XY_base_text, self.x_offset_text, self.y_offset_text])
+        #
+        #     for i, key in enumerate(self.ui_list_a):
+        #         variable_info[key] = self.ui_list_c[i]
+        #     if self.variable_type == 'element array':
+        #         tmp_list = []
+        #         for i in range(len(self.elements_dict_for_LineEdit)):
+        #             tmp_list.append(self.elements_dict_for_LineEdit[i].text())
+        #         variable_info['elements'] = tmp_list
+        #     variable_vis_item._DesignParametertype= self.variable_type
+        #     variable_vis_item.set_variable_info(variable_info)
+        #     self.send_variableVisual_signal.emit(variable_vis_item)
         self.destroy()
 
     def cancel_button_accepted(self):
