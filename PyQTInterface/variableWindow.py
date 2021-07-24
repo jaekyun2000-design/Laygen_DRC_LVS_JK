@@ -35,13 +35,13 @@ class VariableSetupWindow(QWidget):
 
     send_variableVisual_signal = pyqtSignal(VariableVisualItem.VariableVisualItem)
 
-    def __init__(self,variable_type,vis_items=None,variable_obj=None,test=None,ref_list=None):
+    def __init__(self,variable_type,vis_items=None,variable_obj=None,_QTObj=None,ref_list=None):
         super().__init__()
         self.setMinimumHeight(500)
         self.setFixedWidth(300)
         self.variable_type = variable_type
         self.vis_items= vis_items
-        self._QTObj = test
+        self._QTObj = _QTObj
         self.group_list = ref_list
         self.itemList = list()
         self.output_dict = dict()

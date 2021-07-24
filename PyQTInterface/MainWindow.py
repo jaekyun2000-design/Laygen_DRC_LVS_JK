@@ -568,7 +568,7 @@ class _MainWindow(QMainWindow):
         self.tmp_widget = QListWidget()
         self.tmp_widget.addItems([str(group) for group in groups_list])
         self.tmp_widget.currentRowChanged.connect(self.inspect_array_test)
-        self.vw = variableWindow.VariableSetupWindow(variable_type="c_array",vis_items=None,test=self._QTObj,ref_list=groups_list2)
+        self.vw = variableWindow.VariableSetupWindow(variable_type="c_array",vis_items=None,_QTObj=self._QTObj,ref_list=groups_list2)
         self.tmp_widget.itemDoubleClicked.connect(self.vw.getArray)
         self.tmp_widget.show()
         self.test_purpose_var = groups_list
