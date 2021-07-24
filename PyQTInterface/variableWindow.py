@@ -228,9 +228,9 @@ class VariableSetupWindow(QWidget):
             # self.addQLabel(strList)
             # self.addQLine(len(strList))
 
-    def getArray(self, test):
+    def getArray(self, array_list_item):
         self.deleteItemList.clear()
-        input_text = test.text()
+        input_text = array_list_item.text()
         name_flag = False
         source = ''
         target = ''
