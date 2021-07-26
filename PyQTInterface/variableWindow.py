@@ -29,22 +29,23 @@ class VariableSetupWindow(QWidget):
     send_BoundaryDesign_signal = pyqtSignal(dict)
     send_Destroy_signal = pyqtSignal(str)
     send_Warning_signal = pyqtSignal(str)
-    send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+    # send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+    send_DestroyTmpVisual_signal = pyqtSignal(str)
     send_output_dict_signal = pyqtSignal(dict)
 
 
     send_variableVisual_signal = pyqtSignal(VariableVisualItem.VariableVisualItem)
 
-    def __init__(self,variable_type,vis_items=None,variable_obj=None,test=None,ref_list=None):
+    def __init__(self,variable_type,vis_items=None,variable_obj=None,ref_list=None,):
         super().__init__()
         self.setMinimumHeight(500)
         self.setFixedWidth(300)
         self.variable_type = variable_type
         self.vis_items= vis_items
-        self._QTObj = test
         self.group_list = ref_list
         self.itemList = list()
         self.output_dict = dict()
+        self.relative_or_offset = 'relative'
         self.initUI()
 
         if variable_obj == None:
@@ -64,36 +65,317 @@ class VariableSetupWindow(QWidget):
             # self._DesignParameter = BoundaryElement._ItemTraits
             self.updateUI()
 
+    def button_image_change(self,checked):
+        sender = self.sender()
+        if checked:
+            sender.setIcon(QIcon(QPixmap('./image/ON.png')))
+            sender.setText("  Relative Expression  ")
+        else:
+            sender.setIcon(QIcon(QPixmap('./image/OFF.png')))
+            sender.setText("  Offset Expression  ")
 
     def initUI(self):
-        self.variable_type_widget = QLabel(self.variable_type)
+        self.layout_list = []
+        self.variable_type_widget = QComboBox()
+        self.variable_type_widget.addItems(['boundary_array', 'path_array', 'sref_array'])
+        self.variable_type_widget.setCurrentText(self.variable_type)
+        self.variable_type_widget.currentTextChanged.connect(self.typeChanged)
         # self.variable_type_widget.addItems(QLabel(self.variable_type))
         # self.variable_type_widget.currentIndexChanged.connect(self.updateUI)
         self.ui_list_a = []
         self.ui_list_b = []
         self.ui_list_c = []
+        self.relative_or_offset_button = QPushButton()
+        self.relative_or_offset_button.setIcon(QIcon(QPixmap('./image/ON.png')))
+        self.relative_or_offset_button.setIconSize(QSize(50,30))
+        self.relative_or_offset_button.setFlat(True)
+        self.relative_or_offset_button.setCheckable(True)
+        self.relative_or_offset_button.setChecked(True)
+        self.relative_or_offset_button.setAutoFillBackground(False)
+        self.relative_or_offset_button.toggled.connect(self.button_image_change)
+        self.relative_or_offset_button.toggled.connect(self.change_ui)
+        self.relative_or_offset_button.setText("  Relative Expression  ")
 
-        if self.variable_type == 'c_array':
-            self.output_dict['type'] = 'c_array'
+        self.ui_list_a_offset = ['_type', 'XY_ref', 'x_offset', 'y_offset']  # ,'Element1','Element2'])
+        self.XY_source_ref = QLineEdit()
+        self.x_offset = QLineEdit()
+        self.y_offset = QLineEdit()
+        hbox_xy = QHBoxLayout()
+        cal_for_source = QPushButton()
+        cal_for_source.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+        cal_for_source.clicked.connect(self.showSourceCal)
+        hbox_xy.addWidget(self.XY_source_ref)
+        hbox_xy.addWidget(cal_for_source)
+        self.ui_list_b_offset= [self.variable_type_widget, hbox_xy, self.x_offset, self.y_offset]
+
+        # self.relative_or_offset_button.setAutoDefault(False)
+
+        # if self.variable_type == 'path_array':
+        #     self.output_dict['type'] = 'path_array'
+        #     self.XY_source_ref = QLineEdit()
+        #     self.XY_source_ref.field_name = 'XY_source_ref'
+        #     self.XY_source_ref.textChanged.connect(self.update_output_dict)
+        #     self.XY_source_ref.setReadOnly(True)
+        #     self.width_combo = QComboBox()
+        #     self.width_combo.addItems(['Auto', 'Custom'])
+        #     self.width_combo.field_name = 'width'
+        #     self.width_combo.currentTextChanged.connect(self.getWidth)
+        #     self.width_combo.currentTextChanged.connect(self.update_output_dict)
+        #     self.width_input = QLineEdit()
+        #     self.width_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+        #     self.width_input.setReadOnly(True)
+        #     self.width_input.field_name = 'width'
+        #     self.width_input.textChanged.connect(self.update_output_dict)
+        #     self.XY_target_ref = QLineEdit()
+        #     self.XY_target_ref.field_name = 'XY_target_ref'
+        #     self.XY_target_ref.setReadOnly(True)
+        #     self.XY_target_ref.textChanged.connect(self.update_output_dict)
+        #
+        #     self.deleteItemList = QListWidget()
+        #
+        #     hbox1 = QHBoxLayout()
+        #     hbox2 = QHBoxLayout()
+        #     self.layout_list.extend([hbox1,hbox2])
+        #     cal_for_source = QPushButton()
+        #     cal_for_source.setIcon(QIcon(os.getcwd().replace("\\",'/') + "/Image/cal.png"))
+        #     cal_for_source.clicked.connect(self.showSourceCal)
+        #     cal_for_target = QPushButton()
+        #     cal_for_target.setIcon(QIcon(os.getcwd().replace("\\",'/') + "/Image/cal.png"))
+        #     cal_for_target.clicked.connect(self.showTargetCal)
+        #     hbox1.addWidget(self.XY_source_ref)
+        #     hbox1.addWidget(cal_for_source)
+        #     hbox2.addWidget(self.XY_target_ref)
+        #     hbox2.addWidget(cal_for_target)
+        #
+        #     self.rule = QComboBox()
+        #     self.rule.field_name = 'rule'
+        #     self.rule.addItems(['All', 'Even', 'Odd', 'Custom'])
+        #     self.rule.currentTextChanged.connect(self.getRule)
+        #     self.rule.currentTextChanged.connect(self.update_output_dict)
+        #
+        #     self.rule_input = QLineEdit()
+        #     self.rule_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+        #     self.rule_input.setReadOnly(True)
+        #     self.rule_input.field_name = 'rule'
+        #     self.rule_input.textChanged.connect(self.update_output_dict)
+        #
+        #     self.elements_dict_for_Label = []
+        #     self.elements_dict_for_LineEdit = []
+        #     # self.elements_dict_for_LineEdit.append(QLineEdit())
+        #     # self.elements_dict_for_LineEdit.append(QLineEdit())
+        #     self.ui_list_a.extend(['XY_source_ref', 'width', '', 'XY_target_ref', 'Rule', ''])  # ,'Element1','Element2'])
+        #     self.ui_list_b.extend([hbox1, self.width_combo, self.width_input, hbox2, self.rule, self.rule_input])
+        #     # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
+        # elif self.variable_type == 'boundary_array':
+        #     self.output_dict['type'] = 'boundary_array'
+        #     self.XY_source_ref = QLineEdit()
+        #     self.XY_source_ref.field_name = 'XY_source_ref'
+        #     self.XY_source_ref.textChanged.connect(self.update_output_dict)
+        #     self.XY_source_ref.setReadOnly(True)
+        #     self.width_combo = QComboBox()
+        #     self.width_combo.addItems(['Auto', 'Custom'])
+        #     self.width_combo.field_name = 'width'
+        #     self.width_combo.currentTextChanged.connect(self.getWidth)
+        #     self.width_combo.currentTextChanged.connect(self.update_output_dict)
+        #     self.width_input = QLineEdit()
+        #     self.width_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+        #     self.width_input.setReadOnly(True)
+        #     self.width_input.field_name = 'width'
+        #     self.width_input.textChanged.connect(self.update_output_dict)
+        #     self.length_combo = QComboBox()
+        #     self.length_combo.addItems(['Auto', 'Custom'])
+        #     self.length_combo.field_name = 'length'
+        #     self.length_combo.currentTextChanged.connect(self.getLength)
+        #     self.length_combo.currentTextChanged.connect(self.update_output_dict)
+        #     self.length_input = QLineEdit()
+        #     self.length_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+        #     self.length_input.setReadOnly(True)
+        #     self.length_input.field_name = 'length'
+        #     self.length_input.textChanged.connect(self.update_output_dict)
+        #
+        #     self.deleteItemList = QListWidget()
+        #
+        #     hbox1 = QHBoxLayout()
+        #     self.layout_list.append(hbox1)
+        #     cal_for_source = QPushButton()
+        #     cal_for_source.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+        #     cal_for_source.clicked.connect(self.showSourceCal)
+        #     hbox1.addWidget(self.XY_source_ref)
+        #     hbox1.addWidget(cal_for_source)
+        #
+        #     self.rule = QComboBox()
+        #     self.rule.field_name = 'rule'
+        #     self.rule.addItems(['All', 'Even', 'Odd', 'Custom'])
+        #     self.rule.currentTextChanged.connect(self.getRule)
+        #     self.rule.currentTextChanged.connect(self.update_output_dict)
+        #
+        #     self.rule_input = QLineEdit()
+        #     self.rule_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+        #     self.rule_input.setReadOnly(True)
+        #     self.rule_input.field_name = 'rule'
+        #     self.rule_input.textChanged.connect(self.update_output_dict)
+        #
+        #     self.elements_dict_for_Label = []
+        #     self.elements_dict_for_LineEdit = []
+        #     # self.elements_dict_for_LineEdit.append(QLineEdit())
+        #     # self.elements_dict_for_LineEdit.append(QLineEdit())
+        #     self.ui_list_a.extend(
+        #         ['XY_source_ref', 'width', '', 'length', '',  'Rule', ''])  # ,'Element1','Element2'])
+        #     self.ui_list_b.extend([hbox1, self.width_combo, self.width_input, self.length_combo, self.length_input, self.rule, self.rule_input])
+        #     # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
+        #
+        # elif self.variable_type == 'sref_array':
+        #     self.output_dict['type'] = 'sref_array'
+        #     self.XY_source_ref = QLineEdit()
+        #     self.XY_source_ref.field_name = 'XY_source_ref'
+        #     self.XY_source_ref.textChanged.connect(self.update_output_dict)
+        #     self.XY_source_ref.setReadOnly(True)
+        #
+        #     self.deleteItemList = QListWidget()
+        #
+        #     hbox1 = QHBoxLayout()
+        #     cal_for_source = QPushButton()
+        #     cal_for_source.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+        #     cal_for_source.clicked.connect(self.showSourceCal)
+        #     hbox1.addWidget(self.XY_source_ref)
+        #     hbox1.addWidget(cal_for_source)
+        #     self.layout_list.append(hbox1)
+        #
+        #     self.rule = QComboBox()
+        #     self.rule.field_name = 'rule'
+        #     self.rule.addItems(['All', 'Even', 'Odd', 'Custom'])
+        #     self.rule.currentTextChanged.connect(self.getRule)
+        #     self.rule.currentTextChanged.connect(self.update_output_dict)
+        #
+        #     self.rule_input = QLineEdit()
+        #     self.rule_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+        #     self.rule_input.setReadOnly(True)
+        #     self.rule_input.field_name = 'rule'
+        #     self.rule_input.textChanged.connect(self.update_output_dict)
+        #
+        #     self.elements_dict_for_Label = []
+        #     self.elements_dict_for_LineEdit = []
+        #     self.ui_list_a.extend(
+        #         ['XY_source_ref', 'Rule', ''])  # ,'Element1','Element2'])
+        #     self.ui_list_b.extend([hbox1, self.rule, self.rule_input])
+        #     # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
+        #
+        #
+        # elif self.variable_type == 'element array':
+        #     self.XY_base = QLineEdit()
+        #     self.x_offset = QLineEdit()
+        #     self.y_offset = QLineEdit()
+        #     self.elements_dict_for_Label=[]
+        #     self.elements_dict_for_LineEdit=[]
+        #     # self.elements_dict_for_LineEdit.append(QLineEdit())
+        #     # self.elements_dict_for_LineEdit.append(QLineEdit())
+        #     self.ui_list_a.extend(['XY','x_space_distance','y_space_distance'])#,'Element1','Element2'])
+        #     self.ui_list_b.extend([self.XY_base,self.x_offset,self.y_offset])
+        #     self.deleteItemList = QListWidget()
+        #     # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
+        self.create_ui_relative()
+        self.deleteItemList = QListWidget()
+
+        self.okButton = QPushButton("OK",self)
+        self.cancelButton = QPushButton("Cancel",self)
+
+        self.okButton.clicked.connect(self.on_buttonBox_accepted)
+        self.cancelButton.clicked.connect(self.cancel_button_accepted)
+
+        self.setupVboxColumn1 = QVBoxLayout()
+        self.setupVboxColumn2 = QVBoxLayout()
+        self.setupBox = QHBoxLayout()
+        self.layout_list.append(self.setupBox)
+
+        self.setupVboxColumn2.addWidget(self.variable_type_widget)
+
+        self.setupVboxColumn1.addWidget(QLabel("_type"))
+        tmp_list = []
+        for label in self.ui_list_a:
+            label_widget = QLabel(label)
+            self.setupVboxColumn1.addWidget(label_widget)
+            tmp_list.append(label_widget)
+        self.ui_list_a = tmp_list
+        for widget in self.ui_list_b:
+            try:
+                self.setupVboxColumn2.addWidget(widget)
+            except:
+                self.setupVboxColumn2.addLayout(widget)
+
+        self.setupBox.addLayout(self.setupVboxColumn1)
+        self.setupBox.addLayout(self.setupVboxColumn2)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(2)
+        hbox.addWidget(self.okButton)
+        hbox.addWidget(self.cancelButton)
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.relative_or_offset_button)
+        vbox.addStretch(1)
+        vbox.addLayout(self.setupBox)
+        # if self.variable_type == 'path_array':
+        vbox.addWidget(self.deleteItemList)
+        vbox.addStretch(3)
+        vbox.addLayout(hbox)
+        self.layout_list.extend([hbox,vbox])
+
+        self.setLayout(vbox)
+
+        self.setWindowTitle('Constarint Setup Window')
+        self.setGeometry(300,300,500,500)
+        self.updateUI()
+        if self.vis_items is not None:
+            self.show()
+
+    def update_ui(self):
+        tmp_list = []
+        for label in self.ui_list_a:
+            label_widget = QLabel(label)
+            self.setupVboxColumn1.addWidget(label_widget)
+            tmp_list.append(label_widget)
+        self.ui_list_a = tmp_list
+        for widget in self.ui_list_b:
+            try:
+                self.setupVboxColumn2.addWidget(widget)
+            except:
+                self.setupVboxColumn2.addLayout(widget)
+
+    def typeChanged(self, variable_type):
+        self.variable_type = variable_type
+        self.reset_ui()
+        self.create_ui_relative()
+        self.update_ui()
+
+    def create_ui_relative(self):
+        self.ui_list_a = []
+        self.ui_list_b = []
+        self.ui_list_c = []
+        if self.variable_type == 'path_array':
+            self.output_dict['type'] = 'path_array'
             self.XY_source_ref = QLineEdit()
             self.XY_source_ref.field_name = 'XY_source_ref'
+            self.XY_source_ref.textChanged.connect(self.update_output_dict)
             self.XY_source_ref.setReadOnly(True)
             self.width_combo = QComboBox()
             self.width_combo.addItems(['Auto', 'Custom'])
+            self.width_combo.field_name = 'width'
             self.width_combo.currentTextChanged.connect(self.getWidth)
+            self.width_combo.currentTextChanged.connect(self.update_output_dict)
             self.width_input = QLineEdit()
             self.width_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             self.width_input.setReadOnly(True)
-            # self.XY_source_ref.textChanged.connect(self.update_output_dict)
+            self.width_input.field_name = 'width'
+            self.width_input.textChanged.connect(self.update_output_dict)
             self.XY_target_ref = QLineEdit()
             self.XY_target_ref.field_name = 'XY_target_ref'
             self.XY_target_ref.setReadOnly(True)
-            # self.XY_target_ref.textChanged.connect(self.update_output_dict)
+            self.XY_target_ref.textChanged.connect(self.update_output_dict)
 
-            self.deleteItemList = QListWidget()
 
             hbox1 = QHBoxLayout()
             hbox2 = QHBoxLayout()
+            self.layout_list.extend([hbox1,hbox2])
             cal_for_source = QPushButton()
             cal_for_source.setIcon(QIcon(os.getcwd().replace("\\",'/') + "/Image/cal.png"))
             cal_for_source.clicked.connect(self.showSourceCal)
@@ -109,10 +391,13 @@ class VariableSetupWindow(QWidget):
             self.rule.field_name = 'rule'
             self.rule.addItems(['All', 'Even', 'Odd', 'Custom'])
             self.rule.currentTextChanged.connect(self.getRule)
+            self.rule.currentTextChanged.connect(self.update_output_dict)
 
             self.rule_input = QLineEdit()
             self.rule_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             self.rule_input.setReadOnly(True)
+            self.rule_input.field_name = 'rule'
+            self.rule_input.textChanged.connect(self.update_output_dict)
 
             self.elements_dict_for_Label = []
             self.elements_dict_for_LineEdit = []
@@ -121,6 +406,99 @@ class VariableSetupWindow(QWidget):
             self.ui_list_a.extend(['XY_source_ref', 'width', '', 'XY_target_ref', 'Rule', ''])  # ,'Element1','Element2'])
             self.ui_list_b.extend([hbox1, self.width_combo, self.width_input, hbox2, self.rule, self.rule_input])
             # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
+        elif self.variable_type == 'boundary_array':
+            self.output_dict['type'] = 'boundary_array'
+            self.XY_source_ref = QLineEdit()
+            self.XY_source_ref.field_name = 'XY_source_ref'
+            self.XY_source_ref.textChanged.connect(self.update_output_dict)
+            self.XY_source_ref.setReadOnly(True)
+            self.width_combo = QComboBox()
+            self.width_combo.addItems(['Auto', 'Custom'])
+            self.width_combo.field_name = 'width'
+            self.width_combo.currentTextChanged.connect(self.getWidth)
+            self.width_combo.currentTextChanged.connect(self.update_output_dict)
+            self.width_input = QLineEdit()
+            self.width_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            self.width_input.setReadOnly(True)
+            self.width_input.field_name = 'width'
+            self.width_input.textChanged.connect(self.update_output_dict)
+            self.length_combo = QComboBox()
+            self.length_combo.addItems(['Auto', 'Custom'])
+            self.length_combo.field_name = 'length'
+            self.length_combo.currentTextChanged.connect(self.getLength)
+            self.length_combo.currentTextChanged.connect(self.update_output_dict)
+            self.length_input = QLineEdit()
+            self.length_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            self.length_input.setReadOnly(True)
+            self.length_input.field_name = 'length'
+            self.length_input.textChanged.connect(self.update_output_dict)
+
+
+            hbox1 = QHBoxLayout()
+            self.layout_list.append(hbox1)
+            cal_for_source = QPushButton()
+            cal_for_source.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            cal_for_source.clicked.connect(self.showSourceCal)
+            hbox1.addWidget(self.XY_source_ref)
+            hbox1.addWidget(cal_for_source)
+
+            self.rule = QComboBox()
+            self.rule.field_name = 'rule'
+            self.rule.addItems(['All', 'Even', 'Odd', 'Custom'])
+            self.rule.currentTextChanged.connect(self.getRule)
+            self.rule.currentTextChanged.connect(self.update_output_dict)
+
+            self.rule_input = QLineEdit()
+            self.rule_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            self.rule_input.setReadOnly(True)
+            self.rule_input.field_name = 'rule'
+            self.rule_input.textChanged.connect(self.update_output_dict)
+
+            self.elements_dict_for_Label = []
+            self.elements_dict_for_LineEdit = []
+            # self.elements_dict_for_LineEdit.append(QLineEdit())
+            # self.elements_dict_for_LineEdit.append(QLineEdit())
+            self.ui_list_a.extend(
+                ['XY_source_ref', 'width', '', 'length', '',  'Rule', ''])  # ,'Element1','Element2'])
+            self.ui_list_b.extend([hbox1, self.width_combo, self.width_input, self.length_combo, self.length_input, self.rule, self.rule_input])
+            # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
+
+        elif self.variable_type == 'sref_array':
+            self.output_dict['type'] = 'sref_array'
+            self.XY_source_ref = QLineEdit()
+            self.XY_source_ref.field_name = 'XY_source_ref'
+            self.XY_source_ref.textChanged.connect(self.update_output_dict)
+            self.XY_source_ref.setReadOnly(True)
+
+
+            hbox1 = QHBoxLayout()
+            cal_for_source = QPushButton()
+            cal_for_source.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            cal_for_source.clicked.connect(self.showSourceCal)
+            hbox1.addWidget(self.XY_source_ref)
+            hbox1.addWidget(cal_for_source)
+            self.layout_list.append(hbox1)
+
+            self.rule = QComboBox()
+            self.rule.field_name = 'rule'
+            self.rule.addItems(['All', 'Even', 'Odd', 'Custom'])
+            self.rule.currentTextChanged.connect(self.getRule)
+            self.rule.currentTextChanged.connect(self.update_output_dict)
+
+            self.rule_input = QLineEdit()
+            self.rule_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            self.rule_input.setReadOnly(True)
+            self.rule_input.field_name = 'rule'
+            self.rule_input.textChanged.connect(self.update_output_dict)
+
+            self.elements_dict_for_Label = []
+            self.elements_dict_for_LineEdit = []
+            self.ui_list_a.extend(
+                ['XY_source_ref', 'Rule', ''])  # ,'Element1','Element2'])
+            self.ui_list_b.extend([hbox1, self.rule, self.rule_input])
+            # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
+
+
         elif self.variable_type == 'element array':
             self.XY_base = QLineEdit()
             self.x_offset = QLineEdit()
@@ -131,119 +509,268 @@ class VariableSetupWindow(QWidget):
             # self.elements_dict_for_LineEdit.append(QLineEdit())
             self.ui_list_a.extend(['XY','x_space_distance','y_space_distance'])#,'Element1','Element2'])
             self.ui_list_b.extend([self.XY_base,self.x_offset,self.y_offset])
+
             # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
 
-        okButton = QPushButton("OK",self)
-        cancelButton = QPushButton("Cancel",self)
 
-        okButton.clicked.connect(self.on_buttonBox_accepted)
-        cancelButton.clicked.connect(self.cancel_button_accepted)
 
-        self.setupVboxColumn1 = QVBoxLayout()
-        self.setupVboxColumn2 = QVBoxLayout()
-        setupBox = QHBoxLayout()
 
-        self.setupVboxColumn2.addWidget(self.variable_type_widget)
+    def create_ui_offset(self):
+        self.ui_list_a = []
+        self.ui_list_b = []
+        self.ui_list_c = []
 
-        self.setupVboxColumn1.addWidget(QLabel("_type"))
-        for label in self.ui_list_a:
-            self.setupVboxColumn1.addWidget(QLabel(label))
-        for widget in self.ui_list_b:
-            try:
-                self.setupVboxColumn2.addWidget(widget)
-            except:
-                self.setupVboxColumn2.addLayout(widget)
+        self.x_offset = QLineEdit()
+        self.y_offset = QLineEdit()
+        self.row_col = QHBoxLayout()
+        self.row = QLineEdit()
+        self.col = QLineEdit()
+        self.row_col.addWidget(self.row)
+        self.row_col.addWidget(self.col)
 
-        setupBox.addLayout(self.setupVboxColumn1)
-        setupBox.addLayout(self.setupVboxColumn2)
+        if self.variable_type == 'path_array':
+            self.output_dict['type'] = 'path_array'
+            self.XY_ref = QLineEdit()
+            self.XY_ref.field_name = 'XY_ref'
+            self.XY_ref.textChanged.connect(self.update_output_dict)
+            self.XY_ref.setReadOnly(True)
+            self.width_combo = QComboBox()
+            self.width_combo.addItems(['Auto', 'Custom'])
+            self.width_combo.field_name = 'width'
+            self.width_combo.currentTextChanged.connect(self.getWidth)
+            self.width_combo.currentTextChanged.connect(self.update_output_dict)
+            self.width_input = QLineEdit()
+            self.width_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            self.width_input.setReadOnly(True)
+            self.width_input.field_name = 'width'
+            self.width_input.textChanged.connect(self.update_output_dict)
 
-        hbox = QHBoxLayout()
-        hbox.addStretch(2)
-        hbox.addWidget(okButton)
-        hbox.addWidget(cancelButton)
 
-        vbox = QVBoxLayout()
-        vbox.addStretch(1)
-        vbox.addLayout(setupBox)
-        if self.variable_type == 'c_array':
-            vbox.addWidget(self.deleteItemList)
-        vbox.addStretch(3)
-        vbox.addLayout(hbox)
+            hbox1 = QHBoxLayout()
+            cal_for_source = QPushButton()
+            cal_for_source.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            cal_for_source.clicked.connect(self.showSourceCal)
+            hbox1.addWidget(self.XY_source_ref)
+            hbox1.addWidget(cal_for_source)
 
-        self.setLayout(vbox)
+            self.elements_dict_for_Label = []
+            self.elements_dict_for_LineEdit = []
 
-        self.setWindowTitle('Constarint Setup Window')
-        self.setGeometry(300,300,500,500)
-        self.updateUI()
-        if self.vis_items is not None:
-            self.show()
+            self.ui_list_a.extend(
+                ['XY_ref', 'width', '', 'x_offset', 'y_offset', 'row x col'])  # ,'Element1','Element2'])
+            self.ui_list_b.extend([hbox1, self.width_combo, self.width_input, self.x_offset, self.y_offset, self.row_col])
+            # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
+        elif self.variable_type == 'boundary_array':
+            self.output_dict['type'] = 'boundary_array'
+            self.XY_ref = QLineEdit()
+            self.XY_ref.field_name = 'XY_ref'
+            self.XY_ref.textChanged.connect(self.update_output_dict)
+            self.XY_ref.setReadOnly(True)
+            self.width_combo = QComboBox()
+            self.width_combo.addItems(['Auto', 'Custom'])
+            self.width_combo.field_name = 'width'
+            self.width_combo.currentTextChanged.connect(self.getWidth)
+            self.width_combo.currentTextChanged.connect(self.update_output_dict)
+            self.width_input = QLineEdit()
+            self.width_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            self.width_input.setReadOnly(True)
+            self.width_input.field_name = 'width'
+            self.width_input.textChanged.connect(self.update_output_dict)
+            self.length_combo = QComboBox()
+            self.length_combo.addItems(['Auto', 'Custom'])
+            self.length_combo.field_name = 'length'
+            self.length_combo.currentTextChanged.connect(self.getLength)
+            self.length_combo.currentTextChanged.connect(self.update_output_dict)
+            self.length_input = QLineEdit()
+            self.length_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            self.length_input.setReadOnly(True)
+            self.length_input.field_name = 'length'
+            self.length_input.textChanged.connect(self.update_output_dict)
+
+            hbox1 = QHBoxLayout()
+            self.layout_list.append(hbox1)
+            cal_for_source = QPushButton()
+            cal_for_source.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            cal_for_source.clicked.connect(self.showSourceCal)
+            hbox1.addWidget(self.XY_source_ref)
+            hbox1.addWidget(cal_for_source)
+
+
+            self.elements_dict_for_Label = []
+            self.elements_dict_for_LineEdit = []
+            # self.elements_dict_for_LineEdit.append(QLineEdit())
+            # self.elements_dict_for_LineEdit.append(QLineEdit())
+            self.ui_list_a.extend(
+                ['XY_ref', 'width', '', 'length', '', 'x_offset', 'y_offset', 'row x col'])  # ,'Element1','Element2'])
+            self.ui_list_b.extend(
+                [hbox1, self.width_combo, self.width_input, self.length_combo, self.length_input,
+                 self.x_offset, self.y_offset, self.row_col])
+            # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
+
+        elif self.variable_type == 'sref_array':
+            self.output_dict['type'] = 'sref_array'
+            self.XY_ref = QLineEdit()
+            self.XY_ref.field_name = 'XY_ref'
+            self.XY_ref.textChanged.connect(self.update_output_dict)
+            self.XY_ref.setReadOnly(True)
+
+            hbox1 = QHBoxLayout()
+            cal_for_source = QPushButton()
+            cal_for_source.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            cal_for_source.clicked.connect(self.showSourceCal)
+            hbox1.addWidget(self.XY_source_ref)
+            hbox1.addWidget(cal_for_source)
+            self.layout_list.append(hbox1)
+
+            self.elements_dict_for_Label = []
+            self.elements_dict_for_LineEdit = []
+            self.ui_list_a.extend(
+                ['XY_source_ref', 'x_offset', 'y_offset', 'row x col'])  # ,'Element1','Element2'])
+            self.ui_list_b.extend([hbox1, self.x_offset, self.y_offset, self.row_col])
+            # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
+
+
+        elif self.variable_type == 'element array':
+            self.XY_base = QLineEdit()
+            self.x_offset = QLineEdit()
+            self.y_offset = QLineEdit()
+            self.elements_dict_for_Label = []
+            self.elements_dict_for_LineEdit = []
+            # self.elements_dict_for_LineEdit.append(QLineEdit())
+            # self.elements_dict_for_LineEdit.append(QLineEdit())
+            self.ui_list_a.extend(['XY', 'x_space_distance', 'y_space_distance'])  # ,'Element1','Element2'])
+            self.ui_list_b.extend([self.XY_base, self.x_offset, self.y_offset])
+
+            # self.ui_list_b.extend(self.elements_dict_for_LineEdit)
+
+
+    def reset_ui(self):
+        while self.setupVboxColumn1.count() != 1:
+            # tmp = self.setupVboxColumn1.takeAt(1).widget()
+            tmp = self.setupVboxColumn1.takeAt(1)
+            if tmp.widget():
+                widget = tmp.widget()
+                widget.setParent(None)
+                del widget
+            # tmp = self.setupVboxColumn2.takeAt(1).widget()
+            tmp = self.setupVboxColumn2.takeAt(1)
+            if tmp.widget():
+                widget = tmp.widget()
+                widget.setParent(None)
+                del widget
+                # tmp.setParent(None)
+                # del tmp
+            else:
+                lay = tmp.layout()
+                while lay.count() != 0:
+                    tmp = lay.takeAt(0)
+                    if tmp.widget():
+                        widget = tmp.widget()
+                        widget.setParent(None)
+                        del widget
+        # # while layout_item.count() != 0:
+        # #     if layout_item.takeAt(0).widget()
+        # if layout_item:
+        #     sub_item = layout_item.takeAt(0)
+        #     if sub_item.layout():
+        #         sub_layout = sub_item.layout()
+        #         self.reset_ui(sub_layout)
+        #         sub_layout.setParent(None)
+        #         layout_item.removeItem(sub_layout)
+        #         del sub_layout
+        #     if sub_item.widget():
+        #         sub_widget = sub_item.widget()
+        #         sub_widget.setParent(None)
+        #         layout_item.removeWidget(sub_widget)
+        #         del sub_widget
+        #     layout_item.removeItem(sub_item)
+        #     del sub_item
+
+    def change_ui(self, _):
+        if self.relative_or_offset_button.isChecked():
+            self.reset_ui()
+            self.create_ui_relative()
+            self.update_ui()
+        else:
+            self.reset_ui()
+            self.create_ui_offset()
+            self.update_ui()
+
 
     def updateUI(self):
-        # while self.setupVboxColumn1.count() != 1:               # original typed content delete
-        #     tmp = self.setupVboxColumn1.takeAt(1).widget()
-        #     tmp.setParent(None)
-        #     del tmp
-        #     tmp = self.setupVboxColumn2.takeAt(1).widget()
-        #     tmp.setParent(None)
-        #     self.setupVboxColumn2.removeWidget(tmp)
-        #     del tmp
-        #
-        # currentClassName = self.variable_type_widget.currentText() # like: If, While, Number ,...
-        # tmpObj = self._ASTapi._createASTwithName(currentClassName)
-        # strList = list(tmpObj._fields)
-        # self.addQLabel(strList)
-        # self.addQLine(len(strList))
-        #
-        if self.variable_type_widget.text() == "c_array":
-            if self.vis_items is not None:
-                for i, vis_item in enumerate(self.vis_items):
-                    id = vis_item._id
-                    self.itemList.append(id)
-                    self.deleteItemList.addItem(id)
-                # self.elements_dict_for_Label.append(QLabel('Element '+str(i)))
-                # self.elements_dict_for_LineEdit.append(QLineEdit(id))
-                #
-                # self.setupVboxColumn1.addWidget(self.elements_dict_for_Label[-1])
-                # self.setupVboxColumn2.addWidget(self.elements_dict_for_LineEdit[-1])
-
-        elif self.variable_type_widget.text() == "element array":
+        #TODO
+        #아마 필요 없는 fcn 인듯, 나중에 확인하고 삭제
+        if self.vis_items is not None:
             for i, vis_item in enumerate(self.vis_items):
                 id = vis_item._id
-                self.elements_dict_for_Label.append(QLabel('Element '+str(i)))
-                self.elements_dict_for_LineEdit.append(QLineEdit(id))
-
-                self.setupVboxColumn1.addWidget(self.elements_dict_for_Label[-1])
-                self.setupVboxColumn2.addWidget(self.elements_dict_for_LineEdit[-1])
+                self.itemList.append(id)
+                self.deleteItemList.addItem(id)
 
 
-            # strList = ["_pyCode"]
-            # self.addQLabel(strList)
-            # self.addQLine(len(strList))
 
-    def getArray(self, test):
-        self.deleteItemList.clear()
-        input_text = test.text()
-        name_flag = False
-        source = ''
-        target = ''
-        _from = 0
-        _end = 0
-        for idx in range(len(input_text)):
-            if input_text[idx] == "'":
-                _end = idx
-                if name_flag:
-                    tmp_text = input_text[_from:_end]
-                    self.deleteItemList.addItem(tmp_text)
-                    for jdx in range(len(self.group_list)):
-                        if tmp_text == self.group_list[jdx][0]['_id']:
-                            source = 'center(' + str(self.group_list[jdx][1][0]) + ')'
-                            target = 'center(' + str(self.group_list[jdx][2][0]) + ')'
-                _from = idx+1
-                name_flag = not name_flag
+        legacy = False
+        if legacy:
+            if self.variable_type_widget.text() == "path_array":
+                if self.vis_items is not None:
+                    for i, vis_item in enumerate(self.vis_items):
+                        id = vis_item._id
+                        self.itemList.append(id)
+                        self.deleteItemList.addItem(id)
+                    # self.elements_dict_for_Label.append(QLabel('Element '+str(i)))
+                    # self.elements_dict_for_LineEdit.append(QLineEdit(id))
+                    #
+                    # self.setupVboxColumn1.addWidget(self.elements_dict_for_Label[-1])
+                    # self.setupVboxColumn2.addWidget(self.elements_dict_for_LineEdit[-1])
 
-        self.XY_source_ref.setText(source)
-        self.XY_target_ref.setText(target)
-        self.show()
+
+            elif self.variable_type_widget.text() == "element array":
+                if self.vis_items is not None:
+                    for i, vis_item in enumerate(self.vis_items):
+                        id = vis_item._id
+                        self.deleteItemList.addItem(id)
+                        # self.elements_dict_for_Label.append(QLabel('Element '+str(i)))
+                        # self.elements_dict_for_LineEdit.append(QLineEdit(id))
+                        #
+                        # self.setupVboxColumn1.addWidget(self.elements_dict_for_Label[-1])
+                        # self.setupVboxColumn2.addWidget(self.elements_dict_for_LineEdit[-1])
+
+
+                # strList = ["_pyCode"]
+                # self.addQLabel(strList)
+                # self.addQLine(len(strList))
+
+    def getArray(self, array_list_item):
+        if self.variable_type == 'path_array':
+            self.deleteItemList.clear()
+            input_text = array_list_item.text()
+            name_flag = False
+            source = ''
+            target = ''
+            _from = 0
+            _end = 0
+            for idx in range(len(input_text)):
+                if input_text[idx] == "'":
+                    _end = idx
+                    if name_flag:
+                        tmp_text = input_text[_from:_end]
+                        self.deleteItemList.addItem(tmp_text)
+                        for jdx in range(len(self.group_list)):
+                            if tmp_text == self.group_list[jdx][0]['_id']:
+                                source = 'center(' + str(self.group_list[jdx][1][0]) + ')'
+                                target = 'center(' + str(self.group_list[jdx][2][0]) + ')'
+                    _from = idx+1
+                    name_flag = not name_flag
+
+            self.XY_source_ref.setText(source)
+            self.XY_target_ref.setText(target)
+            self.show()
+        else:
+            self.deleteItemList.clear()
+            array_list = eval(array_list_item.text())
+            self.deleteItemList.addItems(array_list)
+            # self.variable_type = "element array"
+            # self.reset_ui(self.layout())
+            self.show()
 
     def getWidth(self, text):
         if text == 'Auto':
@@ -252,6 +779,14 @@ class VariableSetupWindow(QWidget):
         elif text == 'Custom':
             self.width_input.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
             self.width_input.setReadOnly(False)
+
+    def getLength(self, text):
+        if text == 'Auto':
+            self.length_input.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            self.length_input.setReadOnly(True)
+        elif text == 'Custom':
+            self.length_input.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
+            self.length_input.setReadOnly(False)
 
     def getRule(self, text):
         if text == 'Custom':
@@ -271,60 +806,73 @@ class VariableSetupWindow(QWidget):
     def addQLabel(self,strList):
         for str in strList:
             self.setupVboxColumn1.addWidget(QLabel(str))
+
     def addQLine(self,num):
         for i in range(0,num):
             self.setupVboxColumn2.addWidget(QLineEdit())
+
+    def update_output_dict(self, changed_text):
+        sender = self.sender()
+        key = sender.field_name
+        self.output_dict[key] = changed_text
+
     def on_buttonBox_accepted(self):
-        if self.XY_source_ref.text() == '' or self.XY_target_ref.text() == '':
-            self.warning = QMessageBox()
-            self.warning.setText("Incomplete")
-            self.warning.setIcon(QMessageBox.Warning)
-            self.warning.show()
-            return
+        if self.variable_type == 'path_array':
+            if self.XY_source_ref.text() == '' or self.XY_target_ref.text() == '':
+                self.warning = QMessageBox()
+                self.warning.setText("Incomplete")
+                self.warning.setIcon(QMessageBox.Warning)
+                self.warning.show()
+                return
 
-        variable_vis_item = VariableVisualItem.VariableVisualItem()
-        variable_vis_item.addToGroupFromList(self.vis_items)
-        variable_info = dict()
+        for idx in range(self.deleteItemList.count()):
+            _id = self.deleteItemList.item(idx).text()
+            self.send_DestroyTmpVisual_signal.emit(_id)
+        self.send_output_dict_signal.emit(self.output_dict)
 
-        if self.variable_type == 'c_array':
-            dp_id = self.XY_source_ref.text()[self.XY_source_ref.text().find("'")+1:-3]
-            dc_id = self._QTObj._qtProject._ElementManager.dp_id_to_dc_id[dp_id]
-            print(self.XY_source_ref.text().replace(dp_id,dc_id))
-            print(self.XY_target_ref.text().replace(dp_id,dc_id))
-            print(self.XY_source_ref.text())
-            print(self.XY_target_ref.text())
-            self.send_output_dict_signal.emit(self.output_dict)
-        else:
-            self.XY_base_text = self.XY_base.text()
-            self.x_offset_text = self.x_offset.text()
-            self.y_offset_text = self.y_offset.text()
+        # variable_vis_item = VariableVisualItem.VariableVisualItem()
+        # variable_vis_item.addToGroupFromList(self.vis_items)
+        # variable_info = dict()
 
-            if ',' in self.XY_base_text:
-                slicing = self.XY_base_text.find(',')
-                self.XY_base_text = [[float(self.XY_base_text[:slicing]), float(self.XY_base_text[slicing + 1:])]]
-
-            try:
-                self.x_offset_text = float(self.x_offset.text())
-            except:
-                pass
-
-            try:
-                self.y_offset_text = float(self.y_offset.text())
-            except:
-                pass
-
-            self.ui_list_c.extend([self.XY_base_text, self.x_offset_text, self.y_offset_text])
-
-            for i, key in enumerate(self.ui_list_a):
-                variable_info[key] = self.ui_list_c[i]
-            if self.variable_type == 'element array':
-                tmp_list = []
-                for i in range(len(self.elements_dict_for_LineEdit)):
-                    tmp_list.append(self.elements_dict_for_LineEdit[i].text())
-                variable_info['elements'] = tmp_list
-            variable_vis_item._DesignParametertype= self.variable_type
-            variable_vis_item.set_variable_info(variable_info)
-            self.send_variableVisual_signal.emit(variable_vis_item)
+        # if self.variable_type == 'path_array':
+        #     # dp_id = self.XY_source_ref.text()[self.XY_source_ref.text().find("'")+1:-3]
+        #     # dc_id = self._QTObj._qtProject._ElementManager.dp_id_to_dc_id[dp_id]
+        #     # print(self.XY_source_ref.text().replace(dp_id,dc_id))
+        #     # print(self.XY_target_ref.text().replace(dp_id,dc_id))
+        #     # print(self.XY_source_ref.text())
+        #     # print(self.XY_target_ref.text())
+        #     self.send_output_dict_signal.emit(self.output_dict)
+        # else:
+        #     self.XY_base_text = self.XY_base.text()
+        #     self.x_offset_text = self.x_offset.text()
+        #     self.y_offset_text = self.y_offset.text()
+        #
+        #     if ',' in self.XY_base_text:
+        #         slicing = self.XY_base_text.find(',')
+        #         self.XY_base_text = [[float(self.XY_base_text[:slicing]), float(self.XY_base_text[slicing + 1:])]]
+        #
+        #     try:
+        #         self.x_offset_text = float(self.x_offset.text())
+        #     except:
+        #         pass
+        #
+        #     try:
+        #         self.y_offset_text = float(self.y_offset.text())
+        #     except:
+        #         pass
+        #
+        #     self.ui_list_c.extend([self.XY_base_text, self.x_offset_text, self.y_offset_text])
+        #
+        #     for i, key in enumerate(self.ui_list_a):
+        #         variable_info[key] = self.ui_list_c[i]
+        #     if self.variable_type == 'element array':
+        #         tmp_list = []
+        #         for i in range(len(self.elements_dict_for_LineEdit)):
+        #             tmp_list.append(self.elements_dict_for_LineEdit[i].text())
+        #         variable_info['elements'] = tmp_list
+        #     variable_vis_item._DesignParametertype= self.variable_type
+        #     variable_vis_item.set_variable_info(variable_info)
+        #     self.send_variableVisual_signal.emit(variable_vis_item)
         self.destroy()
 
     def cancel_button_accepted(self):
@@ -372,11 +920,13 @@ class VariableSetupWindow(QWidget):
         self.cal.show()
 
     def exportedText(self, text, purpose):
-        if self.variable_type == 'c_array':
+        if self.variable_type == 'path_array':
             if purpose == 'source':
                 self.XY_source_ref.setText(text)
             elif purpose == 'target':
                 self.XY_target_ref.setText(text)
+        if self.variable_type == 'boundary_array':
+            self.XY_source_ref.setText(text)
 
         del self.cal
 

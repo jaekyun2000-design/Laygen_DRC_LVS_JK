@@ -558,26 +558,57 @@ class _MainWindow(QMainWindow):
 
     def inspect_array(self):
         cluster_model = topAPI.clustering.determinstic_clustering(_qtDesignParameters=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
-        cluster_model.layer_matching()
-        cluster_model.build_layer_ist_qt()
-        cluster_model.intersection_matching_path()
+        cluster_model.layer_matching()      #Find array group from here
+        cluster_model.build_layer_ist_qt()  #build layer by layer IST
+        test = cluster_model.intersection_matching_qt()
+        print(test)
+        # cluster_model.intersection_matching_path()
         # cluster_model.sref_matching()
         cluster_model.delete_solo_element_group()
         groups_list = cluster_model.get_array_groups()
-        groups_list2 = cluster_model.get_routing_groups()
-        self.tmp_widget = QListWidget()
-        self.tmp_widget.addItems([str(group) for group in groups_list])
-        self.tmp_widget.currentRowChanged.connect(self.inspect_array_test)
-        self.vw = variableWindow.VariableSetupWindow(variable_type="c_array",vis_items=None,test=self._QTObj,ref_list=groups_list2)
-        self.tmp_widget.itemDoubleClicked.connect(self.vw.getArray)
-        self.tmp_widget.show()
+        test2 = cluster_model.find_ref_for_path_qt(groups_list[1])
+        self.connection_ref = cluster_model.get_routing_groups()
+        self.array_list_widget = QListWidget()
+        self.array_list_widget.addItems([str(group) for group in groups_list])
+        self.array_list_widget.currentRowChanged.connect(self.visualize_inspect_array)
+        # self.vw = variableWindow.VariableSetupWindow(variable_type="path_array",vis_items=None,
+        #                                              _DP=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
+        #                                              ,ref_list=self.connection_ref)
+        # self.array_list_widget.itemDoubleClicked.connect(self.vw.getArray)
+        self.array_list_widget.itemDoubleClicked.connect(self.show_inspect_array_widget)
+        self.array_list_widget.show()
         self.test_purpose_var = groups_list
         self.log = []
         for group in groups_list:
             print(f'array candidate group: {group}')
         print('debug')
 
-    def inspect_array_test(self, row):
+    def show_inspect_array_widget(self, array_list_item):
+        print(array_list_item.text())
+        print(self.connection_ref)
+
+        array_list = eval(array_list_item.text())
+        if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
+            self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array", vis_items=None,
+                                                         ref_list=self.connection_ref)
+            self.vw.send_output_dict_signal.connect(self.create_variable)
+            self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
+            self.vw.getArray(array_list_item)
+        elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
+            self.vw = variableWindow.VariableSetupWindow(variable_type="path_array", vis_items=None,
+                                                         ref_list=self.connection_ref)
+            self.vw.send_output_dict_signal.connect(self.create_variable)
+            self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
+            self.vw.getArray(array_list_item)
+        else:
+            self.vw = variableWindow.VariableSetupWindow(variable_type="sref_array", vis_items=None,
+                                                         ref_list=self.connection_ref)
+            self.vw.getArray(array_list_item)
+
+
+
+
+    def visualize_inspect_array(self, row):
         for id in self.log:
             self.visualItemDict[id].setSelected(False)
         for id in self.test_purpose_var[row]:
@@ -1607,14 +1638,18 @@ class _MainWindow(QMainWindow):
             return
 
         selected_vis_items = self.scene.selectedItems()
-        self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items,test=self._QTObj)
+        self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items)
         # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
         self.vw.send_output_dict_signal.connect(self.create_variable)
+        self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
         self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
 
     def create_variable(self, variable_info_dict):
-        if variable_info_dict['type'] == 'c_array':
+        if variable_info_dict['type'] == 'path_array':
+            test_ast = variable_ast.PathArray()
+            xy_ref_ast = variable_ast.XYCoordinate()
+            xy_target_ast = variable_ast.XYCoordinate()
             variable_info_dict
             print(1)
 
@@ -2647,7 +2682,15 @@ class _CustomView(QGraphicsView):
         menu.addAction(variable_create_connect)
         menu.addAction(visual_ungroup)
 
-        constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('c_array'))
+        if self.scene().selectedItems():
+            if self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 1:
+               constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('boundary_array'))
+            elif self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 2:
+               constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('path_array'))
+            elif self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 3:
+               constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('sref_array'))
+        else:
+            constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('boundary_array'))
         inspect_path_connection.triggered.connect(lambda tmp: self.variable_emit('auto_path'))
         variable_create_array.triggered.connect(lambda tmp: self.variable_emit('array'))
         variable_create_distance.triggered.connect(lambda tmp: self.variable_emit('distance'))
@@ -2659,8 +2702,12 @@ class _CustomView(QGraphicsView):
         menu.exec(event.globalPos())
 
     def variable_emit(self, type):
-        if type == 'c_array':
-            self.variable_signal.emit('c_array')
+        if type == 'boundary_array':
+            self.variable_signal.emit('boundary_array')
+        elif type == 'path_array':
+            self.variable_signal.emit('path_array')
+        elif type == 'sref_array':
+            self.variable_signal.emit('sref_array')
         if type == 'auto_path':
             self.variable_signal.emit('auto_path')
         elif type == 'array':

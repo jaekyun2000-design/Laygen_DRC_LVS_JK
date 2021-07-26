@@ -61,7 +61,7 @@ class GeometricField:
     def qt_design_parameter_projection(self, qt_dp, structure_hierarchy=[], reflect=tf_matrix.reflect_off, angle=tf_matrix.rotate_0, base_xy = [0,0]):
         dp = qt_dp._DesignParameter
         if dp['_DesignParametertype'] == 1:
-            for xy_pair in dp['_XYCoordinates']:
+            for idx , xy_pair in enumerate(dp['_XYCoordinates']):
                 five_point_xy = self.stick_diagram.CenterCoordinateAndWidth2XYCoordinate(xy_pair,dp['_XWidth'],dp['_YWidth'])
                 # transformed_five_point_xy = [base_xy+angle.dot(reflect).dot(xy) for xy in five_point_xy]
                 transformed_five_point_xy = [base_xy+reflect.dot(angle).dot(xy) for xy in five_point_xy]
@@ -71,23 +71,36 @@ class GeometricField:
                 else:
                     dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_ordered]
                 # dp['_XYCoordinatesProjection'] = transformed_five_point_xy_ordered
-                dp['_Hierarchy'] = structure_hierarchy
+                if '_Hierarchy' in dp:
+                    dp['_Hierarchy'].append(copy.deepcopy(structure_hierarchy))
+                    dp['_Hierarchy'][-1][-1] += f'[{idx}]'
+                else:
+                    dp['_Hierarchy'] = copy.deepcopy([structure_hierarchy])
+                    dp['_Hierarchy'][-1][-1] += f'[{idx}]'
+
                 # return base_xy + angle.dot(reflect).dot(xy_pair)
 
         elif dp['_DesignParametertype'] == 3:
             # structure_hierarchy.append(dp['_ElementName'])
-            base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][0])
-            sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect)
-            sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle)
-            # base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][0])
-            # sub_reflect = reflect.dot(convert_reflect_to_matrix(dp['_Reflect']))
-            # sub_angle = angle.dot(convert_angle_to_matrix(dp['_Angle']))
-            for name, sub_qt_dp in dp['_ModelStructure'].items():
-                sub_dp = sub_qt_dp._DesignParameter
-                if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 3:
-                    structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
-                    structure_hierarchy_tmp.append(name)
-                    self.qt_design_parameter_projection(sub_qt_dp,structure_hierarchy=structure_hierarchy_tmp, reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
+            ############ 이 부분에서 idx 처리 해야함! #####################
+            for sref_idx in range(len(dp['_XYCoordinates'])):
+                base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][sref_idx])
+                sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect)
+                sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle)
+                # base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][0])
+                # sub_reflect = reflect.dot(convert_reflect_to_matrix(dp['_Reflect']))
+                # sub_angle = angle.dot(convert_angle_to_matrix(dp['_Angle']))
+                for name, sub_qt_dp in dp['_ModelStructure'].items():
+                    sub_dp = sub_qt_dp._DesignParameter
+                    if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 3:
+                        if dp['_id'] == 'INV27':
+                            print('debug')
+                            if name == '_COLayer':
+                                print('debug')
+                        structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
+                        structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
+                        structure_hierarchy_tmp.append(name)
+                        self.qt_design_parameter_projection(sub_qt_dp,structure_hierarchy=structure_hierarchy_tmp, reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
 
 
 
@@ -100,7 +113,7 @@ class GeometricField:
     def design_parameter_projection(self, dp, structure_hierarchy=[], reflect=tf_matrix.reflect_off, angle=tf_matrix.rotate_0, base_xy = [0,0]):
         # for _, dp in _DesignParameter.items():
         if dp['_DesignParametertype'] == 1:
-            for xy_pair in dp['_XYCoordinates']:
+            for idx, xy_pair in enumerate(dp['_XYCoordinates']):
                 five_point_xy = self.stick_diagram.CenterCoordinateAndWidth2XYCoordinate(xy_pair,dp['_XWidth'],dp['_YWidth'])
                 # transformed_five_point_xy = [base_xy+angle.dot(reflect).dot(xy) for xy in five_point_xy]
                 transformed_five_point_xy = [base_xy+reflect.dot(angle).dot(xy) for xy in five_point_xy]
@@ -110,22 +123,29 @@ class GeometricField:
                 else:
                     dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_ordered]
                 # dp['_XYCoordinatesProjection'] = transformed_five_point_xy_ordered
-                dp['_Hierarchy'] = structure_hierarchy
+                if '_Hierarchy' in dp:
+                    dp['_Hierarchy'].append(copy.deepcopy(structure_hierarchy))
+                    dp['_Hierarchy'][-1][-1] += f'[{idx}]'
+                else:
+                    dp['_Hierarchy'] = copy.deepcopy([structure_hierarchy])
+                    dp['_Hierarchy'][-1][-1] += f'[{idx}]'
                 # return base_xy + angle.dot(reflect).dot(xy_pair)
 
         elif dp['_DesignParametertype'] == 3:
             # structure_hierarchy.append(dp['_ElementName'])
-            base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][0])
-            sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect)
-            sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle)
-            # base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][0])
-            # sub_reflect = reflect.dot(convert_reflect_to_matrix(dp['_Reflect']))
-            # sub_angle = angle.dot(convert_angle_to_matrix(dp['_Angle']))
-            for name, sub_dp in dp['_DesignObj']._DesignParameter.items():
-                if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 3:
-                    structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
-                    structure_hierarchy_tmp.append(name)
-                    self.design_parameter_projection(sub_dp,structure_hierarchy=structure_hierarchy_tmp, reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
+            for sref_idx in len(0, dp['_XYCoordinates']):
+                base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][sref_idx])
+                sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect)
+                sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle)
+                # base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][0])
+                # sub_reflect = reflect.dot(convert_reflect_to_matrix(dp['_Reflect']))
+                # sub_angle = angle.dot(convert_angle_to_matrix(dp['_Angle']))
+                for name, sub_dp in dp['_DesignObj']._DesignParameter.items():
+                    if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 3:
+                        structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
+                        structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
+                        structure_hierarchy_tmp.append(name)
+                        self.design_parameter_projection(sub_dp,structure_hierarchy=structure_hierarchy_tmp, reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
 
     def draw_by_projection_xy(self, _DesignParameter):
         fig, ax = plt.subplots()
@@ -230,10 +250,16 @@ class GeometricField:
         return intersected_dp_hierarchy_names
 
     def search_intersection(self, dp):
-        if dp['_Layer'] not in self.interval_tree_by_layer:
-            return None
+        # if dp['_DesignParametertype'] == 3:
+        #     x_min = dp['_XYCoordinates'][0][0]
+        #     x_max = x_min +1
+        #     y_min = dp['_XYCoordinates'][0][1]
+        #     y_max = y_min + 1
+        # elif dp['_Layer'] not in self.interval_tree_by_layer:
+        #     return None
+        #
         if dp['_DesignParametertype'] == 1:
-            xy_points = dp['_XYCoordinatesProjection']
+            xy_points = dp['_XYCoordinatesProjection'][0]
             x_min, x_max, y_min, y_max = min([xy[0] for xy in xy_points]), max([xy[0] for xy in xy_points]), min([xy[1] for xy in xy_points]), max([xy[1] for xy in xy_points])
         elif dp['_DesignParametertype'] == 2:
             #TODO
@@ -244,6 +270,21 @@ class GeometricField:
             x_min, x_max, y_min, y_max = dp['_XYCoordinates'][0][0][0]-dp['_Width'], dp['_XYCoordinates'][0][0][0]+dp['_Width'], \
                                          min(dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1]),\
                                          max(dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1])
+        elif dp['_DesignParametertype'] == 3:
+            x_min = dp['_XYCoordinates'][0][0]
+            x_max = x_min
+            y_min = dp['_XYCoordinates'][0][1]
+            y_max = y_min
+            vertical_tree = IST(direction='vertical')
+            for layer_interval_tree in self.interval_tree_by_layer.values():
+                for x_intersection_dp in sorted(layer_interval_tree[x_min:x_max+1]):
+                    vertical_tree.add_boundary_node(boundary_dp=x_intersection_dp.data[0], idx=x_intersection_dp.data[1])
+            intersected_node = sorted(vertical_tree[y_min:y_max + 1])
+            del vertical_tree
+            intersected_dp_hierarchy_names = [[node.data[0]['_Hierarchy'][node.data[1]], node.data[1]] for node in
+                                              intersected_node]
+            intersected_dp_hierarchy_names.insert(0, dp)
+            return intersected_dp_hierarchy_names
 
         vertical_tree = IST(direction='vertical')
         for x_intersection_dp in sorted(self.interval_tree_by_layer[dp['_Layer']][x_min:x_max+1]):
@@ -252,7 +293,7 @@ class GeometricField:
         intersected_node = sorted(vertical_tree[y_min:y_max+1])
         del vertical_tree
 
-        intersected_dp_hierarchy_names = [ [node.data[0]['_Hierarchy'], node.data[1]] for node in intersected_node ]
+        intersected_dp_hierarchy_names = [ [node.data[0]['_Hierarchy'][node.data[1]], node.data[1]] for node in intersected_node ]
         intersected_dp_hierarchy_names.insert(0,dp)
 
 

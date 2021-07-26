@@ -52,6 +52,27 @@ class ArgumentVariable(GeneratorVariable):
     _fields = (
         'name',      # str
     )
+
+class PathArray(GeneratorVariable):
+    """
+        PathArray class:
+        Array declaration for path
+        encoded python code will be expressed w/ a loop
+        """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+
+    _fields = (
+        'name',
+        'XY_source_ref',
+        'XY_target_ref',
+        'width',
+        'layer',
+        'index',
+    )
+
+
 class ElementArray(GeneratorVariable):
     """
     ElementArray class:

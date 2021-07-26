@@ -21,6 +21,7 @@ class clustering():
         self.array_groups = []
         self.routing_groups = []
         self.geo_searching = routing_geo_searching.GeometricField()
+        self.intersection_matching_dict_by_name = dict()
         if '_Name' in self._DesignParameter:
             del self._DesignParameter['_Name']
         if '_GDSFile' in self._DesignParameter:
@@ -58,6 +59,49 @@ class clustering():
         for idx in reversed(delete_index_list):
             del self.routing_groups[idx]
 
+    def find_ref_for_path_qt(self,id_list):
+        qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
+        x_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0][0] for qt_dp in qt_dp_list]
+        y_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0][1] for qt_dp in qt_dp_list]
+        x_list.sort()
+        y_list.sort()
+        x_offset = int(x_list[1] - x_list[0])
+        y_offset = int(y_list[1] - y_list[0])
+        if x_offset == 0:
+            col = 1
+            row = len(y_list)
+        else:
+            col = len(x_list)
+            row = 1
+        connection_layer_list = []
+        for id in id_list:
+            # print(self.intersection_matching_dict_by_name[id][0])
+            # tmp = [intersection_info[0] for intersection_info in self.intersection_matching_dict_by_name[id]]
+            connection_layer_list.extend([intersection_info[0] for intersection_info in self.intersection_matching_dict_by_name[id]])
+            # connection_layer_list.extend(self.intersection_matching_dict_by_name[id])
+        # connection_layer_list.extend([self.intersection_matching_dict_by_name[id] for id in id_list])
+        set1 = set(map(tuple,connection_layer_list))
+        connection_top_name = [connection_hierarchy[0] for connection_hierarchy in connection_layer_list]
+        set2 = set(connection_top_name)
+
+        count_list = []
+        for set1_ele in set1:
+            count_list.append(connection_layer_list.count(list(set1_ele)))
+        max_idx = count_list.index(max(count_list))
+        target_reference = list(list(set1)[max_idx])
+
+        count_list = []
+        for set2_ele in set2:
+            count_list.append(connection_top_name.count(set2_ele))
+        max_idx = count_list.index(max(count_list))
+        top_cell_name = list(set2)[max_idx]
+        hierarchy_idx = connection_top_name.index(top_cell_name)
+        source_reference = connection_layer_list[hierarchy_idx]
+
+        cutting_idx = source_reference[-1].find('[')
+        source_reference[-1] = source_reference[-1][:cutting_idx]
+
+        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, source_reference=source_reference, target_reference=target_reference)
 
 
     def get_array_groups(self):
@@ -226,11 +270,47 @@ class determinstic_clustering(clustering):
         y = self._DesignParameter[sref1_name]['_XYCoordinates'][0][1] == self._DesignParameter[sref2_name]['_XYCoordinates'][0][1]
         return  x+y
 
+    def intersection_matching_qt(self):
+        intersection_matching_dict_by_name = dict()
+
+        for key, qt_dp in self._qtDesignParameters.items():
+            dp = qt_dp._DesignParameter
+            # if dp['_DesignParametertype'] == 2 or dp['_DesignParametertype'] == 1:
+            intersection_info = self.geo_searching.search_intersection(dp)
+            self.routing_groups.append(intersection_info)
+            intersection_matching_dict_by_name[intersection_info[0]['_id']] = intersection_info[1:]
+            # if intersection_matching_dict_by_name[intersection_info[0]['_id']]:
+            #     intersection_matching_dict_by_name[intersection_info[0]['_id']].pop(0)
+            # self.routing_groups.append(self.geo_searching.search_intersection(dp))
+        self.intersection_matching_dict_by_name = intersection_matching_dict_by_name
+        return intersection_matching_dict_by_name
+        # return self.routing_groups
+
+    def intersection_matching(self):
+        for key, dp in self._DesignParameter.items():
+            self.routing_groups.append(self.geo_searching.search_intersection(dp))
+
+        return self.routing_groups
+
+
     def intersection_matching_path(self):
+        path_routing_group = []
         for key, dp in self._DesignParameter.items():
             if dp['_DesignParametertype'] == 2:
-                self.routing_groups.append(self.geo_searching.search_intersection(dp))
-        return self.routing_groups
+                path_routing_group.append(self.geo_searching.search_intersection(dp))
+        self.routing_groups.extend(path_routing_group)
+                # self.routing_groups.append(self.geo_searching.search_intersection(dp))
+
+        return path_routing_group
+
+    def intersection_matching_boundary(self):
+        boundary_reference_group = []
+        for key, dp in self._DesignParameter.items():
+            if dp['_DesignParametertype'] == 1:
+                boundary_reference_group.append(self.geo_searching.search_intersection(dp))
+                # self.routing_groups.append(self.geo_searching.search_intersection(dp))
+        self.routing_groups.extend(boundary_reference_group)
+        return boundary_reference_group
 
 
 # file = './smaple.csv'
