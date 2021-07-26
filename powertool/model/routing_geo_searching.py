@@ -246,10 +246,16 @@ class GeometricField:
         return intersected_dp_hierarchy_names
 
     def search_intersection(self, dp):
-        if dp['_Layer'] not in self.interval_tree_by_layer:
-            return None
+        # if dp['_DesignParametertype'] == 3:
+        #     x_min = dp['_XYCoordinates'][0][0]
+        #     x_max = x_min +1
+        #     y_min = dp['_XYCoordinates'][0][1]
+        #     y_max = y_min + 1
+        # elif dp['_Layer'] not in self.interval_tree_by_layer:
+        #     return None
+        #
         if dp['_DesignParametertype'] == 1:
-            xy_points = dp['_XYCoordinatesProjection']
+            xy_points = dp['_XYCoordinatesProjection'][0]
             x_min, x_max, y_min, y_max = min([xy[0] for xy in xy_points]), max([xy[0] for xy in xy_points]), min([xy[1] for xy in xy_points]), max([xy[1] for xy in xy_points])
         elif dp['_DesignParametertype'] == 2:
             #TODO
@@ -260,6 +266,21 @@ class GeometricField:
             x_min, x_max, y_min, y_max = dp['_XYCoordinates'][0][0][0]-dp['_Width'], dp['_XYCoordinates'][0][0][0]+dp['_Width'], \
                                          min(dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1]),\
                                          max(dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1])
+        elif dp['_DesignParametertype'] == 3:
+            x_min = dp['_XYCoordinates'][0][0]
+            x_max = x_min
+            y_min = dp['_XYCoordinates'][0][1]
+            y_max = y_min
+            vertical_tree = IST(direction='vertical')
+            for layer_interval_tree in self.interval_tree_by_layer.values():
+                for x_intersection_dp in sorted(layer_interval_tree[x_min:x_max+1]):
+                    vertical_tree.add_boundary_node(boundary_dp=x_intersection_dp.data[0], idx=x_intersection_dp.data[1])
+            intersected_node = sorted(vertical_tree[y_min:y_max + 1])
+            del vertical_tree
+            intersected_dp_hierarchy_names = [[node.data[0]['_Hierarchy'][node.data[1]], node.data[1]] for node in
+                                              intersected_node]
+            intersected_dp_hierarchy_names.insert(0, dp)
+            return intersected_dp_hierarchy_names
 
         vertical_tree = IST(direction='vertical')
         for x_intersection_dp in sorted(self.interval_tree_by_layer[dp['_Layer']][x_min:x_max+1]):

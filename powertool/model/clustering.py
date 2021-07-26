@@ -226,11 +226,46 @@ class determinstic_clustering(clustering):
         y = self._DesignParameter[sref1_name]['_XYCoordinates'][0][1] == self._DesignParameter[sref2_name]['_XYCoordinates'][0][1]
         return  x+y
 
+    def intersection_matching_qt(self):
+        intersection_matching_dict_by_name = dict()
+
+        for key, qt_dp in self._qtDesignParameters.items():
+            dp = qt_dp._DesignParameter
+            # if dp['_DesignParametertype'] == 2 or dp['_DesignParametertype'] == 1:
+            intersection_info = self.geo_searching.search_intersection(dp)
+            self.routing_groups.append(intersection_info)
+            intersection_matching_dict_by_name[intersection_info[0]['_id']] = intersection_info[1:]
+            if intersection_matching_dict_by_name[intersection_info[0]['_id']]:
+                intersection_matching_dict_by_name[intersection_info[0]['_id']].pop(0)
+            # self.routing_groups.append(self.geo_searching.search_intersection(dp))
+        return intersection_matching_dict_by_name
+        # return self.routing_groups
+
+    def intersection_matching(self):
+        for key, dp in self._DesignParameter.items():
+            self.routing_groups.append(self.geo_searching.search_intersection(dp))
+
+        return self.routing_groups
+
+
     def intersection_matching_path(self):
+        path_routing_group = []
         for key, dp in self._DesignParameter.items():
             if dp['_DesignParametertype'] == 2:
-                self.routing_groups.append(self.geo_searching.search_intersection(dp))
-        return self.routing_groups
+                path_routing_group.append(self.geo_searching.search_intersection(dp))
+        self.routing_groups.extend(path_routing_group)
+                # self.routing_groups.append(self.geo_searching.search_intersection(dp))
+
+        return path_routing_group
+
+    def intersection_matching_boundary(self):
+        boundary_reference_group = []
+        for key, dp in self._DesignParameter.items():
+            if dp['_DesignParametertype'] == 1:
+                boundary_reference_group.append(self.geo_searching.search_intersection(dp))
+                # self.routing_groups.append(self.geo_searching.search_intersection(dp))
+        self.routing_groups.extend(boundary_reference_group)
+        return boundary_reference_group
 
 
 # file = './smaple.csv'
