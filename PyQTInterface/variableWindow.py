@@ -29,7 +29,8 @@ class VariableSetupWindow(QWidget):
     send_BoundaryDesign_signal = pyqtSignal(dict)
     send_Destroy_signal = pyqtSignal(str)
     send_Warning_signal = pyqtSignal(str)
-    send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+    # send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+    send_DestroyTmpVisual_signal = pyqtSignal(str)
     send_output_dict_signal = pyqtSignal(dict)
 
 
@@ -816,6 +817,11 @@ class VariableSetupWindow(QWidget):
                 self.warning.show()
                 return
 
+            for idx in range(self.deleteItemList.count()):
+                _id = self.deleteItemList.item(idx).text()
+                # print(_id)
+                self._DesignParameter[_id]
+                self.send_DestroyTmpVisual_signal.emit(_id)
         self.send_output_dict_signal.emit(self.output_dict)
 
         # variable_vis_item = VariableVisualItem.VariableVisualItem()

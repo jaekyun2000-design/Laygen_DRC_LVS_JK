@@ -591,6 +591,7 @@ class _MainWindow(QMainWindow):
                                                              self._CurrentModuleName]
                                                          , ref_list=self.connection_ref)
             self.vw.send_output_dict_signal.connect(self.create_variable)
+            self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.getArray(array_list_item)
         elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
             self.vw = variableWindow.VariableSetupWindow(variable_type="path_array", vis_items=None,
@@ -598,6 +599,7 @@ class _MainWindow(QMainWindow):
                                                              self._CurrentModuleName]
                                                          , ref_list=self.connection_ref)
             self.vw.send_output_dict_signal.connect(self.create_variable)
+            self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.getArray(array_list_item)
         else:
             self.vw = variableWindow.VariableSetupWindow(variable_type="sref_array", vis_items=None,
@@ -1642,6 +1644,7 @@ class _MainWindow(QMainWindow):
         self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items,_DP=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
         # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
         self.vw.send_output_dict_signal.connect(self.create_variable)
+        self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
         self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
 
