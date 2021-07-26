@@ -827,8 +827,6 @@ class VariableSetupWindow(QWidget):
 
         for idx in range(self.deleteItemList.count()):
             _id = self.deleteItemList.item(idx).text()
-            # print(_id)
-            self._DesignParameter[_id]
             self.send_DestroyTmpVisual_signal.emit(_id)
         self.send_output_dict_signal.emit(self.output_dict)
 
