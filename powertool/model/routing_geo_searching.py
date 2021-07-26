@@ -72,8 +72,8 @@ class GeometricField:
                     dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_ordered]
                 # dp['_XYCoordinatesProjection'] = transformed_five_point_xy_ordered
                 if '_Hierarchy' in dp:
-                    dp['_Hierarchy'].append(copy.deepcopy([structure_hierarchy]))
-                    dp['_Hierarchy'][-1][-1][-1] += f'[{idx}]'
+                    dp['_Hierarchy'].append(copy.deepcopy(structure_hierarchy))
+                    dp['_Hierarchy'][-1][-1] += f'[{idx}]'
                 else:
                     dp['_Hierarchy'] = copy.deepcopy([structure_hierarchy])
                     dp['_Hierarchy'][-1][-1] += f'[{idx}]'
@@ -93,6 +93,10 @@ class GeometricField:
                 for name, sub_qt_dp in dp['_ModelStructure'].items():
                     sub_dp = sub_qt_dp._DesignParameter
                     if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 3:
+                        if dp['_id'] == 'INV27':
+                            print('debug')
+                            if name == '_COLayer':
+                                print('debug')
                         structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
                         structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
                         structure_hierarchy_tmp.append(name)
@@ -120,8 +124,8 @@ class GeometricField:
                     dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_ordered]
                 # dp['_XYCoordinatesProjection'] = transformed_five_point_xy_ordered
                 if '_Hierarchy' in dp:
-                    dp['_Hierarchy'].append(copy.deepcopy([structure_hierarchy]))
-                    dp['_Hierarchy'][-1][-1][-1] += f'[{idx}]'
+                    dp['_Hierarchy'].append(copy.deepcopy(structure_hierarchy))
+                    dp['_Hierarchy'][-1][-1] += f'[{idx}]'
                 else:
                     dp['_Hierarchy'] = copy.deepcopy([structure_hierarchy])
                     dp['_Hierarchy'][-1][-1] += f'[{idx}]'
