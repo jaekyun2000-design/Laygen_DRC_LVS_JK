@@ -816,7 +816,7 @@ class VariableSetupWindow(QWidget):
                 self.warning.show()
                 return
 
-        self.send_output_dict_signal(self.output_dict)
+        self.send_output_dict_signal.emit(self.output_dict)
 
         # variable_vis_item = VariableVisualItem.VariableVisualItem()
         # variable_vis_item.addToGroupFromList(self.vis_items)
@@ -913,6 +913,8 @@ class VariableSetupWindow(QWidget):
                 self.XY_source_ref.setText(text)
             elif purpose == 'target':
                 self.XY_target_ref.setText(text)
+        if self.variable_type == 'boundary_array':
+            self.XY_source_ref.setText(text)
 
         del self.cal
 
