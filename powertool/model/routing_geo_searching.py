@@ -73,7 +73,7 @@ class GeometricField:
                 # dp['_XYCoordinatesProjection'] = transformed_five_point_xy_ordered
                 if '_Hierarchy' in dp:
                     dp['_Hierarchy'].append(copy.deepcopy([structure_hierarchy]))
-                    dp['_Hierarchy'][-1][-1] += f'[{idx}]'
+                    dp['_Hierarchy'][-1][-1][-1] += f'[{idx}]'
                 else:
                     dp['_Hierarchy'] = copy.deepcopy([structure_hierarchy])
                     dp['_Hierarchy'][-1][-1] += f'[{idx}]'
@@ -121,7 +121,7 @@ class GeometricField:
                 # dp['_XYCoordinatesProjection'] = transformed_five_point_xy_ordered
                 if '_Hierarchy' in dp:
                     dp['_Hierarchy'].append(copy.deepcopy([structure_hierarchy]))
-                    dp['_Hierarchy'][-1][-1] += f'[{idx}]'
+                    dp['_Hierarchy'][-1][-1][-1] += f'[{idx}]'
                 else:
                     dp['_Hierarchy'] = copy.deepcopy([structure_hierarchy])
                     dp['_Hierarchy'][-1][-1] += f'[{idx}]'
