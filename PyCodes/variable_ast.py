@@ -288,45 +288,31 @@ class IrregularTransformer(ast.NodeTransformer):
         elif function == 'he':
             function = 'height'
 
-        tmp_string = re.sub('\(|\'|\)',"", expression)
+        tmp_string = re.sub('\(|\'|\)', "", expression)
         tmp_string = tmp_string[len(function):]
         operands = re.split(',', tmp_string)
-        tmp_list = []
-        code = 'self.'                  # Code Always Starts with 'self.' string
+
+        code = 'self.'  # Code Always Starts with 'self.' string
         offsets = []
+        offset_indices = []
         layer_with_index = operands[-1]
-        objects_with_index = operands[0: len(operands)-1]
+        layer_index = re.findall('\[.\]', layer_with_index)[0]
+        layer = layer_with_index[:-len(layer_index)]
+        objects = operands[0: len(operands) - 1]
+        for i in range(len(objects)):  # append code from the start
+            offset_indices.append(re.findall('\[.\]', objects[i])[0])
+            object = objects[i][:-len(offset_indices[i])]
+            code = code + f"_DesignParameter['{object}']['_DesignObj']."
+            offsets.append(code[:-15] + '[\'_XYCoordinates\']')
 
-        for i in range(len(objects_with_index)):
-            index = re.findall('\[.\]',objects_with_index[i])[0]
-            object = objects_with_index[i][:-len(index)]
-            if i == 0:
-                tmp_list.append(code + f"_DesignParameter['{object}']['_DesignObj'].")
-            else:
-                tmp_list.append(tmp_list[i-1] + f"_DesignParameter['{object}']['_DesignObj'].")
+        code = code + f"_DesignParameter['{layer}']"
 
-            offsets.append(tmp_list[i][:-15] + f'[\'_XYCoordinates\']{index}')
-
-        index = re.findall('\[.\]',layer_with_index)[0]
-        layer = layer_with_index[:-len(index)]
-
-        for j in range(len(offsets)):
-            code = code + '+' + offsets[j]
-
-        # Offset Code : 1-dimensional list
-        # Relative Layer Code : 1-dimensional list
-
-        offset_code = code[6:]
-        relative_layer_coordinate = tmp_list[-1] + f"_DesignParameter['{layer}'][\'_XYCoordinates\']{index}"
-        code = f"({offset_code} + {relative_layer_coordinate})"
-
-
-        offset_x = code + '[0]'
-        offset_y = code + '[1]'
-
-        # for i in range(len(offsets)):
-        #     offset_x += offsets[i] + '[0][0]'
-        #     offset_y += offsets[i] + '[0][1]'
+        offset_x = ''
+        offset_y = ''
+        offset_xy = None
+        for i in range(len(offsets)):
+            offset_x += offsets[i] + f'{offset_indices[i]}[0]'
+            offset_y += offsets[i] + f'{offset_indices[i]}[1]'
 
         if function == 'width':
             result = code + '[\'_XWidth\']'
@@ -335,40 +321,40 @@ class IrregularTransformer(ast.NodeTransformer):
 
         if XYFlag == 'X':
             if function == 'lt' or function == 'left' or function == 'lb':
-                result = offset_x + '+' + f"{code}['_XYCoordinates'][0][0] - {code}['_XWidth']/2"
+                result = offset_x + '+' + f"{code}['_XYCoordinates']{layer_index}[0] - {code}['_XWidth']/2"
             elif function == 'top' or function == 'bottom' or function == 'center':
-                result = offset_x + '+' + f"{code}['_XYCoordinates'][0][0]"
+                result = offset_x + '+' + f"{code}['_XYCoordinates']{layer_index}[0]"
             elif function == 'rt' or function == 'right' or function == 'rb':
-                result = offset_x + '+' + f"{code}['_XYCoordinates'][0][0] + {code}['_XWidth']/2"
+                result = offset_x + '+' + f"{code}['_XYCoordinates']{layer_index}[0] + {code}['_XWidth']/2"
             else:   # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag} for Debugging")
         elif XYFlag == 'Y':
             if function == 'lt' or function == 'rt' or function == 'top':
-                result = offset_y + '+' + f"{code}['_XYCoordinates'][0][1] + {code}['_YWidth']/2"
+                result = offset_y + '+' + f"{code}['_XYCoordinates']{layer_index}[1] + {code}['_YWidth']/2"
             elif function == function == 'left' or function == 'right' or function == 'center':
-                result = offset_y + '+' + f"{code}['_XYCoordinates'][0][1]"
+                result = offset_y + '+' + f"{code}['_XYCoordinates']{layer_index}[1]"
             elif function == function == 'lb' or function == 'rb' or function == 'bottom':
-                result = offset_y + '+' + f"{code}['_XYCoordinates'][0][1] - {code}['_YWidth']/2"
+                result = offset_y + '+' + f"{code}['_XYCoordinates']{layer_index}[1] - {code}['_YWidth']/2"
             else:   # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag} for Debugging")
                 pass
         elif XYFlag == 'XY':
         # X Input first
             if function == 'lt' or function == 'left' or function == 'lb':
-                result = offset_x + '+' + f"{code}['_XYCoordinates'][0][0] - {code}['_XWidth']/2"
+                result = offset_x + '+' + f"{code}['_XYCoordinates']{layer_index}[0] - {code}['_XWidth']/2"
             elif function == function == 'top' or function == 'bottom' or function == 'center':
-                result = offset_x + '+' + f"{code}['_XYCoordinates'][0][0]"
+                result = offset_x + '+' + f"{code}['_XYCoordinates']{layer_index}[0]"
             elif function == 'rt' or function == 'right' or function == 'rb':
-                result = offset_x + '+' + f"{code}['_XYCoordinates'][0][0] + {code}['_XWidth']/2"
+                result = offset_x + '+' + f"{code}['_XYCoordinates']{layer_index}[0] + {code}['_XWidth']/2"
             else:   # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag}_X for Debugging")
         # Y input afterwards
             if function == 'lt' or function == 'rt' or function == 'top':
-                result = result + f", {offset_y} + {code}['_XYCoordinates'][0][1] + {code}['_YWidth']/2"
+                result = result + f", {offset_y} + {code}['_XYCoordinates']{layer_index}[1] + {code}['_YWidth']/2"
             elif function == 'left' or function == 'right' or function == 'center':
-                result = result + f", {offset_y} + {code}['_XYCoordinates'][0][1]"
+                result = result + f", {offset_y} + {code}['_XYCoordinates']{layer_index}[1]"
             elif function == 'lb' or function == 'rb' or function == 'bottom':
-                result = result + f", {offset_y} + {code}['_XYCoordinates'][0][1] - {code}['_YWidth']/2"
+                result = result + f", {offset_y} + {code}['_XYCoordinates']{layer_index}[1] - {code}['_YWidth']/2"
             else:  # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag}_Y for Debugging")
             if (function != 'width') & (function != 'height'):
