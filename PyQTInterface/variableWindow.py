@@ -36,13 +36,12 @@ class VariableSetupWindow(QWidget):
 
     send_variableVisual_signal = pyqtSignal(VariableVisualItem.VariableVisualItem)
 
-    def __init__(self,variable_type,vis_items=None,variable_obj=None,_DP=None,ref_list=None,):
+    def __init__(self,variable_type,vis_items=None,variable_obj=None,ref_list=None,):
         super().__init__()
         self.setMinimumHeight(500)
         self.setFixedWidth(300)
         self.variable_type = variable_type
         self.vis_items= vis_items
-        self._DesignParameter = _DP
         self.group_list = ref_list
         self.itemList = list()
         self.output_dict = dict()
@@ -77,7 +76,10 @@ class VariableSetupWindow(QWidget):
 
     def initUI(self):
         self.layout_list = []
-        self.variable_type_widget = QLabel(self.variable_type)
+        self.variable_type_widget = QComboBox()
+        self.variable_type_widget.addItems(['boundary_array', 'path_array', 'sref_array'])
+        self.variable_type_widget.setCurrentText(self.variable_type)
+        self.variable_type_widget.currentTextChanged.connect(self.typeChanged)
         # self.variable_type_widget.addItems(QLabel(self.variable_type))
         # self.variable_type_widget.currentIndexChanged.connect(self.updateUI)
         self.ui_list_a = []
@@ -338,6 +340,12 @@ class VariableSetupWindow(QWidget):
                 self.setupVboxColumn2.addWidget(widget)
             except:
                 self.setupVboxColumn2.addLayout(widget)
+
+    def typeChanged(self, variable_type):
+        self.variable_type = variable_type
+        self.reset_ui()
+        self.create_ui_relative()
+        self.update_ui()
 
     def create_ui_relative(self):
         self.ui_list_a = []
@@ -817,11 +825,11 @@ class VariableSetupWindow(QWidget):
                 self.warning.show()
                 return
 
-            for idx in range(self.deleteItemList.count()):
-                _id = self.deleteItemList.item(idx).text()
-                # print(_id)
-                self._DesignParameter[_id]
-                self.send_DestroyTmpVisual_signal.emit(_id)
+        for idx in range(self.deleteItemList.count()):
+            _id = self.deleteItemList.item(idx).text()
+            # print(_id)
+            self._DesignParameter[_id]
+            self.send_DestroyTmpVisual_signal.emit(_id)
         self.send_output_dict_signal.emit(self.output_dict)
 
         # variable_vis_item = VariableVisualItem.VariableVisualItem()
