@@ -587,25 +587,19 @@ class _MainWindow(QMainWindow):
         array_list = eval(array_list_item.text())
         if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
             self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array", vis_items=None,
-                                                         _DP=self._QTObj._qtProject._DesignParameter[
-                                                             self._CurrentModuleName]
-                                                         , ref_list=self.connection_ref)
+                                                         ref_list=self.connection_ref)
             self.vw.send_output_dict_signal.connect(self.create_variable)
             self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.getArray(array_list_item)
         elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
             self.vw = variableWindow.VariableSetupWindow(variable_type="path_array", vis_items=None,
-                                                         _DP=self._QTObj._qtProject._DesignParameter[
-                                                             self._CurrentModuleName]
-                                                         , ref_list=self.connection_ref)
+                                                         ref_list=self.connection_ref)
             self.vw.send_output_dict_signal.connect(self.create_variable)
             self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.getArray(array_list_item)
         else:
             self.vw = variableWindow.VariableSetupWindow(variable_type="sref_array", vis_items=None,
-                                                         _DP=self._QTObj._qtProject._DesignParameter[
-                                                             self._CurrentModuleName]
-                                                         , ref_list=self.connection_ref)
+                                                         ref_list=self.connection_ref)
             self.vw.getArray(array_list_item)
 
 
@@ -1641,7 +1635,7 @@ class _MainWindow(QMainWindow):
             return
 
         selected_vis_items = self.scene.selectedItems()
-        self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items,_DP=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items)
         # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
         self.vw.send_output_dict_signal.connect(self.create_variable)
         self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
@@ -2685,7 +2679,15 @@ class _CustomView(QGraphicsView):
         menu.addAction(variable_create_connect)
         menu.addAction(visual_ungroup)
 
-        constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('path_array'))
+        if self.scene().selectedItems():
+            if self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 1:
+               constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('boundary_array'))
+            elif self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 2:
+               constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('path_array'))
+            elif self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 3:
+               constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('sref_array'))
+        else:
+            constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('boundary_array'))
         inspect_path_connection.triggered.connect(lambda tmp: self.variable_emit('auto_path'))
         variable_create_array.triggered.connect(lambda tmp: self.variable_emit('array'))
         variable_create_distance.triggered.connect(lambda tmp: self.variable_emit('distance'))
@@ -2697,8 +2699,12 @@ class _CustomView(QGraphicsView):
         menu.exec(event.globalPos())
 
     def variable_emit(self, type):
-        if type == 'path_array':
+        if type == 'boundary_array':
+            self.variable_signal.emit('boundary_array')
+        elif type == 'path_array':
             self.variable_signal.emit('path_array')
+        elif type == 'sref_array':
+            self.variable_signal.emit('sref_array')
         if type == 'auto_path':
             self.variable_signal.emit('auto_path')
         elif type == 'array':
