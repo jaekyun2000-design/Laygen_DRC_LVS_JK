@@ -61,7 +61,7 @@ class GeometricField:
     def qt_design_parameter_projection(self, qt_dp, structure_hierarchy=[], reflect=tf_matrix.reflect_off, angle=tf_matrix.rotate_0, base_xy = [0,0]):
         dp = qt_dp._DesignParameter
         if dp['_DesignParametertype'] == 1:
-            for xy_pair in dp['_XYCoordinates']:
+            for idx , xy_pair in enumerate(dp['_XYCoordinates']):
                 five_point_xy = self.stick_diagram.CenterCoordinateAndWidth2XYCoordinate(xy_pair,dp['_XWidth'],dp['_YWidth'])
                 # transformed_five_point_xy = [base_xy+angle.dot(reflect).dot(xy) for xy in five_point_xy]
                 transformed_five_point_xy = [base_xy+reflect.dot(angle).dot(xy) for xy in five_point_xy]
@@ -72,9 +72,12 @@ class GeometricField:
                     dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_ordered]
                 # dp['_XYCoordinatesProjection'] = transformed_five_point_xy_ordered
                 if '_Hierarchy' in dp:
-                    dp['_Hierarchy'].append([structure_hierarchy])
+                    dp['_Hierarchy'].append(copy.deepcopy([structure_hierarchy]))
+                    dp['_Hierarchy'][-1][-1] += f'[{idx}]'
                 else:
-                    dp['_Hierarchy'] = [structure_hierarchy]
+                    dp['_Hierarchy'] = copy.deepcopy([structure_hierarchy])
+                    dp['_Hierarchy'][-1][-1] += f'[{idx}]'
+
                 # return base_xy + angle.dot(reflect).dot(xy_pair)
 
         elif dp['_DesignParametertype'] == 3:
@@ -106,7 +109,7 @@ class GeometricField:
     def design_parameter_projection(self, dp, structure_hierarchy=[], reflect=tf_matrix.reflect_off, angle=tf_matrix.rotate_0, base_xy = [0,0]):
         # for _, dp in _DesignParameter.items():
         if dp['_DesignParametertype'] == 1:
-            for xy_pair in dp['_XYCoordinates']:
+            for idx, xy_pair in enumerate(dp['_XYCoordinates']):
                 five_point_xy = self.stick_diagram.CenterCoordinateAndWidth2XYCoordinate(xy_pair,dp['_XWidth'],dp['_YWidth'])
                 # transformed_five_point_xy = [base_xy+angle.dot(reflect).dot(xy) for xy in five_point_xy]
                 transformed_five_point_xy = [base_xy+reflect.dot(angle).dot(xy) for xy in five_point_xy]
@@ -117,9 +120,11 @@ class GeometricField:
                     dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_ordered]
                 # dp['_XYCoordinatesProjection'] = transformed_five_point_xy_ordered
                 if '_Hierarchy' in dp:
-                    dp['_Hierarchy'].append([structure_hierarchy])
+                    dp['_Hierarchy'].append(copy.deepcopy([structure_hierarchy]))
+                    dp['_Hierarchy'][-1][-1] += f'[{idx}]'
                 else:
-                    dp['_Hierarchy'] = [structure_hierarchy]
+                    dp['_Hierarchy'] = copy.deepcopy([structure_hierarchy])
+                    dp['_Hierarchy'][-1][-1] += f'[{idx}]'
                 # return base_xy + angle.dot(reflect).dot(xy_pair)
 
         elif dp['_DesignParametertype'] == 3:
