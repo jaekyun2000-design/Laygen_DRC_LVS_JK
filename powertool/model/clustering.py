@@ -59,6 +59,18 @@ class clustering():
         for idx in reversed(delete_index_list):
             del self.routing_groups[idx]
 
+    def find_ref(self, array_group):
+        ref_list = []
+        for id_list in array_group:
+            if self._qtDesignParameters[id_list[0]]._type == 1:
+                ref_list.append(self.find_ref_for_boundary_qt(id_list))
+            elif self._qtDesignParameters[id_list[0]]._type == 2:
+                ref_list.append(self.find_ref_for_path_qt(id_list))
+            elif self._qtDesignParameters[id_list[0]]._type == 3:
+                ref_list.append(self.find_ref_for_sref_qt(id_list))
+        return ref_list
+
+
     def find_ref_for_path_qt(self,id_list):
         qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
         x_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0][0] for qt_dp in qt_dp_list]
