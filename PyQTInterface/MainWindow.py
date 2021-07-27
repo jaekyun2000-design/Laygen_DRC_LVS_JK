@@ -594,20 +594,23 @@ class _MainWindow(QMainWindow):
 
         array_list = eval(array_list_item.text())
         if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
+            print('boundary')
             self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array", vis_items=None,
-                                                         ref_list=self.connection_ref)
+                                                         ref_list=self.connection_ref, inspect_array_window_address=self.array_list_widget)
             self.vw.send_output_dict_signal.connect(self.create_variable)
             self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.getArray(array_list_item)
         elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
+            print('path')
             self.vw = variableWindow.VariableSetupWindow(variable_type="path_array", vis_items=None,
-                                                         ref_list=self.connection_ref)
+                                                         ref_list=self.connection_ref, inspect_array_window_address=self.array_list_widget)
             self.vw.send_output_dict_signal.connect(self.create_variable)
             self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.getArray(array_list_item)
         else:
+            print('sref')
             self.vw = variableWindow.VariableSetupWindow(variable_type="sref_array", vis_items=None,
-                                                         ref_list=self.connection_ref)
+                                                         ref_list=self.connection_ref, inspect_array_window_address=self.array_list_widget)
             self.vw.getArray(array_list_item)
 
 
@@ -1655,8 +1658,8 @@ class _MainWindow(QMainWindow):
             test_ast = variable_ast.PathArray()
             xy_ref_ast = variable_ast.XYCoordinate()
             xy_target_ast = variable_ast.XYCoordinate()
-            variable_info_dict
-            print(1)
+            # variable_info_dict
+        print(variable_info_dict)
 
     def createVariableVisual(self, variableVisualItem):
         design_dict = self._QTObj._qtProject._feed_design(design_type='parameter', module_name= self._CurrentModuleName, dp_dict= variableVisualItem.__dict__)
@@ -1722,13 +1725,14 @@ class _MainWindow(QMainWindow):
         :return: None
 
         """
-        dp_module = dp_id[:-1]
-        while not dp_module in self._QTObj._qtProject._DesignParameter:
-            dp_module = dp_module[:-1]
+        # dp_module = dp_id[:-1]
+        # while not dp_module in self._QTObj._qtProject._DesignParameter:
+        #     dp_module = dp_module[:-1]
+        dp_module = self._CurrentModuleName
 
         dc_id = self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id)
 
-        deletionItems = self.scene.selectedItems()      # Delete Visual Item
+        deletionItems = [self.visualItemDict[dp_id]]     # Delete Visual Item
         for deleteItem in deletionItems:
             self.scene.removeItem(deleteItem)
 
