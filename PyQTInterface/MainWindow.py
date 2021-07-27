@@ -595,19 +595,19 @@ class _MainWindow(QMainWindow):
         array_list = eval(array_list_item.text())
         if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
             self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array", vis_items=None,
-                                                         ref_list=self.connection_ref)
+                                                         ref_list=self.connection_ref, inspect_array_window_address=self.array_list_widget)
             self.vw.send_output_dict_signal.connect(self.create_variable)
             self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.getArray(array_list_item)
         elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
             self.vw = variableWindow.VariableSetupWindow(variable_type="path_array", vis_items=None,
-                                                         ref_list=self.connection_ref)
+                                                         ref_list=self.connection_ref, inspect_array_window_address=self.array_list_widget)
             self.vw.send_output_dict_signal.connect(self.create_variable)
             self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.getArray(array_list_item)
         else:
             self.vw = variableWindow.VariableSetupWindow(variable_type="sref_array", vis_items=None,
-                                                         ref_list=self.connection_ref)
+                                                         ref_list=self.connection_ref, inspect_array_window_address=self.array_list_widget)
             self.vw.getArray(array_list_item)
 
 
@@ -1653,12 +1653,6 @@ class _MainWindow(QMainWindow):
     def create_variable(self, variable_info_dict):
         self.createDummyConstraint(type_for_dc = 'Array', info_dict= variable_info_dict)
 
-        # if variable_info_dict['type'] == 'path_array':
-        #     test_ast = variable_ast.PathArray()
-        #     xy_ref_ast = variable_ast.XYCoordinate()
-        #     xy_target_ast = variable_ast.XYCoordinate()
-        #     variable_info_dict
-        #     print(1)
 
     def createVariableVisual(self, variableVisualItem):
         design_dict = self._QTObj._qtProject._feed_design(design_type='parameter', module_name= self._CurrentModuleName, dp_dict= variableVisualItem.__dict__)
@@ -1724,13 +1718,14 @@ class _MainWindow(QMainWindow):
         :return: None
 
         """
-        dp_module = dp_id[:-1]
-        while not dp_module in self._QTObj._qtProject._DesignParameter:
-            dp_module = dp_module[:-1]
+        # dp_module = dp_id[:-1]
+        # while not dp_module in self._QTObj._qtProject._DesignParameter:
+        #     dp_module = dp_module[:-1]
+        dp_module = self._CurrentModuleName
 
         dc_id = self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id)
 
-        deletionItems = self.scene.selectedItems()      # Delete Visual Item
+        deletionItems = [self.visualItemDict[dp_id]]     # Delete Visual Item
         for deleteItem in deletionItems:
             self.scene.removeItem(deleteItem)
 
@@ -2074,10 +2069,10 @@ class _MainWindow(QMainWindow):
                 design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
                                                                   module_name=self._CurrentModuleName, _ast=_ASTobj)
 
-            else:
+            elif type_for_dc == 'PathXY':
                 try:
                     print("###############################################################")
-                    print(f"                  {type_for_dc} ast creation Start                    ")
+                    print("                  PathXY ast creation Start                    ")
                     print("###############################################################")
                     _ASTForVariable = ASTmodule._Custom_AST_API()
                     _ASTtype = type_for_dc
@@ -2088,13 +2083,8 @@ class _MainWindow(QMainWindow):
 
                     _ASTobj.id = _newConstraintID
                     _ASTobj._id = _newConstraintID
-                    _ASTobj._type = type_for_dc
-                    if type_for_dc == 'LogicExpression':
-                        self._DummyConstraints.ExpressionDict[_newConstraintID] = info_dict
-                    elif type_for_dc == 'Array':
-                        self._DummyConstraints.ArrayDict[_newConstraintID] = info_dict
-                    elif type_for_dc == 'PathXY':
-                        self._DummyConstraints.XYPathDict[_newConstraintID] = info_dict
+                    _ASTobj._type = 'PathXY'
+                    self._DummyConstraints.XYPathDict[_newConstraintID] = info_dict
                     self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
                     design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
                                                                       module_name=self._CurrentModuleName, _ast=_ASTobj)
@@ -2103,61 +2093,46 @@ class _MainWindow(QMainWindow):
                                                                      _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
                     print("###############################################################")
-                    print(f"                  {type_for_dc} ast creation Done                    ")
+                    print("                   PathXY ast creation Done                    ")
                     print("###############################################################")
                 except:
                     print("###############################################################")
-                    print(f"                   {type_for_dc} ast creation Failed                  ")
+                    print("                   PathXY ast creation Failed                  ")
                     print("###############################################################")
-            # elif type_for_dc
-            #     try:
-            #         print("###############################################################")
-            #         print("             LogicExpression ast creation Start                ")
-            #         print("###############################################################")
-            #         _ASTForVariable = ASTmodule._Custom_AST_API()
-            #         _ASTtype = type_for_dc
-            #         _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
-            #
-            #         _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(self._CurrentModuleName)
-            #         _newConstraintID = (self._CurrentModuleName + str(_designConstraintID))
-            #
-            #         _ASTobj.id = _newConstraintID
-            #         _ASTobj._type = 'LogicExpression'
-            #         self._DummyConstraints.ExpressionDict[_newConstraintID] = info_dict
-            #         self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
-            #         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
-            #                                                           module_name=self._CurrentModuleName, _ast=_ASTobj)
-            #         self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
-            #                                                          _parentName=self._CurrentModuleName,
-            #                                                          _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-            #
-            #         print("###############################################################")
-            #         print("              LogicExpression ast creation Done                ")
-            #         print("###############################################################")
-            #     except:
-            #         print("###############################################################")
-            #         print("              LogicExpression ast creation Failed              ")
-            #         print("###############################################################")
-            # elif type_for_dc == 'Array':
-            #     _ASTForVariable = ASTmodule._Custom_AST_API()
-            #     _ASTtype = type_for_dc
-            #     _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
-            #
-            #     _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(self._CurrentModuleName)
-            #     _newConstraintID = (self._CurrentModuleName + str(_designConstraintID))
-            #
-            #     _ASTobj.id = _newConstraintID
-            #     _ASTobj._type = 'LogicExpression'
-            #     self._DummyConstraints.ExpressionDict[_newConstraintID] = info_dict
-            #     self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
-            #     design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
-            #                                                       module_name=self._CurrentModuleName, _ast=_ASTobj)
-            #     self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
-            #                                                      _parentName=self._CurrentModuleName,
-            #                                                      _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-            #     pass
-            # else:
-            #     warnings.warn("Not Valid type")
+                pass
+            elif type_for_dc == 'LogicExpression':
+                try:
+                    print("###############################################################")
+                    print("             LogicExpression ast creation Start                ")
+                    print("###############################################################")
+                    _ASTForVariable = ASTmodule._Custom_AST_API()
+                    _ASTtype = type_for_dc
+                    _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
+
+                    _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(self._CurrentModuleName)
+                    _newConstraintID = (self._CurrentModuleName + str(_designConstraintID))
+
+                    _ASTobj.id = _newConstraintID
+                    _ASTobj._type = 'LogicExpression'
+                    self._DummyConstraints.ExpressionDict[_newConstraintID] = info_dict
+                    self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
+                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                      module_name=self._CurrentModuleName, _ast=_ASTobj)
+                    self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                     _parentName=self._CurrentModuleName,
+                                                                     _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+
+                    print("###############################################################")
+                    print("              LogicExpression ast creation Done                ")
+                    print("###############################################################")
+                except:
+                    print("###############################################################")
+                    print("              LogicExpression ast creation Failed              ")
+                    print("###############################################################")
+            else:
+                warnings.warn("Not Valid type")
+
+
 
     def createVariableConstraint(self, _VariableInfo):
         """
