@@ -559,6 +559,7 @@ class _MainWindow(QMainWindow):
     def inspect_array(self):
         cluster_model = topAPI.clustering.determinstic_clustering(_qtDesignParameters=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
         cluster_model.layer_matching()      #Find array group from here
+        cluster_model.sref_matching()
         cluster_model.build_layer_ist_qt()  #build layer by layer IST
         test = cluster_model.intersection_matching_qt()
         print(test)

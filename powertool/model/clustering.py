@@ -189,7 +189,12 @@ class determinstic_clustering(clustering):
                     self.layer_based_group[layer_num] = [key]
             elif item['_DesignParametertype'] == 3:
                 class_name = item['_DesignObj'].__class__.__name__
-                if class_name in self.design_obj_based_group:
+                if class_name == 'dict':
+                    if item['_DesignObj_Name'] in self.design_obj_based_group:
+                        self.design_obj_based_group[item['_DesignObj_Name']].append(key)
+                    else:
+                        self.design_obj_based_group[item['_DesignObj_Name']] = [key]
+                elif class_name in self.design_obj_based_group:
                     self.design_obj_based_group[class_name].append(key)
                 else:
                     self.design_obj_based_group[class_name] = [key]
@@ -239,7 +244,8 @@ class determinstic_clustering(clustering):
                     tmp_groups.append([generator_instance_name])
                 else:
                     for i, tmp_group in enumerate(tmp_groups):
-                        matching_num, design_type = self.compare_two_srefs(tmp_group[0],generator_instance_name)
+                        matching_num = self.compare_two_srefs(tmp_group[0],generator_instance_name)
+                        # matching_num, design_type = self.compare_two_srefs(tmp_group[0],generator_instance_name)
 
                         if matching_num >= matching_num_of_sref:
                             tmp_groups[i].append(generator_instance_name)
