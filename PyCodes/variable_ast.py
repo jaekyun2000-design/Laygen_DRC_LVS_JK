@@ -33,6 +33,13 @@ class XYCoordinate(GeneratorVariable):
         'id',       # str
     )
 
+class Array(GeneratorVariable):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'id',    # str
+    )
+
 class PathXY(GeneratorVariable):
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -232,12 +239,12 @@ class IrregularTransformer(ast.NodeTransformer):
                 for i in range(len(elements)):
                     expression = elements[i]
                     operands_with_operators_list = re.split(' ', expression)
-                    for i in range(len(operands_with_operators_list)):
-                        isFunction = re.search('\(\[\'.*\'\]\)', operands_with_operators_list[i])
+                    for j in range(len(operands_with_operators_list)):
+                        isFunction = re.search('\(\[\'.*\'\]\)', operands_with_operators_list[j])
                         if isFunction != None:
-                            re_expressed_element = self.expressionTransformer(operands_with_operators_list[i],
+                            re_expressed_element = self.expressionTransformer(operands_with_operators_list[j],
                                                                               XYFlag=XYFlag)
-                            operands_with_operators_list[i] = re_expressed_element
+                            operands_with_operators_list[j] = re_expressed_element
                         else:
                             pass
                     if XYFlag == 'XY':
