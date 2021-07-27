@@ -567,6 +567,7 @@ class _MainWindow(QMainWindow):
         cluster_model.delete_solo_element_group()
         groups_list = cluster_model.get_array_groups()
         test2 = cluster_model.find_ref_for_path_qt(groups_list[1])
+        test2 = cluster_model.find_ref_for_boundary_qt(groups_list[0])
         self.connection_ref = cluster_model.get_routing_groups()
         self.array_list_widget = QListWidget()
         self.array_list_widget.addItems([str(group) for group in groups_list])

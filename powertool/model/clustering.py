@@ -103,6 +103,43 @@ class clustering():
 
         return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, source_reference=source_reference, target_reference=target_reference)
 
+    def find_ref_for_boundary_qt(self, id_list):
+        qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
+        x_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0] for qt_dp in qt_dp_list]
+        y_list = [qt_dp._DesignParameter['_XYCoordinates'][0][1] for qt_dp in qt_dp_list]
+        x_list.sort()
+        y_list.sort()
+        x_offset = int(x_list[1] - x_list[0])
+        y_offset = int(y_list[1] - y_list[0])
+        if x_offset == 0:
+            col = 1
+            row = len(y_list)
+        else:
+            col = len(x_list)
+            row = 1
+        connection_layer_list = []
+        for id in id_list:
+            # print(self.intersection_matching_dict_by_name[id][0])
+            # tmp = [intersection_info[0] for intersection_info in self.intersection_matching_dict_by_name[id]]
+            connection_layer_list.extend(
+                [intersection_info[0] for intersection_info in self.intersection_matching_dict_by_name[id]])
+            # connection_layer_list.extend(self.intersection_matching_dict_by_name[id])
+        # connection_layer_list.extend([self.intersection_matching_dict_by_name[id] for id in id_list])
+        connection_wo_last_idx = copy.deepcopy(connection_layer_list)
+        for idx, _ in enumerate(connection_wo_last_idx):
+            cutting_idx = connection_wo_last_idx[idx][-1].find('[')
+            connection_wo_last_idx[idx][-1] = connection_wo_last_idx[idx][-1][:cutting_idx]
+        set2 = set(map(tuple,connection_wo_last_idx))
+
+        count_list = []
+        for set2_ele in set2:
+            count_list.append(connection_wo_last_idx.count(list(set2_ele)))
+        max_idx = count_list.index(max(count_list))
+        top_cell_name = list(set2)[max_idx]
+        hierarchy_idx = connection_wo_last_idx.index(list(top_cell_name))
+        source_reference = connection_wo_last_idx[hierarchy_idx]
+
+        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, source_reference=source_reference)
 
     def get_array_groups(self):
         return self.array_groups
