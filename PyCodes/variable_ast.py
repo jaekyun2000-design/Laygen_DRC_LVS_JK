@@ -206,8 +206,6 @@ class IrregularTransformer(ast.NodeTransformer):
         tmp = ast.parse(sentence)
         return tmp.body
 
-
-
     def visit_PathXY(self, node):
         _id = node.id
         sentence = '['
@@ -271,7 +269,27 @@ class IrregularTransformer(ast.NodeTransformer):
         tmp = ast.parse(sentence)
         return tmp.body
 
+    def visit_Array(self, node):
+        _id = node.id
+        info_dict = self._id_to_data_dict.ArrayDict[_id]
+        _name = info_dict['name']
+        _type = info_dict['_type']
+        _flag = info_dict['ExpressionFlag']
 
+
+        if info_dict['width'] == 'Auto':
+            if _flag == 'Relative':
+                if _type != 'path_array':
+                    expression = info_dict['source_reference']
+
+        else:
+            _width = info_dict['width']
+
+
+        if _flag == 'Relative':
+            pass
+        elif _flag == 'Offset':
+            pass
 
     def expressionTransformer(self, expression, XYFlag):
         """
