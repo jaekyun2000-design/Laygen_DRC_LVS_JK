@@ -360,6 +360,8 @@ class IrregularTransformer(ast.NodeTransformer):
             if (function != 'width') & (function != 'height'):
                 result = re.split(',', result)
         print(f"Re-Expressed Element: \n{result}")
+        if type(result) == str:
+            result = '(' + result + ')'
         return result
 
 
