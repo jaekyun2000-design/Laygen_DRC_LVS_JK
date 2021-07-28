@@ -2814,6 +2814,7 @@ class _CustomScene(QGraphicsScene):
             return masked_output
 
         items = self.items(event.scenePos())
+        print(f'debug for via {items}')
         # for item in items:
         #     if '_id' in item.__dict__:
         #         print(f'0)Items before masking {item._id}')
@@ -2824,6 +2825,7 @@ class _CustomScene(QGraphicsScene):
             print(items)
             # self.point_items_memory = items
 
+        before_selected_item = None
         if self.point_items_memory:
             print(f'1)There is items in memory: {[item._id for item in self.point_items_memory]}')
             if set(items) == set(self.point_items_memory):
@@ -2847,11 +2849,24 @@ class _CustomScene(QGraphicsScene):
                     self.point_items_memory[0].save_zvalue_in_memory()
                     self.point_items_memory[0].setZValue(10)
                 else:
-                    print(f'3)idx_not_overflow :{idx}')
-                    print(f'3-info) b_z_values : {[item.zValue() for item in self.point_items_memory]}')
-                    self.point_items_memory[idx].restore_zvalue()
-                    self.point_items_memory[idx+1].save_zvalue_in_memory()
-                    self.point_items_memory[idx+1].setZValue(10)
+                    if before_selected_item and before_selected_item not in self.point_items_memory:
+                        '''
+                        어떤 이유인지 모르겠지만, 특정 sref의 경우 bounding box와 실제 클릭이 되는 부분이 다름.
+                        masking을 했을 때 items에 해당 visualitem이 선택이 안되지만, 실제로 scene에서는 선택이 되어서
+                        문제가 생김.
+                        '''
+                        print(f'3) maybe something is wrong!')
+                        print(f'3-info) reset selected item')
+                        before_selected_item.restore_zvalue()
+                        self.point_items_memory[0].setZValue(10)
+                        # print(f'debug z value {before_selected_item.zValue()}')
+                        # print(f'3-info) b_z_values : {[item.zValue() for item in self.point_items_memory]}')
+                    else:
+                        print(f'3)idx_not_overflow :{idx}')
+                        print(f'3-info) b_z_values : {[item.zValue() for item in self.point_items_memory]}')
+                        self.point_items_memory[idx].restore_zvalue()
+                        self.point_items_memory[idx+1].save_zvalue_in_memory()
+                        self.point_items_memory[idx+1].setZValue(10)
             else:
                 if items:
                     print(f'4)new point : {items[0]._id}')
