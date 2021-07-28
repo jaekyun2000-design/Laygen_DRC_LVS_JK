@@ -10,16 +10,18 @@ from sklearn.preprocessing import RobustScaler
 from sklearn.manifold import MDS, LocallyLinearEmbedding
 from sklearn.decomposition import PCA
 
-from model import routing_geo_searching
+from powertool.model import routing_geo_searching
 
 import copy
 
 class clustering():
-    def __init__(self, _DesignParameters = None):
+    def __init__(self, _DesignParameters = None, _qtDesignParameters=None):
         self._DesignParameter = copy.deepcopy(_DesignParameters)
+        self._qtDesignParameters = copy.deepcopy(_qtDesignParameters)
         self.array_groups = []
         self.routing_groups = []
         self.geo_searching = routing_geo_searching.GeometricField()
+        self.intersection_matching_dict_by_name = dict()
         if '_Name' in self._DesignParameter:
             del self._DesignParameter['_Name']
         if '_GDSFile' in self._DesignParameter:
@@ -32,6 +34,11 @@ class clustering():
         if '_GDSFile' in self._DesignParameter:
             del self._DesignParameter['_GDSFile']
 
+    def build_layer_ist_qt(self):
+        self.geo_searching.xy_projection_to_main_coordinates_system_qt(self._qtDesignParameters)
+        self.geo_searching.build_IST_qt(self._qtDesignParameters)
+        return self._qtDesignParameters
+
     def build_layer_ist(self):
         self.geo_searching.xy_projection_to_main_coordinates_system(self._DesignParameter)
         self.geo_searching.build_IST(self._DesignParameter)
@@ -40,19 +47,145 @@ class clustering():
     def delete_solo_element_group(self):
         delete_index_list = []
         for i, group in enumerate(self.array_groups):
-            if len(group) is 1:
+            if len(group) == 1:
                 delete_index_list.append(i)
         for idx in reversed(delete_index_list):
             del self.array_groups[idx]
 
         delete_index_list = []
         for i, group in enumerate(self.routing_groups):
-            if len(group) is 1 :
+            if len(group) == 1 :
                 delete_index_list.append(i)
         for idx in reversed(delete_index_list):
             del self.routing_groups[idx]
 
+    def find_ref(self, array_group):
+        ref_list = []
+        for id_list in array_group:
+            if self._qtDesignParameters[id_list[0]]._type == 1:
+                ref_list.append(self.find_ref_for_boundary_qt(id_list))
+            elif self._qtDesignParameters[id_list[0]]._type == 2:
+                ref_list.append(self.find_ref_for_path_qt(id_list))
+            elif self._qtDesignParameters[id_list[0]]._type == 3:
+                ref_list.append(self.find_ref_for_sref_qt(id_list))
+        return ref_list
 
+
+    def find_ref_for_path_qt(self,id_list):
+        qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
+        x_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0][0] for qt_dp in qt_dp_list]
+        y_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0][1] for qt_dp in qt_dp_list]
+        x_list.sort()
+        y_list.sort()
+        x_offset = int(x_list[1] - x_list[0])
+        y_offset = int(y_list[1] - y_list[0])
+        if x_offset == 0:
+            col = 1
+            row = len(y_list)
+        else:
+            col = len(x_list)
+            row = 1
+        connection_layer_list = []
+        for id in id_list:
+            # print(self.intersection_matching_dict_by_name[id][0])
+            # tmp = [intersection_info[0] for intersection_info in self.intersection_matching_dict_by_name[id]]
+            connection_layer_list.extend([intersection_info[0] for intersection_info in self.intersection_matching_dict_by_name[id]])
+            # connection_layer_list.extend(self.intersection_matching_dict_by_name[id])
+        # connection_layer_list.extend([self.intersection_matching_dict_by_name[id] for id in id_list])
+        set1 = set(map(tuple,connection_layer_list))
+        connection_top_name = [connection_hierarchy[0] for connection_hierarchy in connection_layer_list]
+        set2 = set(connection_top_name)
+
+        count_list = []
+        for set1_ele in set1:
+            count_list.append(connection_layer_list.count(list(set1_ele)))
+        max_idx = count_list.index(max(count_list))
+        target_reference = list(list(set1)[max_idx])
+
+        count_list = []
+        for set2_ele in set2:
+            count_list.append(connection_top_name.count(set2_ele))
+        max_idx = count_list.index(max(count_list))
+        top_cell_name = list(set2)[max_idx]
+        hierarchy_idx = connection_top_name.index(top_cell_name)
+        source_reference = connection_layer_list[hierarchy_idx]
+
+        cutting_idx = source_reference[-1].find('[')
+        source_reference[-1] = source_reference[-1][:cutting_idx]
+
+        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, source_reference=source_reference, target_reference=target_reference)
+
+    def find_ref_for_boundary_qt(self, id_list):
+        qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
+        x_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0] for qt_dp in qt_dp_list]
+        y_list = [qt_dp._DesignParameter['_XYCoordinates'][0][1] for qt_dp in qt_dp_list]
+        x_list.sort()
+        y_list.sort()
+        x_offset = int(x_list[1] - x_list[0])
+        y_offset = int(y_list[1] - y_list[0])
+        if x_offset == 0:
+            col = 1
+            row = len(y_list)
+        else:
+            col = len(x_list)
+            row = 1
+        connection_layer_list = []
+        for id in id_list:
+            # print(self.intersection_matching_dict_by_name[id][0])
+            # tmp = [intersection_info[0] for intersection_info in self.intersection_matching_dict_by_name[id]]
+            connection_layer_list.extend(
+                [copy.deepcopy(intersection_info[0]) for intersection_info in self.intersection_matching_dict_by_name[id]])
+            # connection_layer_list.extend(self.intersection_matching_dict_by_name[id])
+        # connection_layer_list.extend([self.intersection_matching_dict_by_name[id] for id in id_list])
+        connection_wo_last_idx = copy.deepcopy(connection_layer_list)
+        for idx, _ in enumerate(connection_wo_last_idx):
+            cutting_idx = connection_wo_last_idx[idx][-1].find('[')
+            connection_wo_last_idx[idx][-1] = connection_wo_last_idx[idx][-1][:cutting_idx]
+        set2 = set(map(tuple,connection_wo_last_idx))
+
+        count_list = []
+        for set2_ele in set2:
+            count_list.append(connection_wo_last_idx.count(list(set2_ele)))
+        max_idx = count_list.index(max(count_list))
+        top_cell_name = list(set2)[max_idx]
+        hierarchy_idx = connection_wo_last_idx.index(list(top_cell_name))
+        source_reference = connection_wo_last_idx[hierarchy_idx]
+
+        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, source_reference=source_reference)
+
+    def find_ref_for_sref_qt(self, id_list):
+        qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
+        x_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0] for qt_dp in qt_dp_list]
+        y_list = [qt_dp._DesignParameter['_XYCoordinates'][0][1] for qt_dp in qt_dp_list]
+        x_list.sort()
+        y_list.sort()
+        x_offset = int(x_list[1] - x_list[0])
+        y_offset = int(y_list[1] - y_list[0])
+        if x_offset == 0:
+            col = 1
+            row = len(y_list)
+        else:
+            col = len(x_list)
+            row = 1
+        connection_layer_list = []
+        for id in id_list:
+            connection_layer_list.extend(
+                [copy.deepcopy(intersection_info[0]) for intersection_info in self.intersection_matching_dict_by_name[id]])
+        connection_wo_last_idx = copy.deepcopy(connection_layer_list)
+        for idx, _ in enumerate(connection_wo_last_idx):
+            cutting_idx = connection_wo_last_idx[idx][-1].find('[')
+            connection_wo_last_idx[idx][-1] = connection_wo_last_idx[idx][-1][:cutting_idx]
+        set2 = set(map(tuple, connection_wo_last_idx))
+
+        count_list = []
+        for set2_ele in set2:
+            count_list.append(connection_wo_last_idx.count(list(set2_ele)))
+        max_idx = count_list.index(max(count_list))
+        top_cell_name = list(set2)[max_idx]
+        hierarchy_idx = connection_wo_last_idx.index(list(top_cell_name))
+        source_reference = connection_wo_last_idx[hierarchy_idx]
+
+        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, source_reference=source_reference)
 
     def get_array_groups(self):
         return self.array_groups
@@ -64,12 +197,33 @@ class clustering():
 
 
 class determinstic_clustering(clustering):
-    def __init__(self, _DesignParameters = None):
-        super().__init__(_DesignParameters)
+    def __init__(self, _DesignParameters = None, _qtDesignParameters=None):
+        if _qtDesignParameters:
+            _DesignParameters = dict()
+            for key, value in _qtDesignParameters.items():
+                _DesignParameters[key] = value._DesignParameter
+        super().__init__(_DesignParameters,_qtDesignParameters)
         self.layer_based_group = dict()
         self.design_obj_based_group = dict()
         self.pregrouping_by_layer()
+            # self.pregrouping_by_layer_qt()
         # self.layer_matching()
+
+    def pregrouping_by_layer_qt(self):
+        for key, qt_item in self._qtDesignParameters.items():
+            item = qt_item._DesignParameter
+            if item['_DesignParametertype'] == 1 or item['_DesignParametertype'] == 2:
+                layer_num = item['_Layer']
+                if layer_num in self.layer_based_group:
+                    self.layer_based_group[layer_num].append(key)
+                else:
+                    self.layer_based_group[layer_num] = [key]
+            elif item['_DesignParametertype'] == 3:
+                class_name = item['_DesignObj'].__class__.__name__
+                if class_name in self.design_obj_based_group:
+                    self.design_obj_based_group[class_name].append(key)
+                else:
+                    self.design_obj_based_group[class_name] = [key]
 
     def pregrouping_by_layer(self):
         for key, item in self._DesignParameter.items():
@@ -81,7 +235,12 @@ class determinstic_clustering(clustering):
                     self.layer_based_group[layer_num] = [key]
             elif item['_DesignParametertype'] == 3:
                 class_name = item['_DesignObj'].__class__.__name__
-                if class_name in self.design_obj_based_group:
+                if class_name == 'dict':
+                    if item['_DesignObj_Name'] in self.design_obj_based_group:
+                        self.design_obj_based_group[item['_DesignObj_Name']].append(key)
+                    else:
+                        self.design_obj_based_group[item['_DesignObj_Name']] = [key]
+                elif class_name in self.design_obj_based_group:
                     self.design_obj_based_group[class_name].append(key)
                 else:
                     self.design_obj_based_group[class_name] = [key]
@@ -104,15 +263,15 @@ class determinstic_clustering(clustering):
                 else:
                     for i, tmp_group in enumerate(tmp_groups):
                         matching_num, design_type= self.compare_two_elements(tmp_group[0],layer_item_name)
-                        if design_type is 'boundary':
+                        if design_type == 'boundary':
                             if matching_num >= matching_num_of_boundary:
                                 tmp_groups[i].append(layer_item_name)
                                 break
-                        elif design_type is 'path':
+                        elif design_type == 'path':
                             if matching_num >= matching_num_of_path:
                                 tmp_groups[i].append(layer_item_name)
                                 break
-                        elif design_type is 'sref':
+                        elif design_type == 'sref':
                             if matching_num >= matching_num_of_sref:
                                 tmp_groups[i].append(layer_item_name)
                                 break
@@ -131,7 +290,8 @@ class determinstic_clustering(clustering):
                     tmp_groups.append([generator_instance_name])
                 else:
                     for i, tmp_group in enumerate(tmp_groups):
-                        matching_num, design_type = self.compare_two_srefs(tmp_group[0],generator_instance_name)
+                        matching_num = self.compare_two_srefs(tmp_group[0],generator_instance_name)
+                        # matching_num, design_type = self.compare_two_srefs(tmp_group[0],generator_instance_name)
 
                         if matching_num >= matching_num_of_sref:
                             tmp_groups[i].append(generator_instance_name)
@@ -173,10 +333,23 @@ class determinstic_clustering(clustering):
     def compare_two_paths(self,path1_name, path2_name):
         if not len(self._DesignParameter[path1_name]['_XYCoordinates'][0]) == len(self._DesignParameter[path2_name]['_XYCoordinates'][0]):
             return -1
-        x1 = self._DesignParameter[path1_name]['_XYCoordinates'][0][0][0] == self._DesignParameter[path2_name]['_XYCoordinates'][0][0][0]
-        y1 = self._DesignParameter[path1_name]['_XYCoordinates'][0][0][1] == self._DesignParameter[path2_name]['_XYCoordinates'][0][0][1]
-        x2 = self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][0] == self._DesignParameter[path2_name]['_XYCoordinates'][0][-1][0]
-        y2 = self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][1] == self._DesignParameter[path2_name]['_XYCoordinates'][0][-1][1]
+        if self._DesignParameter[path1_name]['_XYCoordinates'][0][0][0] == self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][0]:
+            #vertical case
+            x1, x2 = 0, 0
+            y1 = self._DesignParameter[path1_name]['_XYCoordinates'][0][0][1] == self._DesignParameter[path2_name]['_XYCoordinates'][0][0][1]
+            y2 = self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][1] == \
+                 self._DesignParameter[path2_name]['_XYCoordinates'][0][-1][1]
+        else:
+            x1 = self._DesignParameter[path1_name]['_XYCoordinates'][0][0][0] == \
+                 self._DesignParameter[path2_name]['_XYCoordinates'][0][0][0]
+            x2 = self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][0] == \
+                 self._DesignParameter[path2_name]['_XYCoordinates'][0][-1][0]
+            y1, y2 = 0, 0
+
+        # x1 = self._DesignParameter[path1_name]['_XYCoordinates'][0][0][0] == self._DesignParameter[path2_name]['_XYCoordinates'][0][0][0]
+        # y1 = self._DesignParameter[path1_name]['_XYCoordinates'][0][0][1] == self._DesignParameter[path2_name]['_XYCoordinates'][0][0][1]
+        # x2 = self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][0] == self._DesignParameter[path2_name]['_XYCoordinates'][0][-1][0]
+        # y2 = self._DesignParameter[path1_name]['_XYCoordinates'][0][-1][1] == self._DesignParameter[path2_name]['_XYCoordinates'][0][-1][1]
         width = self._DesignParameter[path1_name]['_Width'] == self._DesignParameter[path2_name]['_Width']
         return x1+y1+x2+y2+width
 
@@ -186,11 +359,47 @@ class determinstic_clustering(clustering):
         y = self._DesignParameter[sref1_name]['_XYCoordinates'][0][1] == self._DesignParameter[sref2_name]['_XYCoordinates'][0][1]
         return  x+y
 
+    def intersection_matching_qt(self):
+        intersection_matching_dict_by_name = dict()
+
+        for key, qt_dp in self._qtDesignParameters.items():
+            dp = qt_dp._DesignParameter
+            # if dp['_DesignParametertype'] == 2 or dp['_DesignParametertype'] == 1:
+            intersection_info = self.geo_searching.search_intersection(dp)
+            self.routing_groups.append(intersection_info)
+            intersection_matching_dict_by_name[intersection_info[0]['_id']] = intersection_info[1:]
+            # if intersection_matching_dict_by_name[intersection_info[0]['_id']]:
+            #     intersection_matching_dict_by_name[intersection_info[0]['_id']].pop(0)
+            # self.routing_groups.append(self.geo_searching.search_intersection(dp))
+        self.intersection_matching_dict_by_name = intersection_matching_dict_by_name
+        return intersection_matching_dict_by_name
+        # return self.routing_groups
+
+    def intersection_matching(self):
+        for key, dp in self._DesignParameter.items():
+            self.routing_groups.append(self.geo_searching.search_intersection(dp))
+
+        return self.routing_groups
+
+
     def intersection_matching_path(self):
+        path_routing_group = []
         for key, dp in self._DesignParameter.items():
             if dp['_DesignParametertype'] == 2:
-                self.routing_groups.append(self.geo_searching.search_intersection(dp))
-        return self.routing_groups
+                path_routing_group.append(self.geo_searching.search_intersection(dp))
+        self.routing_groups.extend(path_routing_group)
+                # self.routing_groups.append(self.geo_searching.search_intersection(dp))
+
+        return path_routing_group
+
+    def intersection_matching_boundary(self):
+        boundary_reference_group = []
+        for key, dp in self._DesignParameter.items():
+            if dp['_DesignParametertype'] == 1:
+                boundary_reference_group.append(self.geo_searching.search_intersection(dp))
+                # self.routing_groups.append(self.geo_searching.search_intersection(dp))
+        self.routing_groups.extend(boundary_reference_group)
+        return boundary_reference_group
 
 
 # file = './smaple.csv'

@@ -15,7 +15,7 @@ import traceback
 class LayerManager(QWidget):
     def __init__(self):
         super(LayerManager, self).__init__()
-        self.layer_table_widget = _ManageList()
+        self.layer_table_widget = _ManageList(self)
         self.initUI()
 
     def initUI(self):
@@ -25,26 +25,42 @@ class LayerManager(QWidget):
         visible_none_button = QPushButton("N-Visible")
         clickable_all_button = QPushButton("A-Clickable")
         clickable_none_button = QPushButton("N-Clickable")
-        selection_layout.addWidget(visible_all_button)
-        selection_layout.addWidget(visible_none_button)
-        selection_layout.addWidget(clickable_all_button)
-        selection_layout.addWidget(clickable_none_button)
+        self.visible_button = QPushButton("NV")
+        self.clickable_button = QPushButton("NC")
+        # selection_layout.addWidget(visible_all_button)
+        # selection_layout.addWidget(visible_none_button)
+        # selection_layout.addWidget(clickable_all_button)
+        # selection_layout.addWidget(clickable_none_button)
+        selection_layout.addWidget(self.visible_button)
+        selection_layout.addWidget(self.clickable_button)
 
         visible_all_button.clicked.connect(self.layer_table_widget.macro_check)
         visible_none_button.clicked.connect(self.layer_table_widget.macro_check)
         clickable_all_button.clicked.connect(self.layer_table_widget.macro_check)
         clickable_none_button.clicked.connect(self.layer_table_widget.macro_check)
 
+        self.visible_button.clicked.connect(self.layer_table_widget.macro_check)
+        self.clickable_button.clicked.connect(self.layer_table_widget.macro_check)
+
         top_layout.addLayout(selection_layout)
         top_layout.addWidget(self.layer_table_widget)
         self.setLayout(top_layout)
 
+    def swapButtonText(self, text):
+        if text[-1] == 'V':
+            self.visible_button.setText(text)
+        elif text[-1] == 'C':
+            self.clickable_button.setText(text)
+
+
 class _ManageList(QTableView):
 
     send_listInLayer_signal = pyqtSignal(list)
+    button_text_signal = pyqtSignal(str)
 
-    def __init__(self):
+    def __init__(self, LMaddress):
         super().__init__()
+        self.lm = LMaddress
         self._layerList = list()
         self._usedlayer = dict()
         self.visibleGenControl = True
@@ -85,6 +101,7 @@ class _ManageList(QTableView):
         self.setModel(self.model)
         self.resizeColumnsToContents()
 
+        self.button_text_signal.connect(self.lm.swapButtonText)
         self.model.itemChanged.connect(self.itemChanged)
 
     def updateLayerList(self, _layerDict):
@@ -116,6 +133,26 @@ class _ManageList(QTableView):
     def itemChanged(self, item):
         try:
             layer = self.model.item(item.index().row()).text()
+
+            if item.checkState() == 0:
+                if item.index().column() == 1:
+                    self.signal = 'AV'
+                elif item.index().column() == 2:
+                    self.signal = 'AC'
+                self.button_text_signal.emit(self.signal)
+            elif item.checkState() == 2:
+                if item.index().column() == 1:
+                    self.signal = 'NV'
+                    for i in range(self.model.rowCount()):
+                        if self.model.item(i, 1).checkState() == 0:
+                            self.signal = 'AV'
+                elif item.index().column() == 2:
+                    self.signal = 'NC'
+                    for i in range(self.model.rowCount()):
+                        if self.model.item(i, 2).checkState() == 0:
+                            self.signal = 'AC'
+                self.button_text_signal.emit(self.signal)
+
             if layer not in self._usedlayer:
                 return
             Visualitem = self._usedlayer[layer]
@@ -197,8 +234,12 @@ class _ManageList(QTableView):
                             x.setFlag(QGraphicsItem.ItemIsSelectable, True)
                         except:
                             continue
+
         except:
             traceback.print_exc()
+
+    # def swapButtonText(self, ):
+
 
     def macro_check(self):
         # purpose: str, mode: bool
@@ -208,7 +249,7 @@ class _ManageList(QTableView):
         else:
             mode = 'off'
 
-        if sender_text[2] == 'V':
+        if sender_text[1] == 'V':
             purpose = 'Visible'
         else:
             purpose = 'Clickable'

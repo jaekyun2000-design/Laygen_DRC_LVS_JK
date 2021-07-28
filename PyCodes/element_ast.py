@@ -5,7 +5,7 @@ import warnings
 import astunparse
 from PyCodes import ASTmodule
 # listTypeData = ['Lib','tb','PlaceDef','RouteDef','DRCDef','Iteration','P_R']
-custom_ast_list = ['Generator','Sref','Boundary','Path', 'Text']
+custom_ast_list = ['Generator','Sref','Boundary','Path', 'Text', 'MacroCell']
 #--start constants--
 
 class Generator(ast.AST):
@@ -60,6 +60,15 @@ class Sref(ElementNode):
         'XY',       # double list or str
         'calculate_fcn',
         'parameters'
+    )
+
+class MacroCell(ElementNode):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'name',     # name str
+        'library',   # library module str
+        'XY',       # double list or str
     )
 
 class Text(ElementNode):
@@ -214,21 +223,21 @@ class ElementTransformer(ast.NodeTransformer):
         if syntax == 'list' :#or syntax == 'string':
             tmp_xy = str(node.XY).replace("'","")
             sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-                      _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {tmp_xy},\
-                      _XWidth = {node.width}, _YWidth = {node.height})"
+                      _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _XWidth = {node.width}, _YWidth = {node.height})\n"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
         elif syntax == 'string':
             tmp_xy = str(node.XY[0]).replace("'","")
             sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-                                  _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {tmp_xy},\
-                                  _XWidth = {node.width}, _YWidth = {node.height})"
+                                  _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _XWidth = {node.width}, _YWidth = {node.height})\n"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
         elif syntax == 'ast':
             tmp_xy = astunparse.unparse(node.XY).replace('\n', '')
             sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-                                              _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {tmp_xy},\
-                                              _XWidth = {node.width}, _YWidth = {node.height})"
+                                              _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _XWidth = {node.width}, _YWidth = {node.height})\n"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
         # print(sentence)
         tmp = ast.parse(sentence)
-        return tmp.body[0]
+        return tmp.body
 
     def visit_Path(self,node):
         syntax = self.xy_syntax_checker(node)
@@ -245,7 +254,7 @@ class ElementTransformer(ast.NodeTransformer):
             sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
                        _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {tmp_xy}, _Width = {node.width})"
         tmp = ast.parse(sentence)
-        return tmp.body[0]
+        return tmp.body
 
     def visit_Sref(self,node):
         syntax = self.xy_syntax_checker(node)

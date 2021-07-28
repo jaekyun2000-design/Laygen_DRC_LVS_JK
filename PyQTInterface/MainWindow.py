@@ -49,6 +49,7 @@ from PyQTInterface import list_manager
 from PyQTInterface import calculator
 
 from generatorLib import generator_model_api
+from generatorLib import DRC
 
 ##for easy debug##
 import json
@@ -65,15 +66,6 @@ subnanoViewScale = 1  #
                       # 0.1 means: coordinates default unit is 0.1nm
                       # 10 means: coordinates default unit is 10nm
 EasyDebugFileName = ''
-
-
-
-class _CustomSignals(QObject):
-    itemSelection = pyqtSignal()
-    itemSelectionDestroy = pyqtSignal()
-    xycoordinateSignal = pyqtSignal()
-
-
 
 class _MainWindow(QMainWindow):
 
@@ -111,6 +103,7 @@ class _MainWindow(QMainWindow):
         self._DummyConstraints = variable_manager.DummyConstraints()
         self.gloabal_clipboard = QGuiApplication.clipboard()
         self.variable_store_list = list()
+
 
     def initUI(self):
 
@@ -202,6 +195,17 @@ class _MainWindow(QMainWindow):
         moduleMenu.addAction(loadPyCodeAction)
 
 
+        #Third Menu
+        auto_path_array_action = QAction("Inspect path array", self)
+
+        auto_path_array_action.setShortcut('Ctrl+1')
+        auto_path_array_action.triggered.connect(self.inspect_array)
+
+
+        automation_menu = menubar.addMenu("&Automation")
+        automation_menu.addAction(auto_path_array_action)
+
+
 
 
         # fileMenu.addAction(exitAction)
@@ -219,6 +223,7 @@ class _MainWindow(QMainWindow):
         self.scene.send_module_name_list_signal.connect(graphicView.name_out_fcn)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
         # self.scene.setMinimumRenderSize(5)
+        graphicView.centerOn(QPointF(268,-165))
         self.setCentralWidget(graphicView)
         self.scene.setBackgroundBrush(QBrush(Qt.white))
         graphicView.scale(1,-1)
@@ -410,6 +415,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
         self.dockContentWidget3_2.send_RequestElementManger_signal.connect(self.convey_element_manager)
         self.dockContentWidget3_2.send_DataChanged_signal.connect(self.constraint_data_changed)
+        self.dockContentWidget3_2.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3_2.get_dp_highlight_dc)
 
 
@@ -427,6 +433,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
         self.dockContentWidget3.send_RequestElementManger_signal.connect(self.convey_element_manager)
         self.dockContentWidget3.send_DataChanged_signal.connect(self.constraint_data_changed)
+        self.dockContentWidget3.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3.get_dp_highlight_dc)
 
         vboxLayout = QVBoxLayout()
@@ -449,7 +456,7 @@ class _MainWindow(QMainWindow):
         self.ConstraintTemplateButton = QPushButton("Template")
         # self.parsetreeEasyRun = QPushButton("easyRun")
         self.variableCallButton = QPushButton("variableCall")
-        self.sref_debug = QPushButton("XYCalculator")
+        self.calculatorButton = QPushButton("XYCalculator")
 
         VBoxForPeriButton.addStretch(3)
         # VBoxForPeriButton.addWidget(self.createConstraintButton)
@@ -464,7 +471,7 @@ class _MainWindow(QMainWindow):
         VBoxForPeriButton.addWidget(self.ConstraintTemplateButton)
         # VBoxForPeriButton.addWidget(self.parsetreeEasyRun)
         VBoxForPeriButton.addWidget(self.variableCallButton)
-        VBoxForPeriButton.addWidget(self.sref_debug)
+        VBoxForPeriButton.addWidget(self.calculatorButton)
         VBoxForPeriButton.addStretch(3)
 
         # self.dockContentWidget3.setDragDropMode(self.dockContectWidget3.MyOwnDragDropMove)
@@ -490,7 +497,7 @@ class _MainWindow(QMainWindow):
         self.ConstraintTemplateButton.clicked.connect(self.makeTemplateWindow)
         # self.parsetreeEasyRun.clicked.connect(self.easyRun)
         self.variableCallButton.clicked.connect(self.variableListUpdate)
-        self.sref_debug.clicked.connect(self.clipboard_test)
+        self.calculatorButton.clicked.connect(self.calculator)
 
 
         ################ Logging Message Dock Widget setting ####################
@@ -533,20 +540,135 @@ class _MainWindow(QMainWindow):
 
     # def threading_test(self,count):
 
-    def debug(self,name_list):
-        print(name_list)
-
-    def clipboard_test(self):
+    def calculator(self):
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
+        self.dockContentWidget3.send_dummy_ast_id_signal.connect(self.calculator_window.getXY)
+        self.dockContentWidget3_2.send_dummy_ast_id_signal.connect(self.calculator_window.getXY)
         self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.storePreset)
         self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
+        self.calculator_window.returnLayer_signal.connect(self.get_hierarchy_return_layer)
         self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
+        # self.calculator_window.send_equation_signal.connect(self.XYDictManagement)
         self.calculator_window.show()
 
-    def save_clipboard(self,save_target):
+    def get_dc_highlight_dp(self,dc_id):
+        dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
+        if dp_id:
+            self.visualItemDict[dp_id].setSelected(True)
+
+    def inspect_array(self):
+        cluster_model = topAPI.clustering.determinstic_clustering(_qtDesignParameters=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        cluster_model.layer_matching()      #Find array group from here
+        cluster_model.sref_matching()
+        cluster_model.build_layer_ist_qt()  #build layer by layer IST
+        test = cluster_model.intersection_matching_qt()
+        print(test)
+        # cluster_model.intersection_matching_path()
+        # cluster_model.sref_matching()
+        cluster_model.delete_solo_element_group()
+        groups_list = cluster_model.get_array_groups()
+        reference_list = cluster_model.find_ref(groups_list)
+        # test2 = cluster_model.find_ref_for_path_qt(groups_list[1])
+        # test2 = cluster_model.find_ref_for_boundary_qt(groups_list[0])
+        # test3 = cluster_model.find_ref_for_sref_qt(groups_list[-1])
+
+        self.connection_ref = cluster_model.get_routing_groups()
+        self.array_list_widget = QListWidget()
+        self.array_list_widget.addItems([str(group) for group in groups_list])
+        self.array_list_widget.currentRowChanged.connect(self.visualize_inspect_array)
+        # self.vw = variableWindow.VariableSetupWindow(variable_type="path_array",vis_items=None,
+        #                                              _DP=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
+        #                                              ,ref_list=self.connection_ref)
+        # self.array_list_widget.itemDoubleClicked.connect(self.vw.getArray)
+        self.array_list_widget.itemDoubleClicked.connect(self.show_inspect_array_widget)
+        self.array_list_widget.show()
+        self.test_purpose_var = groups_list
+        self.log = []
+        for group in groups_list:
+            print(f'array candidate group: {group}')
+        print('debug')
+
+    def show_inspect_array_widget(self, array_list_item):
+        print(array_list_item.text())
+        print(self.connection_ref)
+
+        array_list = eval(array_list_item.text())
+        if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
+            print('boundary')
+            self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array", vis_items=None,
+                                                         ref_list=self.connection_ref, inspect_array_window_address=self.array_list_widget)
+            self.vw.send_output_dict_signal.connect(self.create_variable)
+            self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
+            self.vw.getArray(array_list_item)
+        elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
+            print('path')
+            self.vw = variableWindow.VariableSetupWindow(variable_type="path_array", vis_items=None,
+                                                         ref_list=self.connection_ref, inspect_array_window_address=self.array_list_widget)
+            self.vw.send_output_dict_signal.connect(self.create_variable)
+            self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
+            self.vw.getArray(array_list_item)
+        else:
+            print('sref')
+            self.vw = variableWindow.VariableSetupWindow(variable_type="sref_array", vis_items=None,
+                                                         ref_list=self.connection_ref, inspect_array_window_address=self.array_list_widget)
+            self.vw.getArray(array_list_item)
+
+
+
+
+    def visualize_inspect_array(self, row):
+        for id in self.log:
+            self.visualItemDict[id].setSelected(False)
+        for id in self.test_purpose_var[row]:
+            self.visualItemDict[id].setSelected(True)
+            self.log.append(id)
+        print(row)
+
+    def inspect_geometry(self):
+        target_cell = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
+        geo_search = topAPI.routing_geo_searching.GeometricField()
+        geo_search.xy_projection_to_main_coordinates_system_qt(target_cell)
+        geo_search.build_IST_qt(target_cell)
+        return geo_search
+
+    def save_clipboard(self,save_target,_):
         if type(save_target) == list:
+            new_list = list()
             print(save_target)
-            self.gloabal_clipboard.setText(str(save_target[1:]))
+            print(_)
+            for idx in range(len(save_target)):
+                if idx != 0:
+                    if type(_[idx]) == int:
+                        tmp = save_target[idx] + '[' + str(_[idx]) + ']'
+                    else:
+                        tmp = save_target[idx] + str(_[idx])
+                    new_list.append(tmp)
+            print(new_list)
+            self.gloabal_clipboard.setText(str(new_list))
+
+    def get_hierarchy_return_layer(self, hierarchy_list):
+        module = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
+        layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+        for i in range(len(hierarchy_list)):
+            element = re.sub("\[.\]","", hierarchy_list[i])
+            hierarchy_list[i] = element
+
+        if len(hierarchy_list) == 0:
+            return
+        elif len(hierarchy_list) == 1:
+            _layerInfo = module[hierarchy_list[0]]._DesignParameter['_Layer']
+            if type(_layerInfo) == int:
+                _layerCommonName = layernum2name[str(_layerInfo)]
+            else:
+                _layerCommonName = _layerInfo
+        else:
+            for i in range(len(hierarchy_list)-1):
+                module = module[hierarchy_list[i]]._DesignParameter['_ModelStructure']
+            if module[hierarchy_list[-1]]._DesignParameter['_Layer']:
+                _layerCommonName = layernum2name[str(module[hierarchy_list[-1]]._DesignParameter['_Layer'])]
+                self.calculator_window.returnedLayer = _layerCommonName
+            else:
+                pass
 
     def sref_debug_module(self):
         # tmpcell = {'INV': {'Sub1': {'Sub2': {'PMOS': None}, 'NMOS': None,}, 'NMOS': None, 'PMOS': None}}
@@ -1070,6 +1192,11 @@ class _MainWindow(QMainWindow):
                 self.scene.update()
 
         # if not self.checkNameDuplication(graphicItem):
+        if graphicItem._CreateFlag is True:
+            for item in graphicItem.block:
+                if type(item) is VisualizationItem.QGraphicsTextItemWObounding:
+                    item.setVisible(True)
+
         self.scene.addItem(graphicItem)
         self.scene.send_move_signal.connect(graphicItem.move)
         self.scene.send_moveDone_signal.connect(graphicItem.moveUpdate)
@@ -1396,12 +1523,11 @@ class _MainWindow(QMainWindow):
                         findHint = _newCellName.find(key)
                         if findHint != -1:
                             topcell[_newConstraintID]._DesignParameter['library'] = value
-                            _className = generator_model_api.class_name_dict[_element._DesignParameter['library']]
-                            topcell[_newConstraintID]._DesignParameter['className'] =_className
-                            topcell[_newConstraintID]._DesignParameter['parameters'] = \
-                                generator_model_api.class_dict[value]._ParametersForDesignCalculation
-
-
+                            if value != 'MacroCell':    # case Sref
+                                _className = generator_model_api.class_name_dict[_element._DesignParameter['library']]
+                                topcell[_newConstraintID]._DesignParameter['className'] =_className
+                                topcell[_newConstraintID]._DesignParameter['parameters'] = \
+                                    generator_model_api.class_dict[value]._ParametersForDesignCalculation
                             topcell[_newConstraintID]._ElementName = _newConstraintID
                             topcell[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
                             topcell[_newConstraintID]._DesignParameter['_ElementName'] = _newConstraintID
@@ -1414,7 +1540,7 @@ class _MainWindow(QMainWindow):
                             self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
                                                                              _parentName=topCellName,
                                                                              _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-                            tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
+                            # tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
                             self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=_newConstraintID, dc_id=design_dict['constraint_id'])
                             break
                         else:
@@ -1497,10 +1623,43 @@ class _MainWindow(QMainWindow):
         self.qpd.setWindowModality(Qt.WindowModal)
         self.qpd.show()
 
-    def createVariable(self,type):
+    def createVariable(self,_type):
+        if _type == 'auto_path':
+            selected_vis_items = self.scene.selectedItems()
+            vis_item = selected_vis_items[0]
+            id = vis_item._id
+            geo_field = self.inspect_geometry()
+            overlay_object = geo_field.search_intersection_qt(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][id])
+            #
+            # for obj in overlay_object[1:]:
+            #     obj[0][0]
+            test= [obj[0][0] for obj in overlay_object[1:]]
+            self.log2 = []
+            for id in self.log2:
+                self.visualItemDict[id].setSelected(False)
+            for id in test:
+                self.visualItemDict[id].setSelected(True)
+                self.log2.append(id)
+
+            print('connection info')
+            print(overlay_object[1:])
+            return
+
         selected_vis_items = self.scene.selectedItems()
-        self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
+        self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items)
+        # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
+        self.vw.send_output_dict_signal.connect(self.create_variable)
+        self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
+        self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
+
+    def create_variable(self, variable_info_dict):
+        if variable_info_dict['type'] == 'path_array':
+            test_ast = variable_ast.PathArray()
+            xy_ref_ast = variable_ast.XYCoordinate()
+            xy_target_ast = variable_ast.XYCoordinate()
+            # variable_info_dict
+        print(variable_info_dict)
 
     def createVariableVisual(self, variableVisualItem):
         design_dict = self._QTObj._qtProject._feed_design(design_type='parameter', module_name= self._CurrentModuleName, dp_dict= variableVisualItem.__dict__)
@@ -1566,13 +1725,14 @@ class _MainWindow(QMainWindow):
         :return: None
 
         """
-        dp_module = dp_id[:-1]
-        while not dp_module in self._QTObj._qtProject._DesignParameter:
-            dp_module = dp_module[:-1]
+        # dp_module = dp_id[:-1]
+        # while not dp_module in self._QTObj._qtProject._DesignParameter:
+        #     dp_module = dp_module[:-1]
+        dp_module = self._CurrentModuleName
 
         dc_id = self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id)
 
-        deletionItems = self.scene.selectedItems()      # Delete Visual Item
+        deletionItems = [self.visualItemDict[dp_id]]     # Delete Visual Item
         for deleteItem in deletionItems:
             self.scene.removeItem(deleteItem)
 
@@ -1660,20 +1820,24 @@ class _MainWindow(QMainWindow):
 
     def updateVisualItemFromDesignParameter(self,DesignParameter):
         id = DesignParameter._id
-        self.visualItemDict[id].updateTraits(DesignParameter._DesignParameter)
+        # self.visualItemDict[id].updateTraits(DesignParameter._DesignParameter)
 
         if id in self.visualItemDict:
             self.visualItemDict[id].updateTraits(DesignParameter._DesignParameter)
+            self.visualItemDict[id]._id = id
+            self.visualItemDict[id]._ItemTraits['_id'] = id
+            self.visualItemDict[id]._ItemTraits['_ElementName'] = id
             return self.visualItemDict[id]
         return None
 
     def updateDesignParameter(self,_DesignParameter, element_manager_update = True):
+
         _ID = _DesignParameter['_id']
-        _Module = _ID[:-1]
-        while (_Module in self._QTObj._qtProject._DesignParameter) == False:
-            _Module = _Module[:-1]
-        # _Module = re.sub('[0-9]+', '',_ID)
-        print(_Module)
+        _Module = self._CurrentModuleName
+
+        if _DesignParameter['_id'] != _DesignParameter['_ElementName']:
+            self.visualItemDict[_DesignParameter['_ElementName']] = self.visualItemDict.pop(_DesignParameter['_id'])
+
 
         for key in _DesignParameter:
             self._QTObj._qtProject._DesignParameter[_Module][_ID]._setDesignParameterValue(_index = key, _value= _DesignParameter[key])
@@ -1681,11 +1845,11 @@ class _MainWindow(QMainWindow):
 
         # self._QTObj._qtProject._DesignParameter[_Module][_ID]._updateVisualItem()
         # visualItem = self._QTObj._qtProject._DesignParameter[_Module][_ID]._VisualizationItemObj
-        visualItem = self.updateVisualItemFromDesignParameter(self._QTObj._qtProject._DesignParameter[_Module][_ID])
-        self.updateGraphicItem(visualItem)
 
         design_dict = self._QTObj._qtProject._update_design(design_type='parameter', module_name=self._CurrentModuleName,
                                                           dp_dict=_DesignParameter, id=_ID, element_manager_update =element_manager_update)
+        visualItem = self.updateVisualItemFromDesignParameter(self._QTObj._qtProject._DesignParameter[_Module][_DesignParameter['_ElementName']])
+        self.updateGraphicItem(visualItem)
 
         if design_dict['constraint_id']:
             self.dockContentWidget3_2.update_constraint_by_id(design_dict['constraint_id'])
@@ -1694,35 +1858,49 @@ class _MainWindow(QMainWindow):
     def get_constraint_update_design(self, id, mother_id):
         if id:
             module = self.get_id_return_module(id,'_DesignConstraint')
+            original_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(id)
             design_dict = self._QTObj._qtProject._update_design(design_type='constraint', module_name=module,
                                                               _ast=self._QTObj._qtProject._DesignConstraint[module][id]._ast, id=id)
-            try:
+            if design_dict['parameter']:
+                if original_dp_id != design_dict['parameter_id']:
+                    self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
-                self.updateGraphicItem(visualItem)
-            except:
-                pass #exceptional case LATER ( not 1-to-1 matching constraint.... > cannot update visual item)
+                self.updateGraphicItem(visualItem)\
+            # else:
+            #     pass #exceptional case LATER ( not 1-to-1 matching constraint.... > cannot update visual item)
         if mother_id:
             module = self.get_id_return_module(mother_id, '_DesignConstraint')
+            original_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(mother_id)
             design_dict  = self._QTObj._qtProject._update_design(design_type='constraint', module_name=module,
                                                                 _ast=self._QTObj._qtProject._DesignConstraint[module][
                                                                     mother_id]._ast, id=mother_id)
             if design_dict['parameter']:
-                if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 1:
-                    if design_dict['parameter']._DesignParameter['_XWidth'] == None or design_dict['parameter']._DesignParameter['_YWidth'] == None or design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
-                            pass
-                elif design_dict['parameter']._DesignParameter['_DesignParametertype'] == 2:
-                    if design_dict['parameter']._DesignParameter['_Width'] == None or design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
-                        pass
-                elif design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
-                    if design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
-                        pass
-                else:
-                    visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
-                    self.updateGraphicItem(visualItem)
+                if original_dp_id != design_dict['parameter_id']:
+                    self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
+                # if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 1:
+                #     if design_dict['parameter']._DesignParameter['_XWidth'] == None or design_dict['parameter']._DesignParameter['_YWidth'] == None or design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
+                #             pass
+                # elif design_dict['parameter']._DesignParameter['_DesignParametertype'] == 2:
+                #     if design_dict['parameter']._DesignParameter['_Width'] == None or design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
+                #         pass
+                # elif design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
+                #     if design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
+                #         pass
+                # else:
+            try:
+                visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
+                self.updateGraphicItem(visualItem)
+            except:
+                traceback.print_exc()
 
     def deliveryDesignParameter(self):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()
         self.dockContentWidget3_2.receiveDesignParameter(deliveryParameter)
+
+    # def XYDictManagement(self, equation):
+    #     self.name_index_matching = dict()
+    #     self.name_index_matching[str(equation)] = self.index_for_coordinates
+
 
     def createNewConstraint(self,_ConstraintParameter):
         if self._QTObj._qtProject == None:
@@ -1865,6 +2043,7 @@ class _MainWindow(QMainWindow):
                     _ASTobj._id = _newConstraintID
                     _ASTobj._type = 'XYCoordinate'
                     self._DummyConstraints.XYDict[_newConstraintID] = info_dict
+                    self._DummyConstraints.XYDict[_newConstraintID]
                     self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
                     design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
                                                                       module_name=self._CurrentModuleName, _ast=_ASTobj)
@@ -2252,8 +2431,10 @@ class _MainWindow(QMainWindow):
             old_variable_dict = copy.deepcopy(self.visualItemDict[changed_dp_id]._ItemTraits['variable_info'])
             module_name = self.get_id_return_module(constraint_id,'_DesignConstraint')
             used_variable_list = parse_constraint_to_get_value(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
-            self.visualItemDict[changed_dp_id].update_dc_variable_info(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
-
+            try:
+                self.visualItemDict[changed_dp_id].update_dc_variable_info(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
+            except:
+                traceback.print_exc()
             # erased_variable_list = list(set(old_variable_list)-set(used_variable_list))
             current_variable_dict = self.visualItemDict[changed_dp_id]._ItemTraits['variable_info']
             tmpList=list()
@@ -2431,13 +2612,13 @@ class _MainWindow(QMainWindow):
 class _CustomView(QGraphicsView):
     variable_signal = pyqtSignal(str)
     nameout_signal = pyqtSignal(str)
-    name_list_signal = pyqtSignal(list)
+    name_list_signal = pyqtSignal(list, list)
 
     def __init__(self):
         super(_CustomView, self).__init__()
         self.show()
         self.setMouseTracking(True)
-        self.modulename=None
+        self.getModule=None
 
     def wheelEvent(self, QWheelEvent):
         zoomInFactor = 1.25
@@ -2458,6 +2639,30 @@ class _CustomView(QGraphicsView):
         delta = newPosition - oldPosition
         self.translate(delta.x(),delta.y())
 
+    def keyPressEvent(self, QKeyEvent):
+        if QKeyEvent.key() == Qt.Key_F:
+            every_item = self.scene().items()
+            tmp_group_item = QGraphicsItemGroup()
+            for item in every_item:
+                if type(item) == VisualizationItem._VisualizationItem:
+                    item.setSelected(False)
+                    if item._subCellFlag:
+                        pass
+                    else:
+                        tmp_group_item.addToGroup(item)
+            # map(lambda item: tmp_group_item.addToGroup(item), every_item)
+            print(tmp_group_item.childItems())
+            self.scene().addItem(tmp_group_item)
+            self.fitInView(tmp_group_item,Qt.KeepAspectRatio)
+            self.scene().destroyItemGroup(tmp_group_item)
+            del tmp_group_item
+            # self.fitInView(self.scene().ghost_group_item,Qt.KeepAspectRatio)
+        elif QKeyEvent.key() == Qt.Key_Z:
+            self.fitInView(QRectF(-650,-345,1300,690))
+            # self.centerOn(QPointF(0,0))
+
+        super().keyPressEvent(QKeyEvent)
+
     def mousePressEvent(self, event) -> None:
         if event.button() == Qt.RightButton:
             # print('return')
@@ -2469,30 +2674,51 @@ class _CustomView(QGraphicsView):
     #     super
     def contextMenuEvent(self, event) -> None:
         constraint_create_array = QAction("create array", self)
+        inspect_path_connection = QAction("create auto path", self)
         variable_create_array = QAction("create array variable", self)
         variable_create_distance = QAction("create distance variable", self)
         variable_create_enclosure = QAction("create enclousre variable", self)
         variable_create_connect = QAction("create connect variable", self)
+        visual_ungroup = QAction("ungroup multiple xy index cells", self)
+        visual_ungroup.setShortcut('Ctrl+G')
 
         menu = QMenu(self)
         menu.addAction(constraint_create_array)
+        menu.addAction(inspect_path_connection)
         menu.addAction(variable_create_array)
         menu.addAction(variable_create_distance)
         menu.addAction(variable_create_enclosure)
         menu.addAction(variable_create_connect)
+        menu.addAction(visual_ungroup)
 
-        constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('c_array'))
+        if self.scene().selectedItems():
+            if self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 1:
+               constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('boundary_array'))
+            elif self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 2:
+               constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('path_array'))
+            elif self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 3:
+               constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('sref_array'))
+        else:
+            constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('boundary_array'))
+        inspect_path_connection.triggered.connect(lambda tmp: self.variable_emit('auto_path'))
         variable_create_array.triggered.connect(lambda tmp: self.variable_emit('array'))
         variable_create_distance.triggered.connect(lambda tmp: self.variable_emit('distance'))
         variable_create_enclosure.triggered.connect(lambda tmp: self.variable_emit('enclosure'))
         variable_create_connect.triggered.connect(lambda tmp: self.variable_emit('connect'))
+        visual_ungroup.triggered.connect(self.scene().ungroup_indexed_item)
 
 
         menu.exec(event.globalPos())
 
     def variable_emit(self, type):
-        if type == 'c_array':
-            self.variable_signal.emit('c_array')
+        if type == 'boundary_array':
+            self.variable_signal.emit('boundary_array')
+        elif type == 'path_array':
+            self.variable_signal.emit('path_array')
+        elif type == 'sref_array':
+            self.variable_signal.emit('sref_array')
+        if type == 'auto_path':
+            self.variable_signal.emit('auto_path')
         elif type == 'array':
             self.variable_signal.emit('element array')
         elif type == 'distance':
@@ -2501,6 +2727,8 @@ class _CustomView(QGraphicsView):
             self.variable_signal.emit('enclosure')
         elif type == 'connect':
             self.variable_signal.emit('connect')
+        # elif type == 'ungroup':
+        #     self.variable_signal.emit('ungroup')
 
 
     def dragEnterEvent(self, event) -> None:
@@ -2513,9 +2741,17 @@ class _CustomView(QGraphicsView):
         event.proposedAction()
         super(self).dropEvent(event)
 
-    def name_out_fcn(self,name_list):
-        name_list.insert(0,self.modulename)
-        self.name_list_signal.emit(name_list)
+    def name_out_fcn(self,name_list,index_list):
+        if self.getModule == None:
+            name_list.insert(0,None)
+            index_list.insert(0,None)
+        else:
+            name_list.insert(0,self.getModule._ItemTraits['_ElementName'])
+            if self.getModule._ItemTraits['_DesignParametertype'] == 1:
+                index_list.insert(0,self.getModule.block[0].index)
+            else:
+                index_list.insert(0,self.getModule.index)
+        self.name_list_signal.emit(name_list,index_list)
 
 class _CustomScene(QGraphicsScene):
     send_debug_signal = pyqtSignal()
@@ -2525,7 +2761,7 @@ class _CustomScene(QGraphicsScene):
     send_move_signal = pyqtSignal(QPointF)
     send_moveDone_signal = pyqtSignal()
     send_deleteItem_signal = pyqtSignal(str)
-    send_module_name_list_signal = pyqtSignal(list)
+    send_module_name_list_signal = pyqtSignal(list, list)
     send_mouse_move_signal = pyqtSignal(QGraphicsSceneMouseEvent)
     send_show_variable_signal = pyqtSignal(QGraphicsItem)
     send_doubleclick_signal = pyqtSignal(bool)
@@ -2537,8 +2773,8 @@ class _CustomScene(QGraphicsScene):
         super().__init__()
         if axis:
             pen = QPen()
-            pen.setStyle(Qt.SolidLine)
-            pen.setColor(Qt.GlobalColor.red)
+            pen.setStyle(Qt.DashLine)
+            pen.setColor(Qt.GlobalColor.lightGray)
             pen.setCapStyle(Qt.RoundCap)
             pen.setWidth(3)
 
@@ -2553,6 +2789,19 @@ class _CustomScene(QGraphicsScene):
 
         self.point_items_memory = []
         self.selected_item_in_memory = None
+        # self.ghost_group_item = QGraphicsItemGroup()
+        # self.ghost_group_item.setFlag(f)
+        # self.addItem(self.ghost_group_item)
+
+    # def addItem(self, item: QGraphicsItem) -> None:
+    #     super(_CustomScene, self).addItem(item)
+    #     if item != self.ghost_group_item:
+    #         self.ghost_group_item.addToGroup(item)
+    #
+    # def removeItem(self, item: QGraphicsItem) -> None:
+    #     super(_CustomScene, self).removeItem(item)
+    #     if item != self.ghost_group_item:
+    #         self.ghost_group_item.removeFromGroup(item)
 
     def getNonselectableLayerList(self, _layerlist):
         self.nslist = _layerlist
@@ -2563,11 +2812,13 @@ class _CustomScene(QGraphicsScene):
             masked_output = []
             for item in items:
                 if type(item) == VisualizationItem._VisualizationItem:
+                    self.send_item_clicked_signal.emit(item)
                     if not item.parentItem():
                         masked_output.append(item)
             return masked_output
 
         items = self.items(event.scenePos())
+        print(f'debug for via {items}')
         # for item in items:
         #     if '_id' in item.__dict__:
         #         print(f'0)Items before masking {item._id}')
@@ -2578,6 +2829,7 @@ class _CustomScene(QGraphicsScene):
             print(items)
             # self.point_items_memory = items
 
+        before_selected_item = None
         if self.point_items_memory:
             print(f'1)There is items in memory: {[item._id for item in self.point_items_memory]}')
             if set(items) == set(self.point_items_memory):
@@ -2601,11 +2853,24 @@ class _CustomScene(QGraphicsScene):
                     self.point_items_memory[0].save_zvalue_in_memory()
                     self.point_items_memory[0].setZValue(10)
                 else:
-                    print(f'3)idx_not_overflow :{idx}')
-                    print(f'3-info) z_values : {[item.zValue() for item in self.point_items_memory]}')
-                    self.point_items_memory[idx].restore_zvalue()
-                    self.point_items_memory[idx+1].save_zvalue_in_memory()
-                    self.point_items_memory[idx+1].setZValue(10)
+                    if before_selected_item and before_selected_item not in self.point_items_memory:
+                        '''
+                        어떤 이유인지 모르겠지만, 특정 sref의 경우 bounding box와 실제 클릭이 되는 부분이 다름.
+                        masking을 했을 때 items에 해당 visualitem이 선택이 안되지만, 실제로 scene에서는 선택이 되어서
+                        문제가 생김.
+                        '''
+                        print(f'3) maybe something is wrong!')
+                        print(f'3-info) reset selected item')
+                        before_selected_item.restore_zvalue()
+                        self.point_items_memory[0].setZValue(10)
+                        # print(f'debug z value {before_selected_item.zValue()}')
+                        # print(f'3-info) b_z_values : {[item.zValue() for item in self.point_items_memory]}')
+                    else:
+                        print(f'3)idx_not_overflow :{idx}')
+                        print(f'3-info) b_z_values : {[item.zValue() for item in self.point_items_memory]}')
+                        self.point_items_memory[idx].restore_zvalue()
+                        self.point_items_memory[idx+1].save_zvalue_in_memory()
+                        self.point_items_memory[idx+1].setZValue(10)
             else:
                 if items:
                     print(f'4)new point : {items[0]._id}')
@@ -2826,21 +3091,23 @@ class _CustomScene(QGraphicsScene):
             itemList = self.selectedItems()
             for item in itemList:
                 if item._ItemTraits['_DesignParametertype'] == 3:
-                    subElement = item._ItemTraits['_ElementName']
                     structure_dict = self.copyItem(item)
-                    self.newWindow(structure_dict, subElement)
+                    self.newWindow(structure_dict, item)
         elif QKeyEvent.key() == Qt.Key_I:
             itemList = self.selectedItems()
             for item in itemList:
-                index = len(item._ItemTraits['_XYCoordinates'])
+                # index = len(item._ItemTraits['_XYCoordinates'])
                 if item._ItemTraits['_DesignParametertype'] == 1:
-                    if index is not 1:
-                        subElement = item._ItemTraits['_ElementName']
-                        structure_dict = self.splitItem(item, index)
-                        self.newWindow(structure_dict, subElement)
-                        print(structure_dict)
+                    self.ungroup_indexed_item()
+                    # if index is not 1:
+                    #     subElement = item._ItemTraits['_ElementName']
+                        # structure_dict = self.splitItem(item, index)
+                        # self.newWindow(structure_dict, subElement)
+                        # print(structure_dict)
                 elif item._ItemTraits['_DesignParametertype'] == 2:
                     print('not yet')
+                    print(item)
+                    self.ungroup_indexed_item()
                     # if index is not 1:
                     #     subElement = item._ItemTraits['_ElementName']
                     #     structure_dict = self.splitItem(item, index)
@@ -2857,7 +3124,7 @@ class _CustomScene(QGraphicsScene):
             itemList = self.selectedItems()
             for item in itemList:
                 try:
-                    self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']])
+                    self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0].index])
                 except:
                     pass
 
@@ -2879,11 +3146,11 @@ class _CustomScene(QGraphicsScene):
     def itemListClickIgnore(self,flag):
         self.listIgnoreFlag = flag
 
-    def newWindow(self, structure_dict, subElementName):
+    def newWindow(self, structure_dict, subItem):
 
         self.viewList.append(_CustomView())
-        self.viewList[-1].setWindowTitle(subElementName)
-        self.viewList[-1].modulename = subElementName
+        self.viewList[-1].setWindowTitle(subItem._ItemTraits['_ElementName'])
+        self.viewList[-1].getModule = subItem
         self.viewList[-1].nameout_signal.connect(self.receive_module_name)
         self.viewList[-1].name_list_signal.connect(self.receive_module_name)
 
@@ -2905,10 +3172,10 @@ class _CustomScene(QGraphicsScene):
         self.viewList[-1].setGeometry(200,200,1200,800)
         self.viewList[-1].show()
 
-    def receive_module_name(self,name_list):
+    def receive_module_name(self,name_list,index_list):
         if type(name_list) == str:
             name_list = [name_list]
-        self.send_module_name_list_signal.emit(name_list)
+        self.send_module_name_list_signal.emit(name_list,index_list)
 
     def copyItem(self, item):
         structure_dict = dict()
@@ -2916,9 +3183,9 @@ class _CustomScene(QGraphicsScene):
             structure_dict[key] = value
         return structure_dict
 
-    def splitItem(self, item, index):
+    def splitItem(self, item):
         structure_dict = dict()
-        for i in range(index):
+        for i in range(len(item._ItemTraits['_XYCoordinates'])):
             tmpTraits = copy.deepcopy(item._ItemTraits)
             tmpTraits['_ElementName'] = item._ItemTraits['_ElementName'] + f'[{i}]'
             tmpTraits['_XYCoordinates'] = [item._ItemTraits['_XYCoordinates'][i]]
@@ -2930,6 +3197,53 @@ class _CustomScene(QGraphicsScene):
             # for key, value in item._ItemTraits['_DesignParameterRef'].items():
             #     structure_dict[key] = value
         return structure_dict
+
+    def ungroup_indexed_item(self):
+        for item in self.selectedItems():
+            if type(item) == VisualizationItem._VisualizationItem:
+                if item._PathUngroupedFlag or (len(item._ItemTraits['_XYCoordinates']) == 1 and item._ItemTraits['_DesignParametertype'] == 2):
+                    if len(item.block) != 1:
+                        for child in item.childItems():
+                            if type(child) == VisualizationItem._RectBlock:
+                                tmp_vs_item = child.independent_from_group()
+                                self.addItem(tmp_vs_item)
+                                tmp_vs_item._PathUngroupedFlag = True
+
+                            self.removeItem(item)
+                elif len(item._ItemTraits['_XYCoordinates']) > 1:
+                    if item._ItemTraits['_DesignParametertype'] == 1:
+                        # map(lambda child: child.setFlag(QGraphicsItem.ItemIsSelectable, True), item.childItems())
+                        for child in item.childItems():
+                            if type(child) == VisualizationItem._RectBlock:
+                                tmp_vs_item = child.independent_from_group()
+                                self.addItem(tmp_vs_item)
+                        # map(lambda child: child.independent_from_group(self), item.childItems())
+                    elif item._ItemTraits['_DesignParametertype'] == 2:
+                        rect_counts_for_connected_path = [len(xy) - 1 for xy in item._ItemTraits['_XYCoordinates']]
+                        for idx, rect_count in enumerate(rect_counts_for_connected_path):
+                            print(rect_counts_for_connected_path)
+                            tmp_vs_item = None
+                            rect_count = rect_counts_for_connected_path.pop(0)
+                            count = 0
+                            print(item.childItems())
+                            for child in item.childItems():
+                                if type(child) == VisualizationItem._RectBlock:
+                                    tmp_vs_item = child.independent_path_from_group(tmp_vs_item)
+                                    count += 1
+                                    if count == rect_count:
+                                        self.addItem(tmp_vs_item)
+                                        tmp_vs_item._PathUngroupedFlag = True
+                                        count = 0
+                                        tmp_vs_item = None
+                                        if rect_counts_for_connected_path:
+                                            rect_count = rect_counts_for_connected_path.pop(0)
+
+                    self.removeItem(item)
+
+                else:
+                    print('Only one index exist.')
+                    print(item._ItemTraits['_XYCoordinates'])
+
 
 class _VersatileWindow(QWidget):
     send_Name_signal = pyqtSignal(str)

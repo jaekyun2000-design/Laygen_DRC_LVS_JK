@@ -192,10 +192,12 @@ class _BoundarySetupWindow(QWidget):
             self._DesignParameter['_XWidth'] = float(self.width_input.text())
             self._DesignParameter['_YWidth'] = float(self.height_input.text())
             self._DesignParameter['_Layer'] = self.layer_input.currentText()
+
             try:
                 self.send_DestroyTmpVisual_signal.emit(self.visualItem)
             except:
                 pass
+
             self.send_BoundaryDesign_signal.emit(self._DesignParameter)
             self.destroy()
 
@@ -2585,6 +2587,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_SendASTDict_signal = pyqtSignal(list)
     send_SendSTMT_signal = pyqtSignal(dict)
     send_SendID_signal = pyqtSignal(str)
+    send_SendID_signal_highlight = pyqtSignal(str)
     send_SendCopyConstraint_signal = pyqtSignal(QTInterfaceWithAST.QtDesinConstraint)
     send_RootDesignConstraint_signal = pyqtSignal(str)
     send_ReceiveDone_signal = pyqtSignal()
@@ -2594,6 +2597,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     # send_deleteID_signal = pyqtSignal(str)
     send_deleteConstraint_signal = pyqtSignal(str)
     send_dummy_ast_id_signal = pyqtSignal(str)
+
 
     originalKeyPress = QTreeView.keyPressEvent
 
@@ -2676,9 +2680,12 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             sref_item = self.model.item(rc,0)
             calculate_name_item = sref_item.child(4,4) #row=4 for calculate_fcn in Sref ast
             idx = self.model.indexFromItem(calculate_name_item).siblingAtColumn(4)
-            fcn_list = list(generator_model_api.class_function_dict[_DesignConstraint[_parentName][_id]._ast.library].keys())
-            combo_delegetor = ComboDelegate(self,fcn_list)
-            self.setItemDelegateForColumn(4,combo_delegetor)
+            if _DesignConstraint[_parentName][_id]._ast.library == 'MacroCell':
+                pass
+            else:
+                fcn_list = list(generator_model_api.class_function_dict[_DesignConstraint[_parentName][_id]._ast.library].keys())
+                combo_delegetor = ComboDelegate(self,fcn_list)
+                self.setItemDelegateForColumn(4,combo_delegetor)
             # idx = self.model.index(rc,3,QModelIndex())
             # self.model.appendRow([QStandardItem('aa')])
             # self.openPersistentEditor(self.model.index(rc,3))
@@ -2707,6 +2714,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         try:
             ###Step 1 update value#####################################
             itemIDitem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))     #ID
+            if not itemIDitem:
+                return
             itemID = itemIDitem.text()
             motherID = None
             moduleName = re.sub(r'\d','',itemID)
@@ -3157,6 +3166,10 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 print("copy!!")
         elif QKeyEvent.key() == Qt.Key_F5:
             self.resizeColumnToContents(0)
+        elif QKeyEvent.key() == Qt.Key_H:
+            id_item = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
+            id_string = id_item.text()
+            self.send_SendID_signal_highlight.emit(id_string)
 
         self.originalKeyPress(self,QKeyEvent)
 
@@ -3213,12 +3226,12 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             if idx.isValid():
                 type_item = self.model.itemFromIndex(idx.siblingAtColumn(2))
 
-                if type_item.text() == 'XYCoordinate':
+                if type_item.text() == 'XYCoordinate' or 'PathXY':
                     self.context_menu_for_xy.exec_(self.viewport().mapToGlobal(point))
                 elif "str" in type_item.text():
                     if idx.parent():
                         parent_type_item = self.model.itemFromIndex(idx.parent().siblingAtColumn(2))
-                        if parent_type_item.text() == 'XYCoordinate':
+                        if parent_type_item.text() == 'XYCoordinate' or 'PathXY':
                             self.context_menu_for_xy.exec_(self.viewport().mapToGlobal(point))
                 elif "list" in type_item.text():
                     self.context_menu_for_list.exec_(self.viewport().mapToGlobal(point))
@@ -3265,6 +3278,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                     self.scrollTo(selected_item_idx)
                 except:
                     traceback.print_exc()
+
+
 
 
         # constraint_ids = [item.text() for item in constraint_names]
@@ -4031,8 +4046,8 @@ class _FlatteningCell(QWidget):
         self.loop_obj = QEventLoop()
         self._hdict = _hierarchydict
         self.model = QTreeWidget()
-        self.model.setColumnCount(4)
-        self.model.setHeaderLabels(['Design Object', 'Cell Name', 'Flatten Option', 'Generator Name'])
+        self.model.setColumnCount(5)
+        self.model.setHeaderLabels(['Design Object', 'Cell Name', 'Flatten Option', 'Macro Cell', 'Generator Name'])
         self.itemlist = list()
         self.combolist = list(generator_model_api.class_dict.keys())
         self.initUI()
@@ -4071,9 +4086,12 @@ class _FlatteningCell(QWidget):
         for item in self.itemlist:
             if self.model.itemWidget(item, 2).checkState() == 2:
                 _flatten_dict[item.text(0) + '/' + item.text(1)] = None
+            elif self.model.itemWidget(item, 3).checkState() == 2:
+                _flatten_dict[item.text(0) + '/' + item.text(1)] = 'MacroCell'
             else:
-                _flatten_dict[item.text(0) + '/' + item.text(1)] = self.model.itemWidget(item, 3).currentText()
+                _flatten_dict[item.text(0) + '/' + item.text(1)] = self.model.itemWidget(item, 4).currentText()
 
+        print(_flatten_dict)
         return _flatten_dict
 
 
@@ -4105,13 +4123,17 @@ class _FlatteningCell(QWidget):
     def modifyBraches(self, item, cn):
         cell_name = QLabel(cn)
 
-        check = QCheckBox()
-        check.setText(item.text(1))
+        flattenCheck = QCheckBox()
+        flattenCheck.setText(item.text(1))
+
+        macroCheck = QCheckBox()
+        macroCheck.setText(item.text(1))
 
         combo = QComboBox()
         combo.addItems(self.combolist)
 
-        check.setText('OFF')
+        flattenCheck.setText('OFF')
+        macroCheck.setText('OFF')
         combo.setEnabled(True)
 
         if self.grouping:
@@ -4121,22 +4143,33 @@ class _FlatteningCell(QWidget):
             if module_index != -1:
                 combo.setCurrentIndex(module_index)
 
-        check.stateChanged.connect(self.ActivateCombobox)
+        flattenCheck.stateChanged.connect(self.ActivateCombobox)
+        macroCheck.stateChanged.connect(self.ActivateCombobox)
 
         # self.model.setItemWidget(item, 1, cell_name)
-        self.model.setItemWidget(item, 2, check)
-        self.model.setItemWidget(item, 3, combo)
+        self.model.setItemWidget(item, 2, flattenCheck)
+        self.model.setItemWidget(item, 3, macroCheck)
+        self.model.setItemWidget(item, 4, combo)
 
     def ActivateCombobox(self, state):
         item = self.model.currentItem()
-        siblingcheckbox = self.model.itemWidget(item, 2)
-        siblingcombobox = self.model.itemWidget(item, 3)
+        siblingFlattenCheckbox = self.model.itemWidget(item, 2)
+        siblingMacroCheckbox = self.model.itemWidget(item, 3)
+        siblingcombobox = self.model.itemWidget(item, 4)
 
-        if state == 2:
-            siblingcheckbox.setText('ON')
+        if siblingFlattenCheckbox.checkState() == 2:
+            siblingFlattenCheckbox.setText('ON')
+            siblingMacroCheckbox.setEnabled(False)
+            siblingcombobox.setEnabled(False)
+        elif siblingMacroCheckbox.checkState() == 2:
+            siblingMacroCheckbox.setText('ON')
+            siblingFlattenCheckbox.setEnabled(False)
             siblingcombobox.setEnabled(False)
         else:
-            siblingcheckbox.setText('OFF')
+            siblingFlattenCheckbox.setText('OFF')
+            siblingMacroCheckbox.setText('OFF')
+            siblingFlattenCheckbox.setEnabled(True)
+            siblingMacroCheckbox.setEnabled(True)
             siblingcombobox.setEnabled(True)
 
 class ComboDelegate(QItemDelegate):

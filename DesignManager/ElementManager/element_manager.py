@@ -53,21 +53,31 @@ class ElementManager:
                 elif key == 'width':
                     tmpAST.__dict__[key] = dp_dict['_Width']
 
-        elif dp_dict['_DesignParametertype'] == 3:  #Sref
-            tmpAST = element_ast.Sref()
-            for key in element_ast.Sref._fields:
-                if key == 'name':
-                    tmpAST.__dict__[key] = dp_dict['_ElementName']
-                elif key == 'library':
-                    tmpAST.__dict__[key] = dp_dict['library']
-                elif key == 'className':
-                    tmpAST.__dict__[key] = dp_dict['className']
-                elif key == 'XY':
-                    tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]
-                elif key == 'calculate_fcn':
-                    tmpAST.__dict__[key] = list(generator_model_api.class_function_dict[dp_dict['library']].keys())[0]
-                elif key == 'parameters':
-                    tmpAST.__dict__[key] = dp_dict['parameters']
+        elif dp_dict['_DesignParametertype'] == 3:  # Sref, MacroCell
+            if dp_dict['library'] == 'MacroCell':
+                tmpAST = element_ast.MacroCell()
+                for key in element_ast.MacroCell._fields:
+                    if key == 'name':
+                        tmpAST.__dict__[key] = dp_dict['_ElementName']
+                    elif key == 'library':
+                        tmpAST.__dict__[key] = dp_dict['library']
+                    elif key == 'XY':
+                        tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]
+            else:
+                tmpAST = element_ast.Sref()
+                for key in element_ast.Sref._fields:
+                    if key == 'name':
+                        tmpAST.__dict__[key] = dp_dict['_ElementName']
+                    elif key == 'library':
+                        tmpAST.__dict__[key] = dp_dict['library']
+                    elif key == 'className':
+                        tmpAST.__dict__[key] = dp_dict['className']
+                    elif key == 'XY':
+                        tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]
+                    elif key == 'calculate_fcn':
+                        tmpAST.__dict__[key] = list(generator_model_api.class_function_dict[dp_dict['library']].keys())[0]
+                    elif key == 'parameters':
+                        tmpAST.__dict__[key] = dp_dict['parameters']
 
 
         elif dp_dict['_DesignParametertype'] == 'element array':  #EA
@@ -351,6 +361,11 @@ class ElementManager:
         else:
             return None
 
+    def change_dp_id(self,original_id, changed_id):
+        dc_id = self.dp_id_to_dc_id[original_id]
+        if dc_id:
+            self.dp_id_to_dc_id[changed_id] = self.dp_id_to_dc_id.pop(original_id)
+            self.dc_id_to_dp_id[dc_id] = changed_id
 
 class KeyManager():
     _Boundarykey = dict(
