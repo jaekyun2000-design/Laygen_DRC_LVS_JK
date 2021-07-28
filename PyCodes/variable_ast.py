@@ -115,7 +115,10 @@ class IrregularTransformer(ast.NodeTransformer):
         self._id_to_data_dict = _id_to_data_dict
 
     def visit_XYCoordinate(self,node):
-        _id = node.id
+        if type(node.id) == list:
+            _id = node.id[0]
+        else:
+            _id = node.id
         tmpDict = dict()
         tmpDict['X'] = []
         tmpDict['Y'] = []
@@ -202,7 +205,10 @@ class IrregularTransformer(ast.NodeTransformer):
 
 
     def visit_PathXY(self, node):
-        _id = node.id
+        if type(node.id) == list:
+            _id = node.id[0]
+        else:
+            _id = node.id
         sentence = '['
         for _, elementIdList in self._id_to_data_dict.XYPathDict[_id].items():
             for i in range(len(elementIdList)):

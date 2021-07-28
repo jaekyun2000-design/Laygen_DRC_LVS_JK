@@ -3349,6 +3349,7 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
     ex = _MainWindow()
+
     try:
         app.exec_()
     except:
