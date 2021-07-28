@@ -281,16 +281,81 @@ class IrregularTransformer(ast.NodeTransformer):
         _name = info_dict['name']
         _type = info_dict['_type']
         _flag = info_dict['ExpressionFlag']
-
+        _index = info_dict['index']
+        _width = info_dict['width']
+        _length = info_dict['length']
 
         if info_dict['width'] == 'Auto':
             if _flag == 'Relative':
-                if _type != 'path_array':
-                    expression = info_dict['source_reference']
+                if _type == 'path_array':
+                    if info_dict['source_reference'][0] == info_dict['target_reference'][0]:
+                        mode = 'vertical'
+                        expression1 = info_dict['source_reference']
+                        expression1 = 'width' + expression1
+                        _width = self.expressionTransformer(expression1, None)
+                        if info_dict['length'] == 'Auto':
+                            expression2 = info_dict['source_reference']
+                            expression2 = 'height' + expression2
+                            _length = self.expressionTransformer(expression2, None)
 
+                    else:
+                        mode = 'horizontal'
+                        expression1 = info_dict['source_reference']
+                        expression1 = 'height' + expression1
+                        _width = self.expressionTransformer(expression1, None)
+                        if info_dict['length'] == 'Auto':
+                            expression2 = info_dict['source_reference']
+                            expression2 = 'width' + expression2
+                            _length = self.expressionTransformer(expression2, None)
+                else:
+                    expression1 = info_dict['source_reference']
+                    expression1 = 'width' + expression1
+                    _width = self.expressionTransformer(expression1, None)
+
+                    expression2 = info_dict['source_reference']
+                    expression2 = 'width' + expression2
+                    _length = self.expressionTransformer(expression2, None)
         else:
-            _width = info_dict['width']
+            if _flag == 'Relative':
+                if _type == 'path_array':
+                    if info_dict['source_reference'][0] == info_dict['target_reference'][0]:
+                        mode = 'vertical'
+                        if info_dict['length'] == 'Auto':
+                            expression2 = info_dict['source_reference']
+                            expression2 = 'height' + expression2
+                            _length = self.expressionTransformer(expression2, None)
+                    else:
+                        mode = 'horizontal'
+                        if info_dict['length'] == 'Auto':
+                            expression2 = info_dict['source_reference']
+                            expression2 = 'width' + expression2
+                            _length = self.expressionTransformer(expression2, None)
+                else:
+                    expression1 = info_dict['source_reference']
+                    expression1 = 'width' + expression1
+                    _width = self.expressionTransformer(expression1, None)
 
+                    expression2 = info_dict['source_reference']
+                    expression2 = 'width' + expression2
+                    _length = self.expressionTransformer(expression2, None)
+        # if info_dict['length'] == 'Auto':
+        #     if _flag == 'Relative':
+        #         if _type == 'path_array':
+        #             if info_dict['source_reference'][0] == info_dict['target_reference'][0]:
+        #                 mode = 'vertical'
+        #                 expression = info_dict['source_reference']
+        #                 expression = 'height' + expression
+        #                 _length = self.expressionTransformer(expression, None)
+        #             else:
+        #                 mode = 'horizontal'
+        #                 expression = info_dict['source_reference']
+        #                 expression = 'width' + expression
+        #                 _length = self.expressionTransformer(expression, None)
+        #
+        #         else:
+        #             expression = info_dict['source_reference']
+        #             expression = 'width' + expression
+        #             _width = self.expressionTransformer(expression, None)
 
         if _flag == 'Relative':
             pass
@@ -318,7 +383,11 @@ class IrregularTransformer(ast.NodeTransformer):
             function = 'width'
         elif function == 'he':
             function = 'height'
-
+        if XYFlag == None:
+            if function != ('width' or 'height'):
+                raise Exception("Invalid Input, Debug")
+            else:
+                XYFlag = 'XY'
         tmp_string = re.sub('\(|\'|\)', "", expression)
         tmp_string = tmp_string[len(function):]
         operands = re.split(',', tmp_string)
