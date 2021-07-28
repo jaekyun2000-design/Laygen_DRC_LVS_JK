@@ -567,7 +567,7 @@ class _MainWindow(QMainWindow):
         # cluster_model.sref_matching()
         cluster_model.delete_solo_element_group()
         groups_list = cluster_model.get_array_groups()
-        reference_list = cluster_model.find_ref(groups_list)
+        self.reference_list = cluster_model.find_ref(groups_list)
         # test2 = cluster_model.find_ref_for_path_qt(groups_list[1])
         # test2 = cluster_model.find_ref_for_boundary_qt(groups_list[0])
         # test3 = cluster_model.find_ref_for_sref_qt(groups_list[-1])
@@ -589,28 +589,36 @@ class _MainWindow(QMainWindow):
         print('debug')
 
     def show_inspect_array_widget(self, array_list_item):
-        print(array_list_item.text())
-        print(self.connection_ref)
+        row = self.array_list_widget.row(array_list_item)
+        group_ref = self.reference_list[row]
+        # print(array_list_item.text())
+        # print(self.connection_ref)
 
         array_list = eval(array_list_item.text())
         if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
             print('boundary')
             self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array", vis_items=None,
-                                                         ref_list=self.connection_ref, inspect_array_window_address=self.array_list_widget)
+                                                         connection_ref_list=self.connection_ref,
+                                                         group_ref_list=group_ref,
+                                                         inspect_array_window_address=self.array_list_widget)
             self.vw.send_output_dict_signal.connect(self.create_variable)
             self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.getArray(array_list_item)
         elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
             print('path')
             self.vw = variableWindow.VariableSetupWindow(variable_type="path_array", vis_items=None,
-                                                         ref_list=self.connection_ref, inspect_array_window_address=self.array_list_widget)
+                                                         connection_ref_list=self.connection_ref,
+                                                         group_ref_list=group_ref,
+                                                         inspect_array_window_address=self.array_list_widget)
             self.vw.send_output_dict_signal.connect(self.create_variable)
             self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.getArray(array_list_item)
         else:
             print('sref')
             self.vw = variableWindow.VariableSetupWindow(variable_type="sref_array", vis_items=None,
-                                                         ref_list=self.connection_ref, inspect_array_window_address=self.array_list_widget)
+                                                         connection_ref_list=self.connection_ref,
+                                                         group_ref_list=group_ref,
+                                                         inspect_array_window_address=self.array_list_widget)
             self.vw.getArray(array_list_item)
 
 
