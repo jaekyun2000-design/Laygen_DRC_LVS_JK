@@ -9,7 +9,7 @@ from sklearn.datasets import make_moons
 from sklearn.preprocessing import RobustScaler
 from sklearn.manifold import MDS, LocallyLinearEmbedding
 from sklearn.decomposition import PCA
-
+from PyQTInterface.layermap import LayerReader
 from powertool.model import routing_geo_searching
 
 import copy
@@ -18,6 +18,7 @@ class clustering():
     def __init__(self, _DesignParameters = None, _qtDesignParameters=None):
         self._DesignParameter = copy.deepcopy(_DesignParameters)
         self._qtDesignParameters = copy.deepcopy(_qtDesignParameters)
+        self.qt_dp_layer_conversion()
         self.array_groups = []
         self.routing_groups = []
         self.geo_searching = routing_geo_searching.GeometricField()
@@ -33,6 +34,30 @@ class clustering():
             del self._DesignParameter['_Name']
         if '_GDSFile' in self._DesignParameter:
             del self._DesignParameter['_GDSFile']
+
+    def qt_dp_layer_conversion(self):
+
+        if self._qtDesignParameters:
+            layer_converter = LayerReader._LayerMapping
+            for qt_dp in self._qtDesignParameters.values():
+                item = qt_dp._DesignParameter
+                if item['_DesignParametertype'] == 1 or item['_DesignParametertype'] == 2:
+                    layer = item['_Layer']
+                    if type(layer) == str:
+                        item['_Layer'] = layer_converter[layer][0]
+                    else:
+                        continue
+            _DesignParameters = dict()
+            for key, value in self._qtDesignParameters.items():
+                _DesignParameters[key] = value._DesignParameter
+            self._DesignParameter = copy.deepcopy(_DesignParameters)
+
+                    # layer_num = item['_Layer']
+                    # if layer_num in self.layer_based_group:
+                    #     self.layer_based_group[layer_num].append(key)
+                    # else:
+                    #     self.layer_based_group[layer_num] = [key]
+
 
     def build_layer_ist_qt(self):
         self.geo_searching.xy_projection_to_main_coordinates_system_qt(self._qtDesignParameters)
@@ -198,10 +223,6 @@ class clustering():
 
 class determinstic_clustering(clustering):
     def __init__(self, _DesignParameters = None, _qtDesignParameters=None):
-        if _qtDesignParameters:
-            _DesignParameters = dict()
-            for key, value in _qtDesignParameters.items():
-                _DesignParameters[key] = value._DesignParameter
         super().__init__(_DesignParameters,_qtDesignParameters)
         self.layer_based_group = dict()
         self.design_obj_based_group = dict()
