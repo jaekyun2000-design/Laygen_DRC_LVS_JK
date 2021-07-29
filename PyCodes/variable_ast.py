@@ -2,9 +2,10 @@ import ast
 import astunparse
 import re
 import copy
+from PyCodes import element_ast
 
 custom_ast_list = ['GeneratorVariable', 'LogicExpression', 'ElementArray','DynamicElementArray','Distance',
-                   'ArgumentVariable', 'XYCoordinate', 'PathXY']
+                   'ArgumentVariable', 'XYCoordinate', 'PathXY', 'Array']
 
 
 
@@ -280,9 +281,11 @@ class IrregularTransformer(ast.NodeTransformer):
         info_dict = self._id_to_data_dict.ArrayDict[_id]
 
         ############# Common Elements ################
-        _name = info_dict['name']               # Fixed
+        # _name = info_dict['name']               # Fixed
+        _name = 'test'
         _type = info_dict['_type']              # Fixed
-        _flag = info_dict['ExpressionFlag']     # Fixed
+        # _flag = info_dict['ExpressionFlag']     # Fixed
+        _flag = 'Relative'
         _width = info_dict['width']
         _length = info_dict['length']
         _layer = info_dict['layer']             # Fixed
@@ -291,6 +294,7 @@ class IrregularTransformer(ast.NodeTransformer):
         ########### Elements For Relative #############
         _index = info_dict['index']             # Fixed
         _source_reference = info_dict['source_reference']
+        _target_reference = info_dict['target_reference']
         ###############################################
 
         ############ Elements For Offset ##############
@@ -302,7 +306,7 @@ class IrregularTransformer(ast.NodeTransformer):
         ###############################################
 
         # Width, Length Calculation if needed in advance
-        if info_dict['width'] == 'Auto':
+        if info_dict['width'] == 'Auto':        # If Width is 'Auto', Length should be fixed.
             if _flag == 'Relative':
                 if _type == 'path_array':
                     if info_dict['source_reference'][0] == info_dict['target_reference'][0]:
@@ -310,32 +314,33 @@ class IrregularTransformer(ast.NodeTransformer):
                         expression1 = info_dict['source_reference']
                         expression1 = 'width' + expression1
                         _width = self.expressionTransformer(expression1, 'FA')
-                        if info_dict['length'] == 'Auto':
-                            expression2 = info_dict['source_reference']
-                            expression2 = 'height' + expression2
-                            _length = self.expressionTransformer(expression2, 'FA')
+                        # if info_dict['length'] == 'Auto':
+                        #     expression2 = info_dict['source_reference']
+                        #     expression2 = 'height' + expression2
+                        #     _length = self.expressionTransformer(expression2, 'FA')
                     else:
                         mode = 'horizontal'
                         expression1 = info_dict['source_reference']
                         expression1 = 'height' + expression1
                         _width = self.expressionTransformer(expression1, 'FA')
-                        if info_dict['length'] == 'Auto':
-                            expression2 = info_dict['source_reference']
-                            expression2 = 'width' + expression2
-                            _length = self.expressionTransformer(expression2, 'FA')
+                        # if info_dict['length'] == 'Auto':
+                        #     expression2 = info_dict['source_reference']
+                        #     expression2 = 'width' + expression2
+                        #     _length = self.expressionTransformer(expression2, 'FA')
                 elif _type == 'boundary_array':
                     expression1 = info_dict['source_reference']
+                    #TODO : center, lt, rb 등의 기존 좌표 표현 삭제 후 width로 바꿀 것
                     expression1 = 'width' + expression1
                     _width = self.expressionTransformer(expression1, 'FA')
 
-                    expression2 = info_dict['source_reference']
-                    expression2 = 'height' + expression2
-                    _length = self.expressionTransformer(expression2, 'FA')
+                    # expression2 = info_dict['source_reference']
+                    # expression2 = 'height' + expression2
+                    # _length = self.expressionTransformer(expression2, 'FA')
                 elif _type == 'sref_array':
                     _width = 'Blank'
                     _length = 'Blank'
 
-        else:   # If _width is not 'Auto'
+        else:   # If _width is not 'Auto', Length can either be 'Auto' or Fixed
             if _flag == 'Relative':
                 if _type == 'path_array':
                     if info_dict['source_reference'][0] == info_dict['target_reference'][0]:
@@ -351,18 +356,50 @@ class IrregularTransformer(ast.NodeTransformer):
                             expression2 = 'width' + expression2
                             _length = self.expressionTransformer(expression2, 'FA')
                 elif _type == 'boundary_array':
-                    expression1 = info_dict['source_reference']
-                    expression1 = 'width' + expression1
-                    _width = self.expressionTransformer(expression1, 'FA')
-
-                    expression2 = info_dict['source_reference']
-                    expression2 = 'height' + expression2
-                    _length = self.expressionTransformer(expression2, 'FA')
+                    # expression1 = info_dict['source_reference']
+                    # expression1 = 'width' + expression1
+                    # _width = self.expressionTransformer(expression1, 'FA')
+                    if info_dict['length'] == 'Auto':
+                        expression2 = info_dict['source_reference']
+                        expression2 = 'height' + expression2
+                        _length = self.expressionTransformer(expression2, 'FA')
                 elif _type == 'sref_array':
                     _width = 'Blank'
                     _length = 'Blank'
+        ####### XY Coordinate Extraction @ Layout Generator Source Code ######
+        tmp_string = re.findall('\(.\)', _source_reference)
+        tmp_string = re.sub('\(|\'|\)', "", tmp_string)
+        operands = re.split(',', tmp_string)
+        target_array_qt = operands[-1]          # e.g.) _Met1Layer, _COLayer, ...etc.
         if _flag == 'Relative':
-            pass
+            if _type == 'boundary_array':
+                if _index == 'All':
+                    loop_code = f"XYList = []\n" \
+                                f"for i in range(len({target_array_qt}._DesignParameter['XYCoordinates'])):\n" \
+                                f"\tXYList.append({target_array_qt}._DesignParameter['XYCoordinates'][i])\n"
+                elif _index == 'Odd':
+                    loop_code = f"XYList = []\n" \
+                                f"for i in range(len({target_array_qt}._DesignParameter['XYCoordinates'])):\n" \
+                                f"\tif (i%2 == 1):\n" \
+                                f"\t\tXYList.append({target_array_qt}._DesignParameter['XYCoordinates'][i])\n"
+                elif _index == 'Even':
+                    loop_code = f"XYList = []\n" \
+                                f"for i in range(len({target_array_qt}._DesignParameter['XYCoordinates'])):\n" \
+                                f"\tif (i%2 == 0):\n" \
+                                f"\t\tXYList.append({target_array_qt}._DesignParameter['XYCoordinates'][i])\n"
+
+                tmp_node = element_ast.Boundary()
+                tmp_node.name = _name
+                tmp_node.layer = _layer
+                tmp_node.XY = 'XYList'
+                tmp_node.width = _width
+                tmp_node.height = _length
+                tmp_code_ast = element_ast.visit_Boundary(tmp_node)
+                tmp_code = astunparse.unparse(tmp_code_ast)
+
+                tmp_code = tmp_code[2:-2]
+                sentence = loop_code + '\n' + tmp_code
+                del tmp_node
         elif _flag == 'Offset':
             pass
 
