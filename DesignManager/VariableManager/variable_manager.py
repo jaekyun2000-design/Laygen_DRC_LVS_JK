@@ -68,3 +68,4 @@ class DummyConstraints:
         self.XYDict = dict()
         self.XYPathDict = dict()
         self.ExpressionDict = dict()
+        self.ArrayDict = dict()

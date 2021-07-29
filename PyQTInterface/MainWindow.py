@@ -596,7 +596,6 @@ class _MainWindow(QMainWindow):
 
         array_list = eval(array_list_item.text())
         if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
-            print('boundary')
             self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array", vis_items=None,
                                                          connection_ref_list=self.connection_ref,
                                                          group_ref_list=group_ref,
@@ -605,7 +604,6 @@ class _MainWindow(QMainWindow):
             self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.getArray(array_list_item)
         elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
-            print('path')
             self.vw = variableWindow.VariableSetupWindow(variable_type="path_array", vis_items=None,
                                                          connection_ref_list=self.connection_ref,
                                                          group_ref_list=group_ref,
@@ -614,7 +612,6 @@ class _MainWindow(QMainWindow):
             self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.getArray(array_list_item)
         else:
-            print('sref')
             self.vw = variableWindow.VariableSetupWindow(variable_type="sref_array", vis_items=None,
                                                          connection_ref_list=self.connection_ref,
                                                          group_ref_list=group_ref,
@@ -1662,12 +1659,8 @@ class _MainWindow(QMainWindow):
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
 
     def create_variable(self, variable_info_dict):
-        if variable_info_dict['type'] == 'path_array':
-            test_ast = variable_ast.PathArray()
-            xy_ref_ast = variable_ast.XYCoordinate()
-            xy_target_ast = variable_ast.XYCoordinate()
-            # variable_info_dict
-        print(variable_info_dict)
+        self.createDummyConstraint(type_for_dc = 'Array', info_dict= variable_info_dict)
+
 
     def createVariableVisual(self, variableVisualItem):
         design_dict = self._QTObj._qtProject._feed_design(design_type='parameter', module_name= self._CurrentModuleName, dp_dict= variableVisualItem.__dict__)

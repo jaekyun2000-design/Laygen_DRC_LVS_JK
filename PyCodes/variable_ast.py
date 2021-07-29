@@ -33,6 +33,13 @@ class XYCoordinate(GeneratorVariable):
         'id',       # str
     )
 
+class Array(GeneratorVariable):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'id',    # str
+    )
+
 class PathXY(GeneratorVariable):
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -202,8 +209,6 @@ class IrregularTransformer(ast.NodeTransformer):
         tmp = ast.parse(sentence)
         return tmp.body
 
-
-
     def visit_PathXY(self, node):
         if type(node.id) == list:
             _id = node.id[0]
@@ -238,12 +243,12 @@ class IrregularTransformer(ast.NodeTransformer):
                 for i in range(len(elements)):
                     expression = elements[i]
                     operands_with_operators_list = re.split(' ', expression)
-                    for i in range(len(operands_with_operators_list)):
-                        isFunction = re.search('\(\[\'.*\'\]\)', operands_with_operators_list[i])
+                    for j in range(len(operands_with_operators_list)):
+                        isFunction = re.search('\(\[\'.*\'\]\)', operands_with_operators_list[j])
                         if isFunction != None:
-                            re_expressed_element = self.expressionTransformer(operands_with_operators_list[i],
+                            re_expressed_element = self.expressionTransformer(operands_with_operators_list[j],
                                                                               XYFlag=XYFlag)
-                            operands_with_operators_list[i] = re_expressed_element
+                            operands_with_operators_list[j] = re_expressed_element
                         else:
                             pass
                     if XYFlag == 'XY':
@@ -270,7 +275,96 @@ class IrregularTransformer(ast.NodeTransformer):
         tmp = ast.parse(sentence)
         return tmp.body
 
+    def visit_Array(self, node):
+        _id = node.id
+        info_dict = self._id_to_data_dict.ArrayDict[_id]
 
+        ############# Common Elements ################
+        _name = info_dict['name']               # Fixed
+        _type = info_dict['_type']              # Fixed
+        _flag = info_dict['ExpressionFlag']     # Fixed
+        _width = info_dict['width']
+        _length = info_dict['length']
+        _layer = info_dict['layer']             # Fixed
+        ###############################################
+
+        ########### Elements For Relative #############
+        _index = info_dict['index']             # Fixed
+        _source_reference = info_dict['source_reference']
+        ###############################################
+
+        ############ Elements For Offset ##############
+        _XY_ref = info_dict['XY_ref']
+        _x_distance = info_dict['x_offset']     # Fixed
+        _y_distance = info_dict['y_offset']     # Fixed
+        _row_num = info_dict['row']             # Fixed
+        _col_num = info_dict['col']             # Fixed
+        ###############################################
+
+        # Width, Length Calculation if needed in advance
+        if info_dict['width'] == 'Auto':
+            if _flag == 'Relative':
+                if _type == 'path_array':
+                    if info_dict['source_reference'][0] == info_dict['target_reference'][0]:
+                        mode = 'vertical'
+                        expression1 = info_dict['source_reference']
+                        expression1 = 'width' + expression1
+                        _width = self.expressionTransformer(expression1, 'FA')
+                        if info_dict['length'] == 'Auto':
+                            expression2 = info_dict['source_reference']
+                            expression2 = 'height' + expression2
+                            _length = self.expressionTransformer(expression2, 'FA')
+                    else:
+                        mode = 'horizontal'
+                        expression1 = info_dict['source_reference']
+                        expression1 = 'height' + expression1
+                        _width = self.expressionTransformer(expression1, 'FA')
+                        if info_dict['length'] == 'Auto':
+                            expression2 = info_dict['source_reference']
+                            expression2 = 'width' + expression2
+                            _length = self.expressionTransformer(expression2, 'FA')
+                elif _type == 'boundary_array':
+                    expression1 = info_dict['source_reference']
+                    expression1 = 'width' + expression1
+                    _width = self.expressionTransformer(expression1, 'FA')
+
+                    expression2 = info_dict['source_reference']
+                    expression2 = 'height' + expression2
+                    _length = self.expressionTransformer(expression2, 'FA')
+                elif _type == 'sref_array':
+                    _width = 'Blank'
+                    _length = 'Blank'
+
+        else:   # If _width is not 'Auto'
+            if _flag == 'Relative':
+                if _type == 'path_array':
+                    if info_dict['source_reference'][0] == info_dict['target_reference'][0]:
+                        mode = 'vertical'
+                        if info_dict['length'] == 'Auto':
+                            expression2 = info_dict['source_reference']
+                            expression2 = 'height' + expression2
+                            _length = self.expressionTransformer(expression2, 'FA')
+                    else:
+                        mode = 'horizontal'
+                        if info_dict['length'] == 'Auto':
+                            expression2 = info_dict['source_reference']
+                            expression2 = 'width' + expression2
+                            _length = self.expressionTransformer(expression2, 'FA')
+                elif _type == 'boundary_array':
+                    expression1 = info_dict['source_reference']
+                    expression1 = 'width' + expression1
+                    _width = self.expressionTransformer(expression1, 'FA')
+
+                    expression2 = info_dict['source_reference']
+                    expression2 = 'height' + expression2
+                    _length = self.expressionTransformer(expression2, 'FA')
+                elif _type == 'sref_array':
+                    _width = 'Blank'
+                    _length = 'Blank'
+        if _flag == 'Relative':
+            pass
+        elif _flag == 'Offset':
+            pass
 
     def expressionTransformer(self, expression, XYFlag):
         """
@@ -293,7 +387,11 @@ class IrregularTransformer(ast.NodeTransformer):
             function = 'width'
         elif function == 'he':
             function = 'height'
-
+        if XYFlag == 'FA':
+            if function != ('width' or 'height'):
+                raise Exception("Invalid Input, Debug")
+            else:
+                XYFlag = 'XY'
         tmp_string = re.sub('\(|\'|\)', "", expression)
         tmp_string = tmp_string[len(function):]
         operands = re.split(',', tmp_string)
