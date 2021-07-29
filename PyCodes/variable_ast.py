@@ -333,13 +333,14 @@ class IrregularTransformer(ast.NodeTransformer):
                         #     expression2 = 'width' + expression2
                         #     _length = self.expressionTransformer(expression2, 'FA')
                 elif _type == 'boundary_array':
-                    expression1 = self.get_expression_return_element(_source_reference)
-                    expression1 = 'width' + expression1
-                    _width = self.expressionTransformer(expression1, 'FA')
-
-                    # expression2 = info_dict['source_reference']
-                    # expression2 = 'height' + expression2
-                    # _length = self.expressionTransformer(expression2, 'FA')
+                    # expression1 = self.get_expression_return_element(_source_reference)
+                    # expression1 = 'width' + expression1
+                    # _width = self.expressionTransformer(expression1, 'FA')
+                    #
+                    # # expression2 = info_dict['source_reference']
+                    # # expression2 = 'height' + expression2
+                    # # _length = self.expressionTransformer(expression2, 'FA')
+                    pass
                 elif _type == 'sref_array':
                     _width = 'Blank'
                     _length = 'Blank'
@@ -399,7 +400,7 @@ class IrregularTransformer(ast.NodeTransformer):
                                 f"\tif (i%2 == 0):\n" \
                                 f"\t\tXYList.append({target_array_qt}._DesignParameter['XYCoordinates'][i])\n"
 
-                expression1 = self.get_expression_return_element(_source_reference)
+                expression1 = self.get_expression_del_func(_source_reference)
                 expression1 = 'width' + expression1
                 _width = self.expressionTransformer(expression1, 'FA')
 
@@ -417,7 +418,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 del tmp_node
         elif _flag == 'Offset':
             pass
-    def get_expression_return_element(self, expression):
+    def get_expression_del_func(self, expression):
         function = expression[0:2]
         if function == 'to':
             function = 'top'
