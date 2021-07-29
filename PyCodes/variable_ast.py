@@ -283,27 +283,32 @@ class IrregularTransformer(ast.NodeTransformer):
         ############# Common Elements ################
         # _name = info_dict['name']               # Fixed
         _name = 'test'
-        _type = info_dict['_type']              # Fixed
+        _type = info_dict['type']              # Fixed
         # _flag = info_dict['ExpressionFlag']     # Fixed
         _flag = 'Relative'
-        _width = info_dict['width']
-        _length = info_dict['length']
-        _layer = info_dict['layer']             # Fixed
+        # _width = info_dict['width']
+        # _length = info_dict['length']
+        _width = 'Auto'
+        _length = '100'
+        # _layer = info_dict['layer']             # Fixed
+        _layer = 'METAL1'
         ###############################################
-
-        ########### Elements For Relative #############
-        _index = info_dict['index']             # Fixed
-        _source_reference = info_dict['source_reference']
-        _target_reference = info_dict['target_reference']
-        ###############################################
-
-        ############ Elements For Offset ##############
-        _XY_ref = info_dict['XY_ref']
-        _x_distance = info_dict['x_offset']     # Fixed
-        _y_distance = info_dict['y_offset']     # Fixed
-        _row_num = info_dict['row']             # Fixed
-        _col_num = info_dict['col']             # Fixed
-        ###############################################
+        if _flag == 'Relative':
+            ########### Elements For Relative #############
+            _index = info_dict['index']             # Fixed
+            # _source_reference = info_dict['XY_source_ref']
+            _source_reference = 'center(\'INV0\')'
+            if type == 'Path_array':
+                _target_reference = info_dict['target_reference']   # For Path
+            ###############################################
+        else:
+            ############ Elements For Offset ##############
+            _XY_ref = info_dict['XY_ref']
+            _x_distance = info_dict['x_offset']     # Fixed
+            _y_distance = info_dict['y_offset']     # Fixed
+            _row_num = info_dict['row']             # Fixed
+            _col_num = info_dict['col']             # Fixed
+            ###############################################
 
         # Width, Length Calculation if needed in advance
         if info_dict['width'] == 'Auto':        # If Width is 'Auto', Length should be fixed.
@@ -328,8 +333,7 @@ class IrregularTransformer(ast.NodeTransformer):
                         #     expression2 = 'width' + expression2
                         #     _length = self.expressionTransformer(expression2, 'FA')
                 elif _type == 'boundary_array':
-                    expression1 = info_dict['source_reference']
-                    #TODO : center, lt, rb 등의 기존 좌표 표현 삭제 후 width로 바꿀 것
+                    expression1 = self.get_expression_return_element(_source_reference)
                     expression1 = 'width' + expression1
                     _width = self.expressionTransformer(expression1, 'FA')
 
@@ -374,19 +378,30 @@ class IrregularTransformer(ast.NodeTransformer):
         if _flag == 'Relative':
             if _type == 'boundary_array':
                 if _index == 'All':
+                    _source_reference= re.sub("\',",'\[0\]',_source_reference)
+                    _source_reference = re.sub("\'\)", '\[0\]', _source_reference)
+
                     loop_code = f"XYList = []\n" \
                                 f"for i in range(len({target_array_qt}._DesignParameter['XYCoordinates'])):\n" \
                                 f"\tXYList.append({target_array_qt}._DesignParameter['XYCoordinates'][i])\n"
                 elif _index == 'Odd':
+                    _source_reference = re.sub("\',", '\[1\]', _source_reference)
+                    _source_reference = re.sub("\'\)", '\[1\]', _source_reference)
                     loop_code = f"XYList = []\n" \
                                 f"for i in range(len({target_array_qt}._DesignParameter['XYCoordinates'])):\n" \
                                 f"\tif (i%2 == 1):\n" \
                                 f"\t\tXYList.append({target_array_qt}._DesignParameter['XYCoordinates'][i])\n"
                 elif _index == 'Even':
+                    _source_reference = re.sub("\',", '\[0\]', _source_reference)
+                    _source_reference = re.sub("\'\)", '\[0\]', _source_reference)
                     loop_code = f"XYList = []\n" \
                                 f"for i in range(len({target_array_qt}._DesignParameter['XYCoordinates'])):\n" \
                                 f"\tif (i%2 == 0):\n" \
                                 f"\t\tXYList.append({target_array_qt}._DesignParameter['XYCoordinates'][i])\n"
+
+                expression1 = self.get_expression_return_element(_source_reference)
+                expression1 = 'width' + expression1
+                _width = self.expressionTransformer(expression1, 'FA')
 
                 tmp_node = element_ast.Boundary()
                 tmp_node.name = _name
@@ -402,6 +417,24 @@ class IrregularTransformer(ast.NodeTransformer):
                 del tmp_node
         elif _flag == 'Offset':
             pass
+    def get_expression_return_element(self, expression):
+        function = expression[0:2]
+        if function == 'to':
+            function = 'top'
+        elif function == 'bo':
+            function = 'bottom'
+        elif function == 'le':
+            function = 'left'
+        elif function == 'ri':
+            function = 'right'
+        elif function == 'ce':
+            function = 'center'
+        elif function == 'wi':
+            function = 'width'
+        elif function == 'he':
+            function = 'height'
+        tmp_string = expression[len(function):]
+        return tmp_string
 
     def expressionTransformer(self, expression, XYFlag):
         """

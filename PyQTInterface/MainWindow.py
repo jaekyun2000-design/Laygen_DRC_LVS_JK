@@ -2028,38 +2028,6 @@ class _MainWindow(QMainWindow):
             self.warning.show()
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignConstraint Fail: There is no Module")
         else:
-            # if type_for_dc == 'XYCoordinate':
-            #     try:
-            #         print("###############################################################")
-            #         print("               XYCoordinate ast creation Start                 ")
-            #         print("###############################################################")
-            #         _ASTForVariable = ASTmodule._Custom_AST_API()
-            #         _ASTtype = type_for_dc
-            #         _ASTobj = _ASTForVariable._create_variable_ast_with_name(_ASTtype)
-            #
-            #         _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(self._CurrentModuleName)
-            #         _newConstraintID = (self._CurrentModuleName + str(_designConstraintID))
-            #
-            #         _ASTobj.id = _newConstraintID
-            #         _ASTobj._id = _newConstraintID
-            #         _ASTobj._type = 'XYCoordinate'
-            #         self._DummyConstraints.XYDict[_newConstraintID] = info_dict
-            #         self._DummyConstraints.XYDict[_newConstraintID]
-            #         self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
-            #         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
-            #                                                           module_name=self._CurrentModuleName, _ast=_ASTobj)
-            #         self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
-            #                                                          _parentName=self._CurrentModuleName,
-            #                                                          _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-            #
-            #         print("###############################################################")
-            #         print("                XYCoordinate ast creation Done                 ")
-            #         print("###############################################################")
-            #     except:
-            #         print("###############################################################")
-            #         print("                XYCoordinate ast creation Failed               ")
-            #         print("###############################################################")
-
             if type_for_dc == 'PathXY_row':
                 try:
                     _ASTForVariable = ASTmodule._Custom_AST_API()
@@ -2114,11 +2082,11 @@ class _MainWindow(QMainWindow):
                     #########################################################################################
 
                     print("###############################################################")
-                    print(f"                   {type_for_dc} ast creation Done                    ")
+                    print(f"                  {type_for_dc} ast creation Done                    ")
                     print("###############################################################")
                 except:
                     print("###############################################################")
-                    print(f"                   {type_for_dc} ast creation Failed                  ")
+                    print(f"                  {type_for_dc} ast creation Failed                  ")
                     print("###############################################################")
                     traceback.print_exc()
 
