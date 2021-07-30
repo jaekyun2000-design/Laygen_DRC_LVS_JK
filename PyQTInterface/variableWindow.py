@@ -821,32 +821,38 @@ class VariableSetupWindow(QWidget):
 
     def on_buttonBox_accepted(self):
         output_dict = self.variable_widget.field_value_memory_dict
+        if output_dict['name'] == '':
+            self.warning = QMessageBox()
+            self.warning.setText("Incomplete Name")
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.show()
+            return
         if self.relative_or_offset == 'relative':
             if self.variable_type == 'path_array':
                 if output_dict['XY_source_ref'] == '' or output_dict['XY_target_ref'] == '':
                     self.warning = QMessageBox()
-                    self.warning.setText("Incomplete")
+                    self.warning.setText("Incomplete Source of Target")
                     self.warning.setIcon(QMessageBox.Warning)
                     self.warning.show()
                     return
             elif self.variable_type == 'boundary_array':
                 if output_dict['XY_source_ref'] == '':
                     self.warning = QMessageBox()
-                    self.warning.setText("Incomplete")
+                    self.warning.setText("Incomplete Source")
                     self.warning.setIcon(QMessageBox.Warning)
                     self.warning.show()
                     return
             elif self.variable_type == 'sref_array':
                 if output_dict['XY_source_ref'] == '':
                     self.warning = QMessageBox()
-                    self.warning.setText("Incomplete")
+                    self.warning.setText("Incomplete Source")
                     self.warning.setIcon(QMessageBox.Warning)
                     self.warning.show()
                     return
         elif self.relative_or_offset == 'offset':
             if output_dict['XY_ref'] == '':
                 self.warning = QMessageBox()
-                self.warning.setText("Incomplete")
+                self.warning.setText("Incomplete Reference")
                 self.warning.setIcon(QMessageBox.Warning)
                 self.warning.show()
                 return
@@ -983,6 +989,14 @@ class variableContentWidget(QWidget):
                 field_info = self.return_field_list(name, option)
                 for i, field_name in enumerate(field_info['field_list']):
                     self.field_value_memory_dict[field_name] = ''
+                    if field_name == 'layer':
+                        self.field_value_memory_dict[field_name] = 'PIMP'
+                    if field_name == 'index':
+                        self.field_value_memory_dict[field_name] = 'All'
+                    if field_name == 'width':
+                        self.field_value_memory_dict[field_name] = 'Auto'
+                    if field_name == 'length':
+                        self.field_value_memory_dict[field_name] = 'Auto'
                 self.create_skeleton(name, option, field_info)
 
         self.setLayout(self.vbox)
@@ -1150,6 +1164,7 @@ class variableContentWidget(QWidget):
         tmp_input_widget.setMaximumHeight(20)
         tmp_input_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         tmp_input_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        tmp_input_widget.addItem('')
         tmp_input_widget.currentItemChanged.connect(self.update_output_dict)
 
         output_layout = QHBoxLayout()
