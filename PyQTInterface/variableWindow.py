@@ -693,12 +693,9 @@ class VariableSetupWindow(QWidget):
     def getArray(self, array_list_item):
         self.deleteItemList.clear()
         for field_name in self.group_list:
-            if field_name == 'source_reference':
-                self.variable_widget.field_value_memory_dict['XY_source_ref'] = 'center(' + str(
-                    self.group_list[field_name]) + ')'
-            elif field_name == 'target_reference':
-                self.variable_widget.field_value_memory_dict['XY_target_ref'] = 'center(' + str(
-                    self.group_list[field_name]) + ')'
+            if field_name == 'XY_source_ref' or field_name == 'XY_target_ref':
+                self.variable_widget.field_value_memory_dict[field_name] =\
+                    'center(' + str(self.group_list[field_name]) + ')'
             else:
                 self.variable_widget.field_value_memory_dict[field_name] = self.group_list[field_name]
         array_list = eval(array_list_item.text())
@@ -853,7 +850,6 @@ class VariableSetupWindow(QWidget):
                 self.warning.setIcon(QMessageBox.Warning)
                 self.warning.show()
                 return
-
 
         print('output dict:', self.variable_widget.field_value_memory_dict)
 

@@ -138,7 +138,7 @@ class clustering():
         cutting_idx = source_reference[-1].find('[')
         source_reference[-1] = source_reference[-1][:cutting_idx]
 
-        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, source_reference=source_reference, target_reference=target_reference)
+        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, XY_source_ref=source_reference, XY_target_ref=target_reference)
 
     def find_ref_for_boundary_qt(self, id_list):
         qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
@@ -176,7 +176,7 @@ class clustering():
         hierarchy_idx = connection_wo_last_idx.index(list(top_cell_name))
         source_reference = connection_wo_last_idx[hierarchy_idx]
 
-        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, source_reference=source_reference)
+        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, XY_source_ref=source_reference)
 
     def find_ref_for_sref_qt(self, id_list):
         qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
@@ -210,7 +210,7 @@ class clustering():
         hierarchy_idx = connection_wo_last_idx.index(list(top_cell_name))
         source_reference = connection_wo_last_idx[hierarchy_idx]
 
-        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, source_reference=source_reference)
+        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, XY_source_ref=source_reference)
 
     def get_array_groups(self):
         return self.array_groups
