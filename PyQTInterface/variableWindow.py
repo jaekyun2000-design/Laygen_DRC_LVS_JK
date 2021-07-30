@@ -691,17 +691,14 @@ class VariableSetupWindow(QWidget):
     #         print(clicked_item.text())
 
     def getArray(self, array_list_item):
-        print(self.group_list)
         self.deleteItemList.clear()
         for field_name in self.group_list:
             if field_name == 'source_reference':
-                self.variable_widget.field_value_memory_dict[field_name] = 'center(' + str(
+                self.variable_widget.field_value_memory_dict['XY_source_ref'] = 'center(' + str(
                     self.group_list[field_name]) + ')'
-                print(self.variable_widget.field_value_memory_dict[field_name])
             elif field_name == 'target_reference':
-                self.variable_widget.field_value_memory_dict[field_name] = 'center(' + str(
+                self.variable_widget.field_value_memory_dict['XY_target_ref'] = 'center(' + str(
                     self.group_list[field_name]) + ')'
-                print(self.variable_widget.field_value_memory_dict[field_name])
             else:
                 self.variable_widget.field_value_memory_dict[field_name] = self.group_list[field_name]
         array_list = eval(array_list_item.text())
@@ -826,13 +823,39 @@ class VariableSetupWindow(QWidget):
         self.output_dict[key] = changed_text
 
     def on_buttonBox_accepted(self):
-        if self.variable_type == 'path_array':
-            if self.XY_source_ref.item(0).text() == '' or self.XY_target_ref.item(0).text() == '':
+        output_dict = self.variable_widget.field_value_memory_dict
+        if self.relative_or_offset == 'relative':
+            if self.variable_type == 'path_array':
+                if output_dict['XY_source_ref'] == '' or output_dict['XY_target_ref'] == '':
+                    self.warning = QMessageBox()
+                    self.warning.setText("Incomplete")
+                    self.warning.setIcon(QMessageBox.Warning)
+                    self.warning.show()
+                    return
+            elif self.variable_type == 'boundary_array':
+                if output_dict['XY_source_ref'] == '':
+                    self.warning = QMessageBox()
+                    self.warning.setText("Incomplete")
+                    self.warning.setIcon(QMessageBox.Warning)
+                    self.warning.show()
+                    return
+            elif self.variable_type == 'sref_array':
+                if output_dict['XY_source_ref'] == '':
+                    self.warning = QMessageBox()
+                    self.warning.setText("Incomplete")
+                    self.warning.setIcon(QMessageBox.Warning)
+                    self.warning.show()
+                    return
+        elif self.relative_or_offset == 'offset':
+            if output_dict['XY_ref'] == '':
                 self.warning = QMessageBox()
                 self.warning.setText("Incomplete")
                 self.warning.setIcon(QMessageBox.Warning)
                 self.warning.show()
                 return
+
+
+        print('output dict:', self.variable_widget.field_value_memory_dict)
 
         for idx in range(self.deleteItemList.count()):
             _id = self.deleteItemList.item(idx).text()
@@ -1025,15 +1048,15 @@ class variableContentWidget(QWidget):
                 input_type_list = ['line', 'list', 'line', 'line', 'double_line', None]
         elif option == 'relative':
             if name == 'boundary':
-                field_list = ['name', 'layer', 'source_reference', 'index', 'index_input', 'width', 'width_input',
+                field_list = ['name', 'layer', 'XY_source_ref', 'index', 'index_input', 'width', 'width_input',
                               'length', 'length_input']
                 input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'combo', 'line']
             elif name == 'path':
-                field_list = ['name', 'layer', 'source_reference', 'index', 'index_input', 'width', 'width_input',
-                              'target_reference']
+                field_list = ['name', 'layer', 'XY_source_ref', 'index', 'index_input', 'width', 'width_input',
+                              'XY_target_ref']
                 input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'list']
             elif name == 'sref':
-                field_list = ['name', 'source_reference', 'index', 'index_input']
+                field_list = ['name', 'XY_source_ref', 'index', 'index_input']
                 input_type_list = ['line', 'list', 'combo', 'line']
 
         field_info = dict(field_list=field_list, input_type_list=input_type_list)
