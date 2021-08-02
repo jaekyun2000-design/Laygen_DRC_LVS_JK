@@ -972,6 +972,11 @@ class _MainWindow(QMainWindow):
                     else:
                         pass
 
+            new_dp_name_list = list(filter(lambda dp_name: dp_name not in current_dpdict, list(dp_dict.keys())))
+            for dp_name in new_dp_name_list:
+                dp = dp_dict[dp_name]
+                self.createNewDesignParameter(dp)
+
             print(dp_dict)
 
         except :
