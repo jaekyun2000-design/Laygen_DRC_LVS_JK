@@ -222,7 +222,7 @@ class _MainWindow(QMainWindow):
         graphicView.name_list_signal.connect(self.save_clipboard)
         self.scene.send_module_name_list_signal.connect(graphicView.name_out_fcn)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
-        # self.scene.setMinimumRenderSize(5)
+        self.scene.setMinimumRenderSize(3)
         graphicView.centerOn(QPointF(268,-165))
         self.setCentralWidget(graphicView)
         self.scene.setBackgroundBrush(QBrush(Qt.white))
@@ -2707,7 +2707,15 @@ class _CustomScene(QGraphicsScene):
                 if type(item) == VisualizationItem._VisualizationItem:
                     self.send_item_clicked_signal.emit(item)
                     if not item.parentItem():
-                        masked_output.append(item)
+                        if item not in masked_output:
+                            masked_output.append(item)
+                    else:
+                        mother_item = item.parentItem()
+                        if type(mother_item) == VisualizationItem._VisualizationItem:
+                            if not mother_item.parentItem():
+                                if mother_item is not None and mother_item not in masked_output:
+                                    masked_output.append(mother_item)
+
             return masked_output
 
         items = self.items(event.scenePos())
