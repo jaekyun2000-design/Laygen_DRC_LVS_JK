@@ -696,7 +696,7 @@ class VariableSetupWindow(QWidget):
         for field_name in self.group_list:
             if field_name == 'XY_source_ref' or field_name == 'XY_target_ref':
                 self.variable_widget.field_value_memory_dict[field_name] =\
-                    'center(' + str(self.group_list[field_name]) + ')'
+                    'center(' + str(self.group_list[field_name])[1:-1] + ')'
             else:
                 self.variable_widget.field_value_memory_dict[field_name] = self.group_list[field_name]
         array_list = eval(array_list_item.text())
