@@ -1233,30 +1233,33 @@ class variableContentWidget(QWidget):
                 else:
                     index_input_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
 
-        if text == 'Custom':
-            index_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
-            index_input_widget.setReadOnly(False)
-        else:
-            index_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
-            index_input_widget.setReadOnly(True)
+                if text == 'Custom':
+                    index_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
+                    index_input_widget.setReadOnly(False)
+                else:
+                    index_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+                    index_input_widget.setReadOnly(True)
 
     def get_width(self, text):
         for info, widget in self.widget_dictionary.items():
             if not widget.isHidden():
                 if info[-6:] == 'offset':
                     width_input_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
-                    length_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
                 elif info[-8:] == 'relative':
                     width_input_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
-                    length_widget = self.widget_dictionary[info].layout().itemAt(7).itemAt(1).widget()
 
-        if text == 'Custom':
-            width_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
-            width_input_widget.setReadOnly(False)
-        elif text == 'Auto':
-            width_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
-            width_input_widget.setReadOnly(True)
-            length_widget.setCurrentText('Custom')
+                if text == 'Custom':
+                    width_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
+                    width_input_widget.setReadOnly(False)
+                elif text == 'Auto':
+                    width_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+                    width_input_widget.setReadOnly(True)
+                    if info == 'boundaryoffset':
+                        length_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
+                        length_widget.setCurrentText('Custom')
+                    elif info == 'boundaryrelative':
+                        length_widget = self.widget_dictionary[info].layout().itemAt(7).itemAt(1).widget()
+                        length_widget.setCurrentText('Custom')
 
     def get_length(self, text):
         for info, widget in self.widget_dictionary.items():
@@ -1268,13 +1271,13 @@ class variableContentWidget(QWidget):
                     length_input_widget = self.widget_dictionary[info].layout().itemAt(8).itemAt(1).widget()
                     width_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
 
-        if text == 'Custom':
-            length_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
-            length_input_widget.setReadOnly(False)
-        elif text == 'Auto':
-            length_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
-            length_input_widget.setReadOnly(True)
-            width_widget.setCurrentText('Custom')
+                if text == 'Custom':
+                    length_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
+                    length_input_widget.setReadOnly(False)
+                elif text == 'Auto':
+                    length_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+                    length_input_widget.setReadOnly(True)
+                    width_widget.setCurrentText('Custom')
 
     def update_output_dict(self, changed_text):
         sender = self.sender()
