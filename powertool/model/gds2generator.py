@@ -152,8 +152,10 @@ class GDS2Generator():
             if dp_name in self.dp_name_to_dp_id:
                 temp = self.dp_name_to_dp_id[dp_name]
                 dp_dictionary[dp_name]['_id'] = temp
+                dp_dictionary[dp_name]['_ElementName'] = temp
             else:
                 dp_dictionary[dp_name]['_id'] = dp_name
+                dp_dictionary[dp_name]['_ElementName'] = temp
             print("debug")
 
 
