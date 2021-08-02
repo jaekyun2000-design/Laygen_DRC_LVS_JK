@@ -222,13 +222,12 @@ class _MainWindow(QMainWindow):
         graphicView.name_list_signal.connect(self.save_clipboard)
         self.scene.send_module_name_list_signal.connect(graphicView.name_out_fcn)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
-        # self.scene.setMinimumRenderSize(5)
+        self.scene.setMinimumRenderSize(3)
         graphicView.centerOn(QPointF(268,-165))
         self.setCentralWidget(graphicView)
         self.scene.setBackgroundBrush(QBrush(Qt.white))
         graphicView.scale(1,-1)
         graphicView.setInteractive(True)
-        # graphicView.setScene(self.scene)
 
         graphicView.variable_signal.connect(self.createVariable)
         self.scene.setSceneRect(-1000000,-1000000,2000000,2000000)
@@ -236,7 +235,6 @@ class _MainWindow(QMainWindow):
         self.scene.send_deleteItem_signal.connect(self.deleteDesignParameter)
         self.scene.selectionChanged.connect(self.scene.send_item_list)
         self.scene.send_show_variable_signal.connect(self.variableVisual.toggleVariableVisualization)
-        # self.scene.send_debug_signal.connect(self.sceneDebug)
 
         # if DEBUG:
         #     a,b,c= QPointF(0, 0) ,QPointF(100, 0) ,QPointF(100, 500)
@@ -274,20 +272,12 @@ class _MainWindow(QMainWindow):
 
         srefButtonL = QPushButton("SRefLoad",dockContentWidget1)
         srefButtonL.clicked.connect(self.loadSRefWindow)
-        # srefButtonS = QPushButton("SRefSave",dockContentWidget1)
-        # srefButtonS.clicked.connect(self.makeSRefWindow)
 
         TextButton = QPushButton("Text",dockContentWidget1)
         TextButton.clicked.connect(self.makeTextWindow)
 
         PinButton = QPushButton("Pin",dockContentWidget1)
         PinButton.clicked.connect(self.makePinWindow)
-
-        # FilterButton = QPushButton("Filter",dockContentWidget1)
-        # FilterButton.clicked.connect(self.makeFilterWindow)
-        #
-        # VariableButton = QPushButton("Variable",dockContentWidget1)
-        # VariableButton.clicked.connect(self.makeVariableWindow)
 
         ElemntClickCheckBox = QCheckBox("Element",dockContentWidget1)
         SrefClickCheckBox = QCheckBox("Sref",dockContentWidget1)
@@ -317,11 +307,8 @@ class _MainWindow(QMainWindow):
         vboxOnDock1.addWidget(boundaryButton)
         vboxOnDock1.addWidget(pathButton)
         vboxOnDock1.addWidget(srefButtonL)
-        # vboxOnDock1.addWidget(srefButtonS)
         vboxOnDock1.addWidget(TextButton)
         vboxOnDock1.addWidget(PinButton)
-        # vboxOnDock1.addWidget(FilterButton)
-        # vboxOnDock1.addWidget(VariableButton)
         vboxOnDock1.addStretch(2)
         hboxOnDock1 = QHBoxLayout()
         hboxOnDock2 = QHBoxLayout()
@@ -338,29 +325,12 @@ class _MainWindow(QMainWindow):
         dockContentWidget1.setLayout(vboxOnDock1)
 
         gridOnDock1 = QHBoxLayout()
-        # gridOnDock1.addWidget(self.dockContentWidget1_2)
         gridOnDock1.addWidget(dockContentWidget1)
 
         layoutWidget.setLayout(gridOnDock1)
         dockWidget1.setWidget(layoutWidget)
 
-        # self.addDockWidget(Qt.RightDockWidgetArea,dockWidget1_1)
-        # self.addDockWidget(Qt.RightDockWidgetArea,dockWidget1)
         dockWidget1_1.setWidget(self.dockContentWidget1_2)
-
-        # self.doctWidget_tab1 = QDockWidget("Layers")
-        # unified_widget = QWidget()
-        # v_layout_widget = QVBoxLayout()
-        # v_layout_widget.addWidget(dockWidget1_1)
-        # v_layout_widget.addWidget(dockWidget1)
-        # unified_widget.setLayout(v_layout_widget)
-        # self.doctWidget_tab1.setWidget(unified_widget)
-        # self.addDockWidget(Qt.RightDockWidgetArea,self.doctWidget_tab1)
-        # # self.addDockWidget(Qt.RightDockWidgetArea,dockWidget1_1)
-        #
-        # dockWidget_tab2 = QDockWidget("Variable")
-        # dockWidget_tab2.setWidget(self.dv)
-        # self.addDockWidget(Qt.RightDockWidgetArea, dockWidget_tab2)
 
         dockWidget_tab3 = QDockWidget("Variable")
         dockWidget_tab3.setWidget(self.dv)
@@ -504,41 +474,10 @@ class _MainWindow(QMainWindow):
         dockWidget4ForLoggingMessage = QDockWidget("Logging Message")
         self.dockContentWidget4ForLoggingMessage = SetupWindow._LogMessageWindow()
         self.dockContentWidget4ForLoggingMessage._InfoMessage("MakeProject")
-        #        self.
-        #
-        # self.scene.send_itemList_signal.connect(self.dockContentWidget3.UpdateCustomItem)
-        #
         dockWidget4ForLoggingMessage.setWidget(self.dockContentWidget4ForLoggingMessage)
         self.addDockWidget(Qt.BottomDockWidgetArea, dockWidget4ForLoggingMessage)
 
-    # def sceneDebug(self):
-    #     for key in self.visualItemDict:
-    #         tmp = self.visualItemDict[key]
-    #         path = tmp.shape()
-    #         brush = QBrush(QColor(50,50,50))
-    #         painter = QPainter()
-    #         painter.fillPath(path,brush)
-    #         self.scene.addPath(path)
-    #         # if DEBUG:
-    #         #     a,b,c= QPointF(0, 0) ,QPointF(100, 0) ,QPointF(100, 500)
-    #         #     points = [a,b,c]
-    #         #     aa,bb,cc= QPointF(0, 0) ,QPointF(0, 100) ,QPointF(500, 100)
-    #         #     pointss = [aa,bb,cc]
-    #         #     poly = QPolygonF(points)
-    #         #     poly2 = QPolygonF(pointss)
-    #         #     path = QPainterPath()
-    #         #     path.moveTo(0,0)
-    #         #     path.addPolygon(poly)
-    #         #     path.closeSubpath()
-    #         #     path.addPolygon(poly2)
-    #         #     path.closeSubpath()
-    #         #     painter = QPainter()
-    #         #     brush = QBrush(QColor(50,50,50))
-    #         #     painter.fillPath(path,brush)
-    #         #     self.scene.addPath(path)
         print("******************************Initializing Graphic Interface Complete")
-
-    # def threading_test(self,count):
 
     def calculator(self):
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
@@ -2768,7 +2707,15 @@ class _CustomScene(QGraphicsScene):
                 if type(item) == VisualizationItem._VisualizationItem:
                     self.send_item_clicked_signal.emit(item)
                     if not item.parentItem():
-                        masked_output.append(item)
+                        if item not in masked_output:
+                            masked_output.append(item)
+                    else:
+                        mother_item = item.parentItem()
+                        if type(mother_item) == VisualizationItem._VisualizationItem:
+                            if not mother_item.parentItem():
+                                if mother_item is not None and mother_item not in masked_output:
+                                    masked_output.append(mother_item)
+
             return masked_output
 
         items = self.items(event.scenePos())
