@@ -122,7 +122,8 @@ class GDS2Generator():
             if dp_id == None:
                 continue
             if dp_id not in project._QTObj._qtProject._DesignParameter[self.class_name]:
-                self.dp_name_to_dp_id[dp_id] = dp_id
+                # self.dp_name_to_dp_id[dp_id] = dp_id
+                continue
             name = project._QTObj._qtProject._DesignParameter[self.class_name][dp_id]._ElementName
             self.dp_name_to_dp_id[name] = dp_id
 
@@ -148,8 +149,11 @@ class GDS2Generator():
                 # dp_dictionary[dp_name]['_id'] = temp
             else:
                 dp_dictionary[dp_name] = dp
-            temp = self.dp_name_to_dp_id[dp_name]
-            dp_dictionary[dp_name]['_id'] = temp
+            if dp_name in self.dp_name_to_dp_id:
+                temp = self.dp_name_to_dp_id[dp_name]
+                dp_dictionary[dp_name]['_id'] = temp
+            else:
+                dp_dictionary[dp_name]['_id'] = dp_name
             print("debug")
 
 
