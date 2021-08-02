@@ -235,6 +235,10 @@ class ElementTransformer(ast.NodeTransformer):
             sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
                                               _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _XWidth = {node.width}, _YWidth = {node.height})\n"
             sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
+        else:
+            sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+                                                          _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _XWidth = {node.width}, _YWidth = {node.height})\n"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}\n"
         # print(sentence)
         tmp = ast.parse(sentence)
         return tmp.body
@@ -245,14 +249,20 @@ class ElementTransformer(ast.NodeTransformer):
         if syntax == 'list' or syntax == 'string':
             tmp_xy = str(node.XY).replace("'", "")
             sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {tmp_xy}, _Width = {node.width})"
+                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Width = {node.width})"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
         # elif syntax == 'str':
         #     sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
         #                _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
         elif syntax == 'ast':
             tmp_xy = astunparse.unparse(node.XY).replace('\n', '')
             sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {tmp_xy}, _Width = {node.width})"
+                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Width = {node.width})"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
+        else:
+            sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
+                                   _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Width = {node.width})\n"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}\n"
         tmp = ast.parse(sentence)
         return tmp.body
 
