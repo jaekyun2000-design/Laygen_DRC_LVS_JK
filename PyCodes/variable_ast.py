@@ -328,21 +328,14 @@ class IrregularTransformer(ast.NodeTransformer):
                         #     _length = self.expressionTransformer(expression2, 'FA')
                 elif _type == 'boundary_array':
                     #TODO: boundary element의 값 하나가 'Auto'로 들어오고, 나머지는 상대적 좌표를 이용한 다른 값인 경우에(e.g. LogicExpression, variable 등)
-                    #처리할 case들 나눠서 생각해야 할 듯
-
-                    # expression1 = self.get_expression_return_element(XY_source_ref)
-                    # expression1 = 'width' + expression1
-                    # _width = self.expressionTransformer(expression1, 'FA')
-                    #
-                    # # expression2 = info_dict['XY_source_ref']
-                    # # expression2 = 'height' + expression2
-                    # # _length = self.expressionTransformer(expression2, 'FA')
+                    _length = info_dict['length_input']
                     pass
                 elif _type == 'sref_array':
                     _width = 'Blank'
                     _length = 'Blank'
 
         else:   # If _width is not 'Auto', Length can either be 'Auto' or Fixed
+            _width = info_dict['width_input']
             if _flag == 'relative':
                 if _type == 'path_array':
                     if info_dict['XY_source_ref'][0] == info_dict['target_reference'][0]:
@@ -351,12 +344,16 @@ class IrregularTransformer(ast.NodeTransformer):
                             expression2 = info_dict['XY_source_ref']
                             expression2 = 'height' + expression2
                             _length = self.expressionTransformer(expression2, 'FA')
+                        else:
+                            _length = info_dict["length_input"]
                     else:
                         mode = 'horizontal'
                         if info_dict['length'] == 'Auto':
                             expression2 = info_dict['XY_source_ref']
                             expression2 = 'width' + expression2
                             _length = self.expressionTransformer(expression2, 'FA')
+                        else:
+                            _length = info_dict["length_input"]
                 elif _type == 'boundary_array':
                     # expression1 = info_dict['XY_source_ref']
                     # expression1 = 'width' + expression1
@@ -365,6 +362,8 @@ class IrregularTransformer(ast.NodeTransformer):
                         expression2 = info_dict['XY_source_ref']
                         expression2 = 'height' + expression2
                         _length = self.expressionTransformer(expression2, 'FA')
+                    else:
+                        _length = info_dict["length_input"]
                 elif _type == 'sref_array':
                     _width = 'Blank'
                     _length = 'Blank'
@@ -427,7 +426,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 tmp_node.layer = _layer
                 tmp_node.XY = 'XYList'
                 tmp_node.width = target_width_code
-                tmp_node.height = info_dict['length_input']
+                tmp_node.height = _length
                 tmp_code_ast = element_ast.ElementTransformer().visit_Boundary(tmp_node)
                 tmp_code = astunparse.unparse(tmp_code_ast)
 
