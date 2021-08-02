@@ -1600,6 +1600,7 @@ class _MainWindow(QMainWindow):
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
 
     def create_variable(self, variable_info_dict):
+        print(variable_info_dict)
         self.createDummyConstraint(type_for_dc = 'Array', info_dict= variable_info_dict)
 
 
