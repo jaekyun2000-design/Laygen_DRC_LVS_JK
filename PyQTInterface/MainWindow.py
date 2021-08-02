@@ -1026,7 +1026,7 @@ class _MainWindow(QMainWindow):
             pass
 
     def loadSRefWindow(self):
-        self.ls = SetupWindow._LoadSRefWindow()
+        self.ls = SetupWindow._LoadSRefWindow(purpose='main_load')
         self.ls.show()
         self.ls.send_DesignConstraint_signal.connect(self.srefCreate)
         self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)

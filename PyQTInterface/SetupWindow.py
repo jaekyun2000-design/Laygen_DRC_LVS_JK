@@ -782,10 +782,12 @@ class _SRefSetupWindow(QWidget):
 class _LoadSRefWindow(QWidget):
 
     send_DesignConstraint_signal = pyqtSignal("PyQt_PyObject")
+    send_array_signal = pyqtSignal("PyQt_PyObject")
     send_destroy_signal = pyqtSignal(str)
 
-    def __init__(self, SRefElement = None, create=False):
+    def __init__(self, purpose = None, SRefElement = None, create=False):
         super().__init__()
+        self.purpose = purpose
         self.create = create
         self.par_valueForLineEdit = []
         self.paramDict = dict()
@@ -799,18 +801,23 @@ class _LoadSRefWindow(QWidget):
             self.updateUI()
 
     def initUI(self):
-        self.name = QLabel("name")
+        if self.purpose == 'main_load':
+            self.name = QLabel("name")
         self.library = QLabel("library")
         self.class_name = QLabel("className")
-        self.XY = QLabel("XY")
+        if self.purpose == 'main_load':
+            self.XY = QLabel("XY")
         self.cal_fcn = QLabel("calculate_fcn")
 
         self.pars = QLabel("\nPARAMETERS")
 
-        self.name_input = QLineEdit()
+
+        if self.purpose == 'main_load':
+            self.name_input = QLineEdit()
         self.library_input = QComboBox()
         self.class_name_input = QLineEdit()
-        self.XY_input = QLineEdit()
+        if self.purpose == 'main_load':
+            self.XY_input = QLineEdit()
         self.cal_fcn_input = QComboBox()
 
         self.library_input.addItems(generator_model_api.class_dict.keys())
@@ -837,16 +844,20 @@ class _LoadSRefWindow(QWidget):
         setupHBox1 = QHBoxLayout()
         setupHBox2 = QHBoxLayout()
 
-        self.setupVboxColumn1.addWidget(self.name)
+        if self.purpose == 'main_load':
+            self.setupVboxColumn1.addWidget(self.name)
         self.setupVboxColumn1.addWidget(self.library)
         self.setupVboxColumn1.addWidget(self.class_name)
-        self.setupVboxColumn1.addWidget(self.XY)
+        if self.purpose == 'main_load':
+            self.setupVboxColumn1.addWidget(self.XY)
         self.setupVboxColumn1.addWidget(self.cal_fcn)
 
-        self.setupVboxColumn2.addWidget(self.name_input)
+        if self.purpose == 'main_load':
+            self.setupVboxColumn2.addWidget(self.name_input)
         self.setupVboxColumn2.addWidget(self.library_input)
         self.setupVboxColumn2.addWidget(self.class_name_input)
-        self.setupVboxColumn2.addWidget(self.XY_input)
+        if self.purpose == 'main_load':
+            self.setupVboxColumn2.addWidget(self.XY_input)
         self.setupVboxColumn2.addWidget(self.cal_fcn_input)
 
         self.parVBox1 = QVBoxLayout()
@@ -946,14 +957,16 @@ class _LoadSRefWindow(QWidget):
         tmpAST = element_ast.Sref()
         for key in element_ast.Sref._fields:
             if key == 'name':
-                tmpAST.__dict__[key] = self.name_input.text()
+                if self.purpose == 'main_load':
+                    tmpAST.__dict__[key] = self.name_input.text()
             elif key == 'library':
                 tmpAST.__dict__[key] = self.library_input.currentText()
             elif key == 'className':
                 tmpAST.__dict__[key] = self.class_name_input.text()
             elif key == 'XY':
                 # tmpAST.__dict__[key] = self.XY_input.text()
-                tmpAST.__dict__[key] = [[float(i) for i in self.XY_input.text().split(',')]]
+                if self.purpose == 'main_load':
+                    tmpAST.__dict__[key] = [[float(i) for i in self.XY_input.text().split(',')]]
             elif key == 'calculate_fcn':
                 tmpAST.__dict__[key] = self.cal_fcn_input.currentText()
             elif key == 'parameters':
@@ -961,7 +974,11 @@ class _LoadSRefWindow(QWidget):
 
         if not self.create:
             tmpAST._id = self._DesignParameter['_id']
-        self.send_DesignConstraint_signal.emit(tmpAST)
+
+        if self.purpose == 'main_load':
+            self.send_DesignConstraint_signal.emit(tmpAST)
+        elif self.purpose == 'array_load':
+            self.send_array_signal.emit(tmpAST)
         # if self.create:
         #     self.send_DesignConstraint_signal.emit(tmpAST)
         # else:

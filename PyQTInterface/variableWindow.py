@@ -6,6 +6,7 @@ from PyQt5.QtCore import *
 # from PyQTInterface  import LayerInfo
 from PyQTInterface.layermap  import LayerReader
 from PyQTInterface  import VisualizationItem
+from PyQTInterface import SetupWindow
 from PyQTInterface  import VariableVisualItem
 from PyQTInterface import calculator
 
@@ -1074,8 +1075,8 @@ class variableContentWidget(QWidget):
                               'XY_target_ref']
                 input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'list']
             elif name == 'sref':
-                field_list = ['name', 'XY_source_ref', 'index', 'index_input']
-                input_type_list = ['line', 'list', 'combo', 'line']
+                field_list = ['name', 'XY_source_ref', 'sref_item', 'index', 'index_input']
+                input_type_list = ['line', 'list', 'list', 'combo', 'line']
 
         field_info = dict(field_list=field_list, input_type_list=input_type_list)
         return field_info
@@ -1161,14 +1162,19 @@ class variableContentWidget(QWidget):
         tmp_input_widget = QListWidget()
         tmp_input_widget.field_name = name
 
-        nine_key_cal = QPushButton()
-        nine_key_cal.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
-        if name[3:-4] == 'source':
-            nine_key_cal.clicked.connect(self.show_source_cal)
-        elif name[3:-4] == 'target':
-            nine_key_cal.clicked.connect(self.show_target_cal)
-        elif name[3:-4] == '':
-            nine_key_cal.clicked.connect(self.show_ref_cal)
+        if name == 'sref_item':
+            additional_button = QPushButton()
+            additional_button.setText('SRefLoad')
+            additional_button.clicked.connect(self.show_sref_load)
+        else:
+            additional_button = QPushButton()
+            additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            if name[3:-4] == 'source':
+                additional_button.clicked.connect(self.show_source_cal)
+            elif name[3:-4] == 'target':
+                additional_button.clicked.connect(self.show_target_cal)
+            elif name[3:-4] == '':
+                additional_button.clicked.connect(self.show_ref_cal)
 
         tmp_input_widget.setMaximumHeight(20)
         tmp_input_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -1179,9 +1185,16 @@ class variableContentWidget(QWidget):
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)
         output_layout.addWidget(tmp_input_widget)
-        output_layout.addWidget(nine_key_cal)
+        output_layout.addWidget(additional_button)
 
         return output_layout
+
+    def show_sref_load(self):
+        self.ls = SetupWindow._LoadSRefWindow(purpose='array_load')
+        self.ls.show()
+        self.ls.send_array_signal.connect(self.exported_sref)
+        # self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)
+        # self.ls.send_destroy_signal.connect(self.delete_obj)
 
     def show_source_cal(self):
         self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='source',address=self)
@@ -1197,6 +1210,9 @@ class variableContentWidget(QWidget):
         self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='ref',address=self)
         self.cal.send_expression_signal.connect(self.exported_text)
         self.cal.show()
+
+    def exported_sref(self, sref_ast):
+        print(sref_ast.__dict__)
 
     def exported_text(self, text, purpose):
         for info, widget in self.widget_dictionary.items():
