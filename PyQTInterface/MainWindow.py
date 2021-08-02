@@ -1275,6 +1275,8 @@ class _MainWindow(QMainWindow):
         try:
             cm = self._CurrentModuleName
             _fileName=scf[0]
+            if _fileName == '':
+                return
             self._QTObj._loadProject(_name=_fileName)
             self._QTObj._qtProject.tmp_save_file.load_qt_interface(self,self._QTObj._qtProject._DesignConstraint)
             # self._QTObj._qtProject.tmp_save_file.load_from_constraint_tree_info(self, self._QTObj._qtProject._DesignConstraint)
