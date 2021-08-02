@@ -39,7 +39,7 @@ class VariableSetupWindow(QWidget):
     def __init__(self,variable_type,vis_items=None,variable_obj=None,connection_ref_list=None,group_ref_list=None,inspect_array_window_address=None):
         super().__init__()
         self.setMinimumHeight(500)
-        self.setFixedWidth(300)
+        self.setMinimumWidth(300)
         self.variable_type = variable_type
         self.vis_items= vis_items
         self.connection_list = connection_ref_list
@@ -159,6 +159,7 @@ class VariableSetupWindow(QWidget):
         # vbox.addLayout(self.setupBox)
         self.variable_widget = variableContentWidget()
         self.variable_widget.request_show('boundary', 'relative')
+        self.variable_widget.value_changed_signal.connect(self.update_output_dict_value)
         vbox.addLayout(hbox2)
         vbox.addWidget(self.variable_widget)
         # if self.variable_type == 'path_array':
@@ -819,6 +820,9 @@ class VariableSetupWindow(QWidget):
             changed_text = changed_text.text()
         self.output_dict[key] = changed_text
 
+    def update_output_dict_value(self, name, changed_text):
+        self.output_dict[name] = changed_text
+
     def on_buttonBox_accepted(self):
         output_dict = self.variable_widget.field_value_memory_dict
         if output_dict['name'] == '':
@@ -974,6 +978,7 @@ class VariableSetupWindow(QWidget):
         del self.cal
 
 class variableContentWidget(QWidget):
+    value_changed_signal = pyqtSignal(str, str)
     def __init__(self):
         super(variableContentWidget, self).__init__()
         self.name_list = ['boundary', 'path', 'sref']
@@ -1270,6 +1275,7 @@ class variableContentWidget(QWidget):
             changed_text = changed_text.text()
 
         self.field_value_memory_dict[name] = changed_text
+        self.value_changed_signal.emit(name, changed_text)
         # print(self.field_value_memory_dict)
 
 
