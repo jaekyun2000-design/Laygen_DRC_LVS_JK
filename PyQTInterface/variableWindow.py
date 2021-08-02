@@ -866,8 +866,6 @@ class VariableSetupWindow(QWidget):
                 self.warning.show()
                 return
 
-        print('output dict:', self.variable_widget.field_value_memory_dict)
-
         for idx in range(self.deleteItemList.count()):
             _id = self.deleteItemList.item(idx).text()
             print(_id)
