@@ -371,9 +371,10 @@ class IrregularTransformer(ast.NodeTransformer):
         ####### XY Coordinate Extraction @ Layout Generator Source Code ######
         source_wo_layer = "".join(XY_source_ref.split(",")[:-1]) +')'
         expression_for_ref = self.expressionTransformer(source_wo_layer, 'XY')
-
+        expression_for_ref = "[" + expression_for_ref[0] + ',' + expression_for_ref[1] +"]"
         tmp_string = re.findall('\(.*\)', XY_source_ref)[0]
         tmp_string = re.sub('\(|\'|\)', "", tmp_string)
+        tmp_string = re.sub(" ", "" , tmp_string)
         operands = re.split(',', tmp_string)
         # for i in range(len(operands[:-1])):
         #     operands[i] = re.sub("\[.*\]", "", operands[i])
@@ -388,7 +389,9 @@ class IrregularTransformer(ast.NodeTransformer):
             code = code + f"_DesignParameter['{object}']['_DesignObj']."
             offsets.append(code[:-15] + '[\'_XYCoordinates\']')
 
-        target_layer_XY_code = code + f"_DesignParameter['{operands[-1]}']" + '._DesignParameter[\'_XYCoordinates\']'
+        target_layer_XY_code = code + f"_DesignParameter['{operands[-1]}']" + '[\'_XYCoordinates\']'
+        target_width_code = code + f"_DesignParameter['{operands[-1]}']" + '[\'_XWidth\']'
+        target_length_code = code + f"_DesignParameter['{operands[-1]}']" + '[\'_YWidth\']'
 
         # e.g.) _Met1Layer, _COLayer, ...etc.
         if _flag == 'relative':
@@ -399,7 +402,7 @@ class IrregularTransformer(ast.NodeTransformer):
 
                     loop_code = f"XYList = []\n" \
                                 f"for i in range(len({target_layer_XY_code})):\n" \
-                                f"\tXYList.append({expression_for_ref} + {target_layer_XY_code}[i])\n"
+                                f"\tXYList.append([x+y for x,y in zip({expression_for_ref} , {target_layer_XY_code}[i] ) ] )\n"
                 elif _index == 'Odd':
                     XY_source_ref = re.sub("\',", '[1]', XY_source_ref)
                     XY_source_ref = re.sub("\'\)", '[1]', XY_source_ref)
@@ -423,13 +426,14 @@ class IrregularTransformer(ast.NodeTransformer):
                 tmp_node.name = _name
                 tmp_node.layer = _layer
                 tmp_node.XY = 'XYList'
-                tmp_node.width = _width
-                tmp_node.height = _length
+                tmp_node.width = target_width_code
+                tmp_node.height = info_dict['length_input']
                 tmp_code_ast = element_ast.ElementTransformer().visit_Boundary(tmp_node)
                 tmp_code = astunparse.unparse(tmp_code_ast)
 
                 sentence = loop_code + '\n' + tmp_code
                 del tmp_node
+                return ast.parse(sentence).body
         elif _flag == 'Offset':
             pass
     def get_expression_del_func(self, expression):
