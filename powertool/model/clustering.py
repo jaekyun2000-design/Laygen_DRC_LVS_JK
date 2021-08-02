@@ -135,8 +135,8 @@ class clustering():
         hierarchy_idx = connection_top_name.index(top_cell_name)
         source_reference = connection_layer_list[hierarchy_idx]
 
-        cutting_idx = source_reference[-1].find('[')
-        source_reference[-1] = source_reference[-1][:cutting_idx]
+        # cutting_idx = source_reference[-1].find('[')
+        # source_reference[-1] = source_reference[-1][:cutting_idx]
 
         return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, XY_source_ref=source_reference, XY_target_ref=target_reference)
 
@@ -174,7 +174,8 @@ class clustering():
         max_idx = count_list.index(max(count_list))
         top_cell_name = list(set2)[max_idx]
         hierarchy_idx = connection_wo_last_idx.index(list(top_cell_name))
-        source_reference = connection_wo_last_idx[hierarchy_idx]
+        # source_reference = connection_wo_last_idx[hierarchy_idx]
+        source_reference = connection_layer_list[hierarchy_idx]
 
         return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, XY_source_ref=source_reference)
 
@@ -208,7 +209,9 @@ class clustering():
         max_idx = count_list.index(max(count_list))
         top_cell_name = list(set2)[max_idx]
         hierarchy_idx = connection_wo_last_idx.index(list(top_cell_name))
-        source_reference = connection_wo_last_idx[hierarchy_idx]
+        # source_reference = connection_wo_last_idx[hierarchy_idx]
+        source_reference = connection_layer_list[hierarchy_idx]
+
 
         return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, XY_source_ref=source_reference)
 
