@@ -281,25 +281,19 @@ class IrregularTransformer(ast.NodeTransformer):
         info_dict = self._id_to_data_dict.ArrayDict[_id]
 
         ############# Common Elements ################
-        # _name = info_dict['name']               # Fixed
-        _name = 'test'
+        _name = info_dict['name']               # Fixed
         _type = info_dict['type']              # Fixed
-        # _flag = info_dict['ExpressionFlag']     # Fixed
-        _flag = 'Relative'
-        # _width = info_dict['width']
-        # _length = info_dict['length']
-        _width = 'Auto'
-        _length = '100'
-        # _layer = info_dict['layer']             # Fixed
-        _layer = 'METAL1'
+        _flag = info_dict['flag']     # Fixed
+        _width = info_dict['width']
+        _length = info_dict['length']
+        _layer = info_dict['layer']             # Fixed
         ###############################################
-        if _flag == 'Relative':
-            ########### Elements For Relative #############
+        if _flag == 'relative':
+            ########### Elements For relative #############
             _index = info_dict['index']             # Fixed
-            # _source_reference = info_dict['XY_source_ref']
-            _source_reference = "center('INV0')"
+            _source_reference = info_dict['XY_source_ref']
             if type == 'Path_array':
-                _target_reference = info_dict['target_reference']   # For Path
+                _target_reference = info_dict['XY_target_ref']   # For Path
             ###############################################
         else:
             ############ Elements For Offset ##############
@@ -312,7 +306,7 @@ class IrregularTransformer(ast.NodeTransformer):
 
         # Width, Length Calculation if needed in advance
         if info_dict['width'] == 'Auto':        # If Width is 'Auto', Length should be fixed.
-            if _flag == 'Relative':
+            if _flag == 'relative':
                 if _type == 'path_array':
                     if info_dict['source_reference'][0] == info_dict['target_reference'][0]:
                         mode = 'vertical'
@@ -349,7 +343,7 @@ class IrregularTransformer(ast.NodeTransformer):
                     _length = 'Blank'
 
         else:   # If _width is not 'Auto', Length can either be 'Auto' or Fixed
-            if _flag == 'Relative':
+            if _flag == 'relative':
                 if _type == 'path_array':
                     if info_dict['source_reference'][0] == info_dict['target_reference'][0]:
                         mode = 'vertical'
@@ -379,7 +373,7 @@ class IrregularTransformer(ast.NodeTransformer):
         tmp_string = re.sub('\(|\'|\)', "", tmp_string)
         operands = re.split(',', tmp_string)
         target_array_qt = operands[-1]          # e.g.) _Met1Layer, _COLayer, ...etc.
-        if _flag == 'Relative':
+        if _flag == 'relative':
             if _type == 'boundary_array':
                 if _index == 'All':
                     _source_reference= re.sub("\',",'[0]',_source_reference)
