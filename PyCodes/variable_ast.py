@@ -297,7 +297,7 @@ class IrregularTransformer(ast.NodeTransformer):
             ########### Elements For Relative #############
             _index = info_dict['index']             # Fixed
             # _source_reference = info_dict['XY_source_ref']
-            _source_reference = 'center(\'INV0\')'
+            _source_reference = "center('INV0')"
             if type == 'Path_array':
                 _target_reference = info_dict['target_reference']   # For Path
             ###############################################
@@ -333,6 +333,9 @@ class IrregularTransformer(ast.NodeTransformer):
                         #     expression2 = 'width' + expression2
                         #     _length = self.expressionTransformer(expression2, 'FA')
                 elif _type == 'boundary_array':
+                    #TODO: boundary element의 값 하나가 'Auto'로 들어오고, 나머지는 상대적 좌표를 이용한 다른 값인 경우에(e.g. LogicExpression, variable 등)
+                    #처리할 case들 나눠서 생각해야 할 듯
+
                     # expression1 = self.get_expression_return_element(_source_reference)
                     # expression1 = 'width' + expression1
                     # _width = self.expressionTransformer(expression1, 'FA')
@@ -372,29 +375,29 @@ class IrregularTransformer(ast.NodeTransformer):
                     _width = 'Blank'
                     _length = 'Blank'
         ####### XY Coordinate Extraction @ Layout Generator Source Code ######
-        tmp_string = re.findall('\(.\)', _source_reference)
+        tmp_string = re.findall('\(.*\)', _source_reference)[0]
         tmp_string = re.sub('\(|\'|\)', "", tmp_string)
         operands = re.split(',', tmp_string)
         target_array_qt = operands[-1]          # e.g.) _Met1Layer, _COLayer, ...etc.
         if _flag == 'Relative':
             if _type == 'boundary_array':
                 if _index == 'All':
-                    _source_reference= re.sub("\',",'\[0\]',_source_reference)
-                    _source_reference = re.sub("\'\)", '\[0\]', _source_reference)
+                    _source_reference= re.sub("\',",'[0]',_source_reference)
+                    _source_reference = re.sub("\'\)", '[0]', _source_reference)
 
                     loop_code = f"XYList = []\n" \
                                 f"for i in range(len({target_array_qt}._DesignParameter['XYCoordinates'])):\n" \
                                 f"\tXYList.append({target_array_qt}._DesignParameter['XYCoordinates'][i])\n"
                 elif _index == 'Odd':
-                    _source_reference = re.sub("\',", '\[1\]', _source_reference)
-                    _source_reference = re.sub("\'\)", '\[1\]', _source_reference)
+                    _source_reference = re.sub("\',", '[1]', _source_reference)
+                    _source_reference = re.sub("\'\)", '[1]', _source_reference)
                     loop_code = f"XYList = []\n" \
                                 f"for i in range(len({target_array_qt}._DesignParameter['XYCoordinates'])):\n" \
                                 f"\tif (i%2 == 1):\n" \
                                 f"\t\tXYList.append({target_array_qt}._DesignParameter['XYCoordinates'][i])\n"
                 elif _index == 'Even':
-                    _source_reference = re.sub("\',", '\[0\]', _source_reference)
-                    _source_reference = re.sub("\'\)", '\[0\]', _source_reference)
+                    _source_reference = re.sub("\',", '[0]', _source_reference)
+                    _source_reference = re.sub("\'\)", '[0]', _source_reference)
                     loop_code = f"XYList = []\n" \
                                 f"for i in range(len({target_array_qt}._DesignParameter['XYCoordinates'])):\n" \
                                 f"\tif (i%2 == 0):\n" \
@@ -410,10 +413,9 @@ class IrregularTransformer(ast.NodeTransformer):
                 tmp_node.XY = 'XYList'
                 tmp_node.width = _width
                 tmp_node.height = _length
-                tmp_code_ast = element_ast.visit_Boundary(tmp_node)
+                tmp_code_ast = element_ast.ElementTransformer().visit_Boundary(tmp_node)
                 tmp_code = astunparse.unparse(tmp_code_ast)
 
-                tmp_code = tmp_code[2:-2]
                 sentence = loop_code + '\n' + tmp_code
                 del tmp_node
         elif _flag == 'Offset':
@@ -471,7 +473,7 @@ class IrregularTransformer(ast.NodeTransformer):
         offsets = []
         offset_indices = []
         layer_with_index = operands[-1]
-        layer_index = re.findall('\[.\]', layer_with_index)[0]
+        layer_index = re.findall('\[.*\]', layer_with_index)[0]
         layer = layer_with_index[:-len(layer_index)]
         objects = operands[0: len(operands) - 1]
         for i in range(len(objects)):  # append code from the start
