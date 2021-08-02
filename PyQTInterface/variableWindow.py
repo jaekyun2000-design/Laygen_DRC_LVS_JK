@@ -46,7 +46,8 @@ class VariableSetupWindow(QWidget):
         self.group_list = group_ref_list
         self.inspect_array_window_address = inspect_array_window_address
         self.itemList = list()
-        self.output_dict = dict()
+        self.output_dict = dict(type='boundary',
+                                flag='relative')
         self.relative_or_offset = 'relative'
         self.initUI()
 
@@ -83,6 +84,7 @@ class VariableSetupWindow(QWidget):
         self.variable_type_widget = QComboBox()
         self.variable_type_widget.addItems(['boundary_array', 'path_array', 'sref_array'])
         self.variable_type_widget.setCurrentText(self.variable_type)
+        self.output_dict['type'] = self.variable_type
         self.variable_type_widget.currentTextChanged.connect(self.typeChanged)
         # self.variable_type_widget.addItems(QLabel(self.variable_type))
         # self.variable_type_widget.currentIndexChanged.connect(self.updateUI)
@@ -201,6 +203,7 @@ class VariableSetupWindow(QWidget):
 
     def typeChanged(self, variable_type):
         self.variable_type = variable_type
+        self.output_dict['type'] = variable_type
         if self.relative_or_offset_button.isChecked():
             self.variable_widget.request_show(variable_type[:-6], 'relative')
         else:
@@ -629,11 +632,13 @@ class VariableSetupWindow(QWidget):
 
     def change_ui(self, _):
         if self.relative_or_offset_button.isChecked():
+            self.output_dict['flag'] = 'relative'
             self.variable_widget.request_show(self.variable_type[:-6], 'relative')
             # self.reset_ui()
             # self.create_ui_relative()
             # self.update_ui()
         else:
+            self.output_dict['flag'] = 'offset'
             self.variable_widget.request_show(self.variable_type[:-6], 'offset')
             # self.reset_ui()
             # self.create_ui_offset()
