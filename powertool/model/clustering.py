@@ -100,6 +100,7 @@ class clustering():
         qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
         x_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0][0] for qt_dp in qt_dp_list]
         y_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0][1] for qt_dp in qt_dp_list]
+        layer = LayerReader._LayerName_unified[str(qt_dp_list[0]._DesignParameter['_Layer'])]
         x_list.sort()
         y_list.sort()
         x_offset = int(x_list[1] - x_list[0])
@@ -135,15 +136,18 @@ class clustering():
         hierarchy_idx = connection_top_name.index(top_cell_name)
         source_reference = connection_layer_list[hierarchy_idx]
 
+
         # cutting_idx = source_reference[-1].find('[')
         # source_reference[-1] = source_reference[-1][:cutting_idx]
 
-        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, XY_source_ref=source_reference, XY_target_ref=target_reference)
+        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, layer=layer,
+                    XY_source_ref=source_reference, XY_target_ref=target_reference)
 
     def find_ref_for_boundary_qt(self, id_list):
         qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
         x_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0] for qt_dp in qt_dp_list]
         y_list = [qt_dp._DesignParameter['_XYCoordinates'][0][1] for qt_dp in qt_dp_list]
+        layer = LayerReader._LayerName_unified[str(qt_dp_list[0]._DesignParameter['_Layer'])]
         x_list.sort()
         y_list.sort()
         x_offset = int(x_list[1] - x_list[0])
@@ -177,7 +181,7 @@ class clustering():
         # source_reference = connection_wo_last_idx[hierarchy_idx]
         source_reference = connection_layer_list[hierarchy_idx]
 
-        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, XY_source_ref=source_reference)
+        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, layer=layer, XY_source_ref=source_reference)
 
     def find_ref_for_sref_qt(self, id_list):
         qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
