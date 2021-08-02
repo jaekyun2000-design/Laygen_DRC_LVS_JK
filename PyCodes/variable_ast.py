@@ -304,69 +304,6 @@ class IrregularTransformer(ast.NodeTransformer):
             _col_num = info_dict['col']             # Fixed
             ###############################################
 
-        # Width, Length Calculation if needed in advance
-        if info_dict['width'] == 'Auto':        # If Width is 'Auto', Length should be fixed.
-            if _flag == 'relative':
-                if _type == 'path_array':
-                    if info_dict['XY_source_ref'][0] == info_dict['target_reference'][0]:
-                        mode = 'vertical'
-                        expression1 = info_dict['XY_source_ref']
-                        expression1 = 'width' + expression1
-                        _width = self.expressionTransformer(expression1, 'FA')
-                        # if info_dict['length'] == 'Auto':
-                        #     expression2 = info_dict['XY_source_ref']
-                        #     expression2 = 'height' + expression2
-                        #     _length = self.expressionTransformer(expression2, 'FA')
-                    else:
-                        mode = 'horizontal'
-                        expression1 = info_dict['XY_source_ref']
-                        expression1 = 'height' + expression1
-                        _width = self.expressionTransformer(expression1, 'FA')
-                        # if info_dict['length'] == 'Auto':
-                        #     expression2 = info_dict['XY_source_ref']
-                        #     expression2 = 'width' + expression2
-                        #     _length = self.expressionTransformer(expression2, 'FA')
-                elif _type == 'boundary_array':
-                    #TODO: boundary element의 값 하나가 'Auto'로 들어오고, 나머지는 상대적 좌표를 이용한 다른 값인 경우에(e.g. LogicExpression, variable 등)
-                    _length = info_dict['length_input']
-                    pass
-                elif _type == 'sref_array':
-                    _width = 'Blank'
-                    _length = 'Blank'
-
-        else:   # If _width is not 'Auto', Length can either be 'Auto' or Fixed
-            _width = info_dict['width_input']
-            if _flag == 'relative':
-                if _type == 'path_array':
-                    if info_dict['XY_source_ref'][0] == info_dict['target_reference'][0]:
-                        mode = 'vertical'
-                        if info_dict['length'] == 'Auto':
-                            expression2 = info_dict['XY_source_ref']
-                            expression2 = 'height' + expression2
-                            _length = self.expressionTransformer(expression2, 'FA')
-                        else:
-                            _length = info_dict["length_input"]
-                    else:
-                        mode = 'horizontal'
-                        if info_dict['length'] == 'Auto':
-                            expression2 = info_dict['XY_source_ref']
-                            expression2 = 'width' + expression2
-                            _length = self.expressionTransformer(expression2, 'FA')
-                        else:
-                            _length = info_dict["length_input"]
-                elif _type == 'boundary_array':
-                    # expression1 = info_dict['XY_source_ref']
-                    # expression1 = 'width' + expression1
-                    # _width = self.expressionTransformer(expression1, 'FA')
-                    if info_dict['length'] == 'Auto':
-                        expression2 = info_dict['XY_source_ref']
-                        expression2 = 'height' + expression2
-                        _length = self.expressionTransformer(expression2, 'FA')
-                    else:
-                        _length = info_dict["length_input"]
-                elif _type == 'sref_array':
-                    _width = 'Blank'
-                    _length = 'Blank'
         ####### XY Coordinate Extraction @ Layout Generator Source Code ######
         source_wo_layer = "".join(XY_source_ref.split(",")[:-1]) +')'
         expression_for_ref = self.expressionTransformer(source_wo_layer, 'XY')
@@ -375,9 +312,6 @@ class IrregularTransformer(ast.NodeTransformer):
         tmp_string = re.sub('\(|\'|\)', "", tmp_string)
         tmp_string = re.sub(" ", "" , tmp_string)
         operands = re.split(',', tmp_string)
-        # for i in range(len(operands[:-1])):
-        #     operands[i] = re.sub("\[.*\]", "", operands[i])
-
         code = 'self.'  # Code Always Starts with 'self.' string
         offsets = []
         offset_indices = []
@@ -391,6 +325,54 @@ class IrregularTransformer(ast.NodeTransformer):
         target_layer_XY_code = code + f"_DesignParameter['{operands[-1]}']" + '[\'_XYCoordinates\']'
         target_width_code = code + f"_DesignParameter['{operands[-1]}']" + '[\'_XWidth\']'
         target_length_code = code + f"_DesignParameter['{operands[-1]}']" + '[\'_YWidth\']'
+
+        # Width, Length Calculation if needed
+        if info_dict['width'] == 'Auto':  # If Width is 'Auto', Length should be fixed.
+            if _flag == 'relative':
+                if _type == 'path_array':
+                    if info_dict['XY_source_ref'][0] == info_dict['target_reference'][0]:
+                        mode = 'vertical'
+                    else:
+                        mode = 'horizontal'
+                elif _type == 'boundary_array':
+                    _width = target_width_code
+                    _length = info_dict['length_input']
+                    pass
+                elif _type == 'sref_array':
+                    _width = 'Blank'
+                    _length = 'Blank'
+        else:  # If _width is not 'Auto', Length can either be 'Auto' or Fixed
+            _width = info_dict['width_input']
+            if _flag == 'relative':
+                if _type == 'path_array':
+                    # if info_dict['XY_source_ref'][0] == info_dict['target_reference'][0]:
+                    #     mode = 'vertical'
+                    #     if info_dict['length'] == 'Auto':
+                    #         expression2 = info_dict['XY_source_ref']
+                    #         expression2 = 'height' + expression2
+                    #         _length = self.expressionTransformer(expression2, 'FA')
+                    #     else:
+                    #         _length = info_dict["length_input"]
+                    # else:
+                    #     mode = 'horizontal'
+                    #     if info_dict['length'] == 'Auto':
+                    #         expression2 = info_dict['XY_source_ref']
+                    #         expression2 = 'width' + expression2
+                    #         _length = self.expressionTransformer(expression2, 'FA')
+                    #     else:
+                    #         _length = info_dict["length_input"]
+                    pass
+                elif _type == 'boundary_array':
+                    if info_dict['length'] == 'Auto':
+                        _length = target_length_code
+                    else:
+                        _length = info_dict["length_input"]
+                elif _type == 'sref_array':
+                    _width = 'Blank'
+                    _length = 'Blank'
+
+
+
 
         # e.g.) _Met1Layer, _COLayer, ...etc.
         if _flag == 'relative':
