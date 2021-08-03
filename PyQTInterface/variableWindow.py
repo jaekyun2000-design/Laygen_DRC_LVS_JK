@@ -218,6 +218,13 @@ class VariableSetupWindow(QWidget):
         self.request_dummy_constraint_signal.emit(dummy_id)
         print(dummy_id)
         print(self.current_dummy_constraint)
+        if 'path' in self.current_dummy_constraint['type']:
+            self.variable_widget.request_show('path', self.current_dummy_constraint['flag'])
+        elif 'boundary' in self.current_dummy_constraint['type']:
+            self.variable_widget.request_show('boundary', self.current_dummy_constraint['flag'])
+        elif 'sref' in self.current_dummy_constraint['type']:
+            self.variable_widget.request_show('sref', self.current_dummy_constraint['flag'])
+        self.show()
 
     def delivery_dummy_constraint(self, dummy_constraint):
         self.current_dummy_constraint = dummy_constraint
