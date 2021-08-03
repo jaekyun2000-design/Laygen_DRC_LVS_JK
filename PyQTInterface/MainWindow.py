@@ -1156,7 +1156,7 @@ class _MainWindow(QMainWindow):
             for item in graphicItem.block:
                 if type(item) is VisualizationItem.QGraphicsTextItemWObounding:
                     item.setVisible(True)
-
+        self.visualItemDict[graphicItem._ElementName] = graphicItem
         self.scene.addItem(graphicItem)
         self.scene.send_move_signal.connect(graphicItem.move)
         self.scene.send_moveDone_signal.connect(graphicItem.moveUpdate)
