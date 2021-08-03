@@ -565,11 +565,14 @@ class _MainWindow(QMainWindow):
                                                          group_ref_list=group_ref,
                                                          inspect_array_window_address=self.array_list_widget)
             self.vw.getArray(array_list_item)
+        self.vw.request_dummy_constraint_signal.connect(self.delivery_dummy_constraint)
 
-        self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.send_test)
-        self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.send_test)
+        self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
+        self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
 
-
+    def delivery_dummy_constraint(self, dummy_id):
+        dummy_constraint = self._DummyConstraints.get_dummy_constraint_by_id(dummy_id)
+        self.sender().delivery_dummy_constraint(dummy_constraint)
 
     def visualize_inspect_array(self, row):
         for id in self.log:

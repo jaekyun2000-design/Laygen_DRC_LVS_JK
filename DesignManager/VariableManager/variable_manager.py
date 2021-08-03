@@ -69,3 +69,15 @@ class DummyConstraints:
         self.XYPathDict = dict()
         self.ExpressionDict = dict()
         self.ArrayDict = dict()
+
+    def get_dummy_constraint_by_id(self, id_text):
+        if id_text in self.XYDict:
+            return self.XYDict[id_text]
+        elif id_text in self.XYPathDict:
+            return self.XYPathDict[id_text]
+        elif id_text in self.ExpressionDict:
+            return self.ExpressionDict[id_text]
+        elif id_text in self.ArrayDict:
+            return self.ArrayDict[id_text]
+        else:
+            return None

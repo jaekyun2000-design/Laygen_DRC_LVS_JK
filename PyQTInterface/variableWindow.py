@@ -33,6 +33,7 @@ class VariableSetupWindow(QWidget):
     # send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
     send_DestroyTmpVisual_signal = pyqtSignal(str)
     send_output_dict_signal = pyqtSignal(dict)
+    request_dummy_constraint_signal = pyqtSignal(str)
 
 
     send_variableVisual_signal = pyqtSignal(VariableVisualItem.VariableVisualItem)
@@ -213,8 +214,13 @@ class VariableSetupWindow(QWidget):
         # self.create_ui_relative()
         # self.update_ui()
 
-    def send_test(self, text):
-        print(text)
+    def update_ui_by_constraint_id(self, dummy_id):
+        self.request_dummy_constraint_signal.emit(dummy_id)
+        print(dummy_id)
+        print(self.current_dummy_constraint)
+
+    def delivery_dummy_constraint(self, dummy_constraint):
+        self.current_dummy_constraint = dummy_constraint
 
     # def create_ui_relative(self):
     #     self.ui_list_a = []
