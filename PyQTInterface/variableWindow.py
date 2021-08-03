@@ -1244,10 +1244,7 @@ class variableContentWidget(QWidget):
     def get_index(self, text):
         for info, widget in self.widget_dictionary.items():
             if not widget.isHidden():
-                if info == 'srefrelative':
-                    index_input_widget = self.widget_dictionary[info].layout().itemAt(3).itemAt(1).widget()
-                else:
-                    index_input_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
+                index_input_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
 
                 if text == 'Custom':
                     index_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
