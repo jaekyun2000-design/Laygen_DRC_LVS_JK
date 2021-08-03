@@ -2613,7 +2613,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_DataChanged_signal = pyqtSignal(str)
     # send_deleteID_signal = pyqtSignal(str)
     send_deleteConstraint_signal = pyqtSignal(str)
-    send_dummy_ast_id_signal = pyqtSignal(str)
+    send_dummy_ast_id_for_xy_signal = pyqtSignal(str)
+    send_dummy_ast_id_for_array_signal = pyqtSignal(str)
 
 
     originalKeyPress = QTreeView.keyPressEvent
@@ -3270,11 +3271,16 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
     def browse_expression(self):
         current_item =self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
-        if current_item.text() != None:
-            self.send_dummy_ast_id_signal.emit(current_item.text())
-        else:
-            parent_item = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
-            self.send_dummy_ast_id_signal.emit(parent_item.text())
+        type_name = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0)).text()
+        if type_name in ['XYCoordinate', 'PathXY']:
+            self.send_dummy_ast_id_for_xy_signal.emit(current_item.text())
+        elif type_name == 'Array':
+            self.send_dummy_ast_id_for_array_signal.emit(current_item.text())
+        # if current_item.text() != None:
+        #     self.send_dummy_ast_id_for_xy_signal.emit(current_item.text())
+        # else:
+        #     parent_item = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
+        #     self.send_dummy_ast_id_for_xy_signal.emit(parent_item.text())
 
 
     def get_dp_highlight_dc(self,dp_id_list,_):
