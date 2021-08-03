@@ -2658,6 +2658,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         browse_expression_action = QAction("View expression", self.context_menu_for_xy)
         self.context_menu_for_xy.addActions([browse_expression_action])
 
+        self.context_menu_for_array = QMenu(self)
+        self.context_menu_for_array.addActions([browse_expression_action])
+
 
         add_blank_row_action.triggered.connect(self.append_row)
         add_blank_row_dict_action.triggered.connect(self.append_row)
@@ -3243,17 +3246,19 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             if idx.isValid():
                 type_item = self.model.itemFromIndex(idx.siblingAtColumn(2))
 
-                if type_item.text() == 'XYCoordinate' or 'PathXY':
+                if type_item.text() in ['XYCoordinate', 'PathXY']:
                     self.context_menu_for_xy.exec_(self.viewport().mapToGlobal(point))
-                elif "str" in type_item.text():
-                    if idx.parent():
-                        parent_type_item = self.model.itemFromIndex(idx.parent().siblingAtColumn(2))
-                        if parent_type_item.text() == 'XYCoordinate' or 'PathXY':
-                            self.context_menu_for_xy.exec_(self.viewport().mapToGlobal(point))
-                elif "list" in type_item.text():
-                    self.context_menu_for_list.exec_(self.viewport().mapToGlobal(point))
-                elif "dict" in type_item.text():
-                    self.context_menu_for_dict.exec_(self.viewport().mapToGlobal(point))
+                elif type_item.text() == 'Array':
+                    self.context_menu_for_array.exec_(self.viewport().mapToGlobal(point))
+                # elif "str" in type_item.text():
+                #     if idx.parent():
+                #         parent_type_item = self.model.itemFromIndex(idx.parent().siblingAtColumn(2))
+                #         if parent_type_item.text() == 'XYCoordinate' or 'PathXY':
+                #             self.context_menu_for_xy.exec_(self.viewport().mapToGlobal(point))
+                # elif "list" in type_item.text():
+                #     self.context_menu_for_list.exec_(self.viewport().mapToGlobal(point))
+                # elif "dict" in type_item.text():
+                #     self.context_menu_for_dict.exec_(self.viewport().mapToGlobal(point))
         except:
             traceback.print_exc()
             pass
