@@ -168,7 +168,7 @@ class clustering():
                 odd_filter = list(filter(lambda x: int(x)%2 == 1, source_index_list))
                 if len(even_filter) == len(source_index_list):
                     index = 'Even'
-                elif len(even_filter) == len(source_index_list):
+                elif len(odd_filter) == len(source_index_list):
                     index = 'Odd'
 
 
@@ -213,7 +213,29 @@ class clustering():
         source_reference = connection_wo_last_idx[hierarchy_idx]
         # source_reference = connection_layer_list[hierarchy_idx]
 
-        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, layer=layer, XY_source_ref=source_reference)
+        connection_layer_idx_of_source = []
+        for i, ele in enumerate(connection_wo_last_idx):
+            if ele == source_reference:
+                connection_layer_idx_of_source.append(i)
+        source_reference_list = [connection_layer_list[idx] for idx in connection_layer_idx_of_source]
+        index = 'Custom'
+        source_dp = self.get_hierarchy_item(source_reference_list[0])
+        if type(source_dp) != dict:
+            warnings.warn('WARNING: Trying to inspect index by item which type is not generator.')
+        else:
+            if len(source_dp['_XYCoordinates']) == len(qt_dp_list):
+                index = 'All'
+            else:
+                source_index_list = [re.search('\[[0-9]*\]',source_ref[-1]).group()[1:-1] for source_ref in source_reference_list]
+                even_filter = list(filter(lambda x: int(x)%2 == 0, source_index_list))
+                odd_filter = list(filter(lambda x: int(x)%2 == 1, source_index_list))
+                if len(even_filter) == len(source_index_list):
+                    index = 'Even'
+                elif len(odd_filter) == len(source_index_list):
+                    index = 'Odd'
+
+        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, layer=layer, index = index,
+                    XY_source_ref=source_reference)
 
     def find_ref_for_sref_qt(self, id_list):
         qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
@@ -248,8 +270,29 @@ class clustering():
         source_reference = connection_wo_last_idx[hierarchy_idx]
         # source_reference = connection_layer_list[hierarchy_idx]
 
+        connection_layer_idx_of_source = []
+        for i, ele in enumerate(connection_wo_last_idx):
+            if ele == source_reference:
+                connection_layer_idx_of_source.append(i)
+        source_reference_list = [connection_layer_list[idx] for idx in connection_layer_idx_of_source]
+        index = 'Custom'
+        source_dp = self.get_hierarchy_item(source_reference_list[0])
+        if type(source_dp) != dict:
+            warnings.warn('WARNING: Trying to inspect index by item which type is not generator.')
+        else:
+            if len(source_dp['_XYCoordinates']) == len(qt_dp_list):
+                index = 'All'
+            else:
+                source_index_list = [re.search('\[[0-9]*\]',source_ref[-1]).group()[1:-1] for source_ref in source_reference_list]
+                even_filter = list(filter(lambda x: int(x)%2 == 0, source_index_list))
+                odd_filter = list(filter(lambda x: int(x)%2 == 1, source_index_list))
+                if len(even_filter) == len(source_index_list):
+                    index = 'Even'
+                elif len(odd_filter) == len(source_index_list):
+                    index = 'Odd'
 
-        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, XY_source_ref=source_reference)
+        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, index= index,
+                    XY_source_ref=source_reference)
 
     def get_hierarchy_item(self, hierarchy_list):
         """
