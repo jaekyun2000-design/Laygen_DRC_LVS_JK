@@ -186,8 +186,6 @@ class ExpressionCalculator(QWidget):
         self.presetWindow = QListWidget()
         self.presetWindow.itemClicked.connect(self.presetClicked)
         self.presetWindow.setDragDropMode(QAbstractItemView.InternalMove)
-        for _id in self.presetDict.keys():
-            self.presetWindow.addItem(_id)
 
         DRCText = QLabel('DRC List')
         DRCText.setAlignment(Qt.AlignCenter)
@@ -363,11 +361,19 @@ class ExpressionCalculator(QWidget):
     def getXY(self, XY_id):
         print(XY_id)
         self.show()
+        self.presetWindow.clear()
+        for _id in self.presetDict.keys():
+            self.presetWindow.addItem(_id)
         if XY_id in self.presetDict:
             for i in range(self.presetWindow.count()):
                 if self.presetWindow.item(i).text() == XY_id:
                     self.presetWindow.setCurrentRow(i)
             self.presetClicked()
+
+    def set_preset_window(self):
+        self.presetWindow.clear()
+        for _id in self.presetDict.keys():
+            self.presetWindow.addItem(_id)
 
     def XitemClicked(self):
         if self.YWindow.currentItem():

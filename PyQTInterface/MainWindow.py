@@ -468,10 +468,14 @@ class _MainWindow(QMainWindow):
         # self.parsetreeEasyRun.clicked.connect(self.easyRun)
         self.variableCallButton.clicked.connect(self.variableListUpdate)
         self.calculatorButton.clicked.connect(self.calculator)
+
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
         self.dockContentWidget3.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
         self.dockContentWidget3_2.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
-
+        self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.storePreset)
+        self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
+        self.calculator_window.returnLayer_signal.connect(self.get_hierarchy_return_layer)
+        self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
 
         ################ Logging Message Dock Widget setting ####################
         dockWidget4ForLoggingMessage = QDockWidget("Logging Message")
@@ -483,12 +487,17 @@ class _MainWindow(QMainWindow):
         print("******************************Initializing Graphic Interface Complete")
 
     def calculator(self):
-        self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.storePreset)
-        self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
-        self.calculator_window.returnLayer_signal.connect(self.get_hierarchy_return_layer)
-        self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
+        # self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
+        # self.dockContentWidget3.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
+        # self.dockContentWidget3_2.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
+        # self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.storePreset)
+        # self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
+        # self.calculator_window.returnLayer_signal.connect(self.get_hierarchy_return_layer)
+        # self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
         # self.calculator_window.send_equation_signal.connect(self.XYDictManagement)
+        self.calculator_window.set_preset_window()
         self.calculator_window.show()
+        print(self.calculator_window.presetDict)
 
     def get_dc_highlight_dp(self,dc_id):
         dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
