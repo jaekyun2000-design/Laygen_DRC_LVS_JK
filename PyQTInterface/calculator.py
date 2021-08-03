@@ -260,7 +260,7 @@ class ExpressionCalculator(QWidget):
 
         self.setLayout(top_DRC_layout)
         self.setWindowTitle('Expression Calculator')
-        self.show()
+        # self.show()
 
     # def ExtendDRCWidget(self):
     #     if self.DRCWindow.isHidden():
@@ -361,6 +361,7 @@ class ExpressionCalculator(QWidget):
             self.arithmetic_clicked(clicked=self.div)
 
     def getXY(self, XY_id):
+        print(XY_id)
         self.show()
         if XY_id in self.presetDict:
             for i in range(self.presetWindow.count()):
@@ -923,7 +924,7 @@ class ExpressionCalculator(QWidget):
         self.presetWindow.addItem(_id)
         print(self.presetDict)
 
-    def presetClicked(self, dummy):
+    def presetClicked(self, dummy=None):
         if type(dummy) == str:
             _id = dummy
         else:

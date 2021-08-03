@@ -88,6 +88,7 @@ class _MainWindow(QMainWindow):
         self._QTObj = QTInterfaceWithAST.QtInterFace()
         self._ProjectName = None
         self._CurrentModuleName = None
+        self.gloabal_clipboard = QGuiApplication.clipboard()
         self.initUI()
         self.easyDebugMode()
         self.progrseeBar_unstable = True
@@ -101,7 +102,6 @@ class _MainWindow(QMainWindow):
         self.library_manager = generator_model_api
         self._VariableIDwithAST = variable_manager.Variable_IDwithAST()
         self._DummyConstraints = variable_manager.DummyConstraints()
-        self.gloabal_clipboard = QGuiApplication.clipboard()
         self.variable_store_list = list()
 
 
@@ -468,6 +468,9 @@ class _MainWindow(QMainWindow):
         # self.parsetreeEasyRun.clicked.connect(self.easyRun)
         self.variableCallButton.clicked.connect(self.variableListUpdate)
         self.calculatorButton.clicked.connect(self.calculator)
+        self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
+        self.dockContentWidget3.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
+        self.dockContentWidget3_2.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
 
 
         ################ Logging Message Dock Widget setting ####################
@@ -480,9 +483,6 @@ class _MainWindow(QMainWindow):
         print("******************************Initializing Graphic Interface Complete")
 
     def calculator(self):
-        self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
-        self.dockContentWidget3.send_dummy_ast_id_signal.connect(self.calculator_window.getXY)
-        self.dockContentWidget3_2.send_dummy_ast_id_signal.connect(self.calculator_window.getXY)
         self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.storePreset)
         self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
         self.calculator_window.returnLayer_signal.connect(self.get_hierarchy_return_layer)
@@ -557,6 +557,8 @@ class _MainWindow(QMainWindow):
                                                          inspect_array_window_address=self.array_list_widget)
             self.vw.getArray(array_list_item)
 
+        self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.send_test)
+        self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.send_test)
 
 
 

@@ -213,6 +213,9 @@ class VariableSetupWindow(QWidget):
         # self.create_ui_relative()
         # self.update_ui()
 
+    def send_test(self, text):
+        print(text)
+
     # def create_ui_relative(self):
     #     self.ui_list_a = []
     #     self.ui_list_b = []
