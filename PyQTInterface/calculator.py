@@ -41,6 +41,7 @@ class ExpressionCalculator(QWidget):
         # print(self.display.layoutDirection())
         # # self.display.setLayoutDirection(Qt.RightToLeft)
         # print(self.display.layoutDirection())
+        self.parenthesis_count = 0
         self.equationList = list()
         self.DRCTreeItemDict = dict()
         self.returnedLayer = None
@@ -76,6 +77,8 @@ class ExpressionCalculator(QWidget):
         self.minus = self.create_button(' - ',self.arithmetic_clicked)
         self.mul = self.create_button(' * ',self.arithmetic_clicked)
         self.div = self.create_button(' / ',self.arithmetic_clicked)
+        self.left_parenthesis = self.create_button(' ( ',self.digit_clicked)
+        self.right_parenthesis = self.create_button(' ) ',self.digit_clicked)
 
         self.backspace = self.create_button('<-',self.delete_clicked)
 
@@ -96,7 +99,7 @@ class ExpressionCalculator(QWidget):
         toggling_group_layout.addWidget(self.xy_button)
         self.xy_reference_toggling_group.setLayout(toggling_group_layout)
 
-        add_button = self.create_button('ADD',self.send_clicked, size_constraint=dict(height=35))
+        add_button = self.create_button('ADD',self.add_clicked, size_constraint=dict(height=35))
         edit_button = self.create_button('EDIT',self.edit_clicked, size_constraint=dict(height=35))
         export_button = self.create_button('EXPORT',self.export_clicked, size_constraint=dict(height=35))
         export_path_button = self.create_button('EXPORT FOR PATH',self.export_path_clicked, size_constraint=dict(height=35))
@@ -118,8 +121,8 @@ class ExpressionCalculator(QWidget):
         main_layout = QGridLayout()
         # main_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
         dl_size = 5
-        main_layout.addWidget(self.display, 0, 0, dl_size, 6)
-        main_layout.addWidget(self.backspace, 0, 6, dl_size, 1)
+        main_layout.addWidget(self.display, 0, 0, dl_size, 7)
+        main_layout.addWidget(self.backspace, 0, 7, dl_size, 1)
         # main_layout.addWidget(self.display, 1, 8)
 
         for i in range(10):
@@ -144,10 +147,13 @@ class ExpressionCalculator(QWidget):
         main_layout.addWidget(self.click_button,dl_size+3,1)
         main_layout.addWidget(self.height_button,dl_size+3,2)
 
-        main_layout.addWidget(self.div,dl_size,6)
+        main_layout.addWidget(self.left_parenthesis,dl_size,6)
         main_layout.addWidget(self.mul,dl_size+1,6)
-        main_layout.addWidget(self.minus,dl_size+2,6)
-        main_layout.addWidget(self.plus,dl_size+3,6)
+        main_layout.addWidget(self.plus,dl_size+2,6)
+
+        main_layout.addWidget(self.right_parenthesis,dl_size,7)
+        main_layout.addWidget(self.div,dl_size+1,7)
+        main_layout.addWidget(self.minus,dl_size+2,7)
 
 
 
@@ -572,7 +578,13 @@ class ExpressionCalculator(QWidget):
                             self.equationList[-1] = self.equationList[-1][2:-1]
                         else:
                             self.equationList[-1] = '(-' + self.equationList[-1] + ')'
-
+        elif clicked_button.text() == ' ( ':
+            self.parenthesis_count += 1
+            self.equationList.append(' ( ')
+        elif clicked_button.text() == ' ) ':
+            if self.parenthesis_count > 0:
+                self.parenthesis_count -= 1
+                self.equationList.append(' ) ')
         else:
             digit_value = str(clicked_button.text())
 
@@ -760,8 +772,12 @@ class ExpressionCalculator(QWidget):
         #                  f"self._DesignParameter['{operands[0]}']['_DesignObj']._DesignParameter['{operands[1]}']['_XYCoordinates'][0][0]" \
         #                  f"+ self._DesignParameter['{operands[0]}']['_DesignObj']._DesignParameter['{operands[1]}']['_YWidth']/2]"
 
-    def send_clicked(self):
+    def add_clicked(self):
         XYFlag = None
+        while self.parenthesis_count != 0:
+            self.display.setText(self.display.toPlainText() + ' ) ')
+            self.parenthesis_count -= 1
+
         if len(self.equationList) != 0:
             if self.arithmetic_flag:
                 self.warning = QMessageBox()
