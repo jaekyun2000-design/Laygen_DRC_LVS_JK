@@ -220,6 +220,14 @@ class ElementTransformer(ast.NodeTransformer):
     def visit_Boundary(self,node):
         syntax = self.xy_syntax_checker(node)
 
+        for field in node._fields:
+            if field == 'XY':
+                continue
+            if isinstance(node.__dict__[field], ast.AST):
+                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
+            elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
+                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
+
         if syntax == 'list' :#or syntax == 'string':
             tmp_xy = str(node.XY).replace("'","")
             sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
@@ -246,6 +254,14 @@ class ElementTransformer(ast.NodeTransformer):
     def visit_Path(self,node):
         syntax = self.xy_syntax_checker(node)
 
+        for field in node._fields:
+            if field == 'XY':
+                continue
+            if isinstance(node.__dict__[field], ast.AST):
+                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
+            elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
+                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
+
         if syntax == 'list' or syntax == 'string':
             tmp_xy = str(node.XY).replace("'", "")
             sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
@@ -270,6 +286,15 @@ class ElementTransformer(ast.NodeTransformer):
         syntax = self.xy_syntax_checker(node)
         print(f'debug: {syntax}')
         parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
+
+
+        for field in node._fields:
+            if field == 'XY':
+                continue
+            if isinstance(node.__dict__[field], ast.AST):
+                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
+            elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
+                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
 
         if syntax == 'list':
             tmp_xy = str(node.XY).replace("'", "")
@@ -311,6 +336,15 @@ class ElementTransformer(ast.NodeTransformer):
         return tmp.body
 
     def visit_Text(self, node):
+
+        for field in node._fields:
+            if field == 'XY':
+                continue
+            if isinstance(node.__dict__[field], ast.AST):
+                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
+            elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
+                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
+
         sentence = f"self.{node.name} = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
  _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Presentation = {node.pres}, _Reflect = {node.reflect}, _XYCoordinates = {node.XY},\
  _Mag = {node.magnitude}, _Angle = {node.angle}, _TEXT = '{node.text}')"
