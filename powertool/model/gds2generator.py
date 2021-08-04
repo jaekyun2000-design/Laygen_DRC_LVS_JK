@@ -114,6 +114,10 @@ class GDS2Generator():
         # return self.root_cell._DesignParameter[target_cell_name]
 
     def load_qt_id_info(self, project, constraint_ids):
+        '''
+        This process was required to connect designparm id to element name.
+        However, design parm id and name was unified, so no more use... (Maybe)...
+        '''
         self.element_manager = project._QTObj._qtProject._ElementManager
         dp_id_list = [self.element_manager.get_dp_id_by_dc_id(constraint_id) for constraint_id in constraint_ids]
 
@@ -149,13 +153,13 @@ class GDS2Generator():
                 # dp_dictionary[dp_name]['_id'] = temp
             else:
                 dp_dictionary[dp_name] = dp
-            if dp_name in self.dp_name_to_dp_id:
-                temp = self.dp_name_to_dp_id[dp_name]
-                dp_dictionary[dp_name]['_id'] = temp
-                dp_dictionary[dp_name]['_ElementName'] = temp
-            else:
-                dp_dictionary[dp_name]['_id'] = dp_name
-                dp_dictionary[dp_name]['_ElementName'] = dp_name
+            # if dp_name in self.dp_name_to_dp_id:
+            #     temp = self.dp_name_to_dp_id[dp_name]
+            #     dp_dictionary[dp_name]['_id'] = temp
+            #     dp_dictionary[dp_name]['_ElementName'] = temp
+            # else:
+            dp_dictionary[dp_name]['_id'] = dp_name
+            dp_dictionary[dp_name]['_ElementName'] = dp_name
             print("debug")
 
 
