@@ -245,7 +245,7 @@ class IrregularTransformer(ast.NodeTransformer):
                     expression = elements[i]
                     operands_with_operators_list = re.split(' ', expression)
                     for j in range(len(operands_with_operators_list)):
-                        isFunction = re.search('\(\[\'.*\'\]\)', operands_with_operators_list[j])
+                        isFunction =  re.search('\(\'.*\'\)', operands_with_operators_list[j])
                         if isFunction != None:
                             re_expressed_element = self.expressionTransformer(operands_with_operators_list[j],
                                                                               XYFlag=XYFlag)
@@ -273,6 +273,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 else:
                     final_y_value = tmpDict['Y'][j] + ' + ' + final_y_value
             sentence = final_y_value
+        sentence = '(' + sentence + ')'
         tmp = ast.parse(sentence)
         return tmp.body
 
@@ -390,14 +391,14 @@ class IrregularTransformer(ast.NodeTransformer):
                     loop_code = f"XYList = []\n" \
                                 f"for i in range(len({target_layer_XY_code})):\n" \
                                 f"\tif (i%2 == 1):\n" \
-                                f"\t\tXYList.append({expression_for_ref} + {target_layer_XY_code}[i])\n"
+                                f"\t\tXYList.append([x+y for x,y in zip({expression_for_ref} , {target_layer_XY_code}[i] ) ] )\n"
                 elif _index == 'Even':
                     XY_source_ref = re.sub("\',", '[0]', XY_source_ref)
                     XY_source_ref = re.sub("\'\)", '[0]', XY_source_ref)
                     loop_code = f"XYList = []\n" \
                                 f"for i in range(len({target_layer_XY_code})):\n" \
                                 f"\tif (i%2 == 0):\n" \
-                                f"\t\tXYList.append({expression_for_ref} + {target_layer_XY_code}[i])\n"
+                                f"\t\tXYList.append([x+y for x,y in zip({expression_for_ref} , {target_layer_XY_code}[i] ) ] )\n"
 
                 expression1 = self.get_expression_del_func(XY_source_ref)
                 expression1 = 'width' + expression1
