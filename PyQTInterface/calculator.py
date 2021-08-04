@@ -42,6 +42,7 @@ class ExpressionCalculator(QWidget):
         # # self.display.setLayoutDirection(Qt.RightToLeft)
         # print(self.display.layoutDirection())
         self.parenthesis_count = 0
+        self.custom_index = ''
         self.equationList = list()
         self.DRCTreeItemDict = dict()
         self.returnedLayer = None
@@ -180,6 +181,36 @@ class ExpressionCalculator(QWidget):
         self.XYWindow = QListWidget()
         self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
         self.XYWindow.itemClicked.connect(self.XYitemClicked)
+
+        self.first_index_button = QPushButton()
+        self.first_index_button.setText('first')
+        self.first_index_button.clicked.connect(self.manage_index)
+        self.last_index_button = QPushButton()
+        self.last_index_button.setText('last')
+        self.last_index_button.clicked.connect(self.manage_index)
+        self.custom_index_button = QPushButton()
+        self.custom_index_button.setText('custom')
+        self.custom_index_button.clicked.connect(self.manage_index)
+
+        self.index_layout = QVBoxLayout()
+
+        self.index_button_layout = QHBoxLayout()
+        self.index_button_layout.addWidget(self.first_index_button)
+        self.index_button_layout.addWidget(self.last_index_button)
+        self.index_button_layout.addWidget(self.custom_index_button)
+
+        self.index_input = QLineEdit()
+        self.index_input.textChanged.connect(self.store_index_input)
+        self.index_label = QLabel('index')
+
+        self.index_input_layout = QHBoxLayout()
+        self.index_input_layout.addWidget(self.index_input)
+        self.index_input_layout.addWidget(self.index_label)
+
+        self.index_layout.addLayout(self.index_button_layout)
+        self.index_layout.addLayout(self.index_input_layout)
+        self.index_layout.addSpacing(150)
+
         self.presetButton = QPushButton()
         self.presetButton.setText('▶')
         self.presetButton.setMaximumWidth(30)
@@ -221,7 +252,8 @@ class ExpressionCalculator(QWidget):
         V_layout1 = QVBoxLayout()
 
         H_layout1.addWidget(self.YWindow)
-        H_layout1.addSpacing(282)
+        # H_layout1.addSpacing(282)
+        H_layout1.addLayout(self.index_layout)
         # H_layout1.addSpacing(202)
         # H_layout1.addLayout(V_layout1)
         # V_layout1.addWidget(DRCButton)
@@ -955,6 +987,21 @@ class ExpressionCalculator(QWidget):
             for xy in XYList:
                 self.XYWindow.addItem(xy)
 
+    def manage_index(self,_):
+        sender = self.sender()
+        if sender.text() == 'first':
+            self.index_input.setText('first')
+            self.index_input.setReadOnly(True)
+        elif sender.text() == 'last':
+            self.index_input.setText('last')
+            self.index_input.setReadOnly(True)
+        elif sender.text() == 'custom':
+            self.index_input.setText(self.custom_index)
+            self.index_input.setReadOnly(False)
+
+    def store_index_input(self, changed_text):
+        if changed_text != 'first' and changed_text != 'last':
+            self.custom_index = changed_text
 
 class PathWindow(QWidget):
     send_output_signal = pyqtSignal(dict)
