@@ -1756,6 +1756,9 @@ class _MainWindow(QMainWindow):
         return visualItem
 
     def updateVisualItemFromDesignParameter(self,DesignParameter):
+        if DesignParameter is None:
+            return None
+
         id = DesignParameter._id
         # self.visualItemDict[id].updateTraits(DesignParameter._DesignParameter)
 
@@ -1826,7 +1829,8 @@ class _MainWindow(QMainWindow):
                 # else:
             try:
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
-                self.updateGraphicItem(visualItem)
+                if visualItem:
+                    self.updateGraphicItem(visualItem)
             except:
                 traceback.print_exc()
 
