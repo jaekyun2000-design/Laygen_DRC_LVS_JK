@@ -945,53 +945,28 @@ class _MainWindow(QMainWindow):
             dp_dict = gds2gen.get_updated_designParameters()                                    # New Info
             current_dpdict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]   # Unchanged target Info
 
-            for _dpName, _qtdp in current_dpdict.items():
-                for _newdpName, _newqtdp in dp_dict.items():
-                    if _dpName == _newqtdp['_id']:          # Match Whether Updated Item corresponds to existing qtDesignParameter
-                        if _qtdp._DesignParameter['_DesignParametertype'] == 1:
-                            _qtdp._DesignParameter['_XYCoordinates'] = _newqtdp['_XYCoordinates']
-                            _qtdp._DesignParameter['_Layer'] = LayerReader._LayerName_unified[str(_newqtdp['_Layer'])]
-                            _qtdp._DesignParameter['_XWidth'] = _newqtdp['_XWidth']
-                            _qtdp._DesignParameter['_YWidth'] = _newqtdp['_YWidth']
-                            _qtdp._DesignParameter['_Datatype'] = _newqtdp['_Datatype']
-                            # _qtdp._DesignParameter['_Reflect'] = _newqtdp['_Reflect']
-                            # _qtdp._DesignParameter['_Angle'] = _newqtdp['_Angle']
-                            _qtdp._DesignParameter['_Ignore'] = _newqtdp['_Ignore']
-                            self.updateDesignParameter(_qtdp._DesignParameter, False)
 
-                        elif _qtdp._DesignParameter['_DesignParametertype'] == 2:
-                            _qtdp._DesignParameter['_XYCoordinates'] = _newqtdp['_XYCoordinates']
-                            _qtdp._DesignParameter['_Layer'] = LayerReader._LayerName_unified[str(_newqtdp['_Layer'])]
-                            _qtdp._DesignParameter['_Width'] = _newqtdp['_Width']
-                            _qtdp._DesignParameter['_Datatype'] = _newqtdp['_Datatype']
-                            _qtdp._DesignParameter['_Ignore'] = _newqtdp['_Ignore']
-                            self.updateDesignParameter(_qtdp._DesignParameter, False)
-
-                        elif _qtdp._DesignParameter['_DesignParametertype'] == 3:
-                            _qtdp._DesignParameter['_DesignObj'] = _newqtdp['_DesignObj']
-                            _qtdp._DesignParameter['_XYCoordinates'] = _newqtdp['_XYCoordinates']
-                            _qtdp._DesignParameter['_Reflect'] = _newqtdp['_Reflect']
-                            _qtdp._DesignParameter['_Angle'] = _newqtdp['_Angle']
-                            _qtdp._DesignParameter['_Ignore'] = _newqtdp['_Ignore']
-                            _qtdp._DesignParameter['_ModelStructure'] = _newqtdp['_ModelStructure']
-                            sref_vi = VisualizationItem._VisualizationItem()
-                            sref_vi.updateDesignParameter(_qtdp)
-                            self.scene.addItem(sref_vi)
-                            self.scene.removeItem(self.visualItemDict[_qtdp._DesignParameter['_id']])
-                            self.visualItemDict[_qtdp._DesignParameter['_id']] = sref_vi
-                            self._layerItem = sref_vi.returnLayerDict()
-                            self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
-
-                        break
-                    else:
-                        pass
+            updated_dp_name_list = list(filter(lambda dp_name: dp_name  in current_dpdict, list(dp_dict.keys())))
+            for dp_name in updated_dp_name_list:
+                for key, value in dp_dict[dp_name].items():
+                    current_dpdict[dp_name]._DesignParameter[key] = value
+                if current_dpdict[dp_name]._DesignParameter['_DesignParametertype'] == 3:
+                    sref_vi = VisualizationItem._VisualizationItem()
+                    sref_vi.updateDesignParameter(current_dpdict[dp_name])
+                    self.scene.addItem(sref_vi)
+                    self.scene.removeItem(self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']])
+                    self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']] = sref_vi
+                    self._layerItem = sref_vi.returnLayerDict()
+                    self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
+                else:
+                    self.updateDesignParameter(current_dpdict[dp_name]._DesignParameter, False)
 
             new_dp_name_list = list(filter(lambda dp_name: dp_name not in current_dpdict, list(dp_dict.keys())))
             for dp_name in new_dp_name_list:
                 dp = dp_dict[dp_name]
                 self.createNewDesignParameter(dp)
-
             print(dp_dict)
+
 
         except :
             traceback.print_exc()
