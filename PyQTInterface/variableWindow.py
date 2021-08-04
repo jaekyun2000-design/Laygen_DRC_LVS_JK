@@ -21,6 +21,7 @@ from PyCodes import QTInterfaceWithAST
 from DesignManager.VariableManager import variable_manager
 
 import re, ast, time
+import copy
 import os
 
 
@@ -218,12 +219,13 @@ class VariableSetupWindow(QWidget):
         self.request_dummy_constraint_signal.emit(dummy_id)
         print(dummy_id)
         print(self.current_dummy_constraint)
+        self.variable_type_widget.setCurrentText(self.current_dummy_constraint['type'])
         if 'path' in self.current_dummy_constraint['type']:
-            self.variable_widget.request_show('path', self.current_dummy_constraint['flag'])
+            self.variable_widget.request_load('path', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'], True)
         elif 'boundary' in self.current_dummy_constraint['type']:
-            self.variable_widget.request_show('boundary', self.current_dummy_constraint['flag'])
+            self.variable_widget.request_load('boundary', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'], True)
         elif 'sref' in self.current_dummy_constraint['type']:
-            self.variable_widget.request_show('sref', self.current_dummy_constraint['flag'])
+            self.variable_widget.request_load('sref', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'], True)
         self.show()
 
     def delivery_dummy_constraint(self, dummy_constraint):
@@ -889,6 +891,7 @@ class VariableSetupWindow(QWidget):
             self.send_DestroyTmpVisual_signal.emit(_id)
 
         print(self.deleteItemList)
+        self.variable_widget.output_dict[output_dict['name']] = output_dict
         self.send_output_dict_signal.emit(self.output_dict)
 
         # variable_vis_item = VariableVisualItem.VariableVisualItem()
@@ -999,13 +1002,17 @@ class VariableSetupWindow(QWidget):
 
 class variableContentWidget(QWidget):
     value_changed_signal = pyqtSignal(str, str)
+    output_dict = dict()
+
     def __init__(self):
         super(variableContentWidget, self).__init__()
+        self.edit_flag = False
         self.name_list = ['boundary', 'path', 'sref']
         self.option_list = ['offset', 'relative']
         self.widget_dictionary = dict()
         self.vbox = QVBoxLayout()
         self.field_value_memory_dict = dict()
+
         self.initUI()
 
     def initUI(self):
@@ -1025,6 +1032,11 @@ class variableContentWidget(QWidget):
                 self.create_skeleton(name, option, field_info)
 
         self.setLayout(self.vbox)
+
+    def request_load(self, name, option, id, edit_flag):
+        self.field_value_memory_dict = self.output_dict[id]
+        self.edit_flag = edit_flag
+        self.request_show(name, option)
 
     def request_show(self, name, option):
         for widget in self.widget_dictionary.values():
@@ -1118,7 +1130,7 @@ class variableContentWidget(QWidget):
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)
         output_layout.addWidget(tmp_input_widget)
-        
+
         return output_layout
 
     def create_double_line_field(self, name):
@@ -1316,8 +1328,9 @@ class variableContentWidget(QWidget):
         if type(changed_text) == QListWidgetItem:
             changed_text = changed_text.text()
 
-        self.field_value_memory_dict[name] = changed_text
-        self.value_changed_signal.emit(name, changed_text)
+        if not self.edit_flag:
+            self.field_value_memory_dict[name] = changed_text
+            self.value_changed_signal.emit(name, changed_text)
         # print(self.field_value_memory_dict)
 
 
