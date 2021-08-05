@@ -175,7 +175,7 @@ class VariableSetupWindow(QWidget):
 
         if self.variable_type == 'boundary_array':
             self.output_dict['width'] = 'Auto'
-            self.output_dict['length'] = 'Auto'
+            self.output_dict['height'] = 'Auto'
             self.output_dict['index'] = 'All'
         elif self.variable_type == 'path_array':
             self.output_dict['width'] = 'Auto'
@@ -216,20 +216,21 @@ class VariableSetupWindow(QWidget):
         # self.update_ui()
 
     def update_ui_by_constraint_id(self, dummy_id):
+        self.deleteItemList.clear()
         self.request_dummy_constraint_signal.emit(dummy_id)
         print(dummy_id)
         print(self.current_dummy_constraint)
         self.variable_type_widget.setCurrentText(self.current_dummy_constraint['type'])
         if 'path' in self.current_dummy_constraint['type']:
-            self.variable_widget.request_load('path', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'], True)
+            self.variable_widget.request_load('path', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'])
         elif 'boundary' in self.current_dummy_constraint['type']:
-            self.variable_widget.request_load('boundary', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'], True)
+            self.variable_widget.request_load('boundary', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'])
         elif 'sref' in self.current_dummy_constraint['type']:
-            self.variable_widget.request_load('sref', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'], True)
+            self.variable_widget.request_load('sref', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'])
         self.show()
 
     def delivery_dummy_constraint(self, dummy_constraint):
-        self.current_dummy_constraint = dummy_constraint
+        self.current_dummy_constraint = copy.deepcopy(dummy_constraint)
 
     # def create_ui_relative(self):
     #     self.ui_list_a = []
@@ -892,7 +893,7 @@ class VariableSetupWindow(QWidget):
 
         print(self.deleteItemList)
         self.variable_widget.output_dict[output_dict['name']] = output_dict
-        self.send_output_dict_signal.emit(self.output_dict)
+        self.send_output_dict_signal.emit(copy.deepcopy(self.output_dict))
 
         # variable_vis_item = VariableVisualItem.VariableVisualItem()
         # variable_vis_item.addToGroupFromList(self.vis_items)
@@ -1006,7 +1007,6 @@ class variableContentWidget(QWidget):
 
     def __init__(self):
         super(variableContentWidget, self).__init__()
-        self.edit_flag = False
         self.name_list = ['boundary', 'path', 'sref']
         self.option_list = ['offset', 'relative']
         self.widget_dictionary = dict()
@@ -1027,15 +1027,14 @@ class variableContentWidget(QWidget):
                         self.field_value_memory_dict[field_name] = 'All'
                     if field_name == 'width':
                         self.field_value_memory_dict[field_name] = 'Auto'
-                    if field_name == 'length':
+                    if field_name == 'heigth':
                         self.field_value_memory_dict[field_name] = 'Auto'
                 self.create_skeleton(name, option, field_info)
 
         self.setLayout(self.vbox)
 
-    def request_load(self, name, option, id, edit_flag):
+    def request_load(self, name, option, id):
         self.field_value_memory_dict = self.output_dict[id]
-        self.edit_flag = edit_flag
         self.request_show(name, option)
 
     def request_show(self, name, option):
@@ -1083,7 +1082,7 @@ class variableContentWidget(QWidget):
     def return_field_list(self, name, option):
         if option == 'offset':
             if name == 'boundary':
-                field_list = ['name', 'layer', 'XY_ref', 'width', 'width_input', 'length', 'length_input', 'x_offset',
+                field_list = ['name', 'layer', 'XY_ref', 'width', 'width_input', 'height', 'height_input', 'x_offset',
                               'y_offset', 'row', 'col']
                 input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'line', 'line',
                                    'double_line', None]
@@ -1096,7 +1095,7 @@ class variableContentWidget(QWidget):
         elif option == 'relative':
             if name == 'boundary':
                 field_list = ['name', 'layer', 'XY_source_ref', 'index', 'index_input', 'width', 'width_input',
-                              'length', 'length_input']
+                              'height', 'height_input']
                 input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'combo', 'line']
             elif name == 'path':
                 field_list = ['name', 'layer', 'XY_source_ref', 'index', 'index_input', 'width', 'width_input',
@@ -1120,7 +1119,7 @@ class variableContentWidget(QWidget):
         elif name == 'width_input':
             tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             tmp_input_widget.setReadOnly(True)
-        elif name == 'length_input':
+        elif name == 'height_input':
             tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             tmp_input_widget.setReadOnly(True)
 
@@ -1170,9 +1169,9 @@ class variableContentWidget(QWidget):
             tmp_input_widget.addItems(['Auto', 'Custom'])
             tmp_input_widget.currentTextChanged.connect(self.get_width)
             tmp_input_widget.setCurrentIndex(1)
-        elif name == 'length':
+        elif name == 'height':
             tmp_input_widget.addItems(['Auto', 'Custom'])
-            tmp_input_widget.currentTextChanged.connect(self.get_length)
+            tmp_input_widget.currentTextChanged.connect(self.get_height)
             tmp_input_widget.setCurrentIndex(0)
 
         tmp_input_widget.field_name = name
@@ -1296,28 +1295,28 @@ class variableContentWidget(QWidget):
                     width_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
                     width_input_widget.setReadOnly(True)
                     if info == 'boundaryoffset':
-                        length_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
-                        length_widget.setCurrentText('Custom')
+                        height_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
+                        height_widget.setCurrentText('Custom')
                     elif info == 'boundaryrelative':
-                        length_widget = self.widget_dictionary[info].layout().itemAt(7).itemAt(1).widget()
-                        length_widget.setCurrentText('Custom')
+                        height_widget = self.widget_dictionary[info].layout().itemAt(7).itemAt(1).widget()
+                        height_widget.setCurrentText('Custom')
 
-    def get_length(self, text):
+    def get_height(self, text):
         for info, widget in self.widget_dictionary.items():
             if not widget.isHidden():
                 if info[-6:] == 'offset':
-                    length_input_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
+                    height_input_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
                     width_widget = self.widget_dictionary[info].layout().itemAt(3).itemAt(1).widget()
                 elif info[-8:] == 'relative':
-                    length_input_widget = self.widget_dictionary[info].layout().itemAt(8).itemAt(1).widget()
+                    height_input_widget = self.widget_dictionary[info].layout().itemAt(8).itemAt(1).widget()
                     width_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
 
                 if text == 'Custom':
-                    length_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
-                    length_input_widget.setReadOnly(False)
+                    height_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
+                    height_input_widget.setReadOnly(False)
                 elif text == 'Auto':
-                    length_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
-                    length_input_widget.setReadOnly(True)
+                    height_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+                    height_input_widget.setReadOnly(True)
                     width_widget.setCurrentText('Custom')
 
     def update_output_dict(self, changed_text):
@@ -1328,10 +1327,8 @@ class variableContentWidget(QWidget):
         if type(changed_text) == QListWidgetItem:
             changed_text = changed_text.text()
 
-        if not self.edit_flag:
-            self.field_value_memory_dict[name] = changed_text
-            self.value_changed_signal.emit(name, changed_text)
-        # print(self.field_value_memory_dict)
+        self.field_value_memory_dict[name] = changed_text
+        self.value_changed_signal.emit(name, changed_text)
 
 
 class CustomQTableView(QTableView): ### QAbstractItemView class inherited

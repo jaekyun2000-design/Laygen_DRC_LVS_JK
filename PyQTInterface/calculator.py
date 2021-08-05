@@ -30,6 +30,9 @@ class ExpressionCalculator(QWidget):
 
         self.arithmetic_flag=False
         self.arithmetic_str = ''
+
+        self.left_parenthesis_flag=False
+        self.right_parenthesis_flag=False
         ########################
 
         self.clipboard = clipboard
@@ -78,8 +81,8 @@ class ExpressionCalculator(QWidget):
         self.minus = self.create_button(' - ',self.arithmetic_clicked)
         self.mul = self.create_button(' * ',self.arithmetic_clicked)
         self.div = self.create_button(' / ',self.arithmetic_clicked)
-        self.left_parenthesis = self.create_button(' ( ',self.digit_clicked)
-        self.right_parenthesis = self.create_button(' ) ',self.digit_clicked)
+        self.left_parenthesis = self.create_button(' ( ',self.parenthesis_clicked)
+        self.right_parenthesis = self.create_button(' ) ',self.parenthesis_clicked)
 
         self.backspace = self.create_button('<-',self.delete_clicked)
 
@@ -321,6 +324,8 @@ class ExpressionCalculator(QWidget):
             self.value_flag = True
             self.arithmetic_flag = False
             self.digit_flag = False
+            self.left_parenthesis_flag = False
+            self.right_parenthesis_flag = False
 
             for text in self.equationList:
                 display += text
@@ -389,6 +394,10 @@ class ExpressionCalculator(QWidget):
             self.arithmetic_clicked(clicked=self.mul)
         elif QKeyEvent.text() == '/':
             self.arithmetic_clicked(clicked=self.div)
+        elif QKeyEvent.text() == '(':
+            self.parenthesis_clicked(clicked=self.left_parenthesis)
+        elif QKeyEvent.text() == ')':
+            self.parenthesis_clicked(clicked=self.right_parenthesis)
 
     def getXY(self, XY_id):
         print(XY_id)
@@ -465,6 +474,8 @@ class ExpressionCalculator(QWidget):
             self.value_str = calc_expression
             self.arithmetic_flag = False
             self.digit_flag = False
+            self.left_parenthesis_flag = False
+            self.right_parenthesis_flag = False
             self.show()
             self.waiting = False
 
@@ -483,7 +494,7 @@ class ExpressionCalculator(QWidget):
         arith_sign = clicked_button.text()
         display = str()
 
-        if self.value_flag:
+        if self.value_flag or self.right_parenthesis_flag:
             if self.equationList[-1][-1] == '.':
                 self.equationList[-1] = self.equationList[-1][:-1]
             self.equationList.append(arith_sign)
@@ -494,6 +505,8 @@ class ExpressionCalculator(QWidget):
             return
         self.value_flag = False
         self.digit_flag = False
+        self.left_parenthesis_flag = False
+        self.right_parenthesis_flag = False
 
         for text in self.equationList:
             display += text
@@ -528,29 +541,39 @@ class ExpressionCalculator(QWidget):
                     self.value_flag = False
                     self.digit_flag = False
                     self.arithmetic_flag = True
+                    self.left_parenthesis_flag = False
+                    self.right_parenthesis_flag = False
                 elif self.equationList[-1] == '0.':
                     del self.equationList[-1]
                     self.value_flag = False
                     self.digit_flag = False
                     self.arithmetic_flag = True
+                    self.left_parenthesis_flag = False
+                    self.right_parenthesis_flag = False
                 else:
                     last = self.equationList[-1][:-1]
                     self.equationList[-1] = last
                     self.value_flag = True
                     self.digit_flag = True
                     self.arithmetic_flag = False
+                    self.left_parenthesis_flag = False
+                    self.right_parenthesis_flag = False
             elif self.equationList[-1][0:2] == '(-':
                 if len(self.equationList[-1]) == 4:
                     del self.equationList[-1]
                     self.value_flag = False
                     self.digit_flag = False
                     self.arithmetic_flag = True
+                    self.left_parenthesis_flag = False
+                    self.right_parenthesis_flag = False
                 else:
                     last = self.equationList[-1][:-2] + self.equationList[-1][-1]
                     self.equationList[-1] = last
                     self.value_flag = True
                     self.digit_flag = True
                     self.arithmetic_flag = False
+                    self.left_parenthesis_flag = False
+                    self.right_parenthesis_flag = False
             else:
                 if self.equationList[-1] == '+' or self.equationList[-1] == '-' or self.equationList[-1] == '*' or self.equationList[-1] == '/':
                     del self.equationList[-1]
@@ -561,20 +584,42 @@ class ExpressionCalculator(QWidget):
                         self.value_flag = True
                         self.digit_flag = True
                         self.arithmetic_flag = False
+                        self.left_parenthesis_flag = False
+                        self.right_parenthesis_flag = False
                     else:
                         self.value_flag = True
                         self.digit_flag = False
                         self.arithmetic_flag = False
+                        self.left_parenthesis_flag = False
+                        self.right_parenthesis_flag = False
+                elif self.equationList[-1] == '(':
+                    del self.equationList[-1]
+                    self.value_flag = False
+                    self.digit_flag = False
+                    self.arithmetic_flag = True
+                    self.left_parenthesis_flag = False
+                    self.right_parenthesis_flag = False
+                elif self.equationList[-1] == ')':
+                    del self.equationList[-1]
+                    self.value_flag = True
+                    self.digit_flag = True
+                    self.arithmetic_flag = False
+                    self.left_parenthesis_flag = False
+                    self.right_parenthesis_flag = False
                 else:
                     del self.equationList[-1]
                     self.value_flag = True
                     self.digit_flag = True
                     self.arithmetic_flag = False
+                    self.left_parenthesis_flag = False
+                    self.right_parenthesis_flag = False
 
-            if len(self.equationList) ==0:
+            if len(self.equationList) == 0:
                     self.value_flag = False
                     self.digit_flag = False
                     self.arithmetic_flag = False
+                    self.left_parenthesis_flag = False
+                    self.right_parenthesis_flag = False
 
             for text in self.equationList:
                 display += text
@@ -591,6 +636,38 @@ class ExpressionCalculator(QWidget):
     def showXYWindow(self):
         self.XYWindow.addItem(self.display.toPlainText())
         self.display.clear()
+
+    def parenthesis_clicked(self, clicked= None):
+        if clicked:
+            clicked_button = clicked
+        else:
+            clicked_button = self.sender()
+        display = str()
+
+        if clicked_button.text() == ' ( ':
+            if not self.value_flag:
+                self.parenthesis_count += 1
+                self.equationList.append(' ( ')
+                self.left_parenthesis_flag = True
+                self.right_parenthesis_flag = False
+                self.value_flag = False
+                self.digit_flag = False
+                self.arithmetic_flag = False
+
+        elif clicked_button.text() == ' ) ':
+            if self.value_flag or self.right_parenthesis_flag:
+                if self.parenthesis_count > 0:
+                    self.parenthesis_count -= 1
+                    self.equationList.append(' ) ')
+                    self.right_parenthesis_flag = True
+                    self.left_parenthesis_flag = False
+                    self.value_flag = False
+                    self.digit_flag = False
+                    self.arithmetic_flag = False
+
+        for text in self.equationList:
+            display += text
+        self.display.setText(display)
 
     def digit_clicked(self,  clicked= None):
         if clicked:
@@ -617,13 +694,6 @@ class ExpressionCalculator(QWidget):
                             self.equationList[-1] = self.equationList[-1][2:-1]
                         else:
                             self.equationList[-1] = '(-' + self.equationList[-1] + ')'
-        elif clicked_button.text() == ' ( ':
-            self.parenthesis_count += 1
-            self.equationList.append(' ( ')
-        elif clicked_button.text() == ' ) ':
-            if self.parenthesis_count > 0:
-                self.parenthesis_count -= 1
-                self.equationList.append(' ) ')
         else:
             digit_value = str(clicked_button.text())
 
@@ -648,6 +718,8 @@ class ExpressionCalculator(QWidget):
                 self.value_flag = True
                 self.digit_flag = True
                 self.arithmetic_flag = False
+                self.left_parenthesis_flag = False
+                self.right_parenthesis_flag = False
             else:
                 if self.value_flag:
                     self.equationList[-1] = digit_value
@@ -660,6 +732,8 @@ class ExpressionCalculator(QWidget):
                     self.value_flag = True
                     self.digit_flag = True
                     self.arithmetic_flag = False
+                    self.left_parenthesis_flag = False
+                    self.right_parenthesis_flag = False
 
         for text in self.equationList:
             display += text
@@ -735,6 +809,8 @@ class ExpressionCalculator(QWidget):
         self.value_flag = True
         self.arithmetic_flag = False
         self.digit_flag = False
+        self.left_parenthesis_flag = False
+        self.right_parenthesis_flag = False
 
         for text in self.equationList:
             display += text
@@ -830,6 +906,8 @@ class ExpressionCalculator(QWidget):
                 self.value_flag = False
                 self.digit_flag = False
                 self.arithmetic_flag = False
+                self.left_parenthesis_flag = False
+                self.right_parenthesis_flag = False
 
                 if self.x_button.isChecked():
                     self.showXWindow()
