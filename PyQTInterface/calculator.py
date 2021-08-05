@@ -724,6 +724,12 @@ class ExpressionCalculator(QWidget):
             else:
                 if self.value_flag:
                     self.equationList[-1] = digit_value
+
+                    self.value_flag = True
+                    self.digit_flag = True
+                    self.arithmetic_flag = False
+                    self.left_parenthesis_flag = False
+                    self.right_parenthesis_flag = False
                 else:
                     if digit_value == '.':
                         self.equationList.append('0.')
