@@ -175,7 +175,7 @@ class VariableSetupWindow(QWidget):
 
         if self.variable_type == 'boundary_array':
             self.output_dict['width'] = 'Auto'
-            self.output_dict['length'] = 'Auto'
+            self.output_dict['height'] = 'Auto'
             self.output_dict['index'] = 'All'
         elif self.variable_type == 'path_array':
             self.output_dict['width'] = 'Auto'
@@ -1026,7 +1026,7 @@ class variableContentWidget(QWidget):
                         self.field_value_memory_dict[field_name] = 'All'
                     if field_name == 'width':
                         self.field_value_memory_dict[field_name] = 'Auto'
-                    if field_name == 'length':
+                    if field_name == 'heigth':
                         self.field_value_memory_dict[field_name] = 'Auto'
                 self.create_skeleton(name, option, field_info)
 
@@ -1081,7 +1081,7 @@ class variableContentWidget(QWidget):
     def return_field_list(self, name, option):
         if option == 'offset':
             if name == 'boundary':
-                field_list = ['name', 'layer', 'XY_ref', 'width', 'width_input', 'length', 'length_input', 'x_offset',
+                field_list = ['name', 'layer', 'XY_ref', 'width', 'width_input', 'height', 'height_input', 'x_offset',
                               'y_offset', 'row', 'col']
                 input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'line', 'line',
                                    'double_line', None]
@@ -1094,7 +1094,7 @@ class variableContentWidget(QWidget):
         elif option == 'relative':
             if name == 'boundary':
                 field_list = ['name', 'layer', 'XY_source_ref', 'index', 'index_input', 'width', 'width_input',
-                              'length', 'length_input']
+                              'height', 'height_input']
                 input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'combo', 'line']
             elif name == 'path':
                 field_list = ['name', 'layer', 'XY_source_ref', 'index', 'index_input', 'width', 'width_input',
@@ -1118,7 +1118,7 @@ class variableContentWidget(QWidget):
         elif name == 'width_input':
             tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             tmp_input_widget.setReadOnly(True)
-        elif name == 'length_input':
+        elif name == 'height_input':
             tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             tmp_input_widget.setReadOnly(True)
 
@@ -1168,9 +1168,9 @@ class variableContentWidget(QWidget):
             tmp_input_widget.addItems(['Auto', 'Custom'])
             tmp_input_widget.currentTextChanged.connect(self.get_width)
             tmp_input_widget.setCurrentIndex(1)
-        elif name == 'length':
+        elif name == 'height':
             tmp_input_widget.addItems(['Auto', 'Custom'])
-            tmp_input_widget.currentTextChanged.connect(self.get_length)
+            tmp_input_widget.currentTextChanged.connect(self.get_height)
             tmp_input_widget.setCurrentIndex(0)
 
         tmp_input_widget.field_name = name
@@ -1294,28 +1294,28 @@ class variableContentWidget(QWidget):
                     width_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
                     width_input_widget.setReadOnly(True)
                     if info == 'boundaryoffset':
-                        length_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
-                        length_widget.setCurrentText('Custom')
+                        height_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
+                        height_widget.setCurrentText('Custom')
                     elif info == 'boundaryrelative':
-                        length_widget = self.widget_dictionary[info].layout().itemAt(7).itemAt(1).widget()
-                        length_widget.setCurrentText('Custom')
+                        height_widget = self.widget_dictionary[info].layout().itemAt(7).itemAt(1).widget()
+                        height_widget.setCurrentText('Custom')
 
-    def get_length(self, text):
+    def get_height(self, text):
         for info, widget in self.widget_dictionary.items():
             if not widget.isHidden():
                 if info[-6:] == 'offset':
-                    length_input_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
+                    height_input_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
                     width_widget = self.widget_dictionary[info].layout().itemAt(3).itemAt(1).widget()
                 elif info[-8:] == 'relative':
-                    length_input_widget = self.widget_dictionary[info].layout().itemAt(8).itemAt(1).widget()
+                    height_input_widget = self.widget_dictionary[info].layout().itemAt(8).itemAt(1).widget()
                     width_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
 
                 if text == 'Custom':
-                    length_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
-                    length_input_widget.setReadOnly(False)
+                    height_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
+                    height_input_widget.setReadOnly(False)
                 elif text == 'Auto':
-                    length_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
-                    length_input_widget.setReadOnly(True)
+                    height_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+                    height_input_widget.setReadOnly(True)
                     width_widget.setCurrentText('Custom')
 
     def update_output_dict(self, changed_text):
