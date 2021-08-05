@@ -221,15 +221,15 @@ class VariableSetupWindow(QWidget):
         print(self.current_dummy_constraint)
         self.variable_type_widget.setCurrentText(self.current_dummy_constraint['type'])
         if 'path' in self.current_dummy_constraint['type']:
-            self.variable_widget.request_load('path', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'], True)
+            self.variable_widget.request_load('path', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'])
         elif 'boundary' in self.current_dummy_constraint['type']:
-            self.variable_widget.request_load('boundary', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'], True)
+            self.variable_widget.request_load('boundary', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'])
         elif 'sref' in self.current_dummy_constraint['type']:
-            self.variable_widget.request_load('sref', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'], True)
+            self.variable_widget.request_load('sref', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'])
         self.show()
 
     def delivery_dummy_constraint(self, dummy_constraint):
-        self.current_dummy_constraint = dummy_constraint
+        self.current_dummy_constraint = copy.deepcopy(dummy_constraint)
 
     # def create_ui_relative(self):
     #     self.ui_list_a = []
@@ -892,7 +892,7 @@ class VariableSetupWindow(QWidget):
 
         print(self.deleteItemList)
         self.variable_widget.output_dict[output_dict['name']] = output_dict
-        self.send_output_dict_signal.emit(self.output_dict)
+        self.send_output_dict_signal.emit(copy.deepcopy(self.output_dict))
 
         # variable_vis_item = VariableVisualItem.VariableVisualItem()
         # variable_vis_item.addToGroupFromList(self.vis_items)
@@ -1006,7 +1006,6 @@ class variableContentWidget(QWidget):
 
     def __init__(self):
         super(variableContentWidget, self).__init__()
-        self.edit_flag = False
         self.name_list = ['boundary', 'path', 'sref']
         self.option_list = ['offset', 'relative']
         self.widget_dictionary = dict()
@@ -1033,9 +1032,8 @@ class variableContentWidget(QWidget):
 
         self.setLayout(self.vbox)
 
-    def request_load(self, name, option, id, edit_flag):
+    def request_load(self, name, option, id):
         self.field_value_memory_dict = self.output_dict[id]
-        self.edit_flag = edit_flag
         self.request_show(name, option)
 
     def request_show(self, name, option):
@@ -1328,10 +1326,8 @@ class variableContentWidget(QWidget):
         if type(changed_text) == QListWidgetItem:
             changed_text = changed_text.text()
 
-        if not self.edit_flag:
-            self.field_value_memory_dict[name] = changed_text
-            self.value_changed_signal.emit(name, changed_text)
-        # print(self.field_value_memory_dict)
+        self.field_value_memory_dict[name] = changed_text
+        self.value_changed_signal.emit(name, changed_text)
 
 
 class CustomQTableView(QTableView): ### QAbstractItemView class inherited
