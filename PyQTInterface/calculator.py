@@ -1075,11 +1075,11 @@ class ExpressionCalculator(QWidget):
         display = str()
 
         if sender.text() == 'first':
-            self.index_input.setText('first')
+            self.index_input.setText('0')
             self.index_input.setReadOnly(True)
             index = 0
         elif sender.text() == 'last':
-            self.index_input.setText('last')
+            self.index_input.setText('-1')
             self.index_input.setReadOnly(True)
             index = -1
         elif sender.text() == 'custom':
@@ -1088,7 +1088,8 @@ class ExpressionCalculator(QWidget):
             index = self.custom_index
 
         if self.hierarchy_list != []:
-            self.hierarchy_list[-1] = self.hierarchy_list[-1][:self.hierarchy_list[-1].find('[')+1] + str(index) + self.hierarchy_list[-1][self.hierarchy_list[-1].find(']'):]
+            # self.hierarchy_list[-1] = self.hierarchy_list[-1][:self.hierarchy_list[-1].find('[')+1] + str(index) + self.hierarchy_list[-1][self.hierarchy_list[-1].find(']'):]
+            self.hierarchy_list[-1] = re.sub('\[.*\]','['+str(index)+']',self.hierarchy_list[-1])
 
             calc_expression = self.geo_text + f'({self.hierarchy_list})'.replace(" ", "").replace("([", "(").replace("])", ")")
             if self.value_flag:
@@ -1105,8 +1106,6 @@ class ExpressionCalculator(QWidget):
             for text in self.equationList:
                 display += text
             self.display.setText(display)
-
-            self.returnLayer_signal.emit(self.hierarchy_list)
 
     def store_index_input(self, changed_text):
         if changed_text != 'first' and changed_text != 'last':
