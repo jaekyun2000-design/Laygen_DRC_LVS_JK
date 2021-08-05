@@ -294,7 +294,7 @@ class IrregularTransformer(ast.NodeTransformer):
             _index = info_dict['index']             # Fixed
             XY_source_ref = info_dict['XY_source_ref']
             if type == 'Path_array':
-                _target_reference = info_dict['XY_target_ref']   # For Path
+                XY_target_ref = info_dict['XY_target_ref']   # For Path
             ###############################################
         else:
             ############ Elements For Offset ##############
@@ -327,14 +327,22 @@ class IrregularTransformer(ast.NodeTransformer):
         target_width_code = code + f"_DesignParameter['{operands[-1]}']" + '[\'_XWidth\']'
         target_length_code = code + f"_DesignParameter['{operands[-1]}']" + '[\'_YWidth\']'
 
+        if _type == 'path_array':
+            if info_dict['XY_source_ref'][0] == info_dict['XY_target_ref'][0]:
+                mode = 'vertical'
+            else:
+                mode = 'horizontal'
+
         # Width, Length Calculation if needed
         if info_dict['width'] == 'Auto':  # If Width is 'Auto', Length should be fixed.
             if _flag == 'relative':
                 if _type == 'path_array':
-                    if info_dict['XY_source_ref'][0] == info_dict['target_reference'][0]:
-                        mode = 'vertical'
+                    if mode == 'vertical':
+                        _width = target_width_code
+                        _length = info_dict['length_input']
                     else:
-                        mode = 'horizontal'
+                        _width = target_length_code
+                        _length = info_dict['length_input']
                 elif _type == 'boundary_array':
                     _width = target_width_code
                     _length = info_dict['length_input']
@@ -346,23 +354,18 @@ class IrregularTransformer(ast.NodeTransformer):
             _width = info_dict['width_input']
             if _flag == 'relative':
                 if _type == 'path_array':
-                    # if info_dict['XY_source_ref'][0] == info_dict['target_reference'][0]:
-                    #     mode = 'vertical'
-                    #     if info_dict['length'] == 'Auto':
-                    #         expression2 = info_dict['XY_source_ref']
-                    #         expression2 = 'height' + expression2
-                    #         _length = self.expressionTransformer(expression2, 'FA')
-                    #     else:
-                    #         _length = info_dict["length_input"]
-                    # else:
-                    #     mode = 'horizontal'
-                    #     if info_dict['length'] == 'Auto':
-                    #         expression2 = info_dict['XY_source_ref']
-                    #         expression2 = 'width' + expression2
-                    #         _length = self.expressionTransformer(expression2, 'FA')
-                    #     else:
-                    #         _length = info_dict["length_input"]
-                    pass
+                    if mode == 'vertical':
+                        if info_dict['length'] == 'Auto':
+                            _length = target_length_code
+                        else:
+                            _length = info_dict["length_input"]
+                    else:
+                        if info_dict['length'] == 'Auto':
+                            _length = _width
+                            _width = target_length_code
+                        else:
+                            _length = _width
+                            _width = info_dict['length_input']
                 elif _type == 'boundary_array':
                     if info_dict['length'] == 'Auto':
                         _length = target_length_code
@@ -371,9 +374,6 @@ class IrregularTransformer(ast.NodeTransformer):
                 elif _type == 'sref_array':
                     _width = 'Blank'
                     _length = 'Blank'
-
-
-
 
         # e.g.) _Met1Layer, _COLayer, ...etc.
         if _flag == 'relative':
@@ -412,10 +412,12 @@ class IrregularTransformer(ast.NodeTransformer):
                 tmp_node.height = _length
                 tmp_code_ast = element_ast.ElementTransformer().visit_Boundary(tmp_node)
                 tmp_code = astunparse.unparse(tmp_code_ast)
-
                 sentence = loop_code + '\n' + tmp_code
                 del tmp_node
                 return ast.parse(sentence).body
+            elif _type == 'path_array':
+                pass
+
         elif _flag == 'Offset':
             pass
     def get_expression_del_func(self, expression):
