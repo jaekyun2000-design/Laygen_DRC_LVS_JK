@@ -216,6 +216,7 @@ class VariableSetupWindow(QWidget):
         # self.update_ui()
 
     def update_ui_by_constraint_id(self, dummy_id):
+        self.deleteItemList.clear()
         self.request_dummy_constraint_signal.emit(dummy_id)
         print(dummy_id)
         print(self.current_dummy_constraint)
