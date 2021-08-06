@@ -824,16 +824,8 @@ class _MainWindow(QMainWindow):
             constraint_ids = [item.text() for item in constraint_names]
             topAST = ast.Module()
             topAST.body = copy.deepcopy([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
-
-            # # TODO: XYCoordinate AST 한번에 처리하는 것이 더 좋은가
-            # for i in range(len(constraint_ids)):
-            #     if constraint_ids[i] in list(self._DummyConstraints.XYDict.keys()):
-            #         topAST = variable_ast.IrregularTransformer(self._DummyConstraints.XYDict[constraint_ids[i]]).visit(topAST)
             topAST = variable_ast.IrregularTransformer(self._DummyConstraints).visit(topAST)
-
-
             topAST = element_ast.ElementTransformer().visit(topAST)
-            # variable_ast.VariableTransformer.infoDict = self._DummyConstraints.XYDict
             topAST = variable_ast.VariableTransformer().visit(topAST)
             code = astunparse.unparse(topAST)
             print(code)

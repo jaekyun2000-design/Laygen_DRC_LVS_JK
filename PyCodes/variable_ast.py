@@ -286,15 +286,17 @@ class IrregularTransformer(ast.NodeTransformer):
         _type = info_dict['type']              # Fixed
         _flag = info_dict['flag']     # Fixed
         _width = info_dict['width']
-        _length = info_dict['length']
+        if _type != "path_array":
+            _height = info_dict['height']
+
         _layer = info_dict['layer']             # Fixed
         ###############################################
         if _flag == 'relative':
             ########### Elements For relative #############
             _index = info_dict['index']             # Fixed
             XY_source_ref = info_dict['XY_source_ref']
-            if type == 'Path_array':
-                _target_reference = info_dict['XY_target_ref']   # For Path
+            if _type == 'path_array':
+                XY_target_ref = info_dict['XY_target_ref']   # For Path
             ###############################################
         else:
             ############ Elements For Offset ##############
@@ -305,117 +307,168 @@ class IrregularTransformer(ast.NodeTransformer):
             _col_num = info_dict['col']             # Fixed
             ###############################################
 
-        ####### XY Coordinate Extraction @ Layout Generator Source Code ######
-        source_wo_layer = "".join(XY_source_ref.split(",")[:-1]) +')'
-        expression_for_ref = self.expressionTransformer(source_wo_layer, 'XY')
-        expression_for_ref = "[" + expression_for_ref[0] + ',' + expression_for_ref[1] +"]"
+        ####### XY Coordinate, Width, Height Extraction @ Layout Generator Source Code ######
+        XY_source_ref1 = re.sub('\[.*\]', "", XY_source_ref)
+        XY_source_ref2 = re.sub("\',", '[0]\',', XY_source_ref1)
+        XY_source_ref3 = re.sub("\'\)", '[0]\',', XY_source_ref2)
+        XY_source_ref = XY_source_ref3[:-1] + ")"
+
+        if "," in XY_source_ref:
+            source_wo_layer = "".join(XY_source_ref.split(",")[:-1]) + ')'
+            parent_xy = self.expressionTransformer(source_wo_layer, 'XY')
+            parent_xy = "[" + parent_xy[0] + ',' + parent_xy[1] + "]"
+
+            target_wo_layer = "".join(XY_target_ref.split(",")[:-1]) + ')'
+            target_parent_xy = self.expressionTransformer(target_wo_layer, 'XY')
+            target_parent_xy = "[" + target_parent_xy[0] + ',' + target_parent_xy[1] + "]"
+        else:
+            parent_xy = '[0,0]'
+
         tmp_string = re.findall('\(.*\)', XY_source_ref)[0]
         tmp_string = re.sub('\(|\'|\)', "", tmp_string)
         tmp_string = re.sub(" ", "" , tmp_string)
         operands = re.split(',', tmp_string)
-        code = 'self.'  # Code Always Starts with 'self.' string
-        offsets = []
+        # above operands include indices
+
+        code = 'self.'
         offset_indices = []
         objects = operands[:-1]
         for i in range(len(objects)):  # append code from the start
             offset_indices.append(re.findall('\[.*\]', objects[i])[0])
             object = objects[i][:-len(offset_indices[i])]
             code = code + f"_DesignParameter['{object}']['_DesignObj']."
-            offsets.append(code[:-15] + '[\'_XYCoordinates\']')
+        layer_with_index = operands[-1]
+        layer_index = re.findall('\[.*\]', layer_with_index)[0]
+        layer = layer_with_index[:-len(layer_index)]
 
-        target_layer_XY_code = code + f"_DesignParameter['{operands[-1]}']" + '[\'_XYCoordinates\']'
-        target_width_code = code + f"_DesignParameter['{operands[-1]}']" + '[\'_XWidth\']'
-        target_length_code = code + f"_DesignParameter['{operands[-1]}']" + '[\'_YWidth\']'
+        layer_xy = code + f"_DesignParameter['{layer}']" + '[\'_XYCoordinates\']'
+        _width_code = code + f"_DesignParameter['{layer}']" + '[\'_XWidth\']'
+        _height_code = code + f"_DesignParameter['{layer}']" + '[\'_YWidth\']'
 
-        # Width, Length Calculation if needed
-        if info_dict['width'] == 'Auto':  # If Width is 'Auto', Length should be fixed.
+        ########################### for path array ############################
+        if _type == "path_array":
+            XY_target_ref1 = re.sub('\[.*\]', "", XY_target_ref)
+            XY_target_ref2 = re.sub("\',", '[0]\',', XY_target_ref1)
+            XY_target_ref3 = re.sub("\'\)", '[0]\',', XY_target_ref2)
+            XY_target_ref = XY_target_ref3[:-1] + ")"
+
+            tmp_string2 = re.findall('\(.*\)', XY_target_ref)[0]
+            tmp_string2 = re.sub('\(|\'|\)', "", tmp_string2)
+            tmp_string2 = re.sub(" ", "", tmp_string2)
+            operands2 = re.split(',', tmp_string2)
+            # above operands include indices
+
+            code2 = 'self.'
+            offset_indices = []
+            objects = operands2[:-1]
+            for i in range(len(objects)):  # append code from the start
+                offset_indices.append(re.findall('\[.*\]', objects[i])[0])
+                object = objects[i][:-len(offset_indices[i])]
+                code2 = code2 + f"_DesignParameter['{object}']['_DesignObj']."
+            layer_with_index2 = operands2[-1]
+            layer_index2 = re.findall('\[.*\]', layer_with_index2)[0]
+            layer2 = layer_with_index2[:-len(layer_index2)]
+
+            _target_layer_xy = code + f"_DesignParameter['{layer2}']" + '[\'_XYCoordinates\']'
+            _target_width_code = code + f"_DesignParameter['{layer2}']" + '[\'_XWidth\']'
+            _target_height_code = code + f"_DesignParameter['{layer2}']" + '[\'_YWidth\']'
+        ###########################################################################
+
+        if info_dict['width'] == 'Auto':  # If Width is 'Auto', height should be fixed.
             if _flag == 'relative':
                 if _type == 'path_array':
-                    if info_dict['XY_source_ref'][0] == info_dict['target_reference'][0]:
-                        mode = 'vertical'
-                    else:
-                        mode = 'horizontal'
-                elif _type == 'boundary_array':
-                    _width = target_width_code
-                    _length = info_dict['length_input']
                     pass
+                elif _type == 'boundary_array':
+                    # Width : Auto, height: Value
+                    _width = _width_code
+                    _height = info_dict['height_input']
                 elif _type == 'sref_array':
                     _width = 'Blank'
-                    _length = 'Blank'
-        else:  # If _width is not 'Auto', Length can either be 'Auto' or Fixed
+                    _height = 'Blank'
+        else:  # If _width is not 'Auto', height can either be 'Auto' or Fixed
             _width = info_dict['width_input']
             if _flag == 'relative':
-                if _type == 'path_array':
-                    # if info_dict['XY_source_ref'][0] == info_dict['target_reference'][0]:
-                    #     mode = 'vertical'
-                    #     if info_dict['length'] == 'Auto':
-                    #         expression2 = info_dict['XY_source_ref']
-                    #         expression2 = 'height' + expression2
-                    #         _length = self.expressionTransformer(expression2, 'FA')
-                    #     else:
-                    #         _length = info_dict["length_input"]
-                    # else:
-                    #     mode = 'horizontal'
-                    #     if info_dict['length'] == 'Auto':
-                    #         expression2 = info_dict['XY_source_ref']
-                    #         expression2 = 'width' + expression2
-                    #         _length = self.expressionTransformer(expression2, 'FA')
-                    #     else:
-                    #         _length = info_dict["length_input"]
+                if _type == 'path_array':   # path does not have 'height' input
                     pass
                 elif _type == 'boundary_array':
-                    if info_dict['length'] == 'Auto':
-                        _length = target_length_code
+                    if info_dict['height'] == 'Auto':
+                        _height = _height_code
                     else:
-                        _length = info_dict["length_input"]
+                        _height = info_dict["height_input"]
                 elif _type == 'sref_array':
                     _width = 'Blank'
-                    _length = 'Blank'
+                    _height = 'Blank'
 
-
-
-
-        # e.g.) _Met1Layer, _COLayer, ...etc.
+        ################### Width, height, Coordinates Calculation Done ########################
         if _flag == 'relative':
             if _type == 'boundary_array':
                 if _index == 'All':
-                    XY_source_ref= re.sub("\',",'[0]',XY_source_ref)
-                    XY_source_ref = re.sub("\'\)", '[0]', XY_source_ref)
-
                     loop_code = f"XYList = []\n" \
-                                f"for i in range(len({target_layer_XY_code})):\n" \
-                                f"\tXYList.append([x+y for x,y in zip({expression_for_ref} , {target_layer_XY_code}[i] ) ] )\n"
+                                f"for i in range(len({layer_xy})):\n" \
+                                f"\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
                 elif _index == 'Odd':
-                    XY_source_ref = re.sub("\',", '[1]', XY_source_ref)
-                    XY_source_ref = re.sub("\'\)", '[1]', XY_source_ref)
                     loop_code = f"XYList = []\n" \
-                                f"for i in range(len({target_layer_XY_code})):\n" \
+                                f"for i in range(len({layer_xy})):\n" \
                                 f"\tif (i%2 == 1):\n" \
-                                f"\t\tXYList.append([x+y for x,y in zip({expression_for_ref} , {target_layer_XY_code}[i] ) ] )\n"
+                                f"\t\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
                 elif _index == 'Even':
-                    XY_source_ref = re.sub("\',", '[0]', XY_source_ref)
-                    XY_source_ref = re.sub("\'\)", '[0]', XY_source_ref)
                     loop_code = f"XYList = []\n" \
-                                f"for i in range(len({target_layer_XY_code})):\n" \
+                                f"for i in range(len({layer_xy})):\n" \
                                 f"\tif (i%2 == 0):\n" \
-                                f"\t\tXYList.append([x+y for x,y in zip({expression_for_ref} , {target_layer_XY_code}[i] ) ] )\n"
-
-                expression1 = self.get_expression_del_func(XY_source_ref)
-                expression1 = 'width' + expression1
-                _width = self.expressionTransformer(expression1, 'FA')
+                                f"\t\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
 
                 tmp_node = element_ast.Boundary()
                 tmp_node.name = _name
                 tmp_node.layer = _layer
                 tmp_node.XY = 'XYList'
-                tmp_node.width = target_width_code
-                tmp_node.height = _length
+                tmp_node.width = _width
+                tmp_node.height = _height
                 tmp_code_ast = element_ast.ElementTransformer().visit_Boundary(tmp_node)
                 tmp_code = astunparse.unparse(tmp_code_ast)
 
                 sentence = loop_code + '\n' + tmp_code
                 del tmp_node
                 return ast.parse(sentence).body
+            elif _type == 'path_array':
+                if _index == 'All':
+                    comparison_code = f"path_list = []\n" \
+                                      f"if ({_target_layer_xy}[0][0] == {_target_layer_xy}[-1][0]) :\n" \
+                                      f"\tmode = 'horizontal'\n" \
+                                      f"\t_width = {_height_code}\n"\
+                                      f"elif ({_target_layer_xy}[0][1] == {_target_layer_xy}[-1][1]) :\n" \
+                                      f"\tmode = 'vertical'\n" \
+                                      f"\t_width = {_width_code}\n" \
+                                      f"else:\n" \
+                                      f"\tprint('Invalid Target Input')\n"
+                    case_code = f"if mode == 'vertical':\n" \
+                                f"\txy_with_offset = []\n" \
+                                f"\ttarget_y_value = {target_parent_xy}[1] + {_target_layer_xy}[0][1]\n" \
+                                f"\tfor i in range(len({layer_xy})):\n" \
+                                f"\t\txy_with_offset.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i])])\n" \
+                                f"\n" \
+                                f"\tfor i in range(len(xy_with_offset)):\n" \
+                                f"\t\tpath_list.append([xy_with_offset[i],[xy_with_offset[i][0],target_y_value]])\n" \
+                                f"elif mode == 'horizontal':\n" \
+                                f"\txy_with_offset = []\n" \
+                                f"\ttarget_x_value = {target_parent_xy}[0] + {_target_layer_xy}[0][0]\n" \
+                                f"\tfor i in range(len({layer_xy})):\n" \
+                                f"\t\txy_with_offset.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i])])\n" \
+                                f"\n" \
+                                f"\tfor i in range(len(xy_with_offset)):\n" \
+                                f"\t\tpath_list.append([xy_with_offset[i],[target_x_value, xy_with_offset[i][1]]])\n"
+
+                    tmp_node = element_ast.Path()
+                    tmp_node.name = _name
+                    tmp_node.layer = _layer
+                    tmp_node.XY = 'path_list'
+                    tmp_node.width = '_width'
+                    tmp_code_ast = element_ast.ElementTransformer().visit_Path(tmp_node)
+                    tmp_code = astunparse.unparse(tmp_code_ast)
+
+                    sentence = comparison_code + case_code + tmp_code
+                    del tmp_node
+                    return ast.parse(sentence).body
+
         elif _flag == 'Offset':
             pass
     def get_expression_del_func(self, expression):
@@ -434,6 +487,7 @@ class IrregularTransformer(ast.NodeTransformer):
             function = 'width'
         elif function == 'he':
             function = 'height'
+
         tmp_string = expression[len(function):]
         return tmp_string
 
@@ -481,19 +535,16 @@ class IrregularTransformer(ast.NodeTransformer):
             offsets.append(code[:-15] + '[\'_XYCoordinates\']')
 
         code = code + f"_DesignParameter['{layer}']"
-
         offset_x = ''
         offset_y = ''
         offset_xy = None
         for i in range(len(offsets)):
             offset_x += offsets[i] + f'{offset_indices[i]}[0]'
             offset_y += offsets[i] + f'{offset_indices[i]}[1]'
-
         if function == 'width':
             result = code + '[\'_XWidth\']'
         elif function == 'height':
             result = code + '[\'_YWidth\']'
-
         if XYFlag == 'X':
             if function == 'lt' or function == 'left' or function == 'lb':
                 result = offset_x + '+' + f"{code}['_XYCoordinates']{layer_index}[0] - {code}['_XWidth']/2"
