@@ -308,13 +308,16 @@ class IrregularTransformer(ast.NodeTransformer):
             ###############################################
 
         ####### XY Coordinate, Width, Height Extraction @ Layout Generator Source Code ######
-        XY_source_ref1 = re.sub('\[.*\]', "", XY_source_ref)
-        XY_source_ref2 = re.sub("\',", '[0]\',', XY_source_ref1)
-        XY_source_ref3 = re.sub("\'\)", '[0]\',', XY_source_ref2)
-        XY_source_ref = XY_source_ref3[:-1] + ")"
+        # XY_source_ref1 = re.sub('\[.*\]', "", XY_source_ref)
+        # XY_source_ref2 = re.sub("\',", '[0]\',', XY_source_ref1)
+        # XY_source_ref3 = re.sub("\'\)", '[0]\',', XY_source_ref2)
+        # XY_source_ref = XY_source_ref3[:-1] + ")"
+        # elements_wo_func = self.get_expression_del_func(XY_source_ref)
+        # elements = ",".join(elements_wo_func.split(',')[:-1])
+
 
         if "," in XY_source_ref:
-            source_wo_layer = "".join(XY_source_ref.split(",")[:-1]) + ')'
+            source_wo_layer = ",".join(XY_source_ref.split(",")[:-1]) + ')'
             parent_xy = self.expressionTransformer(source_wo_layer, 'XY')
             parent_xy = "[" + parent_xy[0] + ',' + parent_xy[1] + "]"
 
@@ -334,9 +337,7 @@ class IrregularTransformer(ast.NodeTransformer):
             offset_indices.append(re.findall('\[.*\]', objects[i])[0])
             object = objects[i][:-len(offset_indices[i])]
             code = code + f"_DesignParameter['{object}']['_DesignObj']."
-        layer_with_index = operands[-1]
-        layer_index = re.findall('\[.*\]', layer_with_index)[0]
-        layer = layer_with_index[:-len(layer_index)]
+        layer = operands[-1]
 
         layer_xy = code + f"_DesignParameter['{layer}']" + '[\'_XYCoordinates\']'
         _width_code = code + f"_DesignParameter['{layer}']" + '[\'_XWidth\']'
@@ -344,16 +345,17 @@ class IrregularTransformer(ast.NodeTransformer):
 
         ########################### for path array ############################
         if _type == "path_array":
-            XY_target_ref1 = re.sub('\[.*\]', "", XY_target_ref)
-            XY_target_ref2 = re.sub("\',", '[0]\',', XY_target_ref1)
-            XY_target_ref3 = re.sub("\'\)", '[0]\',', XY_target_ref2)
-            XY_target_ref = XY_target_ref3[:-1] + ")"
-            if "," in XY_target_ref:
-                target_wo_layer = "".join(XY_target_ref.split(",")[:-1]) + ')'
-                target_parent_xy = self.expressionTransformer(target_wo_layer, 'XY')
-                target_parent_xy = "[" + target_parent_xy[0] + ',' + target_parent_xy[1] + "]"
-            else:
-                target_parent_xy = '[0,0]'
+            target_xy = self.expressionTransformer(XY_target_ref, 'XY')
+            # XY_target_ref1 = re.sub("\[.*\]\'", "", XY_target_ref)
+            # XY_target_ref2 = re.sub("\',", '[0]\',', XY_target_ref1)
+            # XY_target_ref3 = re.sub("\'\)", '[0]\',', XY_target_ref2)
+            # XY_target_ref = XY_target_ref3[:-1] + ")"
+            # if "," in XY_target_ref:
+            #     target_wo_layer = "".join(XY_target_ref.split(",")[:-1]) + ')'
+            #     target_parent_xy = self.expressionTransformer(target_wo_layer, 'XY')
+            #     target_parent_xy = "[" + target_parent_xy[0] + ',' + target_parent_xy[1] + "]"
+            # else:
+            #     target_parent_xy = '[0,0]'
             tmp_string2 = re.findall('\(.*\)', XY_target_ref)[0]
             tmp_string2 = re.sub('\(|\'|\)', "", tmp_string2)
             tmp_string2 = re.sub(" ", "", tmp_string2)
@@ -444,7 +446,7 @@ class IrregularTransformer(ast.NodeTransformer):
                                       f"\tprint('Invalid Target Input')\n"
                     case_code = f"if mode == 'vertical':\n" \
                                 f"\txy_with_offset = []\n" \
-                                f"\ttarget_y_value = {target_parent_xy}[1] + {_target_layer_xy}[0][1]\n" \
+                                f"\ttarget_y_value = {target_xy[0]}\n" \
                                 f"\tfor i in range(len({layer_xy})):\n" \
                                 f"\t\txy_with_offset.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i])])\n" \
                                 f"\n" \
@@ -452,7 +454,7 @@ class IrregularTransformer(ast.NodeTransformer):
                                 f"\t\tpath_list.append([xy_with_offset[i],[xy_with_offset[i][0],target_y_value]])\n" \
                                 f"elif mode == 'horizontal':\n" \
                                 f"\txy_with_offset = []\n" \
-                                f"\ttarget_x_value = {target_parent_xy}[0] + {_target_layer_xy}[0][0]\n" \
+                                f"\ttarget_x_value = {target_xy[1]}\n" \
                                 f"\tfor i in range(len({layer_xy})):\n" \
                                 f"\t\txy_with_offset.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i])])\n" \
                                 f"\n" \
@@ -521,6 +523,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 XYFlag = 'XY'
         tmp_string = re.sub('\(|\'|\)', "", expression)
         tmp_string = tmp_string[len(function):]
+        tmp_string = re.sub(" ","",tmp_string)
         operands = re.split(',', tmp_string)
 
         code = 'self.'  # Code Always Starts with 'self.' string
