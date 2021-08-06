@@ -39,13 +39,12 @@ class VariableSetupWindow(QWidget):
 
     send_variableVisual_signal = pyqtSignal(VariableVisualItem.VariableVisualItem)
 
-    def __init__(self,variable_type,vis_items=None,variable_obj=None,connection_ref_list=None,group_ref_list=None,inspect_array_window_address=None):
+    def __init__(self,variable_type,vis_items=None,variable_obj=None,group_ref_list=None,inspect_array_window_address=None):
         super().__init__()
         self.setMinimumHeight(500)
         self.setMinimumWidth(300)
         self.variable_type = variable_type
         self.vis_items= vis_items
-        self.connection_list = connection_ref_list
         self.group_list = group_ref_list
         self.inspect_array_window_address = inspect_array_window_address
         self.itemList = list()
