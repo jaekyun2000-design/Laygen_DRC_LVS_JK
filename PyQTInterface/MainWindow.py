@@ -509,35 +509,25 @@ class _MainWindow(QMainWindow):
             self.visualItemDict[dp_id].setSelected(True)
 
     def inspect_array(self):
-        cluster_model = topAPI.clustering.determinstic_clustering(_qtDesignParameters=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
-        cluster_model.layer_matching()      #Find array group from here
-        cluster_model.sref_matching()
-        cluster_model.build_layer_ist_qt()  #build layer by layer IST
-        test = cluster_model.intersection_matching_qt()
-        cluster_model.delete_solo_element_group()
-        groups_list = cluster_model.get_array_groups()
-        self.reference_list = cluster_model.find_ref(groups_list)
+        inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        output = inspector.inspect()
+        groups_list = output['group_list']
+        self.reference_list = output['reference_list']
+
 
         self.array_list_widget = QListWidget()
         self.array_list_widget.addItems([str(group) for group in groups_list])
         self.array_list_widget.currentRowChanged.connect(self.visualize_inspect_array)
-        # self.vw = variableWindow.VariableSetupWindow(variable_type="path_array",vis_items=None,
-        #                                              _DP=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
-        #                                              ,ref_list=self.connection_ref)
-        # self.array_list_widget.itemDoubleClicked.connect(self.vw.getArray)
+
         self.array_list_widget.itemDoubleClicked.connect(self.show_inspect_array_widget)
         self.array_list_widget.show()
         self.test_purpose_var = groups_list
         self.log = []
-        for group in groups_list:
-            print(f'array candidate group: {group}')
-        print('debug')
+
 
     def show_inspect_array_widget(self, array_list_item):
         row = self.array_list_widget.row(array_list_item)
         group_ref = self.reference_list[row]
-        # print(array_list_item.text())
-        # print(self.connection_ref)
 
         array_list = eval(array_list_item.text())
         if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
