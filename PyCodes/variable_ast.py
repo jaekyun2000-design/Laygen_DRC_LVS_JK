@@ -318,9 +318,6 @@ class IrregularTransformer(ast.NodeTransformer):
             parent_xy = self.expressionTransformer(source_wo_layer, 'XY')
             parent_xy = "[" + parent_xy[0] + ',' + parent_xy[1] + "]"
 
-            target_wo_layer = "".join(XY_target_ref.split(",")[:-1]) + ')'
-            target_parent_xy = self.expressionTransformer(target_wo_layer, 'XY')
-            target_parent_xy = "[" + target_parent_xy[0] + ',' + target_parent_xy[1] + "]"
         else:
             parent_xy = '[0,0]'
 
@@ -351,7 +348,12 @@ class IrregularTransformer(ast.NodeTransformer):
             XY_target_ref2 = re.sub("\',", '[0]\',', XY_target_ref1)
             XY_target_ref3 = re.sub("\'\)", '[0]\',', XY_target_ref2)
             XY_target_ref = XY_target_ref3[:-1] + ")"
-
+            if "," in XY_target_ref:
+                target_wo_layer = "".join(XY_target_ref.split(",")[:-1]) + ')'
+                target_parent_xy = self.expressionTransformer(target_wo_layer, 'XY')
+                target_parent_xy = "[" + target_parent_xy[0] + ',' + target_parent_xy[1] + "]"
+            else:
+                target_parent_xy = '[0,0]'
             tmp_string2 = re.findall('\(.*\)', XY_target_ref)[0]
             tmp_string2 = re.sub('\(|\'|\)', "", tmp_string2)
             tmp_string2 = re.sub(" ", "", tmp_string2)
@@ -369,9 +371,9 @@ class IrregularTransformer(ast.NodeTransformer):
             layer_index2 = re.findall('\[.*\]', layer_with_index2)[0]
             layer2 = layer_with_index2[:-len(layer_index2)]
 
-            _target_layer_xy = code + f"_DesignParameter['{layer2}']" + '[\'_XYCoordinates\']'
-            _target_width_code = code + f"_DesignParameter['{layer2}']" + '[\'_XWidth\']'
-            _target_height_code = code + f"_DesignParameter['{layer2}']" + '[\'_YWidth\']'
+            _target_layer_xy = code2 + f"_DesignParameter['{layer2}']" + '[\'_XYCoordinates\']'
+            _target_width_code = code2 + f"_DesignParameter['{layer2}']" + '[\'_XWidth\']'
+            _target_height_code = code2 + f"_DesignParameter['{layer2}']" + '[\'_YWidth\']'
         ###########################################################################
 
         if info_dict['width'] == 'Auto':  # If Width is 'Auto', height should be fixed.
@@ -432,10 +434,10 @@ class IrregularTransformer(ast.NodeTransformer):
             elif _type == 'path_array':
                 if _index == 'All':
                     comparison_code = f"path_list = []\n" \
-                                      f"if ({_target_layer_xy}[0][0] == {_target_layer_xy}[-1][0]) :\n" \
+                                      f"if ({layer_xy}[0][0] == {layer_xy}[-1][0]) :\n" \
                                       f"\tmode = 'horizontal'\n" \
                                       f"\t_width = {_height_code}\n"\
-                                      f"elif ({_target_layer_xy}[0][1] == {_target_layer_xy}[-1][1]) :\n" \
+                                      f"elif ({layer_xy}[0][1] == {layer_xy}[-1][1]) :\n" \
                                       f"\tmode = 'vertical'\n" \
                                       f"\t_width = {_width_code}\n" \
                                       f"else:\n" \
