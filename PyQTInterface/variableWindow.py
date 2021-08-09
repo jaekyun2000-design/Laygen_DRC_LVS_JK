@@ -190,6 +190,10 @@ class VariableSetupWindow(QWidget):
         self.setGeometry(300,300,500,500)
         # self.updateUI()
         if self.vis_items is not None:
+            for vis_item in self.vis_items:
+                id = vis_item._id
+                self.itemList.append(id)
+                self.deleteItemList.addItem(id)
             self.show()
 
     # def update_ui(self):
