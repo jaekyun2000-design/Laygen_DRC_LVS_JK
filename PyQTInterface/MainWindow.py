@@ -1319,6 +1319,9 @@ class _MainWindow(QMainWindow):
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_ModelStructure'] = _dp['_ModelStructure']
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_Reflect'] = None
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_Angle'] = None
+
+            self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['parameters'] = _AST.parameters
+
         except:
             self.dockContentWidget4ForLoggingMessage._InfoMessage(" Not enough Parameters Given!")
             print("########################################################################################")

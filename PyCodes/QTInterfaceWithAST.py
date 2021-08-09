@@ -81,7 +81,7 @@ class QtDesignParameter:
             _tmpDesignParameter["_Reflect"] = None
             _tmpDesignParameter["_Angle"] = None
             _tmpDesignParameter["_Ignore"] = None
-            _tmpDesignParameter["_Parameters"] = None
+            _tmpDesignParameter["parameters"] = None
             _tmpDesignParameter["_ElementName"] = None
             _tmpDesignParameter["_DesignParametertype"] = 3
             _tmpDesignParameter["_ElementName"] = self._ElementName
