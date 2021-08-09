@@ -1038,8 +1038,9 @@ class _VisualizationItem(QGraphicsItemGroup):
 
     def set_highlight(self):
         for _rect_block in self.block:
-            _rect_block.set_highlight()
-            _rect_block.update()
+            if type(_rect_block) == _RectBlock:
+                _rect_block.set_highlight()
+                _rect_block.update()
 
 class QGraphicsTextItemWObounding(QGraphicsTextItem):
     # pass

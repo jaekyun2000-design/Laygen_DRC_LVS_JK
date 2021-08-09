@@ -515,7 +515,23 @@ class _MainWindow(QMainWindow):
     def inspect_path_point(self):
         inspector = topAPI.inspector.path_point_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
         output = inspector.get_all_path_connection_info()
+        path_list = output['path_list']
+        self.path_point_reference = output['path_connection_info']
         print(output)
+
+        self.path_point_widget =QListWidget()
+        self.path_point_widget.addItems([str(path['_ElementName']) for path in path_list])
+        self.path_point_widget.itemDoubleClicked.connect(self.show_inspect_path_widget)
+        self.path_point_widget.show()
+
+    def show_inspect_path_widget(self, path_item):
+        row = self.sender().row(path_item)
+        reference = copy.deepcopy(self.path_point_reference[row])
+        for ref in reference:
+            self.highlightVI_by_hierarchy_list(ref[0][0])
+
+
+
 
     def inspect_array(self):
         inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
