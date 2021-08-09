@@ -529,6 +529,7 @@ class _MainWindow(QMainWindow):
         reference = copy.deepcopy(self.path_point_reference[row])
         for ref in reference:
             self.highlightVI_by_hierarchy_list(ref[0][0])
+        self.visualItemDict[path_item.text()].set_shallow_highlight()
 
 
 
@@ -2713,6 +2714,9 @@ class _CustomScene(QGraphicsScene):
     def mousePressEvent(self, event):
         for highlighted_rectblock in VisualizationItem._RectBlock.highlighted_item_list:
             highlighted_rectblock.highlight_flag = False
+        for s_highlighted_rectblock in VisualizationItem._RectBlock.shallow_highlight_list:
+            s_highlighted_rectblock.shallow_highlight = False
+
 
         self.send_xyCoordinate_signal.emit(event)
         def masking(items):

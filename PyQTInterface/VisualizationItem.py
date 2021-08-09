@@ -27,10 +27,12 @@ scaleValue = 1
 
 class _RectBlock(QGraphicsRectItem):
     highlighted_item_list = list()
+    shallow_highlight_list = list()
 
     def __init__(self,_BlockTraits=None):
         super().__init__()
         self.setFlag(QGraphicsItem.ItemIsSelectable, False)
+        self.shallow_highlight = False
         self.hover = False
         self.index = None
         self.highlight_flag = False
@@ -106,6 +108,10 @@ class _RectBlock(QGraphicsRectItem):
             pen.setColor(Qt.GlobalColor.black)
             pen.setWidth(5)
             # self.setZValue(1)
+        elif self.shallow_highlight:
+            pen.setStyle(Qt.DotLine)
+            pen.setColor(Qt.GlobalColor.darkGreen)
+            pen.setWidth(7)
         elif self.hover:
             pen.setStyle(Qt.DotLine)
             pen.setColor(Qt.GlobalColor.darkCyan)
@@ -201,6 +207,13 @@ class _RectBlock(QGraphicsRectItem):
             self.highlighted_item_list.append(self)
         else:
             self.highlighted_item_list.remove(self)
+
+    def set_shallow_highlight(self):
+        self.shallow_highlight = not self.shallow_highlight
+        if self.shallow_highlight:
+            self.shallow_highlight_list.append(self)
+        else:
+            self.shallow_highlight_list.remove(self)
 
 class _VisualizationItem(QGraphicsItemGroup):
     _compareLayer = dict()
@@ -1041,6 +1054,14 @@ class _VisualizationItem(QGraphicsItemGroup):
             if type(_rect_block) == _RectBlock:
                 _rect_block.set_highlight()
                 _rect_block.update()
+
+    def set_shallow_highlight(self):
+        for _rect_block in self.block:
+            if type(_rect_block) == _RectBlock:
+                _rect_block.set_shallow_highlight()
+                _rect_block.update()
+
+
 
 class QGraphicsTextItemWObounding(QGraphicsTextItem):
     # pass
