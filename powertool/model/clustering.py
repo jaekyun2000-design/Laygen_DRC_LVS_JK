@@ -525,6 +525,9 @@ class determinstic_clustering(clustering):
         self.routing_groups.extend(boundary_reference_group)
         return boundary_reference_group
 
+    def search_path_intersection_points(self, dp):
+        return self.geo_searching.search_path_intersection_points(dp)
+
 
 # file = './smaple.csv'
 # df_data = pd.read_csv(file)

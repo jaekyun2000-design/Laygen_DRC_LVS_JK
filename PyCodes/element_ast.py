@@ -265,7 +265,7 @@ class ElementTransformer(ast.NodeTransformer):
         if syntax == 'list' or syntax == 'string':
             tmp_xy = str(node.XY).replace("'", "")
             sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Width = {node.width})"
+                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Width = {node.width})\n"
             sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
         # elif syntax == 'str':
         #     sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
@@ -273,7 +273,7 @@ class ElementTransformer(ast.NodeTransformer):
         elif syntax == 'ast':
             tmp_xy = astunparse.unparse(node.XY).replace('\n', '')
             sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Width = {node.width})"
+                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Width = {node.width})\n"
             sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
         else:
             sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
