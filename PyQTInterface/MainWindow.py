@@ -37,7 +37,7 @@ from PyCodes import element_ast, variable_ast
 from DesignManager.ElementManager import element_manager
 from DesignManager.VariableManager import FilterPractice
 from DesignManager.VariableManager import variable_manager
-from PyQTInterface.delegator import interface_delegator
+# from PyQTInterface.delegator import interface_delegator
 
 import threading
 import re
