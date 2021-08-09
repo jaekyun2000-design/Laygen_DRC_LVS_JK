@@ -48,6 +48,7 @@ class ExpressionCalculator(QWidget):
         self.custom_index = ''
         self.equationList = list()
         self.DRCTreeItemDict = dict()
+        self.hierarchy_list = list()
         self.returnedLayer = None
 
         self.setFixedSize(786,800)
@@ -723,6 +724,12 @@ class ExpressionCalculator(QWidget):
             else:
                 if self.value_flag:
                     self.equationList[-1] = digit_value
+
+                    self.value_flag = True
+                    self.digit_flag = True
+                    self.arithmetic_flag = False
+                    self.left_parenthesis_flag = False
+                    self.right_parenthesis_flag = False
                 else:
                     if digit_value == '.':
                         self.equationList.append('0.')
@@ -800,6 +807,10 @@ class ExpressionCalculator(QWidget):
 
         if type(hierarchy_list) == Exception:
             return None
+
+        self.geo_text = geo_text
+        self.hierarchy_list = hierarchy_list
+
         calc_expression = geo_text + f'({hierarchy_list})'.replace(" ","").replace("([", "(").replace("])", ")")
         if self.value_flag:
             print(f'len!!={len(self.value_str)}')
@@ -1067,15 +1078,40 @@ class ExpressionCalculator(QWidget):
 
     def manage_index(self,_):
         sender = self.sender()
+        display = str()
+
         if sender.text() == 'first':
-            self.index_input.setText('first')
+            self.index_input.setText('0')
             self.index_input.setReadOnly(True)
+            index = 0
         elif sender.text() == 'last':
-            self.index_input.setText('last')
+            self.index_input.setText('-1')
             self.index_input.setReadOnly(True)
+            index = -1
         elif sender.text() == 'custom':
             self.index_input.setText(self.custom_index)
             self.index_input.setReadOnly(False)
+            index = self.custom_index
+
+        if self.hierarchy_list != []:
+            # self.hierarchy_list[-1] = self.hierarchy_list[-1][:self.hierarchy_list[-1].find('[')+1] + str(index) + self.hierarchy_list[-1][self.hierarchy_list[-1].find(']'):]
+            self.hierarchy_list[-1] = re.sub('\[.*\]','['+str(index)+']',self.hierarchy_list[-1])
+
+            calc_expression = self.geo_text + f'({self.hierarchy_list})'.replace(" ", "").replace("([", "(").replace("])", ")")
+            if self.value_flag:
+                print(f'len!!={len(self.value_str)}')
+                self.equationList[-1] = calc_expression
+            else:
+                self.equationList.append(calc_expression)
+            self.value_flag = True
+            self.arithmetic_flag = False
+            self.digit_flag = False
+            self.left_parenthesis_flag = False
+            self.right_parenthesis_flag = False
+
+            for text in self.equationList:
+                display += text
+            self.display.setText(display)
 
     def store_index_input(self, changed_text):
         if changed_text != 'first' and changed_text != 'last':
@@ -1337,7 +1373,11 @@ class nine_key_calculator(QWidget):
 
         if type(hierarchy_list) == Exception:
             return None
-        calc_expression = geo_text + f'({hierarchy_list})'.replace(" ","")
+
+        if self.purpose != 'ref':
+            hierarchy_list[-1] = hierarchy_list[-1][:hierarchy_list[-1].find('[')]
+
+        calc_expression = geo_text + f'({hierarchy_list})'.replace(" ","").replace("([", "(").replace("])", ")")
         if self.display.toPlainText() == '':
             self.equationList.append(calc_expression)
         else:

@@ -351,6 +351,9 @@ class _VisualizationItem(QGraphicsItemGroup):
 
 
     def updateTraits(self,_DesignParameter):
+        if _DesignParameter['_XYCoordinates'] == None:
+            return
+        
         if self._ItemTraits['_XYCoordinates'] == None or len(self._ItemTraits['_XYCoordinates']) == 0 :
             self._ItemTraits['_XYCoordinates'] = None
         else:
@@ -767,6 +770,16 @@ class _VisualizationItem(QGraphicsItemGroup):
 
     def update_dc_variable_info(self, _ast):
         if _ast._type == 'Boundary':
+            for field in ['XY', 'layer' , 'width', 'height']:
+                if field not in _ast.__dict__:
+                    return None
+            if type(_ast.XY) != list :
+                return None
+            if type(_ast.width) != int :
+                return None
+            if type(_ast.height) != int :
+                return None
+
             for field in self._ItemTraits['variable_info']:
                 if field == 'XY':
                     self._ItemTraits['variable_info'][field] = str(_ast.XY)

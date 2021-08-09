@@ -37,7 +37,7 @@ from PyCodes import element_ast, variable_ast
 from DesignManager.ElementManager import element_manager
 from DesignManager.VariableManager import FilterPractice
 from DesignManager.VariableManager import variable_manager
-
+from PyQTInterface.delegator import interface_delegator
 
 import threading
 import re
@@ -89,6 +89,7 @@ class _MainWindow(QMainWindow):
         self._ProjectName = None
         self._CurrentModuleName = None
         self.gloabal_clipboard = QGuiApplication.clipboard()
+        # self.setup_window_delegator = interface_delegator.SetupWindowDelegator(self)
         self.initUI()
         self.easyDebugMode()
         self.progrseeBar_unstable = True
@@ -103,6 +104,8 @@ class _MainWindow(QMainWindow):
         self._VariableIDwithAST = variable_manager.Variable_IDwithAST()
         self._DummyConstraints = variable_manager.DummyConstraints()
         self.variable_store_list = list()
+
+
 
 
     def initUI(self):
@@ -266,6 +269,7 @@ class _MainWindow(QMainWindow):
 
         boundaryButton = QPushButton("Boundary")
         boundaryButton.clicked.connect(self.makeBoundaryWindow)
+        # boundaryButton.clicked.connect(self.setup_window_delegator.make_boundary_window)
 
         pathButton = QPushButton("Path",dockContentWidget1)
         pathButton.clicked.connect(self.makePathWindow)
@@ -505,47 +509,29 @@ class _MainWindow(QMainWindow):
             self.visualItemDict[dp_id].setSelected(True)
 
     def inspect_array(self):
-        cluster_model = topAPI.clustering.determinstic_clustering(_qtDesignParameters=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
-        cluster_model.layer_matching()      #Find array group from here
-        cluster_model.sref_matching()
-        cluster_model.build_layer_ist_qt()  #build layer by layer IST
-        test = cluster_model.intersection_matching_qt()
-        print(test)
-        # cluster_model.intersection_matching_path()
-        # cluster_model.sref_matching()
-        cluster_model.delete_solo_element_group()
-        groups_list = cluster_model.get_array_groups()
-        self.reference_list = cluster_model.find_ref(groups_list)
-        # test2 = cluster_model.find_ref_for_path_qt(groups_list[1])
-        # test2 = cluster_model.find_ref_for_boundary_qt(groups_list[0])
-        # test3 = cluster_model.find_ref_for_sref_qt(groups_list[-1])
+        inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        output = inspector.inspect()
+        groups_list = output['group_list']
+        self.reference_list = output['reference_list']
 
-        self.connection_ref = cluster_model.get_routing_groups()
+
         self.array_list_widget = QListWidget()
         self.array_list_widget.addItems([str(group) for group in groups_list])
         self.array_list_widget.currentRowChanged.connect(self.visualize_inspect_array)
-        # self.vw = variableWindow.VariableSetupWindow(variable_type="path_array",vis_items=None,
-        #                                              _DP=self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
-        #                                              ,ref_list=self.connection_ref)
-        # self.array_list_widget.itemDoubleClicked.connect(self.vw.getArray)
+
         self.array_list_widget.itemDoubleClicked.connect(self.show_inspect_array_widget)
         self.array_list_widget.show()
         self.test_purpose_var = groups_list
         self.log = []
-        for group in groups_list:
-            print(f'array candidate group: {group}')
-        print('debug')
+
 
     def show_inspect_array_widget(self, array_list_item):
         row = self.array_list_widget.row(array_list_item)
         group_ref = self.reference_list[row]
-        # print(array_list_item.text())
-        # print(self.connection_ref)
 
         array_list = eval(array_list_item.text())
         if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
             self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array", vis_items=None,
-                                                         connection_ref_list=self.connection_ref,
                                                          group_ref_list=group_ref,
                                                          inspect_array_window_address=self.array_list_widget)
             self.vw.send_output_dict_signal.connect(self.create_variable)
@@ -553,7 +539,6 @@ class _MainWindow(QMainWindow):
             self.vw.getArray(array_list_item)
         elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
             self.vw = variableWindow.VariableSetupWindow(variable_type="path_array", vis_items=None,
-                                                         connection_ref_list=self.connection_ref,
                                                          group_ref_list=group_ref,
                                                          inspect_array_window_address=self.array_list_widget)
             self.vw.send_output_dict_signal.connect(self.create_variable)
@@ -561,7 +546,6 @@ class _MainWindow(QMainWindow):
             self.vw.getArray(array_list_item)
         else:
             self.vw = variableWindow.VariableSetupWindow(variable_type="sref_array", vis_items=None,
-                                                         connection_ref_list=self.connection_ref,
                                                          group_ref_list=group_ref,
                                                          inspect_array_window_address=self.array_list_widget)
             self.vw.getArray(array_list_item)
@@ -824,16 +808,8 @@ class _MainWindow(QMainWindow):
             constraint_ids = [item.text() for item in constraint_names]
             topAST = ast.Module()
             topAST.body = copy.deepcopy([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
-
-            # # TODO: XYCoordinate AST 한번에 처리하는 것이 더 좋은가
-            # for i in range(len(constraint_ids)):
-            #     if constraint_ids[i] in list(self._DummyConstraints.XYDict.keys()):
-            #         topAST = variable_ast.IrregularTransformer(self._DummyConstraints.XYDict[constraint_ids[i]]).visit(topAST)
             topAST = variable_ast.IrregularTransformer(self._DummyConstraints).visit(topAST)
-
-
             topAST = element_ast.ElementTransformer().visit(topAST)
-            # variable_ast.VariableTransformer.infoDict = self._DummyConstraints.XYDict
             topAST = variable_ast.VariableTransformer().visit(topAST)
             code = astunparse.unparse(topAST)
             print(code)
@@ -1756,6 +1732,9 @@ class _MainWindow(QMainWindow):
         return visualItem
 
     def updateVisualItemFromDesignParameter(self,DesignParameter):
+        if DesignParameter is None:
+            return None
+
         id = DesignParameter._id
         # self.visualItemDict[id].updateTraits(DesignParameter._DesignParameter)
 
@@ -1826,7 +1805,8 @@ class _MainWindow(QMainWindow):
                 # else:
             try:
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
-                self.updateGraphicItem(visualItem)
+                if visualItem:
+                    self.updateGraphicItem(visualItem)
             except:
                 traceback.print_exc()
 
