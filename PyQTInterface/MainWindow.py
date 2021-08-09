@@ -559,6 +559,7 @@ class _MainWindow(QMainWindow):
                                                          inspect_array_window_address=self.array_list_widget)
             self.vw.getArray(array_list_item)
         self.vw.request_dummy_constraint_signal.connect(self.delivery_dummy_constraint)
+        self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
 
         self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
         self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
@@ -2360,6 +2361,11 @@ class _MainWindow(QMainWindow):
             self.visualItemDict[_id].setFlag(QGraphicsItemGroup.ItemIsSelectable, True)
             self.visualItemDict[_id].setSelected(True)
 
+    def highlightVI_by_hierarchy_list(self, _hierarchy_list):
+        top_element_name = _hierarchy_list.pop(0)
+        top_element_name = top_element_name.split('[')[0]
+        self.visualItemDict[top_element_name].highlight_element_by_hierarchy(_hierarchy_list)
+
     def makeTemplateWindow(self):
         self.tw = template._TemplateManageWidget(template.templateDict)
         self.tw.show()
@@ -2689,6 +2695,9 @@ class _CustomScene(QGraphicsScene):
         self.nslist = _layerlist
 
     def mousePressEvent(self, event):
+        for highlighted_rectblock in VisualizationItem._RectBlock.highlighted_item_list:
+            highlighted_rectblock.highlight_flag = False
+
         self.send_xyCoordinate_signal.emit(event)
         def masking(items):
             masked_output = []

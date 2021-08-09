@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 import traceback
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
@@ -25,11 +26,14 @@ DEBUG = True
 scaleValue = 1
 
 class _RectBlock(QGraphicsRectItem):
+    highlighted_item_list = list()
+
     def __init__(self,_BlockTraits=None):
         super().__init__()
         self.setFlag(QGraphicsItem.ItemIsSelectable, False)
         self.hover = False
         self.index = None
+        self.highlight_flag = False
         # self.setFlag(QGraphicsItem.ItemIsSelectable,False)
         if _BlockTraits is None:
             self._BlockTraits = dict(
@@ -93,7 +97,7 @@ class _RectBlock(QGraphicsRectItem):
 
         # print(self.zValue())
 
-        if self.isSelected():
+        if self.isSelected() or self.highlight_flag:
             # self._BlockTraits["_Color"].setAlphaF(1)
             # self.setZValue(self.zValue()*10000)
             # print("HighLighted",self.zValue())
@@ -191,6 +195,13 @@ class _RectBlock(QGraphicsRectItem):
 
         return tmp_parent_item
 
+    def set_highlight(self):
+        self.highlight_flag = not self.highlight_flag
+        if self.highlight_flag:
+            self.highlighted_item_list.append(self)
+        else:
+            self.highlighted_item_list.remove(self)
+
 class _VisualizationItem(QGraphicsItemGroup):
     _compareLayer = dict()
     _Layer = LayerReader._LayerMapping
@@ -202,6 +213,7 @@ class _VisualizationItem(QGraphicsItemGroup):
     def __init__(self,_ItemTraits=None):
         super().__init__()
         self.setBoundingRegionGranularity(1)
+        self.sub_element_dict = dict()
         self._id = None
         self._type = None
         self.setFlag(QGraphicsItemGroup.ItemIsSelectable,True)
@@ -658,6 +670,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                                 sub_element_vi.setRotation(rot)
 
                     self.addToGroup(sub_element_vi)
+                    self.sub_element_dict[sub_element_dp_name+f'[{idx}]'] = sub_element_vi
 
                 ############################ Variable Visualization Start ############################
 
@@ -1006,6 +1019,27 @@ class _VisualizationItem(QGraphicsItemGroup):
         # tmp_parent_item._ItemTraits = self.original_parent._ItemTraits
         self.original_parent.removeFromGroup(self)
         return self
+
+    def highlight_element_by_hierarchy(self, hierarchy_list):
+        tmp_vsitem = self
+        while hierarchy_list:
+            element_name = hierarchy_list.pop(0)
+
+            if element_name not in tmp_vsitem.sub_element_dict:
+                element_name_with_idx_list = list(filter(lambda x: element_name in x, list(tmp_vsitem.sub_element_dict.keys())))
+                for element in element_name_with_idx_list:
+                    # tmp_vsitem.sub_element_dict[element].setSelected(True)
+                    tmp_vsitem.sub_element_dict[element].set_highlight()
+                return None
+            else:
+                tmp_vsitem = tmp_vsitem.sub_element_dict[element_name]
+        # tmp_vsitem.setSelected(True)
+        tmp_vsitem.set_highlight()
+
+    def set_highlight(self):
+        for _rect_block in self.block:
+            _rect_block.set_highlight()
+            _rect_block.update()
 
 class QGraphicsTextItemWObounding(QGraphicsTextItem):
     # pass
