@@ -199,14 +199,18 @@ class _MainWindow(QMainWindow):
 
 
         #Third Menu
-        auto_path_array_action = QAction("Inspect path array", self)
+        auto_array_action = QAction("Inspect array", self)
+        auto_pathpoint_action = QAction("Inspect path point", self)
 
-        auto_path_array_action.setShortcut('Ctrl+1')
-        auto_path_array_action.triggered.connect(self.inspect_array)
+        auto_array_action.setShortcut('Ctrl+1')
+        auto_array_action.triggered.connect(self.inspect_array)
 
+        auto_pathpoint_action.setShortcut('Ctrl+2')
+        auto_pathpoint_action.triggered.connect(self.inspect_path_point)
 
         automation_menu = menubar.addMenu("&Automation")
-        automation_menu.addAction(auto_path_array_action)
+        automation_menu.addAction(auto_array_action)
+        automation_menu.addAction(auto_pathpoint_action)
 
 
 
@@ -507,6 +511,11 @@ class _MainWindow(QMainWindow):
         dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
         if dp_id:
             self.visualItemDict[dp_id].setSelected(True)
+
+    def inspect_path_point(self):
+        inspector = topAPI.inspector.path_point_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        output = inspector.get_all_path_connection_info()
+        print(output)
 
     def inspect_array(self):
         inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])

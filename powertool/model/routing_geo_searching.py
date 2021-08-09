@@ -249,6 +249,72 @@ class GeometricField:
 
         return intersected_dp_hierarchy_names
 
+    def search_path_intersection_points(self, dp):
+        x_min_list, x_max_list, y_min_list, y_max_list = [], [], [], []
+        intersection_point_list = []
+        for i in range(len(dp['_XYCoordinates'][0])):
+            if i + 1 != len(dp['_XYCoordinates'][0]):
+                if dp['_XYCoordinates'][0][i][0] == dp['_XYCoordinates'][0][i + 1][0]:
+                    direction = 'vertical'
+                    if dp['_XYCoordinates'][0][i][1] < dp['_XYCoordinates'][0][i + 1][1]:
+                        direction += 'up'
+                    else:
+                        direction += 'down'
+                else:
+                    direction = 'horizontal'
+                    if dp['_XYCoordinates'][0][i][0] < dp['_XYCoordinates'][0][i + 1][0]:
+                        direction += 'right'
+                    else:
+                        direction += 'left'
+
+                if 'horizontal' in direction:
+                    if 'right' in direction:
+                        x_min_list.append(dp['_XYCoordinates'][0][i][0])
+                        x_max_list.append(dp['_XYCoordinates'][0][i][0] + 1)
+                    else:
+                        x_min_list.append(dp['_XYCoordinates'][0][i][0] - 1)
+                        x_max_list.append(dp['_XYCoordinates'][0][i][0])
+                    y_min_list.append(dp['_XYCoordinates'][0][i][1] - dp['_Width'] / 2)
+                    y_max_list.append(dp['_XYCoordinates'][0][i][1] + dp['_Width'] / 2)
+                elif 'vertical' in direction:
+                    x_min_list.append(dp['_XYCoordinates'][0][i][0] - dp['_Width'] / 2)
+                    x_max_list.append(dp['_XYCoordinates'][0][i][0] + dp['_Width'] / 2)
+                    if 'up' in direction:
+                        y_min_list.append(dp['_XYCoordinates'][0][i][1])
+                        y_max_list.append(dp['_XYCoordinates'][0][i][1] + 1)
+                    else:
+                        y_min_list.append(dp['_XYCoordinates'][0][i][1] - 1)
+                        y_max_list.append(dp['_XYCoordinates'][0][i][1])
+            else:
+                if 'horizontal' in direction:
+                    if 'right' in direction:
+                        x_min_list.append(dp['_XYCoordinates'][0][i][0] - 1)
+                        x_max_list.append(dp['_XYCoordinates'][0][i][0])
+                    else:
+                        x_min_list.append(dp['_XYCoordinates'][0][i][0])
+                        x_max_list.append(dp['_XYCoordinates'][0][i][0] + 1)
+                    y_min_list.append(dp['_XYCoordinates'][0][i][1] - dp['_Width'] / 2)
+                    y_max_list.append(dp['_XYCoordinates'][0][i][1] + dp['_Width'] / 2)
+                elif 'vertical' in direction:
+                    x_min_list.append(dp['_XYCoordinates'][0][i][0] - dp['_Width'] / 2)
+                    x_max_list.append(dp['_XYCoordinates'][0][i][0] + dp['_Width'] / 2)
+                    if 'up' in direction:
+                        y_min_list.append(dp['_XYCoordinates'][0][i][1] - 1)
+                        y_max_list.append(dp['_XYCoordinates'][0][i][1])
+                    else:
+                        y_min_list.append(dp['_XYCoordinates'][0][i][1])
+                        y_max_list.append(dp['_XYCoordinates'][0][i][1] + 1)
+
+        for i, x_min in enumerate(x_min_list):
+            vertical_tree = IST(direction='vertical')
+            for x_intersection_dp in sorted(self.interval_tree_by_layer[dp['_Layer']][x_min:x_max_list[i]]):
+                vertical_tree.add_boundary_node(boundary_dp=x_intersection_dp.data[0], idx=x_intersection_dp.data[1])
+            intersected_node = sorted(vertical_tree[y_min_list[i]:y_max_list[i]])
+            del vertical_tree
+            intersection_point_list.append(
+                [[node.data[0]['_Hierarchy'][node.data[1]], node.data[1]] for node in intersected_node])
+        return intersection_point_list
+
     def search_intersection(self, dp):
         # if dp['_DesignParametertype'] == 3:
         #     x_min = dp['_XYCoordinates'][0][0]
@@ -262,7 +328,7 @@ class GeometricField:
             xy_points = dp['_XYCoordinatesProjection'][0]
             x_min, x_max, y_min, y_max = min([xy[0] for xy in xy_points]), max([xy[0] for xy in xy_points]), min([xy[1] for xy in xy_points]), max([xy[1] for xy in xy_points])
         elif dp['_DesignParametertype'] == 2:
-            #TODO
+            # #TODO
             #path case update
             if len(dp['_XYCoordinates'][0]) != 2:
                 return None
