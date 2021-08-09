@@ -37,7 +37,7 @@ from PyCodes import element_ast, variable_ast
 from DesignManager.ElementManager import element_manager
 from DesignManager.VariableManager import FilterPractice
 from DesignManager.VariableManager import variable_manager
-from PyQTInterface.delegator import interface_delegator
+# from PyQTInterface.delegator import interface_delegator
 
 import threading
 import re
@@ -473,7 +473,7 @@ class _MainWindow(QMainWindow):
         self.variableCallButton.clicked.connect(self.variableListUpdate)
         self.calculatorButton.clicked.connect(self.calculator)
 
-        self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
+        self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard, purpose='init')
         self.dockContentWidget3.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
         self.dockContentWidget3_2.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
         self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.storePreset)
