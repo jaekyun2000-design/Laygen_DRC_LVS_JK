@@ -10,14 +10,14 @@ import os
 from generatorLib import drc_api
 
 class ExpressionCalculator(QWidget):
-    # send_expression_signal =  pyqtSignal(dict)
     send_XYCreated_signal = pyqtSignal(str, dict)
     send_dummyconstraints_signal = pyqtSignal(dict, str)
     send_path_row_xy_signal = pyqtSignal(dict, str)
+    send_expression_signal = pyqtSignal(str, str)
     returnLayer_signal = pyqtSignal(list)
     presetDict = dict()
 
-    def __init__(self,clipboard):
+    def __init__(self,clipboard,purpose):
         # super(ExpressionCalculator, self).__init__()
         super().__init__()
 
@@ -45,6 +45,7 @@ class ExpressionCalculator(QWidget):
         # # self.display.setLayoutDirection(Qt.RightToLeft)
         # print(self.display.layoutDirection())
         self.parenthesis_count = 0
+        self.purpose = purpose
         self.custom_index = ''
         self.equationList = list()
         self.DRCTreeItemDict = dict()
@@ -98,6 +99,8 @@ class ExpressionCalculator(QWidget):
         self.y_button = self.create_radio_button('Y',self.xy_reference_clicked)
         self.xy_button = self.create_radio_button('XY',self.xy_reference_clicked)
         self.x_button.setChecked(True)
+        if self.purpose == 'width' or self.purpose == 'height':
+            self.xy_button.setDisabled(True)
 
         toggling_group_layout.addWidget(self.x_button)
         toggling_group_layout.addWidget(self.y_button)
@@ -108,6 +111,8 @@ class ExpressionCalculator(QWidget):
         edit_button = self.create_button('EDIT',self.edit_clicked, size_constraint=dict(height=35))
         export_button = self.create_button('EXPORT',self.export_clicked, size_constraint=dict(height=35))
         export_path_button = self.create_button('EXPORT FOR PATH',self.export_path_clicked, size_constraint=dict(height=35))
+        if self.purpose == 'width' or self.purpose == 'height':
+            export_path_button.setDisabled(True)
 
         option_box_layout.addWidget(self.xy_reference_toggling_group)
         option_box_layout.addWidget(add_button)
@@ -185,6 +190,9 @@ class ExpressionCalculator(QWidget):
         self.XYWindow = QListWidget()
         self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
         self.XYWindow.itemClicked.connect(self.XYitemClicked)
+        if self.purpose == 'width' or self.purpose == 'height':
+            self.XYWindow.setDisabled(True)
+            self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY_disabled.png); background-position: center; background-color: rgb(255,255,255); background-attachment: fixed;")
 
         self.first_index_button = QPushButton()
         self.first_index_button.setText('first')
@@ -404,9 +412,9 @@ class ExpressionCalculator(QWidget):
         print(XY_id)
         self.show()
         self.presetWindow.clear()
-        for _id in self.presetDict.keys():
+        for _id in ExpressionCalculator.presetDict.keys():
             self.presetWindow.addItem(_id)
-        if XY_id in self.presetDict:
+        if XY_id in ExpressionCalculator.presetDict:
             for i in range(self.presetWindow.count()):
                 if self.presetWindow.item(i).text() == XY_id:
                     self.presetWindow.setCurrentRow(i)
@@ -414,7 +422,7 @@ class ExpressionCalculator(QWidget):
 
     def set_preset_window(self):
         self.presetWindow.clear()
-        for _id in self.presetDict.keys():
+        for _id in ExpressionCalculator.presetDict.keys():
             self.presetWindow.addItem(_id)
 
     def XitemClicked(self):
@@ -949,9 +957,9 @@ class ExpressionCalculator(QWidget):
             for i_xy in range(self.XYWindow.count()):
                 self.XYWindow.setCurrentRow(i_xy)
                 XYList.append(self.XYWindow.currentItem().text())
-            self.presetDict[_id]['X'] = XList
-            self.presetDict[_id]['Y'] = YList
-            self.presetDict[_id]['XY'] = XYList
+            ExpressionCalculator.presetDict[_id]['X'] = XList
+            ExpressionCalculator.presetDict[_id]['Y'] = YList
+            ExpressionCalculator.presetDict[_id]['XY'] = XYList
 
     def export_clicked(self, export_type = False):
         XList = list()
@@ -1001,23 +1009,27 @@ class ExpressionCalculator(QWidget):
         아래에서 XYCoordinate constraint 생성하거나, 이미 LogicExpression이 만들어진 상태이면 무시,
         그리고 export_type이 PathXY_row인 경우 main으로 output 보내준다.
         """
-        if export_type == 'PathXY_row':
-            if self.pw.XYCoordinateList.rowCount() == 0:
-                if not XYList:
-                    if not (XList and YList):
-                        self.warning = QMessageBox()
-                        self.warning.setIcon(QMessageBox.Warning)
-                        self.warning.setText("First element for PathXY_row should be XYCoordinates")
-                        self.warning.show()
-                        self.pw.destroy()
-                        del self.pw
-                        return
+        if self.purpose == 'init':
+            if export_type == 'PathXY_row':
+                if self.pw.XYCoordinateList.rowCount() == 0:
+                    if not XYList:
+                        if not (XList and YList):
+                            self.warning = QMessageBox()
+                            self.warning.setIcon(QMessageBox.Warning)
+                            self.warning.setText("First element for PathXY_row should be XYCoordinates")
+                            self.warning.show()
+                            self.pw.destroy()
+                            del self.pw
+                            return
 
-        if export_type == False:
-            if LEFlag == False:
-                self.send_XYCreated_signal.emit('XYCoordinate', output)
-        else:
-            self.send_XYCreated_signal.emit(export_type, output)
+            if export_type == False:
+                if LEFlag == False:
+                    self.send_XYCreated_signal.emit('XYCoordinate', output)
+            else:
+                self.send_XYCreated_signal.emit(export_type, output)
+
+        elif self.purpose == 'width' or self.purpose == 'height':
+            self.send_expression_signal.emit(self.display.toPlainText(), self.purpose)
 
     def export_path_clicked(self):
         if 'pw' not in self.__dict__:
@@ -1047,9 +1059,9 @@ class ExpressionCalculator(QWidget):
         return Exception("No selected layer")
 
     def storePreset(self, dict, _id):
-        self.presetDict[_id] = dict
+        ExpressionCalculator.presetDict[_id] = dict
         self.presetWindow.addItem(_id)
-        print(self.presetDict)
+        print(ExpressionCalculator.presetDict)
 
     def presetClicked(self, dummy=None):
         if type(dummy) == str:
@@ -1057,13 +1069,13 @@ class ExpressionCalculator(QWidget):
         else:
             _id = self.presetWindow.currentItem().text()
 
-        if 'XYidlist' in self.presetDict[_id]:
-            self.pw = PathWindow(address=self, idlist=self.presetDict[_id]['XYidlist'])
+        if 'XYidlist' in ExpressionCalculator.presetDict[_id]:
+            self.pw = PathWindow(address=self, idlist=ExpressionCalculator.presetDict[_id]['XYidlist'])
             self.send_path_row_xy_signal.connect(self.pw.create_row)
         else:
-            XList = self.presetDict[_id]['X']
-            YList = self.presetDict[_id]['Y']
-            XYList = self.presetDict[_id]['XY']
+            XList = ExpressionCalculator.presetDict[_id]['X']
+            YList = ExpressionCalculator.presetDict[_id]['Y']
+            XYList = ExpressionCalculator.presetDict[_id]['XY']
 
             self.XWindow.clear()
             self.YWindow.clear()
@@ -1242,7 +1254,7 @@ class PathWindow(QWidget):
     #     self.XYdictForLineEdit[-1].setReadOnly(True)
 
 class nine_key_calculator(QWidget):
-    send_expression_signal =  pyqtSignal(str, str)
+    send_expression_signal = pyqtSignal(str, str)
 
     def __init__(self,clipboard,purpose,address):
         # super(ExpressionCalculator, self).__init__()

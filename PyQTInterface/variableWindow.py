@@ -1118,9 +1118,15 @@ class variableContentWidget(QWidget):
         elif name == 'width_input':
             tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             tmp_input_widget.setReadOnly(True)
+            additional_button = QPushButton()
+            additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            additional_button.clicked.connect(self.show_width_cal)
         elif name == 'height_input':
             tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             tmp_input_widget.setReadOnly(True)
+            additional_button = QPushButton()
+            additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            additional_button.clicked.connect(self.show_height_cal)
 
         tmp_input_widget.field_name = name
         tmp_input_widget.textChanged.connect(self.update_output_dict)
@@ -1128,6 +1134,8 @@ class variableContentWidget(QWidget):
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)
         output_layout.addWidget(tmp_input_widget)
+        if name == 'width_input' or name == 'heigth_input':
+            output_layout.addWidget(additional_button)
 
         return output_layout
 
@@ -1222,6 +1230,16 @@ class variableContentWidget(QWidget):
         # self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)
         # self.ls.send_destroy_signal.connect(self.delete_obj)
 
+    def show_width_cal(self):
+        self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='width')
+        self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.show()
+
+    def show_height_cal(self):
+        self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='height')
+        self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.show()
+
     def show_source_cal(self):
         self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='source',address=self)
         self.cal.send_expression_signal.connect(self.exported_text)
@@ -1241,31 +1259,34 @@ class variableContentWidget(QWidget):
         print(sref_ast.__dict__)
 
     def exported_text(self, text, purpose):
-        for info, widget in self.widget_dictionary.items():
-            if not widget.isHidden():
-                if purpose == 'source':
-                    if info == 'srefrelative':
-                        source_widget = self.widget_dictionary[info].layout().itemAt(1).itemAt(1).widget()
-                    else:
-                        source_widget = self.widget_dictionary[info].layout().itemAt(2).itemAt(1).widget()
-                    source_widget.takeItem(0)
-                    source_widget.addItem(text)
-                    source_widget.setCurrentRow(0)
-                elif purpose == 'target':
-                    target_widget = self.widget_dictionary[info].layout().itemAt(7).itemAt(1).widget()
-                    target_widget.takeItem(0)
-                    target_widget.addItem(text)
-                    target_widget.setCurrentRow(0)
-                elif purpose == 'ref':
-                    if info == 'srefoffset':
-                        ref_widget = self.widget_dictionary['srefoffset'].layout().itemAt(1).itemAt(1).widget()
-                    else:
-                        ref_widget = self.widget_dictionary[info].layout().itemAt(2).itemAt(1).widget()
-                    ref_widget.takeItem(0)
-                    ref_widget.addItem(text)
-                    ref_widget.setCurrentRow(0)
+        if purpose == 'width' or purpose == 'height':
+            print('ok')
+        elif purpose == 'source' or purpose == 'target' or purpose == 'ref':
+            for info, widget in self.widget_dictionary.items():
+                if not widget.isHidden():
+                    if purpose == 'source':
+                        if info == 'srefrelative':
+                            source_widget = self.widget_dictionary[info].layout().itemAt(1).itemAt(1).widget()
+                        else:
+                            source_widget = self.widget_dictionary[info].layout().itemAt(2).itemAt(1).widget()
+                        source_widget.takeItem(0)
+                        source_widget.addItem(text)
+                        source_widget.setCurrentRow(0)
+                    elif purpose == 'target':
+                        target_widget = self.widget_dictionary[info].layout().itemAt(7).itemAt(1).widget()
+                        target_widget.takeItem(0)
+                        target_widget.addItem(text)
+                        target_widget.setCurrentRow(0)
+                    elif purpose == 'ref':
+                        if info == 'srefoffset':
+                            ref_widget = self.widget_dictionary['srefoffset'].layout().itemAt(1).itemAt(1).widget()
+                        else:
+                            ref_widget = self.widget_dictionary[info].layout().itemAt(2).itemAt(1).widget()
+                        ref_widget.takeItem(0)
+                        ref_widget.addItem(text)
+                        ref_widget.setCurrentRow(0)
 
-                del self.cal
+                    del self.cal
 
     def get_index(self, text):
         for info, widget in self.widget_dictionary.items():
