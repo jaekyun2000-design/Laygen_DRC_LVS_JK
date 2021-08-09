@@ -429,7 +429,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 if _index == 'All':
                     case_code = f"if mode == 'vertical':\n" \
                                 f"\txy_with_offset = []\n" \
-                                f"\ttarget_y_value = {target_xy[0]}\n" \
+                                f"\ttarget_y_value = {target_xy[1]}\n" \
                                 f"\tfor i in range(len({layer_xy})):\n" \
                                 f"\t\txy_with_offset.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i])])\n" \
                                 f"\n" \
@@ -437,7 +437,7 @@ class IrregularTransformer(ast.NodeTransformer):
                                 f"\t\tpath_list.append([xy_with_offset[i],[xy_with_offset[i][0],target_y_value]])\n" \
                                 f"elif mode == 'horizontal':\n" \
                                 f"\txy_with_offset = []\n" \
-                                f"\ttarget_x_value = {target_xy[1]}\n" \
+                                f"\ttarget_x_value = {target_xy[0]}\n" \
                                 f"\tfor i in range(len({layer_xy})):\n" \
                                 f"\t\txy_with_offset.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i])])\n" \
                                 f"\n" \
@@ -446,7 +446,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 elif _index == 'Odd':
                     case_code = f"if mode == 'vertical':\n" \
                                 f"\txy_with_offset = []\n" \
-                                f"\ttarget_y_value = {target_xy[0]}\n" \
+                                f"\ttarget_y_value = {target_xy[1]}\n" \
                                 f"\tfor i in range(len({layer_xy})):\n" \
                                 f"\t\tif (i%2 == 1):\n" \
                                 f"\t\t\txy_with_offset.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i])])\n" \
@@ -455,7 +455,7 @@ class IrregularTransformer(ast.NodeTransformer):
                                 f"\t\tpath_list.append([xy_with_offset[i],[xy_with_offset[i][0],target_y_value]])\n" \
                                 f"elif mode == 'horizontal':\n" \
                                 f"\txy_with_offset = []\n" \
-                                f"\ttarget_x_value = {target_xy[1]}\n" \
+                                f"\ttarget_x_value = {target_xy[0]}\n" \
                                 f"\tfor i in range(len({layer_xy})):\n" \
                                 f"\t\tif (i%2 == 1):\n" \
                                 f"\t\t\txy_with_offset.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i])])\n" \
@@ -465,7 +465,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 elif _index == 'Even':
                     case_code = f"if mode == 'vertical':\n" \
                                 f"\txy_with_offset = []\n" \
-                                f"\ttarget_y_value = {target_xy[0]}\n" \
+                                f"\ttarget_y_value = {target_xy[1]}\n" \
                                 f"\tfor i in range(len({layer_xy})):\n" \
                                 f"\t\tif (i%2 == 0):\n" \
                                 f"\t\t\txy_with_offset.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i])])\n" \
@@ -474,7 +474,7 @@ class IrregularTransformer(ast.NodeTransformer):
                                 f"\t\tpath_list.append([xy_with_offset[i],[xy_with_offset[i][0],target_y_value]])\n" \
                                 f"elif mode == 'horizontal':\n" \
                                 f"\txy_with_offset = []\n" \
-                                f"\ttarget_x_value = {target_xy[1]}\n" \
+                                f"\ttarget_x_value = {target_xy[0]}\n" \
                                 f"\tfor i in range(len({layer_xy})):\n" \
                                 f"\t\tif (i%2 == 0):\n" \
                                 f"\t\t\txy_with_offset.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i])])\n" \
@@ -484,7 +484,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 else:       # Custom Index
                     case_code = f"if mode == 'vertical':\n" \
                                 f"\txy_with_offset = []\n" \
-                                f"\ttarget_y_value = {target_xy[0]}\n" \
+                                f"\ttarget_y_value = {target_xy[1]}\n" \
                                 f"\tfor i in range(len({layer_xy})):\n" \
                                 f"\t\tif i in {_index}:\n" \
                                 f"\t\t\txy_with_offset.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i])])\n" \
@@ -493,7 +493,7 @@ class IrregularTransformer(ast.NodeTransformer):
                                 f"\t\tpath_list.append([xy_with_offset[i],[xy_with_offset[i][0],target_y_value]])\n" \
                                 f"elif mode == 'horizontal':\n" \
                                 f"\txy_with_offset = []\n" \
-                                f"\ttarget_x_value = {target_xy[1]}\n" \
+                                f"\ttarget_x_value = {target_xy[0]}\n" \
                                 f"\tfor i in range(len({layer_xy})):\n" \
                                 f"\t\tif i in {_index}:\n" \
                                 f"\t\t\txy_with_offset.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i])])\n" \
