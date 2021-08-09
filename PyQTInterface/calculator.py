@@ -37,7 +37,7 @@ class ExpressionCalculator(QWidget):
 
         self.clipboard = clipboard
         self.display= QTextEdit('')
-        self.display.setReadOnly(True)
+        # self.display.setReadOnly(True)
         self.display.setAlignment(Qt.AlignRight|Qt.AlignTop)
         self.display.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
         # self.display.setMinimumHeight(80)
