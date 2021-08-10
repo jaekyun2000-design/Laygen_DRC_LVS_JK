@@ -566,7 +566,7 @@ class variableContentWidget(QWidget):
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)
         output_layout.addWidget(tmp_input_widget)
-        if name == 'width_input' or name == 'heigth_input':
+        if name == 'width_input' or name == 'height_input':
             output_layout.addWidget(additional_button)
 
         return output_layout
