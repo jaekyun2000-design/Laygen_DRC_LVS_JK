@@ -81,3 +81,8 @@ class DummyConstraints:
             return self.ArrayDict[id_text]
         else:
             return None
+
+    def search_constraint_id_by_design_name(self, dp_name):
+        for id, dummy_info in self.ArrayDict.items():
+            if dummy_info['name'] == dp_name:
+                return id
