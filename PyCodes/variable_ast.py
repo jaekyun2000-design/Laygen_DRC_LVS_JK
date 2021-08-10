@@ -512,7 +512,34 @@ class IrregularTransformer(ast.NodeTransformer):
                 sentence = comparison_code + case_code + tmp_code
                 del tmp_node
             elif _type == 'sref_array':
-                pass
+                if _index == 'All':
+                    loop_code = f"XYList = []\n" \
+                                f"for i in range(len({layer_xy})):\n" \
+                                f"\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
+                elif _index == 'Odd':
+                    loop_code = f"XYList = []\n" \
+                                f"for i in range(len({layer_xy})):\n" \
+                                f"\tif (i%2 == 1):\n" \
+                                f"\t\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
+                elif _index == 'Even':
+                    loop_code = f"XYList = []\n" \
+                                f"for i in range(len({layer_xy})):\n" \
+                                f"\tif (i%2 == 0):\n" \
+                                f"\t\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
+
+                tmp_node = element_ast.Sref()
+                tmp_node.name = _name
+                tmp_node.XY = 'XYList'
+                tmp_node.library = info_dict['sref_item']['library']
+                tmp_node.className = info_dict['sref_item']['className']
+                tmp_node.calculate_fcn = info_dict['sref_item']['calculate_fcn']
+                tmp_node.parameters = info_dict['sref_item']['parameters']
+                tmp_code_ast = element_ast.ElementTransformer().visit_Sref(tmp_node)
+                tmp_code = astunparse.unparse(tmp_code_ast)
+
+                sentence = loop_code + '\n' + tmp_code
+                del tmp_node
+
         elif _flag == 'offset':
             if "," in XY_source_ref:
                 source_wo_layer = ",".join(XY_source_ref.split(",")[:-1]) + ')'
@@ -572,24 +599,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 loop_code = f"XYList = []\n" \
                             f"for i in range({_row_num}):\n" \
                             f"\tfor j in range({_col_num}):\n" \
-                            f"\t\ttmp = {source_XY_code} + [{_x_distance}, {_y_distance}]\n" \
-                            f"\t\tXYList.append(tmp)\n"
-                # elif _index == 'Odd':
-                #     loop_code = f"XYList = []\n" \
-                #                 f"for i in range(len({layer_xy})):\n" \
-                #                 f"\tif (i%2 == 1):\n" \
-                #                 f"\t\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
-                # elif _index == 'Even':
-                #     loop_code = f"XYList = []\n" \
-                #                 f"for i in range(len({layer_xy})):\n" \
-                #                 f"\tif (i%2 == 0):\n" \
-                #                 f"\t\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
-                # elif _index == 'Custom':
-                #     loop_code = f"XYList = []\n" \
-                #                 f"for i in range({_row_num}):\n" \
-                #                 f"\tfor j in range({_col_num}):\n" \
-                #                 f"\t\ttmp = {source_XY_code} + [{_x_distance}, {_y_distance}]" \
-                #                 f"\t\tXYList.append(tmp)\n"
+                            f"\t\tXYList.append([x+y for x,y in zip({source_XY_code} , [{_x_distance}, {_y_distance}])\n"
 
                 tmp_node = element_ast.Boundary()
                 tmp_node.name = _name

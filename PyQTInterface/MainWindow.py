@@ -1427,13 +1427,6 @@ class _MainWindow(QMainWindow):
             updateModuleList = set(self._QTObj._qtProject._DesignParameter)
             addedModuleList = list(updateModuleList-originalModuleList)
             idLength = 0
-            # randModule = addedModuleList[0]
-            # anyId = list(self._QTObj._qtProject._DesignParameter[randModule])[0]
-            # hierarchyHint=self._QTObj._qtProject._HierarchyFromRootForDesignParameter(_id=anyId,_ParentName=randModule)
-            # rootModule = list(hierarchyHint[0])[0]
-            #
-            # moduleLength = len(addedModuleList)
-            # minimumModule = round(moduleLength/50)
             entireHierarchy = self._QTObj._qtProject._getEntireHierarchy()
             for modules in addedModuleList:
                 idLength += len(self._QTObj._qtProject._DesignParameter[modules])
