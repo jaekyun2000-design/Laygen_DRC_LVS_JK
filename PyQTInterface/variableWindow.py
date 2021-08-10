@@ -249,6 +249,7 @@ class VariableSetupWindow(QWidget):
                 self.variable_widget.field_value_memory_dict[field_name] = self.group_list[field_name]
         array_list = eval(array_list_item.text())
         self.deleteItemList.addItems(array_list)
+        self.variable_type_widget.setCurrentText(self.variable_type)
         self.variable_widget.request_show(self.variable_type[:-6], self.relative_or_offset)
         self.show()
 
@@ -588,13 +589,13 @@ class variableContentWidget(QWidget):
                 additional_button.clicked.connect(self.show_target_cal)
             elif name[3:-4] == '':
                 additional_button.clicked.connect(self.show_ref_cal)
+            tmp_input_widget.itemClicked.connect(self.item_clicked)
 
         tmp_input_widget.setMaximumHeight(20)
         tmp_input_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         tmp_input_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         tmp_input_widget.addItem('')
         tmp_input_widget.currentItemChanged.connect(self.update_output_dict)
-        tmp_input_widget.itemClicked.connect(self.item_clicked)
 
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)

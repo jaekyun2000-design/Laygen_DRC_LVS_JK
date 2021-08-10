@@ -565,6 +565,14 @@ class _MainWindow(QMainWindow):
     def show_inspect_array_widget(self, array_list_item):
         row = self.array_list_widget.row(array_list_item)
         group_ref = self.reference_list[row]
+        array_list = eval(array_list_item.text())
+
+        if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
+            self.vw.variable_type = 'boundary_array'
+        elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
+            self.vw.variable_type = 'path_array'
+        elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 3:
+            self.vw.variable_type = 'sref_array'
 
         self.vw.group_list = group_ref
         self.vw.inspect_array_window_address = self.array_list_widget
