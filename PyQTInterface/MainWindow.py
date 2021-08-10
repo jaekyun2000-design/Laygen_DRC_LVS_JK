@@ -1610,9 +1610,15 @@ class _MainWindow(QMainWindow):
         self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
 
-    def create_variable(self, variable_info_dict):
+    def create_variable(self, _edit_id, variable_info_dict):
+        print('_id:',_edit_id)
         print(variable_info_dict)
         self.createDummyConstraint(type_for_dc = 'Array', info_dict= variable_info_dict)
+
+        # if self._edit_id is None:
+        #     self.createDummyConstraint(type_for_dc = 'Array', info_dict= variable_info_dict)
+        # else:
+        #     create가 아닌 edit으로
 
 
     def createVariableVisual(self, variableVisualItem):

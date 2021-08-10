@@ -33,7 +33,7 @@ class VariableSetupWindow(QWidget):
     send_Warning_signal = pyqtSignal(str)
     # send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
     send_DestroyTmpVisual_signal = pyqtSignal(str)
-    send_output_dict_signal = pyqtSignal(dict)
+    send_output_dict_signal = pyqtSignal(str, dict)
     send_clicked_item_signal = pyqtSignal(list)
     request_dummy_constraint_signal = pyqtSignal(str)
 
@@ -42,6 +42,7 @@ class VariableSetupWindow(QWidget):
 
     def __init__(self,variable_type,vis_items=None,variable_obj=None,group_ref_list=None,inspect_array_window_address=None):
         super().__init__()
+        self._edit_id = None
         self.setMinimumHeight(500)
         self.setMinimumWidth(300)
         self.variable_type = variable_type
@@ -222,9 +223,8 @@ class VariableSetupWindow(QWidget):
 
     def update_ui_by_constraint_id(self, dummy_id):
         self.deleteItemList.clear()
+        self._edit_id = dummy_id
         self.request_dummy_constraint_signal.emit(dummy_id)
-        print(dummy_id)
-        print(self.current_dummy_constraint)
         self.variable_type_widget.setCurrentText(self.current_dummy_constraint['type'])
         if 'path' in self.current_dummy_constraint['type']:
             self.variable_widget.request_load('path', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'])
@@ -362,12 +362,10 @@ class VariableSetupWindow(QWidget):
 
         for idx in range(self.deleteItemList.count()):
             _id = self.deleteItemList.item(idx).text()
-            print(_id)
             self.send_DestroyTmpVisual_signal.emit(_id)
 
-        print(self.deleteItemList)
         self.variable_widget.output_dict[output_dict['name']] = output_dict
-        self.send_output_dict_signal.emit(copy.deepcopy(self.output_dict))
+        self.send_output_dict_signal.emit(self._edit_id, copy.deepcopy(self.output_dict))
 
         if self.inspect_array_window_address is not None:
             self.inspect_array_window_address.close()
@@ -488,8 +486,6 @@ class variableContentWidget(QWidget):
                 elif field_info['input_type_list'][i] == 'combo':
                     row_layout.itemAt(i).itemAt(1).widget().setCurrentText(str(self.field_value_memory_dict[field_name]))
                 elif field_info['input_type_list'][i] == 'list':
-                    print(field_name)
-                    print(self.field_value_memory_dict[field_name])
                     row_layout.itemAt(i).itemAt(1).widget().addItem(self.field_value_memory_dict[field_name])
                     while row_layout.itemAt(i).itemAt(1).widget().count() != 1:
                         row_layout.itemAt(i).itemAt(1).widget().takeItem(0)
