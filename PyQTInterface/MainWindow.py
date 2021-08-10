@@ -566,6 +566,19 @@ class _MainWindow(QMainWindow):
         row = self.array_list_widget.row(array_list_item)
         group_ref = self.reference_list[row]
         array_list = eval(array_list_item.text())
+        #
+        # self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array")
+        # self.vw.send_output_dict_signal.connect(self.create_variable)
+        # self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
+        # self.vw.request_dummy_constraint_signal.connect(self.delivery_dummy_constraint)
+        # self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
+        #
+        # self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
+        # self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
+        #
+        #
+
+
 
         if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
             self.vw.variable_type = 'boundary_array'
@@ -577,6 +590,7 @@ class _MainWindow(QMainWindow):
         self.vw.group_list = group_ref
         self.vw.inspect_array_window_address = self.array_list_widget
         self.vw.getArray(array_list_item)
+        # self.vw.show()
 
     def delivery_dummy_constraint(self, dummy_id):
         dummy_constraint = self._DummyConstraints.get_dummy_constraint_by_id(dummy_id)
