@@ -1606,6 +1606,7 @@ class _MainWindow(QMainWindow):
         # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
         self.vw.send_output_dict_signal.connect(self.create_variable)
         self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
+        self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
         self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
 

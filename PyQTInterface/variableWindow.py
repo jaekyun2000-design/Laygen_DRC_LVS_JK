@@ -777,7 +777,7 @@ class variableContentWidget(QWidget):
                     width_widget.setCurrentText('Custom')
 
     def item_clicked(self, item):
-        hierarchy_list = list(eval(re.search('\(.*\)',item.text()).group()))
+        hierarchy_list = list(eval('['+re.search('\(.*\)',item.text()).group()[1:-1] + ']' ))
         self.send_clicked_item_signal.emit(hierarchy_list)
 
     def update_output_dict(self, changed_text):
