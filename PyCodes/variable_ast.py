@@ -530,10 +530,10 @@ class IrregularTransformer(ast.NodeTransformer):
                 tmp_node = element_ast.Sref()
                 tmp_node.name = _name
                 tmp_node.XY = 'XYList'
-                tmp_node.library = info_dict['sref_item']['library']
-                tmp_node.className = info_dict['sref_item']['className']
-                tmp_node.calculate_fcn = info_dict['sref_item']['calculate_fcn']
-                tmp_node.parameters = info_dict['sref_item']['parameters']
+                tmp_node.library = info_dict['sref_item_dict']['library']
+                tmp_node.className = info_dict['sref_item_dict']['className']
+                tmp_node.calculate_fcn = info_dict['sref_item_dict']['calculate_fcn']
+                tmp_node.parameters = info_dict['sref_item_dict']['parameters']
                 tmp_code_ast = element_ast.ElementTransformer().visit_Sref(tmp_node)
                 tmp_code = astunparse.unparse(tmp_code_ast)
 
