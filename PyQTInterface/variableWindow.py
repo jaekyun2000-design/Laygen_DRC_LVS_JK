@@ -608,7 +608,7 @@ class variableContentWidget(QWidget):
         if self.field_value_memory_dict['sref_item'] == '':
             self.ls = SetupWindow._LoadSRefWindow(purpose='array_load')
         else:
-            self.ls = SetupWindow._LoadSRefWindow(purpose='array_load', SRefElement=self.field_value_memory_dict['sref_item'])
+            self.ls = SetupWindow._LoadSRefWindow(purpose='array_load', SRefElement=self.field_value_memory_dict['sref_item_dict'])
         self.ls.show()
         self.ls.send_array_signal.connect(self.exported_sref)
         # self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)
@@ -649,7 +649,7 @@ class variableContentWidget(QWidget):
         source_widget.addItem(sref_dict['library'])
         source_widget.setCurrentRow(0)
 
-        self.field_value_memory_dict['sref_item'] = sref_dict
+        self.field_value_memory_dict['sref_item_dict'] = sref_dict
 
     def exported_text(self, text, purpose):
         if purpose == 'width' or purpose == 'height':
@@ -739,7 +739,6 @@ class variableContentWidget(QWidget):
     def update_output_dict(self, changed_text):
         sender = self.sender()
         name = sender.field_name
-        # value = sender.text()
 
         if type(changed_text) == QListWidgetItem:
             changed_text = changed_text.text()
