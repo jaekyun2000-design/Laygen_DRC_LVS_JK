@@ -46,12 +46,11 @@ class VariableSetupWindow(QWidget):
         self.setMinimumHeight(500)
         self.setMinimumWidth(300)
         self.variable_type = variable_type
+        self.flag_type = 'relative'
         self.vis_items= vis_items
         self.group_list = group_ref_list
         self.inspect_array_window_address = inspect_array_window_address
         self.itemList = list()
-        self.output_dict = dict(type='boundary',
-                                flag='relative')
         self.relative_or_offset = 'relative'
         self.initUI()
 
@@ -88,13 +87,8 @@ class VariableSetupWindow(QWidget):
         self.variable_type_widget = QComboBox()
         self.variable_type_widget.addItems(['boundary_array', 'path_array', 'sref_array'])
         self.variable_type_widget.setCurrentText(self.variable_type)
-        self.output_dict['type'] = self.variable_type
         self.variable_type_widget.currentTextChanged.connect(self.typeChanged)
-        # self.variable_type_widget.addItems(QLabel(self.variable_type))
-        # self.variable_type_widget.currentIndexChanged.connect(self.updateUI)
-        # self.ui_list_a = []
-        # self.ui_list_b = []
-        # self.ui_list_c = []
+
         self.relative_or_offset_button = QPushButton()
         self.relative_or_offset_button.setIcon(QIcon(QPixmap('./image/ON.png')))
         self.relative_or_offset_button.setIconSize(QSize(50,30))
@@ -165,7 +159,6 @@ class VariableSetupWindow(QWidget):
         # vbox.addLayout(self.setupBox)
         self.variable_widget = variableContentWidget()
         self.variable_widget.request_show('boundary', 'relative')
-        self.variable_widget.value_changed_signal.connect(self.update_output_dict_value)
         self.variable_widget.send_clicked_item_signal.connect(self.send_clicked_item)
         vbox.addLayout(hbox2)
         vbox.addWidget(self.variable_widget)
@@ -174,16 +167,6 @@ class VariableSetupWindow(QWidget):
         vbox.addStretch(3)
         vbox.addLayout(hbox)
         self.layout_list.extend([hbox,vbox])
-
-        if self.variable_type == 'boundary_array':
-            self.output_dict['width'] = 'Auto'
-            self.output_dict['height'] = 'Auto'
-            self.output_dict['index'] = 'All'
-        elif self.variable_type == 'path_array':
-            self.output_dict['width'] = 'Auto'
-            self.output_dict['index'] = 'All'
-        elif self.variable_type == 'sref_array':
-            self.output_dict['index'] = 'All'
 
         self.setLayout(vbox)
 
@@ -197,29 +180,12 @@ class VariableSetupWindow(QWidget):
                 self.deleteItemList.addItem(id)
             self.show()
 
-    # def update_ui(self):
-    #     tmp_list = []
-    #     for label in self.ui_list_a:
-    #         label_widget = QLabel(label)
-    #         self.setupVboxColumn1.addWidget(label_widget)
-    #         tmp_list.append(label_widget)
-    #     self.ui_list_a = tmp_list
-    #     for widget in self.ui_list_b:
-    #         try:
-    #             self.setupVboxColumn2.addWidget(widget)
-    #         except:
-    #             self.setupVboxColumn2.addLayout(widget)
-
     def typeChanged(self, variable_type):
         self.variable_type = variable_type
-        self.output_dict['type'] = variable_type
         if self.relative_or_offset_button.isChecked():
             self.variable_widget.request_show(variable_type[:-6], 'relative')
         else:
             self.variable_widget.request_show(variable_type[:-6], 'offset')
-        # self.reset_ui()
-        # self.create_ui_relative()
-        # self.update_ui()
 
     def update_ui_by_constraint_id(self, dummy_id):
         self.deleteItemList.clear()
@@ -234,17 +200,11 @@ class VariableSetupWindow(QWidget):
 
     def change_ui(self, _):
         if self.relative_or_offset_button.isChecked():
-            self.output_dict['flag'] = 'relative'
             self.variable_widget.request_show(self.variable_type[:-6], 'relative')
-            # self.reset_ui()
-            # self.create_ui_relative()
-            # self.update_ui()
+            self.flag_type = 'relative'
         else:
-            self.output_dict['flag'] = 'offset'
             self.variable_widget.request_show(self.variable_type[:-6], 'offset')
-            # self.reset_ui()
-            # self.create_ui_offset()
-            # self.update_ui()
+            self.flag_type = 'offset'
 
 
     def updateUI(self):
@@ -307,16 +267,6 @@ class VariableSetupWindow(QWidget):
         for i in range(0,num):
             self.setupVboxColumn2.addWidget(QLineEdit())
 
-    def update_output_dict(self, changed_text):
-        sender = self.sender()
-        key = sender.field_name
-        if type(changed_text) == QListWidgetItem:
-            changed_text = changed_text.text()
-        self.output_dict[key] = changed_text
-
-    def update_output_dict_value(self, name, changed_text):
-        self.output_dict[name] = changed_text
-
     def on_buttonBox_accepted(self):
         output_dict = self.variable_widget.field_value_memory_dict
         if output_dict['name'] == '':
@@ -359,8 +309,10 @@ class VariableSetupWindow(QWidget):
             _id = self.deleteItemList.item(idx).text()
             self.send_DestroyTmpVisual_signal.emit(_id)
 
-        self.variable_widget.output_dict[output_dict['name']] = output_dict
-        self.send_output_dict_signal.emit(self._edit_id, copy.deepcopy(self.output_dict))
+        output_dict['type'] = self.variable_type
+        output_dict['flag'] = self.flag_type
+
+        self.send_output_dict_signal.emit(self._edit_id, copy.deepcopy(output_dict))
 
         if self.inspect_array_window_address is not None:
             self.inspect_array_window_address.close()
@@ -429,9 +381,7 @@ class VariableSetupWindow(QWidget):
         self.send_clicked_item_signal.emit(hierarchy_list)
 
 class variableContentWidget(QWidget):
-    value_changed_signal = pyqtSignal(str, str)
     send_clicked_item_signal = pyqtSignal(list)
-    output_dict = dict()
 
     def __init__(self):
         super(variableContentWidget, self).__init__()
@@ -784,7 +734,6 @@ class variableContentWidget(QWidget):
             changed_text = changed_text.text()
 
         self.field_value_memory_dict[name] = changed_text
-        self.value_changed_signal.emit(name, changed_text)
 
 
 class CustomQTableView(QTableView): ### QAbstractItemView class inherited
