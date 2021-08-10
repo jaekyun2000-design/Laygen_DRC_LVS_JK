@@ -967,7 +967,15 @@ class _MainWindow(QMainWindow):
             new_dp_name_list = list(filter(lambda dp_name: dp_name not in current_dpdict, list(dp_dict.keys())))
             for dp_name in new_dp_name_list:
                 dp = dp_dict[dp_name]
-                self.createNewDesignParameter(dp)
+                design_dict = self._QTObj._qtProject._feed_design(design_type='parameter',
+                                                                  module_name=self._CurrentModuleName,
+                                                                  dp_dict=dp, element_manager_update=False)
+                visualItem = self.createVisualItemfromDesignParameter(
+                    self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
+                self.updateGraphicItem(visualItem)
+                dc_id = self._DummyConstraints.search_constraint_id_by_design_name(dp_name)
+                self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=dp_name, dc_id=dc_id)
+
             print(dp_dict)
 
 
