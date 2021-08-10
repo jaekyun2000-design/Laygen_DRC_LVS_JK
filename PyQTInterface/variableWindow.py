@@ -605,7 +605,10 @@ class variableContentWidget(QWidget):
         return output_layout
 
     def show_sref_load(self):
-        self.ls = SetupWindow._LoadSRefWindow(purpose='array_load')
+        if self.field_value_memory_dict['sref_item'] == '':
+            self.ls = SetupWindow._LoadSRefWindow(purpose='array_load')
+        else:
+            self.ls = SetupWindow._LoadSRefWindow(purpose='array_load', SRefElement=self.field_value_memory_dict['sref_item'])
         self.ls.show()
         self.ls.send_array_signal.connect(self.exported_sref)
         # self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)

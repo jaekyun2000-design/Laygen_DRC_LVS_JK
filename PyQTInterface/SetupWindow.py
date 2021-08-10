@@ -785,10 +785,10 @@ class _LoadSRefWindow(QWidget):
     send_array_signal = pyqtSignal("PyQt_PyObject")
     send_destroy_signal = pyqtSignal(str)
 
-    def __init__(self, purpose = None, SRefElement = None, create=False):
+    def __init__(self, purpose = None, SRefElement = None):
         super().__init__()
         self.purpose = purpose
-        self.create = create
+        self.create = False
         self.par_valueForLineEdit = []
         self.paramDict = dict()
         self.initUI()
@@ -796,6 +796,10 @@ class _LoadSRefWindow(QWidget):
         if SRefElement is None:
             self.create = True
             self.visualItem = VisualizationItem._VisualizationItem()
+        elif purpose == 'array_load':
+            self.create = True
+            self.array_dict = SRefElement
+            self.updateUI_for_array()
         else:
             self._DesignParameter = SRefElement._ItemTraits
             self.updateUI()
@@ -909,6 +913,19 @@ class _LoadSRefWindow(QWidget):
             self.cal_fcn_input.setCurrentText(self._DesignParameter['calculate_fcn'])
         i = 0
         for value in self._DesignParameter['parameters'].values():
+            self.par_valueForLineEdit[i].setText(str(value))
+            i += 1
+
+    def updateUI_for_array(self):
+        print(self.array_dict)
+        # self.name_input.setText(self._DesignParameter['_ElementName'])
+        self.library_input.setCurrentText(self.array_dict['library'])
+        self.class_name_input.setText(self.array_dict['className'])
+        # self.XY_input.setText(str(self._DesignParameter['_XYCoordinates'][0][0])+','+str(self._DesignParameter['_XYCoordinates'][0][1]))
+        if 'calculate_fcn' in self.array_dict.keys():
+            self.cal_fcn_input.setCurrentText(self.array_dict['calculate_fcn'])
+        i = 0
+        for value in self.array_dict['parameters'].values():
             self.par_valueForLineEdit[i].setText(str(value))
             i += 1
 
