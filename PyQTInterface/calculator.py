@@ -1386,7 +1386,7 @@ class nine_key_calculator(QWidget):
         if type(hierarchy_list) == Exception:
             return None
 
-        if self.purpose != 'ref':
+        if self.purpose == 'source':
             hierarchy_list[-1] = hierarchy_list[-1][:hierarchy_list[-1].find('[')]
 
         calc_expression = geo_text + f'({hierarchy_list})'.replace(" ","").replace("([", "(").replace("])", ")")
