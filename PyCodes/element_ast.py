@@ -316,6 +316,11 @@ class ElementTransformer(ast.NodeTransformer):
                        f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
             sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
             sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}"
+        else:
+            sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(" \
+                       f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
+            sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}"
 
         # if (type(node.XY) == list) or node.XY.find(',') == -1:
         #     parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
