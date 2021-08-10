@@ -226,12 +226,7 @@ class VariableSetupWindow(QWidget):
         self._edit_id = dummy_id
         self.request_dummy_constraint_signal.emit(dummy_id)
         self.variable_type_widget.setCurrentText(self.current_dummy_constraint['type'])
-        if 'path' in self.current_dummy_constraint['type']:
-            self.variable_widget.request_load('path', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'])
-        elif 'boundary' in self.current_dummy_constraint['type']:
-            self.variable_widget.request_load('boundary', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'])
-        elif 'sref' in self.current_dummy_constraint['type']:
-            self.variable_widget.request_load('sref', self.current_dummy_constraint['flag'], self.current_dummy_constraint['name'])
+        self.variable_widget.request_load(self.current_dummy_constraint)
         self.show()
 
     def delivery_dummy_constraint(self, dummy_constraint):
@@ -466,9 +461,11 @@ class variableContentWidget(QWidget):
 
         self.setLayout(self.vbox)
 
-    def request_load(self, name, option, id):
-        self.field_value_memory_dict = self.output_dict[id]
-        self.request_show(name, option)
+    def request_load(self, output_dictionary):
+        self.field_value_memory_dict = output_dictionary
+        self.request_show(output_dictionary['type'][:-6], output_dictionary['flag'])
+
+
 
     def request_show(self, name, option):
         for widget in self.widget_dictionary.values():
