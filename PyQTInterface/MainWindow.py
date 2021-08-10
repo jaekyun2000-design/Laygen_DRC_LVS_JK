@@ -1609,10 +1609,18 @@ class _MainWindow(QMainWindow):
         self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
         self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
-
+    def edit_variable(self, _edit_id, variable_info_dict, parent_dict):
+        self._DummyConstraints.__dict__[parent_dict][_edit_id].clear()
+        self._DummyConstraints.__dict__[parent_dict][_edit_id] = variable_info_dict
     def create_variable(self, _edit_id, variable_info_dict):
         print('_id:',_edit_id)
         print(variable_info_dict)
+        dicts = self._DummyConstraints.__dict__
+        for _dict, info in dicts.items():
+            for id, element in info.items():
+                if _edit_id == id:
+                    self.edit_variable(_edit_id, variable_info_dict, _dict)
+                    return
         self.createDummyConstraint(type_for_dc = 'Array', info_dict= variable_info_dict)
 
         # if self._edit_id is None:
