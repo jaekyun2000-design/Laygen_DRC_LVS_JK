@@ -638,7 +638,14 @@ class variableContentWidget(QWidget):
         self.cal.show()
 
     def exported_sref(self, sref_ast):
-        print(sref_ast.__dict__)
+        sref_dict = sref_ast.__dict__
+
+        source_widget = self.widget_dictionary['srefrelative'].layout().itemAt(2).itemAt(1).widget()
+        source_widget.takeItem(0)
+        source_widget.addItem(sref_dict['library'])
+        source_widget.setCurrentRow(0)
+
+        self.field_value_memory_dict['sref_item'] = sref_dict
 
     def exported_text(self, text, purpose):
         if purpose == 'width' or purpose == 'height':
