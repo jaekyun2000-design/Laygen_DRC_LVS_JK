@@ -666,11 +666,13 @@ class variableContentWidget(QWidget):
     def show_width_cal(self):
         self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='width')
         self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.set_preset_window()
         self.cal.show()
 
     def show_height_cal(self):
         self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='height')
         self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.set_preset_window()
         self.cal.show()
 
     def show_source_cal(self):
