@@ -315,6 +315,8 @@ class VariableSetupWindow(QWidget):
 
         self.send_output_dict_signal.emit(self._edit_id, copy.deepcopy(output_dict))
 
+        self.variable_widget.refresh_memory_dict()
+
         if self.inspect_array_window_address is not None:
             self.inspect_array_window_address.close()
         self.destroy()
@@ -406,17 +408,30 @@ class variableContentWidget(QWidget):
                         self.field_value_memory_dict[field_name] = 'All'
                     if field_name == 'width':
                         self.field_value_memory_dict[field_name] = 'Auto'
-                    if field_name == 'heigth':
+                    if field_name == 'height':
                         self.field_value_memory_dict[field_name] = 'Auto'
                 self.create_skeleton(name, option, field_info)
 
         self.setLayout(self.vbox)
 
+    def refresh_memory_dict(self):
+        for name in self.name_list:
+            for option in self.option_list:
+                field_info = self.return_field_list(name, option)
+                for i, field_name in enumerate(field_info['field_list']):
+                    self.field_value_memory_dict[field_name] = ''
+                    if field_name == 'layer':
+                        self.field_value_memory_dict[field_name] = 'PIMP'
+                    if field_name == 'index':
+                        self.field_value_memory_dict[field_name] = 'All'
+                    if field_name == 'width':
+                        self.field_value_memory_dict[field_name] = 'Auto'
+                    if field_name == 'height':
+                        self.field_value_memory_dict[field_name] = 'Auto'
+
     def request_load(self, output_dictionary):
         self.field_value_memory_dict = output_dictionary
         self.request_show(output_dictionary['type'][:-6], output_dictionary['flag'])
-
-
 
     def request_show(self, name, option):
         for widget in self.widget_dictionary.values():
@@ -481,8 +496,8 @@ class variableContentWidget(QWidget):
                               'XY_target_ref']
                 input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'list']
             elif name == 'sref':
-                field_list = ['name', 'XY_source_ref', 'sref_item', 'index', 'index_input']
-                input_type_list = ['line', 'list', 'list', 'combo', 'line']
+                field_list = ['name', 'XY_source_ref', 'sref_item', 'index', 'index_input', 'sref_item_dict']
+                input_type_list = ['line', 'list', 'list', 'combo', 'line', None]
 
         field_info = dict(field_list=field_list, input_type_list=input_type_list)
         return field_info
