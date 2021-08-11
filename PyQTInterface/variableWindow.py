@@ -298,6 +298,12 @@ class VariableSetupWindow(QWidget):
                     self.warning.setIcon(QMessageBox.Warning)
                     self.warning.show()
                     return
+                if output_dict['sref_item'] == '':
+                    self.warning = QMessageBox()
+                    self.warning.setText("Incomplete SRef")
+                    self.warning.setIcon(QMessageBox.Warning)
+                    self.warning.show()
+                    return
         elif self.relative_or_offset == 'offset':
             if output_dict['XY_ref'] == '':
                 self.warning = QMessageBox()
