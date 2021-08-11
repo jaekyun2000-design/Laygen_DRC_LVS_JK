@@ -255,6 +255,8 @@ class clustering():
         for id in id_list:
             connection_layer_list.extend(
                 [copy.deepcopy(intersection_info[0]) for intersection_info in self.intersection_matching_dict_by_name[id]])
+        connection_layer_list = list(set(map(tuple,connection_layer_list)))        # idx 도 똑같이 중복되는 element 를 제거
+        connection_layer_list = [list(tupled_data) for tupled_data in connection_layer_list]
         connection_wo_last_idx = copy.deepcopy(connection_layer_list)
         for idx, _ in enumerate(connection_wo_last_idx):
             cutting_idx = connection_wo_last_idx[idx][-1].find('[')
