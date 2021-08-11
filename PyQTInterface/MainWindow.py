@@ -3070,8 +3070,10 @@ class _CustomScene(QGraphicsScene):
             itemList = self.selectedItems()
             for item in itemList:
                 try:
-                    if item._ItemTraits['_DesignParametertype'] == 1 or item._ItemTraits['_DesignParametertype'] ==  2:
+                    if item._ItemTraits['_DesignParametertype'] == 1:
                         self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0].index])
+                    elif item._ItemTraits['_DesignParametertype'] == 2:
+                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [f'{[item.block[0].index[0]]}'+f'{[item.block[0].index[1]]}'])
                     elif item._ItemTraits['_DesignParametertype'] == 3:
                         self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.index])
                 except:
