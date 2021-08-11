@@ -1107,7 +1107,11 @@ class ExpressionCalculator(QWidget):
 
         if self.hierarchy_list != []:
             # self.hierarchy_list[-1] = self.hierarchy_list[-1][:self.hierarchy_list[-1].find('[')+1] + str(index) + self.hierarchy_list[-1][self.hierarchy_list[-1].find(']'):]
-            self.hierarchy_list[-1] = re.sub('\[.*\]','['+str(index)+']',self.hierarchy_list[-1])
+            index_iter_list = re.finditer('\[[a-zA-Z0-9:_\-\+\*\/]*\]', self.hierarchy_list[-1])
+            for last_index in index_iter_list:
+                pass
+            self.hierarchy_list[-1] = self.hierarchy_list[-1][:last_index.span()[0]+1]+str(index)+self.hierarchy_list[-1][last_index.span()[1]-1:]
+            # self.hierarchy_list[-1] = re.sub('\[.*\]','['+str(index)+']',self.hierarchy_list[-1])
 
             calc_expression = self.geo_text + f'({self.hierarchy_list})'.replace(" ", "").replace("([", "(").replace("])", ")")
             if self.value_flag:
