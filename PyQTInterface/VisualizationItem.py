@@ -151,7 +151,7 @@ class _RectBlock(QGraphicsRectItem):
             brush.setStyle(Qt.CrossPattern)
             # brush.setTransform()
         else:
-            brush.setStyle(Qt.SolidPattern)
+            brush.setStyle(Qt.Dense6Pattern)
 
         #
         # if not (self._BlockTraits["_Pattern"] == "blank" or self._BlockTraits["_Pattern"] == "stipple0" or self._BlockTraits["_Pattern"] == "dagger" or self._BlockTraits["_Pattern"] == "brick"):

@@ -5,7 +5,9 @@ import os
 from PyQt5.QtGui import QColor
 
 print("***************Display information file load Start")
-_Technology='065nm'
+import user_setup
+_Technology= user_setup._Technology
+# _Technology= '065nm'
 _HomeDirectory = os.getcwd()
 _DisplayDict = dict()
 _ColorDict = dict()
@@ -13,6 +15,8 @@ _ColorDict = dict()
 
 if _Technology == '180nm':
     _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/display.drf'
+elif _Technology=='028nm':
+    _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/SS28nm/display.drf'
 elif _Technology=='065nm':
     # print(_HomeDirectory)
     _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC65nm/display.drf'
@@ -40,9 +44,12 @@ with open(_DRFfile,'rb',0) as drf:
             # re.sub('\t',' ',lineDecode)
             # print('match')
             # lineDecode.split('')
+            lineDecode = re.sub(' +',' ',lineDecode)
             lineDecode = lineDecode.replace('\t',' ')
             lineDecode = lineDecode.replace('_drawing',' ')
             split = lineDecode.split(' ')
+            if _Technology == '028nm':
+                split.pop(0)
             _DisplayDict[split[2]] = dict()
             _DisplayDict[split[2]]['drawingNum'] = split[3]
             _DisplayDict[split[2]]['Stipple'] = split[4]

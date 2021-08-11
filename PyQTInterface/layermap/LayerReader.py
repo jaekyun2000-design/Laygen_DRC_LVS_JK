@@ -75,10 +75,10 @@ def _LayerNumber2LayerName(_LayerMapping):
     _LayerNum2Name = dict()
 
     for _LayerCommonName in _LayerMapping:
-        if _LayerMapping[_LayerCommonName][1] == 0:
-            i = str(_LayerMapping[_LayerCommonName][0])
-            layerName = _LayerMapping[_LayerCommonName][2]
-            _LayerNum2Name[i] = layerName
+        # if _LayerMapping[_LayerCommonName][1] == 0:
+        i = str(_LayerMapping[_LayerCommonName][0])
+        layerName = _LayerMapping[_LayerCommonName][2]
+        _LayerNum2Name[i] = layerName
     return _LayerNum2Name
 
 def _LayerNumber2CommonLayerName(_LayerMapping):
@@ -107,8 +107,11 @@ def _LayerNumber2UnifiedLayerName(_LayerMapping):
 #
 # '180nm':
 #  '065nm':
-
-if _Technology == '180nm':
+if _Technology=='028nm':
+    _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/SS28nm/cmos28lp_tech.layermap')
+    _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
+    _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
+elif _Technology == '180nm':
     _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/tsmc18rf.layermap')
     _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
     _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
@@ -136,185 +139,214 @@ elif _Technology=='350nm':
     _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'ICFB')
 
 #################    Conversion into Singlevariable   ##################################
- ############################# PIMP Layer Mapping#########################################'
+print('############################# PIMP Layer Mapping#########################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'PIMP':_LayerMappingTmp[('PIMP', 'drawing')]})
+    _LayerMapping.update({'PIMP': _LayerMappingTmp[('PIMP', 'drawing')]})
     # _Layernumber = _LayerMappingTmp[('NIMP', 'drawing')][0]
     # _DataType = _LayerMappingTmp[('NIMP', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'PIMP': _LayerMappingTmp[('BP', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'PIMP':_LayerMappingTmp[('PP', 'drawing')]})
+    _LayerMapping.update({'PIMP': _LayerMappingTmp[('PP', 'drawing')]})
     # _Layernumber = _LayerMappingTmp[('NP', 'drawing')][0]
     # _DataType = _LayerMappingTmp[('NP', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'PIMP':_LayerMappingTmp[('PP', 'drawing')]})
+    _LayerMapping.update({'PIMP': _LayerMappingTmp[('PP', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'PIMP':_LayerMappingTmp[('PP', 'drawing')]})
+    _LayerMapping.update({'PIMP': _LayerMappingTmp[('PP', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'PIMP':_LayerMappingTmp[('PIMP', 'drawing')]})
+    _LayerMapping.update({'PIMP': _LayerMappingTmp[('PIMP', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'PIMP':_LayerMappingTmp[('PIMP', 'drawing')]})
+    _LayerMapping.update({'PIMP': _LayerMappingTmp[('PIMP', 'drawing')]})
 
- ############################# PDK Layer Mapping#########################################'
+print('############################# PDK Layer Mapping#########################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'PDK':(None,None)})
+    _LayerMapping.update({'PDK': (None, None)})
+elif _Technology == '028nm':
+    _LayerMapping.update({'PDK': (None, None)})
+    # _LayerMapping.update({'PDK':_LayerMappingTmp[('IU', 'drawing')]}) ##?
 elif _Technology == '065nm':
-    _LayerMapping.update({'PDK':_LayerMappingTmp[('PDK', 'drawing')]})
-            # _Layernumber = layermapping[('PDK', 'drawing')][0]
-            # _DataType = layermapping[('PDK', 'drawing')][1]
+    _LayerMapping.update({'PDK': _LayerMappingTmp[('PDK', 'drawing')]})
+    # _Layernumber = layermapping[('PDK', 'drawing')][0]
+    # _DataType = layermapping[('PDK', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'PDK':_LayerMappingTmp[('PDK', 'drawing')]})
+    _LayerMapping.update({'PDK': _LayerMappingTmp[('PDK', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'PDK':_LayerMappingTmp[('PDKREC', 'wellbody')]})
+    _LayerMapping.update({'PDK': _LayerMappingTmp[('PDKREC', 'wellbody')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'PDK':(None,None)})
+    _LayerMapping.update({'PDK': (None, None)})
 elif _Technology == '350nm':
-    _LayerMapping.update({'PDK':(None,None)})
+    _LayerMapping.update({'PDK': (None, None)})
 
-
- ############################# NIMP Layer Mapping#########################################'
+print('############################# NIMP Layer Mapping#########################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'NIMP':_LayerMappingTmp[('NIMP', 'drawing')]})
+    _LayerMapping.update({'NIMP': _LayerMappingTmp[('NIMP', 'drawing')]})
     # _Layernumber = _LayerMappingTmp[('NIMP', 'drawing')][0]
     # _DataType = _LayerMappingTmp[('NIMP', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'NIMP': (None, None)})
 elif _Technology == '065nm':
-    _LayerMapping.update({'NIMP':_LayerMappingTmp[('NP', 'drawing')]})
+    _LayerMapping.update({'NIMP': _LayerMappingTmp[('NP', 'drawing')]})
     # _Layernumber = _LayerMappingTmp[('NP', 'drawing')][0]
     # _DataType = _LayerMappingTmp[('NP', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'NIMP':_LayerMappingTmp[('NP', 'drawing')]})
+    _LayerMapping.update({'NIMP': _LayerMappingTmp[('NP', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'NIMP':_LayerMappingTmp[('NP', 'drawing')]})
+    _LayerMapping.update({'NIMP': _LayerMappingTmp[('NP', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'NIMP':_LayerMappingTmp[('NIMP', 'drawing')]})
+    _LayerMapping.update({'NIMP': _LayerMappingTmp[('NIMP', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'NIMP':_LayerMappingTmp[('NIMP', 'drawing')]})
+    _LayerMapping.update({'NIMP': _LayerMappingTmp[('NIMP', 'drawing')]})
 
- ############################ DIFF Layer Mapping#########################################'
+print('############################ DIFF Layer Mapping#########################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'DIFF':_LayerMappingTmp[('DIFF', 'drawing')]})
+    _LayerMapping.update({'DIFF': _LayerMappingTmp[('DIFF', 'drawing')]})
     # _Layernumber = layermapping[('DIFF', 'drawing')][0]
     # _DataType = layermapping[('DIFF', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'DIFF': _LayerMappingTmp[('RX', 'drawing')]})
+    _LayerMapping.update({'DIFFPINDrawing': _LayerMappingTmp[('RX', 'pin')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'DIFF':_LayerMappingTmp[('OD', 'drawing')]})
-            # _Layernumber = layermapping[('OD', 'drawing')][0]
-            # _DataType = layermapping[('OD', 'drawing')][1]
+    _LayerMapping.update({'DIFF': _LayerMappingTmp[('OD', 'drawing')]})
+    # _Layernumber = layermapping[('OD', 'drawing')][0]
+    # _DataType = layermapping[('OD', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'DIFF':_LayerMappingTmp[('OD', 'drawing')]})
+    _LayerMapping.update({'DIFF': _LayerMappingTmp[('OD', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'DIFF':_LayerMappingTmp[('OD', 'drawing')]})
+    _LayerMapping.update({'DIFF': _LayerMappingTmp[('OD', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'DIFF':_LayerMappingTmp[('OD', 'drawing')]})
+    _LayerMapping.update({'DIFF': _LayerMappingTmp[('OD', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'DIFF':_LayerMappingTmp[('DIFF', 'drawing')]})
- ##########################    CONT Layer Mapping#####################################'
+    _LayerMapping.update({'DIFF': _LayerMappingTmp[('DIFF', 'drawing')]})
+print('##########################    CONT Layer Mapping#####################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'CONT':_LayerMappingTmp[('CONT', 'drawing')]})
-            # _Layernumber = layermapping[('CONT', 'drawing')][0]
-            # _DataType = layermapping[('CONT', 'drawing')][1]
+    _LayerMapping.update({'CONT': _LayerMappingTmp[('CONT', 'drawing')]})
+    # _Layernumber = layermapping[('CONT', 'drawing')][0]
+    # _DataType = layermapping[('CONT', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'CONT': _LayerMappingTmp[('CA', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'CONT':_LayerMappingTmp[('CO', 'drawing')]})
-            # _Layernumber = layermapping[('CO', 'drawing')][0]
-            # _DataType = layermapping[('CO', 'drawing')][1]
+    _LayerMapping.update({'CONT': _LayerMappingTmp[('CO', 'drawing')]})
+    # _Layernumber = layermapping[('CO', 'drawing')][0]
+    # _DataType = layermapping[('CO', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'CONT':_LayerMappingTmp[('CO', 'drawing')]})
+    _LayerMapping.update({'CONT': _LayerMappingTmp[('CO', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'CONT':_LayerMappingTmp[('CO', 'drawing')]})
+    _LayerMapping.update({'CONT': _LayerMappingTmp[('CO', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'CONT':_LayerMappingTmp[('CONT', 'drawing')]})
+    _LayerMapping.update({'CONT': _LayerMappingTmp[('CONT', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'CONT':_LayerMappingTmp[('CONT', 'drawing')]})
+    _LayerMapping.update({'CONT': _LayerMappingTmp[('CONT', 'drawing')]})
 
- #############################   METAL1 Layer Mapping#################################'
+print('##########################    PRES Layer Mapping#####################################')
+
+if _Technology == '028nm':
+    _LayerMapping.update({'PRES': _LayerMappingTmp[('PRES', 'drawing')]})
+
+print('##########################    OP Layer Mapping#####################################')
+
+if _Technology == '028nm':
+    _LayerMapping.update({'OP': _LayerMappingTmp[('OP', 'drawing')]})
+
+print('#############################   METAL1 Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL1':_LayerMappingTmp[('METAL1', 'drawing')]})
-            # _Layernumber = layermapping[('METAL1', 'drawing')][0]
-            # _DataType = layermapping[('METAL1', 'drawing')][1]
+    _LayerMapping.update({'METAL1': _LayerMappingTmp[('METAL1', 'drawing')]})
+    # _Layernumber = layermapping[('METAL1', 'drawing')][0]
+    # _DataType = layermapping[('METAL1', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL1': _LayerMappingTmp[('M1', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL1':_LayerMappingTmp[('M1', 'drawing')]})
-            # _Layernumber = layermapping[('M1', 'drawing')][0]
-            # _DataType = layermapping[('M1', 'drawing')][1]
+    _LayerMapping.update({'METAL1': _LayerMappingTmp[('M1', 'drawing')]})
+    # _Layernumber = layermapping[('M1', 'drawing')][0]
+    # _DataType = layermapping[('M1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL1':_LayerMappingTmp[('M1', 'drawing')]})
+    _LayerMapping.update({'METAL1': _LayerMappingTmp[('M1', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL1':_LayerMappingTmp[('M1', 'drawing')]})
+    _LayerMapping.update({'METAL1': _LayerMappingTmp[('M1', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL1':_LayerMappingTmp[('METAL1', 'drawing')]})
+    _LayerMapping.update({'METAL1': _LayerMappingTmp[('METAL1', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL1':_LayerMappingTmp[('METAL1', 'drawing')]})
+    _LayerMapping.update({'METAL1': _LayerMappingTmp[('METAL1', 'drawing')]})
 
-
- #############################   METAL1PIN Layer Mapping#################################'
+print('#############################   METAL1PIN Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL1PIN':_LayerMappingTmp[('METAL1', 'pin')]})
-            # _Layernumber = layermapping[('METAL1', 'drawing')][0]
-            # _DataType = layermapping[('METAL1', 'drawing')][1]
+    _LayerMapping.update({'METAL1PIN': _LayerMappingTmp[('METAL1', 'pin')]})
+    # _Layernumber = layermapping[('METAL1', 'drawing')][0]
+    # _DataType = layermapping[('METAL1', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL1PIN': _LayerMappingTmp[('M1', 'label')]})
+    _LayerMapping.update({'METAL1PINDrawing': _LayerMappingTmp[('M1', 'pin')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL1PIN':_LayerMappingTmp[('M1', 'pin')]})
-            # _Layernumber = layermapping[('M1', 'drawing')][0]
-            # _DataType = layermapping[('M1', 'drawing')][1]
+    _LayerMapping.update({'METAL1PIN': _LayerMappingTmp[('M1', 'pin')]})
+    # _Layernumber = layermapping[('M1', 'drawing')][0]
+    # _DataType = layermapping[('M1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL1PIN':_LayerMappingTmp[('M1', 'pin')]})
+    _LayerMapping.update({'METAL1PIN': _LayerMappingTmp[('M1', 'pin')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL1PIN':_LayerMappingTmp[('M1', 'pin')]})
+    _LayerMapping.update({'METAL1PIN': _LayerMappingTmp[('M1', 'pin')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL1PIN':_LayerMappingTmp[('METAL1', 'pin')]})
+    _LayerMapping.update({'METAL1PIN': _LayerMappingTmp[('METAL1', 'pin')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL1PIN':_LayerMappingTmp[('METAL1', 'pin')]})
+    _LayerMapping.update({'METAL1PIN': _LayerMappingTmp[('METAL1', 'pin')]})
 
-
- ##########################    VIA1 Layer Mapping#####################################'
-
-if _Technology == '180nm':
-    _LayerMapping.update({'VIA12':_LayerMappingTmp[('VIA12', 'drawing')]})
-            # _Layernumber = layermapping[('CONT', 'drawing')][0]
-            # _DataType = layermapping[('CONT', 'drawing')][1]
-elif _Technology == '065nm':
-    _LayerMapping.update({'VIA12':_LayerMappingTmp[('VIA1', 'drawing')]})
-            # _Layernumber = layermapping[('CO', 'drawing')][0]
-            # _DataType = layermapping[('CO', 'drawing')][1]
-elif _Technology == '045nm':
-    _LayerMapping.update({'VIA12':_LayerMappingTmp[('VIA1', 'drawing')]})
-elif _Technology == '090nm':
-    _LayerMapping.update({'VIA12':_LayerMappingTmp[('VIA1', 'drawing')]})
-elif _Technology == '130nm':
-    _LayerMapping.update({'VIA12':_LayerMappingTmp[('VIA12', 'drawing')]})
-elif _Technology == '350nm':
-    _LayerMapping.update({'VIA12':_LayerMappingTmp[('VIA12', 'drawing')]})
-
-
- ##########################    VIA2 Layer Mapping#####################################'
+print('##########################    VIA1 Layer Mapping#####################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'VIA23':_LayerMappingTmp[('VIA23', 'drawing')]})
-            # _Layernumber = layermapping[('CONT', 'drawing')][0]
-            # _DataType = layermapping[('CONT', 'drawing')][1]
+    _LayerMapping.update({'VIA12': _LayerMappingTmp[('VIA12', 'drawing')]})
+    # _Layernumber = layermapping[('CONT', 'drawing')][0]
+    # _DataType = layermapping[('CONT', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'VIA12': _LayerMappingTmp[('V1', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'VIA23':_LayerMappingTmp[('VIA2', 'drawing')]})
-            # _Layernumber = layermapping[('CO', 'drawing')][0]
-            # _DataType = layermapping[('CO', 'drawing')][1]
+    _LayerMapping.update({'VIA12': _LayerMappingTmp[('VIA1', 'drawing')]})
+    # _Layernumber = layermapping[('CO', 'drawing')][0]
+    # _DataType = layermapping[('CO', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'VIA23':_LayerMappingTmp[('VIA2', 'drawing')]})
+    _LayerMapping.update({'VIA12': _LayerMappingTmp[('VIA1', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'VIA23':_LayerMappingTmp[('VIA2', 'drawing')]})
+    _LayerMapping.update({'VIA12': _LayerMappingTmp[('VIA1', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'VIA23':_LayerMappingTmp[('VIA23', 'drawing')]})
+    _LayerMapping.update({'VIA12': _LayerMappingTmp[('VIA12', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'VIA23':_LayerMappingTmp[('VIA23', 'drawing')]})
+    _LayerMapping.update({'VIA12': _LayerMappingTmp[('VIA12', 'drawing')]})
 
- ##########################    VIA3 Layer Mapping#####################################'
+print('##########################    VIA2 Layer Mapping#####################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'VIA34':_LayerMappingTmp[('VIA34', 'drawing')]})
-            # _Layernumber = layermapping[('CONT', 'drawing')][0]
-            # _DataType = layermapping[('CONT', 'drawing')][1]
+    _LayerMapping.update({'VIA23': _LayerMappingTmp[('VIA23', 'drawing')]})
+    # _Layernumber = layermapping[('CONT', 'drawing')][0]
+    # _DataType = layermapping[('CONT', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'VIA23': _LayerMappingTmp[('V2', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'VIA34':_LayerMappingTmp[('VIA3', 'drawing')]})
-            # _Layernumber = layermapping[('CO', 'drawing')][0]
-            # _DataType = layermapping[('CO', 'drawing')][1]
+    _LayerMapping.update({'VIA23': _LayerMappingTmp[('VIA2', 'drawing')]})
+    # _Layernumber = layermapping[('CO', 'drawing')][0]
+    # _DataType = layermapping[('CO', 'drawing')][1]
+elif _Technology == '045nm':
+    _LayerMapping.update({'VIA23': _LayerMappingTmp[('VIA2', 'drawing')]})
+elif _Technology == '090nm':
+    _LayerMapping.update({'VIA23': _LayerMappingTmp[('VIA2', 'drawing')]})
+elif _Technology == '130nm':
+    _LayerMapping.update({'VIA23': _LayerMappingTmp[('VIA23', 'drawing')]})
+elif _Technology == '350nm':
+    _LayerMapping.update({'VIA23': _LayerMappingTmp[('VIA23', 'drawing')]})
+
+print('##########################    VIA3 Layer Mapping#####################################')
+
+if _Technology == '180nm':
+    _LayerMapping.update({'VIA34': _LayerMappingTmp[('VIA34', 'drawing')]})
+    # _Layernumber = layermapping[('CONT', 'drawing')][0]
+    # _DataType = layermapping[('CONT', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'VIA34': _LayerMappingTmp[('V3', 'drawing')]})
+elif _Technology == '065nm':
+    _LayerMapping.update({'VIA34': _LayerMappingTmp[('VIA3', 'drawing')]})
+    # _Layernumber = layermapping[('CO', 'drawing')][0]
+    # _DataType = layermapping[('CO', 'drawing')][1]
 
     # if self._TechnologyViaMet12Met2 == '180nm':
     #         _Layernumber = layermapping[('VIA12', 'drawing')][0]
@@ -323,24 +355,26 @@ elif _Technology == '065nm':
     #         _Layernumber = layermapping[('VIA1', 'drawing')][0]
     #         _DataType = layermapping[('VIA1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'VIA34':_LayerMappingTmp[('VIA3', 'drawing')]})
+    _LayerMapping.update({'VIA34': _LayerMappingTmp[('VIA3', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'VIA34':_LayerMappingTmp[('VIA3', 'drawing')]})
+    _LayerMapping.update({'VIA34': _LayerMappingTmp[('VIA3', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'VIA34':_LayerMappingTmp[('VIA34', 'drawing')]})
+    _LayerMapping.update({'VIA34': _LayerMappingTmp[('VIA34', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'VIA34':_LayerMappingTmp[('VIA34', 'drawing')]})
+    _LayerMapping.update({'VIA34': _LayerMappingTmp[('VIA34', 'drawing')]})
 
- ##########################    VIA4 Layer Mapping#####################################'
+print('##########################    VIA4 Layer Mapping#####################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'VIA45':_LayerMappingTmp[('VIA45', 'drawing')]})
-            # _Layernumber = layermapping[('CONT', 'drawing')][0]
-            # _DataType = layermapping[('CONT', 'drawing')][1]
+    _LayerMapping.update({'VIA45': _LayerMappingTmp[('VIA45', 'drawing')]})
+    # _Layernumber = layermapping[('CONT', 'drawing')][0]
+    # _DataType = layermapping[('CONT', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'VIA45': _LayerMappingTmp[('V4', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'VIA45':_LayerMappingTmp[('VIA4', 'drawing')]})
-            # _Layernumber = layermapping[('CO', 'drawing')][0]
-            # _DataType = layermapping[('CO', 'drawing')][1]
+    _LayerMapping.update({'VIA45': _LayerMappingTmp[('VIA4', 'drawing')]})
+    # _Layernumber = layermapping[('CO', 'drawing')][0]
+    # _DataType = layermapping[('CO', 'drawing')][1]
 
     # if self._TechnologyViaMet12Met2 == '180nm':
     #         _Layernumber = layermapping[('VIA12', 'drawing')][0]
@@ -349,24 +383,26 @@ elif _Technology == '065nm':
     #         _Layernumber = layermapping[('VIA1', 'drawing')][0]
     #         _DataType = layermapping[('VIA1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'VIA45':_LayerMappingTmp[('VIA4', 'drawing')]})
+    _LayerMapping.update({'VIA45': _LayerMappingTmp[('VIA4', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'VIA45':_LayerMappingTmp[('VIA4', 'drawing')]})
+    _LayerMapping.update({'VIA45': _LayerMappingTmp[('VIA4', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'VIA45':_LayerMappingTmp[('VIA45', 'drawing')]})
+    _LayerMapping.update({'VIA45': _LayerMappingTmp[('VIA45', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'VIA45':None})
+    _LayerMapping.update({'VIA45': None})
 
- ##########################    VIA5 Layer Mapping#####################################'
+print('##########################    VIA5 Layer Mapping#####################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'VIA56':_LayerMappingTmp[('VIA56', 'drawing')]})
-            # _Layernumber = layermapping[('CONT', 'drawing')][0]
-            # _DataType = layermapping[('CONT', 'drawing')][1]
+    _LayerMapping.update({'VIA56': _LayerMappingTmp[('VIA56', 'drawing')]})
+    # _Layernumber = layermapping[('CONT', 'drawing')][0]
+    # _DataType = layermapping[('CONT', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'VIA56': _LayerMappingTmp[('V5', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'VIA56':_LayerMappingTmp[('VIA5', 'drawing')]})
-            # _Layernumber = layermapping[('CO', 'drawing')][0]
-            # _DataType = layermapping[('CO', 'drawing')][1]
+    _LayerMapping.update({'VIA56': _LayerMappingTmp[('VIA5', 'drawing')]})
+    # _Layernumber = layermapping[('CO', 'drawing')][0]
+    # _DataType = layermapping[('CO', 'drawing')][1]
 
     # if self._TechnologyViaMet12Met2 == '180nm':
     #         _Layernumber = layermapping[('VIA12', 'drawing')][0]
@@ -375,24 +411,26 @@ elif _Technology == '065nm':
     #         _Layernumber = layermapping[('VIA1', 'drawing')][0]
     #         _DataType = layermapping[('VIA1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'VIA56':_LayerMappingTmp[('VIA5', 'drawing')]})
+    _LayerMapping.update({'VIA56': _LayerMappingTmp[('VIA5', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'VIA56':_LayerMappingTmp[('VIA5', 'drawing')]})
+    _LayerMapping.update({'VIA56': _LayerMappingTmp[('VIA5', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'VIA56':_LayerMappingTmp[('VIA56', 'drawing')]})
+    _LayerMapping.update({'VIA56': _LayerMappingTmp[('VIA56', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'VIA56':None})
+    _LayerMapping.update({'VIA56': None})
 
- ##########################    VIA6 Layer Mapping#####################################'
+print('##########################    VIA6 Layer Mapping#####################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'VIA67':_LayerMappingTmp[('VIA67', 'drawing')]})
-            # _Layernumber = layermapping[('CONT', 'drawing')][0]
-            # _DataType = layermapping[('CONT', 'drawing')][1]
+    _LayerMapping.update({'VIA67': _LayerMappingTmp[('VIA67', 'drawing')]})
+    # _Layernumber = layermapping[('CONT', 'drawing')][0]
+    # _DataType = layermapping[('CONT', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'VIA67': _LayerMappingTmp[('V6', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'VIA67':_LayerMappingTmp[('VIA6', 'drawing')]})
-            # _Layernumber = layermapping[('CO', 'drawing')][0]
-            # _DataType = layermapping[('CO', 'drawing')][1]
+    _LayerMapping.update({'VIA67': _LayerMappingTmp[('VIA6', 'drawing')]})
+    # _Layernumber = layermapping[('CO', 'drawing')][0]
+    # _DataType = layermapping[('CO', 'drawing')][1]
 
     # if self._TechnologyViaMet12Met2 == '180nm':
     #         _Layernumber = layermapping[('VIA12', 'drawing')][0]
@@ -401,24 +439,26 @@ elif _Technology == '065nm':
     #         _Layernumber = layermapping[('VIA1', 'drawing')][0]
     #         _DataType = layermapping[('VIA1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'VIA67':_LayerMappingTmp[('VIA6', 'drawing')]})
+    _LayerMapping.update({'VIA67': _LayerMappingTmp[('VIA6', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'VIA67':_LayerMappingTmp[('VIA6', 'drawing')]})
+    _LayerMapping.update({'VIA67': _LayerMappingTmp[('VIA6', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'VIA67':_LayerMappingTmp[('VIA67', 'drawing')]})
+    _LayerMapping.update({'VIA67': _LayerMappingTmp[('VIA67', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'VIA67':None})
+    _LayerMapping.update({'VIA67': None})
 
- ##########################    VIA7 Layer Mapping#####################################'
+print('##########################    VIA7 Layer Mapping#####################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'VIA78':None})
-            # _Layernumber = layermapping[('CONT', 'drawing')][0]
-            # _DataType = layermapping[('CONT', 'drawing')][1]
+    _LayerMapping.update({'VIA78': None})
+    # _Layernumber = layermapping[('CONT', 'drawing')][0]
+    # _DataType = layermapping[('CONT', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'VIA78': _LayerMappingTmp[('YX', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'VIA78':_LayerMappingTmp[('VIA7', 'drawing')]})
-            # _Layernumber = layermapping[('CO', 'drawing')][0]
-            # _DataType = layermapping[('CO', 'drawing')][1]
+    _LayerMapping.update({'VIA78': _LayerMappingTmp[('VIA7', 'drawing')]})
+    # _Layernumber = layermapping[('CO', 'drawing')][0]
+    # _DataType = layermapping[('CO', 'drawing')][1]
 
     # if self._TechnologyViaMet12Met2 == '180nm':
     #         _Layernumber = layermapping[('VIA12', 'drawing')][0]
@@ -427,24 +467,26 @@ elif _Technology == '065nm':
     #         _Layernumber = layermapping[('VIA1', 'drawing')][0]
     #         _DataType = layermapping[('VIA1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'VIA78':_LayerMappingTmp[('VIA7', 'drawing')]})
+    _LayerMapping.update({'VIA78': _LayerMappingTmp[('VIA7', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'VIA78':_LayerMappingTmp[('VIA7', 'drawing')]})
+    _LayerMapping.update({'VIA78': _LayerMappingTmp[('VIA7', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'VIA78':_LayerMappingTmp[('VIA78', 'drawing')]})
+    _LayerMapping.update({'VIA78': _LayerMappingTmp[('VIA78', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'VIA78':None})
+    _LayerMapping.update({'VIA78': None})
 
- ##########################    VIA8 Layer Mapping#####################################'
+print('##########################    VIA8 Layer Mapping#####################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'VIA89':None})
-            # _Layernumber = layermapping[('CONT', 'drawing')][0]
-            # _DataType = layermapping[('CONT', 'drawing')][1]
+    _LayerMapping.update({'VIA89': None})
+    # _Layernumber = layermapping[('CONT', 'drawing')][0]
+    # _DataType = layermapping[('CONT', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'VIA89': _LayerMappingTmp[('XA', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'VIA89':_LayerMappingTmp[('VIA8', 'drawing')]})
-            # _Layernumber = layermapping[('CO', 'drawing')][0]
-            # _DataType = layermapping[('CO', 'drawing')][1]
+    _LayerMapping.update({'VIA89': _LayerMappingTmp[('VIA8', 'drawing')]})
+    # _Layernumber = layermapping[('CO', 'drawing')][0]
+    # _DataType = layermapping[('CO', 'drawing')][1]
 
     # if self._TechnologyViaMet12Met2 == '180nm':
     #         _Layernumber = layermapping[('VIA12', 'drawing')][0]
@@ -453,354 +495,383 @@ elif _Technology == '065nm':
     #         _Layernumber = layermapping[('VIA1', 'drawing')][0]
     #         _DataType = layermapping[('VIA1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'VIA89':_LayerMappingTmp[('VIA8', 'drawing')]})
+    _LayerMapping.update({'VIA89': _LayerMappingTmp[('VIA8', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'VIA89':_LayerMappingTmp[('VIA8', 'drawing')]})
+    _LayerMapping.update({'VIA89': _LayerMappingTmp[('VIA8', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'VIA89':_LayerMappingTmp[('VIA89', 'drawing')]})
+    _LayerMapping.update({'VIA89': _LayerMappingTmp[('VIA89', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'VIA89':None})
+    _LayerMapping.update({'VIA89': None})
 
-
-
-
-
-
- #############################   METAL2 Layer Mapping#################################'
+print('#############################   METAL2 Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL2':_LayerMappingTmp[('METAL2', 'drawing')]})
-            # _Layernumber = layermapping[('METAL1', 'drawing')][0]
-            # _DataType = layermapping[('METAL1', 'drawing')][1]
+    _LayerMapping.update({'METAL2': _LayerMappingTmp[('METAL2', 'drawing')]})
+    # _Layernumber = layermapping[('METAL1', 'drawing')][0]
+    # _DataType = layermapping[('METAL1', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL2': _LayerMappingTmp[('M2', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL2':_LayerMappingTmp[('M2', 'drawing')]})
-            # _Layernumber = layermapping[('M1', 'drawing')][0]
-            # _DataType = layermapping[('M1', 'drawing')][1]
+    _LayerMapping.update({'METAL2': _LayerMappingTmp[('M2', 'drawing')]})
+    # _Layernumber = layermapping[('M1', 'drawing')][0]
+    # _DataType = layermapping[('M1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL2':_LayerMappingTmp[('M2', 'drawing')]})
+    _LayerMapping.update({'METAL2': _LayerMappingTmp[('M2', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL2':_LayerMappingTmp[('M2', 'drawing')]})
+    _LayerMapping.update({'METAL2': _LayerMappingTmp[('M2', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL2':_LayerMappingTmp[('METAL2', 'drawing')]})
+    _LayerMapping.update({'METAL2': _LayerMappingTmp[('METAL2', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL2':_LayerMappingTmp[('METAL2', 'drawing')]})
+    _LayerMapping.update({'METAL2': _LayerMappingTmp[('METAL2', 'drawing')]})
 
- #############################   METAL2PIN Layer Mapping#################################'
+print('#############################   METAL2PIN Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL2PIN':_LayerMappingTmp[('METAL2', 'pin')]})
-            # _Layernumber = layermapping[('METAL1', 'pin')][0]
-            # _DataType = layermapping[('METAL1', 'pin')][1]
+    _LayerMapping.update({'METAL2PIN': _LayerMappingTmp[('METAL2', 'pin')]})
+    # _Layernumber = layermapping[('METAL1', 'pin')][0]
+    # _DataType = layermapping[('METAL1', 'pin')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL2PIN': _LayerMappingTmp[('M2', 'label')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL2PIN':_LayerMappingTmp[('M2', 'pin')]})
-            # _Layernumber = layermapping[('M1', 'pin')][0]
-            # _DataType = layermapping[('M1', 'pin')][1]
+    _LayerMapping.update({'METAL2PIN': _LayerMappingTmp[('M2', 'pin')]})
+    # _Layernumber = layermapping[('M1', 'pin')][0]
+    # _DataType = layermapping[('M1', 'pin')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL2PIN':_LayerMappingTmp[('M2', 'pin')]})
+    _LayerMapping.update({'METAL2PIN': _LayerMappingTmp[('M2', 'pin')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL2PIN':_LayerMappingTmp[('M2', 'pin')]})
+    _LayerMapping.update({'METAL2PIN': _LayerMappingTmp[('M2', 'pin')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL2PIN':_LayerMappingTmp[('METAL2', 'pin')]})
+    _LayerMapping.update({'METAL2PIN': _LayerMappingTmp[('METAL2', 'pin')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL2PIN':_LayerMappingTmp[('METAL2', 'pin')]})
+    _LayerMapping.update({'METAL2PIN': _LayerMappingTmp[('METAL2', 'pin')]})
 
- #############################   METAL3 Layer Mapping#################################'
+print('#############################   METAL3 Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL3':_LayerMappingTmp[('METAL3', 'drawing')]})
-            # _Layernumber = layermapping[('METAL1', 'drawing')][0]
-            # _DataType = layermapping[('METAL1', 'drawing')][1]
+    _LayerMapping.update({'METAL3': _LayerMappingTmp[('METAL3', 'drawing')]})
+    # _Layernumber = layermapping[('METAL1', 'drawing')][0]
+    # _DataType = layermapping[('METAL1', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL3': _LayerMappingTmp[('M3', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL3':_LayerMappingTmp[('M3', 'drawing')]})
-            # _Layernumber = layermapping[('M1', 'drawing')][0]
-            # _DataType = layermapping[('M1', 'drawing')][1]
+    _LayerMapping.update({'METAL3': _LayerMappingTmp[('M3', 'drawing')]})
+    # _Layernumber = layermapping[('M1', 'drawing')][0]
+    # _DataType = layermapping[('M1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL3':_LayerMappingTmp[('M3', 'drawing')]})
+    _LayerMapping.update({'METAL3': _LayerMappingTmp[('M3', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL3':_LayerMappingTmp[('M3', 'drawing')]})
+    _LayerMapping.update({'METAL3': _LayerMappingTmp[('M3', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL3':_LayerMappingTmp[('METAL3', 'drawing')]})
+    _LayerMapping.update({'METAL3': _LayerMappingTmp[('METAL3', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL3':_LayerMappingTmp[('METAL3', 'drawing')]})
+    _LayerMapping.update({'METAL3': _LayerMappingTmp[('METAL3', 'drawing')]})
 
- #############################   METAL3PIN Layer Mapping#################################'
+print('#############################   METAL3PIN Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL3PIN':_LayerMappingTmp[('METAL3', 'pin')]})
-            # _Layernumber = layermapping[('METAL1', 'pin')][0]
-            # _DataType = layermapping[('METAL1', 'pin')][1]
+    _LayerMapping.update({'METAL3PIN': _LayerMappingTmp[('METAL3', 'pin')]})
+    # _Layernumber = layermapping[('METAL1', 'pin')][0]
+    # _DataType = layermapping[('METAL1', 'pin')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL3PIN': _LayerMappingTmp[('M3', 'label')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL3PIN':_LayerMappingTmp[('M3', 'pin')]})
-            # _Layernumber = layermapping[('M1', 'pin')][0]
-            # _DataType = layermapping[('M1', 'pin')][1]
+    _LayerMapping.update({'METAL3PIN': _LayerMappingTmp[('M3', 'pin')]})
+    # _Layernumber = layermapping[('M1', 'pin')][0]
+    # _DataType = layermapping[('M1', 'pin')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL3PIN':_LayerMappingTmp[('M3', 'pin')]})
+    _LayerMapping.update({'METAL3PIN': _LayerMappingTmp[('M3', 'pin')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL3PIN':_LayerMappingTmp[('M3', 'pin')]})
+    _LayerMapping.update({'METAL3PIN': _LayerMappingTmp[('M3', 'pin')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL3PIN':_LayerMappingTmp[('METAL3', 'pin')]})
+    _LayerMapping.update({'METAL3PIN': _LayerMappingTmp[('METAL3', 'pin')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL3PIN':_LayerMappingTmp[('METAL3', 'pin')]})
- #############################   METAL4 Layer Mapping#################################'
+    _LayerMapping.update({'METAL3PIN': _LayerMappingTmp[('METAL3', 'pin')]})
+print('#############################   METAL4 Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL4':_LayerMappingTmp[('METAL4', 'drawing')]})
-            # _Layernumber = layermapping[('METAL1', 'drawing')][0]
-            # _DataType = layermapping[('METAL1', 'drawing')][1]
+    _LayerMapping.update({'METAL4': _LayerMappingTmp[('METAL4', 'drawing')]})
+    # _Layernumber = layermapping[('METAL1', 'drawing')][0]
+    # _DataType = layermapping[('METAL1', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL4': _LayerMappingTmp[('M4', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL4':_LayerMappingTmp[('M4', 'drawing')]})
-            # _Layernumber = layermapping[('M1', 'drawing')][0]
-            # _DataType = layermapping[('M1', 'drawing')][1]
+    _LayerMapping.update({'METAL4': _LayerMappingTmp[('M4', 'drawing')]})
+    # _Layernumber = layermapping[('M1', 'drawing')][0]
+    # _DataType = layermapping[('M1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL4':_LayerMappingTmp[('M4', 'drawing')]})
+    _LayerMapping.update({'METAL4': _LayerMappingTmp[('M4', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL4':_LayerMappingTmp[('M4', 'drawing')]})
+    _LayerMapping.update({'METAL4': _LayerMappingTmp[('M4', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL4':_LayerMappingTmp[('METAL4', 'drawing')]})
+    _LayerMapping.update({'METAL4': _LayerMappingTmp[('METAL4', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL4':_LayerMappingTmp[('METAL4', 'drawing')]})
+    _LayerMapping.update({'METAL4': _LayerMappingTmp[('METAL4', 'drawing')]})
 
- #############################   METAL4PIN Layer Mapping#################################'
+print('#############################   METAL4PIN Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL4PIN':_LayerMappingTmp[('METAL4', 'pin')]})
-            # _Layernumber = layermapping[('METAL1', 'pin')][0]
-            # _DataType = layermapping[('METAL1', 'pin')][1]
+    _LayerMapping.update({'METAL4PIN': _LayerMappingTmp[('METAL4', 'pin')]})
+    # _Layernumber = layermapping[('METAL1', 'pin')][0]
+    # _DataType = layermapping[('METAL1', 'pin')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL4PIN': _LayerMappingTmp[('M4', 'label')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL4PIN':_LayerMappingTmp[('M4', 'pin')]})
-            # _Layernumber = layermapping[('M1', 'pin')][0]
-            # _DataType = layermapping[('M1', 'pin')][1]
+    _LayerMapping.update({'METAL4PIN': _LayerMappingTmp[('M4', 'pin')]})
+    # _Layernumber = layermapping[('M1', 'pin')][0]
+    # _DataType = layermapping[('M1', 'pin')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL4PIN':_LayerMappingTmp[('M4', 'pin')]})
+    _LayerMapping.update({'METAL4PIN': _LayerMappingTmp[('M4', 'pin')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL4PIN':_LayerMappingTmp[('M4', 'pin')]})
+    _LayerMapping.update({'METAL4PIN': _LayerMappingTmp[('M4', 'pin')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL4PIN':_LayerMappingTmp[('METAL4', 'pin')]})
+    _LayerMapping.update({'METAL4PIN': _LayerMappingTmp[('METAL4', 'pin')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL4PIN':_LayerMappingTmp[('METAL4', 'pin')]})
+    _LayerMapping.update({'METAL4PIN': _LayerMappingTmp[('METAL4', 'pin')]})
 
- #############################   METAL5 Layer Mapping#################################'
+print('#############################   METAL5 Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL5':_LayerMappingTmp[('METAL5', 'drawing')]})
-            # _Layernumber = layermapping[('METAL1', 'drawing')][0]
-            # _DataType = layermapping[('METAL1', 'drawing')][1]
+    _LayerMapping.update({'METAL5': _LayerMappingTmp[('METAL5', 'drawing')]})
+    # _Layernumber = layermapping[('METAL1', 'drawing')][0]
+    # _DataType = layermapping[('METAL1', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL5': _LayerMappingTmp[('M5', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL5':_LayerMappingTmp[('M5', 'drawing')]})
-            # _Layernumber = layermapping[('M1', 'drawing')][0]
-            # _DataType = layermapping[('M1', 'drawing')][1]
+    _LayerMapping.update({'METAL5': _LayerMappingTmp[('M5', 'drawing')]})
+    # _Layernumber = layermapping[('M1', 'drawing')][0]
+    # _DataType = layermapping[('M1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL5':_LayerMappingTmp[('M5', 'drawing')]})
+    _LayerMapping.update({'METAL5': _LayerMappingTmp[('M5', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL5':_LayerMappingTmp[('M5', 'drawing')]})
+    _LayerMapping.update({'METAL5': _LayerMappingTmp[('M5', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL5':_LayerMappingTmp[('METAL5', 'drawing')]})
+    _LayerMapping.update({'METAL5': _LayerMappingTmp[('METAL5', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL5':None})
+    _LayerMapping.update({'METAL5': None})
 
- #############################   METAL5PIN Layer Mapping#################################'
+print('#############################   METAL5PIN Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL5PIN':_LayerMappingTmp[('METAL5', 'pin')]})
-            # _Layernumber = layermapping[('METAL1', 'pin')][0]
-            # _DataType = layermapping[('METAL1', 'pin')][1]
+    _LayerMapping.update({'METAL5PIN': _LayerMappingTmp[('METAL5', 'pin')]})
+    # _Layernumber = layermapping[('METAL1', 'pin')][0]
+    # _DataType = layermapping[('METAL1', 'pin')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL5PIN': _LayerMappingTmp[('M5', 'label')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL5PIN':_LayerMappingTmp[('M5', 'pin')]})
-            # _Layernumber = layermapping[('M1', 'pin')][0]
-            # _DataType = layermapping[('M1', 'pin')][1]
+    _LayerMapping.update({'METAL5PIN': _LayerMappingTmp[('M5', 'pin')]})
+    # _Layernumber = layermapping[('M1', 'pin')][0]
+    # _DataType = layermapping[('M1', 'pin')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL5PIN':_LayerMappingTmp[('M5', 'pin')]})
+    _LayerMapping.update({'METAL5PIN': _LayerMappingTmp[('M5', 'pin')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL5PIN':_LayerMappingTmp[('M5', 'pin')]})
+    _LayerMapping.update({'METAL5PIN': _LayerMappingTmp[('M5', 'pin')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL5PIN':_LayerMappingTmp[('METAL5', 'pin')]})
+    _LayerMapping.update({'METAL5PIN': _LayerMappingTmp[('METAL5', 'pin')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL5PIN':None})
+    _LayerMapping.update({'METAL5PIN': None})
 
- #############################   METAL6 Layer Mapping#################################'
+print('#############################   METAL6 Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL6':_LayerMappingTmp[('METAL6', 'drawing')]})
-            # _Layernumber = layermapping[('METAL1', 'drawing')][0]
-            # _DataType = layermapping[('METAL1', 'drawing')][1]
+    _LayerMapping.update({'METAL6': _LayerMappingTmp[('METAL6', 'drawing')]})
+    # _Layernumber = layermapping[('METAL1', 'drawing')][0]
+    # _DataType = layermapping[('METAL1', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL6': _LayerMappingTmp[('M6', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL6':_LayerMappingTmp[('M6', 'drawing')]})
-            # _Layernumber = layermapping[('M1', 'drawing')][0]
-            # _DataType = layermapping[('M1', 'drawing')][1]
+    _LayerMapping.update({'METAL6': _LayerMappingTmp[('M6', 'drawing')]})
+    # _Layernumber = layermapping[('M1', 'drawing')][0]
+    # _DataType = layermapping[('M1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL6':_LayerMappingTmp[('M6', 'drawing')]})
+    _LayerMapping.update({'METAL6': _LayerMappingTmp[('M6', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL6':_LayerMappingTmp[('M6', 'drawing')]})
+    _LayerMapping.update({'METAL6': _LayerMappingTmp[('M6', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL6':_LayerMappingTmp[('METAL6', 'drawing')]})
+    _LayerMapping.update({'METAL6': _LayerMappingTmp[('METAL6', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL6':None})
+    _LayerMapping.update({'METAL6': None})
 
- #############################   METAL6PIN Layer Mapping#################################'
+print('#############################   METAL6PIN Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL6PIN':_LayerMappingTmp[('METAL6', 'pin')]})
-            # _Layernumber = layermapping[('METAL1', 'pin')][0]
-            # _DataType = layermapping[('METAL1', 'pin')][1]
+    _LayerMapping.update({'METAL6PIN': _LayerMappingTmp[('METAL6', 'pin')]})
+    # _Layernumber = layermapping[('METAL1', 'pin')][0]
+    # _DataType = layermapping[('METAL1', 'pin')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL6PIN': _LayerMappingTmp[('M6', 'label')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL6PIN':_LayerMappingTmp[('M6', 'pin')]})
-            # _Layernumber = layermapping[('M1', 'pin')][0]
-            # _DataType = layermapping[('M1', 'pin')][1]
+    _LayerMapping.update({'METAL6PIN': _LayerMappingTmp[('M6', 'pin')]})
+    # _Layernumber = layermapping[('M1', 'pin')][0]
+    # _DataType = layermapping[('M1', 'pin')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL6PIN':_LayerMappingTmp[('M6', 'pin')]})
+    _LayerMapping.update({'METAL6PIN': _LayerMappingTmp[('M6', 'pin')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL6PIN':_LayerMappingTmp[('M6', 'pin')]})
+    _LayerMapping.update({'METAL6PIN': _LayerMappingTmp[('M6', 'pin')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL6PIN':_LayerMappingTmp[('METAL6', 'pin')]})
+    _LayerMapping.update({'METAL6PIN': _LayerMappingTmp[('METAL6', 'pin')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL6PIN':None})
+    _LayerMapping.update({'METAL6PIN': None})
 
-
- #############################   METAL7 Layer Mapping#################################'
+print('#############################   METAL7 Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL7':_LayerMappingTmp[('METAL7', 'drawing')]})
-            # _Layernumber = layermapping[('METAL1', 'drawing')][0]
-            # _DataType = layermapping[('METAL1', 'drawing')][1]
+    _LayerMapping.update({'METAL7': _LayerMappingTmp[('METAL7', 'drawing')]})
+    # _Layernumber = layermapping[('METAL1', 'drawing')][0]
+    # _DataType = layermapping[('METAL1', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL7': _LayerMappingTmp[('M7', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL7':_LayerMappingTmp[('M7', 'drawing')]})
-            # _Layernumber = layermapping[('M1', 'drawing')][0]
-            # _DataType = layermapping[('M1', 'drawing')][1]
+    _LayerMapping.update({'METAL7': _LayerMappingTmp[('M7', 'drawing')]})
+    # _Layernumber = layermapping[('M1', 'drawing')][0]
+    # _DataType = layermapping[('M1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL7':_LayerMappingTmp[('M7', 'drawing')]})
+    _LayerMapping.update({'METAL7': _LayerMappingTmp[('M7', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL7':_LayerMappingTmp[('M7', 'drawing')]})
+    _LayerMapping.update({'METAL7': _LayerMappingTmp[('M7', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL7':_LayerMappingTmp[('METAL7', 'drawing')]})
+    _LayerMapping.update({'METAL7': _LayerMappingTmp[('METAL7', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL7':None})
+    _LayerMapping.update({'METAL7': None})
 
- #############################   METAL7PIN Layer Mapping#################################'
+print('#############################   METAL7PIN Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL7PIN':_LayerMappingTmp[('METAL7', 'pin')]})
-            # _Layernumber = layermapping[('METAL1', 'pin')][0]
-            # _DataType = layermapping[('METAL1', 'pin')][1]
+    _LayerMapping.update({'METAL7PIN': _LayerMappingTmp[('METAL7', 'pin')]})
+    # _Layernumber = layermapping[('METAL1', 'pin')][0]
+    # _DataType = layermapping[('METAL1', 'pin')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL7PIN': _LayerMappingTmp[('M7', 'label')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL7PIN':_LayerMappingTmp[('M7', 'pin')]})
-            # _Layernumber = layermapping[('M1', 'pin')][0]
-            # _DataType = layermapping[('M1', 'pin')][1]
+    _LayerMapping.update({'METAL7PIN': _LayerMappingTmp[('M7', 'pin')]})
+    # _Layernumber = layermapping[('M1', 'pin')][0]
+    # _DataType = layermapping[('M1', 'pin')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL7PIN':_LayerMappingTmp[('M7', 'pin')]})
+    _LayerMapping.update({'METAL7PIN': _LayerMappingTmp[('M7', 'pin')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL7PIN':_LayerMappingTmp[('M7', 'pin')]})
+    _LayerMapping.update({'METAL7PIN': _LayerMappingTmp[('M7', 'pin')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL7PIN':_LayerMappingTmp[('METAL7', 'pin')]})
+    _LayerMapping.update({'METAL7PIN': _LayerMappingTmp[('METAL7', 'pin')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL7PIN':None})
+    _LayerMapping.update({'METAL7PIN': None})
 
-
- #############################   METAL8 Layer Mapping#################################'
+print('#############################   METAL8 Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL8':None})
-            # _Layernumber = layermapping[('METAL1', 'drawing')][0]
-            # _DataType = layermapping[('METAL1', 'drawing')][1]
+    _LayerMapping.update({'METAL8': None})
+    # _Layernumber = layermapping[('METAL1', 'drawing')][0]
+    # _DataType = layermapping[('METAL1', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL8': _LayerMappingTmp[('IA', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL8':_LayerMappingTmp[('M8', 'drawing')]})
-            # _Layernumber = layermapping[('M1', 'drawing')][0]
-            # _DataType = layermapping[('M1', 'drawing')][1]
+    _LayerMapping.update({'METAL8': _LayerMappingTmp[('M8', 'drawing')]})
+    # _Layernumber = layermapping[('M1', 'drawing')][0]
+    # _DataType = layermapping[('M1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL8':_LayerMappingTmp[('M8', 'drawing')]})
+    _LayerMapping.update({'METAL8': _LayerMappingTmp[('M8', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL8':_LayerMappingTmp[('M8', 'drawing')]})
+    _LayerMapping.update({'METAL8': _LayerMappingTmp[('M8', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL8':_LayerMappingTmp[('METAL8', 'drawing')]})
+    _LayerMapping.update({'METAL8': _LayerMappingTmp[('METAL8', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL8':None})
+    _LayerMapping.update({'METAL8': None})
 
- #############################   METAL8PIN Layer Mapping#################################'
+print('#############################   METAL8PIN Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL8PIN':None})
-            # _Layernumber = layermapping[('METAL1', 'pin')][0]
-            # _DataType = layermapping[('METAL1', 'pin')][1]
+    _LayerMapping.update({'METAL8PIN': None})
+    # _Layernumber = layermapping[('METAL1', 'pin')][0]
+    # _DataType = layermapping[('METAL1', 'pin')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL8PIN': _LayerMappingTmp[('IA', 'label')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL8PIN':_LayerMappingTmp[('M8', 'pin')]})
-            # _Layernumber = layermapping[('M1', 'pin')][0]
-            # _DataType = layermapping[('M1', 'pin')][1]
+    _LayerMapping.update({'METAL8PIN': _LayerMappingTmp[('M8', 'pin')]})
+    # _Layernumber = layermapping[('M1', 'pin')][0]
+    # _DataType = layermapping[('M1', 'pin')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL8PIN':_LayerMappingTmp[('M8', 'pin')]})
+    _LayerMapping.update({'METAL8PIN': _LayerMappingTmp[('M8', 'pin')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL8PIN':_LayerMappingTmp[('M8', 'pin')]})
+    _LayerMapping.update({'METAL8PIN': _LayerMappingTmp[('M8', 'pin')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL8PIN':_LayerMappingTmp[('METAL8', 'pin')]})
+    _LayerMapping.update({'METAL8PIN': _LayerMappingTmp[('METAL8', 'pin')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL8PIN':None})
+    _LayerMapping.update({'METAL8PIN': None})
 
- #############################   METAL9 Layer Mapping#################################'
+print('#############################   METAL9 Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL9':None})
-            # _Layernumber = layermapping[('METAL1', 'drawing')][0]
-            # _DataType = layermapping[('METAL1', 'drawing')][1]
+    _LayerMapping.update({'METAL9': None})
+    # _Layernumber = layermapping[('METAL1', 'drawing')][0]
+    # _DataType = layermapping[('METAL1', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL9': _LayerMappingTmp[('IB', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL9':_LayerMappingTmp[('M9', 'drawing')]})
-            # _Layernumber = layermapping[('M1', 'drawing')][0]
-            # _DataType = layermapping[('M1', 'drawing')][1]
+    _LayerMapping.update({'METAL9': _LayerMappingTmp[('M9', 'drawing')]})
+    # _Layernumber = layermapping[('M1', 'drawing')][0]
+    # _DataType = layermapping[('M1', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL9':_LayerMappingTmp[('M9', 'drawing')]})
+    _LayerMapping.update({'METAL9': _LayerMappingTmp[('M9', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL9':_LayerMappingTmp[('M9', 'drawing')]})
+    _LayerMapping.update({'METAL9': _LayerMappingTmp[('M9', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL9':_LayerMappingTmp[('METAL9', 'drawing')]})
+    _LayerMapping.update({'METAL9': _LayerMappingTmp[('METAL9', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL9':None})
+    _LayerMapping.update({'METAL9': None})
 
- #############################   METAL9PIN Layer Mapping#################################'
+print('#############################   METAL9PIN Layer Mapping#################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'METAL9PIN':None})
-            # _Layernumber = layermapping[('METAL1', 'pin')][0]
-            # _DataType = layermapping[('METAL1', 'pin')][1]
+    _LayerMapping.update({'METAL9PIN': None})
+    # _Layernumber = layermapping[('METAL1', 'pin')][0]
+    # _DataType = layermapping[('METAL1', 'pin')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'METAL9PIN': _LayerMappingTmp[('IB', 'label')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'METAL9PIN':_LayerMappingTmp[('M9', 'pin')]})
-            # _Layernumber = layermapping[('M1', 'pin')][0]
-            # _DataType = layermapping[('M1', 'pin')][1]
+    _LayerMapping.update({'METAL9PIN': _LayerMappingTmp[('M9', 'pin')]})
+    # _Layernumber = layermapping[('M1', 'pin')][0]
+    # _DataType = layermapping[('M1', 'pin')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'METAL9PIN':_LayerMappingTmp[('M9', 'pin')]})
+    _LayerMapping.update({'METAL9PIN': _LayerMappingTmp[('M9', 'pin')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'METAL9PIN':_LayerMappingTmp[('M9', 'pin')]})
+    _LayerMapping.update({'METAL9PIN': _LayerMappingTmp[('M9', 'pin')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'METAL9PIN':_LayerMappingTmp[('METAL9', 'pin')]})
+    _LayerMapping.update({'METAL9PIN': _LayerMappingTmp[('METAL9', 'pin')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'METAL9PIN':None})
+    _LayerMapping.update({'METAL9PIN': None})
 
-
- #########################   WELLBODY Layer Mapping #################################'
+print('#########################   WELLBODY Layer Mapping #################################')
 if _Technology == '180nm':
-    _LayerMapping.update({'WELLBODY':_LayerMappingTmp[('WELLBODY', 'drawing')]})
+    _LayerMapping.update({'WELLBODY': _LayerMappingTmp[('WELLBODY', 'drawing')]})
+if _Technology == '028nm':
+    _LayerMapping.update({'WELLBODY': (None, None)})
 if _Technology == '065nm':
-    _LayerMapping.update({'WELLBODY':(None,None)})
+    _LayerMapping.update({'WELLBODY': (None, None)})
 elif _Technology == '045nm':
-    _LayerMapping.update({'WELLBODY':(None,None)})
+    _LayerMapping.update({'WELLBODY': (None, None)})
 elif _Technology == '090nm':
-    _LayerMapping.update({'WELLBODY':(None,None)})
+    _LayerMapping.update({'WELLBODY': (None, None)})
 elif _Technology == '130nm':
-    _LayerMapping.update({'WELLBODY':(None,None)})
+    _LayerMapping.update({'WELLBODY': (None, None)})
 elif _Technology == '350nm':
-    _LayerMapping.update({'WELLBODY':_LayerMappingTmp[('WELLBODY', 'drawing')]})
+    _LayerMapping.update({'WELLBODY': _LayerMappingTmp[('WELLBODY', 'drawing')]})
 
-
-
-#  WELLBODY boundary generation'
+# print 'WELLBODY boundary generation'
 #         # _xycoordinatetmp = [[0, 0], [0, 100], [100, 100], [100, 0], [0, 0]]
 #         if self._TechnologyNMOS == '180nm':
 #             _Layernumber = layermapping[('WELLBODY', 'drawing')][0]
 #             _DataType = layermapping[('WELLBODY', 'drawing')][1]
- ##########################   POLY Layer Mapping    #################################'
+print('##########################   POLY Layer Mapping    #################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'POLY':_LayerMappingTmp[('POLY1', 'drawing')]})
-            # _Layernumber = layermapping[('POLY1', 'drawing')][0]
-            # _DataType = layermapping[('POLY1', 'drawing')][1]
+    _LayerMapping.update({'POLY': _LayerMappingTmp[('POLY1', 'drawing')]})
+    # _Layernumber = layermapping[('POLY1', 'drawing')][0]
+    # _DataType = layermapping[('POLY1', 'drawing')][1]
+elif _Technology == '028nm':
+    _LayerMapping.update({'POLY': _LayerMappingTmp[('PC', 'drawing')]})
+    _LayerMapping.update({'POLYPINDrawing': _LayerMappingTmp[('PC', 'pin')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'POLY':_LayerMappingTmp[('PO', 'drawing')]})
-            # _Layernumber = layermapping[('PO', 'drawing')][0]
-            # _DataType = layermapping[('PO', 'drawing')][1]
+    _LayerMapping.update({'POLY': _LayerMappingTmp[('PO', 'drawing')]})
+    # _Layernumber = layermapping[('PO', 'drawing')][0]
+    # _DataType = layermapping[('PO', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'POLY':_LayerMappingTmp[('PO', 'drawing')]})
+    _LayerMapping.update({'POLY': _LayerMappingTmp[('PO', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'POLY':_LayerMappingTmp[('PO', 'drawing')]})
+    _LayerMapping.update({'POLY': _LayerMappingTmp[('PO', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'POLY':_LayerMappingTmp[('POLYG', 'drawing')]})
+    _LayerMapping.update({'POLY': _LayerMappingTmp[('POLYG', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'POLY':_LayerMappingTmp[('POLY1', 'drawing')]})
- #########################   NWELL Layer Mapping    #################################'
+    _LayerMapping.update({'POLY': _LayerMappingTmp[('POLY1', 'drawing')]})
+print('#########################   NWELL Layer Mapping    #################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'NWELL':_LayerMappingTmp[('NWELL', 'drawing')]})
+    _LayerMapping.update({'NWELL': _LayerMappingTmp[('NWELL', 'drawing')]})
+elif _Technology == '028nm':
+    _LayerMapping.update({'NWELL': _LayerMappingTmp[('NW', 'drawing')]})
 elif _Technology == '065nm':
-    _LayerMapping.update({'NWELL':_LayerMappingTmp[('NW', 'drawing')]})
+    _LayerMapping.update({'NWELL': _LayerMappingTmp[('NW', 'drawing')]})
     # if self._TechnologyINV == '180nm':
     #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
     #         _DataType = layermapping[('NWELL', 'drawing')][1]
@@ -808,20 +879,22 @@ elif _Technology == '065nm':
     #         _Layernumber = layermapping[('NW', 'drawing')][0]
     #         _DataType = layermapping[('NW', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'NWELL':_LayerMappingTmp[('NW', 'drawing')]})
+    _LayerMapping.update({'NWELL': _LayerMappingTmp[('NW', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'NWELL':_LayerMappingTmp[('NW', 'drawing')]})
+    _LayerMapping.update({'NWELL': _LayerMappingTmp[('NW', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'NWELL':_LayerMappingTmp[('NWELL', 'drawing')]})
+    _LayerMapping.update({'NWELL': _LayerMappingTmp[('NWELL', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'NWELL':_LayerMappingTmp[('NWELL', 'drawing')]})
+    _LayerMapping.update({'NWELL': _LayerMappingTmp[('NWELL', 'drawing')]})
 
- #########################   N3V Layer Mapping    #################################'
+print('#########################   N3V Layer Mapping    #################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'N3V':(None,None)})
+    _LayerMapping.update({'N3V': (None, None)})
+elif _Technology == '028nm':
+    _LayerMapping.update({'N3V': (None, None)})
 elif _Technology == '065nm':
-    _LayerMapping.update({'N3V':(None,None)})
+    _LayerMapping.update({'N3V': (None, None)})
     # if self._TechnologyINV == '180nm':
     #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
     #         _DataType = layermapping[('NWELL', 'drawing')][1]
@@ -829,20 +902,22 @@ elif _Technology == '065nm':
     #         _Layernumber = layermapping[('NW', 'drawing')][0]
     #         _DataType = layermapping[('NW', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'N3V':(None,None)})
+    _LayerMapping.update({'N3V': (None, None)})
 elif _Technology == '090nm':
-    _LayerMapping.update({'N3V':(None,None)})
+    _LayerMapping.update({'N3V': (None, None)})
 elif _Technology == '130nm':
-    _LayerMapping.update({'N3V':(None,None)})
+    _LayerMapping.update({'N3V': (None, None)})
 elif _Technology == '350nm':
-    _LayerMapping.update({'N3V':_LayerMappingTmp[('N3V', 'drawing')]})
+    _LayerMapping.update({'N3V': _LayerMappingTmp[('N3V', 'drawing')]})
 
- #########################   RPDMY Layer Mapping    #################################'
+print('#########################   RPDMY Layer Mapping    #################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'RPDMY':_LayerMappingTmp[('RPDUMMY','drawing')]})
+    _LayerMapping.update({'RPDMY': _LayerMappingTmp[('RPDUMMY', 'drawing')]})
+elif _Technology == '028nm':
+    _LayerMapping.update({'RPDMY': (None, None)})
 elif _Technology == '065nm':
-    _LayerMapping.update({'RPDMY':_LayerMappingTmp[('RPDMY','drawing')]})
+    _LayerMapping.update({'RPDMY': _LayerMappingTmp[('RPDMY', 'drawing')]})
     # if self._TechnologyINV == '180nm':
     #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
     #         _DataType = layermapping[('NWELL', 'drawing')][1]
@@ -850,19 +925,21 @@ elif _Technology == '065nm':
     #         _Layernumber = layermapping[('NW', 'drawing')][0]
     #         _DataType = layermapping[('NW', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'RPDMY':_LayerMappingTmp[('RPDMY','drawing')]})
+    _LayerMapping.update({'RPDMY': _LayerMappingTmp[('RPDMY', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'RPDMY':_LayerMappingTmp[('RPDMY','drawing')]})
+    _LayerMapping.update({'RPDMY': _LayerMappingTmp[('RPDMY', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'RPDMY':_LayerMappingTmp[('RPDMY','drawing')]})
+    _LayerMapping.update({'RPDMY': _LayerMappingTmp[('RPDMY', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'RPDMY':_LayerMappingTmp[('RPDUMMY','drawing')]})
- #########################   RPO Layer Mapping    #################################'
+    _LayerMapping.update({'RPDMY': _LayerMappingTmp[('RPDUMMY', 'drawing')]})
+print('#########################   RPO Layer Mapping    #################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'RPO':_LayerMappingTmp[('RPO','drawing')]})
+    _LayerMapping.update({'RPO': _LayerMappingTmp[('RPO', 'drawing')]})
+elif _Technology == '028nm':
+    _LayerMapping.update({'RPO': (None, None)})
 elif _Technology == '065nm':
-    _LayerMapping.update({'RPO':_LayerMappingTmp[('RPO','drawing')]})
+    _LayerMapping.update({'RPO': _LayerMappingTmp[('RPO', 'drawing')]})
     # if self._TechnologyINV == '180nm':
     #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
     #         _DataType = layermapping[('NWELL', 'drawing')][1]
@@ -870,20 +947,22 @@ elif _Technology == '065nm':
     #         _Layernumber = layermapping[('NW', 'drawing')][0]
     #         _DataType = layermapping[('NW', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'RPO':_LayerMappingTmp[('RPO','drawing')]})
+    _LayerMapping.update({'RPO': _LayerMappingTmp[('RPO', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'RPO':_LayerMappingTmp[('RPO','drawing')]})
+    _LayerMapping.update({'RPO': _LayerMappingTmp[('RPO', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'RPO':_LayerMappingTmp[('RPO','drawing')]})
+    _LayerMapping.update({'RPO': _LayerMappingTmp[('RPO', 'drawing')]})
 elif _Technology == '350nm':
-    _LayerMapping.update({'RPO':_LayerMappingTmp[('RPO','drawing')]})
+    _LayerMapping.update({'RPO': _LayerMappingTmp[('RPO', 'drawing')]})
 
- #########################   RH Layer Mapping    #################################'
+print('#########################   RH Layer Mapping    #################################')
 
 if _Technology == '180nm':
-    _LayerMapping.update({'RH':(None,None)})
+    _LayerMapping.update({'RH': (None, None)})
+elif _Technology == '028nm':
+    _LayerMapping.update({'RH': (None, None)})
 elif _Technology == '065nm':
-    _LayerMapping.update({'RH':_LayerMappingTmp[('RH','drawing')]})
+    _LayerMapping.update({'RH': _LayerMappingTmp[('RH', 'drawing')]})
     # if self._TechnologyINV == '180nm':
     #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
     #         _DataType = layermapping[('NWELL', 'drawing')][1]
@@ -891,56 +970,46 @@ elif _Technology == '065nm':
     #         _Layernumber = layermapping[('NW', 'drawing')][0]
     #         _DataType = layermapping[('NW', 'drawing')][1]
 elif _Technology == '045nm':
-    _LayerMapping.update({'RH':_LayerMappingTmp[('RH','drawing')]})
+    _LayerMapping.update({'RH': _LayerMappingTmp[('RH', 'drawing')]})
 elif _Technology == '090nm':
-    _LayerMapping.update({'RH':_LayerMappingTmp[('RH','drawing')]})
+    _LayerMapping.update({'RH': _LayerMappingTmp[('RH', 'drawing')]})
 elif _Technology == '130nm':
-    _LayerMapping.update({'RH':(None,None)})
+    _LayerMapping.update({'RH': (None, None)})
 elif _Technology == '350nm':
-    _LayerMapping.update({'RH':(None,None)})
+    _LayerMapping.update({'RH': (None, None)})
 
- #########################   IP Layer Mapping    #################################'
+print('#########################   LVT Layer Mapping    #################################')
 
-if _Technology == '180nm':
-    _LayerMapping.update({'IP':(None,None)})
-elif _Technology == '065nm':
-    _LayerMapping.update({'IP':_LayerMappingTmp[('IP','drawing')]})
-    # if self._TechnologyINV == '180nm':
-    #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
-    #         _DataType = layermapping[('NWELL', 'drawing')][1]
-    #     elif self._TechnologyINV == '065nm':
-    #         _Layernumber = layermapping[('NW', 'drawing')][0]
-    #         _DataType = layermapping[('NW', 'drawing')][1]
-elif _Technology == '045nm':
-    _LayerMapping.update({'IP':_LayerMappingTmp[('IP','drawing')]})
-elif _Technology == '090nm':
-    _LayerMapping.update({'IP':_LayerMappingTmp[('IP','drawing')]})
-elif _Technology == '130nm':
-    _LayerMapping.update({'IP':(None,None)})
-elif _Technology == '350nm':
-    _LayerMapping.update({'IP':(None,None)})
+if _Technology == '065nm':
+    _LayerMapping.update({'NLVT': _LayerMappingTmp[('VTL_N', 'drawing')]})
+if _Technology == '028nm':
+    _LayerMapping.update({'LVT': _LayerMappingTmp[('LVT', 'drawing')]})
+if _Technology == '028nm':
+    _LayerMapping.update({'HVT': _LayerMappingTmp[('HVT', 'drawing')]})
+if _Technology == '065nm':
+    _LayerMapping.update({'PLVT': _LayerMappingTmp[('VTL_P', 'drawing')]})
+if _Technology == '028nm':
+    _LayerMapping.update({'SLVT': _LayerMappingTmp[('SLVT', 'drawing')]})
 
- #########################   text Layer Mapping    #################################'
+print('#########################   RXPIN Layer Mapping    #################################')
 
-if _Technology == '180nm':
-    _LayerMapping.update({'text':(None,None)})
-elif _Technology == '065nm':
-    _LayerMapping.update({'text':_LayerMappingTmp[('text','drawing')]})
-    # if self._TechnologyINV == '180nm':
-    #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
-    #         _DataType = layermapping[('NWELL', 'drawing')][1]
-    #     elif self._TechnologyINV == '065nm':
-    #         _Layernumber = layermapping[('NW', 'drawing')][0]
-    #         _DataType = layermapping[('NW', 'drawing')][1]
-elif _Technology == '045nm':
-    _LayerMapping.update({'text':_LayerMappingTmp[('text','drawing')]})
-elif _Technology == '090nm':
-    _LayerMapping.update({'text':_LayerMappingTmp[('text','drawing')]})
-elif _Technology == '130nm':
-    _LayerMapping.update({'text':(None,None)})
-elif _Technology == '350nm':
-    _LayerMapping.update({'text':(None,None)})
+if _Technology == '028nm':
+    _LayerMapping.update({'RXPIN': _LayerMappingTmp[('RX', 'pin')]})
 
+print('#########################   PCPIN Layer Mapping    #################################')
+
+if _Technology == '028nm':
+    _LayerMapping.update({'PCPIN': _LayerMappingTmp[('PC', 'pin')]})
+
+print('#########################   PCCRIT Layer Mapping    #################################')
+
+if _Technology == '028nm':
+    _LayerMapping.update({'PCCRIT': _LayerMappingTmp[('PC', 'crit')]})
+
+print('#########################   M1PIN Layer Mapping    #################################')
+
+if _Technology == '028nm':
+    _LayerMapping.update({'M1PIN': _LayerMappingTmp[('M1', 'pin')]})
 
 _LayerMapFile.close()
 
