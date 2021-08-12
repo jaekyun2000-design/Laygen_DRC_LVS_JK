@@ -201,6 +201,7 @@ class _MainWindow(QMainWindow):
         #Third Menu
         auto_array_action = QAction("Inspect array", self)
         auto_pathpoint_action = QAction("Inspect path point", self)
+        auto_tech_process_change_action = QAction("Change technology node", self)
 
         auto_array_action.setShortcut('Ctrl+1')
         auto_array_action.triggered.connect(self.inspect_array)
@@ -208,9 +209,13 @@ class _MainWindow(QMainWindow):
         auto_pathpoint_action.setShortcut('Ctrl+2')
         auto_pathpoint_action.triggered.connect(self.inspect_path_point)
 
+        auto_tech_process_change_action.setShortcut('Ctrl+3')
+        auto_tech_process_change_action.triggered.connect(self.change_process)
+
         automation_menu = menubar.addMenu("&Automation")
         automation_menu.addAction(auto_array_action)
         automation_menu.addAction(auto_pathpoint_action)
+        automation_menu.addAction(auto_tech_process_change_action)
 
 
 
@@ -529,6 +534,30 @@ class _MainWindow(QMainWindow):
         dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
         if dp_id:
             self.visualItemDict[dp_id].setSelected(True)
+
+    def change_process(self):
+        self.process_list_widget = QListWidget()
+        process_list =[]
+        process_file_path = './PyQTInterface/layermap/'
+        for item in os.listdir(process_file_path):
+            if item == '__pycache__':
+                continue
+            if os.path.isdir(process_file_path+item):
+                process_list.append(item)
+        self.process_list_widget.addItems(process_list)
+        self.process_list_widget.show()
+        self.process_list_widget.doubleClicked.connect(self.request_change_process)
+
+    def request_change_process(self, technology_name):
+        if user_setup._Technology == technology_name:
+            return None
+        else:
+            user_setup._Technology = technology_name
+            LayerReader.rerun_for_process_update()
+
+            print('Process Changed!')
+
+
 
     def inspect_path_point(self):
         inspector = topAPI.inspector.path_point_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])

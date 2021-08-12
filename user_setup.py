@@ -1,4 +1,4 @@
-_Technology='028nm'
+_Technology='SS28nm'
 DEBUG = True
 
 import os.path

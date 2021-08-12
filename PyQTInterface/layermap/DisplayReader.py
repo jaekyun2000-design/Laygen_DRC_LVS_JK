@@ -18,20 +18,91 @@ _Technology= user_setup._Technology
 
 STANDALONE = False
 
-# _Technology= '065nm'
+# _Technology= 'TSMC65nm'
 _HomeDirectory = os.getcwd()
 _DisplayDict = dict()
 _ColorDict = dict()
 _PatternDict = dict()
 _ColorPatternDict = dict()
 
-if _Technology == '180nm':
-    _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/display.drf'
-elif _Technology=='028nm':
-    _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/SS28nm/display.drf'
-elif _Technology=='065nm':
-    # print(_HomeDirectory)
-    _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC65nm/display.drf'
+def run_for_process_update():
+    global _DisplayDict
+    global _ColorDict
+    global _PatternDict
+    global _ColorPatternDict
+    global _DRFfile
+    global _Technology
+    _Technology = user_setup._Technology
+
+    if _Technology == '180nm':
+        _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/display.drf'
+    elif _Technology == 'SS28nm':
+        _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/SS28nm/display.drf'
+    elif _Technology == 'TSMC65nm':
+        # print(_HomeDirectory)
+        _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC65nm/display.drf'
+
+    with open(_DRFfile, 'rb', 0) as drf:
+        lines = drf.readlines()
+        stipple_flag = False
+        packet_flag = False
+        bitmap = None
+        for line in lines:
+            # print(line)
+            lineDecode = line.decode('ISO-8859-1')
+            # parse = re.compile('_drawing$',lineDecode)
+            # print(lineDecode)
+
+            if re.search('display\s+.*\s*\d{1,3}\s*\d{1,3}\s*\d{1,3}', lineDecode):
+                try:
+                    split = lineDecode.split()
+                    R = int(split[3])
+                    G = int(split[4])
+                    B = int(split[5])
+                    _ColorDict[split[2]] = QColor(R, G, B)
+                except:
+                    pass
+
+            if re.search('drDefineStipple', lineDecode):
+                stipple_flag = True
+            if stipple_flag:
+                if line == b')\n' or line == b'\r\n':
+                    stipple_flag = False
+
+                if b'display' in line:
+                    # if bitmap:
+                    #     bitmap.convert_binary_list_to_bytes_list()
+                    # bitmap.calculate_qbit()
+                    lineDecode = lineDecode.split('display')[1]
+                    pattern_name = re.search(' [a-zA-Z0-9]+ ', lineDecode).group()[1:-1]
+                    bitmap = bitmap_converter(pattern_name)
+                    _PatternDict[pattern_name] = bitmap
+
+                if bitmap:
+                    binary_list = list(map(int, re.findall(' [01]', lineDecode)))
+                    bitmap.add_binaries(binary_list)
+
+            if re.search('drDefinePacket', lineDecode):
+                packet_flag = True
+            if packet_flag:
+                if line == b')\n' or line == b'\r\n':
+                    stipple_flag = False
+                # if '_drawing' in lineDecode or '_pin' in lineDecode or '_cirt' in lineDecode:
+                try:
+                    split = re.split('[ \t]+', lineDecode)
+
+                    if split[0] == '':
+                        split.pop(0)
+                    _DisplayDict[split[2]] = dict()
+                    # _DisplayDict[split[2]]['drawingNum'] = split[2].split('_drawing')[0]
+                    _DisplayDict[split[2]]['drawingNum'] = split[2]
+                    _DisplayDict[split[2]]['Stipple'] = split[3]
+                    _DisplayDict[split[2]]['LineStyle'] = split[4]
+                    _DisplayDict[split[2]]['Fill'] = _ColorDict[split[5]]
+                    _DisplayDict[split[2]]['Fill'].name = split[5]
+                    _DisplayDict[split[2]]['Outline'] = _ColorDict[split[6]]
+                except:
+                    pass
 
 
 class bitmap_converter:
@@ -99,69 +170,7 @@ class bitmap_converter:
 
 
 
-with open(_DRFfile,'rb',0) as drf:
-    lines = drf.readlines()
-    stipple_flag = False
-    packet_flag = False
-    bitmap = None
-    for line in lines:
-        # print(line)
-        lineDecode = line.decode('ISO-8859-1')
-        # parse = re.compile('_drawing$',lineDecode)
-        # print(lineDecode)
-
-        if re.search('display\s+.*\s*\d{1,3}\s*\d{1,3}\s*\d{1,3}',lineDecode):
-            try:
-                split = lineDecode.split()
-                R = int(split[3])
-                G = int(split[4])
-                B = int(split[5])
-                _ColorDict[split[2]] = QColor(R,G,B)
-            except:
-                pass
-
-        if re.search('drDefineStipple', lineDecode):
-            stipple_flag = True
-        if stipple_flag:
-            if line == b')\n' or line == b'\r\n':
-                stipple_flag = False
-
-            if b'display' in line:
-                # if bitmap:
-                #     bitmap.convert_binary_list_to_bytes_list()
-                    # bitmap.calculate_qbit()
-                lineDecode = lineDecode.split('display')[1]
-                pattern_name = re.search(' [a-zA-Z0-9]+ ',lineDecode).group()[1:-1]
-                bitmap = bitmap_converter(pattern_name)
-                _PatternDict[pattern_name] = bitmap
-
-            if bitmap:
-                binary_list = list(map(int,re.findall(' [01]',lineDecode)))
-                bitmap.add_binaries(binary_list)
-
-        if re.search('drDefinePacket', lineDecode):
-            packet_flag = True
-        if packet_flag:
-            if line == b')\n' or line == b'\r\n':
-                stipple_flag = False
-            # if '_drawing' in lineDecode or '_pin' in lineDecode or '_cirt' in lineDecode:
-            try:
-                split = re.split('[ \t]+',lineDecode)
-
-                if split[0] == '':
-                    split.pop(0)
-                _DisplayDict[split[2]] = dict()
-                # _DisplayDict[split[2]]['drawingNum'] = split[2].split('_drawing')[0]
-                _DisplayDict[split[2]]['drawingNum'] = split[2]
-                _DisplayDict[split[2]]['Stipple'] = split[3]
-                _DisplayDict[split[2]]['LineStyle'] = split[4]
-                _DisplayDict[split[2]]['Fill'] = _ColorDict[split[5]]
-                _DisplayDict[split[2]]['Fill'].name = split[5]
-                _DisplayDict[split[2]]['Outline'] = _ColorDict[split[6]]
-            except:
-                pass
 
 
-
-
+run_for_process_update()
 print("******************Display information file load Complete")
