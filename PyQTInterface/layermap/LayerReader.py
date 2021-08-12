@@ -76,12 +76,27 @@ def _LayerNumber2LayerName(_LayerMapping):
 
     for _LayerCommonName in _LayerMapping:
         # if _LayerMapping[_LayerCommonName][1] == 0:
+        if _LayerCommonName[0] == 'SLVT':
+            print('de')
         if _LayerCommonName[1] in ['drawing', 'cirt', 'pin']:
             i = str(_LayerMapping[_LayerCommonName][0])
             if not i in _LayerNum2Name:
                 layerName = _LayerMapping[_LayerCommonName][2]
                 _LayerNum2Name[i] = layerName
     return _LayerNum2Name
+
+def _LayDatNum2LayDatName(_LayerMapping):
+    _LayerNumAndDat2Name = dict()
+
+    for _LayDatName in _LayerMapping:
+        lay_num = str(_LayerMapping[_LayDatName][0])
+        dat_num = str(_LayerMapping[_LayDatName][1])
+        if lay_num not in _LayerNumAndDat2Name:
+            _LayerNumAndDat2Name[lay_num] = dict()
+        if dat_num not in _LayerNumAndDat2Name[lay_num]:
+            _LayerNumAndDat2Name[lay_num][dat_num] = _LayDatName
+    return _LayerNumAndDat2Name
+
 
 def _LayerNumber2CommonLayerName(_LayerMapping):
 
@@ -113,32 +128,39 @@ if _Technology=='028nm':
     _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/SS28nm/cmos28lp_tech.layermap')
     _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
     _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
+    _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
 elif _Technology == '180nm':
     _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/tsmc18rf.layermap')
     _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
     _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
+    _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
 elif _Technology=='065nm':
     # print(_HomeDirectory)
     _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/TSMC65nm/tsmcN65.layermap')
     # print(_LayerMapFile)
     _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
     _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
+    _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
 elif _Technology=='045nm':
     _LayerMapFile = open(_HomeDirectory + '/TSMCTechfile/TSMC45nm/tsmcN45.layermap')
     _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
     _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
+    _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
 elif _Technology=='090nm':
     _LayerMapFile = open(_HomeDirectory + '/TSMCTechfile/TSMC90nm/tsmcN90rf.layermap')
     _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
     _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
+    _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
 elif _Technology=='130nm':
     _LayerMapFile = open(_HomeDirectory + '/TSMCTechfile/TSMC130nm/tsmc13rf.layermap')
     _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
     _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
+    _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
     # _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'ICFB')
 elif _Technology=='350nm':
     _LayerMapFile = open(_HomeDirectory + '/TSMCTechfile/TSMC350nm/techfile')
     _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'ICFB')
+    _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
 
 #################    Conversion into Singlevariable   ##################################
 print('############################# PIMP Layer Mapping#########################################')

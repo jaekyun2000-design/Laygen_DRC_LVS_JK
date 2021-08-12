@@ -173,6 +173,7 @@ class _RectBlock(QGraphicsRectItem):
             brush.setTexture(qpix)
 
 
+
         brush.setTransform(QTransform(painter.worldTransform().inverted()[0]))
 
         painter.setBrush(brush)
@@ -499,9 +500,9 @@ class _VisualizationItem(QGraphicsItemGroup):
             DisplayInfo = DisplayReader._DisplayDict
             if self._ItemTraits['_DesignParametertype'] == 1 or self._ItemTraits['_DesignParametertype'] == 2 or self._ItemTraits['_DesignParametertype'] == 8:
                 if type(self._ItemTraits['_Layer']) == str:                         #When GUI Creates DesignParameter --> It has Layer Information in the form of "String" : ex) Met1, Met2, Via12, PIMP
-                    if ['crit'] in self._ItemTraits['_Layer']:
+                    if 'crit' in self._ItemTraits['_Layer']:
                         blockTraits['_DataType'] = '_crit'
-                    elif ['pin'] in self._ItemTraits['_Layer']:
+                    elif 'pin' in self._ItemTraits['_Layer']:
                         blockTraits['_DataType'] = '_pin'
                     else:
                         blockTraits['_DataType'] = '_drawing'
@@ -510,11 +511,14 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                 else:                                                               #When GUI load DesignParameter from GDS File --> It has Layer Information in the form of "Number" : ex) 1,4,7
                     blockTraits['_Layer'] =  self._ItemTraits['_Layer']     #Layer Number
-                    blockTraits['_LayerName'] =  _Layer2Name[str(blockTraits['_Layer'])]#Layer Original Name        -->Original Name is required to access color infromation
-                    if '_DataType' in self._ItemTraits:
-                        blockTraits['_DataType'] = self._ItemTraits['_DataType']
-                    else:
-                        blockTraits['_DataType'] = '_drawing'
+                    # blockTraits['_LayerName'] =  _Layer2Name[str(blockTraits['_Layer'])]#Layer Original Name        -->Original Name is required to access color infromation
+                    blockTraits['_LayerName'] =  LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][0]#Layer Original Name        -->Original Name is required to access color infromation
+                    blockTraits['_DataType'] = '_'+LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][1]
+                    # if '_DataType' in self._ItemTraits:
+                    #     data_type = LayerReader._LayDatNameTmp[str(self._ItemTraits['_Layer'])][str(self._ItemTraits['_DataType'])][1]
+                    #     blockTraits['_DataType'] = '_' + data_type
+                    # else:
+                    #     blockTraits['_DataType'] = '_drawing'
 
                 blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Fill']
                 blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Outline']

@@ -229,10 +229,10 @@ class _MainWindow(QMainWindow):
         graphicView.name_list_signal.connect(self.save_clipboard)
         self.scene.send_module_name_list_signal.connect(graphicView.name_out_fcn)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
-        self.scene.setMinimumRenderSize(3)
+        self.scene.setMinimumRenderSize(1)
         graphicView.centerOn(QPointF(268,-165))
         self.setCentralWidget(graphicView)
-        self.scene.setBackgroundBrush(QBrush(Qt.white))
+        self.scene.setBackgroundBrush(QBrush(Qt.black))
         graphicView.scale(1,-1)
         graphicView.setInteractive(True)
 

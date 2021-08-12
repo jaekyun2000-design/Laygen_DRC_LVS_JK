@@ -144,7 +144,8 @@ with open(_DRFfile,'rb',0) as drf:
         if packet_flag:
             if line == b')\n' or line == b'\r\n':
                 stipple_flag = False
-            if '_drawing' in lineDecode or '_pin' in lineDecode or '_cirt' in lineDecode:
+            # if '_drawing' in lineDecode or '_pin' in lineDecode or '_cirt' in lineDecode:
+            try:
                 split = re.split('[ \t]+',lineDecode)
 
                 if split[0] == '':
@@ -157,6 +158,8 @@ with open(_DRFfile,'rb',0) as drf:
                 _DisplayDict[split[2]]['Fill'] = _ColorDict[split[5]]
                 _DisplayDict[split[2]]['Fill'].name = split[5]
                 _DisplayDict[split[2]]['Outline'] = _ColorDict[split[6]]
+            except:
+                pass
 
 
 
