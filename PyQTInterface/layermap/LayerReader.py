@@ -17,6 +17,10 @@ def run_for_process_update():
     global _LayerNameTmp
     global _LayDatNameTmp
     global _Technology
+    global _LayerNum2CommonName
+    global _LayerName_unified
+    global _LayDatNumToName
+
 
     _Technology = user_setup._Technology
 
@@ -25,11 +29,13 @@ def run_for_process_update():
         _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
         _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
         _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
+        _LayerNum2CommonName = _LayerNumber2CommonLayerName(_LayerMappingTmp)
     elif _Technology == '180nm':
         _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/tsmc18rf.layermap')
         _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
         _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
         _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
+        _LayerNum2CommonName = _LayerNumber2CommonLayerName(_LayerMappingTmp)
     elif _Technology == 'TSMC65nm':
         # print(_HomeDirectory)
         _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/TSMC65nm/tsmcN65.layermap')
@@ -37,6 +43,7 @@ def run_for_process_update():
         _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
         _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
         _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
+        _LayerNum2CommonName = _LayerNumber2CommonLayerName(_LayerMappingTmp)
 
     #################    Conversion into Singlevariable   ##################################
     print('############################# PIMP Layer Mapping#########################################')
@@ -914,7 +921,7 @@ def run_for_process_update():
     _LayerMapFile.close()
 
     _LayerName_unified = _LayerNumber2UnifiedLayerName(_LayerMapping)
-
+    _LayDatNumToName = _LayDatNumber2UnifiedLayerName(_LayerMapping)
     print("******Layer Map file load Complete")
 
 
@@ -1014,12 +1021,26 @@ def _LayerNumber2UnifiedLayerName(_LayerMapping):
     _LayerNum2Name = dict()
 
     for _LayerCommonName in _LayerMapping:
-        if _LayerMapping[_LayerCommonName][1] == 0:
-            i = str(_LayerMapping[_LayerCommonName][0])
-            layerName = _LayerCommonName
-            _LayerNum2Name[i] = layerName
+        # if _LayerMapping[_LayerCommonName][1] == 0:
+        i = str(_LayerMapping[_LayerCommonName][0])
+        layerName = _LayerCommonName
+        _LayerNum2Name[i] = layerName
     return _LayerNum2Name
+
+def _LayDatNumber2UnifiedLayerName(_LayerMapping):
+    _LayDatNum2Name = dict()
+    for _LayerCommonName in _LayerMapping:
+        i = str(_LayerMapping[_LayerCommonName][0])
+        if i not in _LayDatNum2Name:
+            _LayDatNum2Name[i] = dict()
+        j = str(_LayerMapping[_LayerCommonName][1])
+        if j not in _LayDatNum2Name[i]:
+            _LayDatNum2Name[i][j] = _LayerCommonName
+    return _LayDatNum2Name
+
+
 #######################
+
 
 
 run_for_process_update()

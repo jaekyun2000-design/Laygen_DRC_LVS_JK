@@ -232,6 +232,7 @@ class _RectBlock(QGraphicsRectItem):
             self.shallow_highlight_list.remove(self)
 
 class _VisualizationItem(QGraphicsItemGroup):
+    invalid_layer_signal = pyqtSignal(str)
     _compareLayer = dict()
     _Layer = LayerReader._LayerMapping
     _subElementLayer = dict()
@@ -493,50 +494,161 @@ class _VisualizationItem(QGraphicsItemGroup):
 
 
     def blockGeneration(self,_XYCoordinatesPair=None, idx=None):                                  #This creates visual Block (which maps boundary or Path Item)
+        blockTraits = copy.deepcopy(self._ItemTraits)
+
+        _Layer = LayerReader._LayerMapping                      #Layer and Color Mapping
+        _Layer2Name = LayerReader._LayerNameTmp
+        DisplayInfo = DisplayReader._DisplayDict
+        if type(self._ItemTraits['_Layer']) == int: #Load GDS case
+            if LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][0] is None:
+                print('debug')
+            self._ItemTraits['_LayerName'] = LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][0]
+            self._ItemTraits['_DataType'] = '_'+LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][1]
+            self._ItemTraits['_Layer'] = LayerReader._LayDatNumToName[str(self._ItemTraits['_Layer'])][str(self._ItemTraits['_Datatype'])]
+
+
             blockTraits = copy.deepcopy(self._ItemTraits)
 
-            _Layer = LayerReader._LayerMapping                      #Layer and Color Mapping
-            _Layer2Name = LayerReader._LayerNameTmp
-            DisplayInfo = DisplayReader._DisplayDict
-            if self._ItemTraits['_DesignParametertype'] == 1 or self._ItemTraits['_DesignParametertype'] == 2 or self._ItemTraits['_DesignParametertype'] == 8:
-                if type(self._ItemTraits['_Layer']) == str:                         #When GUI Creates DesignParameter --> It has Layer Information in the form of "String" : ex) Met1, Met2, Via12, PIMP
-                    if 'crit' in self._ItemTraits['_Layer']:
-                        blockTraits['_DataType'] = '_crit'
-                    elif 'pin' in self._ItemTraits['_Layer']:
-                        blockTraits['_DataType'] = '_pin'
+
+
+        if self._ItemTraits['_Layer'] is not None: #Load GDS case
+            # if type(self._ItemTraits['_Layer']) == str:                         #When GUI Creates DesignParameter --> It has Layer Information in the form of "String" : ex) Met1, Met2, Via12, PIMP
+            if 'crit' in self._ItemTraits['_LayerName']:
+                blockTraits['_DataType'] = '_crit'
+            elif 'pin' in self._ItemTraits['_LayerName']:
+                blockTraits['_DataType'] = '_pin'
+            else:
+                blockTraits['_DataType'] = '_drawing'
+            blockTraits['_Layer'] =  _Layer[self._ItemTraits['_Layer']][0]     #Layer Number             --> Convert Name to Number
+            blockTraits['_LayerName'] =  _Layer[self._ItemTraits['_Layer']][2]  #Layer Original Name    --> Original Name is required to access color information
+
+        # else:                                                               #When GUI load DesignParameter from GDS File --> It has Layer Information in the form of "Number" : ex) 1,4,7
+        #     blockTraits['_Layer'] =  self._ItemTraits['_Layer']     #Layer Number
+        #     # blockTraits['_LayerName'] =  _Layer2Name[str(blockTraits['_Layer'])]#Layer Original Name        -->Original Name is required to access color infromation
+        #     if '_Datatype' not in blockTraits:
+        #         #TODO
+        #         print('debug')
+        #     blockTraits['_LayerName'] =  LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][0]#Layer Original Name        -->Original Name is required to access color infromation
+        #     blockTraits['_DataType'] = '_'+LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][1]
+        #     # if '_DataType' in self._ItemTraits:
+        #     #     data_type = LayerReader._LayDatNameTmp[str(self._ItemTraits['_Layer'])][str(self._ItemTraits['_DataType'])][1]
+        #     #     blockTraits['_DataType'] = '_' + data_type
+        #     # else:
+        #     #     blockTraits['_DataType'] = '_drawing'
+
+            blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Fill']
+            blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Outline']
+            blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Stipple']
+        # blockTraits['_Pattern_qbit'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Stipple_qbit']
+        del _Layer
+        del _Layer2Name
+        # self.block=[]
+
+        if self._ItemTraits['_DesignParametertype'] == 1:                              # Boundary Case
+            tmpBlock = _RectBlock()
+            tmpBlock.updateTraits(blockTraits)
+            tmpBlock.setPos(_XYCoordinatesPair[0] - blockTraits['_Width']/2,_XYCoordinatesPair[1] - blockTraits['_Height']/2)
+            tmpBlock.index = [idx]
+
+            layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+            layer = layernum2name[str(blockTraits['_Layer'])]
+
+            if self in self._compareLayer:
+                if self._compareLayer[self] == layer:
+                    tmpLayer = None
+                else:
+                    tmpLayer = self._compareLayer[self]
+                    self._compareLayer[self] = layer
+            else:
+                tmpLayer = None
+                self._compareLayer[self] = layer
+                self._subElementLayer[layer].append(self)
+
+            if tmpLayer == None:
+                pass
+            else:
+                self._subElementLayer[tmpLayer].remove(self)
+                self._subElementLayer[layer].append(self)
+
+            self.block.append(tmpBlock)
+            self.addToGroup(tmpBlock)
+
+            ############################ Variable Visualization Start ############################
+
+            for field in self._ItemTraits['variable_info']:
+                if field == 'XY':
+                    self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
+                elif field == 'width':
+                    self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
+                elif field == 'height':
+                    self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Height'])
+
+            self.widthVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['width'])
+            self.heightVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['height'])
+            self.XYVariable = QGraphicsTextItemWObounding('*' + self._ItemTraits['variable_info']['XY'])
+
+            self.setVariable(type='Boundary')
+
+            ############################ Variable Visualization End ############################
+
+
+
+        elif self._ItemTraits['_DesignParametertype'] == 2:                            # Path Case
+            for i in range(0,len(_XYCoordinatesPair)-1):
+                if float(_XYCoordinatesPair[i][0]) == float(_XYCoordinatesPair[i+1][0]):          #Vertical Case
+                    Xmin = _XYCoordinatesPair[i][0] - self._ItemTraits['_Width']/2
+                    Xwidth = self._ItemTraits['_Width']
+                    Ymin = min(_XYCoordinatesPair[i][1],_XYCoordinatesPair[i+1][1])
+                    Ymax = max(_XYCoordinatesPair[i][1],_XYCoordinatesPair[i+1][1])
+                    Ywidth = Ymax - Ymin
+
+                    if len(_XYCoordinatesPair) == 2:                                                    #Only One Block Case
+                        pass
+                    elif i == 0:                                                                                        #There are more than 2 segments and First Block Case
+                        if _XYCoordinatesPair[i][1] < _XYCoordinatesPair[i+1][1]:          #UpWard Case
+                            Ywidth -= self._ItemTraits['_Width']/2
+                        elif _XYCoordinatesPair[i][1] > _XYCoordinatesPair[i+1][1]:        #DownWard Case
+                            Ymin += self._ItemTraits['_Width']/2
+                            Ywidth -= self._ItemTraits['_Width']/2
+                    elif i == len(_XYCoordinatesPair[0])-2:                                                #Last Block Case
+                        if _XYCoordinatesPair[i][1] < _XYCoordinatesPair[i+1][1]:          #UpWard Case
+                            Ymin -= self._ItemTraits['_Width']/2
+                            Ywidth += self._ItemTraits['_Width']/2
+                        elif _XYCoordinatesPair[i][1] > _XYCoordinatesPair[i+1][1]:        #DownWard Case
+                            Ywidth += self._ItemTraits['_Width']/2
+                    else:                                                                                               #Interim Block Case
+                        if _XYCoordinatesPair[i][1] < _XYCoordinatesPair[i+1][1]:          #UpWard Case
+                            Ymin -= self._ItemTraits['_Width']/2
+                        elif _XYCoordinatesPair[i][1] > _XYCoordinatesPair[i+1][1]:        #DownWard Case
+                            Ymin += self._ItemTraits['_Width']/2
+                else:                                                                                                #Horizontal Case
+                    Ymin = _XYCoordinatesPair[i][1] - self._ItemTraits['_Width']/2
+                    Ywidth = self._ItemTraits['_Width']
+                    Xmin = min(_XYCoordinatesPair[i][0],_XYCoordinatesPair[i+1][0])
+                    Xmax = max(_XYCoordinatesPair[i][0],_XYCoordinatesPair[i+1][0])
+                    Xwidth = Xmax - Xmin
+
+                    if len(_XYCoordinatesPair) == 2:                                                    #Only One Block Case
+                        pass
+                    elif i is 0:                                                                                        #There are more than 2 segments and First Block Case
+                        if _XYCoordinatesPair[i][0] < _XYCoordinatesPair[i+1][0]:          #Path to Right Case
+                            Xwidth -= self._ItemTraits['_Width']/2
+                        elif _XYCoordinatesPair[i][0] > _XYCoordinatesPair[i+1][0]:        #Path to Left Case
+                            Xwidth -= self._ItemTraits['_Width']/2
+                            Xmin += self._ItemTraits['_Width']/2
+                    elif i is len(_XYCoordinatesPair)-2:
+                        if _XYCoordinatesPair[i][0] < _XYCoordinatesPair[i+1][0]:          #Path to Right Case
+                            Xmin -= self._ItemTraits['_Width']/2
+                            Xwidth += self._ItemTraits['_Width']/2
+                        elif _XYCoordinatesPair[i][0] > _XYCoordinatesPair[i+1][0]:        #Path to Left Case
+                            Xwidth += self._ItemTraits['_Width']/2
                     else:
-                        blockTraits['_DataType'] = '_drawing'
-                    blockTraits['_Layer'] =  _Layer[self._ItemTraits['_Layer']][0]     #Layer Number             --> Convert Name to Number
-                    blockTraits['_LayerName'] =  _Layer[self._ItemTraits['_Layer']][2]  #Layer Original Name    --> Original Name is required to access color information
-
-                else:                                                               #When GUI load DesignParameter from GDS File --> It has Layer Information in the form of "Number" : ex) 1,4,7
-                    blockTraits['_Layer'] =  self._ItemTraits['_Layer']     #Layer Number
-                    # blockTraits['_LayerName'] =  _Layer2Name[str(blockTraits['_Layer'])]#Layer Original Name        -->Original Name is required to access color infromation
-                    if '_Datatype' not in blockTraits:
-                        #TODO
-                        print('debug')
-                    blockTraits['_LayerName'] =  LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][0]#Layer Original Name        -->Original Name is required to access color infromation
-                    blockTraits['_DataType'] = '_'+LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][1]
-                    # if '_DataType' in self._ItemTraits:
-                    #     data_type = LayerReader._LayDatNameTmp[str(self._ItemTraits['_Layer'])][str(self._ItemTraits['_DataType'])][1]
-                    #     blockTraits['_DataType'] = '_' + data_type
-                    # else:
-                    #     blockTraits['_DataType'] = '_drawing'
-
-                blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Fill']
-                blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Outline']
-                blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Stipple']
-                # blockTraits['_Pattern_qbit'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Stipple_qbit']
-
-            del _Layer
-            del _Layer2Name
-            # self.block=[]
-
-            if self._ItemTraits['_DesignParametertype'] == 1:                              # Boundary Case
-                tmpBlock = _RectBlock()
-                tmpBlock.updateTraits(blockTraits)
-                tmpBlock.setPos(_XYCoordinatesPair[0] - blockTraits['_Width']/2,_XYCoordinatesPair[1] - blockTraits['_Height']/2)
-                tmpBlock.index = [idx]
+                        if _XYCoordinatesPair[i][0] < _XYCoordinatesPair[i+1][0]:          #Path to Right Case
+                            Xmin -= self._ItemTraits['_Width']/2
+                        elif _XYCoordinatesPair[i][0] > _XYCoordinatesPair[i+1][0]:        #Path to Left Case
+                            Xmin += self._ItemTraits['_Width']/2
+                blockTraits['_Width'] = Xwidth
+                blockTraits['_Height'] = Ywidth
 
                 layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                 layer = layernum2name[str(blockTraits['_Layer'])]
@@ -558,88 +670,150 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self._subElementLayer[tmpLayer].remove(self)
                     self._subElementLayer[layer].append(self)
 
-                self.block.append(tmpBlock)
-                self.addToGroup(tmpBlock)
+                self.index = idx
+                block = _RectBlock(blockTraits)
+                block.index = [idx, i]
 
-                ############################ Variable Visualization Start ############################
+                self.block.append(block)  #Block Generation
+                self.block[-1].setPos(Xmin*scaleValue,Ymin*scaleValue)
+                self.addToGroup(self.block[-1])
 
-                for field in self._ItemTraits['variable_info']:
-                    if field == 'XY':
-                        self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
-                    elif field == 'width':
-                        self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
-                    elif field == 'height':
-                        self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Height'])
+            ############################ Variable Visualization Start ############################
+            self.XYVariable = list()
+            self._ItemTraits['variable_info']['XY'] = list()
 
-                self.widthVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['width'])
-                self.heightVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['height'])
-                self.XYVariable = QGraphicsTextItemWObounding('*' + self._ItemTraits['variable_info']['XY'])
+            for field in self._ItemTraits['variable_info']:
+                if field == 'XY':
+                    self._ItemTraits['variable_info'][field] = self._ItemTraits['_XYCoordinates']
+                elif field == 'width':
+                    self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
 
-                self.setVariable(type='Boundary')
+            for self.idx in range(len(self._ItemTraits['_XYCoordinates'][0])):
+                if self.idx == 0:
+                    self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]) + '\nwidth: ' + str(self._ItemTraits['variable_info']['width']))
+                else:
+                    self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]))
 
-                ############################ Variable Visualization End ############################
+                self.setVariable(type='Path')
 
+            ############################ Variable Visualization End ############################
 
+        elif self._ItemTraits['_DesignParametertype'] == 3:                #SRef Case
+            self.index = idx
+            for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
+                sub_element_vi = _VisualizationItem()
+                sub_element_vi._NoVariableFlag = True
+                sub_element_vi._subCellFlag = True
+                sub_element_vi.updateDesignParameter(sub_element_dp)
+                sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
+                sub_element_vi.setPos(_XYCoordinatesPair[0], _XYCoordinatesPair[1])
 
-            elif self._ItemTraits['_DesignParametertype'] == 2:                            # Path Case
-                for i in range(0,len(_XYCoordinatesPair)-1):
-                    if float(_XYCoordinatesPair[i][0]) == float(_XYCoordinatesPair[i+1][0]):          #Vertical Case
-                        Xmin = _XYCoordinatesPair[i][0] - self._ItemTraits['_Width']/2
-                        Xwidth = self._ItemTraits['_Width']
-                        Ymin = min(_XYCoordinatesPair[i][1],_XYCoordinatesPair[i+1][1])
-                        Ymax = max(_XYCoordinatesPair[i][1],_XYCoordinatesPair[i+1][1])
-                        Ywidth = Ymax - Ymin
+                layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+                if sub_element_vi._ItemTraits['_Layer'] == None:
+                    pass
+                else:
+                    if type(sub_element_vi._ItemTraits['_Layer']) == int:
+                        layer = layernum2name[str(sub_element_vi._ItemTraits['_Layer'])]
+                        self._subElementLayer[layer].append(sub_element_vi)
+                    else:
+                        self._subElementLayer[sub_element_vi._ItemTraits['_Layer']].append(sub_element_vi)
 
-                        if len(_XYCoordinatesPair) == 2:                                                    #Only One Block Case
+                if sub_element_vi._ItemTraits['_DesignParametertype'] is not 8:
+                    if self._ItemTraits['_Reflect'] == None and self._ItemTraits['_Angle'] == None:
+                        pass
+                    elif self._ItemTraits['_Reflect'] == [0, 0, 0]:
+                        rot = self._ItemTraits['_Angle']
+                        sub_element_vi.setRotation(rot)
+                    elif self._ItemTraits['_Reflect'] == [1, 0, 0]:
+                        sub_element_vi.setTransform(QTransform(1,0,0,-1,0,0))
+                        if self._ItemTraits['_Angle'] == None:
                             pass
-                        elif i == 0:                                                                                        #There are more than 2 segments and First Block Case
-                            if _XYCoordinatesPair[i][1] < _XYCoordinatesPair[i+1][1]:          #UpWard Case
-                                Ywidth -= self._ItemTraits['_Width']/2
-                            elif _XYCoordinatesPair[i][1] > _XYCoordinatesPair[i+1][1]:        #DownWard Case
-                                Ymin += self._ItemTraits['_Width']/2
-                                Ywidth -= self._ItemTraits['_Width']/2
-                        elif i == len(_XYCoordinatesPair[0])-2:                                                #Last Block Case
-                            if _XYCoordinatesPair[i][1] < _XYCoordinatesPair[i+1][1]:          #UpWard Case
-                                Ymin -= self._ItemTraits['_Width']/2
-                                Ywidth += self._ItemTraits['_Width']/2
-                            elif _XYCoordinatesPair[i][1] > _XYCoordinatesPair[i+1][1]:        #DownWard Case
-                                Ywidth += self._ItemTraits['_Width']/2
-                        else:                                                                                               #Interim Block Case
-                            if _XYCoordinatesPair[i][1] < _XYCoordinatesPair[i+1][1]:          #UpWard Case
-                                Ymin -= self._ItemTraits['_Width']/2
-                            elif _XYCoordinatesPair[i][1] > _XYCoordinatesPair[i+1][1]:        #DownWard Case
-                                Ymin += self._ItemTraits['_Width']/2
-                    else:                                                                                                #Horizontal Case
-                        Ymin = _XYCoordinatesPair[i][1] - self._ItemTraits['_Width']/2
-                        Ywidth = self._ItemTraits['_Width']
-                        Xmin = min(_XYCoordinatesPair[i][0],_XYCoordinatesPair[i+1][0])
-                        Xmax = max(_XYCoordinatesPair[i][0],_XYCoordinatesPair[i+1][0])
-                        Xwidth = Xmax - Xmin
-
-                        if len(_XYCoordinatesPair) == 2:                                                    #Only One Block Case
-                            pass
-                        elif i is 0:                                                                                        #There are more than 2 segments and First Block Case
-                            if _XYCoordinatesPair[i][0] < _XYCoordinatesPair[i+1][0]:          #Path to Right Case
-                                Xwidth -= self._ItemTraits['_Width']/2
-                            elif _XYCoordinatesPair[i][0] > _XYCoordinatesPair[i+1][0]:        #Path to Left Case
-                                Xwidth -= self._ItemTraits['_Width']/2
-                                Xmin += self._ItemTraits['_Width']/2
-                        elif i is len(_XYCoordinatesPair)-2:
-                            if _XYCoordinatesPair[i][0] < _XYCoordinatesPair[i+1][0]:          #Path to Right Case
-                                Xmin -= self._ItemTraits['_Width']/2
-                                Xwidth += self._ItemTraits['_Width']/2
-                            elif _XYCoordinatesPair[i][0] > _XYCoordinatesPair[i+1][0]:        #Path to Left Case
-                                Xwidth += self._ItemTraits['_Width']/2
                         else:
-                            if _XYCoordinatesPair[i][0] < _XYCoordinatesPair[i+1][0]:          #Path to Right Case
-                                Xmin -= self._ItemTraits['_Width']/2
-                            elif _XYCoordinatesPair[i][0] > _XYCoordinatesPair[i+1][0]:        #Path to Left Case
-                                Xmin += self._ItemTraits['_Width']/2
-                    blockTraits['_Width'] = Xwidth
-                    blockTraits['_Height'] = Ywidth
+                            rot = 360 - self._ItemTraits['_Angle']
+                            sub_element_vi.setRotation(rot)
 
-                    layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-                    layer = layernum2name[str(blockTraits['_Layer'])]
+                self.addToGroup(sub_element_vi)
+                self.sub_element_dict[sub_element_dp_name+f'[{idx}]'] = sub_element_vi
+
+            ############################ Variable Visualization Start ############################
+
+            for field in self._ItemTraits['variable_info']:
+                if field == 'XY':
+                    self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
+                elif field == 'parameters':
+                    self._ItemTraits['variable_info'][field] = str(self._ItemTraits['parameters'])
+
+            tmpParam = str(self._ItemTraits['variable_info']['parameters']).replace(',', ',\n')
+
+            self.XYVariable = QGraphicsTextItemWObounding('*' + self._ItemTraits['variable_info']['XY'])
+            self.paramVariable = QGraphicsTextItemWObounding(tmpParam)
+
+            self.setVariable(type='Sref')
+
+            ############################ Variable Visualization End ############################
+
+            self._subElementLayer['SRef'].append(self)
+
+        elif self._ItemTraits['_DesignParametertype'] == 8:                #Text Case
+            if blockTraits['_Layer'] == 127:
+                try:
+                    self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
+                except:
+                    self.text = QGraphicsTextItem(blockTraits['_TEXT'])
+
+                if blockTraits['_Width'] < 1:
+                    fontSize = 1000 * blockTraits['_Width']
+                else:
+                    fontSize = blockTraits['_Width']
+                font = QFont('tmp', fontSize)
+                self.text.setFont(font)
+                self.text.setPos(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1])
+                self.text.setTransform(QTransform(1,0,0,-1,0,0))
+
+                self.block.append(self.text)
+                self.addToGroup(self.text)
+
+                self._subElementLayer['text'].append(self)
+
+                # text = QPainter()
+                # aa = QRectF(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1],100,100)
+                # print(aa)
+                # print(type(blockTraits['_TEXT'].decode()))
+                # # text.scale(1, -1)
+                # text.setPen(Qt.GlobalColor.red)
+                # font = QFont()
+                # font.setBold(True)
+                # font.setPointSize(10)
+                # # text.setFont(font)
+                # text.drawText(aa, Qt.AlignCenter, 'x')
+                # #
+                # #
+                # print("?")
+
+            else:
+                layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+                layer = layernum2name[str(blockTraits['_Layer'])]
+                if 'PIN' in layer:
+                    try:
+                        self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
+                    except:
+                        self.text = QGraphicsTextItem(blockTraits['_TEXT'])
+
+                    self.text.setDefaultTextColor(blockTraits['_Color'])
+                    if blockTraits['_Width'] < 1:
+                        fontSize = 1000 * blockTraits['_Width']
+                    else:
+                        fontSize = blockTraits['_Width']
+                    font = QFont('tmp', fontSize)
+                    self.text.setFont(font)
+                    self.text.setPos(blockTraits['_XYCoordinates'][0][0], blockTraits['_XYCoordinates'][0][1])
+                    self.text.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+
+                    _point = QGraphicsTextItem('X')
+                    _point.setDefaultTextColor(blockTraits['_Color'])
+                    _point_font = QFont('tmp2', 20)
+                    _point.setFont(_point_font)
+                    _point.setPos(blockTraits['_XYCoordinates'][0][0] - 12, blockTraits['_XYCoordinates'][0][1] - 17)
 
                     if self in self._compareLayer:
                         if self._compareLayer[self] == layer:
@@ -658,176 +832,17 @@ class _VisualizationItem(QGraphicsItemGroup):
                         self._subElementLayer[tmpLayer].remove(self)
                         self._subElementLayer[layer].append(self)
 
-                    self.index = idx
-                    block = _RectBlock(blockTraits)
-                    block.index = [idx, i]
-
-                    self.block.append(block)  #Block Generation
-                    self.block[-1].setPos(Xmin*scaleValue,Ymin*scaleValue)
-                    self.addToGroup(self.block[-1])
-
-                ############################ Variable Visualization Start ############################
-                self.XYVariable = list()
-                self._ItemTraits['variable_info']['XY'] = list()
-
-                for field in self._ItemTraits['variable_info']:
-                    if field == 'XY':
-                        self._ItemTraits['variable_info'][field] = self._ItemTraits['_XYCoordinates']
-                    elif field == 'width':
-                        self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
-
-                for self.idx in range(len(self._ItemTraits['_XYCoordinates'][0])):
-                    if self.idx == 0:
-                        self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]) + '\nwidth: ' + str(self._ItemTraits['variable_info']['width']))
-                    else:
-                        self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]))
-
-                    self.setVariable(type='Path')
-
-                ############################ Variable Visualization End ############################
-
-            elif self._ItemTraits['_DesignParametertype'] == 3:                #SRef Case
-                self.index = idx
-                for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
-                    sub_element_vi = _VisualizationItem()
-                    sub_element_vi._NoVariableFlag = True
-                    sub_element_vi._subCellFlag = True
-                    sub_element_vi.updateDesignParameter(sub_element_dp)
-                    sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
-                    sub_element_vi.setPos(_XYCoordinatesPair[0], _XYCoordinatesPair[1])
-
-                    layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-                    if sub_element_vi._ItemTraits['_Layer'] == None:
-                        pass
-                    else:
-                        layer = layernum2name[str(sub_element_vi._ItemTraits['_Layer'])]
-                        self._subElementLayer[layer].append(sub_element_vi)
-
-                    if sub_element_vi._ItemTraits['_DesignParametertype'] is not 8:
-                        if self._ItemTraits['_Reflect'] == None and self._ItemTraits['_Angle'] == None:
-                            pass
-                        elif self._ItemTraits['_Reflect'] == [0, 0, 0]:
-                            rot = self._ItemTraits['_Angle']
-                            sub_element_vi.setRotation(rot)
-                        elif self._ItemTraits['_Reflect'] == [1, 0, 0]:
-                            sub_element_vi.setTransform(QTransform(1,0,0,-1,0,0))
-                            if self._ItemTraits['_Angle'] == None:
-                                pass
-                            else:
-                                rot = 360 - self._ItemTraits['_Angle']
-                                sub_element_vi.setRotation(rot)
-
-                    self.addToGroup(sub_element_vi)
-                    self.sub_element_dict[sub_element_dp_name+f'[{idx}]'] = sub_element_vi
-
-                ############################ Variable Visualization Start ############################
-
-                for field in self._ItemTraits['variable_info']:
-                    if field == 'XY':
-                        self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
-                    elif field == 'parameters':
-                        self._ItemTraits['variable_info'][field] = str(self._ItemTraits['parameters'])
-
-                tmpParam = str(self._ItemTraits['variable_info']['parameters']).replace(',', ',\n')
-
-                self.XYVariable = QGraphicsTextItemWObounding('*' + self._ItemTraits['variable_info']['XY'])
-                self.paramVariable = QGraphicsTextItemWObounding(tmpParam)
-
-                self.setVariable(type='Sref')
-
-                ############################ Variable Visualization End ############################
-
-                self._subElementLayer['SRef'].append(self)
-
-            elif self._ItemTraits['_DesignParametertype'] == 8:                #Text Case
-                if blockTraits['_Layer'] == 127:
-                    try:
-                        self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
-                    except:
-                        self.text = QGraphicsTextItem(blockTraits['_TEXT'])
-
-                    if blockTraits['_Width'] < 1:
-                        fontSize = 1000 * blockTraits['_Width']
-                    else:
-                        fontSize = blockTraits['_Width']
-                    font = QFont('tmp', fontSize)
-                    self.text.setFont(font)
-                    self.text.setPos(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1])
-                    self.text.setTransform(QTransform(1,0,0,-1,0,0))
-
                     self.block.append(self.text)
+                    self.block.append(_point)
                     self.addToGroup(self.text)
+                    self.addToGroup(_point)
 
-                    self._subElementLayer['text'].append(self)
+        else:
+            print("WARNING1: Unvalid DataType Detected!")
 
-                    # text = QPainter()
-                    # aa = QRectF(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1],100,100)
-                    # print(aa)
-                    # print(type(blockTraits['_TEXT'].decode()))
-                    # # text.scale(1, -1)
-                    # text.setPen(Qt.GlobalColor.red)
-                    # font = QFont()
-                    # font.setBold(True)
-                    # font.setPointSize(10)
-                    # # text.setFont(font)
-                    # text.drawText(aa, Qt.AlignCenter, 'x')
-                    # #
-                    # #
-                    # print("?")
-
-                else:
-                    layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-                    layer = layernum2name[str(blockTraits['_Layer'])]
-                    if 'PIN' in layer:
-                        try:
-                            self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
-                        except:
-                            self.text = QGraphicsTextItem(blockTraits['_TEXT'])
-
-                        self.text.setDefaultTextColor(blockTraits['_Color'])
-                        if blockTraits['_Width'] < 1:
-                            fontSize = 1000 * blockTraits['_Width']
-                        else:
-                            fontSize = blockTraits['_Width']
-                        font = QFont('tmp', fontSize)
-                        self.text.setFont(font)
-                        self.text.setPos(blockTraits['_XYCoordinates'][0][0], blockTraits['_XYCoordinates'][0][1])
-                        self.text.setTransform(QTransform(1, 0, 0, -1, 0, 0))
-
-                        _point = QGraphicsTextItem('X')
-                        _point.setDefaultTextColor(blockTraits['_Color'])
-                        _point_font = QFont('tmp2', 20)
-                        _point.setFont(_point_font)
-                        _point.setPos(blockTraits['_XYCoordinates'][0][0] - 12, blockTraits['_XYCoordinates'][0][1] - 17)
-
-                        if self in self._compareLayer:
-                            if self._compareLayer[self] == layer:
-                                tmpLayer = None
-                            else:
-                                tmpLayer = self._compareLayer[self]
-                                self._compareLayer[self] = layer
-                        else:
-                            tmpLayer = None
-                            self._compareLayer[self] = layer
-                            self._subElementLayer[layer].append(self)
-
-                        if tmpLayer == None:
-                            pass
-                        else:
-                            self._subElementLayer[tmpLayer].remove(self)
-                            self._subElementLayer[layer].append(self)
-
-                        self.block.append(self.text)
-                        self.block.append(_point)
-                        self.addToGroup(self.text)
-                        self.addToGroup(_point)
-
-            else:
-                print("WARNING1: Unvalid DataType Detected!")
-
-            # print('--')
-            # print(self._subElementLayer)
-            # self.send_subelementlayer_signal.emit(self._subElementLayer)
+        # print('--')
+        # print(self._subElementLayer)
+        # self.send_subelementlayer_signal.emit(self._subElementLayer)
 
     def update_dc_variable_info(self, _ast):
         if _ast._type == 'Boundary':
@@ -1096,6 +1111,45 @@ class _VisualizationItem(QGraphicsItemGroup):
                 _rect_block.set_shallow_highlight()
                 _rect_block.update()
 
+    def rerun_for_process_update(self):
+
+        child_items = self.childItems()
+        for child in child_items:
+            self.removeFromGroup(child)
+        if self._ItemTraits['_DesignParametertype'] == 1:
+            for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+                self.blockGeneration(xyPairs, idx)
+        elif self._ItemTraits['_DesignParametertype'] == 2:
+            for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+                self.blockGeneration(xyPairs, idx)
+        elif self._ItemTraits['_DesignParametertype'] == 3:
+            for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+                self.blockGeneration(xyPairs, idx)
+        elif self._ItemTraits['_DesignParametertype'] == 8:
+            self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+        else:
+            self.blockGeneration()
+
+
+        return child_items
+
+
+        # if self._ItemTraits['_DesignParametertype'] == 1:
+        #     for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+        #         self.blockGeneration(xyPairs, idx)
+        # elif self._ItemTraits['_DesignParametertype'] == 2:
+        #     for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+        #         self.blockGeneration(xyPairs, idx)
+        # elif self._ItemTraits['_DesignParametertype'] == 3:
+        #     for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+        #         self.blockGeneration(xyPairs, idx)
+        # elif self._ItemTraits['_DesignParametertype'] == 8:
+        #     self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+        # else:
+        #     self.blockGeneration()
+        #
+        #
+        #
 
 
 class QGraphicsTextItemWObounding(QGraphicsTextItem):

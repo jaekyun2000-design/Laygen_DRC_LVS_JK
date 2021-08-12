@@ -546,16 +546,33 @@ class _MainWindow(QMainWindow):
                 process_list.append(item)
         self.process_list_widget.addItems(process_list)
         self.process_list_widget.show()
-        self.process_list_widget.doubleClicked.connect(self.request_change_process)
+        self.process_list_widget.itemDoubleClicked.connect(self.request_change_process)
 
-    def request_change_process(self, technology_name):
+    def request_change_process(self, technology_item):
+        # technology_name = self.sender().row(technology_item).text()
+        technology_name = technology_item.text()
+        print(technology_name)
+
         if user_setup._Technology == technology_name:
             return None
         else:
             user_setup._Technology = technology_name
-            LayerReader.rerun_for_process_update()
+            from PyQTInterface.layermap import DisplayReader
+            LayerReader.run_for_process_update()
+            DisplayReader.run_for_process_update()
+            remove_vs_items = []
+            for vs_item in self.visualItemDict.values():
+                # vs_item.invalid_layer_signal.connect(self.warning_invalid_layer)
+                remove_vs_items.extend(vs_item.rerun_for_process_update())
+            for rm_item in remove_vs_items:
+                self.scene.removeItem(rm_item)
+                del rm_item
+
 
             print('Process Changed!')
+
+    def warning_invalid_layer(self, layer_name):
+        self.warning_widget = QtWarningMsg(f"Not valid layer: {layer_name}")
 
 
 
