@@ -156,7 +156,7 @@ class _RectBlock(QGraphicsRectItem):
         #     # brush.setTexture(dots_bitmap)
         #     brush.setStyle(Qt.Dense6Pattern)
 
-        color_name = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']]['Fill'].name
+        color_name = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DataType']]['Fill'].name
         color_patt_name =color_name+self._BlockTraits["_Pattern"]
 
         if self._BlockTraits["_Pattern"] == 'X':
@@ -166,7 +166,7 @@ class _RectBlock(QGraphicsRectItem):
             brush.setStyle(Qt.NoBrush)
         else:
             if color_patt_name not in DisplayReader._ColorPatternDict:
-                color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']]['Fill']
+                color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DataType']]['Fill']
                 qpix = DisplayReader._PatternDict[self._BlockTraits["_Pattern"]].create_qbit(color)
                 DisplayReader._DisplayDict[color_patt_name] = qpix
             qpix = DisplayReader._DisplayDict[color_patt_name]
@@ -183,7 +183,7 @@ class _RectBlock(QGraphicsRectItem):
 
         try:
             DisplayInfo = DisplayReader._DisplayDict
-            color = DisplayInfo[self._BlockTraits['_LayerName']]['Fill']
+            color = DisplayInfo[self._BlockTraits['_LayerName']+self._BlockTraits['_DataType']]['Fill']
         except:
             self.warning=QMessageBox()
             self.warning.setText("There is no matching QT Color profile")
@@ -499,15 +499,27 @@ class _VisualizationItem(QGraphicsItemGroup):
             DisplayInfo = DisplayReader._DisplayDict
             if self._ItemTraits['_DesignParametertype'] == 1 or self._ItemTraits['_DesignParametertype'] == 2 or self._ItemTraits['_DesignParametertype'] == 8:
                 if type(self._ItemTraits['_Layer']) == str:                         #When GUI Creates DesignParameter --> It has Layer Information in the form of "String" : ex) Met1, Met2, Via12, PIMP
+                    if ['crit'] in self._ItemTraits['_Layer']:
+                        blockTraits['_DataType'] = '_crit'
+                    elif ['pin'] in self._ItemTraits['_Layer']:
+                        blockTraits['_DataType'] = '_pin'
+                    else:
+                        blockTraits['_DataType'] = '_drawing'
                     blockTraits['_Layer'] =  _Layer[self._ItemTraits['_Layer']][0]     #Layer Number             --> Convert Name to Number
                     blockTraits['_LayerName'] =  _Layer[self._ItemTraits['_Layer']][2]  #Layer Original Name    --> Original Name is required to access color information
+
                 else:                                                               #When GUI load DesignParameter from GDS File --> It has Layer Information in the form of "Number" : ex) 1,4,7
                     blockTraits['_Layer'] =  self._ItemTraits['_Layer']     #Layer Number
                     blockTraits['_LayerName'] =  _Layer2Name[str(blockTraits['_Layer'])]#Layer Original Name        -->Original Name is required to access color infromation
-                blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']]['Fill']
-                blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']]['Outline']
-                blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']]['Stipple']
-                # blockTraits['_Pattern_qbit'] =  DisplayInfo[blockTraits['_LayerName']]['Stipple_qbit']
+                    if '_DataType' in self._ItemTraits:
+                        blockTraits['_DataType'] = self._ItemTraits['_DataType']
+                    else:
+                        blockTraits['_DataType'] = '_drawing'
+
+                blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Fill']
+                blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Outline']
+                blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Stipple']
+                # blockTraits['_Pattern_qbit'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Stipple_qbit']
 
             del _Layer
             del _Layer2Name

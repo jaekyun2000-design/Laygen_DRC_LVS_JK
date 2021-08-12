@@ -102,6 +102,7 @@ class bitmap_converter:
 with open(_DRFfile,'rb',0) as drf:
     lines = drf.readlines()
     stipple_flag = False
+    packet_flag = False
     bitmap = None
     for line in lines:
         # print(line)
@@ -138,34 +139,24 @@ with open(_DRFfile,'rb',0) as drf:
                 binary_list = list(map(int,re.findall(' [01]',lineDecode)))
                 bitmap.add_binaries(binary_list)
 
+        if re.search('drDefinePacket', lineDecode):
+            packet_flag = True
+        if packet_flag:
+            if line == b')\n' or line == b'\r\n':
+                stipple_flag = False
+            if '_drawing' in lineDecode or '_pin' in lineDecode or '_cirt' in lineDecode:
+                split = re.split('[ \t]+',lineDecode)
 
-        elif re.search('_drawing',lineDecode):
-            # re.sub('\t',' ',lineDecode)
-            # print('match')
-            # lineDecode.split('')
-            lineDecode = re.sub(' +',' ',lineDecode)
-            lineDecode = lineDecode.replace('\t',' ')
-            lineDecode = lineDecode.replace('_drawing',' ')
-            split = lineDecode.split(' ')
-            if _Technology == '028nm':
-                split.pop(0)
-            _DisplayDict[split[2]] = dict()
-            _DisplayDict[split[2]]['drawingNum'] = split[3]
-            _DisplayDict[split[2]]['Stipple'] = split[4]
-
-            # if not STANDALONE:
-            # _DisplayDict[split[2]]['Stipple_qbit'] = _PatternDict[split[4]].calculate_qbit()
-            _DisplayDict[split[2]]['LineStyle'] = split[5]
-            _DisplayDict[split[2]]['Fill'] = _ColorDict[split[6]]
-            _DisplayDict[split[2]]['Fill'].name = split[6]
-            _DisplayDict[split[2]]['Outline'] = _ColorDict[split[7]]
-            # _DisplayDict[split[2]]['LayerOrginalName'] = split[6]
-            # print(split)
-            # print(lineDecode.group())
-        # tmp2=line.split()
-        # print(tmp2)
-
-        # print(line)
+                if split[0] == '':
+                    split.pop(0)
+                _DisplayDict[split[2]] = dict()
+                # _DisplayDict[split[2]]['drawingNum'] = split[2].split('_drawing')[0]
+                _DisplayDict[split[2]]['drawingNum'] = split[2]
+                _DisplayDict[split[2]]['Stipple'] = split[3]
+                _DisplayDict[split[2]]['LineStyle'] = split[4]
+                _DisplayDict[split[2]]['Fill'] = _ColorDict[split[5]]
+                _DisplayDict[split[2]]['Fill'].name = split[5]
+                _DisplayDict[split[2]]['Outline'] = _ColorDict[split[6]]
 
 
 
