@@ -232,7 +232,7 @@ class _MainWindow(QMainWindow):
         self.scene.setMinimumRenderSize(1)
         graphicView.centerOn(QPointF(268,-165))
         self.setCentralWidget(graphicView)
-        self.scene.setBackgroundBrush(QBrush(Qt.black))
+        self.scene.setBackgroundBrush(QBrush(Qt.white))
         graphicView.scale(1,-1)
         graphicView.setInteractive(True)
 
@@ -301,6 +301,10 @@ class _MainWindow(QMainWindow):
         self.send_visibleCanState_signal.connect(self.dockContentWidget1_2.layer_table_widget.visibleCanState)
         CandidateCheckBox.stateChanged.connect(self.visibleCandidate)
 
+        blackmode_box = QCheckBox("Night Mode", dockContentWidget1)
+        blackmode_box.setCheckState(0)
+        blackmode_box.stateChanged.connect(self.scene.change_background)
+
 
         ########## Second tab ############
         self.dv = variableWindow._DesignVariableManagerWindow(dict())
@@ -328,6 +332,7 @@ class _MainWindow(QMainWindow):
         hboxOnDock2.addWidget(CandidateCheckBox)
         vboxOnDock1.addLayout(hboxOnDock1)
         vboxOnDock1.addLayout(hboxOnDock2)
+        vboxOnDock1.addWidget(blackmode_box)
         vboxOnDock1.addStretch(10)
 
         dockContentWidget1.setLayout(vboxOnDock1)
@@ -2736,6 +2741,12 @@ class _CustomScene(QGraphicsScene):
     #     super(_CustomScene, self).removeItem(item)
     #     if item != self.ghost_group_item:
     #         self.ghost_group_item.removeFromGroup(item)
+
+    def change_background(self, state):
+        if state == 2:
+            self.setBackgroundBrush(QBrush(Qt.black))
+        else:
+            self.setBackgroundBrush(QBrush(Qt.white))
 
     def getNonselectableLayerList(self, _layerlist):
         self.nslist = _layerlist

@@ -512,6 +512,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 else:                                                               #When GUI load DesignParameter from GDS File --> It has Layer Information in the form of "Number" : ex) 1,4,7
                     blockTraits['_Layer'] =  self._ItemTraits['_Layer']     #Layer Number
                     # blockTraits['_LayerName'] =  _Layer2Name[str(blockTraits['_Layer'])]#Layer Original Name        -->Original Name is required to access color infromation
+                    if '_Datatype' not in blockTraits:
+                        #TODO
+                        print('debug')
                     blockTraits['_LayerName'] =  LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][0]#Layer Original Name        -->Original Name is required to access color infromation
                     blockTraits['_DataType'] = '_'+LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][1]
                     # if '_DataType' in self._ItemTraits:
