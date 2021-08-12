@@ -1191,6 +1191,7 @@ class _MainWindow(QMainWindow):
         # layer click on/off  -> _VisualizationItem
 
     def deleteGraphicItem(self,graphicItem):
+        VisualizationItem._VisualizationItem()._subElementLayer[graphicItem._ItemTraits['_Layer']].remove(graphicItem)
         self.scene.removeItem(graphicItem)
 
     def newProject(self):
