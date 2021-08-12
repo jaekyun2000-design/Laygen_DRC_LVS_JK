@@ -76,9 +76,10 @@ def _LayerNumber2LayerName(_LayerMapping):
 
     for _LayerCommonName in _LayerMapping:
         # if _LayerMapping[_LayerCommonName][1] == 0:
-        i = str(_LayerMapping[_LayerCommonName][0])
-        layerName = _LayerMapping[_LayerCommonName][2]
-        _LayerNum2Name[i] = layerName
+        if _LayerCommonName[1] in ['drawing', 'cirt', 'pin']:
+            i = str(_LayerMapping[_LayerCommonName][0])
+            layerName = _LayerMapping[_LayerCommonName][2]
+            _LayerNum2Name[i] = layerName
     return _LayerNum2Name
 
 def _LayerNumber2CommonLayerName(_LayerMapping):

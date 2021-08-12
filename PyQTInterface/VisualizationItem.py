@@ -119,47 +119,62 @@ class _RectBlock(QGraphicsRectItem):
             # self.setZValue(1)
         else:
             self.setZValue(self._BlockTraits['_Layer']/1000)
-
-
-        if self._BlockTraits["_Pattern"] == "blank":
-            brush.setStyle(Qt.NoBrush)
-        elif self._BlockTraits["_Pattern"] == "solid":
-            brush.setStyle(Qt.SolidPattern)
-        elif self._BlockTraits["_Pattern"] == "dots":
-            brush.setStyle(Qt.Dense1Pattern)
-        elif self._BlockTraits["_Pattern"] == "dot4":
-            brush.setStyle(Qt.Dense6Pattern)
-        elif self._BlockTraits["_Pattern"] == "hLine":
-            brush.setStyle(Qt.HorPattern)
-        elif self._BlockTraits["_Pattern"] == "vLine":
-            brush.setStyle(Qt.VerPattern)
-        elif self._BlockTraits["_Pattern"] == "cross":
-            brush.setStyle(Qt.DiagCrossPattern)
-        elif self._BlockTraits["_Pattern"] == "grid":
-            brush.setStyle(Qt.CrossPattern)
-        elif self._BlockTraits["_Pattern"] == "slash":
-            brush.setStyle(Qt.BDiagPattern)
-        elif self._BlockTraits["_Pattern"] == "backSlash":
-            brush.setStyle(Qt.FDiagPattern)
-
-
-        elif self._BlockTraits["_Pattern"] == "stipple0":
-            brush.setStyle(Qt.BDiagPattern)
-        elif self._BlockTraits["_Pattern"] == "dagger":
-            brush.setStyle(Qt.Dense7Pattern)
-        elif self._BlockTraits["_Pattern"] == "brick":
-            brush.setStyle(Qt.CrossPattern)
-            # brush.setTransform()
-        else:
-            brush.setStyle(Qt.Dense6Pattern)
-
+        painter.setPen(pen)
         #
-        # if not (self._BlockTraits["_Pattern"] == "blank" or self._BlockTraits["_Pattern"] == "stipple0" or self._BlockTraits["_Pattern"] == "dagger" or self._BlockTraits["_Pattern"] == "brick"):
+        # if self._BlockTraits["_Pattern"] == "blank":
+        #     brush.setStyle(Qt.NoBrush)
+        # elif self._BlockTraits["_Pattern"] == "solid":
         #     brush.setStyle(Qt.SolidPattern)
+        # elif self._BlockTraits["_Pattern"] == "dots":
+        #     brush.setStyle(Qt.Dense1Pattern)
+        # elif self._BlockTraits["_Pattern"] == "dot4":
+        #     brush.setStyle(Qt.Dense6Pattern)
+        # elif self._BlockTraits["_Pattern"] == "hLine":
+        #     brush.setStyle(Qt.HorPattern)
+        # elif self._BlockTraits["_Pattern"] == "vLine":
+        #     brush.setStyle(Qt.VerPattern)
+        # elif self._BlockTraits["_Pattern"] == "cross":
+        #     brush.setStyle(Qt.DiagCrossPattern)
+        # elif self._BlockTraits["_Pattern"] == "grid":
+        #     brush.setStyle(Qt.CrossPattern)
+        # elif self._BlockTraits["_Pattern"] == "slash":
+        #     brush.setStyle(Qt.BDiagPattern)
+        # elif self._BlockTraits["_Pattern"] == "backSlash":
+        #     brush.setStyle(Qt.FDiagPattern)
+        #
+        #
+        # elif self._BlockTraits["_Pattern"] == "stipple0":
+        #     brush.setStyle(Qt.BDiagPattern)
+        # elif self._BlockTraits["_Pattern"] == "dagger":
+        #     brush.setStyle(Qt.Dense7Pattern)
+        # elif self._BlockTraits["_Pattern"] == "brick":
+        #     brush.setStyle(Qt.CrossPattern)
+        #     # brush.setTransform()
+        # else:
+        #     # dots_bitmap = QBitmap(4,4)
+        #     # dots_bitmap.fromData(QSize(4,4),b'\x01')
+        #     # brush.setTexture(dots_bitmap)
+        #     brush.setStyle(Qt.Dense6Pattern)
+
+        color_name = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']]['Fill'].name
+        color_patt_name =color_name+self._BlockTraits["_Pattern"]
+
+        if self._BlockTraits["_Pattern"] == 'X':
+            painter.drawLine(0,0,self._BlockTraits["_Width"],self._BlockTraits["_Height"])
+            painter.drawLine(0,self._BlockTraits["_Height"],self._BlockTraits["_Width"],0)
+        elif self._BlockTraits["_Pattern"] == 'blank':
+            brush.setStyle(Qt.NoBrush)
+        else:
+            if color_patt_name not in DisplayReader._ColorPatternDict:
+                color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']]['Fill']
+                qpix = DisplayReader._PatternDict[self._BlockTraits["_Pattern"]].create_qbit(color)
+                DisplayReader._DisplayDict[color_patt_name] = qpix
+            qpix = DisplayReader._DisplayDict[color_patt_name]
+            brush.setTexture(qpix)
+
 
         brush.setTransform(QTransform(painter.worldTransform().inverted()[0]))
-        # print("zValue : ", self.zValue())
-        painter.setPen(pen)
+
         painter.setBrush(brush)
 
         painter.drawRect(self.rect())
@@ -492,6 +507,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']]['Fill']
                 blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']]['Outline']
                 blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']]['Stipple']
+                # blockTraits['_Pattern_qbit'] =  DisplayInfo[blockTraits['_LayerName']]['Stipple_qbit']
 
             del _Layer
             del _Layer2Name
