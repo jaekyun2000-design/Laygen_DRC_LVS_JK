@@ -519,6 +519,8 @@ class _MainWindow(QMainWindow):
         print(self.calculator_window.presetDict)
 
     def get_dc_highlight_dp(self,dc_id):
+        for seleceted_item in self.scene.selectedItems():
+            seleceted_item.setSelected(False)
         dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
         if dp_id:
             self.visualItemDict[dp_id].setSelected(True)
