@@ -8,7 +8,7 @@ from PyQTInterface  import VisualizationItem
 from PyQTInterface import SetupWindow
 from PyQTInterface  import VariableVisualItem
 from PyQTInterface import calculator
-
+import warnings
 from PyCodes import ASTmodule
 from PyCodes import element_ast
 
@@ -567,6 +567,10 @@ class variableContentWidget(QWidget):
         if name == 'layer':
             _Layer = LayerReader._LayerMapping
             for LayerName in _Layer:
+                if _Layer[LayerName] == None:
+                    warnings.warn(
+                        f'Current Layer {LayerName} does not match any layer in current technology node.')
+                    continue
                 if _Layer[LayerName][1] == 0:
                     tmp_input_widget.addItem(LayerName)
         elif name == 'index':

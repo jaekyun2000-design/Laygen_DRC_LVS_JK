@@ -514,6 +514,10 @@ class _VisualizationItem(QGraphicsItemGroup):
                     blockTraits['_DataType'] = '_pin'
                 else:
                     blockTraits['_DataType'] = '_drawing'
+
+            layer_data_name = blockTraits['_LayerName']+blockTraits['_DataType']
+            if layer_data_name not in DisplayReader._DisplayDict:
+                DisplayReader.readtechfile()
             blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Fill']
             blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Outline']
             blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Stipple']
