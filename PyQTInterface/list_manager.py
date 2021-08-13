@@ -381,8 +381,9 @@ class layerListItemModel(QStandardItemModel):
         tmp_item_model.setHorizontalHeaderLabels(['    Layer    ','Visible','Clickable'])
 
         for used_layer in used_layer_dict.keys():
-            if len(used_layer_dict[used_layer]) != 0:
-                _used_layer_list.append(used_layer)
+            if used_layer != 'SRef':
+                if len(used_layer_dict[used_layer]) != 0:
+                    _used_layer_list.append(used_layer)
 
         for layer in _used_layer_list:
             self._layer_list.append(layer)
