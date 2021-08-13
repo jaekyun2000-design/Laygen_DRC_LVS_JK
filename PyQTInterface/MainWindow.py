@@ -70,8 +70,6 @@ EasyDebugFileName = ''
 class _MainWindow(QMainWindow):
 
     # def MACRO(self):
-
-
     # send_Boundary_signal = pyqtSignal()
     # send_ProjectName_signal = pyqtSignal(str)
     # send_ModuleName_signal = pyqtSignal(str)
@@ -85,6 +83,12 @@ class _MainWindow(QMainWindow):
 
     def __init__(self):
         super(_MainWindow, self).__init__()
+        # self.setStyleSheet("background-color: whitesmoke")
+        # self.setStyleSheet("background-color: rgb(178, 41, 100)")
+        # self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setStyleSheet("border-color: rgb(178,41,100)")
+
+
         self._QTObj = QTInterfaceWithAST.QtInterFace()
         self._ProjectName = None
         self._CurrentModuleName = None
@@ -213,9 +217,12 @@ class _MainWindow(QMainWindow):
         auto_tech_process_change_action.triggered.connect(self.change_process)
 
         automation_menu = menubar.addMenu("&Automation")
+        automation_menu.setObjectName("top_menu_widget")
         automation_menu.addAction(auto_array_action)
         automation_menu.addAction(auto_pathpoint_action)
         automation_menu.addAction(auto_tech_process_change_action)
+        automation_menu.setStyleSheet("background-color: rgb(178, 41, 100)")
+        # self.setStyleSheet("background-color: rgb(178, 41, 100)")
 
 
 
