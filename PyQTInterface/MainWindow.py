@@ -566,13 +566,18 @@ class _MainWindow(QMainWindow):
             return None
         else:
             user_setup._Technology = technology_name
+
+            for qt_dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].values():
+                qt_dp.run_for_process_update()
+
             from PyQTInterface.layermap import DisplayReader
             LayerReader.run_for_process_update()
             DisplayReader.run_for_process_update()
             remove_vs_items = []
-            for vs_item in self.visualItemDict.values():
+            for dp_name, vs_item in self.visualItemDict.items():
                 # vs_item.invalid_layer_signal.connect(self.warning_invalid_layer)
-                remove_vs_items.extend(vs_item.rerun_for_process_update())
+                qt_dp = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name]
+                remove_vs_items.extend(vs_item.rerun_for_process_update(qt_dp))
             for rm_item in remove_vs_items:
                 self.scene.removeItem(rm_item)
                 del rm_item

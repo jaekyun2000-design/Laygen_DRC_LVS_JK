@@ -510,8 +510,9 @@ class _VisualizationItem(QGraphicsItemGroup):
             tmpBlock.setPos(_XYCoordinatesPair[0] - blockTraits['_Width']/2,_XYCoordinatesPair[1] - blockTraits['_Height']/2)
             tmpBlock.index = [idx]
 
-            layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-            layer = layernum2name[str(blockTraits['_Layer'])]
+            # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+            # layer = layernum2name[str(blockTraits['_Layer'])]
+            layer = blockTraits['_LayerUnifiedName']
 
             if self in self._compareLayer:
                 if self._compareLayer[self] == layer:
@@ -610,8 +611,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 blockTraits['_Width'] = Xwidth
                 blockTraits['_Height'] = Ywidth
 
-                layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-                layer = layernum2name[str(blockTraits['_Layer'])]
+                # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+                # layer = layernum2name[str(blockTraits['_Layer'])]
+                layer = blockTraits['_LayerUnifiedName']
 
                 if self in self._compareLayer:
                     if self._compareLayer[self] == layer:
@@ -668,12 +670,13 @@ class _VisualizationItem(QGraphicsItemGroup):
                 sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
                 sub_element_vi.setPos(_XYCoordinatesPair[0], _XYCoordinatesPair[1])
 
-                layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+                # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                 if sub_element_vi._ItemTraits['_Layer'] == None:
                     pass
                 else:
                     if type(sub_element_vi._ItemTraits['_Layer']) == int:
-                        layer = layernum2name[str(sub_element_vi._ItemTraits['_Layer'])]
+                        # layer = layernum2name[str(sub_element_vi._ItemTraits['_Layer'])]
+                        layer = sub_element_vi._ItemTraits['_LayerUnifiedName']
                         self._subElementLayer[layer].append(sub_element_vi)
                     else:
                         self._subElementLayer[sub_element_vi._ItemTraits['_Layer']].append(sub_element_vi)
@@ -751,8 +754,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 # print("?")
 
             else:
-                layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-                layer = layernum2name[str(blockTraits['_Layer'])]
+                # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+                # layer = layernum2name[str(blockTraits['_Layer'])]
+                layer = blockTraits['_LayerUnifiedName']
                 if 'PIN' in layer:
                     try:
                         self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
@@ -1071,8 +1075,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                 _rect_block.set_shallow_highlight()
                 _rect_block.update()
 
-    def rerun_for_process_update(self):
-
+    def rerun_for_process_update(self, qt_dp):
+        self.updateDesignParameter(qt_dp)
         child_items = self.childItems()
         for child in child_items:
             self.removeFromGroup(child)

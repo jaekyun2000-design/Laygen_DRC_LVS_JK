@@ -191,7 +191,7 @@ class _BoundarySetupWindow(QWidget):
                 raise NotImplementedError
             self._DesignParameter['_XWidth'] = float(self.width_input.text())
             self._DesignParameter['_YWidth'] = float(self.height_input.text())
-            self._DesignParameter['_Layer'] = self.layer_input.currentText()
+            self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
 
             try:
                 self.send_DestroyTmpVisual_signal.emit(self.visualItem)

@@ -58,14 +58,22 @@ class QtDesignParameter:
             self._DesignParameter['_LayerUnifiedName'] = LayerReader._LayDatNumToName[layer_number][data_number]
             self._DesignParameter['_LayerName'] = LayerReader._LayDatNameTmp[layer_number][data_number][0]
             self._DesignParameter['_DataType'] = '_'+LayerReader._LayDatNameTmp[layer_number][data_number][1]
+        else:
+            self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
+            self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
 
         if self._type == 3:
             for sub_qt_dp in self._DesignParameter['_DesignObj'].values():
                 sub_qt_dp.update_unified_expression()
 
     def run_for_process_update(self):
-        self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
-        self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
+        if '_LayerUnifiedName' in self._DesignParameter:
+            self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
+            self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
+
+        if self._type == 3:
+            for sub_qt_dp in self._DesignParameter['_DesignObj'].values():
+                sub_qt_dp.run_for_process_update()
 
     def _createDesignParameter(self):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
@@ -1800,6 +1808,7 @@ class QtProject:
                         print('Constraint -> Parameter is not implemented')
 
                 output = {'parameter': _designParameter, 'constraint': _designConstraint, 'parameter_id': _dp_dict['_ElementName'], 'constraint_id': _designConstraint_id}
+                self._DesignParameter[module_name][_dp_dict['_ElementName']].update_unified_expression()
                 return output
             except:
                 traceback.print_exc()
