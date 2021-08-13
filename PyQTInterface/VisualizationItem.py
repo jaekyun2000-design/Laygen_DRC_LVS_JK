@@ -541,7 +541,10 @@ class _VisualizationItem(QGraphicsItemGroup):
             else:
                 tmpLayer = None
                 self._compareLayer[self] = layer
-                self._subElementLayer[layer].append(self)
+                if layer not in self._subElementLayer:
+                    self._subElementLayer[layer] = [self]
+                else:
+                    self._subElementLayer[layer].append(self)
 
             if tmpLayer == None:
                 pass
@@ -695,7 +698,10 @@ class _VisualizationItem(QGraphicsItemGroup):
                     if type(sub_element_vi._ItemTraits['_Layer']) == int:
                         # layer = layernum2name[str(sub_element_vi._ItemTraits['_Layer'])]
                         layer = sub_element_vi._ItemTraits['_LayerUnifiedName']
-                        self._subElementLayer[layer].append(sub_element_vi)
+                        if layer not in self._subElementLayer:
+                            self._subElementLayer[layer] = [sub_element_vi]
+                        else:
+                            self._subElementLayer[layer].append(sub_element_vi)
                     else:
                         self._subElementLayer[sub_element_vi._ItemTraits['_Layer']].append(sub_element_vi)
 
