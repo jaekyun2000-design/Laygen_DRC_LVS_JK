@@ -59,8 +59,9 @@ class QtDesignParameter:
             self._DesignParameter['_LayerName'] = LayerReader._LayDatNameTmp[layer_number][data_number][0]
             self._DesignParameter['_DataType'] = '_'+LayerReader._LayDatNameTmp[layer_number][data_number][1]
         else:
-            self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
-            self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
+            if '_LayerUnifiedName' in self._DesignParameter:
+                self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
+                self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
 
         if self._type == 3:
             for sub_qt_dp in self._DesignParameter['_DesignObj'].values():
