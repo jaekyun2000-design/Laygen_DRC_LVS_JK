@@ -1027,11 +1027,15 @@ class _MainWindow(QMainWindow):
             # gds2gen.set_root_cell(self._CurrentModuleName)
             # gds2gen.run_qt_constraint_ast()
             dp_dict = gds2gen.get_updated_designParameters()                                    # New Info
+            for dp in dp_dict.values():
+                for qt_dp in dp['_ModelStructure'].values():
+                    qt_dp.update_unified_expression()
             current_dpdict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]   # Unchanged target Info
 
 
             updated_dp_name_list = list(filter(lambda dp_name: dp_name  in current_dpdict, list(dp_dict.keys())))
             for dp_name in updated_dp_name_list:
+                current_dpdict[dp_name].update_unified_expression()
                 for key, value in dp_dict[dp_name].items():
                     current_dpdict[dp_name]._DesignParameter[key] = value
                 if current_dpdict[dp_name]._DesignParameter['_DesignParametertype'] == 3:
