@@ -38,9 +38,16 @@ def run_for_process_update():
         _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/display.drf'
     elif _Technology == 'SS28nm':
         _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/SS28nm/display.drf'
+    elif _Technology == 'TSMC45nm':
+        _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC45nm/display.drf'
     elif _Technology == 'TSMC65nm':
-        # print(_HomeDirectory)
         _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC65nm/display.drf'
+    elif _Technology == 'TSMC90nm':
+        _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC90nm/display.drf'
+    elif _Technology == 'TSMC130nm':
+        _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC130nm/display.drf'
+    elif _Technology == 'TSMC350m':
+        _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC350nm/display.drf'
 
     with open(_DRFfile, 'rb', 0) as drf:
         lines = drf.readlines()
@@ -113,9 +120,16 @@ def readtechfile():
         techfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/techfile'
     elif _Technology == 'SS28nm':
         techfile = _HomeDirectory + '/PyQTInterface/layermap/SS28nm/techfile'
+    elif _Technology == 'TSMC45nm':
+        techfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC45nm/techfile'
     elif _Technology == 'TSMC65nm':
-        # print(_HomeDirectory)
         techfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC65nm/techfile'
+    elif _Technology == 'TSMC90nm':
+        techfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC90nm/techfile'
+    elif _Technology == 'TSMC130nm':
+        techfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC130nm/techfile'
+    elif _Technology == 'TSMC350m':
+        techfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC350nm/techfile'
 
     with open(techfile, 'rb', 0) as tech:
         lines = tech.readlines()

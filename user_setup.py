@@ -1,4 +1,4 @@
-_Technology='TSMC180nm'
+_Technology='TSMC65nm'
 _Night_mode = True
 DEBUG = True
 
