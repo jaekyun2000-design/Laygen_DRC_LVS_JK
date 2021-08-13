@@ -38,8 +38,8 @@ def run_for_process_update():
     if _Technology == 'SS28nm':
         _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/SS28nm/cmos28lp_tech.layermap')
         _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
-    elif _Technology == '180nm':
-        _LayerMapFile = open(_HomeDirectory + '/TSMCTechfile/TSMC180nm/tsmc18rf.layermap')
+    elif _Technology == 'TSMC180nm':
+        _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/tsmc18rf.layermap')
         _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
     elif _Technology == 'TSMC65nm':
         _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/TSMC65nm/tsmcN65.layermap')
@@ -62,7 +62,7 @@ def run_for_process_update():
     #################    Conversion into Singlevariable   ##################################
     print('############################# PIMP Layer Mapping#########################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'PIMP': _LayerMappingTmp[('PIMP', 'drawing')]})
         # _Layernumber = _LayerMappingTmp[('NIMP', 'drawing')][0]
         # _DataType = _LayerMappingTmp[('NIMP', 'drawing')][1]
@@ -82,7 +82,7 @@ def run_for_process_update():
         _LayerMapping.update({'PIMP': _LayerMappingTmp[('PIMP', 'drawing')]})
 
     print('############################# PDK Layer Mapping#########################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'PDK': (None, None)})
     elif _Technology == 'SS28nm':
         _LayerMapping.update({'PDK': (None, None)})
@@ -102,7 +102,7 @@ def run_for_process_update():
 
     print('############################# NIMP Layer Mapping#########################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'NIMP': _LayerMappingTmp[('NIMP', 'drawing')]})
         # _Layernumber = _LayerMappingTmp[('NIMP', 'drawing')][0]
         # _DataType = _LayerMappingTmp[('NIMP', 'drawing')][1]
@@ -123,7 +123,7 @@ def run_for_process_update():
 
     print('############################ DIFF Layer Mapping#########################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'DIFF': _LayerMappingTmp[('DIFF', 'drawing')]})
         # _Layernumber = layermapping[('DIFF', 'drawing')][0]
         # _DataType = layermapping[('DIFF', 'drawing')][1]
@@ -144,7 +144,7 @@ def run_for_process_update():
         _LayerMapping.update({'DIFF': _LayerMappingTmp[('DIFF', 'drawing')]})
     print('##########################    CONT Layer Mapping#####################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'CONT': _LayerMappingTmp[('CONT', 'drawing')]})
         # _Layernumber = layermapping[('CONT', 'drawing')][0]
         # _DataType = layermapping[('CONT', 'drawing')][1]
@@ -174,7 +174,7 @@ def run_for_process_update():
         _LayerMapping.update({'OP': _LayerMappingTmp[('OP', 'drawing')]})
 
     print('#############################   METAL1 Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL1': _LayerMappingTmp[('METAL1', 'drawing')]})
         # _Layernumber = layermapping[('METAL1', 'drawing')][0]
         # _DataType = layermapping[('METAL1', 'drawing')][1]
@@ -194,7 +194,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL1': _LayerMappingTmp[('METAL1', 'drawing')]})
 
     print('#############################   METAL1PIN Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL1PIN': _LayerMappingTmp[('METAL1', 'pin')]})
         # _Layernumber = layermapping[('METAL1', 'drawing')][0]
         # _DataType = layermapping[('METAL1', 'drawing')][1]
@@ -216,7 +216,7 @@ def run_for_process_update():
 
     print('##########################    VIA1 Layer Mapping#####################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'VIA12': _LayerMappingTmp[('VIA12', 'drawing')]})
         # _Layernumber = layermapping[('CONT', 'drawing')][0]
         # _DataType = layermapping[('CONT', 'drawing')][1]
@@ -237,7 +237,7 @@ def run_for_process_update():
 
     print('##########################    VIA2 Layer Mapping#####################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'VIA23': _LayerMappingTmp[('VIA23', 'drawing')]})
         # _Layernumber = layermapping[('CONT', 'drawing')][0]
         # _DataType = layermapping[('CONT', 'drawing')][1]
@@ -258,7 +258,7 @@ def run_for_process_update():
 
     print('##########################    VIA3 Layer Mapping#####################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'VIA34': _LayerMappingTmp[('VIA34', 'drawing')]})
         # _Layernumber = layermapping[('CONT', 'drawing')][0]
         # _DataType = layermapping[('CONT', 'drawing')][1]
@@ -269,7 +269,7 @@ def run_for_process_update():
         # _Layernumber = layermapping[('CO', 'drawing')][0]
         # _DataType = layermapping[('CO', 'drawing')][1]
 
-        # if self._TechnologyViaMet12Met2 == '180nm':
+        # if self._TechnologyViaMet12Met2 == 'TSMC180nm':
         #         _Layernumber = layermapping[('VIA12', 'drawing')][0]
         #         _DataType = layermapping[('VIA12', 'drawing')][1]
         #     elif self._TechnologyViaMet12Met2 == 'TSMC65nm':
@@ -286,7 +286,7 @@ def run_for_process_update():
 
     print('##########################    VIA4 Layer Mapping#####################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'VIA45': _LayerMappingTmp[('VIA45', 'drawing')]})
         # _Layernumber = layermapping[('CONT', 'drawing')][0]
         # _DataType = layermapping[('CONT', 'drawing')][1]
@@ -297,7 +297,7 @@ def run_for_process_update():
         # _Layernumber = layermapping[('CO', 'drawing')][0]
         # _DataType = layermapping[('CO', 'drawing')][1]
 
-        # if self._TechnologyViaMet12Met2 == '180nm':
+        # if self._TechnologyViaMet12Met2 == 'TSMC180nm':
         #         _Layernumber = layermapping[('VIA12', 'drawing')][0]
         #         _DataType = layermapping[('VIA12', 'drawing')][1]
         #     elif self._TechnologyViaMet12Met2 == 'TSMC65nm':
@@ -314,7 +314,7 @@ def run_for_process_update():
 
     print('##########################    VIA5 Layer Mapping#####################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'VIA56': _LayerMappingTmp[('VIA56', 'drawing')]})
         # _Layernumber = layermapping[('CONT', 'drawing')][0]
         # _DataType = layermapping[('CONT', 'drawing')][1]
@@ -325,7 +325,7 @@ def run_for_process_update():
         # _Layernumber = layermapping[('CO', 'drawing')][0]
         # _DataType = layermapping[('CO', 'drawing')][1]
 
-        # if self._TechnologyViaMet12Met2 == '180nm':
+        # if self._TechnologyViaMet12Met2 == 'TSMC180nm':
         #         _Layernumber = layermapping[('VIA12', 'drawing')][0]
         #         _DataType = layermapping[('VIA12', 'drawing')][1]
         #     elif self._TechnologyViaMet12Met2 == 'TSMC65nm':
@@ -342,7 +342,7 @@ def run_for_process_update():
 
     print('##########################    VIA6 Layer Mapping#####################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'VIA67': _LayerMappingTmp[('VIA67', 'drawing')]})
         # _Layernumber = layermapping[('CONT', 'drawing')][0]
         # _DataType = layermapping[('CONT', 'drawing')][1]
@@ -353,7 +353,7 @@ def run_for_process_update():
         # _Layernumber = layermapping[('CO', 'drawing')][0]
         # _DataType = layermapping[('CO', 'drawing')][1]
 
-        # if self._TechnologyViaMet12Met2 == '180nm':
+        # if self._TechnologyViaMet12Met2 == 'TSMC180nm':
         #         _Layernumber = layermapping[('VIA12', 'drawing')][0]
         #         _DataType = layermapping[('VIA12', 'drawing')][1]
         #     elif self._TechnologyViaMet12Met2 == 'TSMC65nm':
@@ -370,7 +370,7 @@ def run_for_process_update():
 
     print('##########################    VIA7 Layer Mapping#####################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'VIA78': None})
         # _Layernumber = layermapping[('CONT', 'drawing')][0]
         # _DataType = layermapping[('CONT', 'drawing')][1]
@@ -381,7 +381,7 @@ def run_for_process_update():
         # _Layernumber = layermapping[('CO', 'drawing')][0]
         # _DataType = layermapping[('CO', 'drawing')][1]
 
-        # if self._TechnologyViaMet12Met2 == '180nm':
+        # if self._TechnologyViaMet12Met2 == 'TSMC180nm':
         #         _Layernumber = layermapping[('VIA12', 'drawing')][0]
         #         _DataType = layermapping[('VIA12', 'drawing')][1]
         #     elif self._TechnologyViaMet12Met2 == 'TSMC65nm':
@@ -398,7 +398,7 @@ def run_for_process_update():
 
     print('##########################    VIA8 Layer Mapping#####################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'VIA89': None})
         # _Layernumber = layermapping[('CONT', 'drawing')][0]
         # _DataType = layermapping[('CONT', 'drawing')][1]
@@ -409,7 +409,7 @@ def run_for_process_update():
         # _Layernumber = layermapping[('CO', 'drawing')][0]
         # _DataType = layermapping[('CO', 'drawing')][1]
 
-        # if self._TechnologyViaMet12Met2 == '180nm':
+        # if self._TechnologyViaMet12Met2 == 'TSMC180nm':
         #         _Layernumber = layermapping[('VIA12', 'drawing')][0]
         #         _DataType = layermapping[('VIA12', 'drawing')][1]
         #     elif self._TechnologyViaMet12Met2 == 'TSMC65nm':
@@ -425,7 +425,7 @@ def run_for_process_update():
         _LayerMapping.update({'VIA89': None})
 
     print('#############################   METAL2 Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL2': _LayerMappingTmp[('METAL2', 'drawing')]})
         # _Layernumber = layermapping[('METAL1', 'drawing')][0]
         # _DataType = layermapping[('METAL1', 'drawing')][1]
@@ -445,7 +445,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL2': _LayerMappingTmp[('METAL2', 'drawing')]})
 
     print('#############################   METAL2PIN Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL2PIN': _LayerMappingTmp[('METAL2', 'pin')]})
         # _Layernumber = layermapping[('METAL1', 'pin')][0]
         # _DataType = layermapping[('METAL1', 'pin')][1]
@@ -465,7 +465,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL2PIN': _LayerMappingTmp[('METAL2', 'pin')]})
 
     print('#############################   METAL3 Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL3': _LayerMappingTmp[('METAL3', 'drawing')]})
         # _Layernumber = layermapping[('METAL1', 'drawing')][0]
         # _DataType = layermapping[('METAL1', 'drawing')][1]
@@ -485,7 +485,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL3': _LayerMappingTmp[('METAL3', 'drawing')]})
 
     print('#############################   METAL3PIN Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL3PIN': _LayerMappingTmp[('METAL3', 'pin')]})
         # _Layernumber = layermapping[('METAL1', 'pin')][0]
         # _DataType = layermapping[('METAL1', 'pin')][1]
@@ -504,7 +504,7 @@ def run_for_process_update():
     elif _Technology == '350nm':
         _LayerMapping.update({'METAL3PIN': _LayerMappingTmp[('METAL3', 'pin')]})
     print('#############################   METAL4 Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL4': _LayerMappingTmp[('METAL4', 'drawing')]})
         # _Layernumber = layermapping[('METAL1', 'drawing')][0]
         # _DataType = layermapping[('METAL1', 'drawing')][1]
@@ -524,7 +524,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL4': _LayerMappingTmp[('METAL4', 'drawing')]})
 
     print('#############################   METAL4PIN Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL4PIN': _LayerMappingTmp[('METAL4', 'pin')]})
         # _Layernumber = layermapping[('METAL1', 'pin')][0]
         # _DataType = layermapping[('METAL1', 'pin')][1]
@@ -544,7 +544,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL4PIN': _LayerMappingTmp[('METAL4', 'pin')]})
 
     print('#############################   METAL5 Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL5': _LayerMappingTmp[('METAL5', 'drawing')]})
         # _Layernumber = layermapping[('METAL1', 'drawing')][0]
         # _DataType = layermapping[('METAL1', 'drawing')][1]
@@ -564,7 +564,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL5': None})
 
     print('#############################   METAL5PIN Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL5PIN': _LayerMappingTmp[('METAL5', 'pin')]})
         # _Layernumber = layermapping[('METAL1', 'pin')][0]
         # _DataType = layermapping[('METAL1', 'pin')][1]
@@ -584,7 +584,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL5PIN': None})
 
     print('#############################   METAL6 Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL6': _LayerMappingTmp[('METAL6', 'drawing')]})
         # _Layernumber = layermapping[('METAL1', 'drawing')][0]
         # _DataType = layermapping[('METAL1', 'drawing')][1]
@@ -604,7 +604,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL6': None})
 
     print('#############################   METAL6PIN Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL6PIN': _LayerMappingTmp[('METAL6', 'pin')]})
         # _Layernumber = layermapping[('METAL1', 'pin')][0]
         # _DataType = layermapping[('METAL1', 'pin')][1]
@@ -624,7 +624,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL6PIN': None})
 
     print('#############################   METAL7 Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL7': _LayerMappingTmp[('METAL7', 'drawing')]})
         # _Layernumber = layermapping[('METAL1', 'drawing')][0]
         # _DataType = layermapping[('METAL1', 'drawing')][1]
@@ -644,7 +644,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL7': None})
 
     print('#############################   METAL7PIN Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL7PIN': _LayerMappingTmp[('METAL7', 'pin')]})
         # _Layernumber = layermapping[('METAL1', 'pin')][0]
         # _DataType = layermapping[('METAL1', 'pin')][1]
@@ -664,7 +664,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL7PIN': None})
 
     print('#############################   METAL8 Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL8': None})
         # _Layernumber = layermapping[('METAL1', 'drawing')][0]
         # _DataType = layermapping[('METAL1', 'drawing')][1]
@@ -684,7 +684,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL8': None})
 
     print('#############################   METAL8PIN Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL8PIN': None})
         # _Layernumber = layermapping[('METAL1', 'pin')][0]
         # _DataType = layermapping[('METAL1', 'pin')][1]
@@ -704,7 +704,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL8PIN': None})
 
     print('#############################   METAL9 Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL9': None})
         # _Layernumber = layermapping[('METAL1', 'drawing')][0]
         # _DataType = layermapping[('METAL1', 'drawing')][1]
@@ -724,7 +724,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL9': None})
 
     print('#############################   METAL9PIN Layer Mapping#################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL9PIN': None})
         # _Layernumber = layermapping[('METAL1', 'pin')][0]
         # _DataType = layermapping[('METAL1', 'pin')][1]
@@ -744,7 +744,7 @@ def run_for_process_update():
         _LayerMapping.update({'METAL9PIN': None})
 
     print('#########################   WELLBODY Layer Mapping #################################')
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'WELLBODY': _LayerMappingTmp[('WELLBODY', 'drawing')]})
     if _Technology == 'SS28nm':
         _LayerMapping.update({'WELLBODY': (None, None)})
@@ -761,12 +761,12 @@ def run_for_process_update():
 
     # print 'WELLBODY boundary generation'
     #         # _xycoordinatetmp = [[0, 0], [0, 100], [100, 100], [100, 0], [0, 0]]
-    #         if self._TechnologyNMOS == '180nm':
+    #         if self._TechnologyNMOS == 'TSMC180nm':
     #             _Layernumber = layermapping[('WELLBODY', 'drawing')][0]
     #             _DataType = layermapping[('WELLBODY', 'drawing')][1]
     print('##########################   POLY Layer Mapping    #################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'POLY': _LayerMappingTmp[('POLY1', 'drawing')]})
         # _Layernumber = layermapping[('POLY1', 'drawing')][0]
         # _DataType = layermapping[('POLY1', 'drawing')][1]
@@ -787,13 +787,13 @@ def run_for_process_update():
         _LayerMapping.update({'POLY': _LayerMappingTmp[('POLY1', 'drawing')]})
     print('#########################   NWELL Layer Mapping    #################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'NWELL': _LayerMappingTmp[('NWELL', 'drawing')]})
     elif _Technology == 'SS28nm':
         _LayerMapping.update({'NWELL': _LayerMappingTmp[('NW', 'drawing')]})
     elif _Technology == 'TSMC65nm':
         _LayerMapping.update({'NWELL': _LayerMappingTmp[('NW', 'drawing')]})
-        # if self._TechnologyINV == '180nm':
+        # if self._TechnologyINV == 'TSMC180nm':
         #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
         #         _DataType = layermapping[('NWELL', 'drawing')][1]
         #     elif self._TechnologyINV == 'TSMC65nm':
@@ -810,13 +810,13 @@ def run_for_process_update():
 
     print('#########################   N3V Layer Mapping    #################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'N3V': (None, None)})
     elif _Technology == 'SS28nm':
         _LayerMapping.update({'N3V': (None, None)})
     elif _Technology == 'TSMC65nm':
         _LayerMapping.update({'N3V': (None, None)})
-        # if self._TechnologyINV == '180nm':
+        # if self._TechnologyINV == 'TSMC180nm':
         #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
         #         _DataType = layermapping[('NWELL', 'drawing')][1]
         #     elif self._TechnologyINV == 'TSMC65nm':
@@ -833,13 +833,13 @@ def run_for_process_update():
 
     print('#########################   RPDMY Layer Mapping    #################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'RPDMY': _LayerMappingTmp[('RPDUMMY', 'drawing')]})
     elif _Technology == 'SS28nm':
         _LayerMapping.update({'RPDMY': (None, None)})
     elif _Technology == 'TSMC65nm':
         _LayerMapping.update({'RPDMY': _LayerMappingTmp[('RPDMY', 'drawing')]})
-        # if self._TechnologyINV == '180nm':
+        # if self._TechnologyINV == 'TSMC180nm':
         #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
         #         _DataType = layermapping[('NWELL', 'drawing')][1]
         #     elif self._TechnologyINV == 'TSMC65nm':
@@ -855,13 +855,13 @@ def run_for_process_update():
         _LayerMapping.update({'RPDMY': _LayerMappingTmp[('RPDUMMY', 'drawing')]})
     print('#########################   RPO Layer Mapping    #################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'RPO': _LayerMappingTmp[('RPO', 'drawing')]})
     elif _Technology == 'SS28nm':
         _LayerMapping.update({'RPO': (None, None)})
     elif _Technology == 'TSMC65nm':
         _LayerMapping.update({'RPO': _LayerMappingTmp[('RPO', 'drawing')]})
-        # if self._TechnologyINV == '180nm':
+        # if self._TechnologyINV == 'TSMC180nm':
         #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
         #         _DataType = layermapping[('NWELL', 'drawing')][1]
         #     elif self._TechnologyINV == 'TSMC65nm':
@@ -878,13 +878,13 @@ def run_for_process_update():
 
     print('#########################   RH Layer Mapping    #################################')
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _LayerMapping.update({'RH': (None, None)})
     elif _Technology == 'SS28nm':
         _LayerMapping.update({'RH': (None, None)})
     elif _Technology == 'TSMC65nm':
         _LayerMapping.update({'RH': _LayerMappingTmp[('RH', 'drawing')]})
-        # if self._TechnologyINV == '180nm':
+        # if self._TechnologyINV == 'TSMC180nm':
         #         _Layernumber = layermapping[('NWELL', 'drawing')][0]
         #         _DataType = layermapping[('NWELL', 'drawing')][1]
         #     elif self._TechnologyINV == 'TSMC65nm':
@@ -1020,6 +1020,6 @@ def _ReadLayerMapFile(_LayerMapFile, CadenceVersion ):
 #######################
 # load layers
 #
-# '180nm':
+# 'TSMC180nm':
 #  'TSMC65nm':
 run_for_process_update()

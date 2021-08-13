@@ -34,7 +34,7 @@ def run_for_process_update():
     global _Technology
     _Technology = user_setup._Technology
 
-    if _Technology == '180nm':
+    if _Technology == 'TSMC180nm':
         _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/display.drf'
     elif _Technology == 'SS28nm':
         _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/SS28nm/display.drf'
@@ -104,6 +104,44 @@ def run_for_process_update():
                 except:
                     pass
 
+def readtechfile():
+    global _DisplayDict
+    global _Technology
+    _Technology = user_setup._Technology
+
+    if _Technology == 'TSMC180nm':
+        techfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/techfile'
+    elif _Technology == 'SS28nm':
+        techfile = _HomeDirectory + '/PyQTInterface/layermap/SS28nm/techfile'
+    elif _Technology == 'TSMC65nm':
+        # print(_HomeDirectory)
+        techfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC65nm/techfile'
+
+    with open(techfile, 'rb', 0) as tech:
+        lines = tech.readlines()
+        techDisplays = False
+        for line in lines:
+            lineDecode = line.decode('ISO-8859-1')
+            if re.search('techDisplays', lineDecode):
+                techDisplays = True
+            if techDisplays:
+                if line == b')\n' or line == b'\r\n':
+                    techDisplays = False
+
+                try:
+                    split = re.split('[ \t]+', lineDecode)
+
+                    if split[0] == '':
+                        split.pop(0)
+                    lay_dat_name = split[1] + '_' + split[2]
+                    packet_name = split[3]
+                    _DisplayDict[lay_dat_name] = dict()
+                    _DisplayDict[lay_dat_name]['Fill'] = _DisplayDict[packet_name]['Fill']
+                    _DisplayDict[lay_dat_name]['Outline'] = _DisplayDict[packet_name]['Outline']
+                    _DisplayDict[lay_dat_name]['Stipple'] = _DisplayDict[packet_name]['Stipple']
+
+                except:
+                    pass
 
 class bitmap_converter:
     def __init__(self, name):
