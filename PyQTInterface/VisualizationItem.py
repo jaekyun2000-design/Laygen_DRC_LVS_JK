@@ -472,9 +472,12 @@ class _VisualizationItem(QGraphicsItemGroup):
         try:
             remove_item_list = []
             # for i in range(0,len(self.block)):
-            for child in self.childItems():
-                self.removeFromGroup(child)
-                remove_item_list.append(child)
+            # for child in self.childItems():
+            #     self.removeFromGroup(child)
+            #     remove_item_list.append(child)
+            for i in range(0,len(self.block)):
+                remove_item_list.append(self.block[i])
+                self.removeFromGroup(self.block[i])
             if self._ItemTraits['_DesignParametertype'] == 1:
                 self.block = []
                 for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
@@ -532,6 +535,15 @@ class _VisualizationItem(QGraphicsItemGroup):
             blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Fill']
             blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Outline']
             blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Stipple']
+
+            print('lll:', blockTraits['_LayerName']+blockTraits['_DataType'])
+
+            # layer_data_name = blockTraits['_Layer']+blockTraits['_DataType']
+            # if layer_data_name not in DisplayReader._DisplayDict:
+            #     DisplayReader.readtechfile()
+            # blockTraits['_Color'] =  DisplayInfo[blockTraits['_Layer']+blockTraits['_DataType']]['Fill']
+            # blockTraits['_Outline'] =  DisplayInfo[blockTraits['_Layer']+blockTraits['_DataType']]['Outline']
+            # blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_Layer']+blockTraits['_DataType']]['Stipple']
 
         if self._ItemTraits['_DesignParametertype'] == 1:                              # Boundary Case
             tmpBlock = _RectBlock()
