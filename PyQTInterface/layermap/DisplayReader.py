@@ -73,8 +73,10 @@ def run_for_process_update():
             if re.search('drDefineStipple', lineDecode):
                 stipple_flag = True
             if stipple_flag:
-                if line == b')\n' or line == b'\r\n':
-                    stipple_flag = False
+                # if line == b')\n' or line == b'\r\n':
+                #     stipple_flag = False
+                if lineDecode[0] == ')':
+                    stipple_flag =False
 
                 if b'display' in line:
                     # if bitmap:
@@ -92,8 +94,11 @@ def run_for_process_update():
             if re.search('drDefinePacket', lineDecode):
                 packet_flag = True
             if packet_flag:
-                if line == b')\n' or line == b'\r\n':
-                    stipple_flag = False
+                # if line == b')\n' or line == b'\r\n':
+                #     stipple_flag = False
+                if lineDecode[0] == ')':
+                    packet_flag = False
+
                 # if '_drawing' in lineDecode or '_pin' in lineDecode or '_cirt' in lineDecode:
                 try:
                     split = re.split('[ \t]+', lineDecode)
