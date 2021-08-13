@@ -365,7 +365,18 @@ class _VisualizationItem(QGraphicsItemGroup):
         for child in self.childItems():
             if type(child) == _VisualizationItem:
                 sub_element_dp_name = child._ElementName
-                remove_item_list.extend(child.updateDesignParameter(QtDesignParameter._DesignParameter['_ModelStructure'][sub_element_dp_name]))
+                if sub_element_dp_name in QtDesignParameter._DesignParameter['_ModelStructure']:
+                    remove_item_list.extend(child.updateDesignParameter(QtDesignParameter._DesignParameter['_ModelStructure'][sub_element_dp_name]))
+                else:
+                    search_stack = [child]
+                    while search_stack:
+                        search_item = search_stack.pop(0)
+                        sub_children = child.childItems()
+                        search_stack.extend(sub_children)
+                        remove_item_list.extend(sub_children)
+                        if type(search_item) == _VisualizationItem:
+                            for sub_child in sub_children:
+                                search_item.removeFromGroup(sub_child)
             self.removeFromGroup(child)
             remove_item_list.append(child)
 

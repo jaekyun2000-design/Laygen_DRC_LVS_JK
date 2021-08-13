@@ -1039,11 +1039,13 @@ class _MainWindow(QMainWindow):
                 for key, value in dp_dict[dp_name].items():
                     current_dpdict[dp_name]._DesignParameter[key] = value
                 if current_dpdict[dp_name]._DesignParameter['_DesignParametertype'] == 3:
-                    sref_vi = VisualizationItem._VisualizationItem()
-                    sref_vi.updateDesignParameter(current_dpdict[dp_name])
-                    self.scene.addItem(sref_vi)
-                    self.scene.removeItem(self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']])
-                    self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']] = sref_vi
+                    sref_vi = self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']]
+                    remove_vi_items = sref_vi.updateDesignParameter(current_dpdict[dp_name])
+                    for rm_vi in remove_vi_items:
+                        self.scene.removeItem(rm_vi)
+                    # self.scene.addItem(sref_vi)
+                    # self.scene.removeItem(self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']])
+                    # self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']] = sref_vi
                     self._layerItem = sref_vi.returnLayerDict()
                     self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
                 else:
