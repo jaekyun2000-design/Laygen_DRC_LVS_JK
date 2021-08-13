@@ -3,6 +3,8 @@ import os
 import collections
 import traceback
 import copy
+import warnings
+
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 from PyQTInterface import VisualizationItem
@@ -69,6 +71,9 @@ class QtDesignParameter:
 
     def run_for_process_update(self):
         if '_LayerUnifiedName' in self._DesignParameter:
+            if LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0] == None:
+                warnings.warn(f'Current Layer {self._DesignParameter["_LayerUnifiedName"]} does not match any layer in current technology node.')
+                return None
             self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
             self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
 

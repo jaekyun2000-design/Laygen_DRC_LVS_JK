@@ -567,8 +567,9 @@ class _MainWindow(QMainWindow):
         else:
             user_setup._Technology = technology_name
 
-            for qt_dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].values():
-                qt_dp.run_for_process_update()
+            if self._CurrentModuleName in self._QTObj._qtProject._DesignParameter:
+                for qt_dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].values():
+                    qt_dp.run_for_process_update()
 
             from PyQTInterface.layermap import DisplayReader
             LayerReader.run_for_process_update()
