@@ -238,7 +238,7 @@ class _BoundarySetupWindow(QWidget):
                 self.height_input.setText(str(self._DesignParameter['_YWidth']))
                 self.XYdictForLineEdit[0].setText(str(origin[0])+','+str(origin[1]))
 
-            self._DesignParameter['_Layer'] = self.layer_input.currentText()
+            self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
 
             self.visualItem.updateTraits(self._DesignParameter)
             self.send_BoundarySetup_signal.emit(self.visualItem)
@@ -260,7 +260,7 @@ class _BoundarySetupWindow(QWidget):
             self._DesignParameter['_XWidth'] = xdistance
             self._DesignParameter['_YWidth'] = ydistance
             self._DesignParameter['_XYCoordinates'] = [origin]
-            self._DesignParameter['_Layer'] = self.layer_input.currentText()
+            self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
             self.visualItem.updateTraits(self._DesignParameter)
             self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
             self.send_BoundarySetup_signal.emit(self.visualItem)
