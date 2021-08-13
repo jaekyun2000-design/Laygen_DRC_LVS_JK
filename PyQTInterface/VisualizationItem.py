@@ -361,6 +361,15 @@ class _VisualizationItem(QGraphicsItemGroup):
             return super().shape()
 
     def updateDesignParameter(self,QtDesignParameter):
+        remove_item_list= []
+        for child in self.childItems():
+            if type(child) == _VisualizationItem:
+                sub_element_dp_name = child._ElementName
+                remove_item_list.extend(child.updateDesignParameter(QtDesignParameter._DesignParameter['_ModelStructure'][sub_element_dp_name]))
+            self.removeFromGroup(child)
+            remove_item_list.append(child)
+
+
         self._id = QtDesignParameter._id
         self._type = QtDesignParameter._type
         self._CreateFlag = False
@@ -390,7 +399,8 @@ class _VisualizationItem(QGraphicsItemGroup):
             self._ItemTraits['_ElementName'] = QtDesignParameter._id
         else:
             self._ItemTraits['_ElementName'] = QtDesignParameter._ElementName
-        self.updateTraits(QtDesignParameter._DesignParameter)
+        remove_item_list.extend(self.updateTraits(QtDesignParameter._DesignParameter))
+        return remove_item_list
 
 
     def updateTraits(self,_DesignParameter):
@@ -449,8 +459,11 @@ class _VisualizationItem(QGraphicsItemGroup):
 
 
         try:
-            for i in range(0,len(self.block)):
-                self.removeFromGroup(self.block[i])
+            remove_item_list = []
+            # for i in range(0,len(self.block)):
+            for child in self.childItems():
+                self.removeFromGroup(child)
+                remove_item_list.append(child)
             if self._ItemTraits['_DesignParametertype'] == 1:
                 self.block = []
                 for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
@@ -476,6 +489,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.setPos(0,0)
         except:
             traceback.print_exc()
+        return remove_item_list
 
     def updateDesignObj(self,visualItem):
         self._ItemTraits['_VisualizationItems'].append(visualItem)
@@ -1076,26 +1090,42 @@ class _VisualizationItem(QGraphicsItemGroup):
                 _rect_block.update()
 
     def rerun_for_process_update(self, qt_dp):
-        self.updateDesignParameter(qt_dp)
-        child_items = self.childItems()
-        for child in child_items:
-            self.removeFromGroup(child)
-        if self._ItemTraits['_DesignParametertype'] == 1:
-            for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
-                self.blockGeneration(xyPairs, idx)
-        elif self._ItemTraits['_DesignParametertype'] == 2:
-            for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
-                self.blockGeneration(xyPairs, idx)
-        elif self._ItemTraits['_DesignParametertype'] == 3:
-            for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
-                self.blockGeneration(xyPairs, idx)
-        elif self._ItemTraits['_DesignParametertype'] == 8:
-            self.blockGeneration(self._ItemTraits['_XYCoordinates'])
-        else:
-            self.blockGeneration()
+        remove_item_list = self.updateDesignParameter(qt_dp)
+        return remove_item_list
+        # child_items = self.childItems()
+        # parent_items = []
+        # for i in range(len(child_items)):
+        #     parent_items.append(self)
+        # child_search_stack = self.childItems()
+        # while child_search_stack:
+        #     child = child_search_stack.pop(0)
+        #     parent = parent_items.pop(0)
+        #     grandchildren = child.childItems()
+        #     if grandchildren:
+        #         child_search_stack.extend(grandchildren)
+        #         child_items.extend(grandchildren)
+        #         for i in range(len(grandchildren)):
+        #             parent_items.append(child)
+        #     parent.removeFromGroup(child)
+
+        # for child in child_items:
+        # #     self.removeFromGroup(child)
+        # if self._ItemTraits['_DesignParametertype'] == 1:
+        #     for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+        #         self.blockGeneration(xyPairs, idx)
+        # elif self._ItemTraits['_DesignParametertype'] == 2:
+        #     for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+        #         self.blockGeneration(xyPairs, idx)
+        # elif self._ItemTraits['_DesignParametertype'] == 3:
+        #     for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
+        #         self.blockGeneration(xyPairs, idx)
+        # elif self._ItemTraits['_DesignParametertype'] == 8:
+        #     self.blockGeneration(self._ItemTraits['_XYCoordinates'])
+        # else:
+        #     self.blockGeneration()
 
 
-        return child_items
+        # return child_items
 
 
         # if self._ItemTraits['_DesignParametertype'] == 1:

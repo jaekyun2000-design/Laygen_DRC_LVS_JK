@@ -78,7 +78,7 @@ class QtDesignParameter:
             self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
 
         if self._type == 3:
-            for sub_qt_dp in self._DesignParameter['_DesignObj'].values():
+            for sub_qt_dp in self._DesignParameter['_ModelStructure'].values():
                 sub_qt_dp.run_for_process_update()
 
     def _createDesignParameter(self):

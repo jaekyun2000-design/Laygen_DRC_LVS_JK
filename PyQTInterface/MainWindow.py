@@ -567,17 +567,19 @@ class _MainWindow(QMainWindow):
         else:
             user_setup._Technology = technology_name
 
+            from PyQTInterface.layermap import DisplayReader
+            LayerReader.run_for_process_update()
+            DisplayReader.run_for_process_update()
+
             if self._CurrentModuleName in self._QTObj._qtProject._DesignParameter:
                 for qt_dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].values():
                     qt_dp.run_for_process_update()
 
-            from PyQTInterface.layermap import DisplayReader
-            LayerReader.run_for_process_update()
-            DisplayReader.run_for_process_update()
             remove_vs_items = []
             for dp_name, vs_item in self.visualItemDict.items():
                 # vs_item.invalid_layer_signal.connect(self.warning_invalid_layer)
                 qt_dp = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name]
+                # vs_item.rerun_for_process_update(qt_dp)
                 remove_vs_items.extend(vs_item.rerun_for_process_update(qt_dp))
             for rm_item in remove_vs_items:
                 self.scene.removeItem(rm_item)
