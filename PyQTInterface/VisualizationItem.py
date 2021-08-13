@@ -406,13 +406,6 @@ class _VisualizationItem(QGraphicsItemGroup):
             '''
             invalid key skipping for visual item
             '''
-            if type(_DesignParameter[key]) == str:
-                if key not in ['className', 'text', 'calculate_fcn', '_id', 'id', 'library', '_ElementName', '_Layer']:
-                    try:
-                        int(_DesignParameter[key])
-                    except:
-                        continue
-
             if key == "_XYCoordinates":    # DesignParameter's XYcoordinate is for real xy coordinates,,,
                 self._ItemTraits['_XYCoordinates'] = copy.deepcopy(_DesignParameter[key])                 # Itemtrait's XY coordinate matches QtDesignParameter's XYCoordinatesForDisplay
             elif key == "_ElementName":
@@ -497,53 +490,19 @@ class _VisualizationItem(QGraphicsItemGroup):
     def blockGeneration(self,_XYCoordinatesPair=None, idx=None):                                  #This creates visual Block (which maps boundary or Path Item)
         blockTraits = copy.deepcopy(self._ItemTraits)
 
-        _Layer = LayerReader._LayerMapping                      #Layer and Color Mapping
-        _Layer2Name = LayerReader._LayerNameTmp
         DisplayInfo = DisplayReader._DisplayDict
-        if type(self._ItemTraits['_Layer']) == int: #Load GDS case
-            if LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][0] is None:
-                print('debug')
-            self._ItemTraits['_LayerName'] = LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][0]
-            self._ItemTraits['_DataType'] = '_'+LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][1]
-            self._ItemTraits['_Layer'] = LayerReader._LayDatNumToName[str(self._ItemTraits['_Layer'])][str(self._ItemTraits['_Datatype'])]
 
-
-            blockTraits = copy.deepcopy(self._ItemTraits)
-
-
-
-        if self._ItemTraits['_Layer'] is not None: #Load GDS case
-            # if type(self._ItemTraits['_Layer']) == str:                         #When GUI Creates DesignParameter --> It has Layer Information in the form of "String" : ex) Met1, Met2, Via12, PIMP
-            if 'crit' in self._ItemTraits['_LayerName']:
-                blockTraits['_DataType'] = '_crit'
-            elif 'pin' in self._ItemTraits['_LayerName']:
-                blockTraits['_DataType'] = '_pin'
-            else:
-                blockTraits['_DataType'] = '_drawing'
-            blockTraits['_Layer'] =  _Layer[self._ItemTraits['_Layer']][0]     #Layer Number             --> Convert Name to Number
-            blockTraits['_LayerName'] =  _Layer[self._ItemTraits['_Layer']][2]  #Layer Original Name    --> Original Name is required to access color information
-
-        # else:                                                               #When GUI load DesignParameter from GDS File --> It has Layer Information in the form of "Number" : ex) 1,4,7
-        #     blockTraits['_Layer'] =  self._ItemTraits['_Layer']     #Layer Number
-        #     # blockTraits['_LayerName'] =  _Layer2Name[str(blockTraits['_Layer'])]#Layer Original Name        -->Original Name is required to access color infromation
-        #     if '_Datatype' not in blockTraits:
-        #         #TODO
-        #         print('debug')
-        #     blockTraits['_LayerName'] =  LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][0]#Layer Original Name        -->Original Name is required to access color infromation
-        #     blockTraits['_DataType'] = '_'+LayerReader._LayDatNameTmp[str(blockTraits['_Layer'])][str(blockTraits['_Datatype'])][1]
-        #     # if '_DataType' in self._ItemTraits:
-        #     #     data_type = LayerReader._LayDatNameTmp[str(self._ItemTraits['_Layer'])][str(self._ItemTraits['_DataType'])][1]
-        #     #     blockTraits['_DataType'] = '_' + data_type
-        #     # else:
-        #     #     blockTraits['_DataType'] = '_drawing'
-
+        if blockTraits['_Layer'] is not None: #Load GDS case
+            if '_DataType' not in blockTraits or not blockTraits['_DataType']:
+                if 'crit' in blockTraits['_LayerUnifiedName']:
+                    blockTraits['_DataType'] = '_crit'
+                elif 'pin' in blockTraits['_LayerUnifiedName']:
+                    blockTraits['_DataType'] = '_pin'
+                else:
+                    blockTraits['_DataType'] = '_drawing'
             blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Fill']
             blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Outline']
             blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Stipple']
-        # blockTraits['_Pattern_qbit'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Stipple_qbit']
-        del _Layer
-        del _Layer2Name
-        # self.block=[]
 
         if self._ItemTraits['_DesignParametertype'] == 1:                              # Boundary Case
             tmpBlock = _RectBlock()

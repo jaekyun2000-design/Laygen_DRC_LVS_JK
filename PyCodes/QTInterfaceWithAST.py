@@ -26,6 +26,7 @@ from gds_editor_ver3 import gds_stream
 
 
 class QtDesignParameter:
+    id_count = 0
     def __init__(self, _id=None, _type=None, _ParentName=None, _ItemTraits=None,
                  _ElementName=None, _name=None):  # _ParentName: module name, _ElementName: designParameter name
         self._id = _id
@@ -42,12 +43,29 @@ class QtDesignParameter:
         self._XYCoordinatesForDisplay = []
         self._NoShowFlag = None
         self._SimplifyFlag = None
+        QtDesignParameter.id_count += 1
         # self._XYCoordinateVariable = None
         # self._YWidthVariable = None
         # self._XWidthVariable = None
         # self._WidthVariable = None
         # self._DesignModuleLib = None
         ###self._VisualizationItemObj = VisualizationItem._VisualizationItem(_ItemTraits = _ItemTraits)
+
+    def update_unified_expression(self):
+        if '_Layer' in self._DesignParameter and type(self._DesignParameter['_Layer']) == int:
+            layer_number = str(self._DesignParameter['_Layer'])
+            data_number = str(self._DesignParameter['_Datatype'])
+            self._DesignParameter['_LayerUnifiedName'] = LayerReader._LayDatNumToName[layer_number][data_number]
+            self._DesignParameter['_LayerName'] = LayerReader._LayDatNameTmp[layer_number][data_number][0]
+            self._DesignParameter['_DataType'] = '_'+LayerReader._LayDatNameTmp[layer_number][data_number][1]
+
+        if self._type == 3:
+            for sub_qt_dp in self._DesignParameter['_DesignObj'].values():
+                sub_qt_dp.update_unified_expression()
+
+    def run_for_process_update(self):
+        self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
+        self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
 
     def _createDesignParameter(self):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
@@ -155,9 +173,11 @@ class QtDesignParameter:
 
 
 class QtDesinConstraint:
+    id_count = 0
     def __init__(self, _id=None, _type=None, _ast=None):
         self._id = _id
         self._type = _type
+        QtDesinConstraint.id_count += 1
 
         if _ast == None:
             self._ast = None
@@ -912,6 +932,8 @@ class QtProject:
                         # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Angle"] = _tmpElement._ELEMENTS._TEXTBODY._STRANS._ANGLE.angle
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                             "_TEXT"] = _tmpElement._ELEMENTS._TEXTBODY._STRING.string_data
+
+                    self._DesignParameter[_tmpStructureName][_tmpId].update_unified_expression()
 
                         # print(vars(_tmpElement._ELEMENTS))
             # print(self._DesignParameter)
@@ -2047,6 +2069,8 @@ class QtProject:
             return userDefineExceptions._InvalidInputError
         else:
             try:
+                # print(f"debug::{QtDesignParameter.id_count}")
+                # return QtDesignParameter.id_count
                 if _ParentName not in self._DesignParameter.keys():
                     self._DesignParameter[_ParentName] = dict()
                 _tmpIdGroup = list(range(0, len(self._DesignParameter[_ParentName].keys()) + 1))
@@ -2065,6 +2089,7 @@ class QtProject:
             return userDefineExceptions._InvalidInputError
         else:
             try:
+                # return QtDesinConstraint.id_count
                 if _ParentName not in self._DesignConstraint.keys():
                     self._DesignConstraint[_ParentName] = dict()
                 _tmpIdGroup = list(range(0, len(self._DesignConstraint[_ParentName].keys()) + 1))
