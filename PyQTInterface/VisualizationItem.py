@@ -4,7 +4,7 @@ import re
 import traceback
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-
+import user_setup
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
@@ -105,7 +105,8 @@ class _RectBlock(QGraphicsRectItem):
             # print("HighLighted",self.zValue())
             pen.setStyle(Qt.SolidLine)
             # pen.setColor(self._BlockTraits["_Outline"])
-            pen.setColor(Qt.GlobalColor.black)
+            color = Qt.GlobalColor.white if user_setup._Night_mode else Qt.GlobalColor.black
+            pen.setColor(color)
             pen.setWidth(5)
             # self.setZValue(1)
         elif self.shallow_highlight:

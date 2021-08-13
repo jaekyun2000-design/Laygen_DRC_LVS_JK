@@ -237,7 +237,8 @@ class _MainWindow(QMainWindow):
         self.scene.setMinimumRenderSize(1)
         graphicView.centerOn(QPointF(268,-165))
         self.setCentralWidget(graphicView)
-        self.scene.setBackgroundBrush(QBrush(Qt.white))
+        color = Qt.black if user_setup._Night_mode else Qt.white
+        self.scene.setBackgroundBrush(QBrush(color))
         graphicView.scale(1,-1)
         graphicView.setInteractive(True)
 
@@ -307,7 +308,8 @@ class _MainWindow(QMainWindow):
         CandidateCheckBox.stateChanged.connect(self.visibleCandidate)
 
         blackmode_box = QCheckBox("Night Mode", dockContentWidget1)
-        blackmode_box.setCheckState(0)
+        state = 2 if user_setup._Night_mode else 0
+        blackmode_box.setCheckState(state)
         blackmode_box.stateChanged.connect(self.scene.change_background)
 
 
@@ -2752,6 +2754,7 @@ class _CustomScene(QGraphicsScene):
     send_show_variable_signal = pyqtSignal(QGraphicsItem)
     send_doubleclick_signal = pyqtSignal(bool)
     send_item_clicked_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+    send_change_background_siganl = pyqtSignal(int)
 
     viewList = []
 
@@ -2791,9 +2794,12 @@ class _CustomScene(QGraphicsScene):
 
     def change_background(self, state):
         if state == 2:
+            user_setup._Night_mode = True
             self.setBackgroundBrush(QBrush(Qt.black))
         else:
+            user_setup._Night_mode = False
             self.setBackgroundBrush(QBrush(Qt.white))
+        self.send_change_background_siganl.emit(state)
 
     def getNonselectableLayerList(self, _layerlist):
         self.nslist = _layerlist
@@ -3168,6 +3174,9 @@ class _CustomScene(QGraphicsScene):
         self.viewList[-1].setDragMode(QGraphicsView.RubberBandDrag)
         self.viewList[-1].scale(1,-1)
         dummy = _CustomScene(axis=False)
+        bg_color = Qt.black if user_setup._Night_mode else Qt.white
+        dummy.setBackgroundBrush(QBrush(bg_color))
+        self.send_change_background_siganl.connect(dummy.change_background)
         dummy.send_module_name_list_signal.connect(self.viewList[-1].name_out_fcn)
         for key, value in structure_dict.items():
             try:
