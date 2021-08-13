@@ -587,6 +587,7 @@ class _MainWindow(QMainWindow):
 
 
             print('Process Changed!')
+            self.process_list_widget.close()
 
     def warning_invalid_layer(self, layer_name):
         self.warning_widget = QtWarningMsg(f"Not valid layer: {layer_name}")
