@@ -239,6 +239,17 @@ class _BoundarySetupWindow(QWidget):
                 self.XYdictForLineEdit[0].setText(str(origin[0])+','+str(origin[1]))
 
             self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
+            self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self.layer_input.currentText()][0]
+            self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self.layer_input.currentText()][2]
+            self._DesignParameter['_Datatype'] = LayerReader._LayerMapping[self.layer_input.currentText()][1]
+            self._DesignParameter['_DataType'] = '_' + LayerReader._LayDatNameTmp[str(self._DesignParameter['_Layer'])][str(self._DesignParameter['_Datatype'])][1]
+
+            if self._DesignParameter['_XWidth'] is None:
+                self._DesignParameter['_XWidth'] = 0
+            if self._DesignParameter['_YWidth'] is None:
+                self._DesignParameter['_YWidth'] = 0
+            if self._DesignParameter['_XYCoordinates'] == []:
+                self._DesignParameter['_XYCoordinates'] = [[_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()]]
 
             self.visualItem.updateTraits(self._DesignParameter)
             self.send_BoundarySetup_signal.emit(self.visualItem)
