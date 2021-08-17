@@ -409,7 +409,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         self._id = QtDesignParameter._id
         self._type = QtDesignParameter._type
         self._ItemTraits['_type'] = self._type
-        self._CreateFlag = False
+        # self._CreateFlag = False
         # try:
         #     oldVersionSupportForXYCoordinatesForDisplay = QtDesignParameter._XYCoordinatesForDisplay
         # except:
@@ -984,9 +984,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.heightVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
                 self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-                self.widthVariable.setVisible(False)
-                self.heightVariable.setVisible(False)
-                self.XYVariable.setVisible(False)
+                # self.widthVariable.setVisible(False)
+                # self.heightVariable.setVisible(False)
+                # self.XYVariable.setVisible(False)
 
                 self.widthVariable.setZValue(1)
                 self.heightVariable.setZValue(1)
