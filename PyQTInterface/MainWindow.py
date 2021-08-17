@@ -1128,7 +1128,8 @@ class _MainWindow(QMainWindow):
         self.ls = SetupWindow._LoadSRefWindow(purpose='main_load')
         self.ls.show()
         self.ls.send_DesignConstraint_signal.connect(self.srefCreate)
-        self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)
+        # self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)
+        self.scene.send_xy_signal.connect(self.ls.DetermineCoordinateWithMouse)
         self.ls.send_destroy_signal.connect(self.delete_obj)
         # self.ls.send_TextSetup_signal.connect(self.updateGraphicItem)
         # self.ls.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
@@ -1459,6 +1460,7 @@ class _MainWindow(QMainWindow):
                                                          _parentName=_moduleName,
                                                          _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
         self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=_newParameterID, dc_id=design_dict['constraint_id'])
+        _module[_newParameterID].update_unified_expression()
         sref_vi = VisualizationItem._VisualizationItem()
         sref_vi.updateDesignParameter(_module[_newParameterID])
         self.scene.addItem(sref_vi)
@@ -2809,7 +2811,8 @@ class _CustomScene(QGraphicsScene):
         self.oldPos = QPointF(0,0)
         self.itemList = list()
         self.nslist = list()
-
+        self.cursor_item = QGraphicsRectItem(0,0,1,1)
+        self.addItem(self.cursor_item)
         self.point_items_memory = []
         self.selected_item_in_memory = None
         # self.ghost_group_item = QGraphicsItemGroup()
@@ -3201,6 +3204,8 @@ class _CustomScene(QGraphicsScene):
         xy = [int(int(QGraphicsSceneMouseEvent.scenePos().x()/snap) * snap), int(int(QGraphicsSceneMouseEvent.scenePos().y()/snap) * snap)]
         self.send_mouse_move_xy_signal.emit(xy)
         self.send_mouse_move_signal.emit(QGraphicsSceneMouseEvent)
+
+        self.cursor_item.setPos(QPoint(xy[0],xy[1]))
 
     def mouseDoubleClickEvent(self, event: 'QGraphicsSceneMouseEvent') -> None:
         self.send_doubleclick_signal.emit(True)

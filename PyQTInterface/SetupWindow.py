@@ -763,8 +763,10 @@ class _LoadSRefWindow(QWidget):
                 self.parVBox1.addWidget(QLabel(self.par_name[-1]))
                 self.parVBox2.addWidget(self.par_valueForLineEdit[-1])
 
-    def DetermineCoordinateWithMouse(self, _MouseEvent):
-        self.XY_input.setText(str(_MouseEvent.scenePos().toPoint().x()) + ',' + str(_MouseEvent.scenePos().toPoint().y()))
+    def DetermineCoordinateWithMouse(self, xy):
+        # self.XY_input.setText(str(_MouseEvent.scenePos().toPoint().x()) + ',' + str(_MouseEvent.scenePos().toPoint().y()))
+        self.XY_input.setText(str(xy[0]) + ',' + str(xy[1]))
+
 
     def on_buttonBox_accepted(self):
         for idx in range(len(self.par_valueForLineEdit)):
