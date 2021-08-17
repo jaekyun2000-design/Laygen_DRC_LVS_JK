@@ -717,7 +717,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 if self.idx == 0:
                     self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]) + '\nwidth: ' + str(self._ItemTraits['variable_info']['width']))
                 else:
-                    self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]))
+                    self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][-1][self.idx]))
 
                 self.setVariable(type='Path')
 
@@ -1002,13 +1002,13 @@ class _VisualizationItem(QGraphicsItemGroup):
             elif type == 'Path':
                 self.tmpXY.setFont(font)
 
-                self.tmpXY.setPos(self._ItemTraits['_XYCoordinates'][0][self.idx][0]-6, self._ItemTraits['_XYCoordinates'][0][self.idx][1]+10)
+                self.tmpXY.setPos(self._ItemTraits['_XYCoordinates'][-1][self.idx][0]-6, self._ItemTraits['_XYCoordinates'][-1][self.idx][1]+10)
 
                 self.tmpXY.setDefaultTextColor(Qt.GlobalColor.red)
 
                 self.tmpXY.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-                self.tmpXY.setVisible(False)
+                # self.tmpXY.setVisible(False)
 
                 self.tmpXY.setZValue(1)
 
