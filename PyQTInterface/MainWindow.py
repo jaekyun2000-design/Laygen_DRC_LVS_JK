@@ -1235,10 +1235,10 @@ class _MainWindow(QMainWindow):
                 self.scene.update()
 
         # if not self.checkNameDuplication(graphicItem):
-        if graphicItem._CreateFlag is False:
+        if graphicItem._CreateFlag is True:
             for item in graphicItem.block:
                 if type(item) is VisualizationItem.QGraphicsTextItemWObounding:
-                    item.setVisible(False)
+                    item.setVisible(True)
         self.visualItemDict[graphicItem._ElementName] = graphicItem
         self.scene.addItem(graphicItem)
         self.scene.send_move_signal.connect(graphicItem.move)

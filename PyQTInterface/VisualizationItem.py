@@ -989,9 +989,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.heightVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
                 self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-                # self.widthVariable.setVisible(False)
-                # self.heightVariable.setVisible(False)
-                # self.XYVariable.setVisible(False)
+                self.widthVariable.setVisible(False)
+                self.heightVariable.setVisible(False)
+                self.XYVariable.setVisible(False)
 
                 self.widthVariable.setZValue(1)
                 self.heightVariable.setZValue(1)
@@ -1013,7 +1013,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                 self.tmpXY.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-                # self.tmpXY.setVisible(False)
+                self.tmpXY.setVisible(False)
 
                 self.tmpXY.setZValue(1)
 
