@@ -634,7 +634,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                         elif _XYCoordinatesPair[i][1] > _XYCoordinatesPair[i+1][1]:        #DownWard Case
                             Ymin += self._ItemTraits['_Width']/2
                             Ywidth -= self._ItemTraits['_Width']/2
-                    elif i == len(_XYCoordinatesPair[0])-2:                                                #Last Block Case
+                    elif i == len(_XYCoordinatesPair)-2:                                                #Last Block Case
                         if _XYCoordinatesPair[i][1] < _XYCoordinatesPair[i+1][1]:          #UpWard Case
                             Ymin -= self._ItemTraits['_Width']/2
                             Ywidth += self._ItemTraits['_Width']/2
@@ -719,7 +719,6 @@ class _VisualizationItem(QGraphicsItemGroup):
                 else:
                     self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][-1][self.idx]))
 
-                print(self.tmpXY.toPlainText())
                 self.setVariable(type='Path')
 
             ############################ Variable Visualization End ############################
