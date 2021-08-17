@@ -145,16 +145,16 @@ class _BoundarySetupWindow(QWidget):
             # _Layer2Name = LayerReader._LayerNameTmp
             # _layerNumber = str(self._DesignParameter['_Layer'])
             for layerExpressionName in _Layer:
-                print("layerExpressionName:",layerExpressionName,_Layer[layerExpressionName][0],self._DesignParameter['_Layer'])
-                if _Layer[layerExpressionName][0] == self._DesignParameter['_Layer']:
-                    self._DesignParameter['_Layer'] = str(layerExpressionName)
+                print("layerExpressionName:",layerExpressionName,_Layer[layerExpressionName][0],self._DesignParameter['_LayerUnifiedName'])
+                if _Layer[layerExpressionName][0] == self._DesignParameter['_LayerUnifiedName']:
+                    self._DesignParameter['_LayerUnifiedName'] = str(layerExpressionName)
                     break
 
             # self._DesignParameter['_Layer'] =  _Layer2Name[_layerNumber]     #Layer Number             --> Convert Name to Number
             del _Layer
-            layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
+            layerIndex = self.layer_input.findText(self._DesignParameter['_LayerUnifiedName'])
         else:
-            layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
+            layerIndex = self.layer_input.findText(self._DesignParameter['_LayerUnifiedName'])
         if layerIndex != -1:
             self.layer_input.setCurrentIndex(layerIndex)
         #setCurrentIndex
@@ -170,17 +170,13 @@ class _BoundarySetupWindow(QWidget):
         for XY in self.XYdictForLineEdit:
             if not XY.text():
                 break
-            # elif type(XY.text()) == str:
-            #     self._DesignParameter['_XYCoordinates'] = self.determineVariableValue("XY", XY.text())
-            #     pass
             else:
                 try:
-                    X = int(XY.text().split(',')[0])
-                    Y = int(XY.text().split(',')[1])
-                    # self._DesignParameter['_XYCoordinates']=[[X+float(self.width_input.text())/2,Y+float(self.height_input.text())/2]]
+                    X = float(XY.text().split(',')[0])
+                    Y = float(XY.text().split(',')[1])
                     self._DesignParameter['_XYCoordinates']=[[X,Y]]
-                    # self._DesignParameter['_XYCoordinatesForDisplay'] = [[X,Y]]
                 except:
+                    # traceback.print_exc()
                     self.warning = QMessageBox()
                     self.warning.setIcon(QMessageBox.Warning)
                     self.warning.setText("Invalid XY Coordinates")
@@ -192,6 +188,7 @@ class _BoundarySetupWindow(QWidget):
             self._DesignParameter['_XWidth'] = float(self.width_input.text())
             self._DesignParameter['_YWidth'] = float(self.height_input.text())
             self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
+            self._DesignParameter['_Layer'] = None
 
             try:
                 self.send_DestroyTmpVisual_signal.emit(self.visualItem)
@@ -217,14 +214,14 @@ class _BoundarySetupWindow(QWidget):
         return [[0,0]]
         pass
 
-    def AddBoundaryPointWithMouse(self,_MouseEvent):
+    def AddBoundaryPointWithMouse(self,xy):
         if self.click < 2:
             ##### When Click the point, adjust x,y locations #####
             if len(self.tmpXYCoordinates) == 0:
-                self.tmpXYCoordinates.append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()])
+                self.tmpXYCoordinates.append(xy)
 
             else:
-                self.tmpXYCoordinates.append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()])
+                self.tmpXYCoordinates.append(xy)
 
                 xdistance = abs(self.tmpXYCoordinates[-1][0] - self.tmpXYCoordinates[-2][0])
                 ydistance = abs(self.tmpXYCoordinates[-1][1] - self.tmpXYCoordinates[-2][1])
@@ -249,7 +246,7 @@ class _BoundarySetupWindow(QWidget):
             if self._DesignParameter['_YWidth'] is None:
                 self._DesignParameter['_YWidth'] = 0
             if self._DesignParameter['_XYCoordinates'] == []:
-                self._DesignParameter['_XYCoordinates'] = [[_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()]]
+                self._DesignParameter['_XYCoordinates'] = [xy]
 
             self.visualItem.updateTraits(self._DesignParameter)
             self.send_BoundarySetup_signal.emit(self.visualItem)
@@ -263,11 +260,11 @@ class _BoundarySetupWindow(QWidget):
             self.destroy()
             self.send_Destroy_signal.emit('bw')
 
-    def mouseTracking(self, event):
+    def mouseTracking(self, xy):
         if self.mouse is not None and self.click < 2:
-            xdistance = abs(self.mouse.x() - event.scenePos().x())
-            ydistance = abs(self.mouse.y() - event.scenePos().y())
-            origin = [(self.mouse.x()+event.scenePos().x())/2, (self.mouse.y()+event.scenePos().y())/2]
+            xdistance = abs(self.mouse[0] - xy[0])
+            ydistance = abs(self.mouse[1] - xy[1])
+            origin = [(self.mouse[0]+xy[0])/2, (self.mouse[1]+xy[1])/2]
             self._DesignParameter['_XWidth'] = xdistance
             self._DesignParameter['_YWidth'] = ydistance
             self._DesignParameter['_XYCoordinates'] = [origin]
@@ -276,8 +273,8 @@ class _BoundarySetupWindow(QWidget):
             self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
             self.send_BoundarySetup_signal.emit(self.visualItem)
 
-    def clickCount(self, _MouseEvent):
-        self.mouse = _MouseEvent.scenePos()
+    def clickCount(self, xy):
+        self.mouse = xy
         self.click += 1
 
 class _PathSetupWindow(QWidget):

@@ -85,8 +85,9 @@ class _MainWindow(QMainWindow):
         super(_MainWindow, self).__init__()
         # self.setStyleSheet("background-color: whitesmoke")
         # self.setStyleSheet("background-color: rgb(178, 41, 100)")
+
         # self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setStyleSheet("border-color: rgb(178,41,100)")
+        self.setStyleSheet("border-color: rgb(178, 41, 100)")
 
 
         self._QTObj = QTInterfaceWithAST.QtInterFace()
@@ -165,6 +166,7 @@ class _MainWindow(QMainWindow):
 
 
         menubar = self.menuBar()
+        # menubar.setStyleSheet("background-color: rgb(178, 41, 100)")
         menubar.setNativeMenuBar(False)
         fileMenu = menubar.addMenu('&Project')
         fileMenu.addAction(newAction)
@@ -221,7 +223,7 @@ class _MainWindow(QMainWindow):
         automation_menu.addAction(auto_array_action)
         automation_menu.addAction(auto_pathpoint_action)
         automation_menu.addAction(auto_tech_process_change_action)
-        automation_menu.setStyleSheet("background-color: rgb(178, 41, 100)")
+        # automation_menu.setStyleSheet("background-color: rgb(178, 41, 100)")
         # self.setStyleSheet("background-color: rgb(178, 41, 100)")
 
 
@@ -1089,9 +1091,10 @@ class _MainWindow(QMainWindow):
         self.bw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
         self.bw.send_BoundaryDesign_signal.connect(self.createNewDesignParameter)
         self.bw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
-        self.scene.send_xyCoordinate_signal.connect(self.bw.AddBoundaryPointWithMouse)
-        self.scene.send_xyCoordinate_signal.connect(self.bw.clickCount)
-        self.scene.send_mouse_move_signal.connect(self.bw.mouseTracking)
+        # self.scene.send_xyCoordinate_signal.connect(self.bw.AddBoundaryPointWithMouse)
+        self.scene.send_xy_signal.connect(self.bw.AddBoundaryPointWithMouse)
+        self.scene.send_xy_signal.connect(self.bw.clickCount)
+        self.scene.send_mouse_move_xy_signal.connect(self.bw.mouseTracking)
         self.bw.send_Destroy_signal.connect(self.delete_obj)
 
 
@@ -1743,8 +1746,8 @@ class _MainWindow(QMainWindow):
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Create DesignParameter Fail: There is no Module")
         else:
             design_dict = self._QTObj._qtProject._feed_design(design_type='parameter', module_name= self._CurrentModuleName, dp_dict= _DesignParameter)
-            visualItem = self.createVisualItemfromDesignParameter(
-                self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
+            design_dict['parameter'].update_unified_expression()
+            visualItem = self.createVisualItemfromDesignParameter(design_dict['parameter'])
             self.updateGraphicItem(visualItem)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Design Parameter Created")
 
@@ -1901,7 +1904,8 @@ class _MainWindow(QMainWindow):
 
         design_dict = self._QTObj._qtProject._update_design(design_type='parameter', module_name=self._CurrentModuleName,
                                                           dp_dict=_DesignParameter, id=_ID, element_manager_update =element_manager_update)
-        visualItem = self.updateVisualItemFromDesignParameter(self._QTObj._qtProject._DesignParameter[_Module][_DesignParameter['_ElementName']])
+        design_dict['parameter'].update_unified_expression()
+        visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
         self.updateGraphicItem(visualItem)
 
         if design_dict['constraint_id']:
@@ -2766,6 +2770,7 @@ class _CustomView(QGraphicsView):
 class _CustomScene(QGraphicsScene):
     send_debug_signal = pyqtSignal()
     send_xyCoordinate_signal = pyqtSignal(QGraphicsSceneMouseEvent)
+    send_xy_signal = pyqtSignal(list)
     send_itemList_signal = pyqtSignal(list)
     send_parameterIDList_signal = pyqtSignal(list,int)
     send_move_signal = pyqtSignal(QPointF)
@@ -2773,6 +2778,8 @@ class _CustomScene(QGraphicsScene):
     send_deleteItem_signal = pyqtSignal(str)
     send_module_name_list_signal = pyqtSignal(list, list)
     send_mouse_move_signal = pyqtSignal(QGraphicsSceneMouseEvent)
+    send_mouse_move_xy_signal = pyqtSignal(list)
+
     send_show_variable_signal = pyqtSignal(QGraphicsItem)
     send_doubleclick_signal = pyqtSignal(bool)
     send_item_clicked_signal = pyqtSignal(VisualizationItem._VisualizationItem)
@@ -2833,7 +2840,14 @@ class _CustomScene(QGraphicsScene):
             s_highlighted_rectblock.shallow_highlight = False
 
 
+        snap = user_setup.MIN_SNAP_SPACING
+        x_point = int(int(event.scenePos().toPoint().x() / snap) * snap)
+        y_point = int(int(event.scenePos().toPoint().y() / snap) * snap)
+        self.send_xy_signal.emit([x_point, y_point])
         self.send_xyCoordinate_signal.emit(event)
+
+
+
         def masking(items):
             masked_output = []
             for item in items:
@@ -3177,6 +3191,10 @@ class _CustomScene(QGraphicsScene):
         if self.moveFlag is True:
             self.send_move_signal.emit(delta)
         self.oldPos = QGraphicsSceneMouseEvent.scenePos()
+
+        snap = user_setup.MIN_SNAP_SPACING
+        xy = [int(int(QGraphicsSceneMouseEvent.scenePos().x()/snap) * snap), int(int(QGraphicsSceneMouseEvent.scenePos().y()/snap) * snap)]
+        self.send_mouse_move_xy_signal.emit(xy)
         self.send_mouse_move_signal.emit(QGraphicsSceneMouseEvent)
 
     def mouseDoubleClickEvent(self, event: 'QGraphicsSceneMouseEvent') -> None:
