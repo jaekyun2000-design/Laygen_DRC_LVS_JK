@@ -94,6 +94,13 @@ class _RectBlock(QGraphicsRectItem):
 
         pen = QPen()
         pen.setColor(self._BlockTraits["_Outline"])
+        pen.setDashPattern(self._BlockTraits['_LinePattern'])
+        pen.setCapStyle(Qt.RoundCap)
+        pen.setWidth(self._BlockTraits['_LineSize']+4)
+        # pen.setStyle(Qt.CustomDashLine)
+
+        # pen.setWidth(5)
+
         brush = QBrush()
         brush.setColor(self._BlockTraits["_Color"])
 
@@ -121,7 +128,7 @@ class _RectBlock(QGraphicsRectItem):
         else:
             self.setZValue(self._BlockTraits['_Layer']/1000)
         painter.setPen(pen)
-        #
+
         # if self._BlockTraits["_Pattern"] == "blank":
         #     brush.setStyle(Qt.NoBrush)
         # elif self._BlockTraits["_Pattern"] == "solid":
@@ -152,12 +159,16 @@ class _RectBlock(QGraphicsRectItem):
         #     brush.setStyle(Qt.CrossPattern)
         #     # brush.setTransform()
         # else:
-        #     # dots_bitmap = QBitmap(4,4)
-        #     # dots_bitmap.fromData(QSize(4,4),b'\x01')
-        #     # brush.setTexture(dots_bitmap)
+        # #     # dots_bitmap = QBitmap(4,4)
+        # #     # dots_bitmap.fromData(QSize(4,4),b'\x01')
+        # #     # brush.setTexture(dots_bitmap)
         #     brush.setStyle(Qt.Dense6Pattern)
 
-        color_name = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DataType']]['Fill'].name
+
+
+
+
+        color_name = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill'].name
         color_patt_name =color_name+self._BlockTraits["_Pattern"]
 
         if self._BlockTraits["_Pattern"] == 'X':
@@ -167,11 +178,25 @@ class _RectBlock(QGraphicsRectItem):
             brush.setStyle(Qt.NoBrush)
         else:
             if color_patt_name not in DisplayReader._ColorPatternDict:
-                color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DataType']]['Fill']
+                color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill']
                 qpix = DisplayReader._PatternDict[self._BlockTraits["_Pattern"]].create_qbit(color)
                 DisplayReader._DisplayDict[color_patt_name] = qpix
             qpix = DisplayReader._DisplayDict[color_patt_name]
             brush.setTexture(qpix)
+
+        if '_type' in self._BlockTraits and self._BlockTraits['_type'] == 2:
+            if self._BlockTraits['_XYCoordinates'][0][0][0] == self._BlockTraits['_XYCoordinates'][0][1][0]:
+                x1 = self._BlockTraits['_Width'] / 2
+                x2 = x1
+                y1 = 0
+                y2 = self._BlockTraits['_Height']
+            else:
+                #horizontal
+                x1 = 0
+                x2 = self._BlockTraits['_Width']
+                y1 = self._BlockTraits['_Height']/2
+                y2 = y1
+            painter.drawLine(x1,y1,x2,y2)
 
 
 
@@ -180,12 +205,13 @@ class _RectBlock(QGraphicsRectItem):
         painter.setBrush(brush)
 
         painter.drawRect(self.rect())
+        painter.setRenderHint(QPainter.Antialiasing)
 
     def layerName2paintTrait(self):
 
         try:
             DisplayInfo = DisplayReader._DisplayDict
-            color = DisplayInfo[self._BlockTraits['_LayerName']+self._BlockTraits['_DataType']]['Fill']
+            color = DisplayInfo[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill']
         except:
             self.warning=QMessageBox()
             self.warning.setText("There is no matching QT Color profile")
@@ -367,22 +393,22 @@ class _VisualizationItem(QGraphicsItemGroup):
                 sub_element_dp_name = child._ElementName
                 if sub_element_dp_name in QtDesignParameter._DesignParameter['_ModelStructure']:
                     remove_item_list.extend(child.updateDesignParameter(QtDesignParameter._DesignParameter['_ModelStructure'][sub_element_dp_name]))
-                else:
-                    search_stack = [child]
-                    while search_stack:
-                        search_item = search_stack.pop(0)
-                        sub_children = child.childItems()
-                        search_stack.extend(sub_children)
-                        remove_item_list.extend(sub_children)
-                        if type(search_item) == _VisualizationItem:
-                            for sub_child in sub_children:
-                                search_item.removeFromGroup(sub_child)
+                # else:
+                #     search_stack = [child]
+                #     while search_stack:
+                #         search_item = search_stack.pop(0)
+                #         sub_children = child.childItems()
+                #         search_stack.extend(sub_children)
+                #         remove_item_list.extend(sub_children)
+                #         for sub_child in sub_children:
+                #             search_item.removeFromGroup(sub_child)
             self.removeFromGroup(child)
             remove_item_list.append(child)
 
 
         self._id = QtDesignParameter._id
         self._type = QtDesignParameter._type
+        self._ItemTraits['_type'] = self._type
         self._CreateFlag = False
         # try:
         #     oldVersionSupportForXYCoordinatesForDisplay = QtDesignParameter._XYCoordinatesForDisplay
@@ -521,29 +547,22 @@ class _VisualizationItem(QGraphicsItemGroup):
         DisplayInfo = DisplayReader._DisplayDict
 
         if blockTraits['_Layer'] is not None: #Load GDS case
-            if '_DataType' not in blockTraits or not blockTraits['_DataType']:
+            if '_DatatypeName' not in blockTraits or not blockTraits['_DatatypeName']:
                 if 'crit' in blockTraits['_LayerUnifiedName']:
-                    blockTraits['_DataType'] = '_crit'
+                    blockTraits['_DatatypeName'] = '_crit'
                 elif 'pin' in blockTraits['_LayerUnifiedName']:
-                    blockTraits['_DataType'] = '_pin'
+                    blockTraits['_DatatypeName'] = '_pin'
                 else:
-                    blockTraits['_DataType'] = '_drawing'
+                    blockTraits['_DatatypeName'] = '_drawing'
 
-            layer_data_name = blockTraits['_LayerName']+blockTraits['_DataType']
+            layer_data_name = blockTraits['_LayerName']+blockTraits['_DatatypeName']
             if layer_data_name not in DisplayReader._DisplayDict:
                 DisplayReader.readtechfile()
-            blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Fill']
-            blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Outline']
-            blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DataType']]['Stipple']
-
-            print('lll:', blockTraits['_LayerName']+blockTraits['_DataType'])
-
-            # layer_data_name = blockTraits['_Layer']+blockTraits['_DataType']
-            # if layer_data_name not in DisplayReader._DisplayDict:
-            #     DisplayReader.readtechfile()
-            # blockTraits['_Color'] =  DisplayInfo[blockTraits['_Layer']+blockTraits['_DataType']]['Fill']
-            # blockTraits['_Outline'] =  DisplayInfo[blockTraits['_Layer']+blockTraits['_DataType']]['Outline']
-            # blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_Layer']+blockTraits['_DataType']]['Stipple']
+            blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['Fill']
+            blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['Outline']
+            blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['Stipple']
+            blockTraits['_LinePattern'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['LineStyle']['pattern']
+            blockTraits['_LineSize'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['LineStyle']['size']
 
         if self._ItemTraits['_DesignParametertype'] == 1:                              # Boundary Case
             tmpBlock = _RectBlock()
@@ -1125,6 +1144,22 @@ class _VisualizationItem(QGraphicsItemGroup):
     def rerun_for_process_update(self, qt_dp):
         remove_item_list = self.updateDesignParameter(qt_dp)
         return remove_item_list
+
+    def clean_delete(self):
+        # remove_item_list = []
+        # remove_item_list.extend(self.childItems())
+        # for child in remove_item_list:
+        #     self.removeFromGroup(child)
+        #     remove_item_list.append(child)
+
+        rm_vs_item = self.childItems()
+        for child in self.childItems():
+            if type(child) == _VisualizationItem:
+                rm_vs_item.extend(child.clean_delete())
+            else:
+                rm_vs_item.extend(child.childItems())
+            self.removeFromGroup(child)
+        return rm_vs_item
         # child_items = self.childItems()
         # parent_items = []
         # for i in range(len(child_items)):

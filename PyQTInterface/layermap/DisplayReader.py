@@ -24,12 +24,14 @@ _DisplayDict = dict()
 _ColorDict = dict()
 _PatternDict = dict()
 _ColorPatternDict = dict()
+_LinePatternDict = dict()
 
 def run_for_process_update():
     global _DisplayDict
     global _ColorDict
     global _PatternDict
     global _ColorPatternDict
+    global _LinePatternDict
     global _DRFfile
     global _Technology
     _Technology = user_setup._Technology
@@ -54,6 +56,7 @@ def run_for_process_update():
         stipple_flag = False
         packet_flag = False
         bitmap = None
+        line_style_flag = False
         for line in lines:
             # print(line)
             lineDecode = line.decode('ISO-8859-1')
@@ -91,6 +94,21 @@ def run_for_process_update():
                     binary_list = list(map(int, re.findall(' [01]', lineDecode)))
                     bitmap.add_binaries(binary_list)
 
+            if re.search('drDefineLineStyle', lineDecode):
+                line_style_flag = True
+            if line_style_flag:
+                if lineDecode[0] == ')' or lineDecode[1] == ')':
+                    line_style_flag = False
+                if 'display' in lineDecode:
+                    split = re.split('[ \t]+', lineDecode)
+                    if split[0] == '':
+                        split.pop(0)
+                    pattern = ",".join(split[4:-1])
+                    _LinePatternDict[split[2]] = dict(
+                        size = int(split[3]),
+                        pattern = eval(pattern)
+                    )
+
             if re.search('drDefinePacket', lineDecode):
                 packet_flag = True
             if packet_flag:
@@ -109,7 +127,7 @@ def run_for_process_update():
                     # _DisplayDict[split[2]]['drawingNum'] = split[2].split('_drawing')[0]
                     _DisplayDict[split[2]]['drawingNum'] = split[2]
                     _DisplayDict[split[2]]['Stipple'] = split[3]
-                    _DisplayDict[split[2]]['LineStyle'] = split[4]
+                    _DisplayDict[split[2]]['LineStyle'] = _LinePatternDict[split[4]]
                     _DisplayDict[split[2]]['Fill'] = _ColorDict[split[5]]
                     _DisplayDict[split[2]]['Fill'].name = split[5]
                     _DisplayDict[split[2]]['Outline'] = _ColorDict[split[6]]

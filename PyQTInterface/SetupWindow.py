@@ -145,16 +145,16 @@ class _BoundarySetupWindow(QWidget):
             # _Layer2Name = LayerReader._LayerNameTmp
             # _layerNumber = str(self._DesignParameter['_Layer'])
             for layerExpressionName in _Layer:
-                print("layerExpressionName:",layerExpressionName,_Layer[layerExpressionName][0],self._DesignParameter['_Layer'])
-                if _Layer[layerExpressionName][0] == self._DesignParameter['_Layer']:
-                    self._DesignParameter['_Layer'] = str(layerExpressionName)
+                print("layerExpressionName:",layerExpressionName,_Layer[layerExpressionName][0],self._DesignParameter['_LayerUnifiedName'])
+                if _Layer[layerExpressionName][0] == self._DesignParameter['_LayerUnifiedName']:
+                    self._DesignParameter['_LayerUnifiedName'] = str(layerExpressionName)
                     break
 
             # self._DesignParameter['_Layer'] =  _Layer2Name[_layerNumber]     #Layer Number             --> Convert Name to Number
             del _Layer
-            layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
+            layerIndex = self.layer_input.findText(self._DesignParameter['_LayerUnifiedName'])
         else:
-            layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
+            layerIndex = self.layer_input.findText(self._DesignParameter['_LayerUnifiedName'])
         if layerIndex != -1:
             self.layer_input.setCurrentIndex(layerIndex)
         #setCurrentIndex
@@ -170,17 +170,13 @@ class _BoundarySetupWindow(QWidget):
         for XY in self.XYdictForLineEdit:
             if not XY.text():
                 break
-            # elif type(XY.text()) == str:
-            #     self._DesignParameter['_XYCoordinates'] = self.determineVariableValue("XY", XY.text())
-            #     pass
             else:
                 try:
-                    X = int(XY.text().split(',')[0])
-                    Y = int(XY.text().split(',')[1])
-                    # self._DesignParameter['_XYCoordinates']=[[X+float(self.width_input.text())/2,Y+float(self.height_input.text())/2]]
+                    X = float(XY.text().split(',')[0])
+                    Y = float(XY.text().split(',')[1])
                     self._DesignParameter['_XYCoordinates']=[[X,Y]]
-                    # self._DesignParameter['_XYCoordinatesForDisplay'] = [[X,Y]]
                 except:
+                    # traceback.print_exc()
                     self.warning = QMessageBox()
                     self.warning.setIcon(QMessageBox.Warning)
                     self.warning.setText("Invalid XY Coordinates")
@@ -192,6 +188,7 @@ class _BoundarySetupWindow(QWidget):
             self._DesignParameter['_XWidth'] = float(self.width_input.text())
             self._DesignParameter['_YWidth'] = float(self.height_input.text())
             self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
+            self._DesignParameter['_Layer'] = None
 
             try:
                 self.send_DestroyTmpVisual_signal.emit(self.visualItem)
@@ -217,14 +214,14 @@ class _BoundarySetupWindow(QWidget):
         return [[0,0]]
         pass
 
-    def AddBoundaryPointWithMouse(self,_MouseEvent):
+    def AddBoundaryPointWithMouse(self,xy):
         if self.click < 2:
             ##### When Click the point, adjust x,y locations #####
             if len(self.tmpXYCoordinates) == 0:
-                self.tmpXYCoordinates.append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()])
+                self.tmpXYCoordinates.append(xy)
 
             else:
-                self.tmpXYCoordinates.append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()])
+                self.tmpXYCoordinates.append(xy)
 
                 xdistance = abs(self.tmpXYCoordinates[-1][0] - self.tmpXYCoordinates[-2][0])
                 ydistance = abs(self.tmpXYCoordinates[-1][1] - self.tmpXYCoordinates[-2][1])
@@ -239,8 +236,20 @@ class _BoundarySetupWindow(QWidget):
                 self.XYdictForLineEdit[0].setText(str(origin[0])+','+str(origin[1]))
 
             self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
+            self._DesignParameter['_Layer'] = None
 
-            self.visualItem.updateTraits(self._DesignParameter)
+            if self._DesignParameter['_XWidth'] is None:
+                self._DesignParameter['_XWidth'] = 0
+            if self._DesignParameter['_YWidth'] is None:
+                self._DesignParameter['_YWidth'] = 0
+            if self._DesignParameter['_XYCoordinates'] == []:
+                self._DesignParameter['_XYCoordinates'] = [xy]
+            qt_dp = QTInterfaceWithAST.QtDesignParameter()
+            for key, value in self._DesignParameter.items():
+                qt_dp._setDesignParameterValue(key, value)
+            qt_dp.update_unified_expression()
+
+            self.visualItem.updateDesignParameter(qt_dp)
             self.send_BoundarySetup_signal.emit(self.visualItem)
 
     def keyPressEvent(self, QKeyEvent):
@@ -252,21 +261,26 @@ class _BoundarySetupWindow(QWidget):
             self.destroy()
             self.send_Destroy_signal.emit('bw')
 
-    def mouseTracking(self, event):
+    def mouseTracking(self, xy):
         if self.mouse is not None and self.click < 2:
-            xdistance = abs(self.mouse.x() - event.scenePos().x())
-            ydistance = abs(self.mouse.y() - event.scenePos().y())
-            origin = [(self.mouse.x()+event.scenePos().x())/2, (self.mouse.y()+event.scenePos().y())/2]
+            xdistance = abs(self.mouse[0] - xy[0])
+            ydistance = abs(self.mouse[1] - xy[1])
+            origin = [(self.mouse[0]+xy[0])/2, (self.mouse[1]+xy[1])/2]
             self._DesignParameter['_XWidth'] = xdistance
             self._DesignParameter['_YWidth'] = ydistance
             self._DesignParameter['_XYCoordinates'] = [origin]
             self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
-            self.visualItem.updateTraits(self._DesignParameter)
+            self._DesignParameter['_Layer'] = None
+            qt_dp = QTInterfaceWithAST.QtDesignParameter()
+            for key, value in self._DesignParameter.items():
+                qt_dp._setDesignParameterValue(key, value)
+            qt_dp.update_unified_expression()
+            self.visualItem.updateDesignParameter(qt_dp)
             self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
             self.send_BoundarySetup_signal.emit(self.visualItem)
 
-    def clickCount(self, _MouseEvent):
-        self.mouse = _MouseEvent.scenePos()
+    def clickCount(self, xy):
+        self.mouse = xy
         self.click += 1
 
 class _PathSetupWindow(QWidget):
@@ -296,7 +310,6 @@ class _PathSetupWindow(QWidget):
 
                 )
             self.visualItem = VisualizationItem._VisualizationItem()
-            self.tmpVI = VisualizationItem._VisualizationItem()
             self.tmpDP = copy.deepcopy(self._DesignParameter)
             self.doubleClickEvent = False
         else:
@@ -387,12 +400,12 @@ class _PathSetupWindow(QWidget):
     def updateUI(self):
         self.name_input.setText(self._DesignParameter['_ElementName'])
         self.width_input.setText(str(self._DesignParameter['_Width']))
-        if type(self._DesignParameter['_Layer']) == int:
-            layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-            _tmplayer = layernum2name[str(self._DesignParameter['_Layer'])]
-            layerIndex = self.layer_input.findText(_tmplayer)
-        else:
-            layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
+        # if type(self._DesignParameter['_Layer']) == int:
+        #     layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+        #     _tmplayer = layernum2name[str(self._DesignParameter['_Layer'])]
+        #     layerIndex = self.layer_input.findText(_tmplayer)
+        # else:
+        layerIndex = self.layer_input.findText(self._DesignParameter['_LayerUnifiedName'])
         if layerIndex != -1:
             self.layer_input.setCurrentIndex(layerIndex)
         for i in range(len(self._DesignParameter['_XYCoordinates'][0])):
@@ -423,7 +436,8 @@ class _PathSetupWindow(QWidget):
             if self._DesignParameter['_ElementName'] == '':
                 raise NotImplementedError
             self._DesignParameter['_Width'] = self.width_input.text()
-            self._DesignParameter['_Layer'] = self.layer_input.currentText()
+            self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
+            self._DesignParameter['_Layer'] = None
             self._DesignParameter['_XYCoordinates'] = [[]]
 
             for XY in self.XYdictForLineEdit:
@@ -443,11 +457,6 @@ class _PathSetupWindow(QWidget):
 
             pass
             self.send_DestroyTmpVisual_signal.emit(self.visualItem)
-            try:
-                self.send_DestroyTmpVisual_signal.emit(self.tmpVI)
-            except:
-                traceback.print_exc()
-                pass
             self.send_PathDesign_signal.emit(self._DesignParameter)
             self.destroy()
             self.send_Destroy_signal.emit('pw')
@@ -476,24 +485,23 @@ class _PathSetupWindow(QWidget):
                         _ItemRef = None, #Reference Of VisualizationItem
                     )
             self.visualItem.updateTraits(self._DesignParameter)
-            self.send_DestroyTmpVisual_signal.emit(self.tmpVI)
             self.destroy()
             self.send_Destroy_signal.emit('pw')
 
-    def AddPathPointWithMouse(self,_MouseEvent):
+    def AddPathPointWithMouse(self,xy):
         if self.doubleClickEvent == False:
             ##### When Click the point, adjust x,y locations #####
             try:
                 if len(self._DesignParameter['_XYCoordinates']) == 0:
-                    self._DesignParameter['_XYCoordinates'].append([[_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()]])
+                    self._DesignParameter['_XYCoordinates'].append([xy])
                 else:
-                    xdistance = abs(_MouseEvent.scenePos().x() - self._DesignParameter['_XYCoordinates'][0][-1][0])
-                    ydistance = abs(_MouseEvent.scenePos().y() - self._DesignParameter['_XYCoordinates'][0][-1][1])
+                    xdistance = abs(xy[0] - self._DesignParameter['_XYCoordinates'][0][-1][0])
+                    ydistance = abs(xy[1] - self._DesignParameter['_XYCoordinates'][0][-1][1])
 
                     if xdistance < ydistance:
-                        self._DesignParameter['_XYCoordinates'][0].append([self._DesignParameter['_XYCoordinates'][0][-1][0],_MouseEvent.scenePos().toPoint().y()])
+                        self._DesignParameter['_XYCoordinates'][0].append([self._DesignParameter['_XYCoordinates'][0][-1][0],xy[1]])
                     else:
-                        self._DesignParameter['_XYCoordinates'][0].append([_MouseEvent.scenePos().toPoint().x(),self._DesignParameter['_XYCoordinates'][0][-1][1]])
+                        self._DesignParameter['_XYCoordinates'][0].append([xy[0],self._DesignParameter['_XYCoordinates'][0][-1][1]])
 
                 # self._DesignParameter['_XYCoordinates'].append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y(),])
 
@@ -502,9 +510,14 @@ class _PathSetupWindow(QWidget):
                 self.XYdictForLineEdit[CurrentEditPointNum].setText(XYstring)
                 self.UpdateXYwidget()
                 self._DesignParameter['_Width'] = self.width_input.text()
-                self._DesignParameter['_Layer'] = self.layer_input.currentText()
+                self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
+                self._DesignParameter['_type'] = 2
+                qt_dp = QTInterfaceWithAST.QtDesignParameter(_type=2)
+                for key, value in self._DesignParameter.items():
+                    qt_dp._setDesignParameterValue(key, value)
+                qt_dp.update_unified_expression()
                 self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
-                self.visualItem.updateTraits(self._DesignParameter)
+                self.visualItem.updateDesignParameter(qt_dp)
                 self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
                 self.send_PathSetup_signal.emit(self.visualItem)
             except:
@@ -525,259 +538,48 @@ class _PathSetupWindow(QWidget):
         self.setupVboxColumn1.addWidget(self.XYdictForLabel[-1])
         self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[-1])
 
-    def mouseTracking(self, event):
+    def mouseTracking(self, xy):
         if self.mouse is not None:
             if self.doubleClickEvent == False:
+                tmp_dp = copy.deepcopy(self._DesignParameter)
                 if self.click == 0:
-                    xdistance = abs(self.mouse.x() - event.scenePos().x())
-                    ydistance = abs(self.mouse.y() - event.scenePos().y())
+                    xdistance = abs(self.mouse.x() - xy[0])
+                    ydistance = abs(self.mouse.y() - xy[1])
 
                     if xdistance < ydistance:
-                        self.tmpDP['_XYCoordinates'] = [[[self.mouse.x(),self.mouse.y()],[self.mouse.x(),event.scenePos().y()]]]
+                        tmp_dp['_XYCoordinates'] = [[self.mouse,[self.mouse[0],xy[1]]]]
                     else:
-                        self.tmpDP['_XYCoordinates'] = [[[self.mouse.x(),self.mouse.y()],[event.scenePos().x(),self.mouse.y()]]]
+                        tmp_dp['_XYCoordinates'] = [[self.mouse,[xy[0],self.mouse[1]]]]
                 else:
-                    xdistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][0] - event.scenePos().x())
-                    ydistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][1] - event.scenePos().y())
+                    xdistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][0] - xy[0])
+                    ydistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][1] - xy[1])
 
                     if xdistance < ydistance:
-                        self.tmpDP['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],event.scenePos().y()]]]
+                        tmp_dp['_XYCoordinates'].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],xy[1]]])
                     else:
-                        self.tmpDP['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[event.scenePos().x(),self._DesignParameter['_XYCoordinates'][0][-1][1]]]]
+                        tmp_dp['_XYCoordinates'].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[xy[0],self._DesignParameter['_XYCoordinates'][0][-1][1]]])
 
-                self.tmpDP['_Width'] = self.width_input.text()
-                self.tmpDP['_Layer'] = self.layer_input.currentText()
-                self.tmpVI.updateTraits(self.tmpDP)
-                self.send_PathSetup_signal.emit(self.tmpVI)
-                self.tmpVI.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
+                tmp_dp['_Width'] = self.width_input.text()
+                tmp_dp['_LayerUnifiedName'] = self.layer_input.currentText()
+                tmp_dp['_type'] = 2
+                qt_dp = QTInterfaceWithAST.QtDesignParameter(_type=2)
+                for key, value in tmp_dp.items():
+                    qt_dp._setDesignParameterValue(key, value)
+                qt_dp.update_unified_expression()
+                self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
+                self.visualItem.updateDesignParameter(qt_dp)
+                # # self.send_PathSetup_signal.emit(self.visualItem)
+                self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
 
-    def clickCount(self, _MouseEvent):
-        self.mouse = _MouseEvent.scenePos()
+
+
+
+    def clickCount(self, xy):
+        self.mouse = xy
         self.click += 1
 
     def quitCreate(self, doubleClickEvent):
         self.doubleClickEvent = doubleClickEvent
-
-class _SRefSetupWindowOG(QWidget):
-
-    send_SRefSetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
-    send_Destroy_signal = pyqtSignal()
-
-    def __init__(self):
-        super().__init__()
-        self.initUI()
-
-
-        self.visualItem = VisualizationItem._VisualizationItem()
-        self._DesignParameter = dict(
-                _Name = None,
-                _DataType = "SRef",
-                _XYCoordinates = [],
-                _ItemRef = None #Reference Of VisualizationItem
-        )
-
-
-    def initUI(self):
-        saveButton = QPushButton("SAVE",self)
-        loadButton = QPushButton("LOAD",self)
-        cancelButton = QPushButton("Cancel",self)
-
-        saveButton.clicked.connect(self.on_saveBox_accepted)
-
-        # self._DesignParameter = dict()
-
-        name = QLabel("Name")
-        self.name_input = QLineEdit()
-
-
-        self.setupVboxColumn1 = QVBoxLayout()
-        self.setupVboxColumn2 = QVBoxLayout()
-        setupBox = QHBoxLayout()
-
-        self.setupVboxColumn1.addWidget(name)
-
-
-        self.setupVboxColumn2.addWidget(self.name_input)
-
-        setupBox.addLayout(self.setupVboxColumn1)
-        setupBox.addLayout(self.setupVboxColumn2)
-
-        hbox = QHBoxLayout()
-        hbox.addStretch(2)
-        hbox.addWidget(saveButton)
-        hbox.addWidget(loadButton)
-        hbox.addWidget(cancelButton)
-        # hbox.addStretch(1)
-
-        vbox = QVBoxLayout()
-        vbox.addStretch(1)
-        vbox.addLayout(setupBox)
-        vbox.addStretch(3)
-        vbox.addLayout(hbox)
-        # vbox.addStretch(1)
-
-        self.setLayout(vbox)
-
-        self.setWindowTitle('SRef Setup Window')
-        self.setGeometry(300,300,500,500)
-        self.show()
-
-    def on_saveBox_accepted(self):
-        # save implement!!
-        self.destroy()
-
-    def keyPressEvent(self, QKeyEvent):
-        if QKeyEvent.key() == Qt.Key_Return:
-            pass
-        #self.send_Destroy_signal.emit()
-        elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
-        #self.send_Destroy_signal.emit()
-
-class _SRefSetupWindow(QWidget):
-
-    send_SRefSetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
-    send_SRefDesign_signal = pyqtSignal(dict)
-    send_Destroy_signal = pyqtSignal(str)
-    send_Warning_signal = pyqtSignal(str)
-
-    def __init__(self,SRefElement= None):
-        super().__init__()
-        self.initUI()
-
-        if SRefElement == None:
-            self.visualItem = VisualizationItem._VisualizationItem()
-            self._DesignParameter = dict(
-                _Layer= None,
-                _DesignParametertype = 3,
-                _XYCoordinates = [],
-                _XWidth = None,
-                _YWidth = None,
-                _Ignore = None,
-                _ElementName = None
-
-                )
-        else:
-            # self.visualItem = BoundaryElement
-            self._DesignParameter = SRefElement._ItemTraits
-            self.updateUI()
-
-
-
-    def initUI(self):
-        okButton = QPushButton("OK",self)
-        cancelButton = QPushButton("Cancel",self)
-
-        okButton.clicked.connect(self.on_buttonBox_accepted)
-        cancelButton.clicked.connect(self.cancel_button_accepted)
-
-        name = QLabel("Element Name")
-        width = QLabel("Width")
-        height = QLabel("Height")
-        layer = QLabel("Layer")
-        self.name_input = QLineEdit()
-        self.width_input = QLineEdit()
-        self.height_input = QLineEdit()
-        self.layer_input = QComboBox()
-
-        _Layer = LayerReader._LayerMapping
-        for LayerName in _Layer:
-            if _Layer[LayerName][1] == 0:       ## Layer is drawing
-                self.layer_input.addItem(LayerName)
-        #
-        # _Layer = LayerInfo._Layer()
-        # for LayerName in _Layer._LayerName:
-        #     self.layer_input.addItem(LayerName)
-        # del _Layer
-
-        self.setupVboxColumn1 = QVBoxLayout()
-        self.setupVboxColumn2 = QVBoxLayout()
-        setupBox = QHBoxLayout()
-
-        self.setupVboxColumn1.addWidget(name)
-        self.setupVboxColumn1.addWidget(width)
-        self.setupVboxColumn1.addWidget(height)
-        self.setupVboxColumn1.addWidget(layer)
-
-
-        self.setupVboxColumn2.addWidget(self.name_input)
-        self.setupVboxColumn2.addWidget(self.width_input)
-        self.setupVboxColumn2.addWidget(self.height_input)
-        self.setupVboxColumn2.addWidget(self.layer_input)
-
-        setupBox.addLayout(self.setupVboxColumn1)
-        setupBox.addLayout(self.setupVboxColumn2)
-
-        hbox = QHBoxLayout()
-        hbox.addStretch(2)
-        hbox.addWidget(okButton)
-        hbox.addWidget(cancelButton)
-        # hbox.addStretch(1)
-
-        vbox = QVBoxLayout()
-        vbox.addStretch(1)
-        vbox.addLayout(setupBox)
-        vbox.addStretch(3)
-        vbox.addLayout(hbox)
-        # vbox.addStretch(1)
-
-        self.setLayout(vbox)
-
-        self.setWindowTitle('Boundary Setup Window')
-        self.setGeometry(300,300,500,500)
-        self.show()
-
-    def updateUI(self):
-        self.name_input.setText(self._DesignParameter['_ElementName'])
-        self.width_input.setText(str(self._DesignParameter['_XWidth']))
-        self.height_input.setText(str(self._DesignParameter['_YWidth']))
-        if type(self._DesignParameter['_Layer']) == int:
-            _Layer = LayerReader._LayerMapping
-            # _Layer2Name = LayerReader._LayerNameTmp
-            # _layerNumber = str(self._DesignParameter['_Layer'])
-            for layerExpressionName in _Layer:
-                print("layerExpressionName:",layerExpressionName,_Layer[layerExpressionName][0],self._DesignParameter['_Layer'])
-                if _Layer[layerExpressionName][0] == self._DesignParameter['_Layer']:
-                    self._DesignParameter['_Layer'] = str(layerExpressionName)
-                    break
-
-            # self._DesignParameter['_Layer'] =  _Layer2Name[_layerNumber]     #Layer Number             --> Convert Name to Number
-            del _Layer
-            layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
-        else:
-            layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
-        if layerIndex != -1:
-            self.layer_input.setCurrentIndex(layerIndex)
-        #setCurrentIndex
-        #findText
-        # self.
-
-    def cancel_button_accepted(self):
-        self.destroy()
-    def on_buttonBox_accepted(self):
-
-        try:
-            self._DesignParameter['_ElementName'] = self.name_input.text()
-            self._DesignParameter['_XWidth'] = float(self.width_input.text())
-            self._DesignParameter['_YWidth'] = float(self.height_input.text())
-            self._DesignParameter['_Layer'] = self.layer_input.currentText()
-            self.send_BoundaryDesign_signal.emit(self._DesignParameter)
-            self.destroy()
-        except:
-            self.send_Warning_signal.emit("Invalid Design Parameter Input")
-            self.warning = QMessageBox()
-            self.warning.setText("Invalid design parameter input")
-            self.warning.setIcon(QMessageBox.Warning)
-            self.warning.show()
-
-
-    def keyPressEvent(self, QKeyEvent):
-        if QKeyEvent.key() == Qt.Key_Return:
-            self.on_buttonBox_accepted()
-            self.send_Destroy_signal.emit('sw')
-        elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
-            self.send_Destroy_signal.emit('sw')
 
 class _LoadSRefWindow(QWidget):
 
@@ -964,8 +766,10 @@ class _LoadSRefWindow(QWidget):
                 self.parVBox1.addWidget(QLabel(self.par_name[-1]))
                 self.parVBox2.addWidget(self.par_valueForLineEdit[-1])
 
-    def DetermineCoordinateWithMouse(self, _MouseEvent):
-        self.XY_input.setText(str(_MouseEvent.scenePos().toPoint().x()) + ',' + str(_MouseEvent.scenePos().toPoint().y()))
+    def DetermineCoordinateWithMouse(self, xy):
+        # self.XY_input.setText(str(_MouseEvent.scenePos().toPoint().x()) + ',' + str(_MouseEvent.scenePos().toPoint().y()))
+        self.XY_input.setText(str(xy[0]) + ',' + str(xy[1]))
+
 
     def on_buttonBox_accepted(self):
         for idx in range(len(self.par_valueForLineEdit)):
