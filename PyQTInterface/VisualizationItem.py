@@ -184,19 +184,19 @@ class _RectBlock(QGraphicsRectItem):
             qpix = DisplayReader._DisplayDict[color_patt_name]
             brush.setTexture(qpix)
 
-        if '_type' in self._BlockTraits and self._BlockTraits['_type'] == 2:
-            if self._BlockTraits['_XYCoordinates'][0][0][0] == self._BlockTraits['_XYCoordinates'][0][1][0]:
-                x1 = self._BlockTraits['_Width'] / 2
-                x2 = x1
-                y1 = 0
-                y2 = self._BlockTraits['_Height']
-            else:
-                #horizontal
-                x1 = 0
-                x2 = self._BlockTraits['_Width']
-                y1 = self._BlockTraits['_Height']/2
-                y2 = y1
-            painter.drawLine(x1,y1,x2,y2)
+        # if '_type' in self._BlockTraits and self._BlockTraits['_type'] == 2:
+        #     if self._BlockTraits['_XYCoordinates'][0][0][0] == self._BlockTraits['_XYCoordinates'][0][1][0]:
+        #         x1 = self._BlockTraits['_Width'] / 2
+        #         x2 = x1
+        #         y1 = 0
+        #         y2 = self._BlockTraits['_Height']
+        #     else:
+        #         #horizontal
+        #         x1 = 0
+        #         x2 = self._BlockTraits['_Width']
+        #         y1 = self._BlockTraits['_Height']/2
+        #         y2 = y1
+        #     painter.drawLine(x1,y1,x2,y2)
 
 
 
