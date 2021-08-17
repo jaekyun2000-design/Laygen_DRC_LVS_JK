@@ -587,14 +587,11 @@ class _MainWindow(QMainWindow):
                 self.scene.removeItem(rm_item)
                 del rm_item
 
-
             print('Process Changed!')
             self.process_list_widget.close()
 
     def warning_invalid_layer(self, layer_name):
         self.warning_widget = QtWarningMsg(f"Not valid layer: {layer_name}")
-
-
 
     def inspect_path_point(self):
         inspector = topAPI.inspector.path_point_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
