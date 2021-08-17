@@ -555,9 +555,15 @@ class _PathSetupWindow(QWidget):
                     ydistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][1] - xy[1])
 
                     if xdistance < ydistance:
-                        tmp_dp['_XYCoordinates'].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],xy[1]]])
+                        if len(tmp_dp['_XYCoordinates'][0]) == 1:
+                            tmp_dp['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],xy[1]]]]
+                        else:
+                            tmp_dp['_XYCoordinates'][0].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],xy[1]]][-1])
                     else:
-                        tmp_dp['_XYCoordinates'].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[xy[0],self._DesignParameter['_XYCoordinates'][0][-1][1]]])
+                        if len(tmp_dp['_XYCoordinates'][0]) == 1:
+                            tmp_dp['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[xy[0],self._DesignParameter['_XYCoordinates'][0][-1][1]]]]
+                        else:
+                            tmp_dp['_XYCoordinates'][0].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[xy[0],self._DesignParameter['_XYCoordinates'][0][-1][1]]][-1])
 
                 tmp_dp['_Width'] = self.width_input.text()
                 tmp_dp['_LayerUnifiedName'] = self.layer_input.currentText()
@@ -568,7 +574,7 @@ class _PathSetupWindow(QWidget):
                 qt_dp.update_unified_expression()
                 self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
                 self.visualItem.updateDesignParameter(qt_dp)
-                # # self.send_PathSetup_signal.emit(self.visualItem)
+                self.send_PathSetup_signal.emit(self.visualItem)
                 self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
 
 

@@ -125,8 +125,8 @@ class _RectBlock(QGraphicsRectItem):
             pen.setColor(Qt.GlobalColor.darkCyan)
             pen.setWidth(5)
             # self.setZValue(1)
-        else:
-            self.setZValue(self._BlockTraits['_Layer']/1000)
+        # else:
+        #     self.setZValue(self._BlockTraits['_Layer'])
         painter.setPen(pen)
 
         # if self._BlockTraits["_Pattern"] == "blank":
@@ -184,19 +184,19 @@ class _RectBlock(QGraphicsRectItem):
             qpix = DisplayReader._DisplayDict[color_patt_name]
             brush.setTexture(qpix)
 
-        if '_type' in self._BlockTraits and self._BlockTraits['_type'] == 2:
-            if self._BlockTraits['_XYCoordinates'][0][0][0] == self._BlockTraits['_XYCoordinates'][0][1][0]:
-                x1 = self._BlockTraits['_Width'] / 2
-                x2 = x1
-                y1 = 0
-                y2 = self._BlockTraits['_Height']
-            else:
-                #horizontal
-                x1 = 0
-                x2 = self._BlockTraits['_Width']
-                y1 = self._BlockTraits['_Height']/2
-                y2 = y1
-            painter.drawLine(x1,y1,x2,y2)
+        # if '_type' in self._BlockTraits and self._BlockTraits['_type'] == 2:
+        #     if self._BlockTraits['_XYCoordinates'][0][0][0] == self._BlockTraits['_XYCoordinates'][0][1][0]:
+        #         x1 = self._BlockTraits['_Width'] / 2
+        #         x2 = x1
+        #         y1 = 0
+        #         y2 = self._BlockTraits['_Height']
+        #     else:
+        #         #horizontal
+        #         x1 = 0
+        #         x2 = self._BlockTraits['_Width']
+        #         y1 = self._BlockTraits['_Height']/2
+        #         y2 = y1
+        #     painter.drawLine(x1,y1,x2,y2)
 
 
 
@@ -219,7 +219,7 @@ class _RectBlock(QGraphicsRectItem):
             self.warning.show()
 
     def restore_zvalue(self):
-        self.setZValue(self._BlockTraits['_Layer'] / 1000)
+        self.setZValue(self._BlockTraits['_Layer'])
 
     def independent_from_group(self):
         self.original_parent = self.parentItem()
@@ -409,7 +409,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         self._id = QtDesignParameter._id
         self._type = QtDesignParameter._type
         self._ItemTraits['_type'] = self._type
-        self._CreateFlag = False
+        # self._CreateFlag = False
         # try:
         #     oldVersionSupportForXYCoordinatesForDisplay = QtDesignParameter._XYCoordinatesForDisplay
         # except:
@@ -717,8 +717,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 if self.idx == 0:
                     self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]) + '\nwidth: ' + str(self._ItemTraits['variable_info']['width']))
                 else:
-                    self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]))
+                    self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][-1][self.idx]))
 
+                print(self.tmpXY.toPlainText())
                 self.setVariable(type='Path')
 
             ############################ Variable Visualization End ############################
@@ -870,6 +871,11 @@ class _VisualizationItem(QGraphicsItemGroup):
         else:
             print("WARNING1: Unvalid DataType Detected!")
 
+        for block in self.block:
+            if type(block) == _RectBlock:
+                block.setZValue(block._BlockTraits['_Layer'])
+        if self._type == 1 or self._type == 2:
+            self.setZValue(self._ItemTraits['_Layer'])
         # print('--')
         # print(self._subElementLayer)
         # self.send_subelementlayer_signal.emit(self._subElementLayer)
@@ -1002,7 +1008,7 @@ class _VisualizationItem(QGraphicsItemGroup):
             elif type == 'Path':
                 self.tmpXY.setFont(font)
 
-                self.tmpXY.setPos(self._ItemTraits['_XYCoordinates'][0][self.idx][0]-6, self._ItemTraits['_XYCoordinates'][0][self.idx][1]+10)
+                self.tmpXY.setPos(self._ItemTraits['_XYCoordinates'][-1][self.idx][0]-6, self._ItemTraits['_XYCoordinates'][-1][self.idx][1]+10)
 
                 self.tmpXY.setDefaultTextColor(Qt.GlobalColor.red)
 

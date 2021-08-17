@@ -587,14 +587,11 @@ class _MainWindow(QMainWindow):
                 self.scene.removeItem(rm_item)
                 del rm_item
 
-
             print('Process Changed!')
             self.process_list_widget.close()
 
     def warning_invalid_layer(self, layer_name):
         self.warning_widget = QtWarningMsg(f"Not valid layer: {layer_name}")
-
-
 
     def inspect_path_point(self):
         inspector = topAPI.inspector.path_point_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
@@ -1213,23 +1210,23 @@ class _MainWindow(QMainWindow):
         self.cw.send_CUSTOM_signal.connect(self.createNewConstraintAST)
 
     def delete_obj(self, obj):
-        sender = self.sender()
-        del sender
-        # if obj == 'cw':
-        #     del self.cw
-        # if obj == 'bw':
-        #     del self.bw
-        # if obj == 'pw':
-        #     del self.pw
-        # if obj == 'dv':
-        #     del self.dv
-        # if obj == 'txtw':
-        #     del self.txtw
-        # if obj == 'pinw':
-        #     del self.pinw
-        # if obj == 'ls':
-        #     del self.ls
-        self.scene.itemListClickIgnore(False)
+        # sender = self.sender()
+        # del sender
+        if obj == 'cw':
+            del self.cw
+        if obj == 'bw':
+            del self.bw
+        if obj == 'pw':
+            del self.pw
+        if obj == 'dv':
+            del self.dv
+        if obj == 'txtw':
+            del self.txtw
+        if obj == 'pinw':
+            del self.pinw
+        if obj == 'ls':
+            del self.ls
+        # self.scene.itemListClickIgnore(False)
 
     def updateGraphicItem(self,graphicItem):
         for items in self.scene.items():
@@ -1326,6 +1323,7 @@ class _MainWindow(QMainWindow):
             if top_module in self._QTObj._qtProject._DesignParameter:
                 for id_name, qt_parameter in self._QTObj._qtProject._DesignParameter[top_module].items():
                     vs_item = self.createVisualItemfromDesignParameter(qt_parameter)
+                    vs_item._CreateFlag = False
                     self.updateGraphicItem(vs_item)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Project Load Done")
 
@@ -1755,6 +1753,7 @@ class _MainWindow(QMainWindow):
             design_dict = self._QTObj._qtProject._feed_design(design_type='parameter', module_name= self._CurrentModuleName, dp_dict= _DesignParameter)
             design_dict['parameter'].update_unified_expression()
             visualItem = self.createVisualItemfromDesignParameter(design_dict['parameter'])
+            visualItem._CreateFlag = False
             self.updateGraphicItem(visualItem)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Design Parameter Created")
 
@@ -2907,7 +2906,7 @@ class _CustomScene(QGraphicsScene):
                     print(f'3)idx_overflow :{idx}')
                     self.point_items_memory[idx].restore_zvalue()
                     self.point_items_memory[0].save_zvalue_in_memory()
-                    self.point_items_memory[0].setZValue(10)
+                    self.point_items_memory[0].setZValue(1000)
                 else:
                     if before_selected_item and before_selected_item not in self.point_items_memory:
                         '''
@@ -2918,7 +2917,7 @@ class _CustomScene(QGraphicsScene):
                         print(f'3) maybe something is wrong!')
                         print(f'3-info) reset selected item')
                         before_selected_item.restore_zvalue()
-                        self.point_items_memory[0].setZValue(10)
+                        self.point_items_memory[0].setZValue(1000)
                         # print(f'debug z value {before_selected_item.zValue()}')
                         # print(f'3-info) b_z_values : {[item.zValue() for item in self.point_items_memory]}')
                     else:
@@ -2926,7 +2925,7 @@ class _CustomScene(QGraphicsScene):
                         print(f'3-info) b_z_values : {[item.zValue() for item in self.point_items_memory]}')
                         self.point_items_memory[idx].restore_zvalue()
                         self.point_items_memory[idx+1].save_zvalue_in_memory()
-                        self.point_items_memory[idx+1].setZValue(10)
+                        self.point_items_memory[idx+1].setZValue(1000)
             else:
                 if items:
                     print(f'4)new point : {items[0]._id}')
