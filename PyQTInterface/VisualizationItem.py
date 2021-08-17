@@ -125,8 +125,8 @@ class _RectBlock(QGraphicsRectItem):
             pen.setColor(Qt.GlobalColor.darkCyan)
             pen.setWidth(5)
             # self.setZValue(1)
-        else:
-            self.setZValue(self._BlockTraits['_Layer']/1000)
+        # else:
+        #     self.setZValue(self._BlockTraits['_Layer'])
         painter.setPen(pen)
 
         # if self._BlockTraits["_Pattern"] == "blank":
@@ -219,7 +219,7 @@ class _RectBlock(QGraphicsRectItem):
             self.warning.show()
 
     def restore_zvalue(self):
-        self.setZValue(self._BlockTraits['_Layer'] / 1000)
+        self.setZValue(self._BlockTraits['_Layer'])
 
     def independent_from_group(self):
         self.original_parent = self.parentItem()
@@ -870,6 +870,11 @@ class _VisualizationItem(QGraphicsItemGroup):
         else:
             print("WARNING1: Unvalid DataType Detected!")
 
+        for block in self.block:
+            if type(block) == _RectBlock:
+                block.setZValue(block._BlockTraits['_Layer'])
+        if self._type == 1 or self._type == 2:
+            self.setZValue(self._ItemTraits['_Layer'])
         # print('--')
         # print(self._subElementLayer)
         # self.send_subelementlayer_signal.emit(self._subElementLayer)

@@ -2905,7 +2905,7 @@ class _CustomScene(QGraphicsScene):
                     print(f'3)idx_overflow :{idx}')
                     self.point_items_memory[idx].restore_zvalue()
                     self.point_items_memory[0].save_zvalue_in_memory()
-                    self.point_items_memory[0].setZValue(10)
+                    self.point_items_memory[0].setZValue(1000)
                 else:
                     if before_selected_item and before_selected_item not in self.point_items_memory:
                         '''
@@ -2916,7 +2916,7 @@ class _CustomScene(QGraphicsScene):
                         print(f'3) maybe something is wrong!')
                         print(f'3-info) reset selected item')
                         before_selected_item.restore_zvalue()
-                        self.point_items_memory[0].setZValue(10)
+                        self.point_items_memory[0].setZValue(1000)
                         # print(f'debug z value {before_selected_item.zValue()}')
                         # print(f'3-info) b_z_values : {[item.zValue() for item in self.point_items_memory]}')
                     else:
@@ -2924,7 +2924,7 @@ class _CustomScene(QGraphicsScene):
                         print(f'3-info) b_z_values : {[item.zValue() for item in self.point_items_memory]}')
                         self.point_items_memory[idx].restore_zvalue()
                         self.point_items_memory[idx+1].save_zvalue_in_memory()
-                        self.point_items_memory[idx+1].setZValue(10)
+                        self.point_items_memory[idx+1].setZValue(1000)
             else:
                 if items:
                     print(f'4)new point : {items[0]._id}')
