@@ -59,7 +59,7 @@ class QtDesignParameter:
             data_number = str(self._DesignParameter['_Datatype'])
             self._DesignParameter['_LayerUnifiedName'] = LayerReader._LayDatNumToName[layer_number][data_number]
             self._DesignParameter['_LayerName'] = LayerReader._LayDatNameTmp[layer_number][data_number][0]
-            self._DesignParameter['_DataType'] = '_'+LayerReader._LayDatNameTmp[layer_number][data_number][1]
+            self._DesignParameter['_DatatypeName'] = '_'+LayerReader._LayDatNameTmp[layer_number][data_number][1]
         else:
             if '_LayerUnifiedName' in self._DesignParameter:
                 self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
