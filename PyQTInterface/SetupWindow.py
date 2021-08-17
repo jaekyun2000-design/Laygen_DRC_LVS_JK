@@ -437,6 +437,7 @@ class _PathSetupWindow(QWidget):
                 raise NotImplementedError
             self._DesignParameter['_Width'] = self.width_input.text()
             self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
+            self._DesignParameter['_Layer'] = None
             self._DesignParameter['_XYCoordinates'] = [[]]
 
             for XY in self.XYdictForLineEdit:
@@ -510,7 +511,8 @@ class _PathSetupWindow(QWidget):
                 self.UpdateXYwidget()
                 self._DesignParameter['_Width'] = self.width_input.text()
                 self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
-                qt_dp = QTInterfaceWithAST.QtDesignParameter()
+                self._DesignParameter['_type'] = 2
+                qt_dp = QTInterfaceWithAST.QtDesignParameter(_type=2)
                 for key, value in self._DesignParameter.items():
                     qt_dp._setDesignParameterValue(key, value)
                 qt_dp.update_unified_expression()
@@ -559,6 +561,7 @@ class _PathSetupWindow(QWidget):
 
                 tmp_dp['_Width'] = self.width_input.text()
                 tmp_dp['_LayerUnifiedName'] = self.layer_input.currentText()
+                tmp_dp['_type'] = 2
                 qt_dp = QTInterfaceWithAST.QtDesignParameter(_type=2)
                 for key, value in tmp_dp.items():
                     qt_dp._setDesignParameterValue(key, value)
