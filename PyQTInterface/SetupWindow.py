@@ -236,10 +236,7 @@ class _BoundarySetupWindow(QWidget):
                 self.XYdictForLineEdit[0].setText(str(origin[0])+','+str(origin[1]))
 
             self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
-            self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self.layer_input.currentText()][0]
-            self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self.layer_input.currentText()][2]
-            self._DesignParameter['_Datatype'] = LayerReader._LayerMapping[self.layer_input.currentText()][1]
-            self._DesignParameter['_DataType'] = '_' + LayerReader._LayDatNameTmp[str(self._DesignParameter['_Layer'])][str(self._DesignParameter['_Datatype'])][1]
+            self._DesignParameter['_Layer'] = None
 
             if self._DesignParameter['_XWidth'] is None:
                 self._DesignParameter['_XWidth'] = 0
@@ -247,8 +244,12 @@ class _BoundarySetupWindow(QWidget):
                 self._DesignParameter['_YWidth'] = 0
             if self._DesignParameter['_XYCoordinates'] == []:
                 self._DesignParameter['_XYCoordinates'] = [xy]
+            qt_dp = QTInterfaceWithAST.QtDesignParameter()
+            for key, value in self._DesignParameter.items():
+                qt_dp._setDesignParameterValue(key, value)
+            qt_dp.update_unified_expression()
 
-            self.visualItem.updateTraits(self._DesignParameter)
+            self.visualItem.updateDesignParameter(qt_dp)
             self.send_BoundarySetup_signal.emit(self.visualItem)
 
     def keyPressEvent(self, QKeyEvent):
@@ -269,7 +270,12 @@ class _BoundarySetupWindow(QWidget):
             self._DesignParameter['_YWidth'] = ydistance
             self._DesignParameter['_XYCoordinates'] = [origin]
             self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
-            self.visualItem.updateTraits(self._DesignParameter)
+            self._DesignParameter['_Layer'] = None
+            qt_dp = QTInterfaceWithAST.QtDesignParameter()
+            for key, value in self._DesignParameter.items():
+                qt_dp._setDesignParameterValue(key, value)
+            qt_dp.update_unified_expression()
+            self.visualItem.updateDesignParameter(qt_dp)
             self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
             self.send_BoundarySetup_signal.emit(self.visualItem)
 
@@ -395,12 +401,12 @@ class _PathSetupWindow(QWidget):
     def updateUI(self):
         self.name_input.setText(self._DesignParameter['_ElementName'])
         self.width_input.setText(str(self._DesignParameter['_Width']))
-        if type(self._DesignParameter['_Layer']) == int:
-            layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-            _tmplayer = layernum2name[str(self._DesignParameter['_Layer'])]
-            layerIndex = self.layer_input.findText(_tmplayer)
-        else:
-            layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
+        # if type(self._DesignParameter['_Layer']) == int:
+        #     layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+        #     _tmplayer = layernum2name[str(self._DesignParameter['_Layer'])]
+        #     layerIndex = self.layer_input.findText(_tmplayer)
+        # else:
+        layerIndex = self.layer_input.findText(self._DesignParameter['_LayerUnifiedName'])
         if layerIndex != -1:
             self.layer_input.setCurrentIndex(layerIndex)
         for i in range(len(self._DesignParameter['_XYCoordinates'][0])):
@@ -431,7 +437,7 @@ class _PathSetupWindow(QWidget):
             if self._DesignParameter['_ElementName'] == '':
                 raise NotImplementedError
             self._DesignParameter['_Width'] = self.width_input.text()
-            self._DesignParameter['_Layer'] = self.layer_input.currentText()
+            self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
             self._DesignParameter['_XYCoordinates'] = [[]]
 
             for XY in self.XYdictForLineEdit:
@@ -510,7 +516,7 @@ class _PathSetupWindow(QWidget):
                 self.XYdictForLineEdit[CurrentEditPointNum].setText(XYstring)
                 self.UpdateXYwidget()
                 self._DesignParameter['_Width'] = self.width_input.text()
-                self._DesignParameter['_Layer'] = self.layer_input.currentText()
+                self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
                 self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
                 self.visualItem.updateTraits(self._DesignParameter)
                 self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
@@ -554,7 +560,7 @@ class _PathSetupWindow(QWidget):
                         self.tmpDP['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[event.scenePos().x(),self._DesignParameter['_XYCoordinates'][0][-1][1]]]]
 
                 self.tmpDP['_Width'] = self.width_input.text()
-                self.tmpDP['_Layer'] = self.layer_input.currentText()
+                self.tmpDP['_LayerUnifiedName'] = self.layer_input.currentText()
                 self.tmpVI.updateTraits(self.tmpDP)
                 self.send_PathSetup_signal.emit(self.tmpVI)
                 self.tmpVI.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)

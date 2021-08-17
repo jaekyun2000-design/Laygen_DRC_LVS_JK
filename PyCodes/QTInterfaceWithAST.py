@@ -40,7 +40,7 @@ class QtDesignParameter:
             # print("There is no valid design parameter name")
         else:
             self._ElementName = _ElementName
-        self._DesignParameter = None
+        self._DesignParameter = dict()
         self._DesignHierarchy = None
         self._XYCoordinatesForDisplay = []
         self._NoShowFlag = None
@@ -56,10 +56,13 @@ class QtDesignParameter:
     def update_unified_expression(self):
         if '_Layer' in self._DesignParameter and type(self._DesignParameter['_Layer']) == int:
             layer_number = str(self._DesignParameter['_Layer'])
-            data_number = str(self._DesignParameter['_Datatype'])
-            self._DesignParameter['_LayerUnifiedName'] = LayerReader._LayDatNumToName[layer_number][data_number]
-            self._DesignParameter['_LayerName'] = LayerReader._LayDatNameTmp[layer_number][data_number][0]
-            self._DesignParameter['_DatatypeName'] = '_'+LayerReader._LayDatNameTmp[layer_number][data_number][1]
+            if '_Datatype' in self._DesignParameter and self._DesignParameter['_Datatype'] is not None:
+                data_number = str(self._DesignParameter['_Datatype'])
+                self._DesignParameter['_LayerUnifiedName'] = LayerReader._LayDatNumToName[layer_number][data_number]
+                self._DesignParameter['_LayerName'] = LayerReader._LayDatNameTmp[layer_number][data_number][0]
+                self._DesignParameter['_DatatypeName'] = '_' + LayerReader._LayDatNameTmp[layer_number][data_number][1]
+            else:
+                pass
         else:
             if '_LayerUnifiedName' in self._DesignParameter:
                 self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]

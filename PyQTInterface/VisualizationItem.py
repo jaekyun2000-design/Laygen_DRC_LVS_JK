@@ -90,7 +90,10 @@ class _RectBlock(QGraphicsRectItem):
         # list_manager.layer_visible_flag_dict[self.itemtrait['layer']] is False:
         #     self.setVisible(False)
 
-        self._BlockTraits["_Color"].setAlphaF(1)
+        try:
+            self._BlockTraits["_Color"].setAlphaF(1)
+        except:
+            print('debug')
 
         pen = QPen()
         pen.setColor(self._BlockTraits["_Outline"])
