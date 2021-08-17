@@ -385,7 +385,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
         self._id = QtDesignParameter._id
         self._type = QtDesignParameter._type
-        self._CreateFlag = False
+        # self._CreateFlag = False
         # try:
         #     oldVersionSupportForXYCoordinatesForDisplay = QtDesignParameter._XYCoordinatesForDisplay
         # except:
@@ -691,7 +691,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 if self.idx == 0:
                     self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]) + '\nwidth: ' + str(self._ItemTraits['variable_info']['width']))
                 else:
-                    self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]))
+                    self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][-1][self.idx]))
 
                 self.setVariable(type='Path')
 
@@ -958,9 +958,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.heightVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
                 self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-                self.widthVariable.setVisible(False)
-                self.heightVariable.setVisible(False)
-                self.XYVariable.setVisible(False)
+                # self.widthVariable.setVisible(False)
+                # self.heightVariable.setVisible(False)
+                # self.XYVariable.setVisible(False)
 
                 self.widthVariable.setZValue(1)
                 self.heightVariable.setZValue(1)
@@ -976,13 +976,13 @@ class _VisualizationItem(QGraphicsItemGroup):
             elif type == 'Path':
                 self.tmpXY.setFont(font)
 
-                self.tmpXY.setPos(self._ItemTraits['_XYCoordinates'][0][self.idx][0]-6, self._ItemTraits['_XYCoordinates'][0][self.idx][1]+10)
+                self.tmpXY.setPos(self._ItemTraits['_XYCoordinates'][-1][self.idx][0]-6, self._ItemTraits['_XYCoordinates'][-1][self.idx][1]+10)
 
                 self.tmpXY.setDefaultTextColor(Qt.GlobalColor.red)
 
                 self.tmpXY.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-                self.tmpXY.setVisible(False)
+                # self.tmpXY.setVisible(False)
 
                 self.tmpXY.setZValue(1)
 

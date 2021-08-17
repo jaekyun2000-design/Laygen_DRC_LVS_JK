@@ -553,9 +553,15 @@ class _PathSetupWindow(QWidget):
                     ydistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][1] - xy[1])
 
                     if xdistance < ydistance:
-                        tmp_dp['_XYCoordinates'].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],xy[1]]])
+                        if len(tmp_dp['_XYCoordinates'][0]) == 1:
+                            tmp_dp['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],xy[1]]]]
+                        else:
+                            tmp_dp['_XYCoordinates'][0].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],xy[1]]][-1])
                     else:
-                        tmp_dp['_XYCoordinates'].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[xy[0],self._DesignParameter['_XYCoordinates'][0][-1][1]]])
+                        if len(tmp_dp['_XYCoordinates'][0]) == 1:
+                            tmp_dp['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[xy[0],self._DesignParameter['_XYCoordinates'][0][-1][1]]]]
+                        else:
+                            tmp_dp['_XYCoordinates'][0].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[xy[0],self._DesignParameter['_XYCoordinates'][0][-1][1]]][-1])
 
                 tmp_dp['_Width'] = self.width_input.text()
                 tmp_dp['_LayerUnifiedName'] = self.layer_input.currentText()

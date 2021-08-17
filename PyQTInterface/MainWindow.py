@@ -1209,23 +1209,23 @@ class _MainWindow(QMainWindow):
         self.cw.send_CUSTOM_signal.connect(self.createNewConstraintAST)
 
     def delete_obj(self, obj):
-        sender = self.sender()
-        del sender
-        # if obj == 'cw':
-        #     del self.cw
-        # if obj == 'bw':
-        #     del self.bw
-        # if obj == 'pw':
-        #     del self.pw
-        # if obj == 'dv':
-        #     del self.dv
-        # if obj == 'txtw':
-        #     del self.txtw
-        # if obj == 'pinw':
-        #     del self.pinw
-        # if obj == 'ls':
-        #     del self.ls
-        self.scene.itemListClickIgnore(False)
+        # sender = self.sender()
+        # del sender
+        if obj == 'cw':
+            del self.cw
+        if obj == 'bw':
+            del self.bw
+        if obj == 'pw':
+            del self.pw
+        if obj == 'dv':
+            del self.dv
+        if obj == 'txtw':
+            del self.txtw
+        if obj == 'pinw':
+            del self.pinw
+        if obj == 'ls':
+            del self.ls
+        # self.scene.itemListClickIgnore(False)
 
     def updateGraphicItem(self,graphicItem):
         for items in self.scene.items():
@@ -1234,10 +1234,10 @@ class _MainWindow(QMainWindow):
                 self.scene.update()
 
         # if not self.checkNameDuplication(graphicItem):
-        if graphicItem._CreateFlag is True:
+        if graphicItem._CreateFlag is False:
             for item in graphicItem.block:
                 if type(item) is VisualizationItem.QGraphicsTextItemWObounding:
-                    item.setVisible(True)
+                    item.setVisible(False)
         self.visualItemDict[graphicItem._ElementName] = graphicItem
         self.scene.addItem(graphicItem)
         self.scene.send_move_signal.connect(graphicItem.move)
@@ -1750,6 +1750,7 @@ class _MainWindow(QMainWindow):
             design_dict = self._QTObj._qtProject._feed_design(design_type='parameter', module_name= self._CurrentModuleName, dp_dict= _DesignParameter)
             design_dict['parameter'].update_unified_expression()
             visualItem = self.createVisualItemfromDesignParameter(design_dict['parameter'])
+            visualItem._CreateFlag = False
             self.updateGraphicItem(visualItem)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Design Parameter Created")
 
