@@ -538,15 +538,6 @@ class _VisualizationItem(QGraphicsItemGroup):
             blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['Outline']
             blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['Stipple']
 
-            print('lll:', blockTraits['_LayerName']+blockTraits['_DatatypeName'])
-
-            # layer_data_name = blockTraits['_Layer']+blockTraits['_DatatypeName']
-            # if layer_data_name not in DisplayReader._DisplayDict:
-            #     DisplayReader.readtechfile()
-            # blockTraits['_Color'] =  DisplayInfo[blockTraits['_Layer']+blockTraits['_DatatypeName']]['Fill']
-            # blockTraits['_Outline'] =  DisplayInfo[blockTraits['_Layer']+blockTraits['_DatatypeName']]['Outline']
-            # blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_Layer']+blockTraits['_DatatypeName']]['Stipple']
-
         if self._ItemTraits['_DesignParametertype'] == 1:                              # Boundary Case
             tmpBlock = _RectBlock()
             tmpBlock.updateTraits(blockTraits)

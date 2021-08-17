@@ -1091,7 +1091,6 @@ class _MainWindow(QMainWindow):
         self.bw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
         self.bw.send_BoundaryDesign_signal.connect(self.createNewDesignParameter)
         self.bw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
-        # self.scene.send_xyCoordinate_signal.connect(self.bw.AddBoundaryPointWithMouse)
         self.scene.send_xy_signal.connect(self.bw.AddBoundaryPointWithMouse)
         self.scene.send_xy_signal.connect(self.bw.clickCount)
         self.scene.send_mouse_move_xy_signal.connect(self.bw.mouseTracking)
@@ -1106,9 +1105,13 @@ class _MainWindow(QMainWindow):
         self.pw.send_PathDesign_signal.connect(self.createNewDesignParameter)
         self.pw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
         self.pw.send_Destroy_signal.connect(self.delete_obj)
-        self.scene.send_xyCoordinate_signal.connect(self.pw.AddPathPointWithMouse)
-        self.scene.send_xyCoordinate_signal.connect(self.pw.clickCount)                          # Mouse Interaction connect
-        self.scene.send_mouse_move_signal.connect(self.pw.mouseTracking)
+        self.scene.send_xy_signal.connect(self.pw.AddPathPointWithMouse)
+        self.scene.send_xy_signal.connect(self.pw.clickCount)  # Mouse Interaction connect
+        self.scene.send_mouse_move_xy_signal.connect(self.pw.mouseTracking)
+        # self.scene.send_xyCoordinate_signal.connect(self.pw.AddPathPointWithMouse)
+        # self.scene.send_xyCoordinate_signal.connect(self.pw.clickCount)                          # Mouse Interaction connect
+        # self.scene.send_mouse_move_signal.connect(self.pw.mouseTracking)
+
         self.scene.send_doubleclick_signal.connect(self.pw.quitCreate)
 
     def makeSRefWindow(self):
@@ -1209,20 +1212,22 @@ class _MainWindow(QMainWindow):
         self.cw.send_CUSTOM_signal.connect(self.createNewConstraintAST)
 
     def delete_obj(self, obj):
-        if obj == 'cw':
-            del self.cw
-        if obj == 'bw':
-            del self.bw
-        if obj == 'pw':
-            del self.pw
-        if obj == 'dv':
-            del self.dv
-        if obj == 'txtw':
-            del self.txtw
-        if obj == 'pinw':
-            del self.pinw
-        if obj == 'ls':
-            del self.ls
+        sender = self.sender()
+        del sender
+        # if obj == 'cw':
+        #     del self.cw
+        # if obj == 'bw':
+        #     del self.bw
+        # if obj == 'pw':
+        #     del self.pw
+        # if obj == 'dv':
+        #     del self.dv
+        # if obj == 'txtw':
+        #     del self.txtw
+        # if obj == 'pinw':
+        #     del self.pinw
+        # if obj == 'ls':
+        #     del self.ls
         self.scene.itemListClickIgnore(False)
 
     def updateGraphicItem(self,graphicItem):

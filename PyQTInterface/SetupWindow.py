@@ -310,7 +310,6 @@ class _PathSetupWindow(QWidget):
 
                 )
             self.visualItem = VisualizationItem._VisualizationItem()
-            self.tmpVI = VisualizationItem._VisualizationItem()
             self.tmpDP = copy.deepcopy(self._DesignParameter)
             self.doubleClickEvent = False
         else:
@@ -457,11 +456,6 @@ class _PathSetupWindow(QWidget):
 
             pass
             self.send_DestroyTmpVisual_signal.emit(self.visualItem)
-            try:
-                self.send_DestroyTmpVisual_signal.emit(self.tmpVI)
-            except:
-                traceback.print_exc()
-                pass
             self.send_PathDesign_signal.emit(self._DesignParameter)
             self.destroy()
             self.send_Destroy_signal.emit('pw')
@@ -490,24 +484,23 @@ class _PathSetupWindow(QWidget):
                         _ItemRef = None, #Reference Of VisualizationItem
                     )
             self.visualItem.updateTraits(self._DesignParameter)
-            self.send_DestroyTmpVisual_signal.emit(self.tmpVI)
             self.destroy()
             self.send_Destroy_signal.emit('pw')
 
-    def AddPathPointWithMouse(self,_MouseEvent):
+    def AddPathPointWithMouse(self,xy):
         if self.doubleClickEvent == False:
             ##### When Click the point, adjust x,y locations #####
             try:
                 if len(self._DesignParameter['_XYCoordinates']) == 0:
-                    self._DesignParameter['_XYCoordinates'].append([[_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y()]])
+                    self._DesignParameter['_XYCoordinates'].append([xy])
                 else:
-                    xdistance = abs(_MouseEvent.scenePos().x() - self._DesignParameter['_XYCoordinates'][0][-1][0])
-                    ydistance = abs(_MouseEvent.scenePos().y() - self._DesignParameter['_XYCoordinates'][0][-1][1])
+                    xdistance = abs(xy[0] - self._DesignParameter['_XYCoordinates'][0][-1][0])
+                    ydistance = abs(xy[1] - self._DesignParameter['_XYCoordinates'][0][-1][1])
 
                     if xdistance < ydistance:
-                        self._DesignParameter['_XYCoordinates'][0].append([self._DesignParameter['_XYCoordinates'][0][-1][0],_MouseEvent.scenePos().toPoint().y()])
+                        self._DesignParameter['_XYCoordinates'][0].append([self._DesignParameter['_XYCoordinates'][0][-1][0],xy[1]])
                     else:
-                        self._DesignParameter['_XYCoordinates'][0].append([_MouseEvent.scenePos().toPoint().x(),self._DesignParameter['_XYCoordinates'][0][-1][1]])
+                        self._DesignParameter['_XYCoordinates'][0].append([xy[0],self._DesignParameter['_XYCoordinates'][0][-1][1]])
 
                 # self._DesignParameter['_XYCoordinates'].append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y(),])
 
@@ -517,8 +510,12 @@ class _PathSetupWindow(QWidget):
                 self.UpdateXYwidget()
                 self._DesignParameter['_Width'] = self.width_input.text()
                 self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
+                qt_dp = QTInterfaceWithAST.QtDesignParameter()
+                for key, value in self._DesignParameter.items():
+                    qt_dp._setDesignParameterValue(key, value)
+                qt_dp.update_unified_expression()
                 self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
-                self.visualItem.updateTraits(self._DesignParameter)
+                self.visualItem.updateDesignParameter(qt_dp)
                 self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
                 self.send_PathSetup_signal.emit(self.visualItem)
             except:
@@ -539,34 +536,43 @@ class _PathSetupWindow(QWidget):
         self.setupVboxColumn1.addWidget(self.XYdictForLabel[-1])
         self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[-1])
 
-    def mouseTracking(self, event):
+    def mouseTracking(self, xy):
         if self.mouse is not None:
             if self.doubleClickEvent == False:
+                tmp_dp = copy.deepcopy(self._DesignParameter)
                 if self.click == 0:
-                    xdistance = abs(self.mouse.x() - event.scenePos().x())
-                    ydistance = abs(self.mouse.y() - event.scenePos().y())
+                    xdistance = abs(self.mouse.x() - xy[0])
+                    ydistance = abs(self.mouse.y() - xy[1])
 
                     if xdistance < ydistance:
-                        self.tmpDP['_XYCoordinates'] = [[[self.mouse.x(),self.mouse.y()],[self.mouse.x(),event.scenePos().y()]]]
+                        tmp_dp['_XYCoordinates'] = [[self.mouse,[self.mouse[0],xy[1]]]]
                     else:
-                        self.tmpDP['_XYCoordinates'] = [[[self.mouse.x(),self.mouse.y()],[event.scenePos().x(),self.mouse.y()]]]
+                        tmp_dp['_XYCoordinates'] = [[self.mouse,[xy[0],self.mouse[1]]]]
                 else:
-                    xdistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][0] - event.scenePos().x())
-                    ydistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][1] - event.scenePos().y())
+                    xdistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][0] - xy[0])
+                    ydistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][1] - xy[1])
 
                     if xdistance < ydistance:
-                        self.tmpDP['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],event.scenePos().y()]]]
+                        tmp_dp['_XYCoordinates'].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],xy[1]]])
                     else:
-                        self.tmpDP['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[event.scenePos().x(),self._DesignParameter['_XYCoordinates'][0][-1][1]]]]
+                        tmp_dp['_XYCoordinates'].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[xy[0],self._DesignParameter['_XYCoordinates'][0][-1][1]]])
 
-                self.tmpDP['_Width'] = self.width_input.text()
-                self.tmpDP['_LayerUnifiedName'] = self.layer_input.currentText()
-                self.tmpVI.updateTraits(self.tmpDP)
-                self.send_PathSetup_signal.emit(self.tmpVI)
-                self.tmpVI.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
+                tmp_dp['_Width'] = self.width_input.text()
+                tmp_dp['_LayerUnifiedName'] = self.layer_input.currentText()
+                qt_dp = QTInterfaceWithAST.QtDesignParameter(_type=2)
+                for key, value in tmp_dp.items():
+                    qt_dp._setDesignParameterValue(key, value)
+                qt_dp.update_unified_expression()
+                self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
+                self.visualItem.updateDesignParameter(qt_dp)
+                # # self.send_PathSetup_signal.emit(self.visualItem)
+                self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
 
-    def clickCount(self, _MouseEvent):
-        self.mouse = _MouseEvent.scenePos()
+
+
+
+    def clickCount(self, xy):
+        self.mouse = xy
         self.click += 1
 
     def quitCreate(self, doubleClickEvent):
