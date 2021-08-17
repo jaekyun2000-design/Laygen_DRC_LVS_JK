@@ -719,6 +719,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 else:
                     self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][-1][self.idx]))
 
+                print(self.tmpXY.toPlainText())
                 self.setVariable(type='Path')
 
             ############################ Variable Visualization End ############################

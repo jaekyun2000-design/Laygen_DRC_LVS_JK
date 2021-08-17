@@ -574,7 +574,7 @@ class _PathSetupWindow(QWidget):
                 qt_dp.update_unified_expression()
                 self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
                 self.visualItem.updateDesignParameter(qt_dp)
-                # # self.send_PathSetup_signal.emit(self.visualItem)
+                self.send_PathSetup_signal.emit(self.visualItem)
                 self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
 
 
