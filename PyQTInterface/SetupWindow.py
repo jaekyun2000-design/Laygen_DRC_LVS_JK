@@ -437,6 +437,7 @@ class _PathSetupWindow(QWidget):
                 raise NotImplementedError
             self._DesignParameter['_Width'] = self.width_input.text()
             self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
+            self._DesignParameter['_Layer'] = None
             self._DesignParameter['_XYCoordinates'] = [[]]
 
             for XY in self.XYdictForLineEdit:
@@ -510,7 +511,8 @@ class _PathSetupWindow(QWidget):
                 self.UpdateXYwidget()
                 self._DesignParameter['_Width'] = self.width_input.text()
                 self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
-                qt_dp = QTInterfaceWithAST.QtDesignParameter()
+                self._DesignParameter['_type'] = 2
+                qt_dp = QTInterfaceWithAST.QtDesignParameter(_type=2)
                 for key, value in self._DesignParameter.items():
                     qt_dp._setDesignParameterValue(key, value)
                 qt_dp.update_unified_expression()
@@ -565,6 +567,7 @@ class _PathSetupWindow(QWidget):
 
                 tmp_dp['_Width'] = self.width_input.text()
                 tmp_dp['_LayerUnifiedName'] = self.layer_input.currentText()
+                tmp_dp['_type'] = 2
                 qt_dp = QTInterfaceWithAST.QtDesignParameter(_type=2)
                 for key, value in tmp_dp.items():
                     qt_dp._setDesignParameterValue(key, value)
@@ -583,227 +586,6 @@ class _PathSetupWindow(QWidget):
 
     def quitCreate(self, doubleClickEvent):
         self.doubleClickEvent = doubleClickEvent
-
-class _SRefSetupWindowOG(QWidget):
-
-    send_SRefSetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
-    send_Destroy_signal = pyqtSignal()
-
-    def __init__(self):
-        super().__init__()
-        self.initUI()
-
-
-        self.visualItem = VisualizationItem._VisualizationItem()
-        self._DesignParameter = dict(
-                _Name = None,
-                _DataType = "SRef",
-                _XYCoordinates = [],
-                _ItemRef = None #Reference Of VisualizationItem
-        )
-
-
-    def initUI(self):
-        saveButton = QPushButton("SAVE",self)
-        loadButton = QPushButton("LOAD",self)
-        cancelButton = QPushButton("Cancel",self)
-
-        saveButton.clicked.connect(self.on_saveBox_accepted)
-
-        # self._DesignParameter = dict()
-
-        name = QLabel("Name")
-        self.name_input = QLineEdit()
-
-
-        self.setupVboxColumn1 = QVBoxLayout()
-        self.setupVboxColumn2 = QVBoxLayout()
-        setupBox = QHBoxLayout()
-
-        self.setupVboxColumn1.addWidget(name)
-
-
-        self.setupVboxColumn2.addWidget(self.name_input)
-
-        setupBox.addLayout(self.setupVboxColumn1)
-        setupBox.addLayout(self.setupVboxColumn2)
-
-        hbox = QHBoxLayout()
-        hbox.addStretch(2)
-        hbox.addWidget(saveButton)
-        hbox.addWidget(loadButton)
-        hbox.addWidget(cancelButton)
-        # hbox.addStretch(1)
-
-        vbox = QVBoxLayout()
-        vbox.addStretch(1)
-        vbox.addLayout(setupBox)
-        vbox.addStretch(3)
-        vbox.addLayout(hbox)
-        # vbox.addStretch(1)
-
-        self.setLayout(vbox)
-
-        self.setWindowTitle('SRef Setup Window')
-        self.setGeometry(300,300,500,500)
-        self.show()
-
-    def on_saveBox_accepted(self):
-        # save implement!!
-        self.destroy()
-
-    def keyPressEvent(self, QKeyEvent):
-        if QKeyEvent.key() == Qt.Key_Return:
-            pass
-        #self.send_Destroy_signal.emit()
-        elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
-        #self.send_Destroy_signal.emit()
-
-class _SRefSetupWindow(QWidget):
-
-    send_SRefSetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
-    send_SRefDesign_signal = pyqtSignal(dict)
-    send_Destroy_signal = pyqtSignal(str)
-    send_Warning_signal = pyqtSignal(str)
-
-    def __init__(self,SRefElement= None):
-        super().__init__()
-        self.initUI()
-
-        if SRefElement == None:
-            self.visualItem = VisualizationItem._VisualizationItem()
-            self._DesignParameter = dict(
-                _Layer= None,
-                _DesignParametertype = 3,
-                _XYCoordinates = [],
-                _XWidth = None,
-                _YWidth = None,
-                _Ignore = None,
-                _ElementName = None
-
-                )
-        else:
-            # self.visualItem = BoundaryElement
-            self._DesignParameter = SRefElement._ItemTraits
-            self.updateUI()
-
-
-
-    def initUI(self):
-        okButton = QPushButton("OK",self)
-        cancelButton = QPushButton("Cancel",self)
-
-        okButton.clicked.connect(self.on_buttonBox_accepted)
-        cancelButton.clicked.connect(self.cancel_button_accepted)
-
-        name = QLabel("Element Name")
-        width = QLabel("Width")
-        height = QLabel("Height")
-        layer = QLabel("Layer")
-        self.name_input = QLineEdit()
-        self.width_input = QLineEdit()
-        self.height_input = QLineEdit()
-        self.layer_input = QComboBox()
-
-        _Layer = LayerReader._LayerMapping
-        for LayerName in _Layer:
-            if _Layer[LayerName][1] == 0:       ## Layer is drawing
-                self.layer_input.addItem(LayerName)
-        #
-        # _Layer = LayerInfo._Layer()
-        # for LayerName in _Layer._LayerName:
-        #     self.layer_input.addItem(LayerName)
-        # del _Layer
-
-        self.setupVboxColumn1 = QVBoxLayout()
-        self.setupVboxColumn2 = QVBoxLayout()
-        setupBox = QHBoxLayout()
-
-        self.setupVboxColumn1.addWidget(name)
-        self.setupVboxColumn1.addWidget(width)
-        self.setupVboxColumn1.addWidget(height)
-        self.setupVboxColumn1.addWidget(layer)
-
-
-        self.setupVboxColumn2.addWidget(self.name_input)
-        self.setupVboxColumn2.addWidget(self.width_input)
-        self.setupVboxColumn2.addWidget(self.height_input)
-        self.setupVboxColumn2.addWidget(self.layer_input)
-
-        setupBox.addLayout(self.setupVboxColumn1)
-        setupBox.addLayout(self.setupVboxColumn2)
-
-        hbox = QHBoxLayout()
-        hbox.addStretch(2)
-        hbox.addWidget(okButton)
-        hbox.addWidget(cancelButton)
-        # hbox.addStretch(1)
-
-        vbox = QVBoxLayout()
-        vbox.addStretch(1)
-        vbox.addLayout(setupBox)
-        vbox.addStretch(3)
-        vbox.addLayout(hbox)
-        # vbox.addStretch(1)
-
-        self.setLayout(vbox)
-
-        self.setWindowTitle('Boundary Setup Window')
-        self.setGeometry(300,300,500,500)
-        self.show()
-
-    def updateUI(self):
-        self.name_input.setText(self._DesignParameter['_ElementName'])
-        self.width_input.setText(str(self._DesignParameter['_XWidth']))
-        self.height_input.setText(str(self._DesignParameter['_YWidth']))
-        if type(self._DesignParameter['_Layer']) == int:
-            _Layer = LayerReader._LayerMapping
-            # _Layer2Name = LayerReader._LayerNameTmp
-            # _layerNumber = str(self._DesignParameter['_Layer'])
-            for layerExpressionName in _Layer:
-                print("layerExpressionName:",layerExpressionName,_Layer[layerExpressionName][0],self._DesignParameter['_Layer'])
-                if _Layer[layerExpressionName][0] == self._DesignParameter['_Layer']:
-                    self._DesignParameter['_Layer'] = str(layerExpressionName)
-                    break
-
-            # self._DesignParameter['_Layer'] =  _Layer2Name[_layerNumber]     #Layer Number             --> Convert Name to Number
-            del _Layer
-            layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
-        else:
-            layerIndex = self.layer_input.findText(self._DesignParameter['_Layer'])
-        if layerIndex != -1:
-            self.layer_input.setCurrentIndex(layerIndex)
-        #setCurrentIndex
-        #findText
-        # self.
-
-    def cancel_button_accepted(self):
-        self.destroy()
-    def on_buttonBox_accepted(self):
-
-        try:
-            self._DesignParameter['_ElementName'] = self.name_input.text()
-            self._DesignParameter['_XWidth'] = float(self.width_input.text())
-            self._DesignParameter['_YWidth'] = float(self.height_input.text())
-            self._DesignParameter['_Layer'] = self.layer_input.currentText()
-            self.send_BoundaryDesign_signal.emit(self._DesignParameter)
-            self.destroy()
-        except:
-            self.send_Warning_signal.emit("Invalid Design Parameter Input")
-            self.warning = QMessageBox()
-            self.warning.setText("Invalid design parameter input")
-            self.warning.setIcon(QMessageBox.Warning)
-            self.warning.show()
-
-
-    def keyPressEvent(self, QKeyEvent):
-        if QKeyEvent.key() == Qt.Key_Return:
-            self.on_buttonBox_accepted()
-            self.send_Destroy_signal.emit('sw')
-        elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
-            self.send_Destroy_signal.emit('sw')
 
 class _LoadSRefWindow(QWidget):
 
@@ -990,8 +772,10 @@ class _LoadSRefWindow(QWidget):
                 self.parVBox1.addWidget(QLabel(self.par_name[-1]))
                 self.parVBox2.addWidget(self.par_valueForLineEdit[-1])
 
-    def DetermineCoordinateWithMouse(self, _MouseEvent):
-        self.XY_input.setText(str(_MouseEvent.scenePos().toPoint().x()) + ',' + str(_MouseEvent.scenePos().toPoint().y()))
+    def DetermineCoordinateWithMouse(self, xy):
+        # self.XY_input.setText(str(_MouseEvent.scenePos().toPoint().x()) + ',' + str(_MouseEvent.scenePos().toPoint().y()))
+        self.XY_input.setText(str(xy[0]) + ',' + str(xy[1]))
+
 
     def on_buttonBox_accepted(self):
         for idx in range(len(self.par_valueForLineEdit)):

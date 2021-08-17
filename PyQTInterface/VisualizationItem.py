@@ -90,13 +90,17 @@ class _RectBlock(QGraphicsRectItem):
         # list_manager.layer_visible_flag_dict[self.itemtrait['layer']] is False:
         #     self.setVisible(False)
 
-        try:
-            self._BlockTraits["_Color"].setAlphaF(1)
-        except:
-            print('debug')
+        self._BlockTraits["_Color"].setAlphaF(1)
 
         pen = QPen()
         pen.setColor(self._BlockTraits["_Outline"])
+        pen.setDashPattern(self._BlockTraits['_LinePattern'])
+        pen.setCapStyle(Qt.RoundCap)
+        pen.setWidth(self._BlockTraits['_LineSize']+4)
+        # pen.setStyle(Qt.CustomDashLine)
+
+        # pen.setWidth(5)
+
         brush = QBrush()
         brush.setColor(self._BlockTraits["_Color"])
 
@@ -124,7 +128,7 @@ class _RectBlock(QGraphicsRectItem):
         else:
             self.setZValue(self._BlockTraits['_Layer']/1000)
         painter.setPen(pen)
-        #
+
         # if self._BlockTraits["_Pattern"] == "blank":
         #     brush.setStyle(Qt.NoBrush)
         # elif self._BlockTraits["_Pattern"] == "solid":
@@ -155,10 +159,14 @@ class _RectBlock(QGraphicsRectItem):
         #     brush.setStyle(Qt.CrossPattern)
         #     # brush.setTransform()
         # else:
-        #     # dots_bitmap = QBitmap(4,4)
-        #     # dots_bitmap.fromData(QSize(4,4),b'\x01')
-        #     # brush.setTexture(dots_bitmap)
+        # #     # dots_bitmap = QBitmap(4,4)
+        # #     # dots_bitmap.fromData(QSize(4,4),b'\x01')
+        # #     # brush.setTexture(dots_bitmap)
         #     brush.setStyle(Qt.Dense6Pattern)
+
+
+
+
 
         color_name = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill'].name
         color_patt_name =color_name+self._BlockTraits["_Pattern"]
@@ -176,6 +184,20 @@ class _RectBlock(QGraphicsRectItem):
             qpix = DisplayReader._DisplayDict[color_patt_name]
             brush.setTexture(qpix)
 
+        if '_type' in self._BlockTraits and self._BlockTraits['_type'] == 2:
+            if self._BlockTraits['_XYCoordinates'][0][0][0] == self._BlockTraits['_XYCoordinates'][0][1][0]:
+                x1 = self._BlockTraits['_Width'] / 2
+                x2 = x1
+                y1 = 0
+                y2 = self._BlockTraits['_Height']
+            else:
+                #horizontal
+                x1 = 0
+                x2 = self._BlockTraits['_Width']
+                y1 = self._BlockTraits['_Height']/2
+                y2 = y1
+            painter.drawLine(x1,y1,x2,y2)
+
 
 
         brush.setTransform(QTransform(painter.worldTransform().inverted()[0]))
@@ -183,6 +205,7 @@ class _RectBlock(QGraphicsRectItem):
         painter.setBrush(brush)
 
         painter.drawRect(self.rect())
+        painter.setRenderHint(QPainter.Antialiasing)
 
     def layerName2paintTrait(self):
 
@@ -385,7 +408,8 @@ class _VisualizationItem(QGraphicsItemGroup):
 
         self._id = QtDesignParameter._id
         self._type = QtDesignParameter._type
-        # self._CreateFlag = False
+        self._ItemTraits['_type'] = self._type
+        self._CreateFlag = False
         # try:
         #     oldVersionSupportForXYCoordinatesForDisplay = QtDesignParameter._XYCoordinatesForDisplay
         # except:
@@ -537,6 +561,8 @@ class _VisualizationItem(QGraphicsItemGroup):
             blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['Fill']
             blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['Outline']
             blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['Stipple']
+            blockTraits['_LinePattern'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['LineStyle']['pattern']
+            blockTraits['_LineSize'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['LineStyle']['size']
 
         if self._ItemTraits['_DesignParametertype'] == 1:                              # Boundary Case
             tmpBlock = _RectBlock()
@@ -691,7 +717,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 if self.idx == 0:
                     self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]) + '\nwidth: ' + str(self._ItemTraits['variable_info']['width']))
                 else:
-                    self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][-1][self.idx]))
+                    self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]))
 
                 self.setVariable(type='Path')
 
@@ -958,9 +984,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.heightVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
                 self.XYVariable.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-                # self.widthVariable.setVisible(False)
-                # self.heightVariable.setVisible(False)
-                # self.XYVariable.setVisible(False)
+                self.widthVariable.setVisible(False)
+                self.heightVariable.setVisible(False)
+                self.XYVariable.setVisible(False)
 
                 self.widthVariable.setZValue(1)
                 self.heightVariable.setZValue(1)
@@ -976,13 +1002,13 @@ class _VisualizationItem(QGraphicsItemGroup):
             elif type == 'Path':
                 self.tmpXY.setFont(font)
 
-                self.tmpXY.setPos(self._ItemTraits['_XYCoordinates'][-1][self.idx][0]-6, self._ItemTraits['_XYCoordinates'][-1][self.idx][1]+10)
+                self.tmpXY.setPos(self._ItemTraits['_XYCoordinates'][0][self.idx][0]-6, self._ItemTraits['_XYCoordinates'][0][self.idx][1]+10)
 
                 self.tmpXY.setDefaultTextColor(Qt.GlobalColor.red)
 
                 self.tmpXY.setTransform(QTransform(1, 0, 0, -1, 0, 0))
 
-                # self.tmpXY.setVisible(False)
+                self.tmpXY.setVisible(False)
 
                 self.tmpXY.setZValue(1)
 
