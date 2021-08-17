@@ -1323,6 +1323,7 @@ class _MainWindow(QMainWindow):
             if top_module in self._QTObj._qtProject._DesignParameter:
                 for id_name, qt_parameter in self._QTObj._qtProject._DesignParameter[top_module].items():
                     vs_item = self.createVisualItemfromDesignParameter(qt_parameter)
+                    vs_item._CreateFlag = False
                     self.updateGraphicItem(vs_item)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Project Load Done")
 
