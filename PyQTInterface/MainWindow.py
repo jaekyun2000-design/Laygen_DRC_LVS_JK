@@ -1028,8 +1028,9 @@ class _MainWindow(QMainWindow):
             # gds2gen.run_qt_constraint_ast()
             dp_dict = gds2gen.get_updated_designParameters()                                    # New Info
             for dp in dp_dict.values():
-                for qt_dp in dp['_ModelStructure'].values():
-                    qt_dp.update_unified_expression()
+                if '_ModelStructure' in dp:
+                    for qt_dp in dp['_ModelStructure'].values():
+                        qt_dp.update_unified_expression()
             current_dpdict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]   # Unchanged target Info
 
 
@@ -1059,6 +1060,7 @@ class _MainWindow(QMainWindow):
                                                                   dp_dict=dp, element_manager_update=False)
                 visualItem = self.createVisualItemfromDesignParameter(
                     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
+                visualItem._CreateFlag = False
                 self.updateGraphicItem(visualItem)
                 dc_id = self._DummyConstraints.search_constraint_id_by_design_name(dp_name)
                 self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=dp_name, dc_id=dc_id)
