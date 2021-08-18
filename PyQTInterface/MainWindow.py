@@ -2146,8 +2146,8 @@ class _MainWindow(QMainWindow):
                             self._DummyConstraints.XYPathDict[_newConstraintID] = info_dict
                         elif (type_for_dc == 'LogicExpression'):
                             self._DummyConstraints.ExpressionDict[_newConstraintID] = info_dict
-                            # self.send_width_height_ast_signal.connect(self.vw.variable_widget.get_width_height_ast)
-                            # self.send_width_height_ast_signal.emit(id, ast)
+                            self.send_width_height_ast_signal.connect(self.vw.variable_widget.get_width_height_ast)
+                            self.send_width_height_ast_signal.emit(_newConstraintID, _ASTobj)
                     elif type_for_dc == 'Array':
                         self._DummyConstraints.ArrayDict[_newConstraintID] = info_dict
                     #########################################################################################

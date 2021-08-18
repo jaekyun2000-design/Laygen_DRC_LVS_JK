@@ -297,7 +297,10 @@ class IrregularTransformer(ast.NodeTransformer):
             _height = info_dict['height']
 
         _layer = info_dict['layer']             # Fixed
-        XY_source_ref = info_dict['XY_source_ref']
+        try:
+            XY_source_ref = info_dict['XY_source_ref']
+        except:
+            XY_source_ref = info_dict['XY_ref']
         ###############################################
         if _flag == 'relative':
             ########### Elements For relative #############
@@ -619,8 +622,26 @@ class IrregularTransformer(ast.NodeTransformer):
 
                 sentence = loop_code + '\n' + tmp_code
                 del tmp_node
+            elif _type == 'path_array':
+                # loop_code
+                pass
+            elif _type == 'sref_array':
+                loop_code = loop_code = f"XYList = []\n" \
+                            f"for i in range({_row_num}):\n" \
+                            f"\tfor j in range({_col_num}):\n" \
+                            f"\t\tXYList.append([x+y for x,y in zip({source_XY_code} , [{_x_distance}, {_y_distance}])\n"
+            tmp_node = element_ast.Sref()
+            tmp_node.name = _name
+            tmp_node.XY = 'XYList'
+            tmp_node.library = info_dict['sref_item_dict']['library']
+            tmp_node.className = info_dict['sref_item_dict']['className']
+            tmp_node.calculate_fcn = info_dict['sref_item_dict']['calculate_fcn']
+            tmp_node.parameters = info_dict['sref_item_dict']['parameters']
+            tmp_code_ast = element_ast.ElementTransformer().visit_Sref(tmp_node)
+            tmp_code = astunparse.unparse(tmp_code_ast)
 
-
+            sentence = loop_code + '\n' + tmp_code
+            del tmp_node
 
 
 
