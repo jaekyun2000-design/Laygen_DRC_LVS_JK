@@ -96,7 +96,7 @@ class _RectBlock(QGraphicsRectItem):
         pen.setColor(self._BlockTraits["_Outline"])
         pen.setDashPattern(self._BlockTraits['_LinePattern'])
         pen.setCapStyle(Qt.RoundCap)
-        pen.setWidth(self._BlockTraits['_LineSize']+4)
+        pen.setWidth(self._BlockTraits['_LineSize']+2)
         # pen.setStyle(Qt.CustomDashLine)
 
         # pen.setWidth(5)
@@ -184,19 +184,19 @@ class _RectBlock(QGraphicsRectItem):
             qpix = DisplayReader._DisplayDict[color_patt_name]
             brush.setTexture(qpix)
 
-        # if '_type' in self._BlockTraits and self._BlockTraits['_type'] == 2:
-        #     if self._BlockTraits['_XYCoordinates'][0][0][0] == self._BlockTraits['_XYCoordinates'][0][1][0]:
-        #         x1 = self._BlockTraits['_Width'] / 2
-        #         x2 = x1
-        #         y1 = 0
-        #         y2 = self._BlockTraits['_Height']
-        #     else:
-        #         #horizontal
-        #         x1 = 0
-        #         x2 = self._BlockTraits['_Width']
-        #         y1 = self._BlockTraits['_Height']/2
-        #         y2 = y1
-        #     painter.drawLine(x1,y1,x2,y2)
+        if '_type' in self._BlockTraits and self._BlockTraits['_type'] == 2:
+            if self._BlockTraits['_Vertical']:
+                x1 = self._BlockTraits['_Width'] / 2
+                x2 = x1
+                y1 = 0
+                y2 = self._BlockTraits['_Height']
+            else:
+                #horizontal
+                x1 = 0
+                x2 = self._BlockTraits['_Width']
+                y1 = self._BlockTraits['_Height']/2
+                y2 = y1
+            painter.drawLine(x1,y1,x2,y2)
 
 
 
@@ -634,7 +634,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                         elif _XYCoordinatesPair[i][1] > _XYCoordinatesPair[i+1][1]:        #DownWard Case
                             Ymin += self._ItemTraits['_Width']/2
                             Ywidth -= self._ItemTraits['_Width']/2
-                    elif i == len(_XYCoordinatesPair[0])-2:                                                #Last Block Case
+                    elif i == len(_XYCoordinatesPair)-2:                                                #Last Block Case
                         if _XYCoordinatesPair[i][1] < _XYCoordinatesPair[i+1][1]:          #UpWard Case
                             Ymin -= self._ItemTraits['_Width']/2
                             Ywidth += self._ItemTraits['_Width']/2
@@ -645,6 +645,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                             Ymin -= self._ItemTraits['_Width']/2
                         elif _XYCoordinatesPair[i][1] > _XYCoordinatesPair[i+1][1]:        #DownWard Case
                             Ymin += self._ItemTraits['_Width']/2
+                    vertical = True
                 else:                                                                                                #Horizontal Case
                     Ymin = _XYCoordinatesPair[i][1] - self._ItemTraits['_Width']/2
                     Ywidth = self._ItemTraits['_Width']
@@ -671,8 +672,10 @@ class _VisualizationItem(QGraphicsItemGroup):
                             Xmin -= self._ItemTraits['_Width']/2
                         elif _XYCoordinatesPair[i][0] > _XYCoordinatesPair[i+1][0]:        #Path to Left Case
                             Xmin += self._ItemTraits['_Width']/2
+                    vertical = False
                 blockTraits['_Width'] = Xwidth
                 blockTraits['_Height'] = Ywidth
+                blockTraits['_Vertical'] = vertical
 
                 # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                 # layer = layernum2name[str(blockTraits['_Layer'])]
@@ -696,7 +699,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self._subElementLayer[layer].append(self)
 
                 self.index = idx
-                block = _RectBlock(blockTraits)
+                block = _RectBlock(copy.deepcopy(blockTraits))
                 block.index = [idx, i]
 
                 self.block.append(block)  #Block Generation
@@ -719,7 +722,6 @@ class _VisualizationItem(QGraphicsItemGroup):
                 else:
                     self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][-1][self.idx]))
 
-                print(self.tmpXY.toPlainText())
                 self.setVariable(type='Path')
 
             ############################ Variable Visualization End ############################
@@ -876,6 +878,11 @@ class _VisualizationItem(QGraphicsItemGroup):
                 block.setZValue(block._BlockTraits['_Layer'])
         if self._type == 1 or self._type == 2:
             self.setZValue(self._ItemTraits['_Layer'])
+        elif self._type == 3:
+            z_list = []
+            for child in self.childItems():
+                z_list.append(child.zValue())
+            self.setZValue(max(z_list))
         # print('--')
         # print(self._subElementLayer)
         # self.send_subelementlayer_signal.emit(self._subElementLayer)
@@ -1227,3 +1234,13 @@ class QGraphicsTextItemWObounding(QGraphicsTextItem):
 
     # def boundingRect(self) -> QRectF:
     #     return QRect(0,0,0,0)
+
+
+
+dict(
+    layer           = 16    ,
+    layerName       ='PP'   ,
+    Datatype        ='0'    ,
+    layerUnifiedName='POLY'     ,
+    DatatypeName    ='Drawing'  ,
+)

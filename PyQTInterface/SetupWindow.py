@@ -196,6 +196,7 @@ class _BoundarySetupWindow(QWidget):
                 pass
 
             self.send_BoundaryDesign_signal.emit(self._DesignParameter)
+            self.click = 2
             self.destroy()
 
             if type(self._DesignParameter['_XWidth']) == str:
