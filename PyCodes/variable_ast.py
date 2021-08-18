@@ -258,22 +258,22 @@ class IrregularTransformer(ast.NodeTransformer):
                         intermediateCode = ' '.join(operands_with_operators_list)
                         tmpDict[XYFlag].append(intermediateCode)
 
-        if len(tmpDict['X']) != 0:
-            for i in range(len(tmpDict['X'])):
-                if final_x_value == None:
-                    final_x_value = tmpDict['X'][i]
-                else:
-                    final_x_value = tmpDict['X'][i] + ' + ' + final_x_value
-            sentence = final_x_value
-        else:
 
-            for j in range(len(tmpDict['Y'])):
-                if final_y_value == None:
-                    final_y_value = tmpDict['Y'][j]
-                else:
-                    final_y_value = tmpDict['Y'][j] + ' + ' + final_y_value
-            sentence = final_y_value
-        sentence = '(' + sentence + ')'
+        for i in range(len(tmpDict['X'])):
+            if final_x_value == None:
+                final_x_value = tmpDict['X'][i]
+            else:
+                final_x_value = tmpDict['X'][i] + ' + ' + final_x_value
+        sentence1 = final_x_value
+
+
+        for j in range(len(tmpDict['Y'])):
+            if final_y_value == None:
+                final_y_value = tmpDict['Y'][j]
+            else:
+                final_y_value = tmpDict['Y'][j] + ' + ' + final_y_value
+        sentence2 = final_y_value
+        sentence = '(' +sentence1+ '+' +sentence2+ ')'
         tmp = ast.parse(sentence)
         return tmp.body
 
@@ -281,14 +281,14 @@ class IrregularTransformer(ast.NodeTransformer):
         _id = node.id
         info_dict = self._id_to_data_dict.ArrayDict[_id]
 
+
+        for key in info_dict.keys():
+            if isinstance(info_dict[key], ast.AST):
+                tmpAST = IrregularTransformer().visit(info_dict[key])
+                sentence = astunparse.unparse(tmpAST)
+                info_dict[key] = sentence
+
         ############ Common Elements ################
-        # for key in info_dict.keys():
-        #     if isinstance(info_dict[key], ast.AST):
-        #         info_dict[key] = IrregularTransformer().visit(info_dict[key])
-        #         ast.unparse() 까지 사용해서 custom_ast --> str 표현으로 바꿔줌
-
-
-
         _name = info_dict['name']               # Fixed
         _type = info_dict['type']              # Fixed
         _flag = info_dict['flag']     # Fixed
