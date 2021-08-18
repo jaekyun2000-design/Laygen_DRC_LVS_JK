@@ -264,7 +264,10 @@ class IrregularTransformer(ast.NodeTransformer):
                 final_x_value = tmpDict['X'][i]
             else:
                 final_x_value = tmpDict['X'][i] + ' + ' + final_x_value
+
         sentence1 = final_x_value
+        if len(sentence1) == 0:
+            sentence1 = '0'
 
 
         for j in range(len(tmpDict['Y'])):
@@ -273,6 +276,9 @@ class IrregularTransformer(ast.NodeTransformer):
             else:
                 final_y_value = tmpDict['Y'][j] + ' + ' + final_y_value
         sentence2 = final_y_value
+        if len(sentence2) == 0:
+            sentence2 = '0'
+
         sentence = '(' +sentence1+ '+' +sentence2+ ')'
         tmp = ast.parse(sentence)
         return tmp.body
