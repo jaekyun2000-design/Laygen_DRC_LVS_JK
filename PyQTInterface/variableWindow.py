@@ -390,8 +390,7 @@ class VariableSetupWindow(QWidget):
 
 class variableContentWidget(QWidget):
     send_clicked_item_signal = pyqtSignal(list)
-    send_width_signal = pyqtSignal(str, dict)
-    send_height_signal = pyqtSignal(str, dict)
+    send_exported_width_height_signal = pyqtSignal(str, dict)
     send_width_height_ast_signal = pyqtSignal(str, ast.AST)
 
     def __init__(self):
@@ -680,10 +679,12 @@ class variableContentWidget(QWidget):
 
     def exported_text(self, text, purpose, output_dict):
         if purpose == 'width':
-            self.send_width_signal.emit('LogicExpression', output_dict)
+            self.width_height = 'width'
+            self.send_exported_width_height_signal.emit('LogicExpression', output_dict)
 
         elif purpose == 'height':
-            self.send_height_signal.emit('LogicExpression', output_dict)
+            self.width_height = 'height'
+            self.send_exported_width_height_signal.emit('LogicExpression', output_dict)
 
         elif purpose == 'source' or purpose == 'target' or purpose == 'ref':
             for info, widget in self.widget_dictionary.items():
@@ -712,7 +713,8 @@ class variableContentWidget(QWidget):
 
                     del self.cal
 
-    def get_width_height_ast(self, _type, ast):
+    def get_width_height_ast(self, _id, _ast):
+        print(111111111111111111111)
         pass
 
     def get_index(self, text):
