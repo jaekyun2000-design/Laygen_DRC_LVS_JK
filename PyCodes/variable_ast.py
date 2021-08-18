@@ -266,7 +266,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 final_x_value = tmpDict['X'][i] + ' + ' + final_x_value
 
         sentence1 = final_x_value
-        if len(sentence1) == 0:
+        if  sentence1 == None:
             sentence1 = '0'
 
 
@@ -276,7 +276,7 @@ class IrregularTransformer(ast.NodeTransformer):
             else:
                 final_y_value = tmpDict['Y'][j] + ' + ' + final_y_value
         sentence2 = final_y_value
-        if len(sentence2) == 0:
+        if sentence2 == None:
             sentence2 = '0'
 
         sentence = '(' +sentence1+ '+' +sentence2+ ')'
@@ -290,7 +290,7 @@ class IrregularTransformer(ast.NodeTransformer):
 
         for key in info_dict.keys():
             if isinstance(info_dict[key], ast.AST):
-                tmpAST = IrregularTransformer().visit(info_dict[key])
+                tmpAST = IrregularTransformer(self._id_to_data_dict).visit(info_dict[key])
                 sentence = astunparse.unparse(tmpAST)
                 info_dict[key] = sentence
 
