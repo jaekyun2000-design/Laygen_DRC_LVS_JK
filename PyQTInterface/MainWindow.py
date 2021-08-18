@@ -80,6 +80,7 @@ class _MainWindow(QMainWindow):
     send_callThread_signal = pyqtSignal()
     send_visibleGenState_signal = pyqtSignal(int, list)
     send_visibleCanState_signal = pyqtSignal(int, list)
+    send_width_height_ast_signal = pyqtSignal(str, ast.AST)
 
     def __init__(self):
         super(_MainWindow, self).__init__()
@@ -2148,6 +2149,8 @@ class _MainWindow(QMainWindow):
                             self._DummyConstraints.XYPathDict[_newConstraintID] = info_dict
                         elif (type_for_dc == 'LogicExpression'):
                             self._DummyConstraints.ExpressionDict[_newConstraintID] = info_dict
+                            # self.send_width_height_ast_signal.connect(self.vw.variable_widget.get_width_height_ast)
+                            # self.send_width_height_ast_signal.emit(width인지 height인지 str으로, ast)
                     elif type_for_dc == 'Array':
                         self._DummyConstraints.ArrayDict[_newConstraintID] = info_dict
                     #########################################################################################
