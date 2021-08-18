@@ -96,7 +96,7 @@ class _RectBlock(QGraphicsRectItem):
         pen.setColor(self._BlockTraits["_Outline"])
         pen.setDashPattern(self._BlockTraits['_LinePattern'])
         pen.setCapStyle(Qt.RoundCap)
-        pen.setWidth(self._BlockTraits['_LineSize']+4)
+        pen.setWidth(self._BlockTraits['_LineSize']+2)
         # pen.setStyle(Qt.CustomDashLine)
 
         # pen.setWidth(5)
@@ -185,7 +185,7 @@ class _RectBlock(QGraphicsRectItem):
             brush.setTexture(qpix)
 
         if '_type' in self._BlockTraits and self._BlockTraits['_type'] == 2:
-            if self._BlockTraits['_XYCoordinates'][0][0][0] == self._BlockTraits['_XYCoordinates'][0][1][0]:
+            if self._BlockTraits['_Vertical']:
                 x1 = self._BlockTraits['_Width'] / 2
                 x2 = x1
                 y1 = 0
@@ -645,6 +645,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                             Ymin -= self._ItemTraits['_Width']/2
                         elif _XYCoordinatesPair[i][1] > _XYCoordinatesPair[i+1][1]:        #DownWard Case
                             Ymin += self._ItemTraits['_Width']/2
+                    vertical = True
                 else:                                                                                                #Horizontal Case
                     Ymin = _XYCoordinatesPair[i][1] - self._ItemTraits['_Width']/2
                     Ywidth = self._ItemTraits['_Width']
@@ -671,8 +672,10 @@ class _VisualizationItem(QGraphicsItemGroup):
                             Xmin -= self._ItemTraits['_Width']/2
                         elif _XYCoordinatesPair[i][0] > _XYCoordinatesPair[i+1][0]:        #Path to Left Case
                             Xmin += self._ItemTraits['_Width']/2
+                    vertical = False
                 blockTraits['_Width'] = Xwidth
                 blockTraits['_Height'] = Ywidth
+                blockTraits['_Vertical'] = vertical
 
                 # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                 # layer = layernum2name[str(blockTraits['_Layer'])]
@@ -696,7 +699,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self._subElementLayer[layer].append(self)
 
                 self.index = idx
-                block = _RectBlock(blockTraits)
+                block = _RectBlock(copy.deepcopy(blockTraits))
                 block.index = [idx, i]
 
                 self.block.append(block)  #Block Generation
