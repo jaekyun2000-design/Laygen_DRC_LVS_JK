@@ -281,7 +281,14 @@ class IrregularTransformer(ast.NodeTransformer):
         _id = node.id
         info_dict = self._id_to_data_dict.ArrayDict[_id]
 
-        ############# Common Elements ################
+        ############ Common Elements ################
+        # for key in info_dict.keys():
+        #     if isinstance(info_dict[key], ast.AST):
+        #         info_dict[key] = IrregularTransformer().visit(info_dict[key])
+        #         ast.unparse() 까지 사용해서 custom_ast --> str 표현으로 바꿔줌
+
+
+
         _name = info_dict['name']               # Fixed
         _type = info_dict['type']              # Fixed
         _flag = info_dict['flag']     # Fixed
