@@ -13,7 +13,7 @@ class ExpressionCalculator(QWidget):
     send_XYCreated_signal = pyqtSignal(str, dict)
     send_dummyconstraints_signal = pyqtSignal(dict, str)
     send_path_row_xy_signal = pyqtSignal(dict, str)
-    send_expression_signal = pyqtSignal(str, str)
+    send_expression_signal = pyqtSignal(str, str, dict)
     returnLayer_signal = pyqtSignal(list)
     presetDict = dict()
 
@@ -1029,7 +1029,7 @@ class ExpressionCalculator(QWidget):
                 self.send_XYCreated_signal.emit(export_type, output)
 
         elif self.purpose == 'width' or self.purpose == 'height':
-            self.send_expression_signal.emit(self.display.toPlainText(), self.purpose)
+            self.send_expression_signal.emit(self.display.toPlainText(), self.purpose, output)
 
     def export_path_clicked(self):
         if 'pw' not in self.__dict__:
