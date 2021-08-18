@@ -392,6 +392,7 @@ class variableContentWidget(QWidget):
     send_clicked_item_signal = pyqtSignal(list)
     send_width_signal = pyqtSignal(str, dict)
     send_height_signal = pyqtSignal(str, dict)
+    send_width_height_ast_signal = pyqtSignal(str, ast.AST)
 
     def __init__(self):
         super(variableContentWidget, self).__init__()
@@ -710,6 +711,9 @@ class variableContentWidget(QWidget):
                         ref_widget.setCurrentRow(0)
 
                     del self.cal
+
+    def get_width_height_ast(self, _type, ast):
+        pass
 
     def get_index(self, text):
         for info, widget in self.widget_dictionary.items():
