@@ -483,25 +483,25 @@ class variableContentWidget(QWidget):
     def return_field_list(self, name, option):
         if option == 'offset':
             if name == 'boundary':
-                field_list = ['name', 'layer', 'XY_ref', 'width', 'width_input', 'height', 'height_input', 'x_offset',
-                              'y_offset', 'row', 'col']
+                field_list = ['name', 'layer', 'XY_ref', 'width', 'width_text', 'height', 'height_text', 'x_offset',
+                              'y_offset', 'row', 'col', 'width_input', 'height_input']
                 input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'line', 'line',
-                                   'double_line', None]
+                                   'double_line', None, None, None]
             elif name == 'path':
-                field_list = ['name', 'layer', 'XY_ref', 'width', 'width_input', 'x_offset', 'y_offset', 'row', 'col']
-                input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'line', 'line', 'double_line', None]
+                field_list = ['name', 'layer', 'XY_ref', 'width', 'width_text', 'x_offset', 'y_offset', 'row', 'col', 'width_input']
+                input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'line', 'line', 'double_line', None, None]
             elif name == 'sref':
                 field_list = ['name', 'XY_ref', 'x_offset', 'y_offset', 'row', 'col']
                 input_type_list = ['line', 'list', 'line', 'line', 'double_line', None]
         elif option == 'relative':
             if name == 'boundary':
-                field_list = ['name', 'layer', 'XY_source_ref', 'index', 'index_input', 'width', 'width_input',
-                              'height', 'height_input']
-                input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'combo', 'line']
+                field_list = ['name', 'layer', 'XY_source_ref', 'index', 'index_input', 'width', 'width_text',
+                              'height', 'height_text', 'width_input', 'height_input']
+                input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'combo', 'line', None, None]
             elif name == 'path':
-                field_list = ['name', 'layer', 'XY_source_ref', 'index', 'index_input', 'width', 'width_input',
-                              'XY_target_ref']
-                input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'list']
+                field_list = ['name', 'layer', 'XY_source_ref', 'index', 'index_input', 'width', 'width_text',
+                              'XY_target_ref', 'width_input']
+                input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'list', None]
             elif name == 'sref':
                 field_list = ['name', 'XY_source_ref', 'sref_item', 'index', 'index_input', 'sref_item_dict']
                 input_type_list = ['line', 'list', 'list', 'combo', 'line', None]
@@ -517,13 +517,13 @@ class variableContentWidget(QWidget):
         if name == 'index_input':
             tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             tmp_input_widget.setReadOnly(True)
-        elif name == 'width_input':
+        elif name == 'width_text':
             tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             tmp_input_widget.setReadOnly(True)
             additional_button = QPushButton()
             additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
             additional_button.clicked.connect(self.show_width_cal)
-        elif name == 'height_input':
+        elif name == 'height_text':
             tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             tmp_input_widget.setReadOnly(True)
             additional_button = QPushButton()
@@ -536,7 +536,7 @@ class variableContentWidget(QWidget):
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)
         output_layout.addWidget(tmp_input_widget)
-        if name == 'width_input' or name == 'height_input':
+        if name == 'width_text' or name == 'height_text':
             output_layout.addWidget(additional_button)
 
         return output_layout
@@ -704,7 +704,7 @@ class variableContentWidget(QWidget):
                         target_widget.setCurrentRow(0)
                     elif purpose == 'ref':
                         if info == 'srefoffset':
-                            ref_widget = self.widget_dictionary['srefoffset'].layout().itemAt(1).itemAt(1).widget()
+                            ref_widget = self.widget_dictionary[info].layout().itemAt(1).itemAt(1).widget()
                         else:
                             ref_widget = self.widget_dictionary[info].layout().itemAt(2).itemAt(1).widget()
                         ref_widget.takeItem(0)
@@ -714,8 +714,25 @@ class variableContentWidget(QWidget):
                     del self.cal
 
     def get_width_height_ast(self, _id, _ast):
-        print(111111111111111111111)
-        pass
+        for info, widget in self.widget_dictionary.items():
+            if not widget.isHidden():
+                if info == 'boundaryrelative':
+                    width_text_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
+                    height_text_widget = self.widget_dictionary[info].layout().itemAt(8).itemAt(1).widget()
+                elif info == 'pathrelative':
+                    width_text_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
+                elif info == 'boundaryoffset':
+                    width_text_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
+                    height_text_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
+                elif info == 'pathoffset':
+                    width_text_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
+
+        if self.width_height == 'width':
+            width_text_widget.setText(_id)
+            self.field_value_memory_dict['width_input'] = _ast
+        elif self.width_height == 'height':
+            height_text_widget.setText(_id)
+            self.field_value_memory_dict['height_input'] = _ast
 
     def get_index(self, text):
         for info, widget in self.widget_dictionary.items():
