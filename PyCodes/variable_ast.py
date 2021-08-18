@@ -405,6 +405,10 @@ class IrregularTransformer(ast.NodeTransformer):
                         _width = 'Blank'
                         _height = 'Blank'
 
+            if _width == '':
+                _width = info_dict['width_text']
+            if _height == '':
+                _height = info_dict['height_text']
         ################### Width, height, Coordinates Calculation Done ########################
         if _flag == 'relative':
             if _type == 'boundary_array':
