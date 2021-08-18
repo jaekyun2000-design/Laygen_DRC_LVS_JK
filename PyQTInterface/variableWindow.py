@@ -643,12 +643,14 @@ class variableContentWidget(QWidget):
     def show_width_cal(self):
         self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='width')
         self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_dummyconstraints_signal.connect(self.cal.storePreset)
         self.cal.set_preset_window()
         self.cal.show()
 
     def show_height_cal(self):
         self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='height')
         self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_dummyconstraints_signal.connect(self.cal.storePreset)
         self.cal.set_preset_window()
         self.cal.show()
 
@@ -680,10 +682,12 @@ class variableContentWidget(QWidget):
     def exported_text(self, text, purpose, output_dict):
         if purpose == 'width':
             self.width_height = 'width'
+            self.output_dict = output_dict
             self.send_exported_width_height_signal.emit('LogicExpression', output_dict)
 
         elif purpose == 'height':
             self.width_height = 'height'
+            self.output_dict = output_dict
             self.send_exported_width_height_signal.emit('LogicExpression', output_dict)
 
         elif purpose == 'source' or purpose == 'target' or purpose == 'ref':
@@ -733,6 +737,7 @@ class variableContentWidget(QWidget):
         elif self.width_height == 'height':
             height_text_widget.setText(_id)
             self.field_value_memory_dict['height_input'] = _ast
+        self.cal.send_dummyconstraints_signal.emit(self.output_dict, _id)
 
     def get_index(self, text):
         for info, widget in self.widget_dictionary.items():
