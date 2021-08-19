@@ -1649,7 +1649,7 @@ class _MainWindow(QMainWindow):
                     visual_item_list.append(visualItem)
                     # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                     # layer = layernum2name[str(tmp_dp_dict['_Layer'])]
-                    layer = tmp_dp_dict['_Layer']
+                    layer = tmp_dp_dict['_LayerUnifiedName']
                     if layer in self._layerItem:
                         self._layerItem[layer].append(visualItem)
                     else:
@@ -3266,7 +3266,7 @@ class _CustomScene(QGraphicsScene):
         self.send_mouse_move_xy_signal.emit(xy)
         self.send_mouse_move_signal.emit(QGraphicsSceneMouseEvent)
 
-        self.cursor_item.setPos(QPoint(xy[0],xy[1]))
+        # self.cursor_item.setPos(QPoint(xy[0],xy[1]))
 
     def mouseDoubleClickEvent(self, event: 'QGraphicsSceneMouseEvent') -> None:
         self.send_doubleclick_signal.emit(True)
