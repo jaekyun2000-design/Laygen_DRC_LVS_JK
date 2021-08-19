@@ -2549,12 +2549,14 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             self.cw = _ConstraintSetupWindow(constraint._ParseTree)
             self.cw.show()
 
-    def set_errored_constraint_id(self, constraint_id, error_flag):
+    def set_errored_constraint_id(self, constraint_id, error_flag, error_log = None):
         if constraint_id in self.model._ConstraintItem:
             item = self.model._ConstraintItem[constraint_id]
             index = self.model.indexFromItem(item)
             if error_flag:
                 self.model.setData(index, QBrush(Qt.red), Qt.BackgroundRole)
+                if error_log:
+                    item.setToolTip(error_log)
             else:
                 self.model.setData(index, QBrush(Qt.white), Qt.BackgroundRole)
 

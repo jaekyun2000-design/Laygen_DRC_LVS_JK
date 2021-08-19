@@ -2527,6 +2527,7 @@ class _MainWindow(QMainWindow):
 
         #######STATIC CONSTRAINT AST DEBUGGING PART###########
         sender = self.sender()
+        sender.blockSignals(True)
         try:
             tested_ast = copy.deepcopy(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][constraint_id]._ast)
             tested_ast = variable_ast.IrregularTransformer(self._DummyConstraints).visit(tested_ast)
@@ -2535,8 +2536,9 @@ class _MainWindow(QMainWindow):
             code = astunparse.unparse(tested_ast)
             sender.set_errored_constraint_id(constraint_id, False)
         except:
-            sender.set_errored_constraint_id(constraint_id, True)
-
+            error_log = traceback.format_exc()
+            sender.set_errored_constraint_id(constraint_id, True, error_log)
+        sender.blockSignals(False)
 
     def highlightVI(self, _idlist):
         for item in self.visualItemDict:
