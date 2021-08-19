@@ -2553,12 +2553,16 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         if constraint_id in self.model._ConstraintItem:
             item = self.model._ConstraintItem[constraint_id]
             index = self.model.indexFromItem(item)
-            if error_flag:
+            if error_flag == 'static':
                 self.model.setData(index, QBrush(Qt.red), Qt.BackgroundRole)
                 if error_log:
                     item.setToolTip(error_log)
-            else:
+            elif error_flag == 'dynamic':
+                self.model.setData(index, QBrush(Qt.yellow), Qt.BackgroundRole)
+                item.setToolTip(error_log)
+            elif error_flag == 'clean':
                 self.model.setData(index, QBrush(Qt.white), Qt.BackgroundRole)
+                item.setToolTip(None)
 
 
     def mouseDoubleClickEvent(self, QMouseEvent):

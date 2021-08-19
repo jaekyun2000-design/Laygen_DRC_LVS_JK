@@ -933,13 +933,34 @@ class _MainWindow(QMainWindow):
         return _finalModule
 
     def debugConstraint(self):
+        self.dockContentWidget3.blockSignals(True)
         try:
-            print("test")
-            look = self._QTObj._qtProject._ParseTreeForDesignConstrain[self._CurrentModuleName]._ast
-            print(astunparse.dump(look))
+            debugger_gds2gen = topAPI.gds2generator.GDS2Generator(True)
+            debugger_gds2gen.load_qt_project(self)
+            debugger_gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter, self._CurrentModuleName)
+
+            module = self._CurrentModuleName
+            constraint_names = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
+            constraint_ids = [item.text() for item in constraint_names]
+            topAST = ast.Module()
+            topAST.body = []
+            error_id = None
+            for _id in constraint_ids:
+                error_id = _id
+                topAST.body.append(self._QTObj._qtProject._DesignConstraint[module][_id]._ast)
+                result_ast = variable_ast.IrregularTransformer(self._DummyConstraints).visit(topAST)
+                result_ast = element_ast.ElementTransformer().visit(result_ast)
+                result_ast = variable_ast.VariableTransformer().visit(result_ast)
+                code = astunparse.unparse(result_ast)
+                debugger_gds2gen.load_qt_design_constraints_code(code)
+                debugger_gds2gen.set_root_cell(self._CurrentModuleName)
+                debugger_gds2gen.run_qt_constraint_ast()
+                self.dockContentWidget3.set_errored_constraint_id(_id, 'clean')
         except:
-            print('fail')
-            pass
+            error_log = traceback.format_exc()
+            self.dockContentWidget3.set_errored_constraint_id(_id, 'dynamic', error_log)
+
+        self.dockContentWidget3.blockSignals(False)
 
     def encodeConstraint(self):
         try:
@@ -959,24 +980,6 @@ class _MainWindow(QMainWindow):
         except:
             traceback.print_exc()
             print("encoding fail")
-
-    # def createAdditionalCode(self):
-    #     modules = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName]
-    #     for _, module in modules.items():
-    #         if module._type == 'XYCoordinate':
-    #             coordinateInfo = self._DummyConstraints.XYDict[module._id]
-    #             for key, value in coordinateInfo.items():
-    #                 if key == 'X':
-    #                     Xelements = re.split('',value)
-    #                     print("Debug")
-    #
-    #                 elif key == 'Y':
-    #                     Yelements = re.split(value)
-    #                     print("Debug")
-    #
-    #                 elif key == 'XY':
-    #                     XYelements = re.split(value)
-    #                     print("Debug")
 
     def visibleCandidate(self, state):
         constraint_names_can = self.dockContentWidget3_2.model.findItems('', Qt.MatchContains, 1)
@@ -2534,10 +2537,10 @@ class _MainWindow(QMainWindow):
             tested_ast = element_ast.ElementTransformer().visit(tested_ast)
             tested_ast = variable_ast.VariableTransformer().visit(tested_ast)
             code = astunparse.unparse(tested_ast)
-            sender.set_errored_constraint_id(constraint_id, False)
+            sender.set_errored_constraint_id(constraint_id, 'clean')
         except:
             error_log = traceback.format_exc()
-            sender.set_errored_constraint_id(constraint_id, True, error_log)
+            sender.set_errored_constraint_id(constraint_id, 'static', error_log)
         sender.blockSignals(False)
 
     def highlightVI(self, _idlist):
