@@ -21,13 +21,7 @@ class ElementManager:
                 if key == 'name':
                     tmpAST.__dict__[key] = dp_dict['_ElementName']
                 elif key == 'layer':
-                    if type(dp_dict['_Layer']) == str:
-                        tmpAST.__dict__[key] = dp_dict['_Layer']
-                    elif type(dp_dict['_Layer']) == int:
-                        layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-                        tmpAST.__dict__[key] = layernum2name[str(dp_dict['_Layer'])]
-                    else:
-                        pass
+                    tmpAST.__dict__[key] = dp_dict['_LayerUnifiedName']
                 elif key == 'XY':
                     tmpAST.__dict__[key] = dp_dict['_XYCoordinates']
                 elif key == 'width':
@@ -41,13 +35,7 @@ class ElementManager:
                 if key == 'name':
                     tmpAST.__dict__[key] = dp_dict['_ElementName']
                 elif key == 'layer':
-                    if type(dp_dict['_Layer']) == str:
-                        tmpAST.__dict__[key] = dp_dict['_Layer']
-                    elif type(dp_dict['_Layer']) == int:
-                        layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-                        tmpAST.__dict__[key] = layernum2name[str(dp_dict['_Layer'])]
-                    else:
-                        pass
+                    tmpAST.__dict__[key] = dp_dict['_LayerUnifiedName']
                 elif key == 'XY':
                     tmpAST.__dict__[key] = dp_dict['_XYCoordinates']
                 elif key == 'width':
@@ -100,7 +88,7 @@ class ElementManager:
                 elif key == 'name':
                     tmpAST.__dict__[key] = dp_dict['_ElementName']
                 elif key == 'layer':
-                    tmpAST.__dict__[key] = dp_dict['_Layer']
+                    tmpAST.__dict__[key] = dp_dict['_LayerUnifiedName']
                 elif key == 'XY':
                     tmpAST.__dict__[key] = dp_dict['_XYCoordinates']
                 elif key == 'pres':
@@ -158,19 +146,12 @@ class ElementManager:
                 if key in ['_XYCoordinates', '_XWidth', '_YWidth']:
                     if self.discriminate_variable(key,ast):
                         return None, None
-                if key == '_Layer':
+                if key == '_LayerUnifiedName':
                     tmpDP[key] = ast.__dict__['layer']
                 elif key == '_DesignParametertype':
                     tmpDP[key] = 1
                 elif key == '_XYCoordinates':
                     tmpDP[key] = ast.XY
-                    #
-                    # for i in range (0,len(ast.XY)):
-                    #     slicing = ast.__dict__['XY'][i].find(',')
-                    #     tmpDP[key] = [[float(ast.__dict__['XY'][i][:slicing]),float(ast.__dict__['XY'][i][slicing+1:])]]
-                    # for i in range (0,len(ast.XY)):
-                    #     slicing = ast.__dict__['XY'].find(',')
-                    #     tmpDP[key] = [[float(ast.__dict__['XY'][:slicing]),float(ast.__dict__['XY'][slicing+1:])]]
                 elif key == '_XWidth':
                     tmpDP[key] = ast.__dict__['width']
                 elif key == '_YWidth':
@@ -189,7 +170,7 @@ class ElementManager:
 
                 if key == '_ElementName':
                     tmpDP[key] = ast.__dict__['name']
-                elif key == '_Layer':
+                elif key == '_LayerUnifiedName':
                     tmpDP[key] = ast.__dict__['layer']
                 elif key == '_DesignParametertype':
                     tmpDP[key] = 2
@@ -270,7 +251,7 @@ class ElementManager:
                     tmpDP[key] = 8
                 elif key == '_ElementName':
                     tmpDP[key] = ast.__dict__['name']
-                elif key == '_Layer':
+                elif key == '_LayerUnifiedName':
                     tmpDP[key] = ast.__dict__['layer']
                 elif key == '_Presentation':
                     tmpDP[key] = ast.__dict__['pres']
@@ -369,7 +350,7 @@ class ElementManager:
 
 class KeyManager():
     _Boundarykey = dict(
-        _Layer=None,
+        _LayerUnifiedName=None,
         _DesignParametertype=1,
         _XYCoordinates=[],
         _XWidth=None,
@@ -380,7 +361,7 @@ class KeyManager():
 
     _Pathkey = dict(
         _ElementName=None,
-        _Layer=None,
+        _LayerUnifiedName=None,
         _DesignParametertype=2,
         _XYCoordinates=[],
         _Width=None,
@@ -406,7 +387,7 @@ class KeyManager():
     _Textkey = dict(
         _id=None,
         _DesignParameterType=8,
-        _Layer=None,
+        _LayerUnifiedName=None,
         _Presentation=None,
         _Reflect=None,
         _XYCoordinates=[],
