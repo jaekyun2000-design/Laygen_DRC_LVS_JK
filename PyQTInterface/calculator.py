@@ -1258,7 +1258,7 @@ class PathWindow(QWidget):
     #     self.XYdictForLineEdit[-1].setReadOnly(True)
 
 class nine_key_calculator(QWidget):
-    send_expression_signal = pyqtSignal(str, str)
+    send_expression_signal = pyqtSignal(str, str, dict)
 
     def __init__(self,clipboard,purpose,address):
         # super(ExpressionCalculator, self).__init__()
@@ -1405,7 +1405,9 @@ class nine_key_calculator(QWidget):
         self.display.setText(display)
 
     def export_clicked(self):
-        self.send_expression_signal.emit(self.display.toPlainText(), self.purpose)
+        print(self.display.toPlainText())
+        dummy_dict = dict()
+        self.send_expression_signal.emit(self.display.toPlainText(), self.purpose, dummy_dict)
         self.destroy()
 
     def parsing_clipboard(self):
