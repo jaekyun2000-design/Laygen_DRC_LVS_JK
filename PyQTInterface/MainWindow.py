@@ -581,30 +581,46 @@ class _MainWindow(QMainWindow):
         print(technology_name)
 
         if user_setup._Technology == technology_name:
+            self.message = QMessageBox()
+            self.message.setText("Technology is not changed.")
+            self.message.setInformativeText("Target technology and current technology is same.")
+            self.message.show()
             return None
         else:
-            user_setup._Technology = technology_name
+            self.message = QMessageBox()
+            self.message.setText("Technology Change.")
+            self.message.setInformativeText(f"Confirm your action.\n"
+                                            f"{user_setup._Technology} to {technology_name}.")
+            self.message.setStandardButtons(QMessageBox.Cancel | QMessageBox.Ok)
+            # self.message.show()
+            choice = self.message.exec()
+            if choice == QMessageBox.Ok:
+                user_setup._Technology = technology_name
 
-            from PyQTInterface.layermap import DisplayReader
-            LayerReader.run_for_process_update()
-            DisplayReader.run_for_process_update()
+                from PyQTInterface.layermap import DisplayReader
+                LayerReader.run_for_process_update()
+                DisplayReader.run_for_process_update()
 
-            if self._CurrentModuleName in self._QTObj._qtProject._DesignParameter:
-                for qt_dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].values():
-                    qt_dp.run_for_process_update()
+                if self._CurrentModuleName in self._QTObj._qtProject._DesignParameter:
+                    for qt_dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].values():
+                        qt_dp.run_for_process_update()
 
-            remove_vs_items = []
-            for dp_name, vs_item in self.visualItemDict.items():
-                # vs_item.invalid_layer_signal.connect(self.warning_invalid_layer)
-                qt_dp = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name]
-                # vs_item.rerun_for_process_update(qt_dp)
-                remove_vs_items.extend(vs_item.rerun_for_process_update(qt_dp))
-            for rm_item in remove_vs_items:
-                self.scene.removeItem(rm_item)
-                del rm_item
+                remove_vs_items = []
+                for dp_name, vs_item in self.visualItemDict.items():
+                    # vs_item.invalid_layer_signal.connect(self.warning_invalid_layer)
+                    qt_dp = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name]
+                    # vs_item.rerun_for_process_update(qt_dp)
+                    remove_vs_items.extend(vs_item.rerun_for_process_update(qt_dp))
+                for rm_item in remove_vs_items:
+                    self.scene.removeItem(rm_item)
+                    del rm_item
 
-            print('Process Changed!')
-            self.process_list_widget.close()
+                print('Process Changed!')
+                self.message = QMessageBox()
+                self.message.setText("Process Changed!")
+                self.message.setInformativeText(f"Technology was changed from {user_setup._Technology} to {technology_name}.")
+                self.message.show()
+                self.process_list_widget.close()
 
     def warning_invalid_layer(self, layer_name):
         self.warning_widget = QtWarningMsg(f"Not valid layer: {layer_name}")
@@ -3455,6 +3471,7 @@ class Tab_widget(QWidget):
             self.show()
         self.count += 1
         new_tab_widget = _MainWindow()
+        new_tab_widget.send_create_new_window_signal.connect(self.add_window)
         self.tabs.addTab(new_tab_widget,f'widget{self.count}')
 
 
