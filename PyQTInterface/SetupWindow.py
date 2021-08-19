@@ -2549,6 +2549,13 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             self.cw = _ConstraintSetupWindow(constraint._ParseTree)
             self.cw.show()
 
+    def set_errored_constraint_id(self, constraint_id, error_flag):
+        if constraint_id in self.model._ConstraintItem:
+            item = self.model._ConstraintItem[constraint_id]
+            index = self.model.indexFromItem(item)
+            self.model.setData(index, QBrush(Qt.red), Qt.BackgroundRole)
+
+
     def mouseDoubleClickEvent(self, QMouseEvent):
 
         ####################double click update flow#######################

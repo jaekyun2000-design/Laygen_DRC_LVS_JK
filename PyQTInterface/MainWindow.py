@@ -1064,6 +1064,7 @@ class _MainWindow(QMainWindow):
                 if '_ModelStructure' in dp:
                     for qt_dp in dp['_ModelStructure'].values():
                         qt_dp.update_unified_expression()
+
             current_dpdict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]   # Unchanged target Info
 
 
@@ -2522,6 +2523,18 @@ class _MainWindow(QMainWindow):
                 #TODO
                 # 여기 디버그좀 부탁함당
                 # 가끔씩 unhashable type: 'list' 라고 if var in tmpList 구문에서 떠요.
+
+        #######STATIC CONSTRAINT AST DEBUGGING PART###########
+        sender = self.sender()
+        try:
+            tested_ast = copy.deepcopy(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][constraint_id]._ast)
+            tested_ast = variable_ast.IrregularTransformer(self._DummyConstraints).visit(tested_ast)
+            tested_ast = element_ast.ElementTransformer().visit(tested_ast)
+            tested_ast = variable_ast.VariableTransformer().visit(tested_ast)
+            code = astunparse.unparse(tested_ast)
+            sender.set_errored_constraint_id(constraint_id, False)
+        except:
+            sender.set_errored_constraint_id(constraint_id, True)
 
 
     def highlightVI(self, _idlist):
