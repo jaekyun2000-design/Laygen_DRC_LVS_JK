@@ -286,8 +286,8 @@ class IrregularTransformer(ast.NodeTransformer):
     def visit_Array(self, node):
         _id = node.id
         info_dict = self._id_to_data_dict.ArrayDict[_id]
-
-
+        _width = ''
+        _height = ''
         for key in info_dict.keys():
             if isinstance(info_dict[key], ast.AST):
                 tmpAST = IrregularTransformer(self._id_to_data_dict).visit(info_dict[key])
@@ -299,10 +299,9 @@ class IrregularTransformer(ast.NodeTransformer):
         _type = info_dict['type']              # Fixed
         _flag = info_dict['flag']     # Fixed
         _width = info_dict['width']
+        _layer = info_dict['layer']
         if _type != "path_array":
             _height = info_dict['height']
-
-        _layer = info_dict['layer']             # Fixed
         try:
             XY_source_ref = info_dict['XY_source_ref']
         except:
@@ -313,7 +312,6 @@ class IrregularTransformer(ast.NodeTransformer):
             _index = info_dict['index']
             if _index == 'Custom':
                 _index = info_dict['index_input'].split(',')
-
             if _type == 'path_array':
                 XY_target_ref = info_dict['XY_target_ref']   # For Path
             ###############################################
@@ -381,38 +379,40 @@ class IrregularTransformer(ast.NodeTransformer):
             ###########################################################################
 
             if info_dict['width'] == 'Auto':  # If Width is 'Auto', height should be fixed.
-                if _flag == 'relative':
-                    if _type == 'path_array':
-                        _height = _height_code
-                    elif _type == 'boundary_array':
-                        # Width : Auto, height: Value
-                        _width = _width_code
-                        _height = info_dict['height_input']
-                    elif _type == 'sref_array':
-                        _width = 'Blank'
-                        _height = 'Blank'
+                if _type == 'path_array':
+                    _width = _width_code
+                elif _type == 'boundary_array':
+                    # Width : Auto, height: Value
+                    _width = _width_code
+                    _height = info_dict['height_input']
+                elif _type == 'sref_array':
+                    _width = 'Blank'
+                    _height = 'Blank'
             else:  # If _width is not 'Auto', height can either be 'Auto' or Fixed
                 _width = info_dict['width_input']
-                if _flag == 'relative':
-                    if _type == 'path_array':   # path does not have 'height' input
+                if _type == 'path_array':   # path does not have 'height' input
+                    pass
+                elif _type == 'boundary_array':
+                    if info_dict['height'] == 'Auto':
                         _height = _height_code
-                    elif _type == 'boundary_array':
-                        if info_dict['height'] == 'Auto':
-                            _height = _height_code
-                        else:
-                            _height = info_dict["height_input"]
-                    elif _type == 'sref_array':
-                        _width = 'Blank'
-                        _height = 'Blank'
+                    else:
+                        _height = info_dict["height_input"]
+                elif _type == 'sref_array':
+                    _width = 'Blank'
+                    _height = 'Blank'
 
-            if '_width' in info_dict:
-                if _width == '':
-                    _width = info_dict['width_text']
-            if '_height' in info_dict:
-                if _height == '':
-                    _height = info_dict['height_text']
-        ################### Width, height, Coordinates Calculation Done ########################
-        if _flag == 'relative':
+            if _width == '':
+                _width = info_dict['width_text']
+            _width = re.sub("\n", "", _width)
+            print(f"width for {node.id} = {_width}")
+
+            if _height == '':
+                _height = info_dict['height_text']
+            _height = re.sub("\n", "", _height)
+            print(f"height for {node.id} = {_height}")
+
+            ################### Width, height, Coordinates Calculation Done ########################
+
             if _type == 'boundary_array':
                 if _index == 'All':
                     loop_code = f"XYList = []\n" \
@@ -444,7 +444,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 comparison_code = f"path_list = []\n" \
                                   f"if ({layer_xy}[0][0] == {layer_xy}[-1][0]) :\n" \
                                   f"\tmode = 'horizontal'\n" \
-                                  f"\t_width = {_height}\n" \
+                                  f"\t_width = {_width}\n" \
                                   f"elif ({layer_xy}[0][1] == {layer_xy}[-1][1]) :\n" \
                                   f"\tmode = 'vertical'\n" \
                                   f"\t_width = {_width}\n" \
@@ -561,7 +561,10 @@ class IrregularTransformer(ast.NodeTransformer):
 
                 sentence = loop_code + '\n' + tmp_code
                 del tmp_node
-
+        ###############################################################################################################
+        ###############################################################################################################
+        ###############################################################################################################
+        ###############################################################################################################
         elif _flag == 'offset':
             if "," in XY_source_ref:
                 source_wo_layer = ",".join(XY_source_ref.split(",")[:-1]) + ')'
