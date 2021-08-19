@@ -383,7 +383,7 @@ class IrregularTransformer(ast.NodeTransformer):
             if info_dict['width'] == 'Auto':  # If Width is 'Auto', height should be fixed.
                 if _flag == 'relative':
                     if _type == 'path_array':
-                        pass
+                        _height = _height_code
                     elif _type == 'boundary_array':
                         # Width : Auto, height: Value
                         _width = _width_code
@@ -395,7 +395,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 _width = info_dict['width_input']
                 if _flag == 'relative':
                     if _type == 'path_array':   # path does not have 'height' input
-                        pass
+                        _height = _height_code
                     elif _type == 'boundary_array':
                         if info_dict['height'] == 'Auto':
                             _height = _height_code
@@ -444,10 +444,10 @@ class IrregularTransformer(ast.NodeTransformer):
                 comparison_code = f"path_list = []\n" \
                                   f"if ({layer_xy}[0][0] == {layer_xy}[-1][0]) :\n" \
                                   f"\tmode = 'horizontal'\n" \
-                                  f"\t_width = {_height_code}\n" \
+                                  f"\t_width = {_height}\n" \
                                   f"elif ({layer_xy}[0][1] == {layer_xy}[-1][1]) :\n" \
                                   f"\tmode = 'vertical'\n" \
-                                  f"\t_width = {_width_code}\n" \
+                                  f"\t_width = {_width}\n" \
                                   f"else:\n" \
                                   f"\tprint('Invalid Target Input')\n"
                 if _index == 'All':
