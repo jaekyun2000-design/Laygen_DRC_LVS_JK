@@ -81,6 +81,7 @@ class _MainWindow(QMainWindow):
     send_visibleGenState_signal = pyqtSignal(int, list)
     send_visibleCanState_signal = pyqtSignal(int, list)
     send_width_height_ast_signal = pyqtSignal(str, ast.AST)
+    send_create_new_window_signal = pyqtSignal()
 
     def __init__(self):
         super(_MainWindow, self).__init__()
@@ -209,6 +210,7 @@ class _MainWindow(QMainWindow):
         auto_array_action = QAction("Inspect array", self)
         auto_pathpoint_action = QAction("Inspect path point", self)
         auto_tech_process_change_action = QAction("Change technology node", self)
+        debug_new_window_action = QAction("New window debug", self)
 
         auto_array_action.setShortcut('Ctrl+1')
         auto_array_action.triggered.connect(self.inspect_array)
@@ -219,11 +221,17 @@ class _MainWindow(QMainWindow):
         auto_tech_process_change_action.setShortcut('Ctrl+3')
         auto_tech_process_change_action.triggered.connect(self.change_process)
 
+        debug_new_window_action.setShortcut('Ctrl+9')
+        debug_new_window_action.triggered.connect(self.debug)
+
+
         automation_menu = menubar.addMenu("&Automation")
         automation_menu.setObjectName("top_menu_widget")
         automation_menu.addAction(auto_array_action)
         automation_menu.addAction(auto_pathpoint_action)
         automation_menu.addAction(auto_tech_process_change_action)
+        automation_menu.addAction(debug_new_window_action)
+
         # automation_menu.setStyleSheet("background-color: rgb(178, 41, 100)")
         # self.setStyleSheet("background-color: rgb(178, 41, 100)")
 
@@ -527,6 +535,12 @@ class _MainWindow(QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea, dockWidget4ForLoggingMessage)
 
         print("******************************Initializing Graphic Interface Complete")
+
+    def debug(self):
+        print('send!')
+        self.send_create_new_window_signal.emit()
+        print('send end')
+
 
     def calculator(self):
         # self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
@@ -3415,6 +3429,34 @@ def custom_excepthook(exctype, value, traceback):
     sys._excepthook(exctype, value, traceback)
     print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
 
+class Tab_widget(QWidget):
+    def __init__(self):
+        super(Tab_widget, self).__init__()
+        self.initUI()
+        self.count=1
+
+    def initUI(self):
+        self.main_widget = _MainWindow()
+        self.main_widget.send_create_new_window_signal.connect(self.add_window)
+
+        self.tabs = QTabWidget()
+
+        vbox = QVBoxLayout()
+        vbox.addWidget(self.tabs)
+
+        self.setLayout(vbox)
+        self.resize(1920, 1080)
+        self.setWindowTitle('GUI Project')
+        self.main_widget.show()
+
+    def add_window(self):
+        if not self.isVisible():
+            self.tabs.addTab(self.main_widget, 'widget1')
+            self.show()
+        self.count += 1
+        new_tab_widget = _MainWindow()
+        self.tabs.addTab(new_tab_widget,f'widget{self.count}')
+
 
 
 if __name__ == '__main__':
@@ -3422,7 +3464,10 @@ if __name__ == '__main__':
     sys.excepthook = custom_excepthook
 
     app = QApplication(sys.argv)
-    ex = _MainWindow()
+    # ex = _MainWindow()
+    ex = Tab_widget()
+
+
 
     try:
         app.exec_()
