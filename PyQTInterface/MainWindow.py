@@ -1065,41 +1065,42 @@ class _MainWindow(QMainWindow):
                     for qt_dp in dp['_ModelStructure'].values():
                         qt_dp.update_unified_expression()
 
-            current_dpdict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]   # Unchanged target Info
+            if self._CurrentModuleName in self._QTObj._qtProject._DesignParameter:
+                current_dpdict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]   # Unchanged target Info
 
 
-            updated_dp_name_list = list(filter(lambda dp_name: dp_name  in current_dpdict, list(dp_dict.keys())))
-            for dp_name in updated_dp_name_list:
-                current_dpdict[dp_name].update_unified_expression()
-                for key, value in dp_dict[dp_name].items():
-                    current_dpdict[dp_name]._DesignParameter[key] = value
-                if current_dpdict[dp_name]._DesignParameter['_DesignParametertype'] == 3:
-                    sref_vi = self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']]
-                    remove_vi_items = sref_vi.updateDesignParameter(current_dpdict[dp_name])
-                    for rm_vi in remove_vi_items:
-                        self.scene.removeItem(rm_vi)
-                    # self.scene.addItem(sref_vi)
-                    # self.scene.removeItem(self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']])
-                    # self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']] = sref_vi
-                    self._layerItem = sref_vi.returnLayerDict()
-                    self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
-                else:
-                    self.updateDesignParameter(current_dpdict[dp_name]._DesignParameter, False)
+                updated_dp_name_list = list(filter(lambda dp_name: dp_name  in current_dpdict, list(dp_dict.keys())))
+                for dp_name in updated_dp_name_list:
+                    current_dpdict[dp_name].update_unified_expression()
+                    for key, value in dp_dict[dp_name].items():
+                        current_dpdict[dp_name]._DesignParameter[key] = value
+                    if current_dpdict[dp_name]._DesignParameter['_DesignParametertype'] == 3:
+                        sref_vi = self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']]
+                        remove_vi_items = sref_vi.updateDesignParameter(current_dpdict[dp_name])
+                        for rm_vi in remove_vi_items:
+                            self.scene.removeItem(rm_vi)
+                        # self.scene.addItem(sref_vi)
+                        # self.scene.removeItem(self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']])
+                        # self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']] = sref_vi
+                        self._layerItem = sref_vi.returnLayerDict()
+                        self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
+                    else:
+                        self.updateDesignParameter(current_dpdict[dp_name]._DesignParameter, False)
 
-            new_dp_name_list = list(filter(lambda dp_name: dp_name not in current_dpdict, list(dp_dict.keys())))
-            for dp_name in new_dp_name_list:
-                dp = dp_dict[dp_name]
-                design_dict = self._QTObj._qtProject._feed_design(design_type='parameter',
-                                                                  module_name=self._CurrentModuleName,
-                                                                  dp_dict=dp, element_manager_update=False)
-                visualItem = self.createVisualItemfromDesignParameter(
-                    self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
-                visualItem._CreateFlag = False
-                self.updateGraphicItem(visualItem)
-                dc_id = self._DummyConstraints.search_constraint_id_by_design_name(dp_name)
-                self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=dp_name, dc_id=dc_id)
+                new_dp_name_list = list(filter(lambda dp_name: dp_name not in current_dpdict, list(dp_dict.keys())))
+                for dp_name in new_dp_name_list:
+                    dp = dp_dict[dp_name]
+                    design_dict = self._QTObj._qtProject._feed_design(design_type='parameter',
+                                                                      module_name=self._CurrentModuleName,
+                                                                      dp_dict=dp, element_manager_update=False)
+                    visualItem = self.createVisualItemfromDesignParameter(
+                        self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
+                    visualItem._CreateFlag = False
+                    self.updateGraphicItem(visualItem)
+                    dc_id = self._DummyConstraints.search_constraint_id_by_design_name(dp_name)
+                    self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=dp_name, dc_id=dc_id)
 
-            print(dp_dict)
+                print(dp_dict)
 
 
         except :

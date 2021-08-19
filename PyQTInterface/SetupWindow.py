@@ -2553,7 +2553,10 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         if constraint_id in self.model._ConstraintItem:
             item = self.model._ConstraintItem[constraint_id]
             index = self.model.indexFromItem(item)
-            self.model.setData(index, QBrush(Qt.red), Qt.BackgroundRole)
+            if error_flag:
+                self.model.setData(index, QBrush(Qt.red), Qt.BackgroundRole)
+            else:
+                self.model.setData(index, QBrush(Qt.white), Qt.BackgroundRole)
 
 
     def mouseDoubleClickEvent(self, QMouseEvent):
