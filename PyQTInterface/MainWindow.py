@@ -994,6 +994,13 @@ class _MainWindow(QMainWindow):
         vi_can = []
         viList = []
 
+        ids_len = len(constraint_ids_can)
+        for i in range(ids_len):
+            dc_id = constraint_ids_can[0]
+            dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
+            constraint_ids_can.remove(dc_id)
+            constraint_ids_can.append(dp_id)
+
         for layer in self._layerItem:
             vi_can.extend(self._layerItem[layer])
 
@@ -1013,6 +1020,13 @@ class _MainWindow(QMainWindow):
         constraint_ids_gen = [item.text() for item in constraint_names_gen]
         vi_gen = []
         viList = []
+
+        ids_len = len(constraint_ids_gen)
+        for i in range(ids_len):
+            dc_id = constraint_ids_gen[0]
+            dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
+            constraint_ids_gen.remove(dc_id)
+            constraint_ids_gen.append(dp_id)
 
         for layer in self._layerItem:
             vi_gen.extend(self._layerItem[layer])
@@ -3273,7 +3287,10 @@ class _CustomScene(QGraphicsScene):
             for item in itemList:
                 try:
                     if item._ItemTraits['_DesignParametertype'] == 1:
-                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0].index])
+                        if item.block[0].index[0] == len(item._ItemTraits['_XYCoordinates']) - 1:
+                            self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']],[-1])
+                        else:
+                            self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0].index])
                     elif item._ItemTraits['_DesignParametertype'] == 2:
                         self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [f'{[item.block[0].index[0]]}'+f'{[item.block[0].index[1]]}'])
                     elif item._ItemTraits['_DesignParametertype'] == 3:
