@@ -428,6 +428,7 @@ class _PathSetupWindow(QWidget):
                     _ItemRef = None, #Reference Of VisualizationItem
                 )
         self.visualItem.updateTraits(self._DesignParameter)
+        self.send_DestroyTmpVisual_signal.emit(self.visualItem)
         self.send_Destroy_signal.emit('pw')
         self.destroy()
 
