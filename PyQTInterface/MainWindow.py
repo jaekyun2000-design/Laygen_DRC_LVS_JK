@@ -1757,6 +1757,14 @@ class _MainWindow(QMainWindow):
     def edit_variable(self, _edit_id, variable_info_dict, parent_dict):
         self._DummyConstraints.__dict__[parent_dict][_edit_id].clear()
         self._DummyConstraints.__dict__[parent_dict][_edit_id] = variable_info_dict
+        dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(_edit_id)
+        dp_update_info =\
+            self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(
+                ast = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_edit_id]._ast,
+                dummy = self._DummyConstraints.__dict__[parent_dict][_edit_id]
+            )
+        for key, value in dp_update_info.items():
+            self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_id]._setDesignParameterValue(key, value)
 
     def create_variable(self, _edit_id, variable_info_dict):
         dicts = self._DummyConstraints.__dict__
