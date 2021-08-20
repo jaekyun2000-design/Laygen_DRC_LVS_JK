@@ -1089,6 +1089,7 @@ class _MainWindow(QMainWindow):
                     for key, value in dp_dict[dp_name].items():
                         current_dpdict[dp_name]._DesignParameter[key] = value
                     if current_dpdict[dp_name]._DesignParameter['_DesignParametertype'] == 3:
+                        #TODO dp에는 있지만, vsitem은 없는경우 예외처리가 안되어 있음 (사실상 가정하지 않는 케이스 이기 때문)
                         sref_vi = self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']]
                         remove_vi_items = sref_vi.updateDesignParameter(current_dpdict[dp_name])
                         for rm_vi in remove_vi_items:
@@ -1118,8 +1119,8 @@ class _MainWindow(QMainWindow):
 
 
         except:
-            working_code = self.debugConstraint()
-            self.runConstraint_for_update(working_code)
+            # working_code = self.debugConstraint()
+            # self.runConstraint_for_update(working_code)
             traceback.print_exc()
 
 

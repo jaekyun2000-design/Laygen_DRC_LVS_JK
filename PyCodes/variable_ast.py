@@ -441,7 +441,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 sentence = loop_code + '\n' + tmp_code
                 del tmp_node
             elif _type == 'path_array':
-                comparison_code = f"path_list = []\n" \
+                comparison_code = f"\npath_list = []\n" \
                                   f"if ({layer_xy}[0][0] == {layer_xy}[-1][0]) :\n" \
                                   f"\tmode = 'horizontal'\n" \
                                   f"\t_width = {_width}\n" \
@@ -687,7 +687,8 @@ class IrregularTransformer(ast.NodeTransformer):
         :param XYFlag: Which mode is checked?
         :return: re-expressed code
         """
-        function = expression[0:2]
+        tmp_str = re.sub("\(|\)", "", expression)
+        function = tmp_str[0:2]
         if function == 'to':
             function = 'top'
         elif function == 'bo':
