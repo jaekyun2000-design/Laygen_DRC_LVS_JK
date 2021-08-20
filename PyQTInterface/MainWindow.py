@@ -2308,15 +2308,16 @@ class _MainWindow(QMainWindow):
         else:
             if type(_input) != dict:    # input is AST type
                 design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= _input)
-
+                self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                 _parentName=self._CurrentModuleName,
+                                                                 _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
                 # self._VariableIDwithAST.variableIDwithASTDict[_vid] = _AST
                 try:
-                    if design_dict['parameter']:
+                    if design_dict['parameter'] is not None:
                         visualItem = self.createVisualItemfromDesignParameter(
                             self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
                         self.updateGraphicItem(visualItem)
-                        self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
-                                                                         _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+
                 except:
                     print("Invalid design parameter dict")
 
