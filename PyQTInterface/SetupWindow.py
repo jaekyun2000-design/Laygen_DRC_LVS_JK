@@ -3108,7 +3108,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             if idx.isValid():
                 type_item = self.model.itemFromIndex(idx.siblingAtColumn(2))
 
-                if type_item.text() in ['XYCoordinate', 'PathXY']:
+                if type_item.text() in ['XYCoordinate', 'PathXY', 'LogicExpression']:
                     self.context_menu_for_xy.exec_(self.viewport().mapToGlobal(point))
                 elif type_item.text() == 'Array':
                     self.context_menu_for_array.exec_(self.viewport().mapToGlobal(point))
@@ -3133,7 +3133,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     def browse_expression(self):
         current_item =self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
         type_name = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0)).text()
-        if type_name in ['XYCoordinate', 'PathXY']:
+        if type_name in ['XYCoordinate', 'PathXY', 'LogicExpression']:
             self.send_dummy_ast_id_for_xy_signal.emit(current_item.text())
         elif type_name == 'Array':
             self.send_dummy_ast_id_for_array_signal.emit(current_item.text())
