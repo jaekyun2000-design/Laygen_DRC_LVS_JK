@@ -996,10 +996,16 @@ class ExpressionCalculator(QWidget):
                 """
                 pass
             elif XList:
-                self.send_XYCreated_signal.emit('LogicExpression', output)
+                if self.purpose == 'width' or self.purpose == 'height':
+                    self.send_XYCreated_signal.emit('LogicExpressionD', output)
+                else:
+                    self.send_XYCreated_signal.emit('LogicExpression', output)
                 LEFlag = True
             elif YList:
-                self.send_XYCreated_signal.emit('LogicExpression', output)
+                if self.purpose == 'width' or self.purpose == 'height':
+                    self.send_XYCreated_signal.emit('LogicExpressionD', output)
+                else:
+                    self.send_XYCreated_signal.emit('LogicExpression', output)
                 LEFlag = True
 
         self.XWindow.clear()
