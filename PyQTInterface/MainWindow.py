@@ -966,8 +966,8 @@ class _MainWindow(QMainWindow):
             error_log = traceback.format_exc()
             self.dockContentWidget3.set_errored_constraint_id(error_id, 'dynamic', error_log)
             return working_code
-
         self.dockContentWidget3.blockSignals(False)
+        return None
 
     def encodeConstraint(self):
         try:
@@ -1119,8 +1119,9 @@ class _MainWindow(QMainWindow):
 
 
         except:
-            # working_code = self.debugConstraint()
-            # self.runConstraint_for_update(working_code)
+            working_code = self.debugConstraint()
+            if working_code:
+                self.runConstraint_for_update(working_code)
             traceback.print_exc()
 
 
