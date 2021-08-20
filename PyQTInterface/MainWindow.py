@@ -966,8 +966,8 @@ class _MainWindow(QMainWindow):
             error_log = traceback.format_exc()
             self.dockContentWidget3.set_errored_constraint_id(error_id, 'dynamic', error_log)
             return working_code
-
         self.dockContentWidget3.blockSignals(False)
+        return None
 
     def encodeConstraint(self):
         try:
@@ -1103,6 +1103,7 @@ class _MainWindow(QMainWindow):
                     for key, value in dp_dict[dp_name].items():
                         current_dpdict[dp_name]._DesignParameter[key] = value
                     if current_dpdict[dp_name]._DesignParameter['_DesignParametertype'] == 3:
+                        #TODO dp에는 있지만, vsitem은 없는경우 예외처리가 안되어 있음 (사실상 가정하지 않는 케이스 이기 때문)
                         sref_vi = self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']]
                         remove_vi_items = sref_vi.updateDesignParameter(current_dpdict[dp_name])
                         for rm_vi in remove_vi_items:
@@ -1133,7 +1134,8 @@ class _MainWindow(QMainWindow):
 
         except:
             working_code = self.debugConstraint()
-            self.runConstraint_for_update(working_code)
+            if working_code:
+                self.runConstraint_for_update(working_code)
             traceback.print_exc()
 
 
@@ -1771,6 +1773,14 @@ class _MainWindow(QMainWindow):
     def edit_variable(self, _edit_id, variable_info_dict, parent_dict):
         self._DummyConstraints.__dict__[parent_dict][_edit_id].clear()
         self._DummyConstraints.__dict__[parent_dict][_edit_id] = variable_info_dict
+        dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(_edit_id)
+        dp_update_info =\
+            self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(
+                ast = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_edit_id]._ast,
+                dummy = self._DummyConstraints.__dict__[parent_dict][_edit_id]
+            )
+        for key, value in dp_update_info.items():
+            self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_id]._setDesignParameterValue(key, value)
 
     def create_variable(self, _edit_id, variable_info_dict):
         dicts = self._DummyConstraints.__dict__
@@ -2147,6 +2157,10 @@ class _MainWindow(QMainWindow):
         XY Coordinates, Loops, ... etc.
         :return:
         """
+        dockContentFlag = True
+        if type_for_dc == "LogicExpressionD":
+            type_for_dc = "LogicExpression"
+            dockContentFlag = False
         if self._QTObj._qtProject == None:
             self.warning = QMessageBox()
             self.warning.setText("There is no Project")
@@ -2193,11 +2207,13 @@ class _MainWindow(QMainWindow):
                     _ASTobj._id = _newConstraintID
                     _ASTobj._type = type_for_dc
                     # self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
-                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
-                                                                      module_name=self._CurrentModuleName, _ast=_ASTobj)
-                    self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
-                                                                     _parentName=self._CurrentModuleName,
-                                                                     _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+                    if dockContentFlag == True:
+                        design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                          module_name=self._CurrentModuleName,
+                                                                          _ast=_ASTobj)
+                        self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                         _parentName=self._CurrentModuleName,
+                                                                         _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
                     ############################## Dummy Constraint Management #############################
                     if (type_for_dc == 'XYCoordinate') or (type_for_dc == 'PathXY') or (type_for_dc == 'LogicExpression'):
@@ -3271,7 +3287,10 @@ class _CustomScene(QGraphicsScene):
             for item in itemList:
                 try:
                     if item._ItemTraits['_DesignParametertype'] == 1:
-                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0].index])
+                        if item.block[0].index[0] == len(item._ItemTraits['_XYCoordinates']) - 1:
+                            self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']],[-1])
+                        else:
+                            self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0].index])
                     elif item._ItemTraits['_DesignParametertype'] == 2:
                         self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [f'{[item.block[0].index[0]]}'+f'{[item.block[0].index[1]]}'])
                     elif item._ItemTraits['_DesignParametertype'] == 3:

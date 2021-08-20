@@ -436,7 +436,7 @@ class _VisualizationItem(QGraphicsItemGroup):
             self._ItemTraits['_ElementName'] = QtDesignParameter._id
         else:
             self._ItemTraits['_ElementName'] = QtDesignParameter._ElementName
-        remove_item_list.extend(self.updateTraits(QtDesignParameter._DesignParameter))
+        remove_item_list.extend(self.updateTraits(QtDesignParameter._DesignParameter) if self.updateTraits(QtDesignParameter._DesignParameter) else [])
         return remove_item_list
 
 

@@ -9,6 +9,7 @@ from PyQTInterface import SetupWindow
 from PyQTInterface  import VariableVisualItem
 from PyQTInterface import calculator
 import warnings
+import traceback
 from PyCodes import ASTmodule
 from PyCodes import element_ast
 
@@ -683,12 +684,12 @@ class variableContentWidget(QWidget):
         if purpose == 'width':
             self.width_height = 'width'
             self.output_dict = output_dict
-            self.send_exported_width_height_signal.emit('LogicExpression', output_dict)
+            self.send_exported_width_height_signal.emit('LogicExpressionD', output_dict)
 
         elif purpose == 'height':
             self.width_height = 'height'
             self.output_dict = output_dict
-            self.send_exported_width_height_signal.emit('LogicExpression', output_dict)
+            self.send_exported_width_height_signal.emit('LogicExpressionD', output_dict)
 
         elif purpose == 'source' or purpose == 'target' or purpose == 'ref':
             for info, widget in self.widget_dictionary.items():
@@ -730,14 +731,16 @@ class variableContentWidget(QWidget):
                     height_text_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
                 elif info == 'pathoffset':
                     width_text_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
-
-        if self.width_height == 'width':
-            width_text_widget.setText(_id)
-            self.field_value_memory_dict['width_input'] = _ast
-        elif self.width_height == 'height':
-            height_text_widget.setText(_id)
-            self.field_value_memory_dict['height_input'] = _ast
-        self.cal.send_dummyconstraints_signal.emit(self.output_dict, _id)
+        try:
+            if self.width_height == 'width':
+                width_text_widget.setText(_id)
+                self.field_value_memory_dict['width_input'] = _ast
+            elif self.width_height == 'height':
+                height_text_widget.setText(_id)
+                self.field_value_memory_dict['height_input'] = _ast
+            self.cal.send_dummyconstraints_signal.emit(self.output_dict, _id)
+        except:
+            traceback.print_exc()
 
     def get_index(self, text):
         for info, widget in self.widget_dictionary.items():
