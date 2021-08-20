@@ -684,12 +684,12 @@ class variableContentWidget(QWidget):
         if purpose == 'width':
             self.width_height = 'width'
             self.output_dict = output_dict
-            self.send_exported_width_height_signal.emit('LogicExpression', output_dict)
+            self.send_exported_width_height_signal.emit('LogicExpressionD', output_dict)
 
         elif purpose == 'height':
             self.width_height = 'height'
             self.output_dict = output_dict
-            self.send_exported_width_height_signal.emit('LogicExpression', output_dict)
+            self.send_exported_width_height_signal.emit('LogicExpressionD', output_dict)
 
         elif purpose == 'source' or purpose == 'target' or purpose == 'ref':
             for info, widget in self.widget_dictionary.items():

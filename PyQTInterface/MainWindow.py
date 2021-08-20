@@ -2134,6 +2134,10 @@ class _MainWindow(QMainWindow):
         XY Coordinates, Loops, ... etc.
         :return:
         """
+        dockContentFlag = True
+        if type_for_dc == "LogicExpressionD":
+            type_for_dc = "LogicExpression"
+            dockContentFlag = False
         if self._QTObj._qtProject == None:
             self.warning = QMessageBox()
             self.warning.setText("There is no Project")
@@ -2180,11 +2184,13 @@ class _MainWindow(QMainWindow):
                     _ASTobj._id = _newConstraintID
                     _ASTobj._type = type_for_dc
                     # self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
-                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
-                                                                      module_name=self._CurrentModuleName, _ast=_ASTobj)
-                    self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
-                                                                     _parentName=self._CurrentModuleName,
-                                                                     _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+                    if dockContentFlag == True:
+                        design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                          module_name=self._CurrentModuleName,
+                                                                          _ast=_ASTobj)
+                        self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                         _parentName=self._CurrentModuleName,
+                                                                         _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
                     ############################## Dummy Constraint Management #############################
                     if (type_for_dc == 'XYCoordinate') or (type_for_dc == 'PathXY') or (type_for_dc == 'LogicExpression'):
