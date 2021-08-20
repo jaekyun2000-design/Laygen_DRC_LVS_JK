@@ -962,9 +962,9 @@ class _MainWindow(QMainWindow):
                 debugger_gds2gen.run_qt_constraint_ast()
                 self.dockContentWidget3.set_errored_constraint_id(_id, 'clean')
                 working_code = code
-        except:
+        except Exception as e:
             error_log = traceback.format_exc()
-            self.dockContentWidget3.set_errored_constraint_id(error_id, 'dynamic', error_log)
+            self.dockContentWidget3.set_errored_constraint_id(error_id, 'dynamic', error_log, e)
             return working_code
         self.dockContentWidget3.blockSignals(False)
         return None
@@ -2569,9 +2569,9 @@ class _MainWindow(QMainWindow):
             tested_ast = variable_ast.VariableTransformer().visit(tested_ast)
             code = astunparse.unparse(tested_ast)
             sender.set_errored_constraint_id(constraint_id, 'clean')
-        except:
+        except Exception as e:
             error_log = traceback.format_exc()
-            sender.set_errored_constraint_id(constraint_id, 'static', error_log)
+            sender.set_errored_constraint_id(constraint_id, 'static', error_log, exception = e)
         sender.blockSignals(False)
 
     def highlightVI(self, _idlist):

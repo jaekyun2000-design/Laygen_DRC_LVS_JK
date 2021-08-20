@@ -222,7 +222,7 @@ class ElementTransformer(ast.NodeTransformer):
 
         for field in node._fields:
             if node.__dict__[field] == '' or node.__dict__[field] == None:
-                raise Exception(f"Not valid {field} value : {node.__dict__[field]}")
+                raise ValueError(f"Not valid \'{field}\' value : {node.__dict__[field]}")
             if field == 'XY':
                 continue
             if isinstance(node.__dict__[field], ast.AST):

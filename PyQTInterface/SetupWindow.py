@@ -2550,7 +2550,23 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             self.cw = _ConstraintSetupWindow(constraint._ParseTree)
             self.cw.show()
 
-    def set_errored_constraint_id(self, constraint_id, error_flag, error_log = None):
+    def set_errored_constraint_id(self, constraint_id, error_flag, error_log = None, exception = None):
+        if exception:
+            error_line = error_log.split('\n')[-2]
+            error_type = type(exception).__name__
+            if error_type in ['TypeError', 'ValueError']:
+                error_element = re.search("\'.+\'",exception.args[0]).group()
+                error_log = f'Error found at : {error_element} \n'
+                error_log += f'Orignal error log: {error_line}'
+            elif error_type in ['KeyError']:
+                error_element = exception.args[0]
+                error_log = f'Trying to refer not valid key: {error_element} \n'
+                # error_log += f'Orignal error log: {error_line}'
+            else:
+                # error_element = re.search("\'.+\'", exception.args[0]).group()
+                # error_log = f'Error found at: {error_element} \n'
+                error_log += f'Orignal error type and log: {error_type}, {error_line}'
+
         if constraint_id in self.model._ConstraintItem:
             item = self.model._ConstraintItem[constraint_id]
             index = self.model.indexFromItem(item)
