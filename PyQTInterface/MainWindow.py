@@ -1987,8 +1987,10 @@ class _MainWindow(QMainWindow):
         # visualItem = self._QTObj._qtProject._DesignParameter[_Module][_ID]._VisualizationItemObj
 
         design_dict = self._QTObj._qtProject._update_design(design_type='parameter', module_name=self._CurrentModuleName,
-                                                          dp_dict=_DesignParameter, id=_ID, element_manager_update =element_manager_update)
-        design_dict['parameter'].update_unified_expression()
+                                                          dp_dict=_DesignParameter, id=_ID, element_manager_update =element_manager_update,
+                                                            dummy_constraints = self._DummyConstraints)
+        if design_dict['parameter']:
+            design_dict['parameter'].update_unified_expression()
         visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
         self.updateGraphicItem(visualItem)
 
@@ -2001,7 +2003,8 @@ class _MainWindow(QMainWindow):
             module = self.get_id_return_module(id,'_DesignConstraint')
             original_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(id)
             design_dict = self._QTObj._qtProject._update_design(design_type='constraint', module_name=module,
-                                                              _ast=self._QTObj._qtProject._DesignConstraint[module][id]._ast, id=id)
+                                                              _ast=self._QTObj._qtProject._DesignConstraint[module][id]._ast, id=id,
+                                                                dummy_constraints = self._DummyConstraints)
             if design_dict['parameter']:
                 if original_dp_id != design_dict['parameter_id']:
                     self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
@@ -2014,7 +2017,8 @@ class _MainWindow(QMainWindow):
             original_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(mother_id)
             design_dict  = self._QTObj._qtProject._update_design(design_type='constraint', module_name=module,
                                                                 _ast=self._QTObj._qtProject._DesignConstraint[module][
-                                                                    mother_id]._ast, id=mother_id)
+                                                                    mother_id]._ast, id=mother_id,
+                                                                 dummy_constraints = self._DummyConstraints)
             if design_dict['parameter']:
                 if original_dp_id != design_dict['parameter_id']:
                     self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
@@ -2185,6 +2189,7 @@ class _MainWindow(QMainWindow):
                     _ASTobj.id = _newConstraintID
                     _ASTobj._id = _newConstraintID
                     _ASTobj._type = 'XYCoordinate'
+                    _ASTobj.info_dict = info_dict
                     self._DummyConstraints.XYDict[_newConstraintID] = info_dict
                     self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
                     self.calculator_window.send_path_row_xy_signal.emit(info_dict, _newConstraintID)
@@ -2206,6 +2211,7 @@ class _MainWindow(QMainWindow):
                     _ASTobj.id = _newConstraintID
                     _ASTobj._id = _newConstraintID
                     _ASTobj._type = type_for_dc
+                    _ASTobj.info_dict = info_dict
                     # self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
                     if dockContentFlag == True:
                         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
@@ -2229,7 +2235,6 @@ class _MainWindow(QMainWindow):
                     elif type_for_dc == 'Array':
                         self._DummyConstraints.ArrayDict[_newConstraintID] = info_dict
                     #########################################################################################
-
                     print("###############################################################")
                     print(f"                  {type_for_dc} ast creation Done                    ")
                     print("###############################################################")

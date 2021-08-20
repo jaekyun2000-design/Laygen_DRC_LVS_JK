@@ -13,6 +13,7 @@ from PyCodes import userDefineExceptions
 from PyCodes import ASTmodule
 from PyQTInterface.layermap import LayerReader
 from DesignManager.ElementManager import element_manager
+from powertool import topAPI
 import ast, astunparse
 import pickle
 import gzip
@@ -1752,12 +1753,15 @@ class QtProject:
 
         return output
 
-    def _update_design(self, design_type: str, module_name: str, id: str, _ast: ast.AST=None, dp_dict: dict=None, element_manager_update = True ) -> dict:
+    def _update_design(self, design_type: str, module_name: str, id: str, _ast: ast.AST=None, dp_dict: dict=None,
+                       element_manager_update = True, dummy_constraints = None ) -> dict:
         try:
             if design_type == 'parameter':
-                output = self._update_design_dictionary(module_name=module_name, id=id, _dp_dict=dp_dict, element_manager_update = element_manager_update)
+                output = self._update_design_dictionary(module_name=module_name, id=id, _dp_dict=dp_dict, element_manager_update = element_manager_update,
+                                                        dummy_constraints = dummy_constraints)
             elif design_type == 'constraint':
-                output = self._update_ast(module_name=module_name, id=id, _ast=_ast, element_manager_update = element_manager_update)
+                output = self._update_ast(module_name=module_name, id=id, _ast=_ast, element_manager_update = element_manager_update,
+                                          dummy_constraints = dummy_constraints)
 
             return output
         except:
@@ -1834,7 +1838,7 @@ class QtProject:
                 return userDefineExceptions._UnkownError
 
     def _update_design_dictionary(self, module_name: str, id: str, _dp_dict: dict,
-                                  element_manager_update: bool = True) -> dict:
+                                  element_manager_update: bool = True, dummy_constraints = None) -> dict:
         # _createNewDesignParameter_by_dict(self, module_name, _dp_dict, element_manager_update=True):
         """
         :param module_name:  current module name
@@ -1850,6 +1854,10 @@ class QtProject:
         else:
             try:
                 if id != _dp_dict['_ElementName']:
+                    # todo 바꿔야할 elementname 여기서 찾아주기.
+                    naming_refactor = topAPI.naming_refactor.NamingRefactor()
+                    naming_refactor.search_ast(original_name=id, changed_name=_dp_dict['_ElementName'],
+                                               constraints=self._DesignConstraint, dummy_constraints = dummy_constraints)
                     self._ElementManager.change_dp_id(id,_dp_dict['_ElementName'])
                     self._DesignParameter[module_name][_dp_dict['_ElementName']] = self._DesignParameter[module_name].pop(id)
                     id = _dp_dict['_ElementName']
@@ -1869,7 +1877,7 @@ class QtProject:
                         design_constraint_id = self._ElementManager.get_dc_id_by_dp_id(id)
                         if design_constraint_id:
                             tmp_dict = self._update_ast(_ast=tmp_ast, module_name=module_name, id=design_constraint_id,
-                                                        element_manager_update=False)
+                                                        element_manager_update=False, dummy_constraints = dummy_constraints)
                             _designConstraint = tmp_dict['constraint']
                             _designConstraint_id = tmp_dict['constraint_id']
                     except:
@@ -2006,7 +2014,8 @@ class QtProject:
                 traceback.print_exc()
                 return userDefineExceptions._UnkownError
 
-    def _update_ast(self, module_name: str, id: str, _ast: ast.AST, element_manager_update: bool=True) -> list:
+    def _update_ast(self, module_name: str, id: str, _ast: ast.AST, element_manager_update: bool=True,
+                    dummy_constraints = None) -> list:
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
             print("_createNewDesignParameter Run.")
         if _ast == None:
