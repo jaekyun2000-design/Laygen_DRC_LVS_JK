@@ -567,9 +567,10 @@ def _ASTDictUpdateMissingPart(_ASTDict):
 
 
 def _getASTtype(_targetAST):            #Input is specific AST object (ex: AST.If, AST.Express ....) , Output is object's ClassName
-    _type = str(type(_targetAST))
-    className = re.search('ast.[a-zA-Z]+', _type).group()
-    className = className[4:]
+    className = type(_targetAST).__name__
+    # _type = str(type(_targetAST))
+    # className = re.search('ast.[a-zA-Z]+', _type).group()
+    # className = className[4:]
     return className
 
 def _checkAST(_target):

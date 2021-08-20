@@ -1,4 +1,5 @@
 import ast
+import warnings
 
 from PyCodes import element_ast, variable_ast
 from PyCodes import ASTmodule
@@ -137,7 +138,7 @@ class ElementManager:
             return False
 
 
-    def get_ast_return_dpdict(self, ast):
+    def get_ast_return_dpdict(self, ast, dummy=None):
         if ASTmodule._getASTtype(ast) == 'Boundary':
             tmpDP = dict()
             for key in KeyManager._Boundarykey.keys():
@@ -269,6 +270,21 @@ class ElementManager:
                     tmpDP[key] = None
                 elif key == '_ElementName':
                     tmpDP[key] = None
+        elif ASTmodule._getASTtype(ast) == 'Array':
+            tmpDP = dict()
+            for key, value in dummy.items():
+                if key == 'name':
+                    tmpDP[key] = value
+                elif key == 'layer':
+                    tmpDP['_LayerUnifiedName'] = value
+                elif '_input' in key:
+                    dp_key = key.split('_')[0]
+                    try:
+                        tmpDP[dp_key] = int(value)
+                    except:
+                        warnings.warn(f'{dp_key} is not numeric value.')
+                        warnings.warn('Static value update is impossible.')
+            return tmpDP
 
         else:
             return None
