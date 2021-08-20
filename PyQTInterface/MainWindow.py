@@ -933,6 +933,11 @@ class _MainWindow(QMainWindow):
         return _finalModule
 
     def debugConstraint(self):
+        '''
+        Run-time debugger for generator constraints.
+        If debugger finds error, then it emits error_id signal to constraint_view widget.
+        And it returns code describing working code which ends at right before error constraint.
+        '''
         self.dockContentWidget3.blockSignals(True)
         try:
             debugger_gds2gen = topAPI.gds2generator.GDS2Generator(True)
@@ -956,9 +961,11 @@ class _MainWindow(QMainWindow):
                 debugger_gds2gen.set_root_cell(self._CurrentModuleName)
                 debugger_gds2gen.run_qt_constraint_ast()
                 self.dockContentWidget3.set_errored_constraint_id(_id, 'clean')
+                working_code = code
         except:
             error_log = traceback.format_exc()
-            self.dockContentWidget3.set_errored_constraint_id(_id, 'dynamic', error_log)
+            self.dockContentWidget3.set_errored_constraint_id(error_id, 'dynamic', error_log)
+            return working_code
 
         self.dockContentWidget3.blockSignals(False)
 
@@ -1052,16 +1059,20 @@ class _MainWindow(QMainWindow):
             print("Run fail")
 
 
-    def runConstraint_for_update(self):
+    def runConstraint_for_update(self, code=None):
+        '''
+        run generator constraint and update visual object by updated designs.
+        stop_point is introduced to support line by line execution.
+        '''
         try:
             gds2gen = topAPI.gds2generator.GDS2Generator(False)
             gds2gen.load_qt_project(self)
             gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter, self._CurrentModuleName)
             gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
-            constraint_ids = [item.text() for item in self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)]
-            # gds2gen.load_qt_id_info(self, constraint_ids)
-            # gds2gen.set_root_cell(self._CurrentModuleName)
-            # gds2gen.run_qt_constraint_ast()
+            if code:
+                gds2gen.load_qt_design_constraints_code(code)
+            else:
+                gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
             dp_dict = gds2gen.get_updated_designParameters()                                    # New Info
             for dp in dp_dict.values():
                 if '_ModelStructure' in dp:
@@ -1106,7 +1117,9 @@ class _MainWindow(QMainWindow):
                 print(dp_dict)
 
 
-        except :
+        except:
+            working_code = self.debugConstraint()
+            self.runConstraint_for_update(working_code)
             traceback.print_exc()
 
 
