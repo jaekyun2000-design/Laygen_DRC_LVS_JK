@@ -2532,10 +2532,12 @@ class _MainWindow(QMainWindow):
         sender = self.sender()
         sender.blockSignals(True)
         try:
-            tested_ast = copy.deepcopy(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][constraint_id]._ast)
+            tested_ast = ast.Module()
+            tested_ast.body = [copy.deepcopy(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][constraint_id]._ast)]
+            # tested_ast = copy.deepcopy(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][constraint_id]._ast)
             tested_ast = variable_ast.IrregularTransformer(self._DummyConstraints).visit(tested_ast)
             tested_ast = element_ast.ElementTransformer().visit(tested_ast)
-            # tested_ast = variable_ast.VariableTransformer().visit(tested_ast)
+            tested_ast = variable_ast.VariableTransformer().visit(tested_ast)
             code = astunparse.unparse(tested_ast)
             sender.set_errored_constraint_id(constraint_id, 'clean')
         except:
