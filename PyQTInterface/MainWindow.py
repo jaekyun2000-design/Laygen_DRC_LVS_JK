@@ -143,6 +143,7 @@ class _MainWindow(QMainWindow):
         EncodeAction = QAction("Encode constraint",self)
         RunGDSAction = QAction("Run constraint",self)
         UpdateGDSAction = QAction("Update constraint",self)
+        setup_action = QAction("Setup",self)
 
         newAction.setShortcut('Ctrl+N')
         newAction.triggered.connect(self.newProject)
@@ -165,6 +166,8 @@ class _MainWindow(QMainWindow):
         UpdateGDSAction.setShortcut('Ctrl+U')
         UpdateGDSAction.triggered.connect(self.runConstraint_for_update)
 
+        setup_action.triggered.connect(self.run_setup_update)
+
 
 
         menubar = self.menuBar()
@@ -178,6 +181,7 @@ class _MainWindow(QMainWindow):
         fileMenu.addAction(EncodeAction)
         fileMenu.addAction(RunGDSAction)
         fileMenu.addAction(UpdateGDSAction)
+        fileMenu.addAction(setup_action)
 
         #Second Menu#
         self.statusBar().showMessage("No Module")
@@ -541,6 +545,15 @@ class _MainWindow(QMainWindow):
         self.send_create_new_window_signal.emit()
         print('send end')
 
+
+    def run_setup_update(self):
+        self.setup_widget = QWidget()
+        form_layout = QFormLayout()
+        setup_list = [item for item in dir(user_setup) if not item.startswith("__")]
+        for setup_item in setup_list:
+            form_layout.addRow(setup_item, QLineEdit(str(user_setup.__dict__[setup_item])))
+        self.setup_widget.setLayout(form_layout)
+        self.setup_widget.show()
 
     def calculator(self):
         # self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
