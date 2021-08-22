@@ -3308,7 +3308,7 @@ class _CustomScene(QGraphicsScene):
             for item in itemList:
                 try:
                     if item._ItemTraits['_DesignParametertype'] == 1:
-                        if item.block[0].index[0] == len(item._ItemTraits['_XYCoordinates']) - 1:
+                        if item.block[0].index[0] == len(item._ItemTraits['_XYCoordinates']) - 1 and len(item._ItemTraits['_XYCoordinates']) != 1:
                             self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']],[-1])
                         else:
                             self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0].index])
