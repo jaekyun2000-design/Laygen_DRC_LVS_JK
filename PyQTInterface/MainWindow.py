@@ -677,6 +677,12 @@ class _MainWindow(QMainWindow):
     def inspect_array(self):
         inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
         output = inspector.inspect()
+        if output == None:
+            self.warning = QMessageBox()
+            self.warning.setText("Unable to recognize Array References; Rearrange the design appropriately!"
+                                 "\nDebug: clustering.py, method find_ref")
+            self.warning.show()
+            return
         groups_list = output['group_list']
         self.reference_list = output['reference_list']
 
