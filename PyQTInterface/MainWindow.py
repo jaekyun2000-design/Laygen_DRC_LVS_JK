@@ -195,7 +195,9 @@ class _MainWindow(QMainWindow):
         newModuleAction.triggered.connect(self.newModule)
 
         moduleManagementAction.triggered.connect(self.moduleManage)
-        self.moduleList = []
+        self.module_name_list = []
+        self.module_dict = {self._CurrentModuleName: self} if self._CurrentModuleName else dict()
+
 
         loadGDSAction.triggered.connect(self.loadGDS)
         loadPyCodeAction.triggered.connect(self.loadPy)
@@ -541,9 +543,19 @@ class _MainWindow(QMainWindow):
         print("******************************Initializing Graphic Interface Complete")
 
     def debug(self):
-        print('send!')
-        self.send_create_new_window_signal.emit()
-        print('send end')
+        tmp_module_name = 'test'
+        self.module_name_list.append(tmp_module_name)
+        self.module_dict[tmp_module_name] = _MainWindow()
+        self.module_dict[tmp_module_name].set_module_name(tmp_module_name)
+        self.module_dict[tmp_module_name].show()
+        self.module_dict[tmp_module_name].module_dict = self.module_dict
+        self.module_dict[tmp_module_name].module_name_list = self.module_name_list
+
+        self.hide()
+
+        # print('send!')
+        # self.send_create_new_window_signal.emit()
+        # print('send end')
 
 
     def run_setup_update(self):
@@ -1464,16 +1476,28 @@ class _MainWindow(QMainWindow):
             self.nmw.send_Name_signal.connect(self.updateModule)
 
 
+    def set_module_name(self, module_name):
+        if self._CurrentModuleName in self.module_name_list:
+            idx = self.module_name_list.index(self._CurrentModuleName)
+            del self.module_name_list[idx]
+        if self._CurrentModuleName in self.module_dict:
+            del self.module_dict[self._CurrentModuleName]
+
+        self.module_name_list.append(module_name)
+        self.module_dict[module_name] = self
+        self._CurrentModuleName = module_name
+
+
     def updateModule(self,ModuleName):
-        if (ModuleName in self.moduleList) == False:
-            self.moduleList.append(ModuleName)
-            # self.moduleListManagement(option="add",ModuleName=ModuleName)
-        self._CurrentModuleName = ModuleName
-        self.statusBar().showMessage( ("Project: "+self._QTObj._qtProject._name+", Module: "+self._CurrentModuleName) , 0 )
-        # self.statusBar().addPermanentWidget( QLabel(str("Project: "+self._QTObj._qtProject._name+", Module: "+self._CurrentModuleName)) )
+        # if (ModuleName in self.module_name_list) == False:
+        #     self.set_module_name(ModuleName)
+        # self.statusBar().showMessage( ("Project: "+self._QTObj._qtProject._name+", Module: "+self._CurrentModuleName) , 0 )
+        # # self.statusBar().addPermanentWidget( QLabel(str("Project: "+self._QTObj._qtProject._name+", Module: "+self._CurrentModuleName)) )
+        self.hide()
+        self.module_dict[ModuleName].show()
 
     def moduleManage(self):
-        self.mw = SetupWindow._ModuleManageWidget(self.moduleList)
+        self.mw = SetupWindow._ModuleManageWidget(self.module_name_list)
         self.mw.show()
         self.mw.send_ModuleName_signal.connect(self.updateModule)
 
@@ -1633,7 +1657,8 @@ class _MainWindow(QMainWindow):
             visual_item_list = []
             addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
             topCellName = addedModulelist[-1]
-            self._CurrentModuleName = topCellName       # Necessary For adding elements inside the cell
+            # self._CurrentModuleName = topCellName       # Necessary For adding elements inside the cell
+            self.set_module_name(topCellName)
             ProcessedModuleDict = self.srefModulization(flattening_dict)            # Reconstruct imported GDS
             self._QTObj._qtProject._DesignParameter[topCellName].clear()            # discard original top cell info
             topcell = self._QTObj._qtProject._DesignParameter[topCellName]
@@ -2717,7 +2742,7 @@ class _MainWindow(QMainWindow):
 
     def easyDebugMode(self):
         self._QTObj._createProject("ProjectForEasyDebug")
-        self.updateModule("EasyDebugModule")
+        self.set_module_name("EasyDebugModule")
 
 
     def get_id_return_module(self, id : str, type : str):
@@ -3533,34 +3558,34 @@ def custom_excepthook(exctype, value, traceback):
     sys._excepthook(exctype, value, traceback)
     print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
 
-class Tab_widget(QWidget):
-    def __init__(self):
-        super(Tab_widget, self).__init__()
-        self.initUI()
-        self.count=1
-
-    def initUI(self):
-        self.main_widget = _MainWindow()
-        self.main_widget.send_create_new_window_signal.connect(self.add_window)
-
-        self.tabs = QTabWidget()
-
-        vbox = QVBoxLayout()
-        vbox.addWidget(self.tabs)
-
-        self.setLayout(vbox)
-        self.resize(1920, 1080)
-        self.setWindowTitle('GUI Project')
-        self.main_widget.show()
-
-    def add_window(self):
-        if not self.isVisible():
-            self.tabs.addTab(self.main_widget, 'widget1')
-            self.show()
-        self.count += 1
-        new_tab_widget = _MainWindow()
-        new_tab_widget.send_create_new_window_signal.connect(self.add_window)
-        self.tabs.addTab(new_tab_widget,f'widget{self.count}')
+# class Tab_widget(QWidget):
+#     def __init__(self):
+#         super(Tab_widget, self).__init__()
+#         self.initUI()
+#         self.count=1
+#
+#     def initUI(self):
+#         self.main_widget = _MainWindow()
+#         self.main_widget.send_create_new_window_signal.connect(self.add_window)
+#
+#         self.tabs = QTabWidget()
+#
+#         vbox = QVBoxLayout()
+#         vbox.addWidget(self.tabs)
+#
+#         self.setLayout(vbox)
+#         self.resize(1920, 1080)
+#         self.setWindowTitle('GUI Project')
+#         self.main_widget.show()
+#
+#     def add_window(self):
+#         if not self.isVisible():
+#             self.tabs.addTab(self.main_widget, 'widget1')
+#             self.show()
+#         self.count += 1
+#         new_tab_widget = _MainWindow()
+#         new_tab_widget.send_create_new_window_signal.connect(self.add_window)
+#         self.tabs.addTab(new_tab_widget,f'widget{self.count}')
 
 
 
@@ -3569,8 +3594,8 @@ if __name__ == '__main__':
     sys.excepthook = custom_excepthook
 
     app = QApplication(sys.argv)
-    # ex = _MainWindow()
-    ex = Tab_widget()
+    ex = _MainWindow()
+    # ex = Tab_widget()
 
 
 
