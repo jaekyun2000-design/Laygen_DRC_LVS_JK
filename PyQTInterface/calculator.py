@@ -99,7 +99,7 @@ class ExpressionCalculator(QWidget):
         self.y_button = self.create_radio_button('Y',self.xy_reference_clicked)
         self.xy_button = self.create_radio_button('XY',self.xy_reference_clicked)
         self.x_button.setChecked(True)
-        if self.purpose == 'width' or self.purpose == 'height':
+        if self.purpose != 'init':
             self.xy_button.setDisabled(True)
 
         toggling_group_layout.addWidget(self.x_button)
@@ -111,7 +111,7 @@ class ExpressionCalculator(QWidget):
         edit_button = self.create_button('EDIT',self.edit_clicked, size_constraint=dict(height=35))
         export_button = self.create_button('EXPORT',self.export_clicked, size_constraint=dict(height=35))
         export_path_button = self.create_button('EXPORT FOR PATH',self.export_path_clicked, size_constraint=dict(height=35))
-        if self.purpose == 'width' or self.purpose == 'height':
+        if self.purpose != 'init':
             export_path_button.setDisabled(True)
 
         option_box_layout.addWidget(self.xy_reference_toggling_group)
@@ -190,7 +190,7 @@ class ExpressionCalculator(QWidget):
         self.XYWindow = QListWidget()
         self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
         self.XYWindow.itemClicked.connect(self.XYitemClicked)
-        if self.purpose == 'width' or self.purpose == 'height':
+        if self.purpose != 'init':
             self.XYWindow.setDisabled(True)
             self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY_disabled.png); background-position: center; background-color: rgb(255,255,255); background-attachment: fixed;")
 
@@ -996,13 +996,13 @@ class ExpressionCalculator(QWidget):
                 """
                 pass
             elif XList:
-                if self.purpose == 'width' or self.purpose == 'height':
+                if self.purpose != 'init':
                     self.send_XYCreated_signal.emit('LogicExpressionD', output)
                 else:
                     self.send_XYCreated_signal.emit('LogicExpression', output)
                 LEFlag = True
             elif YList:
-                if self.purpose == 'width' or self.purpose == 'height':
+                if self.purpose != 'init':
                     self.send_XYCreated_signal.emit('LogicExpressionD', output)
                 else:
                     self.send_XYCreated_signal.emit('LogicExpression', output)
@@ -1034,7 +1034,7 @@ class ExpressionCalculator(QWidget):
             else:
                 self.send_XYCreated_signal.emit(export_type, output)
 
-        elif self.purpose == 'width' or self.purpose == 'height':
+        elif self.purpose != 'init':
             self.send_expression_signal.emit(self.display.toPlainText(), self.purpose, output)
 
     def export_path_clicked(self):
