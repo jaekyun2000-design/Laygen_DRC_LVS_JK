@@ -81,6 +81,7 @@ class _MainWindow(QMainWindow):
     send_visibleGenState_signal = pyqtSignal(int, list)
     send_visibleCanState_signal = pyqtSignal(int, list)
     send_width_height_ast_signal = pyqtSignal(str, ast.AST)
+    send_sref_param_signal = pyqtSignal(str, ast.AST)
     send_create_new_window_signal = pyqtSignal()
 
     def __init__(self):
@@ -1219,6 +1220,7 @@ class _MainWindow(QMainWindow):
         self.ls = SetupWindow._LoadSRefWindow(purpose='main_load')
         self.ls.show()
         self.ls.send_DesignConstraint_signal.connect(self.srefCreate)
+        self.ls.send_exported_sref_signal.connect(self.createDummyConstraint)
         # self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)
         self.scene.send_xy_signal.connect(self.ls.DetermineCoordinateWithMouse)
         self.ls.send_destroy_signal.connect(self.delete_obj)
@@ -2202,6 +2204,11 @@ class _MainWindow(QMainWindow):
         dockContentFlag = True
         if type_for_dc == "LogicExpressionD":
             type_for_dc = "LogicExpression"
+            self.send_width_height_ast_signal.connect(self.vw.variable_widget.get_width_height_ast)
+            dockContentFlag = False
+        if type_for_dc == "LogicExpressionD_sref":
+            type_for_dc = "LogicExpression"
+            self.send_sref_param_signal.connect(self.ls.get_param_value_ast)
             dockContentFlag = False
         if self._QTObj._qtProject == None:
             self.warning = QMessageBox()
@@ -2229,6 +2236,9 @@ class _MainWindow(QMainWindow):
                     _ASTobj._type = 'XYCoordinate'
                     _ASTobj.info_dict = info_dict
                     self._DummyConstraints.XYDict[_newConstraintID] = info_dict
+                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                      module_name=self._CurrentModuleName,
+                                                                      _ast=_ASTobj, element_manager_update=True)
                     self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
                     self.calculator_window.send_path_row_xy_signal.emit(info_dict, _newConstraintID)
                 except:
@@ -2268,8 +2278,8 @@ class _MainWindow(QMainWindow):
                             self._DummyConstraints.XYPathDict[_newConstraintID] = info_dict
                         elif (type_for_dc == 'LogicExpression'):
                             self._DummyConstraints.ExpressionDict[_newConstraintID] = info_dict
-                            self.send_width_height_ast_signal.connect(self.vw.variable_widget.get_width_height_ast)
                             self.send_width_height_ast_signal.emit(_newConstraintID, _ASTobj)
+                            self.send_sref_param_signal.emit(_newConstraintID, _ASTobj)
                     elif type_for_dc == 'Array':
                         self._DummyConstraints.ArrayDict[_newConstraintID] = info_dict
                     #########################################################################################
@@ -3333,7 +3343,7 @@ class _CustomScene(QGraphicsScene):
             for item in itemList:
                 try:
                     if item._ItemTraits['_DesignParametertype'] == 1:
-                        if item.block[0].index[0] == len(item._ItemTraits['_XYCoordinates']) - 1:
+                        if item.block[0].index[0] == len(item._ItemTraits['_XYCoordinates']) - 1 and len(item._ItemTraits['_XYCoordinates']) != 1:
                             self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']],[-1])
                         else:
                             self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0].index])

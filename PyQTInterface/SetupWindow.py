@@ -11,6 +11,7 @@ from PyQt5.QtCore import *
 # from PyQTInterface  import LayerInfo
 from PyQTInterface.layermap  import LayerReader
 from PyQTInterface  import VisualizationItem
+from PyQTInterface import calculator
 
 from PyCodes import ASTmodule
 from PyCodes import element_ast
@@ -594,12 +595,14 @@ class _LoadSRefWindow(QWidget):
     send_DesignConstraint_signal = pyqtSignal("PyQt_PyObject")
     send_array_signal = pyqtSignal("PyQt_PyObject")
     send_destroy_signal = pyqtSignal(str)
+    send_exported_sref_signal = pyqtSignal(str, dict)
 
     def __init__(self, purpose = None, SRefElement = None):
         super().__init__()
         self.purpose = purpose
         self.create = False
         self.par_valueForLineEdit = []
+        self.par_button_for_cal = []
         self.paramDict = dict()
         self.initUI()
 
@@ -676,6 +679,7 @@ class _LoadSRefWindow(QWidget):
 
         self.parVBox1 = QVBoxLayout()
         self.parVBox2 = QVBoxLayout()
+        self.parVBox3 = QVBoxLayout()
 
         self.par_name = []
         self.par_value = []
@@ -687,13 +691,21 @@ class _LoadSRefWindow(QWidget):
             self.par_valueForLineEdit.append(QLineEdit())
             self.par_valueForLineEdit[-1].setText(str(self.par_value[-1]))
 
+            cal_button = QPushButton()
+            cal_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            cal_button.clicked.connect(self.show_cal)
+
+            self.par_button_for_cal.append(cal_button)
+
             self.parVBox1.addWidget(QLabel(self.par_name[-1]))
             self.parVBox2.addWidget(self.par_valueForLineEdit[-1])
+            self.parVBox3.addWidget(self.par_button_for_cal[-1])
 
         setupHBox1.addLayout(self.setupVboxColumn1)
         setupHBox1.addLayout(self.setupVboxColumn2)
         setupHBox2.addLayout(self.parVBox1)
         setupHBox2.addLayout(self.parVBox2)
+        setupHBox2.addLayout(self.parVBox3)
 
         hbox = QHBoxLayout()
         hbox.addStretch(2)
@@ -755,8 +767,13 @@ class _LoadSRefWindow(QWidget):
             tmp.setParent(None)
             self.parVBox2.removeWidget(tmp)
             del tmp
+            tmp = self.parVBox3.takeAt(0).widget()
+            tmp.setParent(None)
+            self.parVBox3.removeWidget(tmp)
+            del tmp
 
         self.par_valueForLineEdit = []
+        self.par_button_for_cal = []
 
         if self.cal_fcn_input.currentText() == "":
             pass
@@ -771,8 +788,15 @@ class _LoadSRefWindow(QWidget):
                 self.par_valueForLineEdit.append(QLineEdit())
                 self.par_valueForLineEdit[-1].setText(str(self.par_value[-1]))
 
+                cal_button = QPushButton()
+                cal_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+                cal_button.clicked.connect(self.show_cal)
+
+                self.par_button_for_cal.append(cal_button)
+
                 self.parVBox1.addWidget(QLabel(self.par_name[-1]))
                 self.parVBox2.addWidget(self.par_valueForLineEdit[-1])
+                self.parVBox3.addWidget(self.par_button_for_cal[-1])
 
     def DetermineCoordinateWithMouse(self, xy):
         # self.XY_input.setText(str(_MouseEvent.scenePos().toPoint().x()) + ',' + str(_MouseEvent.scenePos().toPoint().y()))
@@ -826,6 +850,23 @@ class _LoadSRefWindow(QWidget):
         elif QKeyEvent.key() == Qt.Key_Escape:
             self.destroy()
             self.send_destroy_signal.emit('ls')
+
+    def show_cal(self):
+        sender = self.sender()
+        self.cal_idx = self.par_button_for_cal.index(sender)
+
+        self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='sref')
+        self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_dummyconstraints_signal.connect(self.cal.storePreset)
+        self.cal.set_preset_window()
+        self.cal.show()
+
+    def exported_text(self, text, purpose, output_dict):
+        self.output_dict = output_dict
+        self.send_exported_sref_signal.emit('LogicExpressionD_sref', output_dict)
+
+    def get_param_value_ast(self, _id, _ast):
+        self.par_valueForLineEdit[self.cal_idx].setText(_id)
 
 class _TextSetupWindow(QWidget):
 
