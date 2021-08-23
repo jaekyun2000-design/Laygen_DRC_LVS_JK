@@ -35,6 +35,7 @@ class VariableSetupWindow(QWidget):
     send_DestroyTmpVisual_signal = pyqtSignal(str)
     send_output_dict_signal = pyqtSignal(str, dict)
     send_clicked_item_signal = pyqtSignal(list)
+    send_variable_signal = pyqtSignal(str)
     request_dummy_constraint_signal = pyqtSignal(str)
 
 
@@ -320,6 +321,13 @@ class VariableSetupWindow(QWidget):
         output_dict['flag'] = self.flag_type
 
         self.send_output_dict_signal.emit(self._edit_id, copy.deepcopy(output_dict))
+
+        if output_dict['width'] == 'Custom' and output_dict['width_input'] == '':
+            if re.search('\D+', output_dict['width_text']) is not None:
+                self.send_variable_signal.emit(output_dict['width_text'])
+        if output_dict['height'] == 'Custom' and output_dict['height_input'] == '':
+            if re.search('\D+', output_dict['height_text']) is not None:
+                self.send_variable_signal.emit(output_dict['height_text'])
 
         self.variable_widget.refresh_memory_dict()
 
