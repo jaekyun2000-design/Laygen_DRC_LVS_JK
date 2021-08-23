@@ -530,6 +530,7 @@ class _MainWindow(QMainWindow):
         self.vw.request_dummy_constraint_signal.connect(self.delivery_dummy_constraint)
         self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
         self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
+        self.vw.send_variable_signal.connect(self.send_array_variable)
 
         self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
         self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
@@ -701,6 +702,7 @@ class _MainWindow(QMainWindow):
         self.vw.request_dummy_constraint_signal.connect(self.delivery_dummy_constraint)
         self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
         self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
+        self.vw.send_variable_signal.connect(self.send_array_variable)
 
         self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
         self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
@@ -1809,6 +1811,7 @@ class _MainWindow(QMainWindow):
         self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
         self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
+        self.vw.send_variable_signal.connect(self.send_array_variable)
 
     def edit_variable(self, _edit_id, variable_info_dict, parent_dict):
         self._DummyConstraints.__dict__[parent_dict][_edit_id].clear()
@@ -2087,6 +2090,20 @@ class _MainWindow(QMainWindow):
     #     self.name_index_matching = dict()
     #     self.name_index_matching[str(equation)] = self.index_for_coordinates
 
+    def send_array_variable(self, variable):
+        if variable in self.dv.idDict:
+            self.dv.idDict[variable]['id'].append(self.new_array_id)
+        else:
+            self.cv = variableWindow._createNewDesignVariable()
+            self.cv.send_variable_signal.connect(self.dv.updateList)
+            self.cv.addDVtodict(variable, 'id', self.new_array_id)
+            self.cv.send_variable_signal.emit([variable, ''], 'add')
+
+        # try:
+        #     for var in tmpList:
+        #         if var in self.dv.idDict:
+        #             if self.new_array_id in self.dv.idDict[var]['id']:
+        #                 self.dv.idDict[var]['id'].remove(self.new_array_id)
 
     def createNewConstraint(self,_ConstraintParameter):
         if self._QTObj._qtProject == None:
@@ -2282,6 +2299,7 @@ class _MainWindow(QMainWindow):
                             self.send_sref_param_signal.emit(_newConstraintID, _ASTobj)
                     elif type_for_dc == 'Array':
                         self._DummyConstraints.ArrayDict[_newConstraintID] = info_dict
+                        self.new_array_id = _newConstraintID
                     #########################################################################################
                     print("###############################################################")
                     print(f"                  {type_for_dc} ast creation Done                    ")
