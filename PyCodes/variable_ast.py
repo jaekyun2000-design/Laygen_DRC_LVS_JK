@@ -726,10 +726,15 @@ class IrregularTransformer(ast.NodeTransformer):
             code = code + f"_DesignParameter['{object}']['_DesignObj']."
             offsets.append(code[:-15] + '[\'_XYCoordinates\']')
 
+        if re.search("\[*\]+",layer_index) and function != 'center':
+            print(f"Source '{expression}' includes Path Index: function '{function}' replaced into 'center' ")
+            function = "center"
+
+
         code = code + f"_DesignParameter['{layer}']"
         offset_x = ''
         offset_y = ''
-        offset_xy = None
+
         for i in range(len(offsets)):
             offset_x += offsets[i] + f'{offset_indices[i]}[0]'
             offset_y += offsets[i] + f'{offset_indices[i]}[1]'
@@ -737,33 +742,39 @@ class IrregularTransformer(ast.NodeTransformer):
             result = code + '[\'_XWidth\']'
         elif function == 'height':
             result = code + '[\'_YWidth\']'
+
+        if offset_x == '':
+            offset_x = '0'
+        if offset_y == '':
+            offset_y = '0'
+
         if XYFlag == 'X':
             if function == 'lt' or function == 'left' or function == 'lb':
-                result = offset_x + '+' + f"{code}['_XYCoordinates']{layer_index}[0] - {code}['_XWidth']/2"
+                result = offset_x + ' +' + f"{code}['_XYCoordinates']{layer_index}[0] - {code}['_XWidth']/2"
             elif function == 'top' or function == 'bottom' or function == 'center':
-                result = offset_x + '+' + f"{code}['_XYCoordinates']{layer_index}[0]"
+                result = offset_x + ' +' + f"{code}['_XYCoordinates']{layer_index}[0]"
             elif function == 'rt' or function == 'right' or function == 'rb':
-                result = offset_x + '+' + f"{code}['_XYCoordinates']{layer_index}[0] + {code}['_XWidth']/2"
+                result = offset_x + ' +' + f"{code}['_XYCoordinates']{layer_index}[0] + {code}['_XWidth']/2"
             else:   # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag} for Debugging")
         elif XYFlag == 'Y':
             if function == 'lt' or function == 'rt' or function == 'top':
-                result = offset_y + '+' + f"{code}['_XYCoordinates']{layer_index}[1] + {code}['_YWidth']/2"
+                result = offset_y + ' +' + f"{code}['_XYCoordinates']{layer_index}[1] + {code}['_YWidth']/2"
             elif function == function == 'left' or function == 'right' or function == 'center':
-                result = offset_y + '+' + f"{code}['_XYCoordinates']{layer_index}[1]"
+                result = offset_y + ' +' + f"{code}['_XYCoordinates']{layer_index}[1]"
             elif function == function == 'lb' or function == 'rb' or function == 'bottom':
-                result = offset_y + '+' + f"{code}['_XYCoordinates']{layer_index}[1] - {code}['_YWidth']/2"
+                result = offset_y + ' +' + f"{code}['_XYCoordinates']{layer_index}[1] - {code}['_YWidth']/2"
             else:   # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag} for Debugging")
                 pass
         elif XYFlag == 'XY':
         # X Input first
             if function == 'lt' or function == 'left' or function == 'lb':
-                result = offset_x + '+' + f"{code}['_XYCoordinates']{layer_index}[0] - {code}['_XWidth']/2"
+                result = offset_x + ' +' + f"{code}['_XYCoordinates']{layer_index}[0] - {code}['_XWidth']/2"
             elif function == function == 'top' or function == 'bottom' or function == 'center':
-                result = offset_x + '+' + f"{code}['_XYCoordinates']{layer_index}[0]"
+                result = offset_x + ' +' + f"{code}['_XYCoordinates']{layer_index}[0]"
             elif function == 'rt' or function == 'right' or function == 'rb':
-                result = offset_x + '+' + f"{code}['_XYCoordinates']{layer_index}[0] + {code}['_XWidth']/2"
+                result = offset_x + ' +' + f"{code}['_XYCoordinates']{layer_index}[0] + {code}['_XWidth']/2"
             else:   # Width or Height case
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag}_X for Debugging")
         # Y input afterwards
