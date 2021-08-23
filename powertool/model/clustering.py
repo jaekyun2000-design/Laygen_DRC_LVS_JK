@@ -163,7 +163,7 @@ class clustering():
         index = 'Custom'
         source_dp = self.get_hierarchy_item(source_reference_list[0])
         if type(source_dp) != dict:
-            warnings.warn('WARNING: Trying to inspect index by item which type is not generator.')
+            warnings.warn('WARNING: Trying to inspect index by item whose type is not generator.')
         else:
             if len(source_dp['_XYCoordinates']) == len(qt_dp_list):
                 index = 'All'
