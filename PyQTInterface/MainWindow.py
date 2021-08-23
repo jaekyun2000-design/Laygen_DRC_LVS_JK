@@ -2211,6 +2211,9 @@ class _MainWindow(QMainWindow):
                     _ASTobj._type = 'XYCoordinate'
                     _ASTobj.info_dict = info_dict
                     self._DummyConstraints.XYDict[_newConstraintID] = info_dict
+                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                      module_name=self._CurrentModuleName,
+                                                                      _ast=_ASTobj, element_manager_update=True)
                     self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
                     self.calculator_window.send_path_row_xy_signal.emit(info_dict, _newConstraintID)
                 except:
