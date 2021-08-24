@@ -590,7 +590,8 @@ class _VisualizationItem(QGraphicsItemGroup):
             if tmpLayer == None:
                 pass
             else:
-                self._subElementLayer[tmpLayer].remove(self)
+                if tmpLayer in self._subElementLayer:
+                    self._subElementLayer[tmpLayer].remove(self)
                 self._subElementLayer[layer].append(self)
 
             self.block.append(tmpBlock)
