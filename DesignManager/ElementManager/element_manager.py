@@ -162,11 +162,11 @@ class ElementManager:
                             tmpDP[key] = ast.XY
                     # tmpDP[key] = ast.XY
                 elif key == '_XWidth':
-                    if re.search('\D+^.', ast.__dict__['width']) is None:
+                    if re.search('\D+^.', str(ast.__dict__['width'])) is None:
                         tmpDP[key] = ast.__dict__['width']
                     # tmpDP[key] = ast.__dict__['width']
                 elif key == '_YWidth':
-                    if re.search('\D+^.', ast.__dict__['height']) is None:
+                    if re.search('\D+^.', str(ast.__dict__['height'])) is None:
                         tmpDP[key] = ast.__dict__['height']
                     # tmpDP[key] = ast.__dict__['height']
                 elif key == '_Ignore':
@@ -198,7 +198,7 @@ class ElementManager:
                             tmpDP[key] = ast.__dict__['XY']
                     # tmpDP[key] = ast.__dict__['XY']
                 elif key == '_Width':
-                    if re.search('\D+^.', ast.__dict__['width']) is None:
+                    if re.search('\D+^.', str(ast.__dict__['width'])) is None:
                         tmpDP[key] = ast.__dict__['width']
                     # tmpDP[key] = ast.__dict__['width']
                 elif key == '_Color':
