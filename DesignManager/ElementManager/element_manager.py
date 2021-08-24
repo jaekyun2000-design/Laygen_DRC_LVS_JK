@@ -156,7 +156,7 @@ class ElementManager:
                     contain_variable = False
                     if type(ast.XY) == list:
                         for idx in range(len(ast.XY)):
-                            if re.search('\D+^.', ast.XY[idx][0]) is not None or re.search('\D+^.', ast.XY[idx][1]) is not None:
+                            if re.search('\D+^.', str(ast.XY[idx][0])) is not None or re.search('\D+^.', str(ast.XY[idx][1])) is not None:
                                 contain_variable = True
                         if not contain_variable:
                             tmpDP[key] = ast.XY
@@ -192,7 +192,7 @@ class ElementManager:
                     if type(ast.XY) == list:
                         for i in range(len(ast.__dict__['XY'])):
                             for j in range(len(ast.__dict__['XY'][i])):
-                                if re.search('\D+^.', ast.__dict__['XY'][i][j][0]) is not None or re.search('\D+^.', ast.__dict__['XY'][i][j][1]) is not None:
+                                if re.search('\D+^.', str(ast.__dict__['XY'][i][j][0])) is not None or re.search('\D+^.', str(ast.__dict__['XY'][i][j][1])) is not None:
                                     contain_variable = True
                         if not contain_variable:
                             tmpDP[key] = ast.__dict__['XY']
