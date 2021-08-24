@@ -587,7 +587,13 @@ class _MainWindow(QMainWindow):
             seleceted_item.setSelected(False)
         dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
         if dp_id:
-            self.visualItemDict[dp_id].setSelected(True)
+            try:
+                self.visualItemDict[dp_id].setSelected(True)
+            except:
+                self.warning = QMessageBox()
+                self.warning.setText("Corresponding element is not in the dictionary!")
+                self.warning.show()
+
 
     def change_process(self):
         self.process_list_widget = QListWidget()
@@ -1879,12 +1885,6 @@ class _MainWindow(QMainWindow):
                     self.edit_variable(_edit_id, variable_info_dict, _dict)
                     return
         self.createDummyConstraint(type_for_dc = 'Array', info_dict= variable_info_dict)
-
-        # if self._edit_id is None:
-        #     self.createDummyConstraint(type_for_dc = 'Array', info_dict= variable_info_dict)
-        # else:
-        #     create가 아닌 edit으로
-
 
     def createVariableVisual(self, variableVisualItem):
         design_dict = self._QTObj._qtProject._feed_design(design_type='parameter', module_name= self._CurrentModuleName, dp_dict= variableVisualItem.__dict__)
