@@ -1141,6 +1141,7 @@ class _MainWindow(QMainWindow):
             file = open('./tmp.gds','wb')
             stream_data.write_binary_gds_stream(file)
             file.close()
+
             #
             # module = self._CurrentModuleName
             # topAST = self._QTObj._qtProject._ParseTreeForDesignConstrain[module]._ast
@@ -1210,7 +1211,11 @@ class _MainWindow(QMainWindow):
                     self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=dp_name, dc_id=dc_id)
 
                 print(dp_dict)
-
+            if not code:
+                constraint_names = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
+                constraint_ids = [item.text() for item in constraint_names]
+                for _id in constraint_ids:
+                    self.dockContentWidget3.set_errored_constraint_id(_id, 'clean')
 
         except:
             working_code = self.debugConstraint()
