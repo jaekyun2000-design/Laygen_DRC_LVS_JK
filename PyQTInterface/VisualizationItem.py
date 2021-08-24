@@ -497,13 +497,12 @@ class _VisualizationItem(QGraphicsItemGroup):
 
         try:
             remove_item_list = []
-            # for i in range(0,len(self.block)):
-            # for child in self.childItems():
-            #     self.removeFromGroup(child)
-            #     remove_item_list.append(child)
             for i in range(0,len(self.block)):
-                remove_item_list.append(self.block[i])
+                # remove_item_list.append(self.block[i])
                 self.removeFromGroup(self.block[i])
+            for child in self.childItems():
+                # self.removeFromGroup(child)
+                remove_item_list.append(child)
             if self._ItemTraits['_DesignParametertype'] == 1:
                 self.block = []
                 for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
