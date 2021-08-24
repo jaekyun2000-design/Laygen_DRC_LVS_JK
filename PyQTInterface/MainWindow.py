@@ -754,7 +754,15 @@ class _MainWindow(QMainWindow):
         elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
             self.vw.variable_type = 'path_array'
         elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 3:
+            library = self.visualItemDict[array_list[0]]._ItemTraits['library']
+            className = self.visualItemDict[array_list[0]]._ItemTraits['className']
+            if 'calculate_fcn' in self.visualItemDict[array_list[0]]._ItemTraits:
+                calculate_fcn = self.visualItemDict[array_list[0]]._ItemTraits['calculate_fcn']
+            else:
+                calculate_fcn = None
+            parameters = self.visualItemDict[array_list[0]]._ItemTraits['parameters']
             self.vw.variable_type = 'sref_array'
+            self.vw.variable_widget.field_value_memory_dict['sref_item_dict'] = {'library':library, 'className':className, 'calculate_fcn':calculate_fcn, 'parameters':parameters}
 
         self.vw.group_list = group_ref
         self.vw.inspect_array_window_address = self.array_list_widget
