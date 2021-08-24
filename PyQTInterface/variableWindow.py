@@ -640,7 +640,7 @@ class variableContentWidget(QWidget):
         return output_layout
 
     def show_sref_load(self):
-        if self.field_value_memory_dict['sref_item'] == '':
+        if self.field_value_memory_dict['sref_item_dict'] == {}:
             self.ls = SetupWindow._LoadSRefWindow(purpose='array_load')
         else:
             self.ls = SetupWindow._LoadSRefWindow(purpose='array_load', SRefElement=self.field_value_memory_dict['sref_item_dict'])

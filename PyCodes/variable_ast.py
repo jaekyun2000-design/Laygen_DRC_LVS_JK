@@ -726,7 +726,7 @@ class IrregularTransformer(ast.NodeTransformer):
             code = code + f"_DesignParameter['{object}']['_DesignObj']."
             offsets.append(code[:-15] + '[\'_XYCoordinates\']')
 
-        if re.search("\[*\]+",layer_index) and function != 'center':
+        if re.search("\[.+\][\[.+\]]+",layer_index) and function != 'center':
             print(f"Source '{expression}' includes Path Index: function '{function}' replaced into 'center' ")
             function = "center"
 
