@@ -530,6 +530,7 @@ class _MainWindow(QMainWindow):
         self.vw.request_dummy_constraint_signal.connect(self.delivery_dummy_constraint)
         self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
         self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
+        self.vw.send_variable_signal.connect(self.send_array_variable)
 
         self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
         self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
@@ -641,12 +642,44 @@ class _MainWindow(QMainWindow):
                     self.scene.removeItem(rm_item)
                     del rm_item
 
-                print('Process Changed!')
-                self.message = QMessageBox()
-                self.message.setText("Process Changed!")
-                self.message.setInformativeText(f"Technology was changed from {user_setup._Technology} to {technology_name}.")
-                self.message.show()
-                self.process_list_widget.close()
+                def min_snap_change():
+                    user_setup.MIN_SNAP_SPACING = spin_box.value()
+                    self.min_snap_spacing_change.close()
+                    print('Process Changed!')
+                    self.message = QMessageBox()
+                    self.message.setText("Process Changed!")
+                    self.message.setInformativeText(
+                        f"Technology was changed from {user_setup._Technology} to {technology_name}.")
+                    self.message.show()
+                    self.process_list_widget.close()
+
+                min_snap_before = user_setup.MIN_SNAP_SPACING
+
+                self.min_snap_spacing_change = QWidget()
+
+                label = QLabel('Minimum spacing option :')
+
+                spin_box = QSpinBox()
+                spin_box.setValue(min_snap_before)
+                spin_box.setMinimum(1)
+                spin_box.setSingleStep(1)
+
+                ok_button = QPushButton()
+                ok_button.setText('OK')
+                ok_button.clicked.connect(min_snap_change)
+
+                hbox1 = QHBoxLayout()
+                hbox2 = QHBoxLayout()
+                vbox = QVBoxLayout()
+                hbox1.addWidget(label)
+                hbox1.addWidget(spin_box)
+                hbox2.addStretch(3)
+                hbox2.addWidget(ok_button)
+                vbox.addLayout(hbox1)
+                vbox.addLayout(hbox2)
+                self.min_snap_spacing_change.setLayout(vbox)
+
+                self.min_snap_spacing_change.show()
 
     def warning_invalid_layer(self, layer_name):
         self.warning_widget = QtWarningMsg(f"Not valid layer: {layer_name}")
@@ -676,6 +709,12 @@ class _MainWindow(QMainWindow):
     def inspect_array(self):
         inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
         output = inspector.inspect()
+        if output == None:
+            self.warning = QMessageBox()
+            self.warning.setText("Unable to recognize Array References; Rearrange the design appropriately!"
+                                 "\nDebug: clustering.py, method find_ref")
+            self.warning.show()
+            return
         groups_list = output['group_list']
         self.reference_list = output['reference_list']
 
@@ -701,6 +740,7 @@ class _MainWindow(QMainWindow):
         self.vw.request_dummy_constraint_signal.connect(self.delivery_dummy_constraint)
         self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
         self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
+        self.vw.send_variable_signal.connect(self.send_array_variable)
 
         self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
         self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
@@ -714,7 +754,15 @@ class _MainWindow(QMainWindow):
         elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
             self.vw.variable_type = 'path_array'
         elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 3:
+            library = self.visualItemDict[array_list[0]]._ItemTraits['library']
+            className = self.visualItemDict[array_list[0]]._ItemTraits['className']
+            if 'calculate_fcn' in self.visualItemDict[array_list[0]]._ItemTraits:
+                calculate_fcn = self.visualItemDict[array_list[0]]._ItemTraits['calculate_fcn']
+            else:
+                calculate_fcn = None
+            parameters = self.visualItemDict[array_list[0]]._ItemTraits['parameters']
             self.vw.variable_type = 'sref_array'
+            self.vw.variable_widget.field_value_memory_dict['sref_item_dict'] = {'library':library, 'className':className, 'calculate_fcn':calculate_fcn, 'parameters':parameters}
 
         self.vw.group_list = group_ref
         self.vw.inspect_array_window_address = self.array_list_widget
@@ -1809,6 +1857,7 @@ class _MainWindow(QMainWindow):
         self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
         self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
         self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
+        self.vw.send_variable_signal.connect(self.send_array_variable)
 
     def edit_variable(self, _edit_id, variable_info_dict, parent_dict):
         self._DummyConstraints.__dict__[parent_dict][_edit_id].clear()
@@ -2087,6 +2136,20 @@ class _MainWindow(QMainWindow):
     #     self.name_index_matching = dict()
     #     self.name_index_matching[str(equation)] = self.index_for_coordinates
 
+    def send_array_variable(self, variable):
+        if variable in self.dv.idDict:
+            self.dv.idDict[variable]['id'].append(self.new_array_id)
+        else:
+            self.cv = variableWindow._createNewDesignVariable()
+            self.cv.send_variable_signal.connect(self.dv.updateList)
+            self.cv.addDVtodict(variable, 'id', self.new_array_id)
+            self.cv.send_variable_signal.emit([variable, ''], 'add')
+
+        # try:
+        #     for var in tmpList:
+        #         if var in self.dv.idDict:
+        #             if self.new_array_id in self.dv.idDict[var]['id']:
+        #                 self.dv.idDict[var]['id'].remove(self.new_array_id)
 
     def createNewConstraint(self,_ConstraintParameter):
         if self._QTObj._qtProject == None:
@@ -2282,6 +2345,7 @@ class _MainWindow(QMainWindow):
                             self.send_sref_param_signal.emit(_newConstraintID, _ASTobj)
                     elif type_for_dc == 'Array':
                         self._DummyConstraints.ArrayDict[_newConstraintID] = info_dict
+                        self.new_array_id = _newConstraintID
                     #########################################################################################
                     print("###############################################################")
                     print(f"                  {type_for_dc} ast creation Done                    ")

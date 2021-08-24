@@ -29,7 +29,10 @@ class array_inspector(inspector):
     def inspect(self):
         group_list = self.cluster_model.get_array_groups()
         reference_list = self.cluster_model.find_ref(group_list)
-        return dict(group_list = group_list, reference_list=reference_list)
+        if reference_list == None:
+            return
+        else:
+            return dict(group_list = group_list, reference_list=reference_list)
 
     def get_all_connection_info(self):
         return self.cluster_model.get_routing_groups()

@@ -3846,6 +3846,7 @@ class _ModuleManageWidget(QWidget):
         selectButton.clicked.connect(self.on_selectBox_accepted)
 
         self.manageListWidget = QListWidget()
+        self.manageListWidget.itemDoubleClicked.connect(self.item_double_clicked)
 
         hbox = QHBoxLayout()
         hbox.addStretch(2)
@@ -3878,6 +3879,10 @@ class _ModuleManageWidget(QWidget):
             self.send_ModuleName_signal.emit(self.manageListWidget.currentItem().text())        #Current Module Name emit!!
         except:
             print("no module is selected")
+        self.destroy()
+
+    def item_double_clicked(self, double_clicked_item):
+        self.send_ModuleName_signal.emit(double_clicked_item.text())        #Current Module Name emit!!
         self.destroy()
 
     def on_createBox_accepted(self):
