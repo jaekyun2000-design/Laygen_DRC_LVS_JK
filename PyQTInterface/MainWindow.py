@@ -1032,7 +1032,7 @@ class _MainWindow(QMainWindow):
             error_id = None
             for _id in constraint_ids:
                 error_id = _id
-                topAST.body.append(self._QTObj._qtProject._DesignConstraint[module][_id]._ast)
+                topAST.body.append(copy.deepcopy(self._QTObj._qtProject._DesignConstraint[module][_id]._ast))
                 result_ast = variable_ast.IrregularTransformer(self._DummyConstraints).visit(topAST)
                 result_ast = element_ast.ElementTransformer().visit(result_ast)
                 result_ast = variable_ast.VariableTransformer().visit(result_ast)
