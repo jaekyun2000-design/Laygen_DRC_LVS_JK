@@ -1,4 +1,5 @@
 import ast
+import re
 import warnings
 
 from PyCodes import element_ast, variable_ast
@@ -152,11 +153,22 @@ class ElementManager:
                 elif key == '_DesignParametertype':
                     tmpDP[key] = 1
                 elif key == '_XYCoordinates':
-                    tmpDP[key] = ast.XY
+                    contain_variable = False
+                    if type(ast.XY) == list:
+                        for idx in range(len(ast.XY)):
+                            if re.search('\D+', ast.XY[idx][0]) is not None or re.search('\D+', ast.XY[idx][1]) is not None:
+                                contain_variable = True
+                        if not contain_variable:
+                            tmpDP[key] = ast.XY
+                    # tmpDP[key] = ast.XY
                 elif key == '_XWidth':
-                    tmpDP[key] = ast.__dict__['width']
+                    if re.search('\D+', ast.__dict__['width']) is None:
+                        tmpDP[key] = ast.__dict__['width']
+                    # tmpDP[key] = ast.__dict__['width']
                 elif key == '_YWidth':
-                    tmpDP[key] = ast.__dict__['height']
+                    if re.search('\D+', ast.__dict__['height']) is None:
+                        tmpDP[key] = ast.__dict__['height']
+                    # tmpDP[key] = ast.__dict__['height']
                 elif key == '_Ignore':
                     tmpDP[key] = None
                 elif key == '_ElementName':
@@ -176,9 +188,19 @@ class ElementManager:
                 elif key == '_DesignParametertype':
                     tmpDP[key] = 2
                 elif key == '_XYCoordinates':
-                    tmpDP[key] = ast.__dict__['XY']
+                    contain_variable = False
+                    if type(ast.XY) == list:
+                        for i in range(len(ast.__dict__['XY'])):
+                            for j in range(len(ast.__dict__['XY'][i])):
+                                if re.search('\D+', ast.__dict__['XY'][i][j][0]) is not None or re.search('\D+', ast.__dict__['XY'][i][j][1]) is not None:
+                                    contain_variable = True
+                        if not contain_variable:
+                            tmpDP[key] = ast.__dict__['XY']
+                    # tmpDP[key] = ast.__dict__['XY']
                 elif key == '_Width':
-                    tmpDP[key] = ast.__dict__['width']
+                    if re.search('\D+', ast.__dict__['width']) is None:
+                        tmpDP[key] = ast.__dict__['width']
+                    # tmpDP[key] = ast.__dict__['width']
                 elif key == '_Color':
                     tmpDP[key] = None
                 elif key == '_ItemRef':
@@ -199,7 +221,14 @@ class ElementManager:
                 elif key == 'className':
                     tmpDP[key] = ast.__dict__['className']
                 elif key == 'XY':
-                    tmpDP['_XYCoordinates'] = ast.__dict__['XY']
+                    contain_variable = False
+                    if type(ast.__dict__['XY']) == list:
+                        for idx in range(len(ast.__dict__['XY'])):
+                            if re.search('\D+', ast.__dict__['XY'][idx][0]) is not None or re.search('\D+', ast.__dict__['XY'][idx][1]) is not None:
+                                contain_variable = True
+                        if not contain_variable:
+                            tmpDP[key] = ast.__dict__['XY']
+                    # tmpDP['_XYCoordinates'] = ast.__dict__['XY']
                 elif key == 'calculate_fcn':
                     tmpDP[key] = ast.__dict__['calculate_fcn']
                 elif key == 'parameters':
