@@ -66,6 +66,7 @@ class QtDesignParameter:
                 pass
         else:
             if '_LayerUnifiedName' in self._DesignParameter:
+                print(LayerReader._LayerMapping)
                 self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
                 self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
 
@@ -944,6 +945,8 @@ class QtProject:
                         self._createNewDesignParameter(_id=_tmpId, _type=8, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                             "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
+                        self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                            "_Datatype"] = _tmpElement._ELEMENTS._TEXTBODY._TEXTTYPE.texttype
                         for _tmpXYCoordinate in _tmpElement._ELEMENTS._TEXTBODY._XY.xy:
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                 "_XYCoordinates"].append(_tmpXYCoordinate)

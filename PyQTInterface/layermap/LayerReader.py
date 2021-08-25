@@ -941,6 +941,21 @@ def run_for_process_update():
     if _Technology == 'SS28nm':
         _LayerMapping.update({'M1PIN': _LayerMappingTmp[('M1', 'pin')]})
 
+    print('#########################   text Layer Mapping    #################################')
+
+    if _Technology == 'TSMC180nm':
+        _LayerMapping.update({'text': (None, None)})
+    elif _Technology == 'TSMC65nm':
+        _LayerMapping.update({'text': _LayerMappingTmp[('text', 'drawing')]})
+    elif _Technology == 'TSMC40nm':
+        _LayerMapping.update({'text': _LayerMappingTmp[('text', 'drawing')]})
+    elif _Technology == 'TSMC90nm':
+        _LayerMapping.update({'text': _LayerMappingTmp[('text', 'drawing')]})
+    elif _Technology == 'TSMC130nm':
+        _LayerMapping.update({'text': (None, None)})
+    elif _Technology == 'TSMC350nm':
+        _LayerMapping.update({'text': (None, None)})
+
     _LayerMapFile.close()
 
     _LayerName_unified = _LayerNumber2UnifiedLayerName(_LayerMapping)
