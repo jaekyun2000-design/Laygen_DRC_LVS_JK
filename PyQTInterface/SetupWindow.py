@@ -2604,6 +2604,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 error_element = exception.args[0]
                 error_log = f'Trying to refer not valid key: {error_element} \n'
                 # error_log += f'Orignal error log: {error_line}'
+            elif error_type in ['NameError']:
+                error_element = re.search("\'.+\'",exception.args[0]).group()
+                error_log = f'Variable {error_element} was not defined'
             else:
                 # error_element = re.search("\'.+\'", exception.args[0]).group()
                 # error_log = f'Error found at: {error_element} \n'
@@ -2622,6 +2625,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             elif error_flag == 'clean':
                 self.model.setData(index, QBrush(Qt.white), Qt.BackgroundRole)
                 item.setToolTip(None)
+            elif error_flag == 'no_value':
+                self.model.setData(index, QBrush(Qt.yellow), Qt.BackgroundRole)
+                item.setToolTip(error_log)
 
 
     def mouseDoubleClickEvent(self, QMouseEvent):

@@ -278,7 +278,7 @@ class GDS2Generator():
     def run_qt_constraint_ast(self):
         #add libraries
         # self.root_cell.library_import(self.libraries)
-        user_variable_sentence = ",".join([f'{variable_dict["DV"]}={variable_dict["value"]}' for variable_dict in self.user_variables])
+        user_variable_sentence = ",".join([f'{variable_dict["DV"]}={variable_dict["value"] if variable_dict["value"] != "" else None}' for variable_dict in self.user_variables])
         fcn_define_code = 'def _CalculateDesignParameter(self,' + user_variable_sentence + '):\n\tpass'
         tmp_ast = ast.parse(fcn_define_code)
         self.code = f'_Name="{self.class_name}"\n' + self.code
