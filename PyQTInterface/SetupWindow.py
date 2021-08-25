@@ -2726,6 +2726,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         if StringValue == None or StringValue == "" or StringValue == "*":
             return
 
+        if Field == 'id':
+            return
+
         tmpChildModule = re.sub(r'\d','',StringValue)
         if tmpChildModule in self._DesignConstraintFromQTobj:                        #Check whether it is constraint or not
             if StringValue in self._DesignConstraintFromQTobj[tmpChildModule]:
