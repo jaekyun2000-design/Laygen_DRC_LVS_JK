@@ -227,14 +227,21 @@ class GeometricField:
             xy_points = dp['_XYCoordinatesProjection']
             x_min, x_max, y_min, y_max = min([xy[0] for xy in xy_points]), max([xy[0] for xy in xy_points]), min([xy[1] for xy in xy_points]), max([xy[1] for xy in xy_points])
         elif dp['_DesignParametertype'] == 2:
-            #TODO
-            #path case update
-            if len(dp['_XYCoordinates'][0]) != 2:
-                return None
-            # x_min, x_max, y_min, y_max = dp['_XYCoordinates'][0][0][0], dp['_XYCoordinates'][0][-1][0], dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1]
-            x_min, x_max, y_min, y_max = dp['_XYCoordinates'][0][0][0]-dp['_Width'], dp['_XYCoordinates'][0][0][0]+dp['_Width'], \
-                                         min(dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1]),\
-                                         max(dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1])
+            try:
+                intersection_point_list = self.search_path_intersection_points(dp)
+                intersected_dp_hierarchy_names = [double_list[0] for double_list in intersection_point_list if double_list]
+                intersected_dp_hierarchy_names.insert(0, dp)
+                return intersected_dp_hierarchy_names
+            except:
+                print('db')
+            # #TODO
+            # #path case update
+            # if len(dp['_XYCoordinates'][0]) != 2:
+            #     return None
+            # # x_min, x_max, y_min, y_max = dp['_XYCoordinates'][0][0][0], dp['_XYCoordinates'][0][-1][0], dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1]
+            # x_min, x_max, y_min, y_max = dp['_XYCoordinates'][0][0][0]-dp['_Width'], dp['_XYCoordinates'][0][0][0]+dp['_Width'], \
+            #                              min(dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1]),\
+            #                              max(dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1])
 
         vertical_tree = IST(direction='vertical')
         for x_intersection_dp in sorted(self.interval_tree_by_layer[dp['_Layer']][x_min:x_max+1]):

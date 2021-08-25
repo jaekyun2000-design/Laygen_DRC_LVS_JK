@@ -9,15 +9,19 @@ class FileSaveFormat:
         self.user_variables = []
         self.user_variables_ids = []
         self.variable_store_list = []
+        self.module_list = []
+        self.module_save_file_dict = dict()
         self._DummyConstraints = None
 
-    def save_from_qt_interface(self, main_window):
+    def save_from_qt_interface(self, main_window, sub_module=True):
         self.top_module = main_window._CurrentModuleName
         self.save_constraint_tree_info(main_window)
         if 'dv' in main_window.__dict__:
             self.save_user_variable_info(main_window)
         self.save_extra_ast_info(main_window)
         self.save_calculator_extra_info()
+        if sub_module:
+            self.save_module_info(main_window)
 
 
 
@@ -42,12 +46,22 @@ class FileSaveFormat:
     def save_calculator_extra_info(self):
         self.presetDict = calculator.ExpressionCalculator.presetDict
 
+    def save_module_info(self, main_window):
+        self.module_list = list(filter(lambda element_name: element_name != self.top_module, main_window.module_name_list))
+        for module_name in self.module_list:
+            if module_name == self.top_module:
+                continue
+            save_file = FileSaveFormat()
+            save_file.save_from_qt_interface(main_window.module_dict[module_name], False)
+            self.module_save_file_dict[module_name] = save_file
+
     def load_qt_interface(self,main_window, _DesignConstraint):
         main_window._CurrentModuleName = self.top_module
         self.load_from_constraint_tree_info(main_window, _DesignConstraint)
         self.load_user_variable_info(main_window)
         self.load_extra_ast_info(main_window)
         self.load_calculator_extra_info()
+        self.load_module_info()
 
     def load_from_constraint_tree_info(self,main_window, _DesignConstraint):
         if 'id_items_for_run' not in self.__dict__:
@@ -94,3 +108,12 @@ class FileSaveFormat:
 
     def load_calculator_extra_info(self):
         calculator.ExpressionCalculator.presetDict = self.presetDict
+
+    def load_module_info(self):
+        if self.module_list:
+            for module in self.module_list:
+                if module not in self.module_save_file_dict:
+                    raise Exception(f'{module} info file does not exist.')
+                #TODO complete code after developing new_main_windw fcn
+                self.module_save_file_dict[module]
+

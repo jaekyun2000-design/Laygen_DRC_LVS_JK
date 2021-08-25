@@ -1152,6 +1152,40 @@ class _MainWindow(QMainWindow):
         result_ast = variable_ast.VariableTransformer().visit(result_ast)
         return result_ast
 
+    def debug_not_defined_variables(self):
+        self.dockContentWidget3.blockSignals(True)
+        user_variables = variableWindow._createNewDesignVariable.variableDict.values()
+        has_value_variable_list = list(filter(lambda x: x['value'] != '', user_variables))
+
+        try:
+            debugger_gds2gen = topAPI.gds2generator.GDS2Generator(True)
+            debugger_gds2gen.load_qt_project(self)
+            debugger_gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter, self._CurrentModuleName)
+
+            debugger_gds2gen.user_variables = has_value_variable_list
+
+            module = self._CurrentModuleName
+            constraint_names = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
+            constraint_ids = [item.text() for item in constraint_names]
+            ast_list = []
+            for _id in constraint_ids:
+                error_id = _id
+                ast_list.append(self._QTObj._qtProject._DesignConstraint[module][_id]._ast)
+                result_ast = self.transform_constraints(ast_list)
+                code = astunparse.unparse(result_ast)
+                debugger_gds2gen.load_qt_design_constraints_code(code)
+                debugger_gds2gen.set_root_cell(self._CurrentModuleName)
+                debugger_gds2gen.run_qt_constraint_ast()
+                self.dockContentWidget3.set_errored_constraint_id(_id, 'clean')
+        except Exception as e:
+            error_log = traceback.format_exc()
+            self.dockContentWidget3.set_errored_constraint_id(error_id, 'no_value', error_log, e)
+            error_variable_name = re.search("\'.+\'", e.args[0]).group()
+            self.dockContentWidget3.blockSignals(False)
+            return error_variable_name
+        self.dockContentWidget3.blockSignals(False)
+        return None
+
     def debugConstraint(self):
         '''
         Run-time debugger for generator constraints.
@@ -1182,7 +1216,11 @@ class _MainWindow(QMainWindow):
         except Exception as e:
             error_log = traceback.format_exc()
             self.dockContentWidget3.set_errored_constraint_id(error_id, 'dynamic', error_log, e)
-            return working_code
+            self.dockContentWidget3.blockSignals(False)
+            if 'working_code' in locals():
+                return working_code
+            else:
+                return None
         self.dockContentWidget3.blockSignals(False)
         return None
 
@@ -1286,7 +1324,7 @@ class _MainWindow(QMainWindow):
             gds2gen = topAPI.gds2generator.GDS2Generator(False)
             gds2gen.load_qt_project(self)
             gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter, self._CurrentModuleName)
-            gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
+            # gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
             if code:
                 gds2gen.load_qt_design_constraints_code(code)
             else:
@@ -1339,6 +1377,13 @@ class _MainWindow(QMainWindow):
                 constraint_ids = [item.text() for item in constraint_names]
                 for _id in constraint_ids:
                     self.dockContentWidget3.set_errored_constraint_id(_id, 'clean')
+
+                error_variable_name = self.debug_not_defined_variables()
+                if error_variable_name:
+                    self.warningbox = QMessageBox()
+                    self.warningbox.setText(f"Variable {error_variable_name} was used at generator but not defined.")
+                    self.warningbox.setIcon(QMessageBox.Warning)
+                    self.warningbox.show()
 
         except:
             working_code = self.debugConstraint()
