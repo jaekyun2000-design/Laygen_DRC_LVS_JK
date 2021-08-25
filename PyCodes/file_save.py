@@ -51,17 +51,20 @@ class FileSaveFormat:
         for module_name in self.module_list:
             if module_name == self.top_module:
                 continue
-            save_file = FileSaveFormat()
-            save_file.save_from_qt_interface(main_window.module_dict[module_name], False)
-            self.module_save_file_dict[module_name] = save_file
+            tmp_save_form = FileSaveFormat()
+            tmp_save_form.save_from_qt_interface(main_window.module_dict[module_name], False)
+            main_window.module_dict[module_name]._QTObj._qtProject.tmp_save_file = tmp_save_form
+            save_project = main_window.module_dict[module_name]._QTObj._qtProject
+            self.module_save_file_dict[module_name] = save_project
 
-    def load_qt_interface(self,main_window, _DesignConstraint):
+    def load_qt_interface(self,main_window, _DesignConstraint, sub_module=True):
         main_window._CurrentModuleName = self.top_module
         self.load_from_constraint_tree_info(main_window, _DesignConstraint)
         self.load_user_variable_info(main_window)
         self.load_extra_ast_info(main_window)
         self.load_calculator_extra_info()
-        self.load_module_info()
+        if sub_module:
+            self.load_module_info(main_window)
 
     def load_from_constraint_tree_info(self,main_window, _DesignConstraint):
         if 'id_items_for_run' not in self.__dict__:
@@ -109,11 +112,22 @@ class FileSaveFormat:
     def load_calculator_extra_info(self):
         calculator.ExpressionCalculator.presetDict = self.presetDict
 
-    def load_module_info(self):
+    def load_module_info(self, main_window):
+        from PyQTInterface import MainWindow
         if self.module_list:
+            main_window.module_name_list = self.module_list
             for module in self.module_list:
                 if module not in self.module_save_file_dict:
                     raise Exception(f'{module} info file does not exist.')
                 #TODO complete code after developing new_main_windw fcn
-                self.module_save_file_dict[module]
+                main_window.module_dict[module] = MainWindow._MainWindow()
+                main_window.module_dict[module]._QTObj._qtProject = self.module_save_file_dict[module]
+                dc = main_window.module_dict[module]._QTObj._qtProject._DesignConstraint
+                main_window.module_dict[module]._QTObj._qtProject.tmp_save_file.load_qt_interface(main_window,dc,False)
+                top_module = main_window.module_dict[module]._QTObj._qtProject.tmp_save_file.top_module
+                if top_module in main_window.module_dict[module]._QTObj._qtProject._DesignParameter:
+                    for id_name, qt_parameter in main_window.module_dict[module]._QTObj._qtProject._DesignParameter[top_module].items():
+                        vs_item = main_window.module_dict[module].createVisualItemfromDesignParameter(qt_parameter)
+                        vs_item._CreateFlag = False
+                        main_window.module_dict[module].updateGraphicItem(vs_item)
 
