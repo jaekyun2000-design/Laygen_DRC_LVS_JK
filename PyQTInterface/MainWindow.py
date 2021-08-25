@@ -230,7 +230,7 @@ class _MainWindow(QMainWindow):
         auto_tech_process_change_action.triggered.connect(self.change_process)
 
         debug_new_window_action.setShortcut('Ctrl+9')
-        debug_new_window_action.triggered.connect(self.debug)
+        debug_new_window_action.triggered.connect(self.new_main_window)
 
         automation_menu = menubar.addMenu("&Automation")
         automation_menu.setObjectName("top_menu_widget")
@@ -546,7 +546,7 @@ class _MainWindow(QMainWindow):
 
         print("******************************Initializing Graphic Interface Complete")
 
-    def debug(self):
+    def new_main_window(self):
         selected_items = self.scene.selectedItems()
         if len(selected_items) != 1:
             self.warning = QMessageBox()
@@ -564,15 +564,129 @@ class _MainWindow(QMainWindow):
                 # tmp_module_name = 'test'
                 self.module_name_list.append(tmp_module_name)
                 self.module_dict[tmp_module_name] = _MainWindow()
-                selected_vs_item = VisualizationItem._VisualizationItem(selected_item._ItemTraits)
-                self.module_dict[tmp_module_name].scene.addItem(selected_vs_item)
+                new_project = self.module_dict[tmp_module_name]
+                selected_qt_dp = copy.deepcopy(
+                    self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][tmp_module_name])
+                new_project._QTObj._qtProject._DesignParameter = selected_qt_dp._DesignParameter['_ModelStructure']
+
                 self.module_dict[tmp_module_name].set_module_name(tmp_module_name)
                 self.module_dict[tmp_module_name].show()
                 self.module_dict[tmp_module_name].module_dict = self.module_dict
                 self.module_dict[tmp_module_name].module_name_list = self.module_name_list
 
+                visual_item_list = []
+                for elementID, qtdp in selected_qt_dp._DesignParameter['_ModelStructure'].items():
+                    try:
+                        tmpAST = new_project._QTObj._qtProject._ElementManager.get_dp_return_ast(qtdp)
+                    except:
+                        traceback.print_exc()
+                        return
+                    if tmpAST == None:
+                        continue
+                    design_dict = new_project._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                      module_name=tmp_module_name,
+                                                                      _ast=tmpAST, element_manager_update=False)
+                    new_project.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                     _parentName=tmp_module_name,
+                                                                     _DesignConstraint=new_project._QTObj._qtProject._DesignConstraint)
+                    new_project._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=elementID,
+                                                                         dc_id=design_dict['constraint_id'])
+                    if qtdp._DesignParameter['_DesignParametertype'] != 3:
+                        tmp_dp_dict, _ = new_project._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
+                        visualItem = new_project.createVisualItemfromDesignParameter(qtdp)
+                        visual_item_list.append(visualItem)
+                        layer = tmp_dp_dict['_LayerUnifiedName']
+                        if layer in new_project._layerItem:
+                            new_project._layerItem[layer].append(visualItem)
+                        else:
+                            new_project._layerItem[layer] = [visualItem]
+
+                        new_project._id_layer_mapping[qtdp._id] = layer
+                        new_project.scene.addItem(visualItem)
+                    else:
+                        sref_vi = VisualizationItem._VisualizationItem()
+                        sref_vi.updateDesignParameter(qtdp)
+                        new_project.scene.addItem(sref_vi)
+                        new_project.visualItemDict[qtdp._id] = sref_vi
+
+                        new_project._layerItem = sref_vi.returnLayerDict()
+
+                    new_project.dockContentWidget1_2.layer_table_widget.updateLayerList(new_project._layerItem)
+
+
+
                 self.hide()
 
+        # if topcell[_newConstraintID]._DesignParameter['_DesignParametertype'] == 3:
+        #     _cellModel = _element._DesignParameter['_DesignObj_Name']
+        #     _cellName = _element._DesignParameter['_ElementName']
+        #     _newCellName = _cellModel + '/' + _cellName
+        #     for key, value in flattening_dict.items():
+        #         findHint = _newCellName.find(key)
+        #         if findHint != -1:
+        #             topcell[_newConstraintID]._DesignParameter['library'] = value
+        #             if value != 'MacroCell':  # case Sref
+        #                 _className = generator_model_api.class_name_dict[_element._DesignParameter['library']]
+        #                 topcell[_newConstraintID]._DesignParameter['className'] = _className
+        #                 topcell[_newConstraintID]._DesignParameter['parameters'] = \
+        #                     generator_model_api.class_dict[value]._ParametersForDesignCalculation
+        #             topcell[_newConstraintID]._ElementName = _newConstraintID
+        #             topcell[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
+        #             topcell[_newConstraintID]._DesignParameter['_ElementName'] = _newConstraintID
+        #             tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(topcell[_newConstraintID])
+        #             if tmpAST == None:
+        #                 continue
+        #             design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+        #                                                               module_name=topCellName,
+        #                                                               _ast=tmpAST, element_manager_update=False)
+        #             self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+        #                                                              _parentName=topCellName,
+        #                                                              _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+        #             # tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
+        #             self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=_newConstraintID,
+        #                                                                  dc_id=design_dict['constraint_id'])
+        #             break
+        #         else:
+        #             continue
+        # else:
+        #     tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(topcell[_newConstraintID])
+        #     if tmpAST is None:
+        #         continue
+        #     design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=topCellName,
+        #                                                       _ast=tmpAST, element_manager_update=False)
+        #     self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+        #                                                      _parentName=topCellName,
+        #                                                      _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+        #     tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
+        #     self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=_newConstraintID,
+        #                                                          dc_id=design_dict['constraint_id'])
+        #
+        #     ####################################### Visual Item Creation ##########################################
+        # if topcell[_newConstraintID]._DesignParameter['_DesignParametertype'] != 3:
+        #     visualItem = self.createVisualItemfromDesignParameter(topcell[_newConstraintID])
+        #     visual_item_list.append(visualItem)
+        #     # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+        #     # layer = layernum2name[str(tmp_dp_dict['_Layer'])]
+        #     layer = tmp_dp_dict['_LayerUnifiedName']
+        #     if layer in self._layerItem:
+        #         self._layerItem[layer].append(visualItem)
+        #     else:
+        #         self._layerItem[layer] = [visualItem]
+        #
+        #     self._id_layer_mapping[topcell[_newConstraintID]._id] = layer
+        #     self.scene.addItem(visualItem)
+        # else:
+        #     sref_vi = VisualizationItem._VisualizationItem()
+        #     sref_vi.updateDesignParameter(topcell[_newConstraintID])
+        #     self.scene.addItem(sref_vi)
+        #     self.visualItemDict[topcell[_newConstraintID]._id] = sref_vi
+        #
+        #     self._layerItem = sref_vi.returnLayerDict()
+        #
+        # self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
+
+        # for i in range(len(sref_vi.returnLayerDict()['PIMP'])):
+        #     print(sref_vi.returnLayerDict()['PIMP'][i]._ItemTraits)
         # print('send!')
         # self.send_create_new_window_signal.emit()
         # print('send end')
