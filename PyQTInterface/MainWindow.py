@@ -195,14 +195,16 @@ class _MainWindow(QMainWindow):
         newModuleAction.setShortcut('Ctrl+M')
         newModuleAction.triggered.connect(self.newModule)
 
+        loadGDSAction.setShortcut('Ctrl+G')
+        loadGDSAction.triggered.connect(self.loadGDS)
+
+        loadPyCodeAction.triggered.connect(self.loadPy)
+
         moduleManagementAction.setShortcut('Ctrl+0')
         moduleManagementAction.triggered.connect(self.moduleManage)
+
         self.module_name_list = []
         self.module_dict = {self._CurrentModuleName: self} if self._CurrentModuleName else dict()
-
-
-        loadGDSAction.triggered.connect(self.loadGDS)
-        loadPyCodeAction.triggered.connect(self.loadPy)
 
         moduleMenu = menubar.addMenu("&Module")
         # self.moduleListSubMenu = moduleMenu.addMenu('&Module List')

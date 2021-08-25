@@ -884,7 +884,7 @@ class _TextSetupWindow(QWidget):
             self._DesignParameter = dict(
                 _ElementName = None,
                 _DesignParametertype = 8,
-                _Layer = 'text',
+                _LayerUnifiedName = 'text',
                 _XYCoordinates = [],
                 _Presentation = None,
                 _Reflect = None,
@@ -982,7 +982,7 @@ class _TextSetupWindow(QWidget):
             self._DesignParameter['_Mag'] = float(self.width_input.text())
             self.send_TextDesign_signal.emit(self._DesignParameter)
             self.destroy()
-
+            self.send_Destroy_signal.emit('txtw')
             # if type(self._DesignParameter['_XWidth']) == str:
             #     self.warning = QMessageBox()
             #     self.warning.setText("test")
@@ -997,9 +997,21 @@ class _TextSetupWindow(QWidget):
 
     def DetermineCoordinateWithMouse(self, _MouseEvent):
         ##### When Click the point, adjust x,y locations #####
-        self.XY_input[0].setText(str(_MouseEvent.scenePos().toPoint().x())+','+str(_MouseEvent.scenePos().toPoint().y()))
+        X = _MouseEvent.scenePos().toPoint().x()
+        Y = _MouseEvent.scenePos().toPoint().y()
+        self.XY_input[0].setText(str(X)+','+str(Y))
+        self._DesignParameter['_XYCoordinates']=[[X,Y]]
+        self._DesignParameter['_ElementName'] = self.text_input.text()
+        self._DesignParameter['_TEXT'] = self.text_input.text()
+        self._DesignParameter['_Mag'] = float(self.width_input.text())
 
-        self.visualItem.updateTraits(self._DesignParameter)
+        qt_dp = QTInterfaceWithAST.QtDesignParameter()
+        for key, value in self._DesignParameter.items():
+            qt_dp._setDesignParameterValue(key, value)
+        qt_dp.update_unified_expression()
+
+        self.visualItem.updateDesignParameter(qt_dp)
+        # self.visualItem.updateTraits(self._DesignParameter)
         self.send_TextSetup_signal.emit(self.visualItem)
 
     def keyPressEvent(self, QKeyEvent):
@@ -1132,9 +1144,10 @@ class _PinSetupWindow(QWidget):
                 raise NotImplementedError
             self._DesignParameter['_TEXT'] = self.text_input.text()
             self._DesignParameter['_Mag'] = float(self.width_input.text())
-            self._DesignParameter['_Layer'] = self.layer_input.currentText()
+            self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
             self.send_PinDesign_signal.emit(self._DesignParameter)
             self.destroy()
+            self.send_Destroy_signal.emit('pinw')
 
             # if type(self._DesignParameter['_XWidth']) == str:
             #     self.warning = QMessageBox()
@@ -1150,9 +1163,22 @@ class _PinSetupWindow(QWidget):
 
     def DetermineCoordinateWithMouse(self, _MouseEvent):
         ##### When Click the point, adjust x,y locations #####
-        self.XY_input[0].setText(str(_MouseEvent.scenePos().toPoint().x())+','+str(_MouseEvent.scenePos().toPoint().y()))
+        X = _MouseEvent.scenePos().toPoint().x()
+        Y = _MouseEvent.scenePos().toPoint().y()
+        self.XY_input[0].setText(str(X)+','+str(Y))
+        self._DesignParameter['_XYCoordinates']=[[X,Y]]
+        self._DesignParameter['_ElementName'] = self.text_input.text()
+        self._DesignParameter['_TEXT'] = self.text_input.text()
+        self._DesignParameter['_Mag'] = float(self.width_input.text())
+        self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
 
-        self.visualItem.updateTraits(self._DesignParameter)
+        qt_dp = QTInterfaceWithAST.QtDesignParameter()
+        for key, value in self._DesignParameter.items():
+            qt_dp._setDesignParameterValue(key, value)
+        qt_dp.update_unified_expression()
+
+        self.visualItem.updateDesignParameter(qt_dp)
+        # self.visualItem.updateTraits(self._DesignParameter)
         self.send_PinSetup_signal.emit(self.visualItem)
 
     def keyPressEvent(self, QKeyEvent):
@@ -2406,7 +2432,7 @@ class _SelectedDesignListWidget(QListWidget):
             self.sw.send_exported_sref_signal.connect(self.createDummyConstraint)
             self.sw.send_destroy_signal.connect(self.sw.close)
         elif modifyingObject._ItemTraits['_DesignParametertype'] == 8:
-            if modifyingObject._ItemTraits['_Layer'] == 'text':
+            if modifyingObject._ItemTraits['_LayerUnifiedName'] == 'text':
                 self.txtw = _TextSetupWindow(modifyingObject)
                 self.txtw.show()
                 self.txtw.send_TextDesign_signal.connect(self.send_UpdateDesignParameter_signal)
