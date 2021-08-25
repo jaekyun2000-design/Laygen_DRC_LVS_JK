@@ -578,7 +578,10 @@ class _MainWindow(QMainWindow):
 
                 hierarchy_key = selected_qt_dp._DesignParameter['_DesignObj_Name'] + '/' + tmp_module_name
 
-                hierarchy = {tmp_module_name : self.entireHierarchy[self._CurrentModuleName][hierarchy_key]}
+                if self.entireHierarchy[self._CurrentModuleName][hierarchy_key] is None:
+                    hierarchy = {tmp_module_name : dict()}
+                else:
+                    hierarchy = {tmp_module_name : self.entireHierarchy[self._CurrentModuleName][hierarchy_key]}
                 new_project.create_dc_vi_from_top_dp(hierarchy)
                 self.hide()
 
