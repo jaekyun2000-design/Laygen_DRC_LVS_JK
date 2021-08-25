@@ -195,6 +195,7 @@ class _MainWindow(QMainWindow):
         newModuleAction.setShortcut('Ctrl+M')
         newModuleAction.triggered.connect(self.newModule)
 
+        moduleManagementAction.setShortcut('Ctrl+0')
         moduleManagementAction.triggered.connect(self.moduleManage)
         self.module_name_list = []
         self.module_dict = {self._CurrentModuleName: self} if self._CurrentModuleName else dict()
@@ -230,7 +231,6 @@ class _MainWindow(QMainWindow):
 
         debug_new_window_action.setShortcut('Ctrl+9')
         debug_new_window_action.triggered.connect(self.debug)
-
 
         automation_menu = menubar.addMenu("&Automation")
         automation_menu.setObjectName("top_menu_widget")
@@ -398,6 +398,8 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget2.send_parameterIDList_signal.connect(self.parameterToTemplateHandler)
         self.dockContentWidget2.send_deleteItem_signal.connect(self.deleteDesignParameter)
 
+        self.dockContentWidget2.createDummyConstraint = self.createDummyConstraint
+
         # self.dockContentWidget2.signa.connect(graphicView.keyPressEvent)
 
         dockWidget2.setWidget(self. dockContentWidget2)
@@ -545,15 +547,31 @@ class _MainWindow(QMainWindow):
         print("******************************Initializing Graphic Interface Complete")
 
     def debug(self):
-        tmp_module_name = 'test'
-        self.module_name_list.append(tmp_module_name)
-        self.module_dict[tmp_module_name] = _MainWindow()
-        self.module_dict[tmp_module_name].set_module_name(tmp_module_name)
-        self.module_dict[tmp_module_name].show()
-        self.module_dict[tmp_module_name].module_dict = self.module_dict
-        self.module_dict[tmp_module_name].module_name_list = self.module_name_list
+        selected_items = self.scene.selectedItems()
+        if len(selected_items) != 1:
+            self.warning = QMessageBox()
+            self.warning.setText("Select Only One Item")
+            self.warning.show()
+        else:
+            for selected_item in selected_items:
+                tmp_module_name = selected_item._ElementName
 
-        self.hide()
+            if selected_item._ItemTraits['_DesignParametertype'] != 3:
+                self.warning = QMessageBox()
+                self.warning.setText("Select SRef Item")
+                self.warning.show()
+            else:
+                # tmp_module_name = 'test'
+                self.module_name_list.append(tmp_module_name)
+                self.module_dict[tmp_module_name] = _MainWindow()
+                selected_vs_item = VisualizationItem._VisualizationItem(selected_item._ItemTraits)
+                self.module_dict[tmp_module_name].scene.addItem(selected_vs_item)
+                self.module_dict[tmp_module_name].set_module_name(tmp_module_name)
+                self.module_dict[tmp_module_name].show()
+                self.module_dict[tmp_module_name].module_dict = self.module_dict
+                self.module_dict[tmp_module_name].module_name_list = self.module_name_list
+
+                self.hide()
 
         # print('send!')
         # self.send_create_new_window_signal.emit()
