@@ -1050,7 +1050,10 @@ class _MainWindow(QMainWindow):
         except Exception as e:
             error_log = traceback.format_exc()
             self.dockContentWidget3.set_errored_constraint_id(error_id, 'dynamic', error_log, e)
-            return working_code
+            if 'working_code' in locals():
+                return working_code
+            else:
+                return None
         self.dockContentWidget3.blockSignals(False)
         return None
 

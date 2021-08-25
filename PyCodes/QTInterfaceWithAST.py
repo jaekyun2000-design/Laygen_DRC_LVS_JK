@@ -397,7 +397,7 @@ class QtDesinConstraint:
                     else:
                         if type(self._ast.__dict__[_index]) != list:
                             # if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
-                            print(
+                            warnings.warn(
                                 'Warning. self._ast.{} = {} : which is not list format, but try to append deisgn constraint value'.format(
                                     _index, self._ast.__dict__[_index]))
                             self._ast.__dict__[_index] = [_value]
