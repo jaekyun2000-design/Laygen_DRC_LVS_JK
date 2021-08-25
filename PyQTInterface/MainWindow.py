@@ -617,76 +617,6 @@ class _MainWindow(QMainWindow):
 
                 self.hide()
 
-        # if topcell[_newConstraintID]._DesignParameter['_DesignParametertype'] == 3:
-        #     _cellModel = _element._DesignParameter['_DesignObj_Name']
-        #     _cellName = _element._DesignParameter['_ElementName']
-        #     _newCellName = _cellModel + '/' + _cellName
-        #     for key, value in flattening_dict.items():
-        #         findHint = _newCellName.find(key)
-        #         if findHint != -1:
-        #             topcell[_newConstraintID]._DesignParameter['library'] = value
-        #             if value != 'MacroCell':  # case Sref
-        #                 _className = generator_model_api.class_name_dict[_element._DesignParameter['library']]
-        #                 topcell[_newConstraintID]._DesignParameter['className'] = _className
-        #                 topcell[_newConstraintID]._DesignParameter['parameters'] = \
-        #                     generator_model_api.class_dict[value]._ParametersForDesignCalculation
-        #             topcell[_newConstraintID]._ElementName = _newConstraintID
-        #             topcell[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
-        #             topcell[_newConstraintID]._DesignParameter['_ElementName'] = _newConstraintID
-        #             tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(topcell[_newConstraintID])
-        #             if tmpAST == None:
-        #                 continue
-        #             design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
-        #                                                               module_name=topCellName,
-        #                                                               _ast=tmpAST, element_manager_update=False)
-        #             self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
-        #                                                              _parentName=topCellName,
-        #                                                              _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-        #             # tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
-        #             self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=_newConstraintID,
-        #                                                                  dc_id=design_dict['constraint_id'])
-        #             break
-        #         else:
-        #             continue
-        # else:
-        #     tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(topcell[_newConstraintID])
-        #     if tmpAST is None:
-        #         continue
-        #     design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=topCellName,
-        #                                                       _ast=tmpAST, element_manager_update=False)
-        #     self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
-        #                                                      _parentName=topCellName,
-        #                                                      _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-        #     tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
-        #     self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=_newConstraintID,
-        #                                                          dc_id=design_dict['constraint_id'])
-        #
-        #     ####################################### Visual Item Creation ##########################################
-        # if topcell[_newConstraintID]._DesignParameter['_DesignParametertype'] != 3:
-        #     visualItem = self.createVisualItemfromDesignParameter(topcell[_newConstraintID])
-        #     visual_item_list.append(visualItem)
-        #     # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-        #     # layer = layernum2name[str(tmp_dp_dict['_Layer'])]
-        #     layer = tmp_dp_dict['_LayerUnifiedName']
-        #     if layer in self._layerItem:
-        #         self._layerItem[layer].append(visualItem)
-        #     else:
-        #         self._layerItem[layer] = [visualItem]
-        #
-        #     self._id_layer_mapping[topcell[_newConstraintID]._id] = layer
-        #     self.scene.addItem(visualItem)
-        # else:
-        #     sref_vi = VisualizationItem._VisualizationItem()
-        #     sref_vi.updateDesignParameter(topcell[_newConstraintID])
-        #     self.scene.addItem(sref_vi)
-        #     self.visualItemDict[topcell[_newConstraintID]._id] = sref_vi
-        #
-        #     self._layerItem = sref_vi.returnLayerDict()
-        #
-        # self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
-
-        # for i in range(len(sref_vi.returnLayerDict()['PIMP'])):
-        #     print(sref_vi.returnLayerDict()['PIMP'][i]._ItemTraits)
         # print('send!')
         # self.send_create_new_window_signal.emit()
         # print('send end')
@@ -3625,6 +3555,8 @@ class _CustomScene(QGraphicsScene):
         dummy.setBackgroundBrush(QBrush(bg_color))
         self.send_change_background_siganl.connect(dummy.change_background)
         dummy.send_module_name_list_signal.connect(self.viewList[-1].name_out_fcn)
+
+        tmp_group_item = QGraphicsItemGroup()
         for key, value in structure_dict.items():
             try:
                 DP = VisualizationItem._VisualizationItem()
@@ -3633,10 +3565,23 @@ class _CustomScene(QGraphicsScene):
                 DP.setToolTip(key)
             except:
                 DP = value
-            dummy.addItem(DP)
+            # dummy.addItem(DP)
+
+            if type(DP) == VisualizationItem._VisualizationItem:
+                DP.setSelected(False)
+                if DP._subCellFlag:
+                    pass
+                else:
+                    tmp_group_item.addToGroup(DP)
 
         self.viewList[-1].setScene(dummy)
         self.viewList[-1].setGeometry(200,200,1200,800)
+
+        dummy.addItem(tmp_group_item)
+        self.viewList[-1].fitInView(tmp_group_item, Qt.KeepAspectRatio)
+        dummy.destroyItemGroup(tmp_group_item)
+        del tmp_group_item
+
         self.viewList[-1].show()
 
     def receive_module_name(self,name_list,index_list):
