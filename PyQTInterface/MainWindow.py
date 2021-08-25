@@ -398,6 +398,8 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget2.send_parameterIDList_signal.connect(self.parameterToTemplateHandler)
         self.dockContentWidget2.send_deleteItem_signal.connect(self.deleteDesignParameter)
 
+        self.dockContentWidget2.createDummyConstraint = self.createDummyConstraint
+
         # self.dockContentWidget2.signa.connect(graphicView.keyPressEvent)
 
         dockWidget2.setWidget(self. dockContentWidget2)

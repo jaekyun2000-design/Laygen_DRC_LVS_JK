@@ -2403,6 +2403,7 @@ class _SelectedDesignListWidget(QListWidget):
             self.sw = _LoadSRefWindow(purpose='main_load', SRefElement=modifyingObject)
             self.sw.show()
             self.sw.send_DesignConstraint_signal.connect(self.send_UpdateDesignAST_signal)
+            self.sw.send_exported_sref_signal.connect(self.createDummyConstraint)
             self.sw.send_destroy_signal.connect(self.sw.close)
         elif modifyingObject._ItemTraits['_DesignParametertype'] == 8:
             if modifyingObject._ItemTraits['_Layer'] == 'text':
