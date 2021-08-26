@@ -1,5 +1,6 @@
 import warnings
 from PyQTInterface import calculator
+import user_setup
 
 class FileSaveFormat:
     def __init__(self):
@@ -12,8 +13,10 @@ class FileSaveFormat:
         self.module_list = []
         self.module_save_file_dict = dict()
         self._DummyConstraints = None
+        self.user_setups = dict()
 
     def save_from_qt_interface(self, main_window, sub_module=True):
+        self.save_user_setup()
         self.top_module = main_window._CurrentModuleName
         self.save_constraint_tree_info(main_window)
         if 'dv' in main_window.__dict__:
@@ -57,7 +60,13 @@ class FileSaveFormat:
             save_project = main_window.module_dict[module_name]._QTObj._qtProject
             self.module_save_file_dict[module_name] = save_project
 
+    def save_user_setup(self):
+        variable_names = [item for item in dir(user_setup) if not item.startswith('__')]
+        for variable_name in variable_names:
+            self.user_setups[variable_name] = user_setup.__dict__[variable_name]
+
     def load_qt_interface(self,main_window, _DesignConstraint, sub_module=True):
+        self.load_user_setup()
         main_window._CurrentModuleName = self.top_module
         self.load_from_constraint_tree_info(main_window, _DesignConstraint)
         self.load_user_variable_info(main_window)
@@ -131,3 +140,11 @@ class FileSaveFormat:
                         vs_item._CreateFlag = False
                         main_window.module_dict[module].updateGraphicItem(vs_item)
 
+    def load_user_setup(self):
+        if 'user_setups' in self.__dict__:
+            for name, value in self.user_setups.items():
+                user_setup.__dict__[name] = value
+        from PyQTInterface.layermap import DisplayReader
+        from PyQTInterface.layermap import LayerReader
+        LayerReader.run_for_process_update()
+        DisplayReader.run_for_process_update()
