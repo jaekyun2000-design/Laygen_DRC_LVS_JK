@@ -1800,28 +1800,36 @@ class _MainWindow(QMainWindow):
         self._QTObj._qtProject._DesignParameter[topCellName].clear()            # discard original top cell info
         topcell = self._QTObj._qtProject._DesignParameter[topCellName]
         for _id, _element in ProcessedModuleDict.items():
-            _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(topCellName)
-            _newConstraintID = (topCellName + str(_designConstraintID))
-            topcell[_newConstraintID] = _element
-            topcell[_newConstraintID]._id = _newConstraintID
+            # _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(topCellName)
+            legacy_dp_id = self._QTObj._qtProject._getDesignParameterId(topCellName)
+
+            if _element._DesignParameter['_DesignParametertype'] == 3:
+                parameter_id = _element._ElementName
+                topcell[parameter_id] = _element
+                topcell[parameter_id]._id = _element._ElementName
+            else:
+                parameter_id = (topCellName + str(legacy_dp_id))
+                topcell[parameter_id] = _element
+                topcell[parameter_id]._id = parameter_id
             ######################################### AST Creation ################################################
-            if topcell[_newConstraintID]._DesignParameter['_DesignParametertype'] == 3:
+
+            if topcell[parameter_id]._DesignParameter['_DesignParametertype'] == 3:
                 _cellModel = _element._DesignParameter['_DesignObj_Name']
                 _cellName = _element._DesignParameter['_ElementName']
                 _newCellName = _cellModel + '/' + _cellName
                 for key, value in flattening_dict.items():
                     findHint = _newCellName.find(key)
                     if findHint != -1:
-                        topcell[_newConstraintID]._DesignParameter['library'] = value
+                        topcell[parameter_id]._DesignParameter['library'] = value
                         if value != 'MacroCell':    # case Sref
                             _className = generator_model_api.class_name_dict[_element._DesignParameter['library']]
-                            topcell[_newConstraintID]._DesignParameter['className'] =_className
-                            topcell[_newConstraintID]._DesignParameter['parameters'] = \
+                            topcell[parameter_id]._DesignParameter['className'] =_className
+                            topcell[parameter_id]._DesignParameter['parameters'] = \
                                 generator_model_api.class_dict[value]._ParametersForDesignCalculation
-                        topcell[_newConstraintID]._ElementName = _newConstraintID
-                        topcell[_newConstraintID]._DesignParameter['_id'] = _newConstraintID
-                        topcell[_newConstraintID]._DesignParameter['_ElementName'] = _newConstraintID
-                        tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(topcell[_newConstraintID])
+                        topcell[parameter_id]._ElementName = parameter_id
+                        topcell[parameter_id]._DesignParameter['_id'] = parameter_id
+                        topcell[parameter_id]._DesignParameter['_ElementName'] = parameter_id
+                        tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(topcell[parameter_id])
                         if tmpAST == None:
                             continue
                         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
@@ -1831,12 +1839,12 @@ class _MainWindow(QMainWindow):
                                                                          _parentName=topCellName,
                                                                          _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
                         # tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
-                        self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=_newConstraintID, dc_id=design_dict['constraint_id'])
+                        self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=parameter_id, dc_id=design_dict['constraint_id'])
                         break
                     else:
                         continue
             else:
-                tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(topcell[_newConstraintID])
+                tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(topcell[parameter_id])
                 if tmpAST is None:
                     continue
                 design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=topCellName,
@@ -1845,11 +1853,11 @@ class _MainWindow(QMainWindow):
                                                                  _parentName=topCellName,
                                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
                 tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
-                self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=_newConstraintID, dc_id=design_dict['constraint_id'])
+                self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=parameter_id, dc_id=design_dict['constraint_id'])
 
             ####################################### Visual Item Creation ##########################################
-            if topcell[_newConstraintID]._DesignParameter['_DesignParametertype'] != 3:
-                visualItem = self.createVisualItemfromDesignParameter(topcell[_newConstraintID])
+            if topcell[parameter_id]._DesignParameter['_DesignParametertype'] != 3:
+                visualItem = self.createVisualItemfromDesignParameter(topcell[parameter_id])
                 visual_item_list.append(visualItem)
                 # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                 # layer = layernum2name[str(tmp_dp_dict['_Layer'])]
@@ -1859,13 +1867,13 @@ class _MainWindow(QMainWindow):
                 else:
                     self._layerItem[layer] = [visualItem]
 
-                self._id_layer_mapping[topcell[_newConstraintID]._id] = layer
+                self._id_layer_mapping[topcell[parameter_id]._id] = layer
                 self.scene.addItem(visualItem)
             else:
                 sref_vi = VisualizationItem._VisualizationItem()
-                sref_vi.updateDesignParameter(topcell[_newConstraintID])
+                sref_vi.updateDesignParameter(topcell[parameter_id])
                 self.scene.addItem(sref_vi)
-                self.visualItemDict[topcell[_newConstraintID]._id] = sref_vi
+                self.visualItemDict[topcell[parameter_id]._id] = sref_vi
 
                 self._layerItem = sref_vi.returnLayerDict()
 

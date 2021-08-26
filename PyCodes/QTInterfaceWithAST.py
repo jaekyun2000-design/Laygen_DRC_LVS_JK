@@ -885,6 +885,7 @@ class QtProject:
             #     print("No File Selected")
             #     pass
             structure_order = _GDSStreamObj._STRUCTURES if _reverse is False else reversed(_GDSStreamObj._STRUCTURES)
+            sref_name_count = dict()
             for _tmpStructure in structure_order:
                 # _tmpStructureName = _tmpStructure._STRNAME.strname.split('\x00', 1)[0]
                 _tmpStructureName = _tmpStructure._STRNAME.strname.decode()
@@ -921,7 +922,16 @@ class QtProject:
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                             "_Width"] = _tmpElement._ELEMENTS._WIDTH.width
                     elif "_SREF" in vars(_tmpElement._ELEMENTS):
-                        self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
+                        if _tmpElement._GDS_ELEMENT_NAME:
+                            self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
+                        else:
+                            sref_name =_tmpElement._ELEMENTS._SNAME.sname.decode().split('\x00')[0]
+                            if sref_name not in sref_name_count:
+                                sref_name_count[sref_name] = 0
+                            else:
+                                sref_name_count[sref_name] += 1
+                            self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName,
+                                                           _ElementName=sref_name+'_'+str(sref_name_count[sref_name]))
                         # print('     monitor for debug: ', _tmpElement._ELEMENTS._SNAME.sname.decode())
                         # print('     monitor for debug: ', _tmpElement._ELEMENTS._XY)
                         _tmpSname = _tmpElement._ELEMENTS._SNAME.sname.decode()
