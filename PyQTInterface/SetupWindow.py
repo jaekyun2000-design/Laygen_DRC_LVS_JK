@@ -3229,7 +3229,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         :param _: not use (trigger signal return dp_di_list and type, but this slot does not use type.
         :return:
         """
-        self.selectionModel().clearSelection()
+        self.clearSelection()
 
         self.send_RequestElementManger_signal.emit()
         dc_id_list = [self._ElementMangerFromQTobj.get_dc_id_by_dp_id(_id) for _id in dp_id_list]
@@ -3247,8 +3247,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 except:
                     traceback.print_exc()
 
-
-
+    def clearSelection(self):
+        super(_ConstraintTreeViewWidgetAST, self).clearSelection()
+        self.setCurrentIndex(self.model.index(-1,-1))
 
         # constraint_ids = [item.text() for item in constraint_names]
 

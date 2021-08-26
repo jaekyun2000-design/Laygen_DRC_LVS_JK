@@ -455,6 +455,11 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3.get_dp_highlight_dc)
 
+        self.sendLeftButton.clicked.connect(self.dockContentWidget3.clearSelection)
+        self.sendLeftButton.clicked.connect(self.dockContentWidget3_2.clearSelection)
+        self.sendRightButton.clicked.connect(self.dockContentWidget3.clearSelection)
+        self.sendRightButton.clicked.connect(self.dockContentWidget3_2.clearSelection)
+
         vboxLayout = QVBoxLayout()
         vboxLayout.addWidget(self.sendDownButton)
         vboxLayout.addStretch(3)
