@@ -2376,6 +2376,8 @@ class _SelectedDesignListWidget(QListWidget):
 
         for item in _items:
             if type(item) == VisualizationItem._VisualizationItem:
+                if item.parentItem():
+                    continue
                 tmpName = item._ItemTraits['_ElementName']
                 if tmpName == None:
                     continue
