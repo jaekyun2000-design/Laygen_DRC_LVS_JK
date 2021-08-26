@@ -2179,6 +2179,7 @@ class _MainWindow(QMainWindow):
                 if original_dp_id != design_dict['parameter_id']:
                     self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
+                visualItem._CreateFlag = False
                 self.updateGraphicItem(visualItem)\
             # else:
             #     pass #exceptional case LATER ( not 1-to-1 matching constraint.... > cannot update visual item)
@@ -2204,6 +2205,7 @@ class _MainWindow(QMainWindow):
                 # else:
             try:
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
+                visualItem._CreateFlag = False
                 if visualItem:
                     self.updateGraphicItem(visualItem)
             except:
