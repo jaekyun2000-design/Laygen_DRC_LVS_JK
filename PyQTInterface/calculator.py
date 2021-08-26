@@ -327,9 +327,9 @@ class ExpressionCalculator(QWidget):
         if self.DRCWindow.currentItem().childCount() == 0:
 
             if self.value_flag:
-                self.equationList[-1] = self.DRCWindow.currentItem().text(0)
+                self.equationList[-1] = 'drc.' + self.DRCWindow.currentItem().text(0)
             else:
-                self.equationList.append(self.DRCWindow.currentItem().text(0))
+                self.equationList.append('drc.' + self.DRCWindow.currentItem().text(0))
             self.value_flag = True
             self.arithmetic_flag = False
             self.digit_flag = False
