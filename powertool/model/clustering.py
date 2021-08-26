@@ -1,3 +1,4 @@
+import traceback
 import warnings
 
 import pandas as pd
@@ -99,6 +100,7 @@ class clustering():
                     ref_list.append(self.find_ref_for_sref_qt(id_list))
             return ref_list
         except:
+            traceback.print_exc()
             print("Unable to recognize Array References; Rearrange the design appropriately!")
             return
 
@@ -498,7 +500,7 @@ class determinstic_clustering(clustering):
             # if dp['_DesignParametertype'] == 2 or dp['_DesignParametertype'] == 1:
             intersection_info = self.geo_searching.search_intersection(dp)
             self.routing_groups.append(intersection_info)
-            intersection_matching_dict_by_name[intersection_info[0]['_id']] = intersection_info[1:]
+            intersection_matching_dict_by_name[intersection_info[0]['_ElementName']] = intersection_info[1:]
             # if intersection_matching_dict_by_name[intersection_info[0]['_id']]:
             #     intersection_matching_dict_by_name[intersection_info[0]['_id']].pop(0)
             # self.routing_groups.append(self.geo_searching.search_intersection(dp))

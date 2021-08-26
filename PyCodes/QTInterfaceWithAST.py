@@ -66,7 +66,6 @@ class QtDesignParameter:
                 pass
         else:
             if '_LayerUnifiedName' in self._DesignParameter:
-                print(LayerReader._LayerMapping)
                 self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
                 self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
 
