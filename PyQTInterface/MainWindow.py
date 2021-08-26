@@ -2205,6 +2205,7 @@ class _MainWindow(QMainWindow):
                 # else:
             try:
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
+                visualItem._CreateFlag = False
                 if visualItem:
                     self.updateGraphicItem(visualItem)
             except:
