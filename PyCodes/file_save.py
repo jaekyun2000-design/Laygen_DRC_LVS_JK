@@ -1,7 +1,7 @@
 import warnings
 from PyQTInterface import calculator
 import user_setup
-
+import copy
 class FileSaveFormat:
     def __init__(self):
         self.top_module = None
@@ -125,6 +125,9 @@ class FileSaveFormat:
         from PyQTInterface import MainWindow
         if self.module_list:
             for module in self.module_list:
+                main_window.module_name_list = copy.deepcopy(self.module_list)
+                main_window.module_name_list.append(self.top_module)
+                main_window.module_dict[self.top_module] = main_window
                 if module not in self.module_save_file_dict:
                     raise Exception(f'{module} info file does not exist.')
                 #TODO complete code after developing new_main_windw fcn
@@ -143,8 +146,6 @@ class FileSaveFormat:
                 main_window.module_dict[module].module_name_list = main_window.module_name_list
                 main_window.module_dict[module].module_dict = main_window.module_dict
                 main_window.module_dict[module].hide()
-            main_window.module_name_list = self.module_list
-            main_window.module_name_list.append(self.top_module)
 
 
     def load_user_setup(self):
