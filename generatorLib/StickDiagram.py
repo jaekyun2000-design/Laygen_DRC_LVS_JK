@@ -395,7 +395,8 @@ class _StickDiagram:
                                                                                             self._CreateGDSBoundaryElement(_Layer= _DesignParameterInDictionary[_DesignParameter]['_Layer'], _Datatype=_DesignParameterInDictionary[_DesignParameter]['_Datatype'],
                                                                                                                            _XYCoordinates=self.CenterCoordinateAndWidth2XYCoordinate( _XYCenter=_XYCoordinate,
                                                                                                                            _WidthX=_DesignParameterInDictionary[_DesignParameter]['_XWidth'],
-                                                                                                                           _WidthY=_DesignParameterInDictionary[_DesignParameter]['_YWidth']))
+                                                                                                                           _WidthY=_DesignParameterInDictionary[_DesignParameter]['_YWidth'],),
+                                                                                                                           _ElementName = _DesignParameter)
                                                                                             )
             elif _DesignParameterInDictionary[_DesignParameter]['_DesignParametertype'] == 2 and _DesignParameterInDictionary[_DesignParameter]['_Ignore']==None:
                 for _XYCoordinates in _DesignParameterInDictionary[_DesignParameter]['_XYCoordinates']:
@@ -421,7 +422,7 @@ class _StickDiagram:
                         _DesignParameterInDictionary['_GDSFile']['_GDSFile'][0]._ELEMENTS.append(
                                                                                             self._CreateGDSPathElement(_Layer=_DesignParameterInDictionary[_DesignParameter]['_Layer'], _Datatype=_DesignParameterInDictionary[_DesignParameter]['_Datatype'],
                                                                                                                        _Width=_DesignParameterInDictionary[_DesignParameter]['_Width'],
-                                                                                                               _XYCoordinates=_tmpXYCoordinates, _ElementName =_DesignParameterInDictionary[_DesignParameter]['_ElementName'] )
+                                                                                                               _XYCoordinates=_tmpXYCoordinates, _ElementName =_DesignParameter,)
                                                                                             )
                     del _tmpXYCoordinates
             elif _DesignParameterInDictionary[_DesignParameter]['_DesignParametertype'] == 3 and _DesignParameterInDictionary[_DesignParameter]['_DesignObj'] != None and _DesignParameterInDictionary[_DesignParameter]['_Ignore']==None:
@@ -447,6 +448,7 @@ class _StickDiagram:
                                                                                                                                _Mag=_DesignParameterInDictionary[_DesignParameter]['_Mag'],
                                                                                                                                _Angle=_DesignParameterInDictionary[_DesignParameter]['_Angle'],
                                                                                                                                _TEXT=_DesignParameterInDictionary[_DesignParameter]['_TEXT'],
+                                                                                                                               _ElementName=_DesignParameter
                                                                                                                                )
                                                                                                 )
             elif _DesignParameterInDictionary[_DesignParameter]['_DesignParametertype'] == 6:
@@ -456,7 +458,8 @@ class _StickDiagram:
                                                                                             self._CreateGDSBoundaryElement(_Layer= _tmpRail['_Layer'], _Datatype=_tmpRail['_Datatype'],
                                                                                                                            _XYCoordinates=self.CenterCoordinateAndWidth2XYCoordinate( _XYCenter=_XYCoordinate,
                                                                                                                            _WidthX=_tmpRail['_XWidth'],
-                                                                                                                           _WidthY=_tmpRail['_YWidth']))
+                                                                                                                           _WidthY=_tmpRail['_YWidth'],
+                                                                                                                          _ElementName = _DesignParameter))
                                                                                             )
                 for _tmpViaArray in _DesignParameterInDictionary[_DesignParameter]['_ViaArrays']:
                     _tmpViaArray['_DesignObj']._UpdateDesignParameter2GDSStructure()
