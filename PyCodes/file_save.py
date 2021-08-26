@@ -124,12 +124,13 @@ class FileSaveFormat:
     def load_module_info(self, main_window):
         from PyQTInterface import MainWindow
         if self.module_list:
-            main_window.module_name_list = self.module_list
             for module in self.module_list:
                 if module not in self.module_save_file_dict:
                     raise Exception(f'{module} info file does not exist.')
                 #TODO complete code after developing new_main_windw fcn
                 main_window.module_dict[module] = MainWindow._MainWindow()
+                main_window.module_dict[module].set_module_name(module)
+
                 main_window.module_dict[module]._QTObj._qtProject = self.module_save_file_dict[module]
                 dc = main_window.module_dict[module]._QTObj._qtProject._DesignConstraint
                 main_window.module_dict[module]._QTObj._qtProject.tmp_save_file.load_qt_interface(main_window,dc,False)
@@ -139,6 +140,12 @@ class FileSaveFormat:
                         vs_item = main_window.module_dict[module].createVisualItemfromDesignParameter(qt_parameter)
                         vs_item._CreateFlag = False
                         main_window.module_dict[module].updateGraphicItem(vs_item)
+                main_window.module_dict[module].module_name_list = main_window.module_name_list
+                main_window.module_dict[module].module_dict = main_window.module_dict
+                main_window.module_dict[module].hide()
+            main_window.module_name_list = self.module_list
+            main_window.module_name_list.append(self.top_module)
+
 
     def load_user_setup(self):
         if 'user_setups' in self.__dict__:
