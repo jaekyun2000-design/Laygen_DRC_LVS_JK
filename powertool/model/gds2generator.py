@@ -11,6 +11,8 @@ from powertool.model import clustering, routing_geo_searching
 import pickle
 import copy
 import ast, astunparse
+from generatorLib import DRC
+drc = DRC.DRC()
 import types
 
 def load_pickle(file_name):

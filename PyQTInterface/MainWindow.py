@@ -670,6 +670,7 @@ class _MainWindow(QMainWindow):
                 from PyQTInterface.layermap import DisplayReader
                 LayerReader.run_for_process_update()
                 DisplayReader.run_for_process_update()
+                from generatorLib import DRC
 
                 if self._CurrentModuleName in self._QTObj._qtProject._DesignParameter:
                     for qt_dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].values():
