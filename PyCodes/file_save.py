@@ -136,7 +136,7 @@ class FileSaveFormat:
 
                 main_window.module_dict[module]._QTObj._qtProject = self.module_save_file_dict[module]
                 dc = main_window.module_dict[module]._QTObj._qtProject._DesignConstraint
-                main_window.module_dict[module]._QTObj._qtProject.tmp_save_file.load_qt_interface(main_window,dc,False)
+                main_window.module_dict[module]._QTObj._qtProject.tmp_save_file.load_qt_interface(main_window.module_dict[module],dc,False)
                 top_module = main_window.module_dict[module]._QTObj._qtProject.tmp_save_file.top_module
                 if top_module in main_window.module_dict[module]._QTObj._qtProject._DesignParameter:
                     for id_name, qt_parameter in main_window.module_dict[module]._QTObj._qtProject._DesignParameter[top_module].items():
