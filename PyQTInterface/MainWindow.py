@@ -1808,7 +1808,7 @@ class _MainWindow(QMainWindow):
             # _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(topCellName)
             legacy_dp_id = self._QTObj._qtProject._getDesignParameterId(topCellName)
 
-            if _element._DesignParameter['_DesignParametertype'] == 3:
+            if _element._ElementName:
                 parameter_id = _element._ElementName
                 topcell[parameter_id] = _element
                 topcell[parameter_id]._id = _element._ElementName
