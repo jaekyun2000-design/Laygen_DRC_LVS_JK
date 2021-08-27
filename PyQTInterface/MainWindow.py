@@ -47,6 +47,7 @@ from PyQTInterface import VariableVisualItem
 from PyQTInterface import variableWindow
 from PyQTInterface import list_manager
 from PyQTInterface import calculator
+from PyQTInterface import ConditionalStatement
 
 from generatorLib import generator_model_api
 from generatorLib import DRC
@@ -474,13 +475,14 @@ class _MainWindow(QMainWindow):
         self.createConstraintButtonAST = QPushButton("CreateAST")
         self.createConstraintButtonCUSTOM = QPushButton("Element(Custom)")
         self.createVariableButtonCUSTOM = QPushButton("Variable(Custom)")
-        self.saveConstraintAsJSONButton = QPushButton("SaveAs...(JSON)")
+        # self.saveConstraintAsJSONButton = QPushButton("SaveAs...(JSON)")
         self.saveConstraintAsPickleButton = QPushButton("SaveAs...(pickle)")
-        self.loadConstraintFromPickleButton = QPushButton("Load...")
-        self.ConstraintTemplateButton = QPushButton("Template")
+        # self.loadConstraintFromPickleButton = QPushButton("Load...")
+        # self.ConstraintTemplateButton = QPushButton("Template")
         # self.parsetreeEasyRun = QPushButton("easyRun")
         self.variableCallButton = QPushButton("variableCall")
         self.calculatorButton = QPushButton("XYCalculator")
+        self.conditional_stmt_button = QPushButton("if debug")
 
         VBoxForPeriButton.addStretch(3)
         # VBoxForPeriButton.addWidget(self.createConstraintButton)
@@ -489,13 +491,14 @@ class _MainWindow(QMainWindow):
         VBoxForPeriButton.addWidget(self.createConstraintButtonAST)
         VBoxForPeriButton.addWidget(self.createConstraintButtonCUSTOM)
         VBoxForPeriButton.addWidget(self.createVariableButtonCUSTOM)
-        VBoxForPeriButton.addWidget(self.saveConstraintAsJSONButton)
+        # VBoxForPeriButton.addWidget(self.saveConstraintAsJSONButton)
         VBoxForPeriButton.addWidget(self.saveConstraintAsPickleButton)
-        VBoxForPeriButton.addWidget(self.loadConstraintFromPickleButton)
-        VBoxForPeriButton.addWidget(self.ConstraintTemplateButton)
+        # VBoxForPeriButton.addWidget(self.loadConstraintFromPickleButton)
+        # VBoxForPeriButton.addWidget(self.ConstraintTemplateButton)
         # VBoxForPeriButton.addWidget(self.parsetreeEasyRun)
         VBoxForPeriButton.addWidget(self.variableCallButton)
         VBoxForPeriButton.addWidget(self.calculatorButton)
+        VBoxForPeriButton.addWidget(self.conditional_stmt_button)
         VBoxForPeriButton.addStretch(3)
 
         # self.dockContentWidget3.setDragDropMode(self.dockContectWidget3.MyOwnDragDropMove)
@@ -515,13 +518,14 @@ class _MainWindow(QMainWindow):
         self.createConstraintButtonAST.clicked.connect(self.makeConstraintWindowAST)
         self.createConstraintButtonCUSTOM.clicked.connect(self.makeConstraintWindowCUSTOM)
         self.createVariableButtonCUSTOM.clicked.connect(self.makeVariableWindowCUSTOM)
-        self.saveConstraintAsJSONButton.clicked.connect(self.saveConstraint)
+        # self.saveConstraintAsJSONButton.clicked.connect(self.saveConstraint)
         self.saveConstraintAsPickleButton.clicked.connect(self.saveConstraintP)
-        self.loadConstraintFromPickleButton.clicked.connect(self.loadConstraintP)
-        self.ConstraintTemplateButton.clicked.connect(self.makeTemplateWindow)
+        # self.loadConstraintFromPickleButton.clicked.connect(self.loadConstraintP)
+        # self.ConstraintTemplateButton.clicked.connect(self.makeTemplateWindow)
         # self.parsetreeEasyRun.clicked.connect(self.easyRun)
         self.variableCallButton.clicked.connect(self.variableListUpdate)
         self.calculatorButton.clicked.connect(self.calculator)
+        self.conditional_stmt_button.clicked.connect(self.conditional_stmt)
 
 
         ##################Extra widget initialization #########################
@@ -618,6 +622,10 @@ class _MainWindow(QMainWindow):
         self.calculator_window.set_preset_window()
         self.calculator_window.show()
         print(self.calculator_window.presetDict)
+
+    def conditional_stmt(self):
+        self.conditional_stmt_window = ConditionalStatement.CreateConditionalStatement()
+        self.conditional_stmt_window.show()
 
     def get_dc_highlight_dp(self,dc_id):
         for seleceted_item in self.scene.selectedItems():
