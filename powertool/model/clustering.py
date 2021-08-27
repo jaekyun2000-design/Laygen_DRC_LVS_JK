@@ -102,85 +102,99 @@ class clustering():
         except:
             traceback.print_exc()
             print("Unable to recognize Array References; Rearrange the design appropriately!")
-            return
+            return ref_list
 
 
 
     def find_ref_for_path_qt(self,id_list):
-        qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
-        x_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0][0] for qt_dp in qt_dp_list]
-        y_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0][1] for qt_dp in qt_dp_list]
-        layer = LayerReader._LayerName_unified[str(qt_dp_list[0]._DesignParameter['_Layer'])]
-        x_list.sort()
-        y_list.sort()
-        x_offset = int(x_list[1] - x_list[0])
-        y_offset = int(y_list[1] - y_list[0])
-        if x_offset == 0:
-            col = 1
-            row = len(y_list)
-        else:
-            col = len(x_list)
-            row = 1
-        connection_layer_list = []
-        for id in id_list:
-            # print(self.intersection_matching_dict_by_name[id][0])
-            # tmp = [intersection_info[0] for intersection_info in self.intersection_matching_dict_by_name[id]]
-            connection_layer_list.extend([intersection_info[0] for intersection_info in self.intersection_matching_dict_by_name[id]])
-            # connection_layer_list.extend(self.intersection_matching_dict_by_name[id])
-        # connection_layer_list.extend([self.intersection_matching_dict_by_name[id] for id in id_list])
-        connection_wo_last_idx = copy.deepcopy(connection_layer_list)
-        for idx, _ in enumerate(connection_wo_last_idx):
-            connection_wo_last_idx[idx][-1] = copy.deepcopy(connection_wo_last_idx[idx][-1].split('[')[0])
-            # cutting_idx = connection_wo_last_idx[idx][-1].find('[')
-            # connection_wo_last_idx[idx][-1] = connection_wo_last_idx[idx][-1][:cutting_idx]
+        x_offset = None
+        y_offset = None
+        col = None
+        row = None
+        layer = None
+        index = None
+        XY_source_ref = None
+        XY_target_ref = None
 
-        set1 = set(map(tuple,connection_layer_list))
-        connection_top_name = [connection_hierarchy[0] for connection_hierarchy in connection_layer_list]
-        set2 = set(connection_top_name)
-
-        count_list = []
-        for set1_ele in set1:
-            count_list.append(connection_layer_list.count(list(set1_ele)))
-        max_idx = count_list.index(max(count_list))
-        target_reference = list(list(set1)[max_idx])
-
-        count_list = []
-        set2.remove(target_reference[0])
-        for set2_ele in set2:
-            count_list.append(connection_top_name.count(set2_ele))
-        max_idx = count_list.index(max(count_list))
-        top_cell_name = list(set2)[max_idx]
-        hierarchy_idx = connection_top_name.index(top_cell_name)
-        source_reference = copy.deepcopy(connection_layer_list[hierarchy_idx])
-        source_reference[-1] = copy.deepcopy(source_reference[-1].split('[')[0])
-
-        # cutting_idx = source_reference[-1].find('[')
-        # source_reference[-1] = source_reference[-1][:cutting_idx]
-
-        connection_layer_idx_of_source = []
-        for i, ele in enumerate(connection_wo_last_idx):
-            if ele == source_reference:
-                connection_layer_idx_of_source.append(i)
-        source_reference_list = [connection_layer_list[idx] for idx in connection_layer_idx_of_source]
-        index = 'Custom'
-        source_dp = self.get_hierarchy_item(source_reference_list[0])
-        if type(source_dp) != dict:
-            warnings.warn('WARNING: Trying to inspect index by item whose type is not generator.')
-        else:
-            if len(source_dp['_XYCoordinates']) == len(qt_dp_list):
-                index = 'All'
+        try:
+            qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
+            x_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0][0] for qt_dp in qt_dp_list]
+            y_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0][1] for qt_dp in qt_dp_list]
+            layer = LayerReader._LayerName_unified[str(qt_dp_list[0]._DesignParameter['_Layer'])]
+            x_list.sort()
+            y_list.sort()
+            x_offset = int(x_list[1] - x_list[0])
+            y_offset = int(y_list[1] - y_list[0])
+            if x_offset == 0:
+                col = 1
+                row = len(y_list)
             else:
-                source_index_list = [re.search('\[[0-9]*\]',source_ref[-1]).group()[1:-1] for source_ref in source_reference_list]
-                even_filter = list(filter(lambda x: int(x)%2 == 0, source_index_list))
-                odd_filter = list(filter(lambda x: int(x)%2 == 1, source_index_list))
-                if len(even_filter) == len(source_index_list):
-                    index = 'Even'
-                elif len(odd_filter) == len(source_index_list):
-                    index = 'Odd'
+                col = len(x_list)
+                row = 1
+            connection_layer_list = []
+            for id in id_list:
+                # print(self.intersection_matching_dict_by_name[id][0])
+                # tmp = [intersection_info[0] for intersection_info in self.intersection_matching_dict_by_name[id]]
+                connection_layer_list.extend([intersection_info[0] for intersection_info in self.intersection_matching_dict_by_name[id]])
+                # connection_layer_list.extend(self.intersection_matching_dict_by_name[id])
+            # connection_layer_list.extend([self.intersection_matching_dict_by_name[id] for id in id_list])
+            connection_wo_last_idx = copy.deepcopy(connection_layer_list)
+            for idx, _ in enumerate(connection_wo_last_idx):
+                connection_wo_last_idx[idx][-1] = copy.deepcopy(connection_wo_last_idx[idx][-1].split('[')[0])
+                # cutting_idx = connection_wo_last_idx[idx][-1].find('[')
+                # connection_wo_last_idx[idx][-1] = connection_wo_last_idx[idx][-1][:cutting_idx]
+
+            set1 = set(map(tuple,connection_layer_list))
+            connection_top_name = [connection_hierarchy[0] for connection_hierarchy in connection_layer_list]
+            set2 = set(connection_top_name)
+
+            count_list = []
+            for set1_ele in set1:
+                count_list.append(connection_layer_list.count(list(set1_ele)))
+            max_idx = count_list.index(max(count_list))
+            target_reference = list(list(set1)[max_idx])
+
+            count_list = []
+            set2.remove(target_reference[0])
+            for set2_ele in set2:
+                count_list.append(connection_top_name.count(set2_ele))
+            max_idx = count_list.index(max(count_list))
+            top_cell_name = list(set2)[max_idx]
+            hierarchy_idx = connection_top_name.index(top_cell_name)
+            source_reference = copy.deepcopy(connection_layer_list[hierarchy_idx])
+            source_reference[-1] = copy.deepcopy(source_reference[-1].split('[')[0])
+
+            # cutting_idx = source_reference[-1].find('[')
+            # source_reference[-1] = source_reference[-1][:cutting_idx]
+
+            connection_layer_idx_of_source = []
+            for i, ele in enumerate(connection_wo_last_idx):
+                if ele == source_reference:
+                    connection_layer_idx_of_source.append(i)
+            source_reference_list = [connection_layer_list[idx] for idx in connection_layer_idx_of_source]
+            index = 'Custom'
+            source_dp = self.get_hierarchy_item(source_reference_list[0])
+            if type(source_dp) != dict:
+                warnings.warn('WARNING: Trying to inspect index by item whose type is not generator.')
+            else:
+                if len(source_dp['_XYCoordinates']) == len(qt_dp_list):
+                    index = 'All'
+                else:
+                    source_index_list = [re.search('\[[0-9]*\]',source_ref[-1]).group()[1:-1] for source_ref in source_reference_list]
+                    even_filter = list(filter(lambda x: int(x)%2 == 0, source_index_list))
+                    odd_filter = list(filter(lambda x: int(x)%2 == 1, source_index_list))
+                    if len(even_filter) == len(source_index_list):
+                        index = 'Even'
+                    elif len(odd_filter) == len(source_index_list):
+                        index = 'Odd'
 
 
-        return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, layer=layer, index=index,
-                    XY_source_ref=source_reference, XY_target_ref=target_reference)
+            return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, layer=layer, index=index,
+                        XY_source_ref=source_reference, XY_target_ref=target_reference)
+        except:
+
+            return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, layer=layer, index=index,
+                        XY_source_ref=source_reference, XY_target_ref=target_reference)
 
     def find_ref_for_boundary_qt(self, id_list):
         qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
