@@ -464,7 +464,7 @@ class ExpressionCalculator(QWidget):
     def waitForClick(self, event):
         if self.waiting == True:
             display = str()
-            calc_expression = '['+str(event.scenePos().x())+','+str(event.scenePos().y())+']'
+            calc_expression = str(event.scenePos().x())+','+str(event.scenePos().y())
 
             if self.value_flag:
                 print(f'len!!={len(self.value_str)}')
