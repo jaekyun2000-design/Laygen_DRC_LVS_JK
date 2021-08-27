@@ -70,19 +70,19 @@ class CreateConditionalStatement(QWidget):
             self.condition_input.setReadOnly(False)
 
     def ok_clicked(self):
-        if self.operator_input.currentText() != 'None':
-            if self.var_input.text() == '' or self.condition_input.text() == '':
-                self.warning = QMessageBox()
-                self.warning.setText("Fill variable and condition")
-                self.warning.show()
-        elif self.operator_input.currentText() == 'None':
+        if self.operator_input.currentText() == 'None':
             if self.var_input.text() == '':
                 self.warning = QMessageBox()
                 self.warning.setText("Fill variable")
                 self.warning.show()
-        else:
-            print(self.var_input.text(), self.operator_input.currentText(), self.condition_input.text())
-            self.destroy()
+        elif self.operator_input.currentText() != 'None':
+            if self.var_input.text() == '' or self.condition_input.text() == '':
+                self.warning = QMessageBox()
+                self.warning.setText("Fill variable and condition")
+                self.warning.show()
+            else:
+                print(self.var_input.text(), self.operator_input.currentText(), self.condition_input.text())
+                self.destroy()
 
     def cancel_clicked(self):
         self.destroy()
