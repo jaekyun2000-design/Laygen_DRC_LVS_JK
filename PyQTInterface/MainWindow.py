@@ -1081,7 +1081,8 @@ class _MainWindow(QMainWindow):
     def transform_constraints(self, target_ast_list):
         module_ast = ast.Module()
         module_ast.body = copy.deepcopy(target_ast_list)
-        result_ast = variable_ast.IrregularTransformer(self._DummyConstraints).visit(module_ast)
+        # result_ast = variable_ast.IrregularTransformer(self._DummyConstraints).visit(module_ast)
+        result_ast = variable_ast.IrregularTransformer().visit(module_ast)
         result_ast = element_ast.ElementTransformer().visit(result_ast)
         result_ast = variable_ast.VariableTransformer().visit(result_ast)
         return result_ast

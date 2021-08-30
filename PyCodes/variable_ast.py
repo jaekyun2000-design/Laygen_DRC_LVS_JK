@@ -146,10 +146,11 @@ class Distance(GeneratorVariable):
     )
 
 class IrregularTransformer(ast.NodeTransformer):
-    def __init__(self, _id_to_data_dict):
-        if not _id_to_data_dict:
-            raise Exception("Not valid input")
-        self._id_to_data_dict = _id_to_data_dict
+    def __init__(self):
+        pass
+        # if not _id_to_data_dict:
+        #     raise Exception("Not valid input")
+        # self._id_to_data_dict = _id_to_data_dict
 
     def visit_XYCoordinate(self,node):
         if type(node.id) == list:
@@ -165,7 +166,9 @@ class IrregularTransformer(ast.NodeTransformer):
 
         # for XYFlag, elements in self._id_to_data_dict.items():
         # When PathXY transformer called this function,
-        for XYFlag, elements in self._id_to_data_dict.XYDict[_id].items():
+        # for XYFlag, elements in self._id_to_data_dict.XYDict[_id].items():
+        for XYFlag, elements in node.info_dict.items():
+
             for j in range(len(elements)):
                 expression = elements[j]
                 operands_with_operators_list = re.split(' ', expression)
@@ -245,7 +248,8 @@ class IrregularTransformer(ast.NodeTransformer):
         else:
             _id = node.id
         sentence = '['
-        for _, elementIdList in self._id_to_data_dict.XYPathDict[_id].items():
+        # for _, elementIdList in self._id_to_data_dict.XYPathDict[_id].items():
+        for _, elementIdList in node.info_dict.items():
             for i in range(len(elementIdList)):
                 tmp_node = XYCoordinate()
                 tmp_node.id = elementIdList[i]
@@ -266,7 +270,8 @@ class IrregularTransformer(ast.NodeTransformer):
         tmpDict['Y'] = []
         final_x_value = None
         final_y_value = None
-        for XYFlag, elements in self._id_to_data_dict.ExpressionDict[_id].items():
+        # for XYFlag, elements in self._id_to_data_dict.ExpressionDict[_id].items():
+        for XYFlag, elements in node.info_dict.ExpressionDict[_id].items():
             if len(elements) == 0:
                 pass
             else:
@@ -314,12 +319,14 @@ class IrregularTransformer(ast.NodeTransformer):
 
     def visit_Array(self, node):
         _id = node.id
-        info_dict = self._id_to_data_dict.ArrayDict[_id]
+        # info_dict = self._id_to_data_dict.ArrayDict[_id]
+        info_dict = node.info_dict
         _width = ''
         _height = ''
         for key in info_dict.keys():
             if isinstance(info_dict[key], ast.AST):
-                tmpAST = IrregularTransformer(self._id_to_data_dict).visit(info_dict[key])
+                # tmpAST = IrregularTransformer(self._id_to_data_dict).visit(info_dict[key])
+                tmpAST = IrregularTransformer().visit(info_dict[key])
                 sentence = astunparse.unparse(tmpAST)
                 info_dict[key] = sentence
 
