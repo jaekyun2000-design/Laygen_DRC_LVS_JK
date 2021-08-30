@@ -9,6 +9,7 @@ import copy
 import os
 from generatorLib import drc_api
 
+
 class createConditionalStatement(QWidget):
     def __init__(self):
         super().__init__()
@@ -48,7 +49,7 @@ class createConditionalStatement(QWidget):
 
         self.show()
 
-    def and_or_clicked(self,_):
+    def and_or_clicked(self, _):
         sender = self.sender()
 
         input_layout = self.input_widget.add_line(sender.text())
@@ -80,7 +81,7 @@ class createConditionalStatement(QWidget):
 
             output_list.append(output_dict)
             idx = output_dict_list.index(output_dict)
-            if idx != len(output_dict_list)-1:
+            if idx != len(output_dict_list) - 1:
                 output_list.append(output_and_or_list[idx])
 
         print(output_list)
@@ -175,7 +176,7 @@ class createConditionalStatementCapsule(QWidget):
 
         return self.main_layout
 
-    def operator_changed(self,_):
+    def operator_changed(self, _):
         sender = self.sender()
 
         for i in range(len(self.output_dict_list)):
@@ -184,10 +185,12 @@ class createConditionalStatementCapsule(QWidget):
                 break
 
         if sender.currentText() == 'None':
-            self.main_layout.itemAt(i).itemAt(2).itemAt(1).widget().setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            self.main_layout.itemAt(i).itemAt(2).itemAt(1).widget().setStyleSheet(
+                "QLineEdit{background:rgb(222,222,222);}")
             self.main_layout.itemAt(i).itemAt(2).itemAt(1).widget().setReadOnly(True)
         else:
-            self.main_layout.itemAt(i).itemAt(2).itemAt(1).widget().setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
+            self.main_layout.itemAt(i).itemAt(2).itemAt(1).widget().setStyleSheet(
+                "QLineEdit{background:rgb(255,255,255);}")
             self.main_layout.itemAt(i).itemAt(2).itemAt(1).widget().setReadOnly(False)
 
     def update_output_dict(self, _):
@@ -199,22 +202,43 @@ class createConditionalStatementCapsule(QWidget):
             self.output_dict_list[i]['operator'] = op
             self.output_dict_list[i]['condition'] = cond
 
+
 class applyConditionalStatement(QWidget):
     def __init__(self):
         super().__init__()
-        self.option = ['if', 'dummy']
         self.init_ui()
 
     def init_ui(self):
-        option_input = QComboBox()
-        option_input.addItems(self.option)
-        option_input.currentTextChanged.connect(self.option_changed)
+        self.input_widget = applyConditionalStatementCapsule()
 
         if_button = QPushButton()
         if_button.setText('if')
+        if_button.setMinimumWidth(50)
+        if_button.setMaximumWidth(50)
+        if_button.clicked.connect(self.stmt_clicked)
+        if_button.clicked.connect(self.change_if)
 
         else_button = QPushButton()
         else_button.setText('else')
+        else_button.setDisabled(True)
+        else_button.setMinimumWidth(50)
+        else_button.setMaximumWidth(50)
+        else_button.clicked.connect(self.stmt_clicked)
+        else_button.clicked.connect(self.disable_else)
+
+        for_button = QPushButton()
+        for_button.setText('for')
+        for_button.setMinimumWidth(50)
+        for_button.setMaximumWidth(50)
+        for_button.clicked.connect(self.stmt_clicked)
+        for_button.clicked.connect(self.disable_else)
+
+        while_button = QPushButton()
+        while_button.setText('while')
+        while_button.setMinimumWidth(50)
+        while_button.setMaximumWidth(50)
+        while_button.clicked.connect(self.stmt_clicked)
+        while_button.clicked.connect(self.disable_else)
 
         ok_button = QPushButton()
         ok_button.setText('OK')
@@ -224,58 +248,236 @@ class applyConditionalStatement(QWidget):
         cancel_button.setText('cancel')
         cancel_button.clicked.connect(self.cancel_clicked)
 
-        button_layout = QHBoxLayout()
-        button_layout.addWidget(if_button)
-        button_layout.addWidget(else_button)
+        option_layout = QHBoxLayout()
+        option_layout.addWidget(if_button)
+        option_layout.addWidget(else_button)
+        option_layout.addWidget(for_button)
+        option_layout.addWidget(while_button)
+        option_layout.addSpacing(600)
 
-        self.option_layout = QHBoxLayout()
-        self.option_layout.addWidget(option_input)
-        self.option_layout.addSpacing(150)
-        self.option_layout.addLayout(button_layout)
+        self.button_layout = QHBoxLayout()
+        self.button_layout.addSpacing(300)
+        self.button_layout.addWidget(ok_button)
+        self.button_layout.addWidget(cancel_button)
 
-        self.setLayout(self.option_layout)
+        self.main_layout = QVBoxLayout()
+        self.main_layout.addLayout(option_layout)
+        self.main_layout.addSpacing(30)
+        self.main_layout.addLayout(self.button_layout)
+
+        self.setLayout(self.main_layout)
+
+        self.setMinimumWidth(600)
+        self.setMaximumWidth(600)
 
         self.show()
 
-    def option_changed(self):
+    def change_if(self):
+        sender = self.sender()
+        sender.setText('elif')
+
+        self.main_layout.itemAt(0).itemAt(1).widget().setDisabled(False)
+
+    def disable_else(self):
+        self.main_layout.itemAt(0).itemAt(0).widget().setText('if')
+        self.main_layout.itemAt(0).itemAt(1).widget().setDisabled(True)
+
+    def stmt_clicked(self):
         sender = self.sender()
 
-        if sender.currentText() == 'if':
-            if_button = QPushButton()
-            if_button.setText('if')
+        input_layout = self.input_widget.new_line(sender.text())
 
-            else_button = QPushButton()
-            else_button.setText('else')
+        self.main_layout.removeItem(self.button_layout)
+        self.main_layout.addLayout(input_layout)
+        self.main_layout.addLayout(self.button_layout)
+        self.input_widget.main_layout = self.main_layout
+        self.setLayout(self.main_layout)
 
-            old_button_layout = self.option_layout.itemAt(2)
-            for i in range(old_button_layout.count()):
-                old_button_layout.removeItem(old_button_layout.itemAt(i))
-            self.option_layout.removeItem(old_button_layout)
-            button_layout = QHBoxLayout()
-            button_layout.addWidget(if_button)
-            button_layout.addWidget(else_button)
-            self.option_layout.addLayout(button_layout)
+    def ok_clicked(self):
+        print('ok')
+        # self.destroy()
 
-            self.setLayout(self.option_layout)
+    def cancel_clicked(self):
+        print('cancel')
+        # self.destroy()
 
+
+class applyConditionalStatementCapsule(QWidget):
+    def __init__(self):
+        super().__init__()
+
+    def new_line(self, clicked_button):
+        stmt_label = QLabel(clicked_button)
+        stmt_label.setMinimumWidth(30)
+        stmt_label.setMaximumWidth(30)
+
+        exp_input = QLineEdit()
+
+        hbox1 = QHBoxLayout()
+        hbox1.addWidget(stmt_label)
+        hbox1.addWidget(exp_input)
+
+        if_button = QPushButton()
+        if_button.setText('if')
+        if_button.indent = 0
+        if_button.setMinimumWidth(50)
+        if_button.setMaximumWidth(50)
+        if_button.clicked.connect(self.stmt_clicked)
+        if_button.clicked.connect(self.change_if)
+
+        else_button = QPushButton()
+        else_button.setText('else')
+        else_button.setDisabled(True)
+        else_button.indent = 0
+        else_button.setMinimumWidth(50)
+        else_button.setMaximumWidth(50)
+        else_button.clicked.connect(self.stmt_clicked)
+        else_button.clicked.connect(self.disable_else)
+
+        for_button = QPushButton()
+        for_button.setText('for')
+        for_button.indent = 0
+        for_button.setMinimumWidth(50)
+        for_button.setMaximumWidth(50)
+        for_button.clicked.connect(self.stmt_clicked)
+        for_button.clicked.connect(self.disable_else)
+
+        while_button = QPushButton()
+        while_button.setText('while')
+        while_button.indent = 0
+        while_button.setMinimumWidth(50)
+        while_button.setMaximumWidth(50)
+        while_button.clicked.connect(self.stmt_clicked)
+        while_button.clicked.connect(self.disable_else)
+
+        hbox2 = QHBoxLayout()
+        hbox2.addSpacing(35)
+        hbox2.addWidget(if_button)
+        hbox2.addWidget(else_button)
+        hbox2.addWidget(for_button)
+        hbox2.addWidget(while_button)
+        hbox2.addSpacing(600)
+
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(hbox1)
+        main_layout.addLayout(hbox2)
+
+        return main_layout
+
+    def change_if(self):
+        sender = self.sender()
+        sender.setText('elif')
+
+        for i in range(2, self.main_layout.count() - 1):
+            if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget():
+                break
+
+        self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget().setDisabled(False)
+
+    def disable_else(self):
+        sender = self.sender()
+
+        for i in range(2, self.main_layout.count() - 1):
+            if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget():
+                break
+
+        self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().setText('if')
+        self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget().setDisabled(True)
+
+
+    def stmt_clicked(self):
+        sender = self.sender()
+        indent = sender.indent
+
+        input_layout = self.add_line(sender.text(), indent + 1)
+
+        for i in range(2, self.main_layout.count() - 1):
+            if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget():
+                break
+
+        print(i)
+        count = self.main_layout.count() - 1
+        print(count)
+
+        if i == count - 1:
+            j = count
         else:
-            if_button = QPushButton()
-            if_button.setText('else')
+            for j in range(i+1, self.main_layout.count() - 1):
+                if sender.indent == self.main_layout.itemAt(j).itemAt(1).itemAt(1).widget().indent:
+                    break
+                j = count
 
-            else_button = QPushButton()
-            else_button.setText('if')
+        self.main_layout.insertLayout(j, input_layout)
 
-            dummy_button = QPushButton()
-            dummy_button.setText('dummy')
+    def add_line(self, clicked_button, indent):
+        stmt_label = QLabel(clicked_button)
+        stmt_label.setMinimumWidth(30)
+        stmt_label.setMaximumWidth(30)
 
-            old_button_layout = self.option_layout.itemAt(2)
-            for i in range(old_button_layout.count()):
-                old_button_layout.removeItem(old_button_layout.itemAt(i))
-            self.option_layout.removeItem(old_button_layout)
-            button_layout = QHBoxLayout()
-            button_layout.addWidget(if_button)
-            button_layout.addWidget(else_button)
-            button_layout.addWidget(dummy_button)
-            self.option_layout.addLayout(button_layout)
+        exp_input = QLineEdit()
 
-            self.setLayout(self.option_layout)
+        hbox1 = QHBoxLayout()
+        hbox1.addSpacing(40 * indent)
+        hbox1.addWidget(stmt_label)
+        hbox1.addWidget(exp_input)
+
+        if_button = QPushButton()
+        if_button.setText('if')
+        if_button.indent = indent
+        if_button.setMinimumWidth(50)
+        if_button.setMaximumWidth(50)
+        if_button.clicked.connect(self.stmt_clicked)
+        if_button.clicked.connect(self.change_if)
+
+        else_button = QPushButton()
+        else_button.setText('else')
+        else_button.setDisabled(True)
+        else_button.indent = indent
+        else_button.setMinimumWidth(50)
+        else_button.setMaximumWidth(50)
+        else_button.clicked.connect(self.stmt_clicked)
+
+        for_button = QPushButton()
+        for_button.setText('for')
+        for_button.indent = indent
+        for_button.setMinimumWidth(50)
+        for_button.setMaximumWidth(50)
+        for_button.clicked.connect(self.stmt_clicked)
+
+        while_button = QPushButton()
+        while_button.setText('while')
+        while_button.indent = indent
+        while_button.setMinimumWidth(50)
+        while_button.setMaximumWidth(50)
+        while_button.clicked.connect(self.stmt_clicked)
+
+        hbox2 = QHBoxLayout()
+        hbox2.addSpacing(40 * indent + 35)
+        hbox2.addWidget(if_button)
+        hbox2.addWidget(else_button)
+        hbox2.addWidget(for_button)
+        hbox2.addWidget(while_button)
+        hbox2.addSpacing(600)
+
+        add_layout = QVBoxLayout()
+        add_layout.addLayout(hbox1)
+        add_layout.addLayout(hbox2)
+
+        return add_layout
+    #     self.insert_layout(add_layout)
+    #
+    #     self.main_layout.addLayout(add_layout)
+    #     self.setLayout(self.main_layout)
+    #
+    # def insert_layout(self, add_layout):
+    #
+    #     pass
