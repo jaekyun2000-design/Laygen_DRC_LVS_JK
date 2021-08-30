@@ -482,7 +482,8 @@ class _MainWindow(QMainWindow):
         # self.parsetreeEasyRun = QPushButton("easyRun")
         self.variableCallButton = QPushButton("variableCall")
         self.calculatorButton = QPushButton("XYCalculator")
-        self.conditional_stmt_button = QPushButton("if debug")
+        self.create_conditional_stmt_button = QPushButton("create if debug")
+        self.apply_conditional_stmt_button = QPushButton("apply if debug")
 
         VBoxForPeriButton.addStretch(3)
         # VBoxForPeriButton.addWidget(self.createConstraintButton)
@@ -498,7 +499,8 @@ class _MainWindow(QMainWindow):
         # VBoxForPeriButton.addWidget(self.parsetreeEasyRun)
         VBoxForPeriButton.addWidget(self.variableCallButton)
         VBoxForPeriButton.addWidget(self.calculatorButton)
-        VBoxForPeriButton.addWidget(self.conditional_stmt_button)
+        VBoxForPeriButton.addWidget(self.create_conditional_stmt_button)
+        VBoxForPeriButton.addWidget(self.apply_conditional_stmt_button)
         VBoxForPeriButton.addStretch(3)
 
         # self.dockContentWidget3.setDragDropMode(self.dockContectWidget3.MyOwnDragDropMove)
@@ -525,7 +527,8 @@ class _MainWindow(QMainWindow):
         # self.parsetreeEasyRun.clicked.connect(self.easyRun)
         self.variableCallButton.clicked.connect(self.variableListUpdate)
         self.calculatorButton.clicked.connect(self.calculator)
-        self.conditional_stmt_button.clicked.connect(self.conditional_stmt)
+        self.create_conditional_stmt_button.clicked.connect(self.create_conditional_stmt)
+        self.apply_conditional_stmt_button.clicked.connect(self.apply_conditional_stmt)
 
 
         ##################Extra widget initialization #########################
@@ -623,9 +626,13 @@ class _MainWindow(QMainWindow):
         self.calculator_window.show()
         print(self.calculator_window.presetDict)
 
-    def conditional_stmt(self):
-        self.conditional_stmt_window = ConditionalStatement.CreateConditionalStatement()
-        self.conditional_stmt_window.show()
+    def create_conditional_stmt(self):
+        self.create_conditional_stmt_window = ConditionalStatement.createConditionalStatement()
+        self.create_conditional_stmt_window.show()
+
+    def apply_conditional_stmt(self):
+        self.apply_conditional_stmt_window = ConditionalStatement.applyConditionalStatement()
+        self.apply_conditional_stmt_window.show()
 
     def get_dc_highlight_dp(self,dc_id):
         for seleceted_item in self.scene.selectedItems():
