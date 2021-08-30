@@ -629,6 +629,15 @@ class _MainWindow(QMainWindow):
     def create_conditional_stmt(self):
         self.create_conditional_stmt_window = ConditionalStatement.createConditionalStatement()
         self.create_conditional_stmt_window.show()
+        self.create_conditional_stmt_window.send_output_dict_signal.connect(self.test)
+
+    def test(self, output_dict):
+        test_ast = variable_ast.ConditionExpression()
+        test_ast.variable = output_dict['variable']
+        test_ast.operator = output_dict['operator']
+        test_ast.condition = output_dict['condition']
+        self.createNewConstraintAST(test_ast)
+
 
     def apply_conditional_stmt(self):
         self.apply_conditional_stmt_window = ConditionalStatement.applyConditionalStatement()
