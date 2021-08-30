@@ -396,17 +396,14 @@ class applyConditionalStatementCapsule(QWidget):
         indent = sender.indent
 
         input_layout = self.add_line(sender.text(), indent + 1)
+        count = self.main_layout.count() - 1
 
-        for i in range(2, self.main_layout.count() - 1):
+        for i in range(2, count):
             if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget():
                 break
-
-        print(i)
-        count = self.main_layout.count() - 1
-        print(count)
 
         if i == count - 1:
             j = count
