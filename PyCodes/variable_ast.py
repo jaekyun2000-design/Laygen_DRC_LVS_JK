@@ -839,7 +839,7 @@ class IrregularTransformer(ast.NodeTransformer):
 
     def visit_ConditionSTMT(self, node):
         tmp_node = copy.deepcopy(node)
-        tmp_node.expression = astunparse.unparse(self.visit(tmp_node.expression))
+        tmp_node.expression = astunparse.unparse(self.visit(tmp_node.expression)).replace('\n','')
         return_str = str(tmp_node.stmt) + ' ' + str(tmp_node.expression) + ':' + '\n'
         if not tmp_node.body:
             return_str += '\tpass'
@@ -855,13 +855,22 @@ class IrregularTransformer(ast.NodeTransformer):
         tmp_node = copy.deepcopy(node)
         for field in tmp_node._fields:
             if isinstance(tmp_node.__dict__[field], ast.AST):
-                raise Exception("Not implemented.")
+                tmp_node.__dict__[field] = astunparse.unparse(run_transformer(tmp_node.__dict__[field])).replace('\n','')
         return_str = str(tmp_node.variable) + str(tmp_node.operator) + str(tmp_node.condition)
         return ast.parse(return_str)
-        # return str(tmp_node.variable) + str(tmp_node.operator) + str(tmp_node.condition)
 
 
 
+def run_transformer(source_ast):
+    module_ast = ast.Module()
+    if type(source_ast) == list:
+        module_ast.body = copy.deepcopy(source_ast)
+    else:
+        module_ast.body = copy.deepcopy([source_ast])
+    result_ast = IrregularTransformer().visit(module_ast)
+    result_ast = element_ast.ElementTransformer().visit(result_ast)
+    result_ast = VariableTransformer().visit(result_ast)
+    return result_ast
 
 
 
@@ -902,16 +911,19 @@ if __name__ == '__main__':
     print(astunparse.unparse(kk))
 
 
-# a = ConditionSTMTlist()
-# b = ConditionSTMT()
-# b.stmt = 'if'
-# c = ConditionExpression()
+a = ConditionSTMTlist()
+b = ConditionSTMT()
+b.stmt = 'if'
+c = ConditionExpression()
+variable__ = ast.parse('a').body[0]
+c.variable = variable__
 # c.variable = 1
-# c.operator = '>'
-# c.condition = '0'
-# b.expression = c
-# tmp = ast.parse('print("hello")')
-# b.body = tmp.body
-# a.body = [b]
-# tf = IrregularTransformer(dict(a=10))
-# print(tf.visit(a))
+c.operator = '>'
+c.condition = '0'
+b.expression = c
+tmp = ast.parse('print("hello")')
+b.body = tmp.body
+a.body = [b]
+tf = IrregularTransformer()
+k = tf.visit(a)
+print(astunparse.unparse(k))
