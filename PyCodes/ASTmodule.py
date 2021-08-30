@@ -589,9 +589,13 @@ def _STMTListMask(_STMTList):
 
         # if stmt['_key'] == "If":
 
-
-
-
+def run_transformer(source_ast):
+    module_ast = ast.Module()
+    module_ast.body = copy.deepcopy(source_ast)
+    result_ast = variable_ast.IrregularTransformer().visit(module_ast)
+    result_ast = element_ast.ElementTransformer().visit(result_ast)
+    result_ast = variable_ast.VariableTransformer().visit(result_ast)
+    return result_ast
 
 #stmtList = _loadASTclassList()
 #def _STMTtoAST(_targetSTMT):

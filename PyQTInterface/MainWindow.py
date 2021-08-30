@@ -1078,15 +1078,6 @@ class _MainWindow(QMainWindow):
                         break
         return _finalModule
 
-    def transform_constraints(self, target_ast_list):
-        module_ast = ast.Module()
-        module_ast.body = copy.deepcopy(target_ast_list)
-        # result_ast = variable_ast.IrregularTransformer(self._DummyConstraints).visit(module_ast)
-        result_ast = variable_ast.IrregularTransformer().visit(module_ast)
-        result_ast = element_ast.ElementTransformer().visit(result_ast)
-        result_ast = variable_ast.VariableTransformer().visit(result_ast)
-        return result_ast
-
     def debug_not_defined_variables(self):
         self.dockContentWidget3.blockSignals(True)
         user_variables = variableWindow._createNewDesignVariable.variableDict.values()
@@ -1106,7 +1097,8 @@ class _MainWindow(QMainWindow):
             for _id in constraint_ids:
                 error_id = _id
                 ast_list.append(self._QTObj._qtProject._DesignConstraint[module][_id]._ast)
-                result_ast = self.transform_constraints(ast_list)
+                # result_ast = self.transform_constraints(ast_list)
+                result_ast = ASTmodule.run_transformer(ast_list)
                 code = astunparse.unparse(result_ast)
                 debugger_gds2gen.load_qt_design_constraints_code(code)
                 debugger_gds2gen.set_root_cell(self._CurrentModuleName)
@@ -1141,7 +1133,8 @@ class _MainWindow(QMainWindow):
             for _id in constraint_ids:
                 error_id = _id
                 ast_list.append(self._QTObj._qtProject._DesignConstraint[module][_id]._ast)
-                result_ast = self.transform_constraints(ast_list)
+                # result_ast = self.transform_constraints(ast_list)
+                result_ast = ASTmodule.run_transformer(ast_list)
                 code = astunparse.unparse(result_ast)
                 debugger_gds2gen.load_qt_design_constraints_code(code)
                 debugger_gds2gen.set_root_cell(self._CurrentModuleName)
@@ -1164,7 +1157,10 @@ class _MainWindow(QMainWindow):
             module = self._CurrentModuleName
             constraint_names = self.dockContentWidget3.model.findItems('',Qt.MatchContains,1)
             constraint_ids = [item.text() for item in constraint_names]
-            topAST = self.transform_constraints([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
+            # topAST = self.transform_constraints([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
+            topAST = ASTmodule.run_transformer([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
+
+
             code = astunparse.unparse(topAST)
             print(code)
 
@@ -2817,7 +2813,8 @@ class _MainWindow(QMainWindow):
         sender = self.sender()
         sender.blockSignals(True)
         try:
-            tested_ast = self.transform_constraints([self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][constraint_id]._ast])
+            # tested_ast = self.transform_constraints([self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][constraint_id]._ast])
+            tested_ast = ASTmodule.run_transformer([self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][constraint_id]._ast])
             code = astunparse.unparse(tested_ast)
             sender.set_errored_constraint_id(constraint_id, 'clean')
         except Exception as e:
