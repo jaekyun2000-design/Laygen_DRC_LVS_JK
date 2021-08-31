@@ -638,7 +638,7 @@ class _MainWindow(QMainWindow):
             else info_dict['variable']
             output_ast.condition = create_ast_by_dict(info_dict['condition']) if type(info_dict['condition']) == dict \
             else info_dict['condition']
-            output_ast.operator = output_dict['operator']
+            output_ast.operator = info_dict['operator']
             return output_ast
 
         test_ast = create_ast_by_dict(output_dict)
