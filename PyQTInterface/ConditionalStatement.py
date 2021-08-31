@@ -295,11 +295,9 @@ class applyConditionalStatement(QWidget):
 
     def ok_clicked(self):
         print('ok')
-        # self.destroy()
 
     def cancel_clicked(self):
         print('cancel')
-        # self.destroy()
 
 
 class applyConditionalStatementCapsule(QWidget):
@@ -396,22 +394,25 @@ class applyConditionalStatementCapsule(QWidget):
         indent = sender.indent
 
         input_layout = self.add_line(sender.text(), indent + 1)
-        count = self.main_layout.count() - 1
+        count = self.main_layout.count()
 
-        for i in range(2, count):
+        for i in range(count):
+            print(self.main_layout.itemAt(i))
+
+        for i in range(2, count-2):
             if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget():
                 break
 
-        if i == count - 1:
-            j = count
+        if i == count - 2:
+            j = count - 1
         else:
-            for j in range(i+1, self.main_layout.count() - 1):
-                if sender.indent == self.main_layout.itemAt(j).itemAt(1).itemAt(1).widget().indent:
+            for j in range(i+1, count-2):
+                if sender.indent >= self.main_layout.itemAt(j).itemAt(1).itemAt(1).widget().indent:
                     break
-                j = count
+                j = count - 1
 
         self.main_layout.insertLayout(j, input_layout)
 
@@ -470,11 +471,6 @@ class applyConditionalStatementCapsule(QWidget):
         add_layout.addLayout(hbox2)
 
         return add_layout
-    #     self.insert_layout(add_layout)
-    #
-    #     self.main_layout.addLayout(add_layout)
-    #     self.setLayout(self.main_layout)
-    #
-    # def insert_layout(self, add_layout):
-    #
-    #     pass
+
+    def update_output_dict(self):
+        pass
