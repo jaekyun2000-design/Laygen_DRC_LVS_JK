@@ -638,10 +638,15 @@ class _MainWindow(QMainWindow):
         test_ast.condition = output_dict['condition']
         self.createNewConstraintAST(test_ast)
 
-
     def apply_conditional_stmt(self):
         self.apply_conditional_stmt_window = ConditionalStatement.applyConditionalStatement()
         self.apply_conditional_stmt_window.show()
+        self.apply_conditional_stmt_window.send_output_list_signal.connect(self.test2)
+
+    def test2(self, output_list):
+        test_ast = variable_ast.ConditionSTMTlist()
+        test_ast.body = output_list
+        self.createNewConstraintAST(test_ast)
 
     def get_dc_highlight_dp(self,dc_id):
         for seleceted_item in self.scene.selectedItems():

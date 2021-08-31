@@ -211,6 +211,8 @@ class createConditionalStatementCapsule(QWidget):
 
 
 class applyConditionalStatement(QWidget):
+    send_output_list_signal = pyqtSignal(list)
+
     def __init__(self):
         super().__init__()
         self.init_ui()
@@ -301,10 +303,13 @@ class applyConditionalStatement(QWidget):
         self.setLayout(self.main_layout)
 
     def ok_clicked(self):
-        self.input_widget.update_output_dict()
+        output_list = self.input_widget.update_output_dict()
+
+        self.send_output_list_signal.emit(output_list)
+        self.destroy()
 
     def cancel_clicked(self):
-        print('cancel')
+        self.destroy()
 
 
 class applyConditionalStatementCapsule(QWidget):
@@ -492,4 +497,4 @@ class applyConditionalStatementCapsule(QWidget):
                                                            body=list())
                 output_list.append(self.main_layout.itemAt(i).tmp_dict)
 
-        print(output_list)
+        return output_list
