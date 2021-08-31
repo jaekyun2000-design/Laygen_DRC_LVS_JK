@@ -12,6 +12,7 @@ from generatorLib import drc_api
 
 class createConditionalStatement(QWidget):
     send_output_dict_signal = pyqtSignal(dict)
+
     def __init__(self):
         super().__init__()
         self.init_ui()
@@ -61,7 +62,6 @@ class createConditionalStatement(QWidget):
         self.setLayout(self.main_layout)
 
     def ok_clicked(self):
-        output_list = list()
         output_dict_list = self.input_widget.output_dict_list
         output_and_or_list = self.input_widget.output_and_or_list
 
@@ -80,13 +80,18 @@ class createConditionalStatement(QWidget):
                     self.warning.show()
                     return
 
-            output_list.append(output_dict)
-            idx = output_dict_list.index(output_dict)
-            if idx != len(output_dict_list) - 1:
-                output_list.append(output_and_or_list[idx])
+        for idx in range(len(output_and_or_list)):
+            tmp_dict = dict(variable=None,
+                            operator=None,
+                            condition=None)
+            tmp_dict['variable'] = output_dict_list[idx]
+            tmp_dict['operator'] = output_and_or_list[idx]
+            tmp_dict['condition'] = output_dict_list[idx + 1]
 
-        print(output_list)
-        self.send_output_dict_signal.emit(output_list[0])
+            output_dict_list[idx + 1] = tmp_dict
+
+        print(tmp_dict)
+        self.send_output_dict_signal.emit(tmp_dict)
         self.destroy()
 
     def cancel_clicked(self):
@@ -296,12 +301,10 @@ class applyConditionalStatement(QWidget):
         self.setLayout(self.main_layout)
 
     def ok_clicked(self):
-        print('ok')
-        # self.destroy()
+        self.input_widget.update_output_dict()
 
     def cancel_clicked(self):
         print('cancel')
-        # self.destroy()
 
 
 class applyConditionalStatementCapsule(QWidget):
@@ -392,29 +395,29 @@ class applyConditionalStatementCapsule(QWidget):
         self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().setText('if')
         self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget().setDisabled(True)
 
-
     def stmt_clicked(self):
         sender = self.sender()
         indent = sender.indent
 
         input_layout = self.add_line(sender.text(), indent + 1)
-        count = self.main_layout.count() - 1
+        count = self.main_layout.count()
 
-        for i in range(2, count):
+        for i in range(2, count - 1):
             if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget():
                 break
 
-        if i == count - 1:
-            j = count
+        if i == count - 2:
+            j = count - 1
         else:
-            for j in range(i+1, self.main_layout.count() - 1):
-                if sender.indent == self.main_layout.itemAt(j).itemAt(1).itemAt(1).widget().indent:
+            for j in range(i + 1, count - 1):
+                if sender.indent >= self.main_layout.itemAt(j).itemAt(1).itemAt(1).widget().indent:
                     break
-                j = count
+                j = count - 1
 
+        input_layout.parent_layout = self.main_layout.itemAt(i)
         self.main_layout.insertLayout(j, input_layout)
 
     def add_line(self, clicked_button, indent):
@@ -472,11 +475,21 @@ class applyConditionalStatementCapsule(QWidget):
         add_layout.addLayout(hbox2)
 
         return add_layout
-    #     self.insert_layout(add_layout)
-    #
-    #     self.main_layout.addLayout(add_layout)
-    #     self.setLayout(self.main_layout)
-    #
-    # def insert_layout(self, add_layout):
-    #
-    #     pass
+
+    def update_output_dict(self):
+        count = self.main_layout.count()
+        output_list = list()
+
+        for i in range(2, count - 1):
+            if 'parent_layout' in self.main_layout.itemAt(i).__dict__:
+                self.main_layout.itemAt(i).tmp_dict = dict(stmt=self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text(),
+                                                           expression=self.main_layout.itemAt(i).itemAt(0).itemAt(2).widget().text(),
+                                                           body=list())
+                self.main_layout.itemAt(i).parent_layout.tmp_dict['body'].append(self.main_layout.itemAt(i).tmp_dict)
+            else:
+                self.main_layout.itemAt(i).tmp_dict = dict(stmt=self.main_layout.itemAt(i).itemAt(0).itemAt(0).widget().text(),
+                                                           expression=self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text(),
+                                                           body=list())
+                output_list.append(self.main_layout.itemAt(i).tmp_dict)
+
+        print(output_list)
