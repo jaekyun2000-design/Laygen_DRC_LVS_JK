@@ -11,6 +11,7 @@ from generatorLib import drc_api
 
 
 class createConditionalStatement(QWidget):
+    send_output_dict_signal = pyqtSignal(dict)
     def __init__(self):
         super().__init__()
         self.init_ui()
@@ -85,6 +86,7 @@ class createConditionalStatement(QWidget):
                 output_list.append(output_and_or_list[idx])
 
         print(output_list)
+        self.send_output_dict_signal.emit(output_list[0])
         self.destroy()
 
     def cancel_clicked(self):

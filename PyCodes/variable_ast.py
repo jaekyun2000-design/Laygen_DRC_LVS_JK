@@ -49,6 +49,35 @@ class PathXY(GeneratorVariable):
         'id',  # str
     )
 
+class ConditionSTMTlist(GeneratorVariable):
+    def __init__(self):
+        super().__init__()
+
+    _fields = (
+        'body',
+    )
+
+class ConditionSTMT(GeneratorVariable):
+    def __init__(self):
+        super().__init__()
+
+    _fields = (
+        'stmt',
+        'expression',
+        'body',
+    )
+
+
+class ConditionExpression(GeneratorVariable):
+    def __init__(self):
+        super().__init__()
+
+    _fields = (
+        'variable',
+        'operator',
+        'condition',
+    )
+
 class ArgumentVariable(GeneratorVariable):
     """
     ArgumentVariable class:
@@ -117,10 +146,11 @@ class Distance(GeneratorVariable):
     )
 
 class IrregularTransformer(ast.NodeTransformer):
-    def __init__(self, _id_to_data_dict):
-        if not _id_to_data_dict:
-            raise Exception("Not valid input")
-        self._id_to_data_dict = _id_to_data_dict
+    def __init__(self):
+        pass
+        # if not _id_to_data_dict:
+        #     raise Exception("Not valid input")
+        # self._id_to_data_dict = _id_to_data_dict
 
     def visit_XYCoordinate(self,node):
         if type(node.id) == list:
@@ -136,7 +166,9 @@ class IrregularTransformer(ast.NodeTransformer):
 
         # for XYFlag, elements in self._id_to_data_dict.items():
         # When PathXY transformer called this function,
-        for XYFlag, elements in self._id_to_data_dict.XYDict[_id].items():
+        # for XYFlag, elements in self._id_to_data_dict.XYDict[_id].items():
+        for XYFlag, elements in node.info_dict.items():
+
             for j in range(len(elements)):
                 expression = elements[j]
                 operands_with_operators_list = re.split(' ', expression)
@@ -216,7 +248,8 @@ class IrregularTransformer(ast.NodeTransformer):
         else:
             _id = node.id
         sentence = '['
-        for _, elementIdList in self._id_to_data_dict.XYPathDict[_id].items():
+        # for _, elementIdList in self._id_to_data_dict.XYPathDict[_id].items():
+        for _, elementIdList in node.info_dict.items():
             for i in range(len(elementIdList)):
                 tmp_node = XYCoordinate()
                 tmp_node.id = elementIdList[i]
@@ -237,7 +270,8 @@ class IrregularTransformer(ast.NodeTransformer):
         tmpDict['Y'] = []
         final_x_value = None
         final_y_value = None
-        for XYFlag, elements in self._id_to_data_dict.ExpressionDict[_id].items():
+        # for XYFlag, elements in self._id_to_data_dict.ExpressionDict[_id].items():
+        for XYFlag, elements in node.info_dict.ExpressionDict[_id].items():
             if len(elements) == 0:
                 pass
             else:
@@ -285,12 +319,14 @@ class IrregularTransformer(ast.NodeTransformer):
 
     def visit_Array(self, node):
         _id = node.id
-        info_dict = self._id_to_data_dict.ArrayDict[_id]
+        # info_dict = self._id_to_data_dict.ArrayDict[_id]
+        info_dict = node.info_dict
         _width = ''
         _height = ''
         for key in info_dict.keys():
             if isinstance(info_dict[key], ast.AST):
-                tmpAST = IrregularTransformer(self._id_to_data_dict).visit(info_dict[key])
+                # tmpAST = IrregularTransformer(self._id_to_data_dict).visit(info_dict[key])
+                tmpAST = IrregularTransformer().visit(info_dict[key])
                 sentence = astunparse.unparse(tmpAST)
                 info_dict[key] = sentence
 
@@ -793,6 +829,51 @@ class IrregularTransformer(ast.NodeTransformer):
             result = '(' + result + ')'
         return result
 
+    def visit_ConditionSTMTlist(self, node):
+        return_str = ''
+        for stmt in node.body:
+            return_str += astunparse.unparse(self.visit(stmt))
+        # return return_str
+        return ast.parse(return_str)
+
+
+    def visit_ConditionSTMT(self, node):
+        tmp_node = copy.deepcopy(node)
+        tmp_node.expression = astunparse.unparse(self.visit(tmp_node.expression)).replace('\n','')
+        return_str = str(tmp_node.stmt) + ' ' + str(tmp_node.expression) + ':' + '\n'
+        if not tmp_node.body:
+            return_str += '\tpass'
+        else:
+            for body_stmt in tmp_node.body:
+                if isinstance(body_stmt, ast.AST):
+                    return_str += '\t' + str(astunparse.unparse(body_stmt).replace('\n','')) + '\n'
+                else:
+                    return_str += '\t' + str(body_stmt) + '\n'
+        return ast.parse(return_str)
+
+    def visit_ConditionExpression(self, node):
+        tmp_node = copy.deepcopy(node)
+        for field in tmp_node._fields:
+            if isinstance(tmp_node.__dict__[field], ast.AST):
+                tmp_node.__dict__[field] = astunparse.unparse(run_transformer(tmp_node.__dict__[field])).replace('\n','')
+        return_str = str(tmp_node.variable) + str(tmp_node.operator) + str(tmp_node.condition)
+        return ast.parse(return_str)
+
+
+
+def run_transformer(source_ast):
+    module_ast = ast.Module()
+    if type(source_ast) == list:
+        module_ast.body = copy.deepcopy(source_ast)
+    else:
+        module_ast.body = copy.deepcopy([source_ast])
+    result_ast = IrregularTransformer().visit(module_ast)
+    result_ast = element_ast.ElementTransformer().visit(result_ast)
+    result_ast = VariableTransformer().visit(result_ast)
+    return result_ast
+
+
+
 
 
 class VariableTransformer(ast.NodeTransformer):
@@ -828,3 +909,21 @@ if __name__ == '__main__':
     print(astunparse.dump(kk))
     astunparse.unparse(kk)
     print(astunparse.unparse(kk))
+
+
+a = ConditionSTMTlist()
+b = ConditionSTMT()
+b.stmt = 'if'
+c = ConditionExpression()
+variable__ = ast.parse('a').body[0]
+c.variable = variable__
+# c.variable = 1
+c.operator = '>'
+c.condition = '0'
+b.expression = c
+tmp = ast.parse('print("hello")')
+b.body = tmp.body
+a.body = [b]
+tf = IrregularTransformer()
+k = tf.visit(a)
+print(astunparse.unparse(k))

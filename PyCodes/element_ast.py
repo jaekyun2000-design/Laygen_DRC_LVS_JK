@@ -3,7 +3,6 @@ import copy
 import warnings
 
 import astunparse
-from PyCodes import ASTmodule
 # listTypeData = ['Lib','tb','PlaceDef','RouteDef','DRCDef','Iteration','P_R']
 custom_ast_list = ['Generator','Sref','Boundary','Path', 'Text', 'MacroCell']
 #--start constants--
@@ -166,7 +165,7 @@ class GeneratorTransformer(ast.NodeTransformer):
 class ElementTransformer(ast.NodeTransformer):
 
     def xy_syntax_checker(self,node):
-        node._type = ASTmodule._getASTtype(node)
+        node._type = className = type(node).__name__
         if node._type == 'Path':
             if 'XY' in node.__dict__:
                 if type(node.XY) != list:
