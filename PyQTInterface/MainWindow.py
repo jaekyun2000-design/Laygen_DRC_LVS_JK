@@ -632,10 +632,16 @@ class _MainWindow(QMainWindow):
         self.create_conditional_stmt_window.send_output_dict_signal.connect(self.test)
 
     def test(self, output_dict):
-        test_ast = variable_ast.ConditionExpression()
-        test_ast.variable = output_dict['variable']
-        test_ast.operator = output_dict['operator']
-        test_ast.condition = output_dict['condition']
+        def create_ast_by_dict(info_dict):
+            output_ast = variable_ast.ConditionExpression()
+            output_ast.variable = create_ast_by_dict(info_dict['variable']) if type(info_dict['variable']) == dict \
+            else info_dict['variable']
+            output_ast.condition = create_ast_by_dict(info_dict['condition']) if type(info_dict['condition']) == dict \
+            else info_dict['condition']
+            output_ast.operator = output_dict['operator']
+            return output_ast
+
+        test_ast = create_ast_by_dict(output_dict)
         self.createNewConstraintAST(test_ast)
 
     def apply_conditional_stmt(self):
