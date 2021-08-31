@@ -79,16 +79,18 @@ class createConditionalStatement(QWidget):
                     self.warning.setText("Fill variable and condition")
                     self.warning.show()
                     return
+        if len(output_and_or_list) == 0:
+            tmp_dict = output_dict
+        else:
+            for idx in range(len(output_and_or_list)):
+                tmp_dict = dict(variable=None,
+                                operator=None,
+                                condition=None)
+                tmp_dict['variable'] = output_dict_list[idx]
+                tmp_dict['operator'] = output_and_or_list[idx]
+                tmp_dict['condition'] = output_dict_list[idx + 1]
 
-        for idx in range(len(output_and_or_list)):
-            tmp_dict = dict(variable=None,
-                            operator=None,
-                            condition=None)
-            tmp_dict['variable'] = output_dict_list[idx]
-            tmp_dict['operator'] = output_and_or_list[idx]
-            tmp_dict['condition'] = output_dict_list[idx + 1]
-
-            output_dict_list[idx + 1] = tmp_dict
+                output_dict_list[idx + 1] = tmp_dict
 
         print(tmp_dict)
         self.send_output_dict_signal.emit(tmp_dict)
