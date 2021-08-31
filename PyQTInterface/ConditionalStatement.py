@@ -402,7 +402,7 @@ class applyConditionalStatementCapsule(QWidget):
         input_layout = self.add_line(sender.text(), indent + 1)
         count = self.main_layout.count()
 
-        for i in range(2, count-2):
+        for i in range(2, count-1):
             if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
