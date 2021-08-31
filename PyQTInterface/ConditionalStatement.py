@@ -61,7 +61,6 @@ class createConditionalStatement(QWidget):
         self.setLayout(self.main_layout)
 
     def ok_clicked(self):
-        output_list = list()
         output_dict_list = self.input_widget.output_dict_list
         output_and_or_list = self.input_widget.output_and_or_list
 
@@ -80,13 +79,18 @@ class createConditionalStatement(QWidget):
                     self.warning.show()
                     return
 
-            output_list.append(output_dict)
-            idx = output_dict_list.index(output_dict)
-            if idx != len(output_dict_list) - 1:
-                output_list.append(output_and_or_list[idx])
+        for idx in range(len(output_and_or_list)):
+            tmp_dict = dict(variable=None,
+                       operator=None,
+                       condition=None)
+            tmp_dict['variable'] = output_dict_list[idx]
+            tmp_dict['operator'] = output_and_or_list[idx]
+            tmp_dict['condition'] = output_dict_list[idx+1]
 
-        print(output_list)
-        self.send_output_dict_signal.emit(output_list[0])
+            output_dict_list[idx+1] = tmp_dict
+
+        print(tmp_dict)
+        self.send_output_dict_signal.emit(tmp_dict)
         self.destroy()
 
     def cancel_clicked(self):
@@ -296,7 +300,7 @@ class applyConditionalStatement(QWidget):
         self.setLayout(self.main_layout)
 
     def ok_clicked(self):
-        print('ok')
+        self.input_widget.update_output_dict()
 
     def cancel_clicked(self):
         print('cancel')
@@ -398,9 +402,6 @@ class applyConditionalStatementCapsule(QWidget):
         input_layout = self.add_line(sender.text(), indent + 1)
         count = self.main_layout.count()
 
-        for i in range(count):
-            print(self.main_layout.itemAt(i))
-
         for i in range(2, count-2):
             if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
@@ -411,7 +412,7 @@ class applyConditionalStatementCapsule(QWidget):
         if i == count - 2:
             j = count - 1
         else:
-            for j in range(i+1, count-2):
+            for j in range(i+1, count-1):
                 if sender.indent >= self.main_layout.itemAt(j).itemAt(1).itemAt(1).widget().indent:
                     break
                 j = count - 1
@@ -475,4 +476,34 @@ class applyConditionalStatementCapsule(QWidget):
         return add_layout
 
     def update_output_dict(self):
-        pass
+        count = self.main_layout.count()
+
+        for i in range(count):
+            print(self.main_layout.itemAt(i))
+
+        for i in range(2, count-2):
+            # if self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().indent == 0:
+            #     print(0)
+            # elif self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().indent == 1:
+            #     print(1)
+            # elif self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().indent == 2:
+            #     print(2)
+            print(self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().indent)
+
+
+
+        #     if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
+        #             sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
+        #             sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
+        #             sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget():
+        #         break
+        #
+        # if i == count - 2:
+        #     j = count - 1
+        # else:
+        #     for j in range(i+1, count-2):
+        #         if sender.indent >= self.main_layout.itemAt(j).itemAt(1).itemAt(1).widget().indent:
+        #             break
+        #         j = count - 1
+        #
+        # self.main_layout.insertLayout(j, input_layout)
