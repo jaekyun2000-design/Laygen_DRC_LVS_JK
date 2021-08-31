@@ -12,6 +12,7 @@ from generatorLib import drc_api
 
 class createConditionalStatement(QWidget):
     send_output_dict_signal = pyqtSignal(dict)
+
     def __init__(self):
         super().__init__()
         self.init_ui()
@@ -81,13 +82,13 @@ class createConditionalStatement(QWidget):
 
         for idx in range(len(output_and_or_list)):
             tmp_dict = dict(variable=None,
-                       operator=None,
-                       condition=None)
+                            operator=None,
+                            condition=None)
             tmp_dict['variable'] = output_dict_list[idx]
             tmp_dict['operator'] = output_and_or_list[idx]
-            tmp_dict['condition'] = output_dict_list[idx+1]
+            tmp_dict['condition'] = output_dict_list[idx + 1]
 
-            output_dict_list[idx+1] = tmp_dict
+            output_dict_list[idx + 1] = tmp_dict
 
         print(tmp_dict)
         self.send_output_dict_signal.emit(tmp_dict)
@@ -394,7 +395,6 @@ class applyConditionalStatementCapsule(QWidget):
         self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().setText('if')
         self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget().setDisabled(True)
 
-
     def stmt_clicked(self):
         sender = self.sender()
         indent = sender.indent
@@ -402,7 +402,7 @@ class applyConditionalStatementCapsule(QWidget):
         input_layout = self.add_line(sender.text(), indent + 1)
         count = self.main_layout.count()
 
-        for i in range(2, count-1):
+        for i in range(2, count - 1):
             if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
@@ -412,11 +412,12 @@ class applyConditionalStatementCapsule(QWidget):
         if i == count - 2:
             j = count - 1
         else:
-            for j in range(i+1, count-1):
+            for j in range(i + 1, count - 1):
                 if sender.indent >= self.main_layout.itemAt(j).itemAt(1).itemAt(1).widget().indent:
                     break
                 j = count - 1
 
+        input_layout.parent_layout = self.main_layout.itemAt(i)
         self.main_layout.insertLayout(j, input_layout)
 
     def add_line(self, clicked_button, indent):
@@ -477,33 +478,18 @@ class applyConditionalStatementCapsule(QWidget):
 
     def update_output_dict(self):
         count = self.main_layout.count()
+        output_list = list()
 
-        for i in range(count):
-            print(self.main_layout.itemAt(i))
+        for i in range(2, count - 1):
+            if 'parent_layout' in self.main_layout.itemAt(i).__dict__:
+                self.main_layout.itemAt(i).tmp_dict = dict(stmt=self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text(),
+                                                           expression=self.main_layout.itemAt(i).itemAt(0).itemAt(2).widget().text(),
+                                                           body=list())
+                self.main_layout.itemAt(i).parent_layout.tmp_dict['body'].append(self.main_layout.itemAt(i).tmp_dict)
+            else:
+                self.main_layout.itemAt(i).tmp_dict = dict(stmt=self.main_layout.itemAt(i).itemAt(0).itemAt(0).widget().text(),
+                                                           expression=self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text(),
+                                                           body=list())
+                output_list.append(self.main_layout.itemAt(i).tmp_dict)
 
-        for i in range(2, count-2):
-            # if self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().indent == 0:
-            #     print(0)
-            # elif self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().indent == 1:
-            #     print(1)
-            # elif self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().indent == 2:
-            #     print(2)
-            print(self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().indent)
-
-
-
-        #     if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
-        #             sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
-        #             sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
-        #             sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget():
-        #         break
-        #
-        # if i == count - 2:
-        #     j = count - 1
-        # else:
-        #     for j in range(i+1, count-2):
-        #         if sender.indent >= self.main_layout.itemAt(j).itemAt(1).itemAt(1).widget().indent:
-        #             break
-        #         j = count - 1
-        #
-        # self.main_layout.insertLayout(j, input_layout)
+        print(output_list)
