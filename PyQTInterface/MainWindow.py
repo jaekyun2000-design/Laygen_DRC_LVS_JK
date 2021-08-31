@@ -642,7 +642,21 @@ class _MainWindow(QMainWindow):
             return output_ast
 
         test_ast = create_ast_by_dict(output_dict)
-        self.createNewConstraintAST(test_ast)
+        # self.createNewConstraintAST(test_ast)
+
+        ast_list = ASTmodule._searchAST(test_ast)
+        idx = ast_list.index(test_ast)
+        ast_list.pop(idx)
+        _, top_id = self._QTObj._qtProject._createNewDesignConstraintAST(_ASTDtype="ASTsingle",
+                                                                     _ParentName=self._CurrentModuleName,
+                                                                     _AST=test_ast)
+        for sub_ast in ast_list:
+            self._QTObj._qtProject._createNewDesignConstraintAST(_ASTDtype="ASTsingle",
+                                                                 _ParentName=self._CurrentModuleName,
+                                                                 _AST=sub_ast)
+
+        self.dockContentWidget3_2.createNewConstraintAST(_id=top_id[0], _parentName=self._CurrentModuleName,
+                                                         _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
     def apply_conditional_stmt(self):
         self.apply_conditional_stmt_window = ConditionalStatement.applyConditionalStatement()
