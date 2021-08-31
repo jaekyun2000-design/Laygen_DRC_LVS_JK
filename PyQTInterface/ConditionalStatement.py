@@ -19,11 +19,11 @@ class createConditionalStatement(QWidget):
 
     def init_ui(self):
         and_button = QPushButton()
-        and_button.setText('AND')
+        and_button.setText('and')
         and_button.clicked.connect(self.and_or_clicked)
 
         or_button = QPushButton()
-        or_button.setText('OR')
+        or_button.setText('or')
         or_button.clicked.connect(self.and_or_clicked)
 
         ok_button = QPushButton()
@@ -48,8 +48,6 @@ class createConditionalStatement(QWidget):
         self.main_layout.addLayout(input_layout)
         self.main_layout.addLayout(self.button_layout)
         self.setLayout(self.main_layout)
-
-        self.show()
 
     def and_or_clicked(self, _):
         sender = self.sender()
@@ -214,6 +212,7 @@ class createConditionalStatementCapsule(QWidget):
 
 class applyConditionalStatement(QWidget):
     send_output_list_signal = pyqtSignal(list)
+    send_ast_id_signal = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
@@ -317,6 +316,7 @@ class applyConditionalStatement(QWidget):
 class applyConditionalStatementCapsule(QWidget):
     def __init__(self):
         super().__init__()
+        self.create_widget = createConditionalStatement()
 
     def new_line(self, clicked_button):
         stmt_label = QLabel(clicked_button)
@@ -325,9 +325,14 @@ class applyConditionalStatementCapsule(QWidget):
 
         exp_input = QLineEdit()
 
+        exp_button = QPushButton()
+        exp_button.setText('create')
+        exp_button.clicked.connect(self.show_create_widget)
+
         hbox1 = QHBoxLayout()
         hbox1.addWidget(stmt_label)
         hbox1.addWidget(exp_input)
+        hbox1.addWidget(exp_button)
 
         if_button = QPushButton()
         if_button.setText('if')
@@ -434,10 +439,15 @@ class applyConditionalStatementCapsule(QWidget):
 
         exp_input = QLineEdit()
 
+        exp_button = QPushButton()
+        exp_button.setText('create')
+        exp_button.clicked.connect(self.show_create_widget)
+
         hbox1 = QHBoxLayout()
         hbox1.addSpacing(40 * indent)
         hbox1.addWidget(stmt_label)
         hbox1.addWidget(exp_input)
+        hbox1.addWidget(exp_button)
 
         if_button = QPushButton()
         if_button.setText('if')
@@ -500,3 +510,16 @@ class applyConditionalStatementCapsule(QWidget):
                 output_list.append(self.main_layout.itemAt(i).tmp_dict)
 
         return output_list
+
+    def show_create_widget(self):
+        sender = self.sender()
+        count = self.main_layout.count()
+
+        for i in range(2, count - 1):
+            if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget():
+                break
+
+        self.create_widget.show()
