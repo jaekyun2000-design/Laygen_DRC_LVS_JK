@@ -19,11 +19,11 @@ class createConditionalStatement(QWidget):
 
     def init_ui(self):
         and_button = QPushButton()
-        and_button.setText('AND')
+        and_button.setText('and')
         and_button.clicked.connect(self.and_or_clicked)
 
         or_button = QPushButton()
-        or_button.setText('OR')
+        or_button.setText('or')
         or_button.clicked.connect(self.and_or_clicked)
 
         ok_button = QPushButton()
@@ -48,8 +48,6 @@ class createConditionalStatement(QWidget):
         self.main_layout.addLayout(input_layout)
         self.main_layout.addLayout(self.button_layout)
         self.setLayout(self.main_layout)
-
-        self.show()
 
     def and_or_clicked(self, _):
         sender = self.sender()
@@ -79,18 +77,20 @@ class createConditionalStatement(QWidget):
                     self.warning.setText("Fill variable and condition")
                     self.warning.show()
                     return
+        if len(output_and_or_list) == 0:
+            tmp_dict = output_dict
+        else:
+            for idx in range(len(output_and_or_list)):
+                tmp_dict = dict(variable=None,
+                                operator=None,
+                                condition=None)
+                tmp_dict['variable'] = output_dict_list[idx]
+                tmp_dict['operator'] = output_and_or_list[idx]
+                tmp_dict['condition'] = output_dict_list[idx + 1]
 
-        for idx in range(len(output_and_or_list)):
-            tmp_dict = dict(variable=None,
-                            operator=None,
-                            condition=None)
-            tmp_dict['variable'] = output_dict_list[idx]
-            tmp_dict['operator'] = output_and_or_list[idx]
-            tmp_dict['condition'] = output_dict_list[idx + 1]
+                output_dict_list[idx + 1] = tmp_dict
 
-            output_dict_list[idx + 1] = tmp_dict
-            print(tmp_dict)
-
+        print(tmp_dict)
         self.send_output_dict_signal.emit(tmp_dict)
         self.destroy()
 

@@ -340,6 +340,26 @@ class _MainWindow(QMainWindow):
         blackmode_box.setCheckState(state)
         blackmode_box.stateChanged.connect(self.scene.change_background)
 
+        X_label = QLabel('X:')
+        X_value = QLineEdit()
+        X_value.setMaximumWidth(40)
+        X_value.setMinimumWidth(40)
+        X_value.setReadOnly(True)
+
+        Y_label = QLabel('Y:')
+        Y_value = QLineEdit()
+        Y_value.setMaximumWidth(40)
+        Y_value.setMinimumWidth(40)
+        Y_value.setReadOnly(True)
+
+        def get_mouse(xy):
+            X = xy[0]
+            Y = xy[1]
+
+            X_value.setText(str(X))
+            Y_value.setText(str(Y))
+
+        self.scene.send_mouse_move_xy_signal.connect(get_mouse)
 
         ########## Second tab ############
         self.dv = variableWindow._DesignVariableManagerWindow(dict())
@@ -359,15 +379,24 @@ class _MainWindow(QMainWindow):
         vboxOnDock1.addStretch(2)
         hboxOnDock1 = QHBoxLayout()
         hboxOnDock2 = QHBoxLayout()
+        hboxOnDock3 = QHBoxLayout()
         hboxOnDock1.addWidget(ElemntClickCheckBox)
         hboxOnDock1.addWidget(SrefClickCheckBox)
         hboxOnDock1.addWidget(VariableClickCheckBox)
         hboxOnDock2.addWidget(GeneratorCheckBox)
         hboxOnDock2.addStretch(2)
         hboxOnDock2.addWidget(CandidateCheckBox)
+        hboxOnDock3.addSpacing(30)
+        hboxOnDock3.addWidget(X_label)
+        hboxOnDock3.addWidget(X_value)
+        hboxOnDock3.addSpacing(90)
+        hboxOnDock3.addWidget(Y_label)
+        hboxOnDock3.addWidget(Y_value)
+        hboxOnDock3.addSpacing(30)
         vboxOnDock1.addLayout(hboxOnDock1)
         vboxOnDock1.addLayout(hboxOnDock2)
         vboxOnDock1.addWidget(blackmode_box)
+        vboxOnDock1.addLayout(hboxOnDock3)
         vboxOnDock1.addStretch(10)
 
         dockContentWidget1.setLayout(vboxOnDock1)
@@ -632,11 +661,31 @@ class _MainWindow(QMainWindow):
         self.create_conditional_stmt_window.send_output_dict_signal.connect(self.test)
 
     def test(self, output_dict):
-        test_ast = variable_ast.ConditionExpression()
-        test_ast.variable = output_dict['variable']
-        test_ast.operator = output_dict['operator']
-        test_ast.condition = output_dict['condition']
-        self.createNewConstraintAST(test_ast)
+        def create_ast_by_dict(info_dict):
+            output_ast = variable_ast.ConditionExpression()
+            output_ast.variable = create_ast_by_dict(info_dict['variable']) if type(info_dict['variable']) == dict \
+            else info_dict['variable']
+            output_ast.condition = create_ast_by_dict(info_dict['condition']) if type(info_dict['condition']) == dict \
+            else info_dict['condition']
+            output_ast.operator = info_dict['operator']
+            return output_ast
+
+        test_ast = create_ast_by_dict(output_dict)
+        # self.createNewConstraintAST(test_ast)
+
+        ast_list = ASTmodule._searchAST(test_ast)
+        idx = ast_list.index(test_ast)
+        ast_list.pop(idx)
+        _, top_id = self._QTObj._qtProject._createNewDesignConstraintAST(_ASTDtype="ASTsingle",
+                                                                     _ParentName=self._CurrentModuleName,
+                                                                     _AST=test_ast)
+        for sub_ast in ast_list:
+            self._QTObj._qtProject._createNewDesignConstraintAST(_ASTDtype="ASTsingle",
+                                                                 _ParentName=self._CurrentModuleName,
+                                                                 _AST=sub_ast)
+
+        self.dockContentWidget3_2.createNewConstraintAST(_id=top_id[0], _parentName=self._CurrentModuleName,
+                                                         _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
     def apply_conditional_stmt(self):
         self.apply_conditional_stmt_window = ConditionalStatement.applyConditionalStatement()

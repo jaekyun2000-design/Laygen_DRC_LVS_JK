@@ -839,7 +839,10 @@ class IrregularTransformer(ast.NodeTransformer):
 
     def visit_ConditionSTMT(self, node):
         tmp_node = copy.deepcopy(node)
-        tmp_node.expression = astunparse.unparse(self.visit(tmp_node.expression)).replace('\n','')
+        if tmp_node.expression:
+            tmp_node.expression = astunparse.unparse(self.visit(tmp_node.expression)).replace('\n','')
+        else:
+            tmp_node.expression = ''
         return_str = str(tmp_node.stmt) + ' ' + str(tmp_node.expression) + ':' + '\n'
         if not tmp_node.body:
             return_str += '\tpass'
