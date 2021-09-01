@@ -340,6 +340,26 @@ class _MainWindow(QMainWindow):
         blackmode_box.setCheckState(state)
         blackmode_box.stateChanged.connect(self.scene.change_background)
 
+        X_label = QLabel('X:')
+        X_value = QLineEdit()
+        X_value.setMaximumWidth(40)
+        X_value.setMinimumWidth(40)
+        X_value.setReadOnly(True)
+
+        Y_label = QLabel('Y:')
+        Y_value = QLineEdit()
+        Y_value.setMaximumWidth(40)
+        Y_value.setMinimumWidth(40)
+        Y_value.setReadOnly(True)
+
+        def get_mouse(xy):
+            X = xy[0]
+            Y = xy[1]
+
+            X_value.setText(str(X))
+            Y_value.setText(str(Y))
+
+        self.scene.send_mouse_move_xy_signal.connect(get_mouse)
 
         ########## Second tab ############
         self.dv = variableWindow._DesignVariableManagerWindow(dict())
@@ -359,15 +379,24 @@ class _MainWindow(QMainWindow):
         vboxOnDock1.addStretch(2)
         hboxOnDock1 = QHBoxLayout()
         hboxOnDock2 = QHBoxLayout()
+        hboxOnDock3 = QHBoxLayout()
         hboxOnDock1.addWidget(ElemntClickCheckBox)
         hboxOnDock1.addWidget(SrefClickCheckBox)
         hboxOnDock1.addWidget(VariableClickCheckBox)
         hboxOnDock2.addWidget(GeneratorCheckBox)
         hboxOnDock2.addStretch(2)
         hboxOnDock2.addWidget(CandidateCheckBox)
+        hboxOnDock3.addSpacing(30)
+        hboxOnDock3.addWidget(X_label)
+        hboxOnDock3.addWidget(X_value)
+        hboxOnDock3.addSpacing(90)
+        hboxOnDock3.addWidget(Y_label)
+        hboxOnDock3.addWidget(Y_value)
+        hboxOnDock3.addSpacing(30)
         vboxOnDock1.addLayout(hboxOnDock1)
         vboxOnDock1.addLayout(hboxOnDock2)
         vboxOnDock1.addWidget(blackmode_box)
+        vboxOnDock1.addLayout(hboxOnDock3)
         vboxOnDock1.addStretch(10)
 
         dockContentWidget1.setLayout(vboxOnDock1)
