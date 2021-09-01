@@ -89,8 +89,8 @@ class createConditionalStatement(QWidget):
             tmp_dict['condition'] = output_dict_list[idx + 1]
 
             output_dict_list[idx + 1] = tmp_dict
+            print(tmp_dict)
 
-        print(tmp_dict)
         self.send_output_dict_signal.emit(tmp_dict)
         self.destroy()
 

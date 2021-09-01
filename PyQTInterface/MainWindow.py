@@ -894,11 +894,23 @@ class _MainWindow(QMainWindow):
         else:
             for i in range(len(hierarchy_list)-1):
                 module = module[hierarchy_list[i]]._DesignParameter['_ModelStructure']
-            if module[hierarchy_list[-1]]._DesignParameter['_Layer']:
-                _layerCommonName = layernum2name[str(module[hierarchy_list[-1]]._DesignParameter['_Layer'])]
-                self.calculator_window.returnedLayer = _layerCommonName
-            else:
-                pass
+            try:
+                if module[hierarchy_list[-1]]._DesignParameter['_Layer']:
+                    _layerCommonName = layernum2name[str(module[hierarchy_list[-1]]._DesignParameter['_Layer'])]
+                    self.calculator_window.returnedLayer = _layerCommonName
+                else:
+                    pass
+            except:
+                self.warningbox = QMessageBox()
+                self.warningbox.setText(f"Check the layer name. Update your design if not done yet.\n"
+                                        f"KeyError: {hierarchy_list[-1]}")
+                self.warningbox.setIcon(QMessageBox.Warning)
+                self.warningbox.show()
+                self.calculator_window.destroy()
+                del self.calculator_window
+                return
+
+
 
     def sref_debug_module(self):
         # tmpcell = {'INV': {'Sub1': {'Sub2': {'PMOS': None}, 'NMOS': None,}, 'NMOS': None, 'PMOS': None}}
