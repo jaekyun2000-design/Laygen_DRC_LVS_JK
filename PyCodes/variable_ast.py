@@ -62,7 +62,7 @@ class ConditionSTMT(GeneratorVariable):
         super().__init__()
 
     _fields = (
-        'stmt',
+        'c_type',
         'expression',
         'body',
     )
@@ -843,7 +843,7 @@ class IrregularTransformer(ast.NodeTransformer):
 
     def visit_ConditionSTMT(self, node):
         tmp_node = copy.deepcopy(node)
-        if tmp_node.stmt == 'else':
+        if tmp_node.c_type == 'else':
             tmp_node.expression = ''
         else:
             if 'expression' in tmp_node.__dict__ and tmp_node.expression:
@@ -851,7 +851,7 @@ class IrregularTransformer(ast.NodeTransformer):
                     tmp_node.expression = astunparse.unparse(self.visit(tmp_node.expression))[1:-1]
             else:
                 tmp_node.expression = ''
-        return_str = str(tmp_node.stmt) + ' ' + str(tmp_node.expression) + ':' + '\n'
+        return_str = str(tmp_node.c_type) + ' ' + str(tmp_node.expression) + ':' + '\n'
         if not tmp_node.body:
             return_str += '\tpass'
         else:
@@ -861,7 +861,7 @@ class IrregularTransformer(ast.NodeTransformer):
                     return_str += '\t' + str(astunparse.unparse(body_py_ast))[1:-1].replace('\n','\n\t') + '\n'
                 else:
                     return_str += '\t' + str(body_stmt) + '\n'
-        if tmp_node.stmt in ['else', 'elif']:
+        if tmp_node.c_type in ['else', 'elif']:
             return_str = 'if None:\n\tpass\n' + return_str
             tmp_ast = ast.parse(return_str)
             return tmp_ast.body[0].orelse   #return list type
@@ -930,10 +930,10 @@ if __name__ == '__main__':
 
 # a = ConditionSTMTlist()
 # bb = ConditionSTMT()
-# bb.stmt = 'if'
+# bb.c_type = 'if'
 #
 # b = ConditionSTMT()
-# b.stmt = 'else'
+# b.c_type = 'else'
 # c = ConditionExpression()
 # variable__ = ast.parse('a').body[0]
 # c.variable = variable__

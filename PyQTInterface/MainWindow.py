@@ -707,7 +707,7 @@ class _MainWindow(QMainWindow):
 
         def create_stmt_ast_by_dict(info_dict):
             output_ast = variable_ast.ConditionSTMT()
-            output_ast.stmt = info_dict['stmt']
+            output_ast.stmt = info_dict['type']
             output_ast.expression = create_exp_ast_by_dict(info_dict['expression']) if type(info_dict['expression']) == dict \
             else info_dict['expression']
             output_ast.body = []
