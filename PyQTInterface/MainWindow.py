@@ -2319,8 +2319,8 @@ class _MainWindow(QMainWindow):
                     self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
             try:
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
-                visualItem._CreateFlag = False
                 if visualItem:
+                    visualItem._CreateFlag = False
                     self.updateGraphicItem(visualItem)
             except:
                 traceback.print_exc()
