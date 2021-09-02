@@ -10,7 +10,7 @@ import os
 from generatorLib import drc_api
 
 
-class createConditionalStatement(QWidget):
+class ConditionExpreesionWidget(QWidget):
     send_output_dict_signal = pyqtSignal(dict)
 
     def __init__(self):
@@ -41,7 +41,7 @@ class createConditionalStatement(QWidget):
         self.button_layout.addWidget(ok_button)
         self.button_layout.addWidget(cancel_button)
 
-        self.input_widget = createConditionalStatementCapsule()
+        self.input_widget = ConditionExpreesionWidgetCapsule()
         input_layout = self.input_widget.new_line()
 
         self.main_layout = QVBoxLayout()
@@ -98,7 +98,7 @@ class createConditionalStatement(QWidget):
         self.destroy()
 
 
-class createConditionalStatementCapsule(QWidget):
+class ConditionExpreesionWidgetCapsule(QWidget):
     def __init__(self):
         super().__init__()
         self.operator = ['==', '!=', '>', '<', '>=', '<=', 'is', 'is not', 'in', 'not in', 'None']
@@ -210,21 +210,22 @@ class createConditionalStatementCapsule(QWidget):
             self.output_dict_list[i]['condition'] = cond
 
 
-class applyConditionalStatement(QWidget):
+class ConditionStmtWidget(QWidget):
     send_output_list_signal = pyqtSignal(list)
+    send_ast_id_signal = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
         self.init_ui()
 
     def init_ui(self):
-        self.input_widget = applyConditionalStatementCapsule()
+        self.input_widget = ConditionStmtWidgetCapsule()
 
         if_button = QPushButton()
         if_button.setText('if')
         if_button.setMinimumWidth(50)
         if_button.setMaximumWidth(50)
-        if_button.clicked.connect(self.stmt_clicked)
+        if_button.clicked.connect(self.c_type_clicked)
         if_button.clicked.connect(self.change_if)
 
         else_button = QPushButton()
@@ -232,21 +233,21 @@ class applyConditionalStatement(QWidget):
         else_button.setDisabled(True)
         else_button.setMinimumWidth(50)
         else_button.setMaximumWidth(50)
-        else_button.clicked.connect(self.stmt_clicked)
+        else_button.clicked.connect(self.c_type_clicked)
         else_button.clicked.connect(self.disable_else)
 
         for_button = QPushButton()
         for_button.setText('for')
         for_button.setMinimumWidth(50)
         for_button.setMaximumWidth(50)
-        for_button.clicked.connect(self.stmt_clicked)
+        for_button.clicked.connect(self.c_type_clicked)
         for_button.clicked.connect(self.disable_else)
 
         while_button = QPushButton()
         while_button.setText('while')
         while_button.setMinimumWidth(50)
         while_button.setMaximumWidth(50)
-        while_button.clicked.connect(self.stmt_clicked)
+        while_button.clicked.connect(self.c_type_clicked)
         while_button.clicked.connect(self.disable_else)
 
         ok_button = QPushButton()
@@ -291,7 +292,7 @@ class applyConditionalStatement(QWidget):
         self.main_layout.itemAt(0).itemAt(0).widget().setText('if')
         self.main_layout.itemAt(0).itemAt(1).widget().setDisabled(True)
 
-    def stmt_clicked(self):
+    def c_type_clicked(self):
         sender = self.sender()
 
         input_layout = self.input_widget.new_line(sender.text())
@@ -312,27 +313,34 @@ class applyConditionalStatement(QWidget):
         self.destroy()
 
 
-class applyConditionalStatementCapsule(QWidget):
+class ConditionStmtWidgetCapsule(QWidget):
     def __init__(self):
         super().__init__()
+        self.create_widget = ConditionExpreesionWidget()
 
     def new_line(self, clicked_button):
-        stmt_label = QLabel(clicked_button)
-        stmt_label.setMinimumWidth(30)
-        stmt_label.setMaximumWidth(30)
+        c_type_label = QLabel(clicked_button)
+        c_type_label.setMinimumWidth(30)
+        c_type_label.setMaximumWidth(30)
 
         exp_input = QLineEdit()
 
+        exp_button = QPushButton()
+        exp_button.setText('create')
+        exp_button.clicked.connect(self.show_create_widget)
+
         hbox1 = QHBoxLayout()
-        hbox1.addWidget(stmt_label)
+        hbox1.addSpacing(0)
+        hbox1.addWidget(c_type_label)
         hbox1.addWidget(exp_input)
+        hbox1.addWidget(exp_button)
 
         if_button = QPushButton()
         if_button.setText('if')
         if_button.indent = 0
         if_button.setMinimumWidth(50)
         if_button.setMaximumWidth(50)
-        if_button.clicked.connect(self.stmt_clicked)
+        if_button.clicked.connect(self.c_type_clicked)
         if_button.clicked.connect(self.change_if)
 
         else_button = QPushButton()
@@ -341,7 +349,7 @@ class applyConditionalStatementCapsule(QWidget):
         else_button.indent = 0
         else_button.setMinimumWidth(50)
         else_button.setMaximumWidth(50)
-        else_button.clicked.connect(self.stmt_clicked)
+        else_button.clicked.connect(self.c_type_clicked)
         else_button.clicked.connect(self.disable_else)
 
         for_button = QPushButton()
@@ -349,7 +357,7 @@ class applyConditionalStatementCapsule(QWidget):
         for_button.indent = 0
         for_button.setMinimumWidth(50)
         for_button.setMaximumWidth(50)
-        for_button.clicked.connect(self.stmt_clicked)
+        for_button.clicked.connect(self.c_type_clicked)
         for_button.clicked.connect(self.disable_else)
 
         while_button = QPushButton()
@@ -357,7 +365,7 @@ class applyConditionalStatementCapsule(QWidget):
         while_button.indent = 0
         while_button.setMinimumWidth(50)
         while_button.setMaximumWidth(50)
-        while_button.clicked.connect(self.stmt_clicked)
+        while_button.clicked.connect(self.c_type_clicked)
         while_button.clicked.connect(self.disable_else)
 
         hbox2 = QHBoxLayout()
@@ -400,7 +408,7 @@ class applyConditionalStatementCapsule(QWidget):
         self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().setText('if')
         self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget().setDisabled(True)
 
-    def stmt_clicked(self):
+    def c_type_clicked(self):
         sender = self.sender()
         indent = sender.indent
 
@@ -426,23 +434,28 @@ class applyConditionalStatementCapsule(QWidget):
         self.main_layout.insertLayout(j, input_layout)
 
     def add_line(self, clicked_button, indent):
-        stmt_label = QLabel(clicked_button)
-        stmt_label.setMinimumWidth(30)
-        stmt_label.setMaximumWidth(30)
+        c_type_label = QLabel(clicked_button)
+        c_type_label.setMinimumWidth(30)
+        c_type_label.setMaximumWidth(30)
 
         exp_input = QLineEdit()
 
+        exp_button = QPushButton()
+        exp_button.setText('create')
+        exp_button.clicked.connect(self.show_create_widget)
+
         hbox1 = QHBoxLayout()
         hbox1.addSpacing(40 * indent)
-        hbox1.addWidget(stmt_label)
+        hbox1.addWidget(c_type_label)
         hbox1.addWidget(exp_input)
+        hbox1.addWidget(exp_button)
 
         if_button = QPushButton()
         if_button.setText('if')
         if_button.indent = indent
         if_button.setMinimumWidth(50)
         if_button.setMaximumWidth(50)
-        if_button.clicked.connect(self.stmt_clicked)
+        if_button.clicked.connect(self.c_type_clicked)
         if_button.clicked.connect(self.change_if)
 
         else_button = QPushButton()
@@ -451,21 +464,21 @@ class applyConditionalStatementCapsule(QWidget):
         else_button.indent = indent
         else_button.setMinimumWidth(50)
         else_button.setMaximumWidth(50)
-        else_button.clicked.connect(self.stmt_clicked)
+        else_button.clicked.connect(self.c_type_clicked)
 
         for_button = QPushButton()
         for_button.setText('for')
         for_button.indent = indent
         for_button.setMinimumWidth(50)
         for_button.setMaximumWidth(50)
-        for_button.clicked.connect(self.stmt_clicked)
+        for_button.clicked.connect(self.c_type_clicked)
 
         while_button = QPushButton()
         while_button.setText('while')
         while_button.indent = indent
         while_button.setMinimumWidth(50)
         while_button.setMaximumWidth(50)
-        while_button.clicked.connect(self.stmt_clicked)
+        while_button.clicked.connect(self.c_type_clicked)
 
         hbox2 = QHBoxLayout()
         hbox2.addSpacing(40 * indent + 35)
@@ -487,14 +500,42 @@ class applyConditionalStatementCapsule(QWidget):
 
         for i in range(2, count - 1):
             if 'parent_layout' in self.main_layout.itemAt(i).__dict__:
-                self.main_layout.itemAt(i).tmp_dict = dict(stmt=self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text(),
+                self.main_layout.itemAt(i).tmp_dict = dict(c_type=self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text(),
                                                            expression=self.main_layout.itemAt(i).itemAt(0).itemAt(2).widget().text(),
                                                            body=list())
                 self.main_layout.itemAt(i).parent_layout.tmp_dict['body'].append(self.main_layout.itemAt(i).tmp_dict)
             else:
-                self.main_layout.itemAt(i).tmp_dict = dict(stmt=self.main_layout.itemAt(i).itemAt(0).itemAt(0).widget().text(),
-                                                           expression=self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text(),
+                self.main_layout.itemAt(i).tmp_dict = dict(c_type=self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text(),
+                                                           expression=self.main_layout.itemAt(i).itemAt(0).itemAt(2).widget().text(),
                                                            body=list())
                 output_list.append(self.main_layout.itemAt(i).tmp_dict)
 
         return output_list
+
+    def show_create_widget(self):
+        sender = self.sender()
+        count = self.main_layout.count()
+
+        for i in range(2, count - 1):
+            if sender == self.main_layout.itemAt(i).itemAt(0).itemAt(3).widget():
+                self.idx = i
+                break
+
+        self.create_widget.send_output_dict_signal.connect(self.get_stmt)
+        self.create_widget.show()
+
+    def get_stmt(self, output_dict):
+        if type(output_dict['variable']) == dict:
+            output_dict['variable'] = '(' + self.get_stmt(output_dict['variable']) + ')'
+            output_dict['condition'] = '(' + output_dict['condition']['variable'] + ' ' +\
+                                       output_dict['condition']['operator'] + ' ' +\
+                                       output_dict['condition']['condition'] + ')'
+            output_text = output_dict['variable'] + ' ' + output_dict['operator'] + ' ' + output_dict['condition']
+            print(self.main_layout.itemAt(self.idx).itemAt(0).itemAt(1).widget())
+            self.main_layout.itemAt(self.idx).itemAt(0).itemAt(2).widget().setText(output_text)
+            return output_text
+        else:
+            output_text = output_dict['variable'] + ' ' + output_dict['operator'] + ' ' + output_dict['condition']
+            print(self.main_layout.itemAt(self.idx).itemAt(0).itemAt(1).widget())
+            self.main_layout.itemAt(self.idx).itemAt(0).itemAt(2).widget().setText(output_text)
+            return output_text

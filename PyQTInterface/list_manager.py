@@ -8,6 +8,7 @@ from PyQt5.QtCore import *
 
 import traceback
 
+
 # layer_visible_flag_dict = dict()
 # for layer in LayerReader._LayerMapping:
 #     layer_visible_flag_dict[layer] = True
@@ -33,7 +34,7 @@ class LayerManager(QWidget):
 
         self.relative_or_offset_button = QPushButton()
         self.relative_or_offset_button.setIcon(QIcon(QPixmap('./image/ON.png')))
-        self.relative_or_offset_button.setIconSize(QSize(50,30))
+        self.relative_or_offset_button.setIconSize(QSize(50, 30))
         self.relative_or_offset_button.setFlat(True)
         self.relative_or_offset_button.setCheckable(True)
         self.relative_or_offset_button.setChecked(True)
@@ -69,7 +70,7 @@ class LayerManager(QWidget):
         elif text[-1] == 'C':
             self.clickable_button.setText(text)
 
-    def button_image_change(self,checked):
+    def button_image_change(self, checked):
         sender = self.sender()
         if checked:
             sender.setIcon(QIcon(QPixmap('./image/ON.png')))
@@ -83,7 +84,6 @@ class LayerManager(QWidget):
 
 
 class _ManageList(QTableView):
-
     send_listInLayer_signal = pyqtSignal(list)
     button_text_signal = pyqtSignal(str)
     send_used_layer_dict_signal = pyqtSignal(str, dict)
@@ -208,13 +208,12 @@ class _ManageList(QTableView):
 
         if self.visibleCanControl == False and self.visibleGenControl == False:
             VisualItemForVisible = []
-        elif self.visibleCanControl == False:
+        elif not self.visibleCanControl:
             VisualItemForVisible = list(set(Visualitem) - set(self.canList))
         elif self.visibleGenControl == False:
             VisualItemForVisible = list(set(Visualitem) - set(self.genList))
         else:
             VisualItemForVisible = Visualitem
-
 
         if item.index().column() == 1:
             # if self.visibleGenControl == True and self.visibleCanControl == True:
@@ -289,7 +288,6 @@ class _ManageList(QTableView):
 
     # def swapButtonText(self, ):
 
-
     def macro_check(self):
         # purpose: str, mode: bool
         sender_text = self.sender().text()
@@ -309,12 +307,12 @@ class _ManageList(QTableView):
             col = 2
 
         if mode == 'on':
-            state= Qt.Checked
+            state = Qt.Checked
         elif mode == 'off':
-            state= Qt.Unchecked
+            state = Qt.Unchecked
 
         for row in range(0, self.model.model_dictionary[self.type].rowCount()):
-            self.model.model_dictionary[self.type].item(row,col).setCheckState(state)
+            self.model.model_dictionary[self.type].item(row, col).setCheckState(state)
 
 
 class layerListItemModel(QStandardItemModel):
@@ -336,7 +334,7 @@ class layerListItemModel(QStandardItemModel):
 
     def show_all_layer(self):
         tmp_item_model = QStandardItemModel()
-        tmp_item_model.setHorizontalHeaderLabels(['    Layer    ','Visible','Clickable'])
+        tmp_item_model.setHorizontalHeaderLabels(['Layer', 'Visible', 'Clickable'])
 
         _Layer = LayerReader._LayerMapping
 
@@ -345,6 +343,7 @@ class layerListItemModel(QStandardItemModel):
 
             item = QStandardItem(layer)
             item.setEditable(False)
+            item.setSizeHint(QSize(165, 0))
 
             itemv = QStandardItem(layer)
             itemv.setCheckable(True)
@@ -359,8 +358,8 @@ class layerListItemModel(QStandardItemModel):
             itemc.setText('')
 
             tmp_item_model.appendRow(item)
-            tmp_item_model.setItem(tmp_item_model.rowCount()-1,1,itemv)
-            tmp_item_model.setItem(tmp_item_model.rowCount()-1,2,itemc)
+            tmp_item_model.setItem(tmp_item_model.rowCount() - 1, 1, itemv)
+            tmp_item_model.setItem(tmp_item_model.rowCount() - 1, 2, itemc)
 
         self.model_dictionary['all'] = tmp_item_model
 
@@ -372,13 +371,15 @@ class layerListItemModel(QStandardItemModel):
 
             for _used_row in range(self.model_dictionary['used'].rowCount()):
                 if layer == self.model_dictionary['used'].item(_used_row, 0).text():
-                    tmp_item_model.item(_all_row, 1).setCheckState(self.model_dictionary['used'].item(_used_row, 1).checkState())
-                    tmp_item_model.item(_all_row, 2).setCheckState(self.model_dictionary['used'].item(_used_row, 2).checkState())
+                    tmp_item_model.item(_all_row, 1).setCheckState(
+                        self.model_dictionary['used'].item(_used_row, 1).checkState())
+                    tmp_item_model.item(_all_row, 2).setCheckState(
+                        self.model_dictionary['used'].item(_used_row, 2).checkState())
 
     def show_used_layer(self, used_layer_dict):
         _used_layer_list = list()
         tmp_item_model = QStandardItemModel()
-        tmp_item_model.setHorizontalHeaderLabels(['    Layer    ','Visible','Clickable'])
+        tmp_item_model.setHorizontalHeaderLabels(['Layer', 'Visible', 'Clickable'])
 
         for used_layer in used_layer_dict.keys():
             if used_layer != 'SRef':
@@ -404,12 +405,14 @@ class layerListItemModel(QStandardItemModel):
             itemc.setText('')
 
             tmp_item_model.appendRow(item)
-            tmp_item_model.setItem(tmp_item_model.rowCount()-1,1,itemv)
-            tmp_item_model.setItem(tmp_item_model.rowCount()-1,2,itemc)
+            tmp_item_model.setItem(tmp_item_model.rowCount() - 1, 1, itemv)
+            tmp_item_model.setItem(tmp_item_model.rowCount() - 1, 2, itemc)
 
             for _row in range(self.model_dictionary['all'].rowCount()):
-                if layer == self.model_dictionary['all'].item(_row,0).text():
-                    tmp_item_model.item(tmp_item_model.rowCount()-1,1).setCheckState(self.model_dictionary['all'].item(_row,1).checkState())
-                    tmp_item_model.item(tmp_item_model.rowCount()-1,2).setCheckState(self.model_dictionary['all'].item(_row,2).checkState())
+                if layer == self.model_dictionary['all'].item(_row, 0).text():
+                    tmp_item_model.item(tmp_item_model.rowCount() - 1, 1).setCheckState(
+                        self.model_dictionary['all'].item(_row, 1).checkState())
+                    tmp_item_model.item(tmp_item_model.rowCount() - 1, 2).setCheckState(
+                        self.model_dictionary['all'].item(_row, 2).checkState())
 
         self.model_dictionary['used'] = tmp_item_model

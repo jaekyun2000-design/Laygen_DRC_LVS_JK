@@ -656,11 +656,11 @@ class _MainWindow(QMainWindow):
         print(self.calculator_window.presetDict)
 
     def create_conditional_stmt(self):
-        self.create_conditional_stmt_window = ConditionalStatement.createConditionalStatement()
+        self.create_conditional_stmt_window = ConditionalStatement.ConditionExpreesionWidget()
         self.create_conditional_stmt_window.show()
-        self.create_conditional_stmt_window.send_output_dict_signal.connect(self.test)
+        self.create_conditional_stmt_window.send_output_dict_signal.connect(self.create_condition_exp)
 
-    def test(self, output_dict):
+    def create_condition_exp(self, output_dict):
         def create_ast_by_dict(info_dict):
             output_ast = variable_ast.ConditionExpression()
             output_ast.variable = create_ast_by_dict(info_dict['variable']) if type(info_dict['variable']) == dict \
@@ -688,14 +688,49 @@ class _MainWindow(QMainWindow):
                                                          _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
     def apply_conditional_stmt(self):
-        self.apply_conditional_stmt_window = ConditionalStatement.applyConditionalStatement()
+        self.apply_conditional_stmt_window = ConditionalStatement.ConditionStmtWidget()
         self.apply_conditional_stmt_window.show()
-        self.apply_conditional_stmt_window.send_output_list_signal.connect(self.test2)
+        self.apply_conditional_stmt_window.send_output_list_signal.connect(self.create_condition_stmt)
 
-    def test2(self, output_list):
-        test_ast = variable_ast.ConditionSTMTlist()
-        test_ast.body = output_list
-        self.createNewConstraintAST(test_ast)
+    def create_condition_stmt(self, output_list):
+        condition_stmt_list_ast = variable_ast.ConditionSTMTlist()
+        condition_stmt_list_ast.body = []
+
+        def create_exp_ast_by_dict(info_dict):
+            output_ast = variable_ast.ConditionExpression()
+            output_ast.variable = create_exp_ast_by_dict(info_dict['variable']) if type(info_dict['variable']) == dict \
+            else info_dict['variable']
+            output_ast.condition = create_exp_ast_by_dict(info_dict['condition']) if type(info_dict['condition']) == dict \
+            else info_dict['condition']
+            output_ast.operator = info_dict['operator']
+            return output_ast
+
+        def create_stmt_ast_by_dict(info_dict):
+            output_ast = variable_ast.ConditionSTMT()
+            output_ast.c_type = info_dict['c_type']
+            output_ast.expression = create_exp_ast_by_dict(info_dict['expression']) if type(info_dict['expression']) == dict \
+            else info_dict['expression']
+            output_ast.body = []
+            for stmt in info_dict['body']:
+                output_ast.body.append(create_stmt_ast_by_dict(stmt))
+            return output_ast
+
+        for stmt in output_list:
+            condition_stmt_list_ast.body.append(create_stmt_ast_by_dict(stmt))
+
+        ast_list = ASTmodule._searchAST(condition_stmt_list_ast)
+        idx = ast_list.index(condition_stmt_list_ast)
+        ast_list.pop(idx)
+        _, top_id = self._QTObj._qtProject._createNewDesignConstraintAST(_ASTDtype="ASTsingle",
+                                                                         _ParentName=self._CurrentModuleName,
+                                                                         _AST=condition_stmt_list_ast)
+        for sub_ast in ast_list:
+            self._QTObj._qtProject._createNewDesignConstraintAST(_ASTDtype="ASTsingle",
+                                                                 _ParentName=self._CurrentModuleName,
+                                                                 _AST=sub_ast)
+
+        self.dockContentWidget3_2.createNewConstraintAST(_id=top_id[0], _parentName=self._CurrentModuleName,
+                                                         _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
     def get_dc_highlight_dp(self,dc_id):
         for seleceted_item in self.scene.selectedItems():
@@ -1477,7 +1512,8 @@ class _MainWindow(QMainWindow):
         self.txtw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
         self.txtw.send_TextDesign_signal.connect(self.createNewDesignParameter)
         self.txtw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
-        self.scene.send_xyCoordinate_signal.connect(self.txtw.DetermineCoordinateWithMouse)
+        self.scene.send_xy_signal.connect(self.txtw.DetermineCoordinateWithMouse)
+        # self.scene.send_xyCoordinate_signal.connect(self.txtw.DetermineCoordinateWithMouse)
         self.txtw.send_Destroy_signal.connect(self.delete_obj)
 
     def makePinWindow(self):
@@ -1487,7 +1523,8 @@ class _MainWindow(QMainWindow):
         self.pinw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
         self.pinw.send_PinDesign_signal.connect(self.createNewDesignParameter)
         self.pinw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
-        self.scene.send_xyCoordinate_signal.connect(self.pinw.DetermineCoordinateWithMouse)
+        # self.scene.send_xyCoordinate_signal.connect(self.pinw.DetermineCoordinateWithMouse)
+        self.scene.send_xy_signal.connect(self.pinw.DetermineCoordinateWithMouse)
         self.pinw.send_Destroy_signal.connect(self.delete_obj)
 
     # def makeFilterWindow(self):
@@ -2294,20 +2331,10 @@ class _MainWindow(QMainWindow):
             if design_dict['parameter']:
                 if original_dp_id != design_dict['parameter_id']:
                     self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
-                # if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 1:
-                #     if design_dict['parameter']._DesignParameter['_XWidth'] == None or design_dict['parameter']._DesignParameter['_YWidth'] == None or design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
-                #             pass
-                # elif design_dict['parameter']._DesignParameter['_DesignParametertype'] == 2:
-                #     if design_dict['parameter']._DesignParameter['_Width'] == None or design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
-                #         pass
-                # elif design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
-                #     if design_dict['parameter']._DesignParameter['_XYCoordinates'] == None :
-                #         pass
-                # else:
             try:
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
-                visualItem._CreateFlag = False
                 if visualItem:
+                    visualItem._CreateFlag = False
                     self.updateGraphicItem(visualItem)
             except:
                 traceback.print_exc()
@@ -3073,7 +3100,7 @@ class _CustomView(QGraphicsView):
                     else:
                         tmp_group_item.addToGroup(item)
             # map(lambda item: tmp_group_item.addToGroup(item), every_item)
-            print(tmp_group_item.childItems())
+
             self.scene().addItem(tmp_group_item)
             self.fitInView(tmp_group_item,Qt.KeepAspectRatio)
             self.scene().destroyItemGroup(tmp_group_item)

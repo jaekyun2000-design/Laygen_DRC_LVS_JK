@@ -979,7 +979,7 @@ class _TextSetupWindow(QWidget):
             if self._DesignParameter['_ElementName'] == '':
                 raise NotImplementedError
             self._DesignParameter['_TEXT'] = self.text_input.text()
-            self._DesignParameter['_Mag'] = float(self.width_input.text())
+            self._DesignParameter['_Mag'] = int(self.width_input.text())
             self.send_TextDesign_signal.emit(self._DesignParameter)
             self.destroy()
             self.send_Destroy_signal.emit('txtw')
@@ -995,15 +995,15 @@ class _TextSetupWindow(QWidget):
             self.warning.setIcon(QMessageBox.Warning)
             self.warning.show()
 
-    def DetermineCoordinateWithMouse(self, _MouseEvent):
+    def DetermineCoordinateWithMouse(self, xy):
         ##### When Click the point, adjust x,y locations #####
-        X = _MouseEvent.scenePos().toPoint().x()
-        Y = _MouseEvent.scenePos().toPoint().y()
+        X = xy[0]
+        Y = xy[1]
         self.XY_input[0].setText(str(X)+','+str(Y))
         self._DesignParameter['_XYCoordinates']=[[X,Y]]
         self._DesignParameter['_ElementName'] = self.text_input.text()
         self._DesignParameter['_TEXT'] = self.text_input.text()
-        self._DesignParameter['_Mag'] = float(self.width_input.text())
+        self._DesignParameter['_Mag'] = int(self.width_input.text())
 
         qt_dp = QTInterfaceWithAST.QtDesignParameter()
         for key, value in self._DesignParameter.items():
@@ -1161,10 +1161,10 @@ class _PinSetupWindow(QWidget):
             self.warning.setIcon(QMessageBox.Warning)
             self.warning.show()
 
-    def DetermineCoordinateWithMouse(self, _MouseEvent):
+    def DetermineCoordinateWithMouse(self, xy):
         ##### When Click the point, adjust x,y locations #####
-        X = _MouseEvent.scenePos().toPoint().x()
-        Y = _MouseEvent.scenePos().toPoint().y()
+        X = xy[0]
+        Y = xy[1]
         self.XY_input[0].setText(str(X)+','+str(Y))
         self._DesignParameter['_XYCoordinates']=[[X,Y]]
         self._DesignParameter['_ElementName'] = self.text_input.text()
@@ -2514,6 +2514,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_deleteConstraint_signal = pyqtSignal(str)
     send_dummy_ast_id_for_xy_signal = pyqtSignal(str)
     send_dummy_ast_id_for_array_signal = pyqtSignal(str)
+    send_dummy_ast_id_for_condition_signal = pyqtSignal(str)
 
 
     originalKeyPress = QTreeView.keyPressEvent
@@ -2560,6 +2561,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
         self.context_menu_for_array = QMenu(self)
         self.context_menu_for_array.addActions([browse_expression_action])
+
+        self.context_menu_for_condition = QMenu(self)
+        self.context_menu_for_condition.addActions([browse_expression_action])
 
 
         add_blank_row_action.triggered.connect(self.append_row)
@@ -3191,6 +3195,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                     self.context_menu_for_xy.exec_(self.viewport().mapToGlobal(point))
                 elif type_item.text() == 'Array':
                     self.context_menu_for_array.exec_(self.viewport().mapToGlobal(point))
+                elif type_item.text() == "ConditionSTMTlist":
+                    self.context_menu_for_condition.exec_(self.viewport().mapToGlobal(point))
                 # elif "str" in type_item.text():
                 #     if idx.parent():
                 #         parent_type_item = self.model.itemFromIndex(idx.parent().siblingAtColumn(2))
@@ -3216,6 +3222,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             self.send_dummy_ast_id_for_xy_signal.emit(current_item.text())
         elif type_name == 'Array':
             self.send_dummy_ast_id_for_array_signal.emit(current_item.text())
+        elif type_name == "ConditionSTMTlist":
+            self.send_dummy_ast_id_for_condition_signal.emit(current_item.text())
         # if current_item.text() != None:
         #     self.send_dummy_ast_id_for_xy_signal.emit(current_item.text())
         # else:
