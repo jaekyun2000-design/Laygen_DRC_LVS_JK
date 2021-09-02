@@ -979,7 +979,7 @@ class _TextSetupWindow(QWidget):
             if self._DesignParameter['_ElementName'] == '':
                 raise NotImplementedError
             self._DesignParameter['_TEXT'] = self.text_input.text()
-            self._DesignParameter['_Mag'] = float(self.width_input.text())
+            self._DesignParameter['_Mag'] = int(self.width_input.text())
             self.send_TextDesign_signal.emit(self._DesignParameter)
             self.destroy()
             self.send_Destroy_signal.emit('txtw')
@@ -995,15 +995,15 @@ class _TextSetupWindow(QWidget):
             self.warning.setIcon(QMessageBox.Warning)
             self.warning.show()
 
-    def DetermineCoordinateWithMouse(self, _MouseEvent):
+    def DetermineCoordinateWithMouse(self, xy):
         ##### When Click the point, adjust x,y locations #####
-        X = _MouseEvent.scenePos().toPoint().x()
-        Y = _MouseEvent.scenePos().toPoint().y()
+        X = xy[0]
+        Y = xy[1]
         self.XY_input[0].setText(str(X)+','+str(Y))
         self._DesignParameter['_XYCoordinates']=[[X,Y]]
         self._DesignParameter['_ElementName'] = self.text_input.text()
         self._DesignParameter['_TEXT'] = self.text_input.text()
-        self._DesignParameter['_Mag'] = float(self.width_input.text())
+        self._DesignParameter['_Mag'] = int(self.width_input.text())
 
         qt_dp = QTInterfaceWithAST.QtDesignParameter()
         for key, value in self._DesignParameter.items():
@@ -1161,10 +1161,10 @@ class _PinSetupWindow(QWidget):
             self.warning.setIcon(QMessageBox.Warning)
             self.warning.show()
 
-    def DetermineCoordinateWithMouse(self, _MouseEvent):
+    def DetermineCoordinateWithMouse(self, xy):
         ##### When Click the point, adjust x,y locations #####
-        X = _MouseEvent.scenePos().toPoint().x()
-        Y = _MouseEvent.scenePos().toPoint().y()
+        X = xy[0]
+        Y = xy[1]
         self.XY_input[0].setText(str(X)+','+str(Y))
         self._DesignParameter['_XYCoordinates']=[[X,Y]]
         self._DesignParameter['_ElementName'] = self.text_input.text()
