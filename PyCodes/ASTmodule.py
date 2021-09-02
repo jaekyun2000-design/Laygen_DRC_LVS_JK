@@ -595,8 +595,10 @@ def run_transformer(source_ast):
         module_ast.body = copy.deepcopy(source_ast)
     else:
         module_ast.body = copy.deepcopy([source_ast])
-    result_ast = variable_ast.IrregularTransformer().visit(module_ast)
-    result_ast = element_ast.ElementTransformer().visit(result_ast)
+    # result_ast = variable_ast.IrregularTransformer().visit(module_ast)
+    # result_ast = element_ast.ElementTransformer().visit(result_ast)
+    result_ast = element_ast.ElementTransformer().visit(module_ast)
+    result_ast = variable_ast.IrregularTransformer().visit(result_ast)
     result_ast = variable_ast.VariableTransformer().visit(result_ast)
     return result_ast
 

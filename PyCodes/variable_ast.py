@@ -832,34 +832,48 @@ class IrregularTransformer(ast.NodeTransformer):
     def visit_ConditionSTMTlist(self, node):
         return_str = ''
         for stmt in node.body:
+            stmt_py_ast = self.visit(stmt)
+            if type(stmt_py_ast) == list:
+                if type(stmt_py_ast[0]) != ast.If:
+                    return_str += '\nelse:\n' + astunparse.unparse(self.visit(stmt)).replace('\n','\n\t')
+                    continue
             return_str += astunparse.unparse(self.visit(stmt))
-        # return return_str
         return ast.parse(return_str)
 
 
     def visit_ConditionSTMT(self, node):
         tmp_node = copy.deepcopy(node)
-        if tmp_node.expression:
-            tmp_node.expression = astunparse.unparse(self.visit(tmp_node.expression)).replace('\n','')
-        else:
+        if tmp_node.stmt == 'else':
             tmp_node.expression = ''
+        else:
+            if 'expression' in tmp_node.__dict__ and tmp_node.expression:
+                if isinstance(tmp_node.expression, ast.AST):
+                    tmp_node.expression = astunparse.unparse(self.visit(tmp_node.expression))[1:-1]
+            else:
+                tmp_node.expression = ''
         return_str = str(tmp_node.stmt) + ' ' + str(tmp_node.expression) + ':' + '\n'
         if not tmp_node.body:
             return_str += '\tpass'
         else:
             for body_stmt in tmp_node.body:
                 if isinstance(body_stmt, ast.AST):
-                    return_str += '\t' + str(astunparse.unparse(body_stmt).replace('\n','')) + '\n'
+                    body_py_ast = run_transformer(body_stmt)
+                    return_str += '\t' + str(astunparse.unparse(body_py_ast))[1:-1].replace('\n','\n\t') + '\n'
                 else:
                     return_str += '\t' + str(body_stmt) + '\n'
-        return ast.parse(return_str)
+        if tmp_node.stmt in ['else', 'elif']:
+            return_str = 'if None:\n\tpass\n' + return_str
+            tmp_ast = ast.parse(return_str)
+            return tmp_ast.body[0].orelse   #return list type
+        else:
+            return ast.parse(return_str)    #return module type
 
     def visit_ConditionExpression(self, node):
         tmp_node = copy.deepcopy(node)
         for field in tmp_node._fields:
             if isinstance(tmp_node.__dict__[field], ast.AST):
-                tmp_node.__dict__[field] = astunparse.unparse(run_transformer(tmp_node.__dict__[field])).replace('\n','')
-        return_str = str(tmp_node.variable) + str(tmp_node.operator) + str(tmp_node.condition)
+                tmp_node.__dict__[field] = astunparse.unparse(run_transformer(tmp_node.__dict__[field]))[1:-1]
+        return_str = str(tmp_node.variable) + ' '+ str(tmp_node.operator) + ' '+ str(tmp_node.condition)
         return ast.parse(return_str)
 
 
@@ -870,8 +884,8 @@ def run_transformer(source_ast):
         module_ast.body = copy.deepcopy(source_ast)
     else:
         module_ast.body = copy.deepcopy([source_ast])
-    result_ast = IrregularTransformer().visit(module_ast)
-    result_ast = element_ast.ElementTransformer().visit(result_ast)
+    result_ast = element_ast.ElementTransformer().visit(module_ast)
+    result_ast = IrregularTransformer().visit(result_ast)
     result_ast = VariableTransformer().visit(result_ast)
     return result_ast
 
@@ -914,19 +928,23 @@ if __name__ == '__main__':
     print(astunparse.unparse(kk))
 
 
-a = ConditionSTMTlist()
-b = ConditionSTMT()
-b.stmt = 'if'
-c = ConditionExpression()
-variable__ = ast.parse('a').body[0]
-c.variable = variable__
-# c.variable = 1
-c.operator = '>'
-c.condition = '0'
-b.expression = c
-tmp = ast.parse('print("hello")')
-b.body = tmp.body
-a.body = [b]
-tf = IrregularTransformer()
-k = tf.visit(a)
-print(astunparse.unparse(k))
+# a = ConditionSTMTlist()
+# bb = ConditionSTMT()
+# bb.stmt = 'if'
+#
+# b = ConditionSTMT()
+# b.stmt = 'else'
+# c = ConditionExpression()
+# variable__ = ast.parse('a').body[0]
+# c.variable = variable__
+# # c.variable = 1
+# c.operator = '>'
+# c.condition = '0'
+# # b.expression = c
+# bb.expression = c
+# tmp = ast.parse('print("hello")')
+# b.body = tmp.body
+# a.body = [b]
+# tf = IrregularTransformer()
+# k = tf.visit(a)
+# print(astunparse.unparse(k))
