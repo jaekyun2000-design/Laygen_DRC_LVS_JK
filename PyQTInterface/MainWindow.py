@@ -656,7 +656,7 @@ class _MainWindow(QMainWindow):
         print(self.calculator_window.presetDict)
 
     def create_conditional_stmt(self):
-        self.create_conditional_stmt_window = ConditionalStatement.createConditionalStatement()
+        self.create_conditional_stmt_window = ConditionalStatement.ConditionExpreesionWidget()
         self.create_conditional_stmt_window.show()
         self.create_conditional_stmt_window.send_output_dict_signal.connect(self.create_condition_exp)
 
@@ -688,7 +688,7 @@ class _MainWindow(QMainWindow):
                                                          _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
     def apply_conditional_stmt(self):
-        self.apply_conditional_stmt_window = ConditionalStatement.applyConditionalStatement()
+        self.apply_conditional_stmt_window = ConditionalStatement.ConditionStmtWidget()
         self.apply_conditional_stmt_window.show()
         self.apply_conditional_stmt_window.send_output_list_signal.connect(self.create_condition_stmt)
 
@@ -707,7 +707,7 @@ class _MainWindow(QMainWindow):
 
         def create_stmt_ast_by_dict(info_dict):
             output_ast = variable_ast.ConditionSTMT()
-            output_ast.stmt = info_dict['type']
+            output_ast.c_type = info_dict['c_type']
             output_ast.expression = create_exp_ast_by_dict(info_dict['expression']) if type(info_dict['expression']) == dict \
             else info_dict['expression']
             output_ast.body = []
@@ -1500,7 +1500,8 @@ class _MainWindow(QMainWindow):
         self.txtw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
         self.txtw.send_TextDesign_signal.connect(self.createNewDesignParameter)
         self.txtw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
-        self.scene.send_xyCoordinate_signal.connect(self.txtw.DetermineCoordinateWithMouse)
+        self.scene.send_xy_signal.connect(self.txtw.DetermineCoordinateWithMouse)
+        # self.scene.send_xyCoordinate_signal.connect(self.txtw.DetermineCoordinateWithMouse)
         self.txtw.send_Destroy_signal.connect(self.delete_obj)
 
     def makePinWindow(self):
@@ -1510,7 +1511,8 @@ class _MainWindow(QMainWindow):
         self.pinw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
         self.pinw.send_PinDesign_signal.connect(self.createNewDesignParameter)
         self.pinw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
-        self.scene.send_xyCoordinate_signal.connect(self.pinw.DetermineCoordinateWithMouse)
+        # self.scene.send_xyCoordinate_signal.connect(self.pinw.DetermineCoordinateWithMouse)
+        self.scene.send_xy_signal.connect(self.pinw.DetermineCoordinateWithMouse)
         self.pinw.send_Destroy_signal.connect(self.delete_obj)
 
     # def makeFilterWindow(self):
@@ -3086,7 +3088,7 @@ class _CustomView(QGraphicsView):
                     else:
                         tmp_group_item.addToGroup(item)
             # map(lambda item: tmp_group_item.addToGroup(item), every_item)
-            print(tmp_group_item.childItems())
+
             self.scene().addItem(tmp_group_item)
             self.fitInView(tmp_group_item,Qt.KeepAspectRatio)
             self.scene().destroyItemGroup(tmp_group_item)
