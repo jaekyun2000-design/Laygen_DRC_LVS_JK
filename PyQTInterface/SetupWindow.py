@@ -15,7 +15,7 @@ from PyQTInterface import calculator
 
 from PyCodes import ASTmodule
 from PyCodes import element_ast
-
+from PyQTInterface.delegator import delegator
 import logging
 import copy
 from PyCodes import userDefineExceptions
@@ -32,6 +32,7 @@ class _BoundarySetupWindow(QWidget):
 
     send_BoundarySetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
     send_BoundaryDesign_signal = pyqtSignal(dict)
+    send_design_message = pyqtSignal(delegator.DelegateMessage)
     send_Destroy_signal = pyqtSignal(str)
     send_Warning_signal = pyqtSignal(str)
     send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
@@ -197,6 +198,8 @@ class _BoundarySetupWindow(QWidget):
                 pass
 
             self.send_BoundaryDesign_signal.emit(self._DesignParameter)
+            message = delegator.DelegateMessage(arguments=[self._DesignParameter], target_fcn='create_qt_parameter')
+            self.send_design_message.emit(message)
             self.click = 2
             self.destroy()
 

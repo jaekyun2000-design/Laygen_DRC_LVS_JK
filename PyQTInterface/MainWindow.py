@@ -37,7 +37,8 @@ from PyCodes import element_ast, variable_ast
 from DesignManager.ElementManager import element_manager
 from DesignManager.VariableManager import FilterPractice
 from DesignManager.VariableManager import variable_manager
-# from PyQTInterface.delegator import interface_delegator
+from PyQTInterface.delegator import interface_delegator
+from PyQTInterface.delegator import dpdc_delegator
 
 import threading
 import re
@@ -83,8 +84,8 @@ class _MainWindow(QMainWindow):
     def __init__(self):
         super(_MainWindow, self).__init__()
         self.setStyleSheet("border-color: rgb(178, 41, 100)")
-
-
+        self.design_delegator = dpdc_delegator.DesignDelegator(self)
+        self.widget_delegator = interface_delegator.WidgetDelegator(self)
         self._QTObj = QTInterfaceWithAST.QtInterFace()
         self._ProjectName = None
         self._CurrentModuleName = None
@@ -277,7 +278,8 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget1_2 = list_manager.LayerManager()
 
         boundaryButton = QPushButton("Boundary")
-        boundaryButton.clicked.connect(self.makeBoundaryWindow)
+        # boundaryButton.clicked.connect(self.makeBoundaryWindow)
+        boundaryButton.clicked.connect(self.widget_delegator.make_boundary_window)
         # boundaryButton.clicked.connect(self.setup_window_delegator.make_boundary_window)
 
         pathButton = QPushButton("Path",dockContentWidget1)
@@ -1324,7 +1326,8 @@ class _MainWindow(QMainWindow):
         self.bw.show()
         self.bw.send_BoundarySetup_signal.connect(self.updateGraphicItem)
         self.bw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
-        self.bw.send_BoundaryDesign_signal.connect(self.createNewDesignParameter)
+        # self.bw.send_BoundaryDesign_signal.connect(self.createNewDesignParameter)
+        self.bw.send_design_message.connect(self.design_delegator.message_delivery)
         self.bw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
         self.scene.send_xy_signal.connect(self.bw.AddBoundaryPointWithMouse)
         self.scene.send_xy_signal.connect(self.bw.clickCount)
