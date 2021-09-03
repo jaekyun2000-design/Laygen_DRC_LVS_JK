@@ -1297,7 +1297,7 @@ class _MainWindow(QMainWindow):
                         self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
                     visualItem._CreateFlag = False
                     self.updateGraphicItem(visualItem)
-                    dc_id = self._DummyConstraints.search_constraint_id_by_design_name(dp_name)
+                    dc_id = self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_name)
                     self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=dp_name, dc_id=dc_id)
 
                 print(dp_dict)
@@ -1829,21 +1829,22 @@ class _MainWindow(QMainWindow):
 
     def edit_variable(self, _edit_id, variable_info_dict):
         target_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(_edit_id)
+        new_dp_id = variable_info_dict['name']
         self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_edit_id]._ast.info_dict.clear()
         self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_edit_id]._ast.info_dict = variable_info_dict
         try:
-            self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][variable_info_dict['name']] = \
+            self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][new_dp_id] = \
                 self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].pop(target_dp_id)
-            self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][variable_info_dict['name']]._DesignParameter['_ElementName'] = variable_info_dict['name']
+            self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][new_dp_id]._DesignParameter['_ElementName'] = new_dp_id
         except:
             pass
-
-        dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(_edit_id)
-        dp_update_info =\
-            self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(
-                ast = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_edit_id]._ast)
-        for key, value in dp_update_info.items():
-            self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_id]._setDesignParameterValue(key, value)
+        self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=new_dp_id, dc_id=_edit_id)
+        # dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(_edit_id)
+        # dp_update_info =\
+        #     self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(
+        #         ast = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_edit_id]._ast)
+        # for key, value in dp_update_info.items():
+        #     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_id]._setDesignParameterValue(key, value)
 
     def create_variable(self, _edit_id, variable_info_dict):
         if _edit_id in list(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName].keys()):
