@@ -1,6 +1,7 @@
 from PyQTInterface import SetupWindow
 from PyQTInterface.delegator import delegator
 
+from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout
     
     
 class WidgetDelegator(delegator.Delegator):
@@ -82,3 +83,41 @@ class WidgetDelegator(delegator.Delegator):
         self.main_window.cw = SetupWindow._VariableSetupWindowCUSTOM(_ASTapi=self.main_window._ASTapi)
         self.main_window.cw.show()
         self.main_window.cw.send_CUSTOM_signal.connect(self.main_window.createNewConstraintAST)
+
+    def convert_elements_to_sref_widget(self, vis_item_list):
+        """
+        choice between assign generator or create generator
+        """
+        self.choice_widget = QWidget()
+        layout = QHBoxLayout()
+        assign_btn = QPushButton('assign')
+        create_btn = QPushButton('create')
+        layout.addWidget(assign_btn)
+        layout.addWidget(create_btn)
+        self.choice_widget.setLayout(layout)
+        self.choice_widget.show()
+
+        message = delegator.DelegateMessage(arguments=[vis_item_list], target_fcn='convert_elements_to_sref')
+        def delievery_message(_):
+            self.main_window.design_delegator.message_delivery(message)
+
+        def assign_gen():
+            self.choice_widget.close()
+            self.ls = SetupWindow._LoadSRefWindow(purpose='main_load')
+            self.ls.show()
+            self.ls.send_DesignConstraint_signal.connect(self.main_window.srefCreate)
+            self.ls.send_DesignConstraint_signal.connect(delievery_message)
+            self.ls.send_exported_sref_signal.connect(self.main_window.createDummyConstraint)
+            self.main_window.scene.send_xy_signal.connect(self.ls.DetermineCoordinateWithMouse)
+            message = delegator.DelegateMessage(arguments=[vis_item_list], target_fcn='convert_elements_to_sref')
+
+        def create_gen():
+            message = delegator.DelegateMessage(arguments=[vis_item_list], target_fcn='create_sref_by_elements')
+            delievery_message(None)
+            self.choice_widget.close()
+
+        assign_btn.clicked.connect(assign_gen)
+        create_btn.clicked.connect(create_gen)
+
+
+
