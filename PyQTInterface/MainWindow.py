@@ -280,19 +280,18 @@ class _MainWindow(QMainWindow):
         boundaryButton = QPushButton("Boundary")
         # boundaryButton.clicked.connect(self.makeBoundaryWindow)
         boundaryButton.clicked.connect(self.widget_delegator.make_boundary_window)
-        # boundaryButton.clicked.connect(self.setup_window_delegator.make_boundary_window)
 
         pathButton = QPushButton("Path",dockContentWidget1)
-        pathButton.clicked.connect(self.makePathWindow)
+        pathButton.clicked.connect(self.widget_delegator.makePathWindow)
 
         srefButtonL = QPushButton("SRefLoad",dockContentWidget1)
-        srefButtonL.clicked.connect(self.loadSRefWindow)
+        srefButtonL.clicked.connect(self.widget_delegator.loadSRefWindow)
 
         TextButton = QPushButton("Text",dockContentWidget1)
-        TextButton.clicked.connect(self.makeTextWindow)
+        TextButton.clicked.connect(self.widget_delegator.makeTextWindow)
 
         PinButton = QPushButton("Pin",dockContentWidget1)
-        PinButton.clicked.connect(self.makePinWindow)
+        PinButton.clicked.connect(self.widget_delegator.makePinWindow)
 
         ElemntClickCheckBox = QCheckBox("Element",dockContentWidget1)
         SrefClickCheckBox = QCheckBox("Sref",dockContentWidget1)
@@ -517,10 +516,10 @@ class _MainWindow(QMainWindow):
 
         self.addDockWidget(Qt.BottomDockWidgetArea,dockWidget3)
         # self.createConstraintButton.clicked.connect(self.makeConstraintWindow)
-        self.createConstraintWithPyCodeButton.clicked.connect(self.makePyCodeWindow)
-        self.createConstraintButtonAST.clicked.connect(self.makeConstraintWindowAST)
-        self.createConstraintButtonCUSTOM.clicked.connect(self.makeConstraintWindowCUSTOM)
-        self.createVariableButtonCUSTOM.clicked.connect(self.makeVariableWindowCUSTOM)
+        self.createConstraintWithPyCodeButton.clicked.connect(self.widget_delegator.makePyCodeWindow)
+        self.createConstraintButtonAST.clicked.connect(self.widget_delegator.makeConstraintWindowAST)
+        self.createConstraintButtonCUSTOM.clicked.connect(self.widget_delegator.makeConstraintWindowCUSTOM)
+        self.createVariableButtonCUSTOM.clicked.connect(self.widget_delegator.makeVariableWindowCUSTOM)
         # self.saveConstraintAsJSONButton.clicked.connect(self.saveConstraint)
         self.saveConstraintAsPickleButton.clicked.connect(self.saveConstraintP)
         # self.loadConstraintFromPickleButton.clicked.connect(self.loadConstraintP)
@@ -1321,103 +1320,6 @@ class _MainWindow(QMainWindow):
                 continue
         return False
 
-    def makeBoundaryWindow(self):
-        self.bw = SetupWindow._BoundarySetupWindow()
-        self.bw.show()
-        self.bw.send_BoundarySetup_signal.connect(self.updateGraphicItem)
-        self.bw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
-        # self.bw.send_BoundaryDesign_signal.connect(self.createNewDesignParameter)
-        self.bw.send_design_message.connect(self.design_delegator.message_delivery)
-        self.bw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
-        self.scene.send_xy_signal.connect(self.bw.AddBoundaryPointWithMouse)
-        self.scene.send_xy_signal.connect(self.bw.clickCount)
-        self.scene.send_mouse_move_xy_signal.connect(self.bw.mouseTracking)
-        self.bw.send_Destroy_signal.connect(self.delete_obj)
-
-
-    def makePathWindow(self):
-        self.scene.itemListClickIgnore(True)
-        self.pw = SetupWindow._PathSetupWindow()
-        self.pw.show()
-        self.pw.send_PathSetup_signal.connect(self.updateGraphicItem)
-        self.pw.send_PathDesign_signal.connect(self.createNewDesignParameter)
-        self.pw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
-        self.pw.send_Destroy_signal.connect(self.delete_obj)
-        self.scene.send_xy_signal.connect(self.pw.AddPathPointWithMouse)
-        self.scene.send_xy_signal.connect(self.pw.clickCount)  # Mouse Interaction connect
-        self.scene.send_mouse_move_xy_signal.connect(self.pw.mouseTracking)
-        # self.scene.send_xyCoordinate_signal.connect(self.pw.AddPathPointWithMouse)
-        # self.scene.send_xyCoordinate_signal.connect(self.pw.clickCount)                          # Mouse Interaction connect
-        # self.scene.send_mouse_move_signal.connect(self.pw.mouseTracking)
-
-        self.scene.send_doubleclick_signal.connect(self.pw.quitCreate)
-
-    def makeSRefWindow(self):
-        scf = QFileDialog.getSaveFileName(self,'Save Design Parameter','./PyQTInterface/modules')
-        try:
-            _fileName=scf[0]
-            self._QTObj._qtProject._saveDesignParameterAsPickle(_file=_fileName)
-        except:
-            print("Save DesignParameter Failed")
-            self.dockContentWidget4ForLoggingMessage._WarningMessage("Save DesignParameter Fail: Unknown")
-            pass
-
-    def loadSRefWindow(self):
-        self.ls = SetupWindow._LoadSRefWindow(purpose='main_load')
-        self.ls.show()
-        self.ls.send_DesignConstraint_signal.connect(self.srefCreate)
-        self.ls.send_exported_sref_signal.connect(self.createDummyConstraint)
-        self.scene.send_xy_signal.connect(self.ls.DetermineCoordinateWithMouse)
-        self.ls.send_destroy_signal.connect(self.delete_obj)
-
-
-    def makeTextWindow(self):
-        self.txtw = SetupWindow._TextSetupWindow()
-        self.txtw.show()
-        self.txtw.send_TextSetup_signal.connect(self.updateGraphicItem)
-        self.txtw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
-        self.txtw.send_TextDesign_signal.connect(self.createNewDesignParameter)
-        self.txtw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
-        self.scene.send_xy_signal.connect(self.txtw.DetermineCoordinateWithMouse)
-        # self.scene.send_xyCoordinate_signal.connect(self.txtw.DetermineCoordinateWithMouse)
-        self.txtw.send_Destroy_signal.connect(self.delete_obj)
-
-    def makePinWindow(self):
-        self.pinw = SetupWindow._PinSetupWindow()
-        self.pinw.show()
-        self.pinw.send_PinSetup_signal.connect(self.updateGraphicItem)
-        self.pinw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
-        self.pinw.send_PinDesign_signal.connect(self.createNewDesignParameter)
-        self.pinw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
-        # self.scene.send_xyCoordinate_signal.connect(self.pinw.DetermineCoordinateWithMouse)
-        self.scene.send_xy_signal.connect(self.pinw.DetermineCoordinateWithMouse)
-        self.pinw.send_Destroy_signal.connect(self.delete_obj)
-
-    def makeConstraintWindow(self):
-        self.cw = SetupWindow._ConstraintSetupWindow()
-        self.cw.show()
-        self.cw.send_DesignConstraint_signal.connect(self.createNewConstraint)
-
-    def makePyCodeWindow(self):
-        self.cw = SetupWindow._ConstraintSetupWindowPyCode()
-        self.cw.show()
-        self.cw.send_PyCode_signal.connect(self.createNewConstraintPyCode)
-
-    def makeConstraintWindowAST(self):
-        self.cw = SetupWindow._ConstraintSetupWindowAST(_ASTapi = self._ASTapi)
-        self.cw.show()
-        self.cw.send_AST_signal.connect(self.createNewConstraintAST)
-        self.cw.send_destroy_signal.connect(self.delete_obj)
-
-    def makeConstraintWindowCUSTOM(self):
-        self.cw = SetupWindow._ConstraintSetupWindowCUSTOM(_ASTapi = self._ASTapi)
-        self.cw.show()
-        self.cw.send_CUSTOM_signal.connect(self.createNewConstraintAST)
-
-    def makeVariableWindowCUSTOM(self):
-        self.cw = SetupWindow._VariableSetupWindowCUSTOM(_ASTapi=self._ASTapi)
-        self.cw.show()
-        self.cw.send_CUSTOM_signal.connect(self.createNewConstraintAST)
 
     def delete_obj(self, obj):
         # sender = self.sender()
