@@ -271,7 +271,7 @@ class IrregularTransformer(ast.NodeTransformer):
         final_x_value = None
         final_y_value = None
         # for XYFlag, elements in self._id_to_data_dict.ExpressionDict[_id].items():
-        for XYFlag, elements in node.info_dict.ExpressionDict[_id].items():
+        for XYFlag, elements in node.info_dict.items():
             if len(elements) == 0:
                 pass
             else:
