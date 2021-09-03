@@ -2,6 +2,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+
+from PyQTInterface import calculator
 import warnings
 import re
 import copy
@@ -114,9 +116,15 @@ class ConditionExpreesionWidgetCapsule(QWidget):
         var_label = QLabel('variable')
         var_input = QLineEdit()
         var_input.textChanged.connect(self.update_output_dict)
-        var_layout = QVBoxLayout()
-        var_layout.addWidget(var_label)
-        var_layout.addWidget(var_input)
+        var_cal = QPushButton()
+        var_cal.setIcon(QIcon(QPixmap('./image/cal.png')))
+        var_cal.clicked.connect(self.cal_clicked)
+        var_h_layout = QHBoxLayout()
+        var_h_layout.addWidget(var_input)
+        var_h_layout.addWidget(var_cal)
+        var_v_layout = QVBoxLayout()
+        var_v_layout.addWidget(var_label)
+        var_v_layout.addLayout(var_h_layout)
 
         operator_label = QLabel('operator')
         operator_input = QComboBox()
@@ -127,17 +135,23 @@ class ConditionExpreesionWidgetCapsule(QWidget):
         operator_layout.addWidget(operator_label)
         operator_layout.addWidget(operator_input)
 
-        condition_label = QLabel('condition')
-        condition_input = QLineEdit()
-        condition_input.textChanged.connect(self.update_output_dict)
-        condition_layout = QVBoxLayout()
-        condition_layout.addWidget(condition_label)
-        condition_layout.addWidget(condition_input)
+        cond_label = QLabel('condition')
+        cond_input = QLineEdit()
+        cond_input.textChanged.connect(self.update_output_dict)
+        cond_cal = QPushButton()
+        cond_cal.setIcon(QIcon(QPixmap('./image/cal.png')))
+        cond_cal.clicked.connect(self.cal_clicked)
+        cond_h_layout = QHBoxLayout()
+        cond_h_layout.addWidget(cond_input)
+        cond_h_layout.addWidget(cond_cal)
+        cond_v_layout = QVBoxLayout()
+        cond_v_layout.addWidget(cond_label)
+        cond_v_layout.addLayout(cond_h_layout)
 
         input_layout = QHBoxLayout()
-        input_layout.addLayout(var_layout)
+        input_layout.addLayout(var_v_layout)
         input_layout.addLayout(operator_layout)
-        input_layout.addLayout(condition_layout)
+        input_layout.addLayout(cond_v_layout)
 
         self.main_layout = QVBoxLayout()
         self.main_layout.addLayout(input_layout)
@@ -153,31 +167,43 @@ class ConditionExpreesionWidgetCapsule(QWidget):
 
         _label = QLabel('')
 
-        self.var_input = QLineEdit()
-        self.var_input.textChanged.connect(self.update_output_dict)
-        var_layout = QVBoxLayout()
-        var_layout.addWidget(_label)
-        var_layout.addWidget(self.var_input)
+        var_input = QLineEdit()
+        var_input.textChanged.connect(self.update_output_dict)
+        var_cal = QPushButton()
+        var_cal.setIcon(QIcon(QPixmap('./image/cal.png')))
+        var_cal.clicked.connect(self.cal_clicked)
+        var_h_layout = QHBoxLayout()
+        var_h_layout.addWidget(var_input)
+        var_h_layout.addWidget(var_cal)
+        var_v_layout = QVBoxLayout()
+        var_v_layout.addWidget(_label)
+        var_v_layout.addLayout(var_h_layout)
 
         and_or_label = QLabel(and_or)
-        self.operator_input = QComboBox()
-        self.operator_input.addItems(self.operator)
-        self.operator_input.currentTextChanged.connect(self.operator_changed)
-        self.operator_input.currentTextChanged.connect(self.update_output_dict)
+        operator_input = QComboBox()
+        operator_input.addItems(self.operator)
+        operator_input.currentTextChanged.connect(self.operator_changed)
+        operator_input.currentTextChanged.connect(self.update_output_dict)
         operator_layout = QVBoxLayout()
         operator_layout.addWidget(and_or_label)
-        operator_layout.addWidget(self.operator_input)
+        operator_layout.addWidget(operator_input)
 
-        self.condition_input = QLineEdit()
-        self.condition_input.textChanged.connect(self.update_output_dict)
-        condition_layout = QVBoxLayout()
-        condition_layout.addWidget(_label)
-        condition_layout.addWidget(self.condition_input)
+        cond_input = QLineEdit()
+        cond_input.textChanged.connect(self.update_output_dict)
+        cond_cal = QPushButton()
+        cond_cal.setIcon(QIcon(QPixmap('./image/cal.png')))
+        cond_cal.clicked.connect(self.cal_clicked)
+        cond_h_layout = QHBoxLayout()
+        cond_h_layout.addWidget(cond_input)
+        cond_h_layout.addWidget(cond_cal)
+        cond_v_layout = QVBoxLayout()
+        cond_v_layout.addWidget(_label)
+        cond_v_layout.addLayout(cond_h_layout)
 
         input_layout = QHBoxLayout()
-        input_layout.addLayout(var_layout)
+        input_layout.addLayout(var_v_layout)
         input_layout.addLayout(operator_layout)
-        input_layout.addLayout(condition_layout)
+        input_layout.addLayout(cond_v_layout)
 
         self.main_layout.addLayout(input_layout)
 
@@ -192,22 +218,56 @@ class ConditionExpreesionWidgetCapsule(QWidget):
                 break
 
         if sender.currentText() == 'None':
-            self.main_layout.itemAt(i).itemAt(2).itemAt(1).widget().setStyleSheet(
+            self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(0).widget().setStyleSheet(
                 "QLineEdit{background:rgb(222,222,222);}")
-            self.main_layout.itemAt(i).itemAt(2).itemAt(1).widget().setReadOnly(True)
+            self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(0).widget().setReadOnly(True)
+            self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(1).widget().setDisabled(True)
         else:
-            self.main_layout.itemAt(i).itemAt(2).itemAt(1).widget().setStyleSheet(
+            self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(0).widget().setStyleSheet(
                 "QLineEdit{background:rgb(255,255,255);}")
-            self.main_layout.itemAt(i).itemAt(2).itemAt(1).widget().setReadOnly(False)
+            self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(0).widget().setReadOnly(False)
+            self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(1).widget().setDisabled(False)
 
     def update_output_dict(self, _):
         for i in range(len(self.output_dict_list)):
-            var = self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text()
+            var = self.main_layout.itemAt(i).itemAt(0).itemAt(1).itemAt(0).widget().text()
             op = self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().currentText()
-            cond = self.main_layout.itemAt(i).itemAt(2).itemAt(1).widget().text()
+            cond = self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(0).widget().text()
             self.output_dict_list[i]['variable'] = var
             self.output_dict_list[i]['operator'] = op
             self.output_dict_list[i]['condition'] = cond
+
+    def cal_clicked(self):
+        sender = self.sender()
+
+        for i in range(len(self.output_dict_list)):
+            if sender == self.main_layout.itemAt(i).itemAt(0).itemAt(1).itemAt(1).widget():
+                tmp = 'var'
+                break
+            if sender == self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(1).widget():
+                tmp = 'cond'
+                break
+
+        self.sender_list = [i, tmp]
+
+        self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='')
+        self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_dummyconstraints_signal.connect(self.cal.storePreset)
+        self.cal.set_preset_window()
+        self.cal.show()
+
+    def exported_text(self, str1, str2, dict1):
+        if dict1['X']:
+            if self.sender_list[1] == 'var':
+                self.main_layout.itemAt(self.sender_list[0]).itemAt(0).itemAt(1).itemAt(0).widget().setText(str(dict1['X']))
+            elif self.sender_list[1] == 'cond':
+                self.main_layout.itemAt(self.sender_list[0]).itemAt(2).itemAt(1).itemAt(0).widget().setText(str(dict1['X']))
+        elif dict1['Y']:
+            if self.sender_list[1] == 'var':
+                self.main_layout.itemAt(self.sender_list[0]).itemAt(0).itemAt(1).itemAt(0).widget().setText(str(dict1['Y']))
+            elif self.sender_list[1] == 'cond':
+                self.main_layout.itemAt(self.sender_list[0]).itemAt(2).itemAt(1).itemAt(0).widget().setText(str(dict1['Y']))
+
 
 class ConditionStmtWidget(QWidget):
     send_output_list_signal = pyqtSignal(list)
