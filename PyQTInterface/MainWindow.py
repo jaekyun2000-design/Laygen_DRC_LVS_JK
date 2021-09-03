@@ -37,6 +37,7 @@ from PyCodes import element_ast, variable_ast
 from DesignManager.ElementManager import element_manager
 from DesignManager.VariableManager import FilterPractice
 from DesignManager.VariableManager import variable_manager
+from PyQTInterface.delegator import delegator
 from PyQTInterface.delegator import interface_delegator
 from PyQTInterface.delegator import dpdc_delegator
 
@@ -262,6 +263,8 @@ class _MainWindow(QMainWindow):
         graphicView.setInteractive(True)
 
         graphicView.variable_signal.connect(self.createVariable)
+        graphicView.send_widget_message.connect(self.widget_delegator.message_delivery)
+        graphicView.send_design_message.connect(self.design_delegator.message_delivery)
         self.scene.setSceneRect(-1000000,-1000000,2000000,2000000)
         self.scene.send_parameterIDList_signal.connect(self.parameterToTemplateHandler)
         self.scene.send_deleteItem_signal.connect(self.deleteDesignParameter)
@@ -2743,6 +2746,8 @@ class _MainWindow(QMainWindow):
 
 class _CustomView(QGraphicsView):
     variable_signal = pyqtSignal(str)
+    send_design_message = pyqtSignal(delegator.DelegateMessage)
+    send_widget_message = pyqtSignal(delegator.DelegateMessage)
     nameout_signal = pyqtSignal(str)
     name_list_signal = pyqtSignal(list, list)
 
@@ -2849,7 +2854,11 @@ class _CustomView(QGraphicsView):
         if type == 'boundary_array':
             self.variable_signal.emit('boundary_array')
         elif type == 'to_sref':
-            self.variable_signal.emit('to_sref')
+            selected_vis_items = self.scene().selectedItems()
+            message = delegator.DelegateMessage(arguments=[selected_vis_items], target_fcn='convert_elements_to_sref_widget')
+            self.send_widget_message.emit(message)
+            # self.send_design_message.emit(message)
+            # self.variable_signal.emit('to_sref')
         elif type == 'path_array':
             self.variable_signal.emit('path_array')
         elif type == 'sref_array':
