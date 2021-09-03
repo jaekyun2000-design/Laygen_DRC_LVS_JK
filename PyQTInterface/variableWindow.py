@@ -52,7 +52,6 @@ class VariableSetupWindow(QWidget):
         self.group_list = group_ref_list
         self.inspect_array_window_address = inspect_array_window_address
         self.itemList = list()
-        self.relative_or_offset = 'relative'
         self.initUI()
 
         if variable_obj == None:
@@ -77,11 +76,9 @@ class VariableSetupWindow(QWidget):
         if checked:
             sender.setIcon(QIcon(QPixmap('./image/ON.png')))
             sender.setText("  Relative Expression  ")
-            self.expressionType = 'relative'
         else:
             sender.setIcon(QIcon(QPixmap('./image/OFF.png')))
             sender.setText("  Offset Expression  ")
-            self.expressionType = 'offset'
 
     def initUI(self):
         self.layout_list = []
@@ -252,7 +249,7 @@ class VariableSetupWindow(QWidget):
         array_list = eval(array_list_item.text())
         self.deleteItemList.addItems(array_list)
         self.variable_type_widget.setCurrentText(self.variable_type)
-        self.variable_widget.request_show(self.variable_type[:-6], self.relative_or_offset)
+        self.variable_widget.request_show(self.variable_type[:-6], self.flag_type)
         self.show()
 
     def clickFromScene(self, item):
@@ -278,7 +275,7 @@ class VariableSetupWindow(QWidget):
             self.warning.setIcon(QMessageBox.Warning)
             self.warning.show()
             return
-        if self.relative_or_offset == 'relative':
+        if self.flag_type == 'relative':
             if self.variable_type == 'path_array':
                 if output_dict['XY_source_ref'] == '' or output_dict['XY_target_ref'] == '':
                     self.warning = QMessageBox()
@@ -306,7 +303,7 @@ class VariableSetupWindow(QWidget):
                     self.warning.setIcon(QMessageBox.Warning)
                     self.warning.show()
                     return
-        elif self.relative_or_offset == 'offset':
+        elif self.flag_type == 'offset':
             if output_dict['XY_ref'] == '':
                 self.warning = QMessageBox()
                 self.warning.setText("Incomplete Reference")
