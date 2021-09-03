@@ -234,31 +234,6 @@ class ElementManager:
                 elif key == 'parameters':
                     tmpDP[key] = ast.__dict__['parameters']
                 pass
-            # for key in KeyManager._SRefkey.keys():
-            #     if key == '_id':
-            #         tmpDP[key] = ast.__dict__['name']
-            #     elif key == '_DesignParametertype':
-            #         tmpDP[key] = 3
-            #     elif key == '_XYCoordinates':
-            #         tmpDP[key] = ast.XY
-            #     elif key == '_DesignObj':
-            #         tmpDP[key] = None
-            #         # TODO: DesignObj necessary for constraint -> parameter?
-            #     elif key == '_DesignLibraryName':
-            #         tmpDP[key] = ast.__dict__['library']
-            #     elif key == '_className':
-            #         tmpDP[key] = ast.__dict__['className']
-            #     elif key == '_Reflect':
-            #         tmpDP[key] = None
-            #     elif key == '_Angle':
-            #         tmpDP[key] = None
-            #     elif key == '_Parameters':
-            #         tmpDP[key] = ast.__dict__['parameters']
-            #     elif key == '_Ignore':
-            #         tmpDP[key] = None
-            #     elif key == '_ElementName':
-            #         tmpDP[key] = ast.__dict__['name']
-            #     pass
 
         elif ASTmodule._getASTtype(ast) == 'Text':
             # 'id',  # name str
