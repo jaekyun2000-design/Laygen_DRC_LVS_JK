@@ -1,3 +1,6 @@
+import warnings
+
+
 class DelegateMessage:
     def __init__(self, arguments: list = [], arguments_dict: dict = {}, target_fcn: str = None, sender: object = None):
         self.arguments = arguments
@@ -40,6 +43,9 @@ class Delegator:
         self.main_window = main_window
 
     def message_delivery(self, message: DelegateMessage):
-        method = message.get_method(self)
-        arguments = message.get_arguments()
-        method(*arguments[0],**arguments[1])
+        try:
+            method = message.get_method(self)
+            arguments = message.get_arguments()
+            method(*arguments[0],**arguments[1])
+        except Exception as e:
+            warnings.warn(str(e))
