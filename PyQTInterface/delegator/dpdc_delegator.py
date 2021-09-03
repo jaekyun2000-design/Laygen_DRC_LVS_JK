@@ -122,3 +122,21 @@ class DesignDelegator(delegator.Delegator):
             self.main_window.updateGraphicItem(self.main_window.visualItemDict[id])
             return self.main_window.visualItemDict[id]
         return None
+
+    def delete_qt_parameter(self, dp_name, delete_dc=True):
+        dp_module = self.main_window._CurrentModuleName
+
+        dc_id = self.main_window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_name)
+
+        deletionItems = [self.main_window.visualItemDict[dp_name]]  # Delete Visual Item
+        for deleteItem in deletionItems:
+            self.main_window.scene.removeItem(deleteItem)
+
+        del self.main_window._QTObj._qtProject._DesignParameter[dp_module][dp_name]
+
+        if delete_dc:
+            self.main_window.deleteDesignConstraint(dc_id, delete_dp=False)
+
+    def convert_elements_to_sref(self, vis_item_list):
+        for vis in vis_item_list:
+            self.delete_qt_parameter(vis._id)
