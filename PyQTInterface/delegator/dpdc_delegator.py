@@ -12,12 +12,9 @@ class DesignDelegator(delegator.Delegator):
         request: create_vs_item,,,
         return : nothing
         """
-
         design_dict = self.main_window._QTObj._qtProject._feed_design(design_type='parameter', module_name= self.main_window._CurrentModuleName, dp_dict= dp_dict)
         design_dict['parameter'].update_unified_expression()
-
         self.create_vs_item(design_dict['parameter'])
-
         if design_dict['constraint']:
             self.add_constraint_to_treeview(design_dict['constraint_id'])
 
@@ -25,12 +22,27 @@ class DesignDelegator(delegator.Delegator):
         """
         receive: design constraint_ast or dictionary.
         process: dc info -> qt_dc (by qt_project's feed_design)
-        request:
+        request: if dp was created, create vs item
         return : nothing
         """
-        pass
+        if constraint_ast:
+            design_dict = self.main_window._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                          odule_name= self.main_window._CurrentModuleName,
+                                                                          _ast=constraint_ast)
+            self.add_constraint_to_treeview(design_dict['constraint_id'])
+            if design_dict['parameter']:
+                self.create_vs_item(design_dict['parameter'])
+        elif constraint_dict:
+            pass
+
 
     def create_vs_item(self, qt_design_parameter):
+        """
+        receive: qt_design_parameter
+        process: create vs item and save layer info
+        request: nothing
+        return : nothing
+        """
         visual_item = VisualizationItem._VisualizationItem()
         visual_item._CreateFlag = False
         visual_item.updateDesignParameter(qt_design_parameter)
@@ -47,6 +59,12 @@ class DesignDelegator(delegator.Delegator):
         self.main_window.dockContentWidget1_2.layer_table_widget.updateLayerList(self.main_window._layerItem)
 
     def add_constraint_to_treeview(self, constraint_id):
+        """
+        receive: constraint_id
+        process: post constraint info on tree widget
+        request: nothing
+        return : nothing
+        """
         self.main_window.dockContentWidget3_2.createNewConstraintAST(_id=constraint_id,
                                                                      _parentName=self.main_window._CurrentModuleName,
                                                                      _DesignConstraint=self.main_window._QTObj._qtProject._DesignConstraint)
