@@ -37,7 +37,8 @@ from PyCodes import element_ast, variable_ast
 from DesignManager.ElementManager import element_manager
 from DesignManager.VariableManager import FilterPractice
 from DesignManager.VariableManager import variable_manager
-# from PyQTInterface.delegator import interface_delegator
+from PyQTInterface.delegator import interface_delegator
+from PyQTInterface.delegator import dpdc_delegator
 
 import threading
 import re
@@ -70,11 +71,6 @@ EasyDebugFileName = ''
 
 class _MainWindow(QMainWindow):
 
-    # def MACRO(self):
-    # send_Boundary_signal = pyqtSignal()
-    # send_ProjectName_signal = pyqtSignal(str)
-    # send_ModuleName_signal = pyqtSignal(str)
-    # send_createNewDesignParameter_signal = pyqtSignal(str,int,str)QApplication
     send_progressMaximum_signal = pyqtSignal(int)
     send_progressMinimum_signal = pyqtSignal(int)
     send_progressValue_signal = pyqtSignal(int)
@@ -87,18 +83,13 @@ class _MainWindow(QMainWindow):
 
     def __init__(self):
         super(_MainWindow, self).__init__()
-        # self.setStyleSheet("background-color: whitesmoke")
-        # self.setStyleSheet("background-color: rgb(178, 41, 100)")
-
-        # self.setWindowFlags(Qt.FramelessWindowHint)
         self.setStyleSheet("border-color: rgb(178, 41, 100)")
-
-
+        self.design_delegator = dpdc_delegator.DesignDelegator(self)
+        self.widget_delegator = interface_delegator.WidgetDelegator(self)
         self._QTObj = QTInterfaceWithAST.QtInterFace()
         self._ProjectName = None
         self._CurrentModuleName = None
         self.gloabal_clipboard = QGuiApplication.clipboard()
-        # self.setup_window_delegator = interface_delegator.SetupWindowDelegator(self)
         self.initUI()
         self.easyDebugMode()
         self.progrseeBar_unstable = True
@@ -277,25 +268,6 @@ class _MainWindow(QMainWindow):
         self.scene.selectionChanged.connect(self.scene.send_item_list)
         self.scene.send_show_variable_signal.connect(self.variableVisual.toggleVariableVisualization)
 
-        # if DEBUG:
-        #     a,b,c= QPointF(0, 0) ,QPointF(100, 0) ,QPointF(100, 500)
-        #     points = [a,b,c]
-        #     aa,bb,cc= QPointF(0, 0) ,QPointF(0, 100) ,QPointF(500, 100)
-        #     pointss = [aa,bb,cc]
-        #     poly = QPolygonF(points)
-        #     poly2 = QPolygonF(pointss)
-        #     path = QPainterPath()
-        #     path.moveTo(0,0)
-        #     path.addPolygon(poly)
-        #     path.closeSubpath()
-        #     path.addPolygon(poly2)
-        #     path.closeSubpath()
-        #     painter = QPainter()
-        #     brush = QBrush(QColor(50,50,50))
-        #     painter.fillPath(path,brush)
-        #     self.scene.addPath(path)
-
-
         ################# Right Dock Widget setting ####################
         dockWidget1 = QDockWidget("Element")
         dockWidget1.setMaximumHeight(400)
@@ -306,20 +278,20 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget1_2 = list_manager.LayerManager()
 
         boundaryButton = QPushButton("Boundary")
-        boundaryButton.clicked.connect(self.makeBoundaryWindow)
-        # boundaryButton.clicked.connect(self.setup_window_delegator.make_boundary_window)
+        # boundaryButton.clicked.connect(self.makeBoundaryWindow)
+        boundaryButton.clicked.connect(self.widget_delegator.make_boundary_window)
 
         pathButton = QPushButton("Path",dockContentWidget1)
-        pathButton.clicked.connect(self.makePathWindow)
+        pathButton.clicked.connect(self.widget_delegator.makePathWindow)
 
         srefButtonL = QPushButton("SRefLoad",dockContentWidget1)
-        srefButtonL.clicked.connect(self.loadSRefWindow)
+        srefButtonL.clicked.connect(self.widget_delegator.loadSRefWindow)
 
         TextButton = QPushButton("Text",dockContentWidget1)
-        TextButton.clicked.connect(self.makeTextWindow)
+        TextButton.clicked.connect(self.widget_delegator.makeTextWindow)
 
         PinButton = QPushButton("Pin",dockContentWidget1)
-        PinButton.clicked.connect(self.makePinWindow)
+        PinButton.clicked.connect(self.widget_delegator.makePinWindow)
 
         ElemntClickCheckBox = QCheckBox("Element",dockContentWidget1)
         SrefClickCheckBox = QCheckBox("Sref",dockContentWidget1)
@@ -432,7 +404,6 @@ class _MainWindow(QMainWindow):
 
         self.dockContentWidget2.createDummyConstraint = self.createDummyConstraint
 
-        # self.dockContentWidget2.signa.connect(graphicView.keyPressEvent)
 
         dockWidget2.setWidget(self. dockContentWidget2)
         self.addDockWidget(Qt.LeftDockWidgetArea,dockWidget2)
@@ -454,7 +425,6 @@ class _MainWindow(QMainWindow):
 
 
         self.sendLeftButton.clicked.connect(self.dockContentWidget3_2.checkSend)
-        #self.dockContentWidget3_2.send_SendSTMT_signal.connect(self.dockContentWidget3.receiveConstraintSTMT)
         self.dockContentWidget3_2.send_SendID_signal.connect(self.dockContentWidget3.receiveConstraintID)
         self.dockContentWidget3_2.send_ReceiveDone_signal.connect(self.dockContentWidget3.removeCurrentIndexItem)
         self.dockContentWidget3_2.send_SendCopyConstraint_signal.connect(self.constraintToTemplateHandler)
@@ -471,7 +441,6 @@ class _MainWindow(QMainWindow):
 
 
         self.sendRightButton.clicked.connect(self.dockContentWidget3.checkSend)
-        #self.dockContentWidget3.send_SendSTMT_signal.connect(self.dockContentWidget3_2.receiveConstraintSTMT)
         self.dockContentWidget3.send_SendID_signal.connect(self.dockContentWidget3_2.receiveConstraintID)
         self.dockContentWidget3.send_ReceiveDone_signal.connect(self.dockContentWidget3_2.removeCurrentIndexItem)
         self.dockContentWidget3.send_RootDesignConstraint_signal.connect(self.setRootConstraint)
@@ -513,6 +482,7 @@ class _MainWindow(QMainWindow):
         self.calculatorButton = QPushButton("XYCalculator")
         self.create_conditional_stmt_button = QPushButton("create if debug")
         self.apply_conditional_stmt_button = QPushButton("apply if debug")
+        self.add_constraint_view_button = QPushButton("add constraint view")
 
         VBoxForPeriButton.addStretch(3)
         # VBoxForPeriButton.addWidget(self.createConstraintButton)
@@ -530,6 +500,7 @@ class _MainWindow(QMainWindow):
         VBoxForPeriButton.addWidget(self.calculatorButton)
         VBoxForPeriButton.addWidget(self.create_conditional_stmt_button)
         VBoxForPeriButton.addWidget(self.apply_conditional_stmt_button)
+        VBoxForPeriButton.addWidget(self.add_constraint_view_button)
         VBoxForPeriButton.addStretch(3)
 
         # self.dockContentWidget3.setDragDropMode(self.dockContectWidget3.MyOwnDragDropMove)
@@ -545,10 +516,10 @@ class _MainWindow(QMainWindow):
 
         self.addDockWidget(Qt.BottomDockWidgetArea,dockWidget3)
         # self.createConstraintButton.clicked.connect(self.makeConstraintWindow)
-        self.createConstraintWithPyCodeButton.clicked.connect(self.makePyCodeWindow)
-        self.createConstraintButtonAST.clicked.connect(self.makeConstraintWindowAST)
-        self.createConstraintButtonCUSTOM.clicked.connect(self.makeConstraintWindowCUSTOM)
-        self.createVariableButtonCUSTOM.clicked.connect(self.makeVariableWindowCUSTOM)
+        self.createConstraintWithPyCodeButton.clicked.connect(self.widget_delegator.makePyCodeWindow)
+        self.createConstraintButtonAST.clicked.connect(self.widget_delegator.makeConstraintWindowAST)
+        self.createConstraintButtonCUSTOM.clicked.connect(self.widget_delegator.makeConstraintWindowCUSTOM)
+        self.createVariableButtonCUSTOM.clicked.connect(self.widget_delegator.makeVariableWindowCUSTOM)
         # self.saveConstraintAsJSONButton.clicked.connect(self.saveConstraint)
         self.saveConstraintAsPickleButton.clicked.connect(self.saveConstraintP)
         # self.loadConstraintFromPickleButton.clicked.connect(self.loadConstraintP)
@@ -558,6 +529,7 @@ class _MainWindow(QMainWindow):
         self.calculatorButton.clicked.connect(self.calculator)
         self.create_conditional_stmt_button.clicked.connect(self.create_conditional_stmt)
         self.apply_conditional_stmt_button.clicked.connect(self.apply_conditional_stmt)
+        self.add_constraint_view_button.clicked.connect(self.add_constraint_view)
 
 
         ##################Extra widget initialization #########################
@@ -631,6 +603,16 @@ class _MainWindow(QMainWindow):
         # print('send!')
         # self.send_create_new_window_signal.emit()
         # print('send end')
+    def add_constraint_view(self):
+        self.c_view_configuration = QWidget()
+        form_layout = QFormLayout()
+        config_list = ['Fcn Name']
+        for config_item in config_list:
+            form_layout.addRow(config_item, QLineEdit())
+        self.c_view_configuration.setLayout(form_layout)
+        self.c_view_configuration.show()
+        calculation_fcn_name = 'CalculateC2FF'
+
 
 
     def run_setup_update(self):
@@ -643,14 +625,6 @@ class _MainWindow(QMainWindow):
         self.setup_widget.show()
 
     def calculator(self):
-        # self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard)
-        # self.dockContentWidget3.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
-        # self.dockContentWidget3_2.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
-        # self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.storePreset)
-        # self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
-        # self.calculator_window.returnLayer_signal.connect(self.get_hierarchy_return_layer)
-        # self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
-        # self.calculator_window.send_equation_signal.connect(self.XYDictManagement)
         self.calculator_window.set_preset_window()
         self.calculator_window.show()
         print(self.calculator_window.presetDict)
@@ -993,83 +967,6 @@ class _MainWindow(QMainWindow):
                 self.calculator_window.destroy()
                 del self.calculator_window
                 return
-
-
-
-    def sref_debug_module(self):
-        # tmpcell = {'INV': {'Sub1': {'Sub2': {'PMOS': None}, 'NMOS': None,}, 'NMOS': None, 'PMOS': None}}
-        # # tmpcell = {'Gen1': {'Gen2-1': {'Gen3': None}, 'Gen2-2': None}}
-        #
-        # self.fc = SetupWindow._FlatteningCell(tmpcell)
-        # self.fc.show()
-
-        tmp_generator = generator_model_api.class_dict['NMOSWithDummy']()
-        name = 'sref_name'
-        library = 'NMOSWithDummy'
-        className = 'Is_it_necessary?'
-        XY = [[0,0]]
-        import ast
-        # parameters = ast.parse(str(tmp_generator._ParametersForDesignCalculation))
-        sref_ast = element_ast.Sref()
-        sref_ast.name = name
-        sref_ast.library = library
-        sref_ast.className = className
-        sref_ast.XY = XY
-        sref_ast.parameters = tmp_generator._ParametersForDesignCalculation
-        # a , id = self._QTObj._qtProject._createNewDesignConstraintAST( _ASTDtype = "pyCode",_ParentName=self._CurrentModuleName, _pyCode=str(tmp_generator._ParametersForDesignCalculation))
-        # sref_ast.parameters = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][id]
-        # sref_ast.parameters = " "
-        design_dict = self._QTObj._qtProject._feed_design(design_type='constraint', module_name=self._CurrentModuleName, _ast= sref_ast)
-        self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'], _parentName=self._CurrentModuleName,
-                                                         _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-
-
-        # tmp_generator._ParametersForDesignCalculation
-
-    def sref_visual_debug(self):
-        DesignParameter = QTInterfaceWithAST.QtDesignParameter(_id='test1',_type=1, _ParentName='INV', _ElementName='name')
-        DesignParameter._createDesignParameter()
-        DesignParameter._setDesignParameterValue(_index='_Layer', _value='METAL1')
-        DesignParameter._setDesignParameterValue(_index='_Datatype', _value='PIMP')
-        DesignParameter._setDesignParameterValue(_index='_XYCoordinatesForDisplay', _value=[[0,0]])
-        DesignParameter._setDesignParameterValue(_index='_XWidth', _value=100)
-        DesignParameter._setDesignParameterValue(_index='_YWidth', _value=100)
-        DesignParameter._setDesignParameterValue(_index='_Ignore', _value=False)
-        DesignParameter._setDesignParameterValue(_index='_ElementName', _value='name')
-        visualItem = VisualizationItem._VisualizationItem()
-        visualItem.updateDesignParameter(DesignParameter)
-        visualItem.setBoundingRegionGranularity(1)
-        self.visualItemDict[DesignParameter._id] = visualItem
-
-        visualItem.setToolTip(DesignParameter._id + '\n' + str(DesignParameter._type))
-        # self.scene.addItem(visualItem)
-
-        visualItem2 = VisualizationItem._VisualizationItem()
-
-        visualItem2.setPos(-200,0)
-        visualItem2._subSrefVisualItem = visualItem
-        self.scene.addItem(visualItem2)
-        # visualItem3 = VisualizationItem._VisualizationItem()
-        # visualItem3.addToGroup(visualItem)
-        # self.scene.addItem(visualItem3)
-        # return visualItem
-
-        pass
-    # def hierarchyCalculator(self, _targetDict, _level = None):
-    #     if _level == None:
-    #         _level = 1
-    #     else:
-    #         _level = _level
-    #     for key, value in _targetDict.items():
-    #         if key == 'flattenFlag' :
-    #             continue
-    #         elif value['subcell'] == None:
-    #             break
-    #         else:
-    #             _level = _level + 1
-    #             subLevel = self.hierarchyCalculator(value['subcell'], _level)
-    #             _level = max(subLevel, _level)
-    #     return _level
 
 
 
@@ -1435,136 +1332,6 @@ class _MainWindow(QMainWindow):
                 continue
         return False
 
-    def makeBoundaryWindow(self):
-        self.bw = SetupWindow._BoundarySetupWindow()
-        self.bw.show()
-        self.bw.send_BoundarySetup_signal.connect(self.updateGraphicItem)
-        self.bw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
-        self.bw.send_BoundaryDesign_signal.connect(self.createNewDesignParameter)
-        self.bw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
-        self.scene.send_xy_signal.connect(self.bw.AddBoundaryPointWithMouse)
-        self.scene.send_xy_signal.connect(self.bw.clickCount)
-        self.scene.send_mouse_move_xy_signal.connect(self.bw.mouseTracking)
-        self.bw.send_Destroy_signal.connect(self.delete_obj)
-
-
-    def makePathWindow(self):
-        self.scene.itemListClickIgnore(True)
-        self.pw = SetupWindow._PathSetupWindow()
-        self.pw.show()
-        self.pw.send_PathSetup_signal.connect(self.updateGraphicItem)
-        self.pw.send_PathDesign_signal.connect(self.createNewDesignParameter)
-        self.pw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
-        self.pw.send_Destroy_signal.connect(self.delete_obj)
-        self.scene.send_xy_signal.connect(self.pw.AddPathPointWithMouse)
-        self.scene.send_xy_signal.connect(self.pw.clickCount)  # Mouse Interaction connect
-        self.scene.send_mouse_move_xy_signal.connect(self.pw.mouseTracking)
-        # self.scene.send_xyCoordinate_signal.connect(self.pw.AddPathPointWithMouse)
-        # self.scene.send_xyCoordinate_signal.connect(self.pw.clickCount)                          # Mouse Interaction connect
-        # self.scene.send_mouse_move_signal.connect(self.pw.mouseTracking)
-
-        self.scene.send_doubleclick_signal.connect(self.pw.quitCreate)
-
-    def makeSRefWindow(self):
-        scf = QFileDialog.getSaveFileName(self,'Save Design Parameter','./PyQTInterface/modules')
-        try:
-            _fileName=scf[0]
-            self._QTObj._qtProject._saveDesignParameterAsPickle(_file=_fileName)
-        except:
-            print("Save DesignParameter Failed")
-            self.dockContentWidget4ForLoggingMessage._WarningMessage("Save DesignParameter Fail: Unknown")
-            pass
-
-    def loadSRefWindow(self):
-        self.ls = SetupWindow._LoadSRefWindow(purpose='main_load')
-        self.ls.show()
-        self.ls.send_DesignConstraint_signal.connect(self.srefCreate)
-        self.ls.send_exported_sref_signal.connect(self.createDummyConstraint)
-        # self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)
-        self.scene.send_xy_signal.connect(self.ls.DetermineCoordinateWithMouse)
-        self.ls.send_destroy_signal.connect(self.delete_obj)
-        # self.ls.send_TextSetup_signal.connect(self.updateGraphicItem)
-        # self.ls.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
-        # self.ls.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
-        # self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)
-
-    # def loadSRefWindowlegacy(self):
-    #     scf = QFileDialog.getOpenFileName(self,'Load Design Parameter','./PyQTInterface/modules')
-    #     try:
-    #         _fileName=scf[0]
-    #         self._QTObj._qtProject._loadDesignParameterAsPickle(_file=_fileName)
-    #     except:
-    #         print("Save DesignParameter Failed")
-    #         self.dockContentWidget4ForLoggingMessage._WarningMessage("Save DesignParameter Fail: Unknown")
-    #
-    #         #################DesignParameter Load ######################
-    #     for module in self._QTObj._qtProject._DesignParameter:
-    #         for id in self._QTObj._qtProject._DesignParameter[module]:
-    #             visualItem = self.createVisualItemfromDesignParameter(self._QTObj._qtProject._DesignParameter[module][id])
-    #             self.updateGraphicItem(visualItem)
-    #
-    #     self.dockContentWidget4ForLoggingMessage._InfoMessage("Project Load Done")
-
-    def makeTextWindow(self):
-        self.txtw = SetupWindow._TextSetupWindow()
-        self.txtw.show()
-        self.txtw.send_TextSetup_signal.connect(self.updateGraphicItem)
-        self.txtw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
-        self.txtw.send_TextDesign_signal.connect(self.createNewDesignParameter)
-        self.txtw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
-        self.scene.send_xy_signal.connect(self.txtw.DetermineCoordinateWithMouse)
-        # self.scene.send_xyCoordinate_signal.connect(self.txtw.DetermineCoordinateWithMouse)
-        self.txtw.send_Destroy_signal.connect(self.delete_obj)
-
-    def makePinWindow(self):
-        self.pinw = SetupWindow._PinSetupWindow()
-        self.pinw.show()
-        self.pinw.send_PinSetup_signal.connect(self.updateGraphicItem)
-        self.pinw.send_DestroyTmpVisual_signal.connect(self.deleteGraphicItem)
-        self.pinw.send_PinDesign_signal.connect(self.createNewDesignParameter)
-        self.pinw.send_Warning_signal.connect(self.dockContentWidget4ForLoggingMessage._WarningMessage)
-        # self.scene.send_xyCoordinate_signal.connect(self.pinw.DetermineCoordinateWithMouse)
-        self.scene.send_xy_signal.connect(self.pinw.DetermineCoordinateWithMouse)
-        self.pinw.send_Destroy_signal.connect(self.delete_obj)
-
-    # def makeFilterWindow(self):
-    #     # self.fw = FilterPractice._FilterWindow()
-    #     self.fw = variableWindow._TmpClass(self.visualItemDict)
-    #     self.fw.show()
-    #
-    # def makeVariableWindow(self):
-    #     self.dv = variableWindow._DesignVariableManagerWindow(self.visualItemDict)
-    #     self.dvstate = True
-    #     self.dv.show()
-    #     self.dv.send_variable_siganl.connect(self.createNewConstraintAST)
-    #     self.dv.send_changedData_signal.connect(self.updateVariableConstraint)
-    #     self.dv.send_destroy_signal.connect(self.delete_obj)
-
-    def makeConstraintWindow(self):
-        self.cw = SetupWindow._ConstraintSetupWindow()
-        self.cw.show()
-        self.cw.send_DesignConstraint_signal.connect(self.createNewConstraint)
-
-    def makePyCodeWindow(self):
-        self.cw = SetupWindow._ConstraintSetupWindowPyCode()
-        self.cw.show()
-        self.cw.send_PyCode_signal.connect(self.createNewConstraintPyCode)
-
-    def makeConstraintWindowAST(self):
-        self.cw = SetupWindow._ConstraintSetupWindowAST(_ASTapi = self._ASTapi)
-        self.cw.show()
-        self.cw.send_AST_signal.connect(self.createNewConstraintAST)
-        self.cw.send_destroy_signal.connect(self.delete_obj)
-
-    def makeConstraintWindowCUSTOM(self):
-        self.cw = SetupWindow._ConstraintSetupWindowCUSTOM(_ASTapi = self._ASTapi)
-        self.cw.show()
-        self.cw.send_CUSTOM_signal.connect(self.createNewConstraintAST)
-
-    def makeVariableWindowCUSTOM(self):
-        self.cw = SetupWindow._VariableSetupWindowCUSTOM(_ASTapi=self._ASTapi)
-        self.cw.show()
-        self.cw.send_CUSTOM_signal.connect(self.createNewConstraintAST)
 
     def delete_obj(self, obj):
         # sender = self.sender()
@@ -1600,28 +1367,6 @@ class _MainWindow(QMainWindow):
         self.scene.addItem(graphicItem)
         self.scene.send_move_signal.connect(graphicItem.move)
         self.scene.send_moveDone_signal.connect(graphicItem.moveUpdate)
-        # visual_item_list = self.scene.items()
-        # _blockList = list()
-        # _layerList = list()
-        # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-        #
-        # for index in range(0,len(visual_item_list)):
-        #     # print(visual_item_list[index].__class__.__name__)
-        #     if visual_item_list[index].__class__.__name__ == "_RectBlock":
-        #         _blockList.append(visual_item_list[index])
-        #
-        # for i in range(0,len(_blockList)):
-        #     _newLayer = layernum2name[str(_blockList[i].__dict__['_BlockTraits']['_Layer'])]
-        #     if _newLayer in _layerList:
-        #         pass
-        #     else:
-        #         _layerList.append(_newLayer)
-
-        # self.dockContentWidget1_2.updateLayerList(self._layerItem)
-
-        # layer 정보 : _RectBlock
-        # layer visual on/off -> _Rectblock on/off  <important>
-        # layer click on/off  -> _VisualizationItem
 
     def deleteGraphicItem(self,graphicItem):
         VisualizationItem._VisualizationItem()._subElementLayer[graphicItem._ItemTraits['_LayerUnifiedName']].remove(graphicItem)
@@ -1752,10 +1497,6 @@ class _MainWindow(QMainWindow):
 
 
     def updateModule(self,ModuleName):
-        # if (ModuleName in self.module_name_list) == False:
-        #     self.set_module_name(ModuleName)
-        # self.statusBar().showMessage( ("Project: "+self._QTObj._qtProject._name+", Module: "+self._CurrentModuleName) , 0 )
-        # # self.statusBar().addPermanentWidget( QLabel(str("Project: "+self._QTObj._qtProject._name+", Module: "+self._CurrentModuleName)) )
         self.hide()
         self.module_dict[ModuleName].show()
 
@@ -2072,6 +1813,8 @@ class _MainWindow(QMainWindow):
             print('connection info')
             print(overlay_object[1:])
             return
+        elif _type == 'to_sref':
+            pass
 
         selected_vis_items = self.scene.selectedItems()
         self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items)
@@ -2219,30 +1962,12 @@ class _MainWindow(QMainWindow):
     def updateXYCoordinatesForDisplay(self):
         print("debug,updateXYforDisplay")
 
-        # _ID = _DesignParameter['_id']
-        # _Module = _ID[:-1]
-        # while (_Module in self._QTObj._qtProject._DesignParameter) == False:
-        #     _Module = _Module[:-1]
-        #
         for module in self._QTObj._qtProject._DesignParameter:
             for id in self._QTObj._qtProject._DesignParameter[module]:
                 if id in self.visualItemDict:
                     self._QTObj._qtProject._DesignParameter[module][id]._XYCoordinatesForDisplay = self.visualItemDict[id]._XYCoordinatesForDisplay
 
-        #
-        #
-        # for visualItemName in self.visualItemDict:
-        #     print(self.visualItemDict[visualItemName]._XYCoordinatesForDisplay)
-        #
 
-
-
-
-    # def createVisualItemfromDesignParameter(self,DesignParameter): #Origin
-    #     visualItem = VisualizationItem._VisualizationItem()
-    #     visualItem.updateTraits(DesignParameter._DesignParameter)
-    #     self.visualItemDict[DesignParameter._id] = visualItem
-    #     return visualItem
 
     def createVisualItemfromDesignParameter(self,DesignParameter):
         visualItem = VisualizationItem._VisualizationItem()
@@ -2252,14 +1977,6 @@ class _MainWindow(QMainWindow):
         self.visualItemDict[DesignParameter._id] = visualItem
 
         visualItem.setToolTip(DesignParameter._id + '\n' + str(DesignParameter._type))
-
-        # layer = visualItem._ItemTraits['_Layer']
-        # if layer in self._layerItem:
-        #     self._layerItem[layer].append(visualItem)
-        # else:
-        #     self._layerItem[layer] = [visualItem]
-        #
-        # self._id_layer_mapping[DesignParameter._id] = layer
 
         return visualItem
 
@@ -2343,10 +2060,6 @@ class _MainWindow(QMainWindow):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()
         self.dockContentWidget3_2.receiveDesignParameter(deliveryParameter)
 
-    # def XYDictManagement(self, equation):
-    #     self.name_index_matching = dict()
-    #     self.name_index_matching[str(equation)] = self.index_for_coordinates
-
     def send_array_variable(self, variable):
         if variable in self.dv.idDict:
             self.dv.idDict[variable]['id'].append(self.new_array_id)
@@ -2355,12 +2068,6 @@ class _MainWindow(QMainWindow):
             self.cv.send_variable_signal.connect(self.dv.updateList)
             self.cv.addDVtodict(variable, 'id', self.new_array_id)
             self.cv.send_variable_signal.emit([variable, ''], 'add')
-
-        # try:
-        #     for var in tmpList:
-        #         if var in self.dv.idDict:
-        #             if self.new_array_id in self.dv.idDict[var]['id']:
-        #                 self.dv.idDict[var]['id'].remove(self.new_array_id)
 
     def createNewConstraint(self,_ConstraintParameter):
         if self._QTObj._qtProject == None:
@@ -2726,18 +2433,6 @@ class _MainWindow(QMainWindow):
 
         self.dockContentWidget3_2.receiveConstraintSTMT(_STMT)
 
-        # _id = updateDict['_id']
-        # _Module = re.sub('[0-9]+', '', _id)
-        #
-        # for key in updateDict:
-        #     if key == "_id":
-        #         continue
-        #     else:
-        #         self._QTObj._qtProject._DesignConstraint[_Module][_id]._setDesignConstraintValue(_index=key, _value=updateDict[key])
-        # _STMT = self._QTObj._qtProject._DesignConstraint[_Module][_id]._readConstraintValueAsSTMT()
-        #
-        # self.dockContentWidget3_2.receiveConstraintSTMT(_STMT)
-
 
     def setRootConstraint(self,_id):
         _Module = re.sub('[0-9]+', '',_id)
@@ -3038,25 +2733,6 @@ class _MainWindow(QMainWindow):
             if module in self._QTObj._qtProject.__dict__[type]:
                 return module
 
-    # def easyRun(self):
-    #     try:
-    #         file = './PyQTInterface/json/' + EasyDebugFileName + '.json'
-    #         #with open('./PyQTInterface/json/INV_IITP.json') as js:
-    #         with open(file) as js:
-    #             jsonData = json.load(js)
-    #             constraint = jsonData
-    #
-    #             testObj0 = ParseTree.pyCodeParseTree()
-    #             testObj0.BuildParseTree(_Constraints=constraint)
-    #             testObj0.CompilepyCode()
-    #             # testObj0.PyCodeScriptGeneration( fileName= 'default.py', mode = 'wt', text = None)
-    #             testObj0.PyCodeScriptGeneration(fileName= 'INV1.py')
-    #             print(testObj0._ParseTree._lineCodes)
-    #     except:
-    #         self.error = QMessageBox()
-    #         self.error.setText("Easy Run Fail")
-    #         self.error.show()
-
 
 class _CustomView(QGraphicsView):
     variable_signal = pyqtSignal(str)
@@ -3123,6 +2799,7 @@ class _CustomView(QGraphicsView):
     #     super
     def contextMenuEvent(self, event) -> None:
         constraint_create_array = QAction("create array", self)
+        convert_to_sref = QAction("convert to sref", self)
         inspect_path_connection = QAction("create auto path", self)
         variable_create_array = QAction("create array variable", self)
         variable_create_distance = QAction("create distance variable", self)
@@ -3133,6 +2810,7 @@ class _CustomView(QGraphicsView):
 
         menu = QMenu(self)
         menu.addAction(constraint_create_array)
+        menu.addAction(convert_to_sref)
         menu.addAction(inspect_path_connection)
         menu.addAction(variable_create_array)
         menu.addAction(variable_create_distance)
@@ -3149,6 +2827,7 @@ class _CustomView(QGraphicsView):
                constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('sref_array'))
         else:
             constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('boundary_array'))
+        convert_to_sref.triggered.connect(lambda tmp: self.variable_emit('to_sref'))
         inspect_path_connection.triggered.connect(lambda tmp: self.variable_emit('auto_path'))
         variable_create_array.triggered.connect(lambda tmp: self.variable_emit('array'))
         variable_create_distance.triggered.connect(lambda tmp: self.variable_emit('distance'))
@@ -3162,6 +2841,8 @@ class _CustomView(QGraphicsView):
     def variable_emit(self, type):
         if type == 'boundary_array':
             self.variable_signal.emit('boundary_array')
+        elif type == 'to_sref':
+            self.variable_signal.emit('to_sref')
         elif type == 'path_array':
             self.variable_signal.emit('path_array')
         elif type == 'sref_array':
@@ -3252,15 +2933,6 @@ class _CustomScene(QGraphicsScene):
         # self.ghost_group_item.setFlag(f)
         # self.addItem(self.ghost_group_item)
 
-    # def addItem(self, item: QGraphicsItem) -> None:
-    #     super(_CustomScene, self).addItem(item)
-    #     if item != self.ghost_group_item:
-    #         self.ghost_group_item.addToGroup(item)
-    #
-    # def removeItem(self, item: QGraphicsItem) -> None:
-    #     super(_CustomScene, self).removeItem(item)
-    #     if item != self.ghost_group_item:
-    #         self.ghost_group_item.removeFromGroup(item)
 
     def change_background(self, state):
         if state == 2:
@@ -3307,16 +2979,12 @@ class _CustomScene(QGraphicsScene):
             return masked_output
 
         items = self.items(event.scenePos())
-        print(f'debug for via {items}')
-        # for item in items:
-        #     if '_id' in item.__dict__:
-        #         print(f'0)Items before masking {item._id}')
+        # print(f'debug for via {items}')
         items = masking(items)
 
-        if not self.point_items_memory:
-            print('No items in memory!')
-            print(items)
-            # self.point_items_memory = items
+        # if not self.point_items_memory:
+        #     print('No items in memory!')
+        #     print(items)
 
         before_selected_item = None
         if self.point_items_memory:
@@ -3332,12 +3000,10 @@ class _CustomScene(QGraphicsScene):
                         idx = self.point_items_memory.index(before_selected_item)
                     else:
                         idx = -1
-                        # super(_CustomScene, self).mousePressEvent(event)
-                        # return
                 else:
                     idx = -1
                 if idx+1 == len(self.point_items_memory):
-                    print(f'3)idx_overflow :{idx}')
+                    # print(f'3)idx_overflow :{idx}')
                     self.point_items_memory[idx].restore_zvalue()
                     self.point_items_memory[0].save_zvalue_in_memory()
                     self.point_items_memory[0].setZValue(1000)
@@ -3348,141 +3014,26 @@ class _CustomScene(QGraphicsScene):
                         masking을 했을 때 items에 해당 visualitem이 선택이 안되지만, 실제로 scene에서는 선택이 되어서
                         문제가 생김.
                         '''
-                        print(f'3) maybe something is wrong!')
-                        print(f'3-info) reset selected item')
+                        # print(f'3) maybe something is wrong!')
+                        # print(f'3-info) reset selected item')
                         before_selected_item.restore_zvalue()
                         self.point_items_memory[0].setZValue(1000)
-                        # print(f'debug z value {before_selected_item.zValue()}')
-                        # print(f'3-info) b_z_values : {[item.zValue() for item in self.point_items_memory]}')
                     else:
-                        print(f'3)idx_not_overflow :{idx}')
-                        print(f'3-info) b_z_values : {[item.zValue() for item in self.point_items_memory]}')
+                        # print(f'3)idx_not_overflow :{idx}')
+                        # print(f'3-info) b_z_values : {[item.zValue() for item in self.point_items_memory]}')
                         self.point_items_memory[idx].restore_zvalue()
                         self.point_items_memory[idx+1].save_zvalue_in_memory()
                         self.point_items_memory[idx+1].setZValue(1000)
             else:
-                if items:
-                    print(f'4)new point : {items[0]._id}')
-                else:
-                    print(f'4)clear')
+                # if items:
+                #     print(f'4)new point : {items[0]._id}')
+                # else:
+                #     print(f'4)clear')
                 map(lambda item: item.restore_zvalue(), self.point_items_memory)
                 self.point_items_memory = items
         else:
             self.point_items_memory = items
         super().mousePressEvent(event)
-
-        # def masking(items):
-        #     masked_output = []
-        #     for item in items:
-        #         if type(item) == VisualizationItem._VisualizationItem:
-        #             masked_output.append(item)
-        #     return masked_output
-        #
-        # items = self.items(event.scenePos())
-        # items = masking(items)
-        #
-        # if not self.point_items_memory:
-        #     print('No Memory!')
-        #     print(items)
-        #     self.point_items_memory = items
-        #     return
-        # if set(self.point_items_memory) == set(items):
-        #     print('Same point!')
-        #     selected_item = self.selectedItems()[0]
-        #     if selected_item in items:
-        #         idx = items.index(selected_item)
-        #     else:
-        #         print('not selected')
-        #         idx = 0
-        #         items[idx].grabMouse()
-        #         items[idx].setSelected(True)
-        #         return
-        #     if len(items) == 1:
-        #         return
-        #     if idx+1 == len(items):
-        #         print('idx out')
-        #         map(lambda item: item.ungrabMouse(), items)
-        #         # items[idx].ungrabMouse()
-        #     else:
-        #         print(f'idx={idx}')
-        #         items[idx].ungrabMouse()
-        #         items[idx+1].grabMouse()
-        # else:
-        #     print('New point')
-        #     self.point_items_memory = items
-        #     return
-
-
-        # _RectBlock_list = list()
-        #
-        # for layer in self.nslist:
-        #     if layer in self.itemList:
-        #         self.itemList.remove(layer)
-        #
-        # if len(self.selectedItems()) != 0:
-        #     selected = self.selectedItems()
-        #     for i in range(len(selected)):
-        #         self.itemList.append(selected[i])
-        #         # selected[i].setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
-        #         selected[i].setSelected(False)
-        # else:
-        #     for i in range(len(self.itemList)):
-        #         # self.itemList[i].setFlag(QGraphicsItemGroup.ItemIsSelectable, True)
-        #         self.itemList[i].setSelected(True)
-        #     self.itemList.clear()
-        #
-        # self.send_xyCoordinate_signal.emit(event)
-        # if self.moveFlag is True:
-        #     self.moveFlag = False
-        #     self.send_moveDone_signal.emit()
-        #     print("moveDone emmit")
-        # else:
-        #     # self.oldPos = event.scenePos()
-        #     pass
-        # super().mousePressEvent(event)
-
-    # def mouseReleaseEvent(self, event: 'QGraphicsSceneMouseEvent') -> None:
-    #     super(_CustomScene, self).mouseReleaseEvent(event)
-    #     def masking(items):
-    #         masked_output = []
-    #         for item in items:
-    #             if type(item) == VisualizationItem._VisualizationItem:
-    #                 masked_output.append(item)
-    #         return masked_output
-    #
-    #     items = self.items(event.scenePos())
-    #     items = masking(items)
-    #
-    #     if not self.point_items_memory:
-    #         print('No Memory!')
-    #         print(items)
-    #         self.point_items_memory = items
-    #         return
-    #     if set(self.point_items_memory) == set(items):
-    #         print('Same point!')
-    #         # selected_item = self.selectedItems()[0]
-    #         selected_item = self.selected_item_in_memory
-    #         if selected_item in items:
-    #             idx = items.index(selected_item)
-    #         else:
-    #             print('not selected')
-    #             idx = 0
-    #             items[idx].setSelected(True)
-    #             return
-    #         if len(items) == 1:
-    #             return
-    #         if idx+1 == len(items):
-    #             print('idx out')
-    #             map(lambda item: item.setSelected(False), items)
-    #             # items[idx].ungrabMouse()
-    #         else:
-    #             print(f'idx={idx}')
-    #             items[idx].setSelected(False)
-    #             items[idx+1].setSelected(True)
-    #     else:
-    #         print('New point')
-    #         self.point_items_memory = items
-    #         return
 
     def send_item_list(self):
         itemList = self.selectedItems()
@@ -3499,23 +3050,10 @@ class _CustomScene(QGraphicsScene):
         event.accept()
         print(event.pos())
 
-    # def eventFilter(self, obj, event):
-    #     if obj ==  and event.type() == QEvent.HoverEnter:
-    #         self.onHovered()
-    #     return super(_CustomScene, self).eventFilter(obj, event)
-    #
-    # def onHovered(self):
-    #     print("hovered")
-
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Delete:
-            # if self.parent():
-            #     warnings.warn("You cannot delete at sub-window level.")
             deletionItems = self.selectedItems()
             for deleteItem in deletionItems:
-                # self.removeItem(deleteItem)
-                # if type(deleteItem) == VisualizationItem._RectBlock:
-                #     continue
                 _ID = deleteItem._ItemTraits['_id']
                 self.send_deleteItem_signal.emit(_ID)
         elif QKeyEvent.key() == Qt.Key_M:
@@ -3585,30 +3123,14 @@ class _CustomScene(QGraphicsScene):
         elif QKeyEvent.key() == Qt.Key_I:
             itemList = self.selectedItems()
             for item in itemList:
-                # index = len(item._ItemTraits['_XYCoordinates'])
                 if item._ItemTraits['_DesignParametertype'] == 1:
                     self.ungroup_indexed_item()
-                    # if index is not 1:
-                    #     subElement = item._ItemTraits['_ElementName']
-                        # structure_dict = self.splitItem(item, index)
-                        # self.newWindow(structure_dict, subElement)
-                        # print(structure_dict)
                 elif item._ItemTraits['_DesignParametertype'] == 2:
                     print('not yet')
                     print(item)
                     self.ungroup_indexed_item()
-                    # if index is not 1:
-                    #     subElement = item._ItemTraits['_ElementName']
-                    #     structure_dict = self.splitItem(item, index)
-                    #     self.newWindow(structure_dict, subElement)
-                    #     print(structure_dict)
                 elif item._ItemTraits['_DesignParametertype'] == 3:
                     print('not yet')
-                    # if index is not 1:
-                    #     subElement = item._ItemTraits['_ElementName']
-                    #     structure_dict = self.splitItem(item, index)
-                    #     self.newWindow(structure_dict, subElement)
-                    #     print(structure_dict)
         elif QKeyEvent.key() == Qt.Key_O:
             itemList = self.selectedItems()
             for item in itemList:
@@ -3838,50 +3360,12 @@ class _VersatileWindow(QWidget):
         elif QKeyEvent.key() == Qt.Key_Escape:
             self.destroy()
 
-#
-# class _QActionCustom(QAction):
-#     send_Text_signal = pyqtSignal(str)
-#     def __init__(self):
-#         super().__init__()
-#
-#     def triggered(self, checked=False):
-#
-#         self.send_Text_signal.emit(self.text())
 
 def custom_excepthook(exctype, value, traceback):
     print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
     print(exctype, value, traceback)
     sys._excepthook(exctype, value, traceback)
     print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
-
-# class Tab_widget(QWidget):
-#     def __init__(self):
-#         super(Tab_widget, self).__init__()
-#         self.initUI()
-#         self.count=1
-#
-#     def initUI(self):
-#         self.main_widget = _MainWindow()
-#         self.main_widget.send_create_new_window_signal.connect(self.add_window)
-#
-#         self.tabs = QTabWidget()
-#
-#         vbox = QVBoxLayout()
-#         vbox.addWidget(self.tabs)
-#
-#         self.setLayout(vbox)
-#         self.resize(1920, 1080)
-#         self.setWindowTitle('GUI Project')
-#         self.main_widget.show()
-#
-#     def add_window(self):
-#         if not self.isVisible():
-#             self.tabs.addTab(self.main_widget, 'widget1')
-#             self.show()
-#         self.count += 1
-#         new_tab_widget = _MainWindow()
-#         new_tab_widget.send_create_new_window_signal.connect(self.add_window)
-#         self.tabs.addTab(new_tab_widget,f'widget{self.count}')
 
 
 

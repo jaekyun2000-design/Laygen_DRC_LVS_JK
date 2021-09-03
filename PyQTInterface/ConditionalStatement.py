@@ -209,7 +209,6 @@ class ConditionExpreesionWidgetCapsule(QWidget):
             self.output_dict_list[i]['operator'] = op
             self.output_dict_list[i]['condition'] = cond
 
-
 class ConditionStmtWidget(QWidget):
     send_output_list_signal = pyqtSignal(list)
     send_ast_id_signal = pyqtSignal(str)
@@ -220,6 +219,7 @@ class ConditionStmtWidget(QWidget):
 
     def init_ui(self):
         self.input_widget = ConditionStmtWidgetCapsule()
+        self.input_widget.adjust_size_signal.connect(self.adjustSize)
 
         if_button = QPushButton()
         if_button.setText('if')
@@ -227,6 +227,13 @@ class ConditionStmtWidget(QWidget):
         if_button.setMaximumWidth(50)
         if_button.clicked.connect(self.c_type_clicked)
         if_button.clicked.connect(self.change_if)
+
+        elif_button = QPushButton()
+        elif_button.setText('elif')
+        elif_button.setDisabled(True)
+        elif_button.setMinimumWidth(50)
+        elif_button.setMaximumWidth(50)
+        elif_button.clicked.connect(self.c_type_clicked)
 
         else_button = QPushButton()
         else_button.setText('else')
@@ -260,6 +267,7 @@ class ConditionStmtWidget(QWidget):
 
         option_layout = QHBoxLayout()
         option_layout.addWidget(if_button)
+        option_layout.addWidget(elif_button)
         option_layout.addWidget(else_button)
         option_layout.addWidget(for_button)
         option_layout.addWidget(while_button)
@@ -283,14 +291,12 @@ class ConditionStmtWidget(QWidget):
         self.show()
 
     def change_if(self):
-        sender = self.sender()
-        sender.setText('elif')
-
         self.main_layout.itemAt(0).itemAt(1).widget().setDisabled(False)
+        self.main_layout.itemAt(0).itemAt(2).widget().setDisabled(False)
 
     def disable_else(self):
-        self.main_layout.itemAt(0).itemAt(0).widget().setText('if')
         self.main_layout.itemAt(0).itemAt(1).widget().setDisabled(True)
+        self.main_layout.itemAt(0).itemAt(2).widget().setDisabled(True)
 
     def c_type_clicked(self):
         sender = self.sender()
@@ -314,6 +320,8 @@ class ConditionStmtWidget(QWidget):
 
 
 class ConditionStmtWidgetCapsule(QWidget):
+    adjust_size_signal = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         self.create_widget = ConditionExpreesionWidget()
@@ -325,15 +333,27 @@ class ConditionStmtWidgetCapsule(QWidget):
 
         exp_input = QLineEdit()
 
+        comment_input = QLineEdit()
+        comment_input.setMinimumWidth(90)
+        comment_input.setMaximumWidth(90)
+
         exp_button = QPushButton()
         exp_button.setText('create')
+        exp_button.setMinimumWidth(70)
+        exp_button.setMaximumWidth(70)
         exp_button.clicked.connect(self.show_create_widget)
 
         hbox1 = QHBoxLayout()
         hbox1.addSpacing(0)
         hbox1.addWidget(c_type_label)
-        hbox1.addWidget(exp_input)
-        hbox1.addWidget(exp_button)
+        if clicked_button == 'else':
+            hbox1.addSpacing(500)
+            hbox1.addWidget(comment_input)
+            hbox1.addSpacing(76)
+        else:
+            hbox1.addWidget(exp_input)
+            hbox1.addWidget(comment_input)
+            hbox1.addWidget(exp_button)
 
         if_button = QPushButton()
         if_button.setText('if')
@@ -342,6 +362,14 @@ class ConditionStmtWidgetCapsule(QWidget):
         if_button.setMaximumWidth(50)
         if_button.clicked.connect(self.c_type_clicked)
         if_button.clicked.connect(self.change_if)
+
+        elif_button = QPushButton()
+        elif_button.setText('elif')
+        elif_button.setDisabled(True)
+        elif_button.indent = 0
+        elif_button.setMinimumWidth(50)
+        elif_button.setMaximumWidth(50)
+        elif_button.clicked.connect(self.c_type_clicked)
 
         else_button = QPushButton()
         else_button.setText('else')
@@ -368,13 +396,21 @@ class ConditionStmtWidgetCapsule(QWidget):
         while_button.clicked.connect(self.c_type_clicked)
         while_button.clicked.connect(self.disable_else)
 
+        delete_button = QPushButton()
+        delete_button.setText('delete')
+        delete_button.setMinimumWidth(70)
+        delete_button.setMaximumWidth(70)
+        delete_button.clicked.connect(self.delete_line)
+
         hbox2 = QHBoxLayout()
         hbox2.addSpacing(35)
         hbox2.addWidget(if_button)
+        hbox2.addWidget(elif_button)
         hbox2.addWidget(else_button)
         hbox2.addWidget(for_button)
         hbox2.addWidget(while_button)
         hbox2.addSpacing(600)
+        hbox2.addWidget(delete_button)
 
         main_layout = QVBoxLayout()
         main_layout.addLayout(hbox1)
@@ -384,16 +420,17 @@ class ConditionStmtWidgetCapsule(QWidget):
 
     def change_if(self):
         sender = self.sender()
-        sender.setText('elif')
 
         for i in range(2, self.main_layout.count() - 1):
             if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
-                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget():
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(5).widget():
                 break
 
         self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget().setDisabled(False)
+        self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget().setDisabled(False)
 
     def disable_else(self):
         sender = self.sender()
@@ -402,11 +439,12 @@ class ConditionStmtWidgetCapsule(QWidget):
             if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
-                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget():
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(5).widget():
                 break
 
-        self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget().setText('if')
         self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget().setDisabled(True)
+        self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget().setDisabled(True)
 
     def c_type_clicked(self):
         sender = self.sender()
@@ -419,7 +457,8 @@ class ConditionStmtWidgetCapsule(QWidget):
             if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(1).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(2).widget() or \
                     sender == self.main_layout.itemAt(i).itemAt(1).itemAt(3).widget() or \
-                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget():
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(4).widget() or \
+                    sender == self.main_layout.itemAt(i).itemAt(1).itemAt(5).widget():
                 break
 
         if i == count - 2:
@@ -440,15 +479,27 @@ class ConditionStmtWidgetCapsule(QWidget):
 
         exp_input = QLineEdit()
 
+        comment_input = QLineEdit()
+        comment_input.setMinimumWidth(90)
+        comment_input.setMaximumWidth(90)
+
         exp_button = QPushButton()
         exp_button.setText('create')
+        exp_button.setMinimumWidth(70)
+        exp_button.setMaximumWidth(70)
         exp_button.clicked.connect(self.show_create_widget)
 
         hbox1 = QHBoxLayout()
         hbox1.addSpacing(40 * indent)
         hbox1.addWidget(c_type_label)
-        hbox1.addWidget(exp_input)
-        hbox1.addWidget(exp_button)
+        if clicked_button == 'else':
+            hbox1.addSpacing(500)
+            hbox1.addWidget(comment_input)
+            hbox1.addSpacing(81)
+        else:
+            hbox1.addWidget(exp_input)
+            hbox1.addWidget(comment_input)
+            hbox1.addWidget(exp_button)
 
         if_button = QPushButton()
         if_button.setText('if')
@@ -457,6 +508,14 @@ class ConditionStmtWidgetCapsule(QWidget):
         if_button.setMaximumWidth(50)
         if_button.clicked.connect(self.c_type_clicked)
         if_button.clicked.connect(self.change_if)
+
+        elif_button = QPushButton()
+        elif_button.setText('elif')
+        elif_button.setDisabled(True)
+        elif_button.indent = indent
+        elif_button.setMinimumWidth(50)
+        elif_button.setMaximumWidth(50)
+        elif_button.clicked.connect(self.c_type_clicked)
 
         else_button = QPushButton()
         else_button.setText('else')
@@ -480,19 +539,115 @@ class ConditionStmtWidgetCapsule(QWidget):
         while_button.setMaximumWidth(50)
         while_button.clicked.connect(self.c_type_clicked)
 
+        delete_button = QPushButton()
+        delete_button.setText('delete')
+        delete_button.setMinimumWidth(70)
+        delete_button.setMaximumWidth(70)
+        delete_button.clicked.connect(self.delete_line)
+
         hbox2 = QHBoxLayout()
         hbox2.addSpacing(40 * indent + 35)
         hbox2.addWidget(if_button)
+        hbox2.addWidget(elif_button)
         hbox2.addWidget(else_button)
         hbox2.addWidget(for_button)
         hbox2.addWidget(while_button)
         hbox2.addSpacing(600)
+        hbox2.addWidget(delete_button)
 
         add_layout = QVBoxLayout()
         add_layout.addLayout(hbox1)
         add_layout.addLayout(hbox2)
 
         return add_layout
+
+    def delete_line(self):
+        sender = self.sender()
+        count = self.main_layout.count()
+
+        for i in range(2, count - 1):
+            if sender == self.main_layout.itemAt(i).itemAt(1).itemAt(7).widget():
+                tmp_layout = self.main_layout.takeAt(i)
+                for _ in range(tmp_layout.itemAt(0).count()):
+                    tmp_widget_item = tmp_layout.itemAt(0).takeAt(0)
+                    if tmp_widget_item is not None:
+                        tmp_widget = tmp_widget_item.widget()
+                        if tmp_widget is not None:
+                            tmp_widget.setParent(None)
+                        del tmp_widget
+                for _ in range(tmp_layout.itemAt(1).count()):
+                    tmp_widget_item = tmp_layout.itemAt(1).takeAt(0)
+                    if tmp_widget_item is not None:
+                        tmp_widget = tmp_widget_item.widget()
+                        if tmp_widget is not None:
+                            tmp_widget.setParent(None)
+                        del tmp_widget
+                break
+
+        for _ in range(i, count - 2):
+            if 'parent_layout' in self.main_layout.itemAt(i).__dict__:
+                if self.main_layout.itemAt(i).parent_layout == tmp_layout:
+                    self.delete_child_line(self.main_layout.takeAt(i))
+                if self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text() == 'else':
+                    self.delete_child_line(self.main_layout.takeAt(i))
+                    break
+            else:
+                if self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text() == 'else':
+                    self.delete_child_line(self.main_layout.takeAt(i))
+                    break
+
+        count = self.main_layout.count()
+
+        if i != count - 1:
+            if self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text() == 'elif':
+                self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().setText('if')
+
+        for j in range(2, i):
+            if 'parent_layout' in self.main_layout.itemAt(i+1-j).__dict__:
+                if 'parent_layout' in tmp_layout.__dict__:
+                    if self.main_layout.itemAt(i+1-j).parent_layout == tmp_layout.parent_layout:
+                        if self.main_layout.itemAt(i+1-j).itemAt(0).itemAt(1).widget().text() == 'if' or \
+                                self.main_layout.itemAt(i+1-j).itemAt(0).itemAt(1).widget().text() == 'elif':
+                            self.main_layout.itemAt(i+1-j).parent_layout.itemAt(1).itemAt(2).widget().setDisabled(False)
+                            self.main_layout.itemAt(i+1-j).parent_layout.itemAt(1).itemAt(3).widget().setDisabled(False)
+                else:
+                    if 'parent_layout' not in self.main_layout.itemAt(i+1-j).__dict__:
+                        if self.main_layout.itemAt(i+1-j).itemAt(0).itemAt(1).widget().text() == 'if' or \
+                                self.main_layout.itemAt(i+1-j).itemAt(0).itemAt(1).widget().text() == 'elif':
+                            self.main_layout.itemAt(0).itemAt(1).widget().setDisabled(False)
+                            self.main_layout.itemAt(0).itemAt(2).widget().setDisabled(False)
+                        else:
+                            break
+            else:
+                if 'parent_layout' in tmp_layout.__dict__:
+                    break
+                else:
+                    if j == i - 1:
+                        if self.main_layout.itemAt(j).itemAt(0).itemAt(1).widget().text() == 'if' or \
+                                self.main_layout.itemAt(j).itemAt(0).itemAt(1).widget().text() == 'elif':
+                            self.main_layout.itemAt(0).itemAt(1).widget().setDisabled(False)
+                            self.main_layout.itemAt(0).itemAt(2).widget().setDisabled(False)
+
+        del tmp_layout
+        self.adjust_size_signal.emit()
+
+    def delete_child_line(self, delete_layout):
+            tmp_layout = delete_layout
+            for _ in range(tmp_layout.itemAt(0).count()):
+                tmp_widget_item = tmp_layout.itemAt(0).takeAt(0)
+                if tmp_widget_item is not None:
+                    tmp_widget = tmp_widget_item.widget()
+                    if tmp_widget is not None:
+                        tmp_widget.setParent(None)
+                    del tmp_widget
+            for _ in range(tmp_layout.itemAt(1).count()):
+                tmp_widget_item = tmp_layout.itemAt(1).takeAt(0)
+                if tmp_widget_item is not None:
+                    tmp_widget = tmp_widget_item.widget()
+                    if tmp_widget is not None:
+                        tmp_widget.setParent(None)
+                    del tmp_widget
+            del tmp_layout
 
     def update_output_dict(self):
         count = self.main_layout.count()
@@ -517,7 +672,7 @@ class ConditionStmtWidgetCapsule(QWidget):
         count = self.main_layout.count()
 
         for i in range(2, count - 1):
-            if sender == self.main_layout.itemAt(i).itemAt(0).itemAt(3).widget():
+            if sender == self.main_layout.itemAt(i).itemAt(0).itemAt(4).widget():
                 self.idx = i
                 break
 
