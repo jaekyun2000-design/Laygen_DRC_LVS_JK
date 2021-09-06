@@ -2999,7 +2999,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         valueItem = self.model.itemFromIndex(itemIndex.siblingAtColumn(3))
         indexID = indexIDItem.text()
         value = valueItem.text()
-        tmpModuel =  re.sub(r'\d','',indexID)
+        tmpModuel = re.sub(r'\d','',indexID)
         self.send_RequestDesignConstraint_signal.emit()
 
         if tmpModuel in self._DesignConstraintFromQTobj:                #Constraint Case -> expand subhierarchy
@@ -3333,7 +3333,7 @@ class _ConstraintModel(QStandardItemModel):
         updateValueDict = dict()
         updateValueDict['_id'] = None
 
-        motherID_Module = re.sub(r'\d','',motherID)
+        motherID_Module = self._CurrentModuleName
         if motherID_Module in self._DesignConstraintFromQTobj:
             #Module Valid Case
             if motherID in self._DesignConstraintFromQTobj[motherID_Module]:
@@ -3603,7 +3603,7 @@ class _ConstraintModel(QStandardItemModel):
                     try:
 
                         childID = childVariable._id
-                        childModule = re.sub(r'\d','',childID)
+                        childModule = self._CurrentModuleName
                         _placeholder = field
                         _id = childVariable._id
                         _constraintRealType = childVariable._type
