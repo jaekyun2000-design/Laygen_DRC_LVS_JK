@@ -282,9 +282,29 @@ class ElementTransformer(ast.NodeTransformer):
             if field == 'XY':
                 continue
             if isinstance(node.__dict__[field], ast.AST):
-                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
+                if type(node.__dict__[field]) == 'LogicExpression':
+                    tmp_node = variable_ast.LogicExpression()
+                    tmp_node.id = node.__dict__[field].id
+                    tmp_node.info_dict = node.__dict__[field].info_dict
+                    tmp_code_ast = variable_ast.IrregularTransformer().visit_LogicExpression(tmp_node)
+                elif type(node.__dict__[field]) == 'PathXY':
+                    tmp_node = variable_ast.PathXY()
+                    tmp_node.id = node.__dict__[field].id
+                    tmp_node.info_dict = node.__dict__[field].info_dict
+                    tmp_code_ast = variable_ast.IrregularTransformer().visit_PathXY(tmp_node)
             elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
-                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
+                if type(node.__dict__[field][0]) == 'LogicExpression':
+                    tmp_node = variable_ast.LogicExpression()
+                    tmp_node.id = node.__dict__[field][0].id
+                    tmp_node.info_dict = node.__dict__[field][0].info_dict
+                    tmp_code_ast = variable_ast.IrregularTransformer().visit_LogicExpression(tmp_node)
+                elif type(node.__dict__[field][0]) == 'PathXY':
+                    tmp_node = variable_ast.PathXY()
+                    tmp_node.id = node.__dict__[field][0].id
+                    tmp_node.info_dict = node.__dict__[field][0].info_dict
+                    tmp_code_ast = variable_ast.IrregularTransformer().visit_PathXY(tmp_node)
+                tmp_code = astunparse.unparse(tmp_code_ast)
+                node.__dict__[field] = tmp_code
 
         if syntax == 'list' or syntax == 'string':
             tmp_xy = str(node.XY).replace("'", "")
