@@ -236,6 +236,8 @@ class ElementTransformer(ast.NodeTransformer):
                     tmp_node.id = node.__dict__[field].id
                     tmp_node.info_dict = node.__dict__[field].info_dict
                     tmp_code_ast = variable_ast.IrregularTransformer().visit_XYCoordinate(tmp_node)
+                tmp_code = astunparse.unparse(tmp_code_ast)
+                node.__dict__[field] = tmp_code
             elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
                 if type(node.__dict__[field][0]) == 'LogicExpression':
                     tmp_node = variable_ast.LogicExpression()
@@ -292,6 +294,8 @@ class ElementTransformer(ast.NodeTransformer):
                     tmp_node.id = node.__dict__[field].id
                     tmp_node.info_dict = node.__dict__[field].info_dict
                     tmp_code_ast = variable_ast.IrregularTransformer().visit_PathXY(tmp_node)
+                tmp_code = astunparse.unparse(tmp_code_ast)
+                node.__dict__[field] = tmp_code
             elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
                 if type(node.__dict__[field][0]) == 'LogicExpression':
                     tmp_node = variable_ast.LogicExpression()
@@ -338,9 +342,27 @@ class ElementTransformer(ast.NodeTransformer):
             if field == 'XY':
                 continue
             if isinstance(node.__dict__[field], ast.AST):
-                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
+                if type(node.__dict__[field]) == 'XYCoordinate':
+                    tmp_node = variable_ast.LogicExpression()
+                    tmp_node.id = node.__dict__[field].id
+                    tmp_node.info_dict = node.__dict__[field].info_dict
+                    tmp_code_ast = variable_ast.IrregularTransformer().visit_XYCoordinate(tmp_node)
+                    tmp_code = astunparse.unparse(tmp_code_ast)
+                    node.__dict__[field] = tmp_code
+                else:
+                    warnings.warn(f'{type(node.__dict__[field])} is not valid inside SREF element.')
+                    return
             elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
-                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
+                if type(node.__dict__[field][0]) == 'XYCoordinate':
+                    tmp_node = variable_ast.XYCoordinate()
+                    tmp_node.id = node.__dict__[field][0].id
+                    tmp_node.info_dict = node.__dict__[field][0].info_dict
+                    tmp_code_ast = variable_ast.IrregularTransformer().visit_XYCoordinate(tmp_node)
+                    tmp_code = astunparse.unparse(tmp_code_ast)
+                    node.__dict__[field] = tmp_code
+                else:
+                    warnings.warn(f'{type(node.__dict__[field])} is not valid inside SREF element.')
+                    return
 
         if syntax == 'list':
             tmp_xy = str(node.XY).replace("'", "")
