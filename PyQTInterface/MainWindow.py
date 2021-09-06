@@ -1643,7 +1643,13 @@ class _MainWindow(QMainWindow):
         except:
             import collections
             self._QTObj._qtProject._DesignParameter = collections.OrderedDict()
-            self._QTObj._qtProject._loadDesignsFromGDSlegacy(_file = _fileName, _topModuleName = _moduleName, _reverse=True)
+            try:
+                self._QTObj._qtProject._loadDesignsFromGDSlegacy(_file = _fileName, _topModuleName = _moduleName, _reverse=True)
+            except:
+                warnings.warn("Invalid Technology")
+                del originalModuleList
+                self._QTObj._qtProject._DesignParameter.clear()
+                return
         print("****************************File Load From Legacy Complete")
 
         if self.progrseeBar_unstable == True:
