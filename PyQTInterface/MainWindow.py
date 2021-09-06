@@ -1497,6 +1497,8 @@ class _MainWindow(QMainWindow):
         self.module_name_list.append(module_name)
         self.module_dict[module_name] = self
         self._CurrentModuleName = module_name
+        self.dockContentWidget3._CurrentModuleName = module_name
+        self.dockContentWidget3_2._CurrentModuleName = module_name
 
 
     def updateModule(self,ModuleName):

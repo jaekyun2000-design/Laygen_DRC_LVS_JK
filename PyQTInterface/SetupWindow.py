@@ -2534,7 +2534,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.itemToASTDict = dict()
         self.item_dict = dict()
         self.removeFlag = False
-
+        self._CurrentModuleName = None
         self.EditMode = False
         self.setAnimated(True)
 
