@@ -129,7 +129,7 @@ class DesignDelegator(delegator.Delegator):
 
 
         self.control_constraint_tree_view(target_id,channel=3,request='update')
-        if design_dict and design_dict['parameter_id']:
+        if design_dict in locals() and design_dict['parameter_id']:
             design_dict['parameter'].update_unified_expression()
             self.update_vs_item(design_dict['parameter'])
 
