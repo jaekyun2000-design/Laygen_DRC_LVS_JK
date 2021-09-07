@@ -124,11 +124,12 @@ class DesignDelegator(delegator.Delegator):
         if updated_variable_dict:
             from powertool import topAPI
             naming_refactor = topAPI.naming_refactor.NamingRefactor()
-            for key, value in updated_variable_dict:
+            for key, value in updated_variable_dict.items():
                 naming_refactor.search_ast(original_name=key, changed_name=value, constraints=dict(tmp_module=dict(tmp_dc=target_dc)), dummy_constraints=None)
 
-        self.control_constraint_tree_view(design_dict['constraint_id'],channel=3,request='update')
-        if design_dict['parameter_id']:
+
+        self.control_constraint_tree_view(target_id,channel=3,request='update')
+        if design_dict and design_dict['parameter_id']:
             design_dict['parameter'].update_unified_expression()
             self.update_vs_item(design_dict['parameter'])
 
