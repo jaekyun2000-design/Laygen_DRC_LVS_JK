@@ -40,6 +40,7 @@ from DesignManager.VariableManager import variable_manager
 from PyQTInterface.delegator import delegator
 from PyQTInterface.delegator import interface_delegator
 from PyQTInterface.delegator import dpdc_delegator
+from PyQTInterface.delegator import transfer_delegator
 
 import threading
 import re
@@ -87,6 +88,7 @@ class _MainWindow(QMainWindow):
         self.setStyleSheet("border-color: rgb(178, 41, 100)")
         self.design_delegator = dpdc_delegator.DesignDelegator(self)
         self.widget_delegator = interface_delegator.WidgetDelegator(self)
+        self.transfer_delegator = transfer_delegator.TransferDelegator(self)
         self._QTObj = QTInterfaceWithAST.QtInterFace()
         self._ProjectName = None
         self._CurrentModuleName = None
@@ -342,6 +344,7 @@ class _MainWindow(QMainWindow):
         self.dv.send_variable_siganl.connect(self.createNewConstraintAST)
         self.dv.send_changedData_signal.connect(self.updateVariableConstraint)
         self.dv.selected_variable_item_id_signal.connect(self.highlightVI)
+        self.dv.send_id_in_edited_variable_signal.connect(self.transfer_delegator.change_used_variable_name)
 
         vboxOnDock1 = QVBoxLayout()             # Layout For Button Widget
 
@@ -361,13 +364,13 @@ class _MainWindow(QMainWindow):
         hboxOnDock2.addWidget(GeneratorCheckBox)
         hboxOnDock2.addStretch(2)
         hboxOnDock2.addWidget(CandidateCheckBox)
-        hboxOnDock3.addSpacing(30)
+        hboxOnDock3.addSpacing(20)
         hboxOnDock3.addWidget(X_label)
         hboxOnDock3.addWidget(X_value)
-        hboxOnDock3.addSpacing(90)
+        hboxOnDock3.addSpacing(60)
         hboxOnDock3.addWidget(Y_label)
         hboxOnDock3.addWidget(Y_value)
-        hboxOnDock3.addSpacing(30)
+        hboxOnDock3.addSpacing(20)
         vboxOnDock1.addLayout(hboxOnDock1)
         vboxOnDock1.addLayout(hboxOnDock2)
         vboxOnDock1.addWidget(blackmode_box)
@@ -483,8 +486,8 @@ class _MainWindow(QMainWindow):
         # self.parsetreeEasyRun = QPushButton("easyRun")
         self.variableCallButton = QPushButton("variableCall")
         self.calculatorButton = QPushButton("XYCalculator")
-        self.create_conditional_stmt_button = QPushButton("create if debug")
-        self.apply_conditional_stmt_button = QPushButton("apply if debug")
+        self.condition_expression_button = QPushButton("create if debug")
+        self.conditional_stmt_button = QPushButton("apply if debug")
         self.add_constraint_view_button = QPushButton("add constraint view")
 
         VBoxForPeriButton.addStretch(3)
@@ -501,8 +504,8 @@ class _MainWindow(QMainWindow):
         # VBoxForPeriButton.addWidget(self.parsetreeEasyRun)
         VBoxForPeriButton.addWidget(self.variableCallButton)
         VBoxForPeriButton.addWidget(self.calculatorButton)
-        VBoxForPeriButton.addWidget(self.create_conditional_stmt_button)
-        VBoxForPeriButton.addWidget(self.apply_conditional_stmt_button)
+        VBoxForPeriButton.addWidget(self.condition_expression_button)
+        VBoxForPeriButton.addWidget(self.conditional_stmt_button)
         VBoxForPeriButton.addWidget(self.add_constraint_view_button)
         VBoxForPeriButton.addStretch(3)
 
@@ -530,8 +533,8 @@ class _MainWindow(QMainWindow):
         # self.parsetreeEasyRun.clicked.connect(self.easyRun)
         self.variableCallButton.clicked.connect(self.variableListUpdate)
         self.calculatorButton.clicked.connect(self.calculator)
-        self.create_conditional_stmt_button.clicked.connect(self.create_conditional_stmt)
-        self.apply_conditional_stmt_button.clicked.connect(self.apply_conditional_stmt)
+        self.condition_expression_button.clicked.connect(self.condition_expression)
+        self.conditional_stmt_button.clicked.connect(self.condition_stmt)
         self.add_constraint_view_button.clicked.connect(self.add_constraint_view)
 
 
@@ -632,10 +635,10 @@ class _MainWindow(QMainWindow):
         self.calculator_window.show()
         print(self.calculator_window.presetDict)
 
-    def create_conditional_stmt(self):
-        self.create_conditional_stmt_window = ConditionalStatement.ConditionExpreesionWidget()
-        self.create_conditional_stmt_window.show()
-        self.create_conditional_stmt_window.send_output_dict_signal.connect(self.create_condition_exp)
+    def condition_expression(self):
+        self.condition_expression_window = ConditionalStatement.ConditionExpressionWidget()
+        self.condition_expression_window.show()
+        self.condition_expression_window.send_output_dict_signal.connect(self.create_condition_exp)
 
     def create_condition_exp(self, output_dict):
         def create_ast_by_dict(info_dict):
@@ -664,10 +667,10 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.createNewConstraintAST(_id=top_id[0], _parentName=self._CurrentModuleName,
                                                          _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
-    def apply_conditional_stmt(self):
-        self.apply_conditional_stmt_window = ConditionalStatement.ConditionStmtWidget()
-        self.apply_conditional_stmt_window.show()
-        self.apply_conditional_stmt_window.send_output_list_signal.connect(self.create_condition_stmt)
+    def condition_stmt(self):
+        self.conditional_stmt_window = ConditionalStatement.ConditionStmtWidget()
+        self.conditional_stmt_window.show()
+        self.conditional_stmt_window.send_output_list_signal.connect(self.create_condition_stmt)
 
     def create_condition_stmt(self, output_list):
         condition_stmt_list_ast = variable_ast.ConditionSTMTlist()
@@ -2639,6 +2642,9 @@ class _MainWindow(QMainWindow):
         top_element_name = _hierarchy_list.pop(0)
         top_element_name = top_element_name.split('[')[0]
         self.visualItemDict[top_element_name].highlight_element_by_hierarchy(_hierarchy_list)
+
+    def change_used_variable_name(self, _id_list):
+        print(_id_list)
 
     def makeTemplateWindow(self):
         self.tw = template._TemplateManageWidget(template.templateDict)

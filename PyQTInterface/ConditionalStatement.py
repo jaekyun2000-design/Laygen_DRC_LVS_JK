@@ -12,7 +12,7 @@ import os
 from generatorLib import drc_api
 
 
-class ConditionExpreesionWidget(QWidget):
+class ConditionExpressionWidget(QWidget):
     send_output_dict_signal = pyqtSignal(dict)
 
     def __init__(self):
@@ -43,7 +43,7 @@ class ConditionExpreesionWidget(QWidget):
         self.button_layout.addWidget(ok_button)
         self.button_layout.addWidget(cancel_button)
 
-        self.input_widget = ConditionExpreesionWidgetCapsule()
+        self.input_widget = ConditionExpressionWidgetCapsule()
         input_layout = self.input_widget.new_line()
 
         self.main_layout = QVBoxLayout()
@@ -60,6 +60,12 @@ class ConditionExpreesionWidget(QWidget):
         self.main_layout.addLayout(input_layout)
         self.main_layout.addLayout(self.button_layout)
         self.setLayout(self.main_layout)
+
+    def set_for_expression(self):
+        self.input_widget.main_layout.itemAt(0).itemAt(0).itemAt(1).itemAt(1).widget().setDisabled(True)
+
+        self.input_widget.main_layout.itemAt(0).itemAt(1).itemAt(1).widget().setCurrentText('in')
+        self.input_widget.main_layout.itemAt(0).itemAt(1).itemAt(1).widget().setDisabled(True)
 
     def ok_clicked(self):
         output_dict_list = self.input_widget.output_dict_list
@@ -100,7 +106,7 @@ class ConditionExpreesionWidget(QWidget):
         self.destroy()
 
 
-class ConditionExpreesionWidgetCapsule(QWidget):
+class ConditionExpressionWidgetCapsule(QWidget):
     def __init__(self):
         super().__init__()
         self.operator = ['==', '!=', '>', '<', '>=', '<=', 'is', 'is not', 'in', 'not in', 'None']
@@ -381,10 +387,10 @@ class ConditionStmtWidget(QWidget):
 
 class ConditionStmtWidgetCapsule(QWidget):
     adjust_size_signal = pyqtSignal()
+    for_exp_signal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
-        self.create_widget = ConditionExpreesionWidget()
 
     def new_line(self, clicked_button):
         c_type_label = QLabel(clicked_button)
@@ -392,8 +398,10 @@ class ConditionStmtWidgetCapsule(QWidget):
         c_type_label.setMaximumWidth(30)
 
         exp_input = QLineEdit()
+        exp_input.setPlaceholderText('expression')
 
         comment_input = QLineEdit()
+        comment_input.setPlaceholderText('comment')
         comment_input.setMinimumWidth(90)
         comment_input.setMaximumWidth(90)
 
@@ -538,8 +546,10 @@ class ConditionStmtWidgetCapsule(QWidget):
         c_type_label.setMaximumWidth(30)
 
         exp_input = QLineEdit()
+        exp_input.setPlaceholderText('expression')
 
         comment_input = QLineEdit()
+        comment_input.setPlaceholderText('comment')
         comment_input.setMinimumWidth(90)
         comment_input.setMaximumWidth(90)
 
@@ -730,11 +740,17 @@ class ConditionStmtWidgetCapsule(QWidget):
     def show_create_widget(self):
         sender = self.sender()
         count = self.main_layout.count()
+        
+        self.create_widget = ConditionExpressionWidget()
 
         for i in range(2, count - 1):
             if sender == self.main_layout.itemAt(i).itemAt(0).itemAt(4).widget():
                 self.idx = i
                 break
+
+        if self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text() == 'for':
+            self.for_exp_signal.connect(self.create_widget.set_for_expression)
+            self.for_exp_signal.emit()
 
         self.create_widget.send_output_dict_signal.connect(self.get_stmt)
         self.create_widget.show()

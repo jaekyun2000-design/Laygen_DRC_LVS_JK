@@ -343,6 +343,7 @@ class layerListItemModel(QStandardItemModel):
 
             item = QStandardItem(layer)
             item.setEditable(False)
+            item.setTextAlignment(Qt.AlignCenter)
             item.setSizeHint(QSize(165, 0))
 
             itemv = QStandardItem(layer)

@@ -829,6 +829,7 @@ class _DesignVariableManagerWindow(QWidget):
     send_variable_siganl = pyqtSignal(dict)
     send_changedData_signal = pyqtSignal(dict)
     selected_variable_item_id_signal = pyqtSignal(list)
+    send_id_in_edited_variable_signal = pyqtSignal(str, str, list)
     elementDict = dict()
 
     def __init__(self, itemDict):
@@ -955,8 +956,12 @@ class _DesignVariableManagerWindow(QWidget):
             value = self.variableDict[vid]['value']
 
             self.editWidget = _editDesignVariable(self, vid, DV, value)
+            self.editWidget.send_id_in_edited_variable_signal.connect(self.send_id_in_edited_variable)
             self.editWidget.show()
             self.selectedItem = None
+
+    def send_id_in_edited_variable(self, _original_id, _new_id, _id_list):
+        self.send_id_in_edited_variable_signal.emit(_original_id, _new_id, _id_list)
 
     def delete_clicked(self):
         if self.selectedItem == None:
@@ -1146,8 +1151,8 @@ class _createNewDesignVariable(QWidget):
             self.warning.show()
 
 class _editDesignVariable(QWidget):
-
     send_DV_signal = pyqtSignal(list, str)
+    send_id_in_edited_variable_signal = pyqtSignal(str, str, list)
 
     def __init__(self, address, vid, DV, value):
         super().__init__()
@@ -1231,6 +1236,8 @@ class _editDesignVariable(QWidget):
             else:
                 self.idDict[self.name.text()] = self.idDict[self.DV]
                 del self.idDict[self.DV]
+
+            self.send_id_in_edited_variable_signal.emit(self.DV, self.name.text(), self.idDict[self.name.text()]['id'])
 
             self.destroy()
 

@@ -234,11 +234,11 @@ class ExpressionCalculator(QWidget):
         DRCText.setAlignment(Qt.AlignCenter)
         self.DRCWindow = QTreeWidget()
         self.DRCWindow.setHeaderLabel('')
-        drc_dict = drc_api.drc_classified_dict
-        for layer in drc_dict.keys():
+        self.drc_dict = drc_api.drc_classified_dict
+        for layer in self.drc_dict.keys():
             top = QTreeWidgetItem([layer])
             self.DRCTreeItemDict[layer] = top
-            for key in drc_dict[layer]:
+            for key in self.drc_dict[layer]:
                  tmpItem = QTreeWidgetItem(top,[key])
             self.DRCWindow.addTopLevelItem(top)
 
@@ -324,12 +324,25 @@ class ExpressionCalculator(QWidget):
 
     def DRC_click(self):
         display = str()
-        if self.DRCWindow.currentItem().childCount() == 0:
+        _tmp_rule = str()
+        _tmp_item_text = self.DRCWindow.currentItem().text(0)
+        _tmp_parent_text = self.DRCWindow.currentItem().parent().text(0)
 
-            if self.value_flag:
-                self.equationList[-1] = 'drc.' + self.DRCWindow.currentItem().text(0)
+        if self.DRCWindow.currentItem().childCount() == 0:
+            if type(self.drc_dict[_tmp_parent_text][_tmp_item_text]) == list:
+                for item in self.drc_dict[_tmp_parent_text][_tmp_item_text]:
+                    _tmp_rule = _tmp_rule + item + ' = None, '
+
+                _tmp_rule = '(' + _tmp_rule[:-2] + ')'
+                if self.value_flag:
+                    self.equationList[-1] = 'drc.' + self.DRCWindow.currentItem().text(0) + _tmp_rule
+                else:
+                    self.equationList.append('drc.' + self.DRCWindow.currentItem().text(0) + _tmp_rule)
             else:
-                self.equationList.append('drc.' + self.DRCWindow.currentItem().text(0))
+                if self.value_flag:
+                    self.equationList[-1] = 'drc.' + self.DRCWindow.currentItem().text(0)
+                else:
+                    self.equationList.append('drc.' + self.DRCWindow.currentItem().text(0))
             self.value_flag = True
             self.arithmetic_flag = False
             self.digit_flag = False
