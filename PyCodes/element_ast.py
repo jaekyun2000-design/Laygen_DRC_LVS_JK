@@ -228,37 +228,7 @@ class ElementTransformer(ast.NodeTransformer):
             if isinstance(node.__dict__[field], ast.AST):
                 tmp_ast = run_transformer(node.__dict__[field])
                 node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
-                # if type(node.__dict__[field]) == 'LogicExpression':
-                #     tmp_node = variable_ast.LogicExpression()
-                #     tmp_node.id = node.__dict__[field].id
-                #     tmp_node.info_dict = node.__dict__[field].info_dict
-                #     tmp_code_ast = variable_ast.IrregularTransformer().visit_LogicExpression(tmp_node)
-                # elif type(node.__dict__[field]) == 'XYCoordinate':
-                #     tmp_node = variable_ast.XYCoordinate()
-                #     tmp_node.id = node.__dict__[field].id
-                #     tmp_node.info_dict = node.__dict__[field].info_dict
-                #     tmp_code_ast = variable_ast.IrregularTransformer().visit_XYCoordinate(tmp_node)
-                # else:
-                #     warnings.warn(f'{type(node.__dict__[field])} is not valid inside Boundary element.')
-                #     return
-                # tmp_code = astunparse.unparse(tmp_code_ast)
-                # node.__dict__[field] = tmp_code
             elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
-                # if type(node.__dict__[field][0]) == 'LogicExpression':
-                #     tmp_node = variable_ast.LogicExpression()
-                #     tmp_node.id = node.__dict__[field][0].id
-                #     tmp_node.info_dict = node.__dict__[field][0].info_dict
-                #     tmp_code_ast = variable_ast.IrregularTransformer().visit_LogicExpression(tmp_node)
-                # elif type(node.__dict__[field][0]) == 'XYCoordinate':
-                #     tmp_node = variable_ast.XYCoordinate()
-                #     tmp_node.id = node.__dict__[field][0].id
-                #     tmp_node.info_dict = node.__dict__[field][0].info_dict
-                #     tmp_code_ast = variable_ast.IrregularTransformer().visit_XYCoordinate(tmp_node)
-                # else:
-                #     warnings.warn(f'{type(node.__dict__[field])} is not valid inside Boundary element.')
-                #     return
-                # tmp_code = astunparse.unparse(tmp_code_ast)
-                # node.__dict__[field] = tmp_code
                 tmp_ast = run_transformer(node.__dict__[field][0])
                 node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
         if syntax == 'list' :#or syntax == 'string':
@@ -293,37 +263,11 @@ class ElementTransformer(ast.NodeTransformer):
             if field == 'XY':
                 continue
             if isinstance(node.__dict__[field], ast.AST):
-                if type(node.__dict__[field]) == 'LogicExpression':
-                    tmp_node = variable_ast.LogicExpression()
-                    tmp_node.id = node.__dict__[field].id
-                    tmp_node.info_dict = node.__dict__[field].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_LogicExpression(tmp_node)
-                elif type(node.__dict__[field]) == 'PathXY':
-                    tmp_node = variable_ast.PathXY()
-                    tmp_node.id = node.__dict__[field].id
-                    tmp_node.info_dict = node.__dict__[field].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_PathXY(tmp_node)
-                else:
-                    warnings.warn(f'{type(node.__dict__[field])} is not valid inside Path element.')
-                    return
-                tmp_code = astunparse.unparse(tmp_code_ast)
-                node.__dict__[field] = tmp_code
+                tmp_ast = run_transformer(node.__dict__[field])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
             elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
-                if type(node.__dict__[field][0]) == 'LogicExpression':
-                    tmp_node = variable_ast.LogicExpression()
-                    tmp_node.id = node.__dict__[field][0].id
-                    tmp_node.info_dict = node.__dict__[field][0].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_LogicExpression(tmp_node)
-                elif type(node.__dict__[field][0]) == 'PathXY':
-                    tmp_node = variable_ast.PathXY()
-                    tmp_node.id = node.__dict__[field][0].id
-                    tmp_node.info_dict = node.__dict__[field][0].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_PathXY(tmp_node)
-                else:
-                    warnings.warn(f'{type(node.__dict__[field])} is not valid inside Path element.')
-                    return
-                tmp_code = astunparse.unparse(tmp_code_ast)
-                node.__dict__[field] = tmp_code
+                tmp_ast = run_transformer(node.__dict__[field][0])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
 
         if syntax == 'list' or syntax == 'string':
             tmp_xy = str(node.XY).replace("'", "")
@@ -357,27 +301,11 @@ class ElementTransformer(ast.NodeTransformer):
             if field == 'XY':
                 continue
             if isinstance(node.__dict__[field], ast.AST):
-                if type(node.__dict__[field]) == 'XYCoordinate':
-                    tmp_node = variable_ast.LogicExpression()
-                    tmp_node.id = node.__dict__[field].id
-                    tmp_node.info_dict = node.__dict__[field].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_XYCoordinate(tmp_node)
-                    tmp_code = astunparse.unparse(tmp_code_ast)
-                    node.__dict__[field] = tmp_code
-                else:
-                    warnings.warn(f'{type(node.__dict__[field])} is not valid inside SREF element.')
-                    return
+                tmp_ast = run_transformer(node.__dict__[field])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
             elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
-                if type(node.__dict__[field][0]) == 'XYCoordinate':
-                    tmp_node = variable_ast.XYCoordinate()
-                    tmp_node.id = node.__dict__[field][0].id
-                    tmp_node.info_dict = node.__dict__[field][0].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_XYCoordinate(tmp_node)
-                    tmp_code = astunparse.unparse(tmp_code_ast)
-                    node.__dict__[field] = tmp_code
-                else:
-                    warnings.warn(f'{type(node.__dict__[field])} is not valid inside SREF element.')
-                    return
+                tmp_ast = run_transformer(node.__dict__[field][0])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
 
         if syntax == 'list':
             tmp_xy = str(node.XY).replace("'", "")
@@ -404,21 +332,6 @@ class ElementTransformer(ast.NodeTransformer):
                        f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
             sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
             sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}"
-
-        # if (type(node.XY) == list) or node.XY.find(',') == -1:
-        #     parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
-        #     sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}("\
-        #                f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
-        #     sentence +=f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" +parameter_sentence + "))\n"
-        #     sentence +=f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}"
-        #
-        # else:
-        #     parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
-        #     sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(" \
-        #                f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
-        #     sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
-        #     sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = [[{node.XY}]]"
-
 
         tmp = ast.parse(sentence)
         return tmp.body
