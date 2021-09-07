@@ -1,3 +1,5 @@
+import warnings
+
 from PyQTInterface.delegator import delegator
 from PyQTInterface import VisualizationItem
 
@@ -104,11 +106,19 @@ class DesignDelegator(delegator.Delegator):
             self.control_constraint_tree_view(design_dict['constraint_id'],channel=3,request='update')
 
     def update_qt_constraint(self, target_id, updated_ast=None, updated_dict=None):
-        if updated_ast:
-            design_dict = self.main_window._QTObj._qtProject._update_design(design_type='constraint', module_name=self.main_window._CurrentModuleName,
-                                                                            _ast=updated_ast,)
-        elif updated_dict:
-            raise Exception('Not Implemented Yet.')
+        # if updated_ast:
+        #     design_dict = self.main_window._QTObj._qtProject._update_design(design_type='constraint', module_name=self.main_window._CurrentModuleName,
+        #                                                                     _ast=updated_ast,)
+        if updated_dict and not updated_ast:
+            updated_ast = self.main_window._QTObj._qtProject._DesignConstraint[self.main_window._CurrentModuleName][target_id]._ast
+            for key, value in updated_dict:
+                if key not in updated_ast:
+                    warnings.warn(f"key: {key} is not valid field for ast of {target_id} constraint.")
+                updated_ast.__dict__[key] = value
+        design_dict = self.main_window._QTObj._qtProject._update_design(design_type='constraint',
+                                                                        module_name=self.main_window._CurrentModuleName,
+                                                                        _ast=updated_ast, )
+
 
         self.control_constraint_tree_view(design_dict['constraint_id'],channel=3,request='update')
         if design_dict['parameter_id']:
