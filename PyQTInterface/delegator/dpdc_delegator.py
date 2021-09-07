@@ -105,20 +105,27 @@ class DesignDelegator(delegator.Delegator):
         if design_dict['constraint_id']:
             self.control_constraint_tree_view(design_dict['constraint_id'],channel=3,request='update')
 
-    def update_qt_constraint(self, target_id, updated_ast=None, updated_dict=None):
+    def update_qt_constraint(self, target_id, updated_ast=None, updated_dict=None, updated_variable_dict=None):
         # if updated_ast:
         #     design_dict = self.main_window._QTObj._qtProject._update_design(design_type='constraint', module_name=self.main_window._CurrentModuleName,
         #                                                                     _ast=updated_ast,)
+        target_dc = self.main_window._QTObj._qtProject._DesignConstraint[self.main_window._CurrentModuleName][target_id]
         if updated_dict and not updated_ast:
-            updated_ast = self.main_window._QTObj._qtProject._DesignConstraint[self.main_window._CurrentModuleName][target_id]._ast
+            updated_ast = target_dc._ast
             for key, value in updated_dict:
                 if key not in updated_ast:
                     warnings.warn(f"key: {key} is not valid field for ast of {target_id} constraint.")
                 updated_ast.__dict__[key] = value
+
         design_dict = self.main_window._QTObj._qtProject._update_design(design_type='constraint',
                                                                         module_name=self.main_window._CurrentModuleName,
                                                                         _ast=updated_ast, )
 
+        if updated_variable_dict:
+            from powertool import topAPI
+            naming_refactor = topAPI.naming_refactor.NamingRefactor()
+            for key, value in updated_variable_dict:
+                naming_refactor.search_ast(original_name=key, changed_name=value, constraints=dict(tmp_module=dict(tmp_dc=target_dc)), dummy_constraints=None)
 
         self.control_constraint_tree_view(design_dict['constraint_id'],channel=3,request='update')
         if design_dict['parameter_id']:
