@@ -43,3 +43,5 @@ class RefactorTransformer(ast.NodeTransformer):
             node = ast.Constant(node.value.replace(self.original_name,self.changed_name), None)
 
         return super(RefactorTransformer, self).generic_visit(node)
+
+
