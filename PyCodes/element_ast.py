@@ -226,38 +226,41 @@ class ElementTransformer(ast.NodeTransformer):
             if field == 'XY':
                 continue
             if isinstance(node.__dict__[field], ast.AST):
-                if type(node.__dict__[field]) == 'LogicExpression':
-                    tmp_node = variable_ast.LogicExpression()
-                    tmp_node.id = node.__dict__[field].id
-                    tmp_node.info_dict = node.__dict__[field].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_LogicExpression(tmp_node)
-                elif type(node.__dict__[field]) == 'XYCoordinate':
-                    tmp_node = variable_ast.XYCoordinate()
-                    tmp_node.id = node.__dict__[field].id
-                    tmp_node.info_dict = node.__dict__[field].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_XYCoordinate(tmp_node)
-                else:
-                    warnings.warn(f'{type(node.__dict__[field])} is not valid inside Boundary element.')
-                    return
-                tmp_code = astunparse.unparse(tmp_code_ast)
-                node.__dict__[field] = tmp_code
+                tmp_ast = run_transformer(node.__dict__[field])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
+                # if type(node.__dict__[field]) == 'LogicExpression':
+                #     tmp_node = variable_ast.LogicExpression()
+                #     tmp_node.id = node.__dict__[field].id
+                #     tmp_node.info_dict = node.__dict__[field].info_dict
+                #     tmp_code_ast = variable_ast.IrregularTransformer().visit_LogicExpression(tmp_node)
+                # elif type(node.__dict__[field]) == 'XYCoordinate':
+                #     tmp_node = variable_ast.XYCoordinate()
+                #     tmp_node.id = node.__dict__[field].id
+                #     tmp_node.info_dict = node.__dict__[field].info_dict
+                #     tmp_code_ast = variable_ast.IrregularTransformer().visit_XYCoordinate(tmp_node)
+                # else:
+                #     warnings.warn(f'{type(node.__dict__[field])} is not valid inside Boundary element.')
+                #     return
+                # tmp_code = astunparse.unparse(tmp_code_ast)
+                # node.__dict__[field] = tmp_code
             elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
-                if type(node.__dict__[field][0]) == 'LogicExpression':
-                    tmp_node = variable_ast.LogicExpression()
-                    tmp_node.id = node.__dict__[field][0].id
-                    tmp_node.info_dict = node.__dict__[field][0].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_LogicExpression(tmp_node)
-                elif type(node.__dict__[field][0]) == 'XYCoordinate':
-                    tmp_node = variable_ast.XYCoordinate()
-                    tmp_node.id = node.__dict__[field][0].id
-                    tmp_node.info_dict = node.__dict__[field][0].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_XYCoordinate(tmp_node)
-                else:
-                    warnings.warn(f'{type(node.__dict__[field])} is not valid inside Boundary element.')
-                    return
-                tmp_code = astunparse.unparse(tmp_code_ast)
-                node.__dict__[field] = tmp_code
-
+                # if type(node.__dict__[field][0]) == 'LogicExpression':
+                #     tmp_node = variable_ast.LogicExpression()
+                #     tmp_node.id = node.__dict__[field][0].id
+                #     tmp_node.info_dict = node.__dict__[field][0].info_dict
+                #     tmp_code_ast = variable_ast.IrregularTransformer().visit_LogicExpression(tmp_node)
+                # elif type(node.__dict__[field][0]) == 'XYCoordinate':
+                #     tmp_node = variable_ast.XYCoordinate()
+                #     tmp_node.id = node.__dict__[field][0].id
+                #     tmp_node.info_dict = node.__dict__[field][0].info_dict
+                #     tmp_code_ast = variable_ast.IrregularTransformer().visit_XYCoordinate(tmp_node)
+                # else:
+                #     warnings.warn(f'{type(node.__dict__[field])} is not valid inside Boundary element.')
+                #     return
+                # tmp_code = astunparse.unparse(tmp_code_ast)
+                # node.__dict__[field] = tmp_code
+                tmp_ast = run_transformer(node.__dict__[field][0])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
         if syntax == 'list' :#or syntax == 'string':
             tmp_xy = str(node.XY).replace("'","")
             sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0]," \

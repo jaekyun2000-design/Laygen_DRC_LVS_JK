@@ -3401,12 +3401,12 @@ if __name__ == '__main__':
     ex = _MainWindow()
     # ex = Tab_widget()
 
-
-
     try:
         app.exec_()
     except:
         print("something wrong")
     # sys.exit(app.exec_())
+
+
 
 
