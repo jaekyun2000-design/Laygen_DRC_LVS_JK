@@ -895,11 +895,15 @@ class QtProject:
                 # print('monitor for decode in _loadDesignsFromGDS ', _tmpStructureName)
                 # print('monitor for dubug: ', _tmpStructureName)
                 for _tmpElement in _tmpStructure._ELEMENTS:
-                    _tmpId = self._getDesignParameterId(_ParentName=_tmpStructureName)
-                    _tmpId = _tmpStructureName + str(_tmpId)
+                    if _tmpElement._GDS_ELEMENT_NAME:
+                        _tmpId = _tmpElement._GDS_ELEMENT_NAME
+                    else:
+                        _tmpId = self._getDesignParameterId(_ParentName=_tmpStructureName)
+                        _tmpId = _tmpStructureName + str(_tmpId)
                     if "_BOUNDARY" in vars(_tmpElement._ELEMENTS):
                         if _tmpElement._GDS_ELEMENT_NAME:
                             self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
+                            _tmpId = _tmpElement._GDS_ELEMENT_NAME
                         else:
                             try:
                                 element_name = LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][str(_tmpElement._ELEMENTS._DATATYPE.datatype)] + '_boundary'
@@ -908,6 +912,7 @@ class QtProject:
                                 else:
                                     element_name_count[element_name] += 1
                                 tmp_element_name = element_name + '_' + str(element_name_count[element_name])
+                                _tmpId = tmp_element_name
 
                                 self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName,
                                                                _ElementName=tmp_element_name)
@@ -928,6 +933,7 @@ class QtProject:
                     elif "_PATH" in vars(_tmpElement._ELEMENTS):
                         if _tmpElement._GDS_ELEMENT_NAME:
                             self._createNewDesignParameter(_id=_tmpId, _type=2, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
+                            _tmpId = _tmpElement._GDS_ELEMENT_NAME
                         else:
                             try:
                                 element_name = LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][
@@ -937,6 +943,7 @@ class QtProject:
                                 else:
                                     element_name_count[element_name] += 1
                                 tmp_element_name = element_name + '_' + str(element_name_count[element_name])
+                                _tmpId = tmp_element_name
                                 self._createNewDesignParameter(_id=_tmpId, _type=2, _ParentName=_tmpStructureName, _ElementName=tmp_element_name)
                             except:
                                 warnings.warn(f'LayerReader does not have info about Layer: {_tmpElement._ELEMENTS._LAYER.layer} and Dtype: {_tmpElement._ELEMENTS._DATATYPE.datatype}. ')
@@ -954,12 +961,14 @@ class QtProject:
                     elif "_SREF" in vars(_tmpElement._ELEMENTS):
                         if _tmpElement._GDS_ELEMENT_NAME:
                             self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
+                            _tmpId = _tmpElement._GDS_ELEMENT_NAME
                         else:
                             sref_name =_tmpElement._ELEMENTS._SNAME.sname.decode().split('\x00')[0]
                             if sref_name not in sref_name_count:
                                 sref_name_count[sref_name] = 0
                             else:
                                 sref_name_count[sref_name] += 1
+                            _tmpId = sref_name
                             self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName,
                                                            _ElementName=sref_name+'_'+str(sref_name_count[sref_name]))
                         # print('     monitor for debug: ', _tmpElement._ELEMENTS._SNAME.sname.decode())
