@@ -109,6 +109,7 @@ class DesignDelegator(delegator.Delegator):
         # if updated_ast:
         #     design_dict = self.main_window._QTObj._qtProject._update_design(design_type='constraint', module_name=self.main_window._CurrentModuleName,
         #                                                                     _ast=updated_ast,)
+        design_dict=None
         target_dc = self.main_window._QTObj._qtProject._DesignConstraint[self.main_window._CurrentModuleName][target_id]
         if updated_dict and not updated_ast:
             updated_ast = target_dc._ast
@@ -129,7 +130,7 @@ class DesignDelegator(delegator.Delegator):
 
 
         self.control_constraint_tree_view(target_id,channel=3,request='update')
-        if design_dict in locals() and design_dict['parameter_id']:
+        if design_dict and design_dict['parameter_id']:
             design_dict['parameter'].update_unified_expression()
             self.update_vs_item(design_dict['parameter'])
 
