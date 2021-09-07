@@ -35,7 +35,6 @@ class DesignDelegator(delegator.Delegator):
         elif constraint_dict:
             pass
 
-
     def create_vs_item(self, qt_design_parameter):
         """
         receive: qt_design_parameter
@@ -79,7 +78,6 @@ class DesignDelegator(delegator.Delegator):
             elif request == 'update':
                 target.update_constraint_by_id(constraint_id)
 
-
     def update_qt_parameter(self, dp_dict, element_manager_update=True):
         """
         receive: design parameter dictionary
@@ -105,8 +103,18 @@ class DesignDelegator(delegator.Delegator):
         if design_dict['constraint_id']:
             self.control_constraint_tree_view(design_dict['constraint_id'],channel=3,request='update')
 
-    def update_qt_constraint(self):
-        pass
+    def update_qt_constraint(self, target_id, updated_ast=None, updated_dict=None):
+        if updated_ast:
+            design_dict = self.main_window._QTObj._qtProject._update_design(design_type='constraint', module_name=self.main_window._CurrentModuleName,
+                                                                            _ast=updated_ast,)
+        elif updated_dict:
+            raise Exception('Not Implemented Yet.')
+
+        self.control_constraint_tree_view(design_dict['constraint_id'],channel=3,request='update')
+        if design_dict['parameter_id']:
+            design_dict['parameter'].update_unified_expression()
+            self.update_vs_item(design_dict['parameter'])
+
 
     def update_vs_item(self, qt_design_parameter):
         if qt_design_parameter is None:
