@@ -226,37 +226,11 @@ class ElementTransformer(ast.NodeTransformer):
             if field == 'XY':
                 continue
             if isinstance(node.__dict__[field], ast.AST):
-                if type(node.__dict__[field]) == 'LogicExpression':
-                    tmp_node = variable_ast.LogicExpression()
-                    tmp_node.id = node.__dict__[field].id
-                    tmp_node.info_dict = node.__dict__[field].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_LogicExpression(tmp_node)
-                elif type(node.__dict__[field]) == 'XYCoordinate':
-                    tmp_node = variable_ast.XYCoordinate()
-                    tmp_node.id = node.__dict__[field].id
-                    tmp_node.info_dict = node.__dict__[field].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_XYCoordinate(tmp_node)
-                else:
-                    warnings.warn(f'{type(node.__dict__[field])} is not valid inside Boundary element.')
-                    return
-                tmp_code = astunparse.unparse(tmp_code_ast)
-                node.__dict__[field] = tmp_code
+                tmp_ast = run_transformer(node.__dict__[field])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
             elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
-                if type(node.__dict__[field][0]) == 'LogicExpression':
-                    tmp_node = variable_ast.LogicExpression()
-                    tmp_node.id = node.__dict__[field][0].id
-                    tmp_node.info_dict = node.__dict__[field][0].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_LogicExpression(tmp_node)
-                elif type(node.__dict__[field][0]) == 'XYCoordinate':
-                    tmp_node = variable_ast.XYCoordinate()
-                    tmp_node.id = node.__dict__[field][0].id
-                    tmp_node.info_dict = node.__dict__[field][0].info_dict
-                    tmp_code_ast = variable_ast.IrregularTransformer().visit_XYCoordinate(tmp_node)
-                else:
-                    warnings.warn(f'{type(node.__dict__[field])} is not valid inside Boundary element.')
-                    return
-                tmp_code = astunparse.unparse(tmp_code_ast)
-                node.__dict__[field] = tmp_code
+                tmp_ast = run_transformer(node.__dict__[field])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
 
         if syntax == 'list' :#or syntax == 'string':
             tmp_xy = str(node.XY).replace("'","")
@@ -445,46 +419,8 @@ def run_transformer(source_ast):
         module_ast.body = copy.deepcopy(source_ast)
     else:
         module_ast.body = copy.deepcopy([source_ast])
-
+    # result_ast = variable_ast.IrregularTransformer().visit(module_ast)
+    # result_ast = element_ast.ElementTransformer().visit(result_ast)
     result_ast = variable_ast.IrregularTransformer().visit(module_ast)
     result_ast = variable_ast.VariableTransformer().visit(result_ast)
-    result_ast = ElementTransformer().visit(result_ast)
-
     return result_ast
-
-
-if __name__ == '__main__':
-    a = Boundary()
-    b = Path()
-    # c = Sref()
-    d = Text()
-
-    a.name = 'AdditionalMetal1Layer'
-    a.layer = 'METAL1'
-    a.XY = [[2,4]]
-    a.width= '_XWidth'
-    a.height = 200
-
-    b.name = 'AdditionalODPath'
-    b.layer = 'DIFF'
-    b.XY = 'XYcenter'
-    b.width = 200
-
-    # c.name = 'NMOS'
-    # c.library = 'NMOSWithDummy'
-    # c.className = '_NMOS'
-    # c.XY = [[0,0]]
-
-    d.id = 'textname'
-    d.layer = 'METAL1PIN'
-    d.XY = [[0,0]]
-    d.pres = [0,1,2]
-    d.reflect = [0,0,0]
-    d.magnitude = 0.1
-    d.angle = 0.1
-    d.text = 'VDD'
-
-    ef = ElementTransformer().visit_Boundary(a)
-    pt = ElementTransformer().visit_Path(b)
-    # st = ElementTransformer().visit_Sref(c)
-    print("DEBUG")
