@@ -292,14 +292,14 @@ class ElementTransformer(ast.NodeTransformer):
     def visit_Sref(self,node):
         syntax = self.xy_syntax_checker(node)
         print(f'debug: {syntax}')
+        if syntax == 'ast':
+            syntax = 'string'
         parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
 
 
         for field in node._fields:
             if node.__dict__[field] == '' or node.__dict__[field] == None:
                 raise Exception(f"Not valid {field} value : {node.__dict__[field]}")
-            if field == 'XY':
-                continue
             if isinstance(node.__dict__[field], ast.AST):
                 tmp_ast = run_transformer(node.__dict__[field])
                 node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
@@ -321,17 +321,17 @@ class ElementTransformer(ast.NodeTransformer):
             sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
             sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = [[{tmp_xy}]]"
 
-        elif syntax == 'ast':
-            tmp_xy = astunparse.unparse(node.XY).replace('\n','')
-            sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(" \
-                       f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
-            sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
-            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}"
-        else:
-            sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(" \
-                       f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
-            sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
-            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}"
+        # elif syntax == 'ast':
+        #     tmp_xy = astunparse.unparse(node.XY).replace('\n','')
+        #     sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(" \
+        #                f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
+        #     sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
+        #     sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}"
+        # else:
+        #     sentence = f"self._DesignParameter['{node.name}'] = self._SrefElementDeclaration(_DesignObj = {node.library}.{node.className}(" \
+        #                f"_Name = '{node.name}In{{}}'.format(_Name)))[0]\n"
+        #     sentence += f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
+        #     sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}"
 
         tmp = ast.parse(sentence)
         return tmp.body
