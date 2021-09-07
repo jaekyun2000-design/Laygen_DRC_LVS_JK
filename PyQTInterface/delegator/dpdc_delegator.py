@@ -116,10 +116,10 @@ class DesignDelegator(delegator.Delegator):
                 if key not in updated_ast:
                     warnings.warn(f"key: {key} is not valid field for ast of {target_id} constraint.")
                 updated_ast.__dict__[key] = value
-
-        design_dict = self.main_window._QTObj._qtProject._update_design(design_type='constraint',
-                                                                        module_name=self.main_window._CurrentModuleName,
-                                                                        _ast=updated_ast, )
+        if updated_ast:
+            design_dict = self.main_window._QTObj._qtProject._update_design(design_type='constraint', id=target_id,
+                                                                            module_name=self.main_window._CurrentModuleName,
+                                                                            _ast=updated_ast, )
 
         if updated_variable_dict:
             from powertool import topAPI
