@@ -219,12 +219,11 @@ class ElementTransformer(ast.NodeTransformer):
 
     def visit_Boundary(self,node):
         syntax = self.xy_syntax_checker(node)
-
+        if syntax == 'ast':
+            syntax = 'string'
         for field in node._fields:
             if node.__dict__[field] == '' or node.__dict__[field] == None:
                 raise ValueError(f"Not valid \'{field}\' value : {node.__dict__[field]}")
-            if field == 'XY':
-                continue
             if isinstance(node.__dict__[field], ast.AST):
                 tmp_ast = run_transformer(node.__dict__[field])
                 node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
@@ -241,11 +240,6 @@ class ElementTransformer(ast.NodeTransformer):
             sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0]," \
                        f"_Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _XWidth = {node.width}, _YWidth = {node.height})\n"
             sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
-        elif syntax == 'ast':
-            tmp_xy = astunparse.unparse(node.XY).replace('\n', '')
-            sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0]," \
-                       f"_Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _XWidth = {node.width}, _YWidth = {node.height})\n"
-            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
         else:
             sentence = f"self._DesignParameter['{node.name}'] = self._BoundaryElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0]," \
                        f"_Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _XWidth = {node.width}, _YWidth = {node.height})\n"
@@ -256,12 +250,11 @@ class ElementTransformer(ast.NodeTransformer):
 
     def visit_Path(self,node):
         syntax = self.xy_syntax_checker(node)
-
+        if syntax == 'ast':
+            syntax = 'string'
         for field in node._fields:
             if node.__dict__[field] == '' or node.__dict__[field] == None:
                 raise Exception(f"Not valid {field} value : {node.__dict__[field]}")
-            if field == 'XY':
-                continue
             if isinstance(node.__dict__[field], ast.AST):
                 tmp_ast = run_transformer(node.__dict__[field])
                 node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
@@ -271,14 +264,6 @@ class ElementTransformer(ast.NodeTransformer):
 
         if syntax == 'list' or syntax == 'string':
             tmp_xy = str(node.XY).replace("'", "")
-            sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-                       _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Width = {node.width})\n"
-            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
-        # elif syntax == 'str':
-        #     sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
-        #                _Datatype = DesignParameters._LayerMapping['{node.layer}'][1],_XYCoordinates = {node.XY}, _Width = {node.width})"
-        elif syntax == 'ast':
-            tmp_xy = astunparse.unparse(node.XY).replace('\n', '')
             sentence = f"self._DesignParameter['{node.name}'] = self._PathElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
                        _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Width = {node.width})\n"
             sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
@@ -341,16 +326,14 @@ class ElementTransformer(ast.NodeTransformer):
         for field in node._fields:
             if node.__dict__[field] == '' or node.__dict__[field] == None:
                 raise Exception(f"Not valid {field} value : {node.__dict__[field]}")
-            if field == 'XY':
-                continue
             if isinstance(node.__dict__[field], ast.AST):
                 node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
             elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
                 node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
 
-        sentence = f"self.{node.name} = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],\
- _Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Presentation = {node.pres}, _Reflect = {node.reflect}, _XYCoordinates = {node.XY},\
- _Mag = {node.magnitude}, _Angle = {node.angle}, _TEXT = '{node.text}')"
+        sentence = f"self.{node.name} = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0]," \
+                   f"_Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Presentation = {node.pres}, _Reflect = {node.reflect}, _XYCoordinates = {node.XY}," \
+                   f"_Mag = {node.magnitude}, _Angle = {node.angle}, _TEXT = '{node.text}')"
         print(sentence)
         tmp = ast.parse(sentence)
         return tmp.body[0]
