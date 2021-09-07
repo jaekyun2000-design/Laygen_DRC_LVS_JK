@@ -270,7 +270,9 @@ class DRCPOLYGATE:
             self._PolygateMinExtensionOnOD = 220
             self._PolygateMinSpaceAtCorner = 375
 
-    def DRCPolygateMinExtensionOnOD(self, _ChannelLength):
+    def DRCPolygateMinExtensionOnOD(self, _ChannelLength = None):
+        if _ChannelLength == None:
+            raise NotImplementedError
         if DesignParameters._Technology == 'SS28nm':
             if _ChannelLength < 70:
                 return self._PolygateMinExtensionOnOD
