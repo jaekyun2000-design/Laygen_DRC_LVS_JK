@@ -42,7 +42,8 @@ class RefactorTransformer(ast.NodeTransformer):
         elif type(node) == ast.Constant and type(node.value) == str:
             node = ast.Constant(node.value.replace(self.original_name,self.changed_name), None)
         elif type(node) == ast.Name:
-            node.id= node.id.replace(self.original_name,self.changed_name)
+            if node.id == self.original_name:
+                node.id= node.id.replace(self.original_name,self.changed_name)
 
         return super(RefactorTransformer, self).generic_visit(node)
 
