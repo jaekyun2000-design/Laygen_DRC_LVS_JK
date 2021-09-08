@@ -1021,8 +1021,6 @@ def _LayerNumber2LayerName(_LayerMapping):
 
     for _LayerCommonName in _LayerMapping:
         # if _LayerMapping[_LayerCommonName][1] == 0:
-        if _LayerCommonName[0] == 'SLVT':
-            print('de')
         if _LayerCommonName[1] in ['drawing', 'cirt', 'pin']:
             i = str(_LayerMapping[_LayerCommonName][0])
             if not i in _LayerNum2Name:
