@@ -1,4 +1,6 @@
 import warnings
+import ast
+import astunparse
 
 from PyQTInterface.delegator import delegator
 from PyQTInterface import VisualizationItem
@@ -125,15 +127,14 @@ class DesignDelegator(delegator.Delegator):
         if updated_variable_dict:
             updated_ast = target_dc._ast
             from powertool import topAPI
-            naming_refactor = topAPI.naming_refactor.NamingRefactor()
             for key, value in updated_variable_dict.items():
                 # naming_refactor.search_ast(original_name=key, changed_name=value, constraints=dict(tmp_module=dict(tmp_dc=target_dc)), dummy_constraints=None)
                 for field in updated_ast._fields:
                     if type(updated_ast.__dict__[field]) == str:
                         tmp_ast = ast.parse(updated_ast.__dict__[field])
-                        tf = RefactorTransformer()
-                        changed_ast = tf.visit(tmp_ast)
-                        sentence = astunparse.unparse(changed_ast)[1:-1]
+                        tf = topAPI.naming_refactor.RefactorTransformer(key,value,None)
+                        tmp_ast = tf.visit(tmp_ast.body[0])
+                        sentence = astunparse.unparse(tmp_ast)[1:-1]
                         updated_ast.__dict__[field] = sentence
 
 
