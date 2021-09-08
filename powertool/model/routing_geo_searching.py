@@ -137,11 +137,7 @@ class GeometricField:
                 # sub_angle = angle.dot(convert_angle_to_matrix(dp['_Angle']))
                 for name, sub_qt_dp in dp['_ModelStructure'].items():
                     sub_dp = sub_qt_dp._DesignParameter
-                    if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 3:
-                        if dp['_id'] == 'INV27':
-                            print('debug')
-                            if name == '_COLayer':
-                                print('debug')
+                    if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 2 or sub_dp['_DesignParametertype'] == 3:
                         structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
                         structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
                         structure_hierarchy_tmp.append(name)
@@ -174,6 +170,7 @@ class GeometricField:
                 else:
                     dp['_Hierarchy'] = copy.deepcopy([structure_hierarchy])
                     dp['_Hierarchy'][-1][-1] += f'[{idx}]'
+
                 # return base_xy + angle.dot(reflect).dot(xy_pair)
         elif dp['_DesignParametertype'] == 2:
             for idx, xy_pair_list in enumerate(dp['_XYCoordinates']):
@@ -196,31 +193,35 @@ class GeometricField:
                     transformed_five_point_xy_ordered = self.stick_diagram.MinMaxXY2XYCoordinate(
                         self.stick_diagram.XYCoordinate2MinMaxXY(transformed_five_point_xy))
                     transformed_five_point_xy_list.append(transformed_five_point_xy_ordered)
-                    if '_Hierarchy' in dp:
-                        dp['_Hierarchy'].append(copy.deepcopy(structure_hierarchy))
+                    if '_Hierarchy' not in dp:
+                        dp['_Hierarchy'] = copy.deepcopy([[structure_hierarchy]])
                     else:
-                        dp['_Hierarchy'] = copy.deepcopy([structure_hierarchy])
-                    dp['_Hierarchy'][-1][-1] += f'{[idx][i]}'
+                        if idx < len(dp['_Hierarchy']):
+                            dp['_Hierarchy'][idx].append(copy.deepcopy(structure_hierarchy))
+                        else:
+                            dp['_Hierarchy'].append(copy.deepcopy([structure_hierarchy]))
+                    # `if '_Hierarchy' in dp:
+                    #     dp['_Hierarchy'][-1].append(copy.deepcopy(structure_hierarchy))
+                    # else:
+                    #     dp['_Hierarchy'] = copy.deepcopy([[structure_hierarchy]])
+                    dp['_Hierarchy'][-1][-1][-1] += f'{[idx]}{[i]}'
                 if '_XYCoordinatesProjection' in dp:
                     dp['_XYCoordinatesProjection'].append(transformed_five_point_xy_list)
                 else:
                     dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_list]
         elif dp['_DesignParametertype'] == 3:
             # structure_hierarchy.append(dp['_ElementName'])
-            for sref_idx in len(0, dp['_XYCoordinates']):
+            for sref_idx in range(len(dp['_XYCoordinates'])):
                 base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][sref_idx])
                 sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect)
                 sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle)
-                # base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordina`tes'][0])
-                # sub_reflect = reflect.dot(convert_reflect_to_matrix(dp['_Reflect']))
-                # sub_angle = angle.dot(convert_angle_to_matrix(dp['_Angle']))
                 for name, sub_dp in dp['_DesignObj']._DesignParameter.items():
-                    if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 3:
+                    if sub_dp['_DesignParametertype'] in [1,2,3]:
                         structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
                         structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
                         structure_hierarchy_tmp.append(name)
                         self.design_parameter_projection(sub_dp, structure_hierarchy=structure_hierarchy_tmp,
-                                                         reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
+                                                            reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
 
     def draw_by_projection_xy(self, _DesignParameter):
         fig, ax = plt.subplots()
