@@ -2937,7 +2937,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 del self.itemToDesignConstraintDict[key[0]]
 
     def receiveConstraintID(self,_id):
-            _module = re.sub(r'\d','',_id)
+            # _module = re.sub(r'\d','',_id)
+            _module = self._CurrentModuleName
             if _module not in self._DesignConstraintFromQTobj:
                 self.send_RequestDesignConstraint_signal.emit()
 #            if _module in self._DesignConstraintFromQTobj:
