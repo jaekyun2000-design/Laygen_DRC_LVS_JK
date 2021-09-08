@@ -486,8 +486,8 @@ class _MainWindow(QMainWindow):
         # self.parsetreeEasyRun = QPushButton("easyRun")
         self.variableCallButton = QPushButton("variableCall")
         self.calculatorButton = QPushButton("XYCalculator")
-        self.condition_expression_button = QPushButton("create if debug")
-        self.conditional_stmt_button = QPushButton("apply if debug")
+        self.condition_expression_button = QPushButton("condition exp debug")
+        self.conditional_stmt_button = QPushButton("condition stmt debug")
         self.add_constraint_view_button = QPushButton("add constraint view")
 
         VBoxForPeriButton.addStretch(3)

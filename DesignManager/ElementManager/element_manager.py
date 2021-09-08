@@ -156,17 +156,17 @@ class ElementManager:
                     contain_variable = False
                     if type(ast.XY) == list:
                         for idx in range(len(ast.XY)):
-                            if re.search('\D+^.', str(ast.XY[idx][0])) is not None or re.search('\D+^.', str(ast.XY[idx][1])) is not None:
+                            if re.search('\D+', str(ast.XY[idx][0])) is not None or re.search('\D+', str(ast.XY[idx][1])) is not None:
                                 contain_variable = True
                         if not contain_variable:
                             tmpDP[key] = ast.XY
                     # tmpDP[key] = ast.XY
                 elif key == '_XWidth':
-                    if re.search('\D+^.', str(ast.__dict__['width'])) is None:
+                    if re.search('\D+', str(ast.__dict__['width'])) is None:
                         tmpDP[key] = ast.__dict__['width']
                     # tmpDP[key] = ast.__dict__['width']
                 elif key == '_YWidth':
-                    if re.search('\D+^.', str(ast.__dict__['height'])) is None:
+                    if re.search('\D+', str(ast.__dict__['height'])) is None:
                         tmpDP[key] = ast.__dict__['height']
                     # tmpDP[key] = ast.__dict__['height']
                 elif key == '_Ignore':
@@ -192,13 +192,13 @@ class ElementManager:
                     if type(ast.XY) == list:
                         for i in range(len(ast.__dict__['XY'])):
                             for j in range(len(ast.__dict__['XY'][i])):
-                                if re.search('\D+^.', str(ast.__dict__['XY'][i][j][0])) is not None or re.search('\D+^.', str(ast.__dict__['XY'][i][j][1])) is not None:
+                                if re.search('\D+', str(ast.__dict__['XY'][i][j][0])) is not None or re.search('\D+', str(ast.__dict__['XY'][i][j][1])) is not None:
                                     contain_variable = True
                         if not contain_variable:
                             tmpDP[key] = ast.__dict__['XY']
                     # tmpDP[key] = ast.__dict__['XY']
                 elif key == '_Width':
-                    if re.search('\D+^.', str(ast.__dict__['width'])) is None:
+                    if re.search('\D+', str(ast.__dict__['width'])) is None:
                         tmpDP[key] = ast.__dict__['width']
                     # tmpDP[key] = ast.__dict__['width']
                 elif key == '_Color':
@@ -224,7 +224,7 @@ class ElementManager:
                     contain_variable = False
                     if type(ast.__dict__['XY']) == list:
                         for idx in range(len(ast.__dict__['XY'])):
-                            if re.search('\D+^.', str(ast.__dict__['XY'][idx][0])) is not None or re.search('\D+^.', str(ast.__dict__['XY'][idx][1])) is not None:
+                            if re.search('\D+', str(ast.__dict__['XY'][idx][0])) is not None or re.search('\D+', str(ast.__dict__['XY'][idx][1])) is not None:
                                 contain_variable = True
                         if not contain_variable:
                             tmpDP[key] = ast.__dict__['XY']
