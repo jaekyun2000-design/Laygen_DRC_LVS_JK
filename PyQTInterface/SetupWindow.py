@@ -1,5 +1,7 @@
 import sys
 import os
+import warnings
+
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 # from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsView, QGraphicsScene, QGraphicsItem
@@ -2683,27 +2685,31 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 return
             itemID = itemIDitem.text()
             motherID = None
-            moduleName = re.sub(r'\d','',itemID)
+            # moduleName = re.sub(r'\d','',itemID)
+            moduleName = self._CurrentModuleName
             try:
                 valueItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(3))    #ConstraintValue
                 value = valueItem.text()
             except:
                 value = None
 
-            if moduleName in self._DesignConstraintFromQTobj:
+            # if moduleName in self._DesignConstraintFromQTobj:
+            if itemID in self._DesignConstraintFromQTobj[moduleName]:
                 pass
             else:
                 motherIDItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
                 motherID = motherIDItem.text()
-                motherModuleName = re.sub(r'\d','',motherID)
+                # motherModuleName = re.sub(r'\d','',motherID)
+                motherModuleName = self._CurrentModuleName
                 placeHolderItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0))
                 placeHolder = placeHolderItem.text()
 
                 #if parent is not AST case (Double list or dictionary case)
-                if motherModuleName not in self._DesignConstraintFromQTobj:
+                # if motherModuleName not in self._DesignConstraintFromQTobj:
+                if motherID not in self._DesignConstraintFromQTobj[motherModuleName]:
                     grandparentIDItem = self.model.itemFromIndex(self.currentIndex().parent().parent().siblingAtColumn(1))
                     grandparentID = grandparentIDItem.text()
-                    grandParentModuleName = re.sub(r'\d','',grandparentID)
+                    grandParentModuleName = self._CurrentModuleName
                     fieldItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(0))
                     field = fieldItem.text()
                     '''
@@ -2717,7 +2723,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                         idx2 = itemIDitem.row()
                         great_grandparent_id_item = self.model.itemFromIndex(self.currentIndex().parent().parent().parent().siblingAtColumn(1))
                         great_grandparent_id = great_grandparent_id_item.text()
-                        great_grandparent_module_name = re.sub(r'\d','',great_grandparent_id)
+                        great_grandparent_module_name = self._CurrentModuleName
                         self.updateDesignConstraintWithList_grandchild(Module=great_grandparent_module_name,Id=great_grandparent_id,Field=field,idx1=idx1, idx2=idx2,StringValue=value)
 
                     elif type(self._DesignConstraintFromQTobj[grandParentModuleName][grandparentID]._ast.__dict__[field]) == dict:
@@ -2730,13 +2736,13 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                     self.updateDesginConstraintWithSTR(Module=motherModuleName,Id=motherID,Field =placeHolder ,StringValue=value)
 
             ###Step 2 sub-hierarchy refresh#####################################            #To expand unseen contents <Constraint Case>
-            if moduleName == '':
+            if itemID not in self._DesignConstraintFromQTobj[moduleName]:
                 pass
             elif moduleName in self._DesignConstraintFromQTobj:
                 if itemID in self._DesignConstraintFromQTobj[moduleName]:
                     self.refreshItem(self.currentIndex())
                 else:
-                    print('Warning during mouseDoubleClickEvent, Valid module name ({}), but invalid ID ({})'.format(moduleName,itemID))
+                    warnings.warn('During mouseDoubleClickEvent, Valid module name ({}), but invalid ID ({})'.format(moduleName,itemID))
 
             ###Step 3 sub-hierarchy refresh for placeholder's children #####################################    #To expand unseen contents <value = *, Case>
             if self.currentIndex().parent().isValid():  # Sub-hierarchy case        Do nothing??->Yes, it does something....
