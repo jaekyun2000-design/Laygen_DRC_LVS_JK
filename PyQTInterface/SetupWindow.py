@@ -2978,7 +2978,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 else:
                     motherIdItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
                     motherId = motherIdItem.text()
-                    motherModule = re.sub(r'\d','',motherId)
+                    # motherModule = re.sub(r'\d','',motherId)
+                    motherModule = self._CurrentModuleName
                     if motherModule not in self._DesignConstraintFromQTobj:
                         self.send_RequestDesignConstraint_signal.emit()
                     placeHolder = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0)).text()
