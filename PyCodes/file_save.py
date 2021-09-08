@@ -67,7 +67,8 @@ class FileSaveFormat:
 
     def load_qt_interface(self,main_window, _DesignConstraint, sub_module=True):
         self.load_user_setup()
-        main_window._CurrentModuleName = self.top_module
+        # main_window._CurrentModuleName = self.top_module
+        main_window.set_module_name(self.top_module)
         self.load_from_constraint_tree_info(main_window, _DesignConstraint)
         self.load_user_variable_info(main_window)
         self.load_extra_ast_info(main_window)
