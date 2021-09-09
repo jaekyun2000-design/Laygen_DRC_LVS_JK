@@ -263,16 +263,21 @@ class ConditionExpressionWidgetCapsule(QWidget):
         self.cal.show()
 
     def exported_text(self, str1, str2, dict1):
-        if dict1['X']:
-            if self.sender_list[1] == 'var':
-                self.main_layout.itemAt(self.sender_list[0]).itemAt(0).itemAt(1).itemAt(0).widget().setText(str(dict1['X']))
-            elif self.sender_list[1] == 'cond':
-                self.main_layout.itemAt(self.sender_list[0]).itemAt(2).itemAt(1).itemAt(0).widget().setText(str(dict1['X']))
-        elif dict1['Y']:
-            if self.sender_list[1] == 'var':
-                self.main_layout.itemAt(self.sender_list[0]).itemAt(0).itemAt(1).itemAt(0).widget().setText(str(dict1['Y']))
-            elif self.sender_list[1] == 'cond':
-                self.main_layout.itemAt(self.sender_list[0]).itemAt(2).itemAt(1).itemAt(0).widget().setText(str(dict1['Y']))
+        # if dict1['X']:
+        #     if self.sender_list[1] == 'var':
+        #         self.main_layout.itemAt(self.sender_list[0]).itemAt(0).itemAt(1).itemAt(0).widget().setText(str(dict1['X']))
+        #     elif self.sender_list[1] == 'cond':
+        #         self.main_layout.itemAt(self.sender_list[0]).itemAt(2).itemAt(1).itemAt(0).widget().setText(str(dict1['X']))
+        # elif dict1['Y']:
+        #     if self.sender_list[1] == 'var':
+        #         self.main_layout.itemAt(self.sender_list[0]).itemAt(0).itemAt(1).itemAt(0).widget().setText(str(dict1['Y']))
+        #     elif self.sender_list[1] == 'cond':
+        #         self.main_layout.itemAt(self.sender_list[0]).itemAt(2).itemAt(1).itemAt(0).widget().setText(str(dict1['Y']))
+
+        if self.sender_list[1] == 'var':
+            self.main_layout.itemAt(self.sender_list[0]).itemAt(0).itemAt(1).itemAt(0).widget().setText(str(dict1))
+        elif self.sender_list[1] == 'cond':
+            self.main_layout.itemAt(self.sender_list[0]).itemAt(2).itemAt(1).itemAt(0).widget().setText(str(dict1))
 
 
 class ConditionStmtWidget(QWidget):
@@ -354,8 +359,6 @@ class ConditionStmtWidget(QWidget):
         self.setMinimumWidth(600)
         self.setMaximumWidth(600)
 
-        self.show()
-
     def change_if(self):
         self.main_layout.itemAt(0).itemAt(1).widget().setDisabled(False)
         self.main_layout.itemAt(0).itemAt(2).widget().setDisabled(False)
@@ -384,6 +387,8 @@ class ConditionStmtWidget(QWidget):
     def cancel_clicked(self):
         self.destroy()
 
+    def show_list(self):
+        self.show()
 
 class ConditionStmtWidgetCapsule(QWidget):
     adjust_size_signal = pyqtSignal()

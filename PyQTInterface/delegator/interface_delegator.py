@@ -1,7 +1,7 @@
 from PyQTInterface import SetupWindow
 from PyQTInterface.delegator import delegator
 
-from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QLineEdit
     
     
 class WidgetDelegator(delegator.Delegator):
@@ -112,12 +112,39 @@ class WidgetDelegator(delegator.Delegator):
             message = delegator.DelegateMessage(arguments=[vis_item_list], target_fcn='convert_elements_to_sref')
 
         def create_gen():
-            message = delegator.DelegateMessage(arguments=[vis_item_list], target_fcn='create_sref_by_elements')
-            delievery_message(None)
+            # message = delegator.DelegateMessage(arguments=[vis_item_list], target_fcn='create_sref_by_elements')
+            message = delegator.DelegateMessage(arguments=[vis_item_list], target_fcn='create_sref')
+            self.main_window.widget_delegator.message_delivery(message)
+            # delievery_message(None)
             self.choice_widget.close()
 
         assign_btn.clicked.connect(assign_gen)
         create_btn.clicked.connect(create_gen)
 
+    def create_sref(self, vis_item_list):
+        def send_module_name():
+            tmp_dict = {'vis_item_dict': {self.module_name.text() : vis_item_list}}
 
+            message = delegator.DelegateMessage(arguments_dict=tmp_dict, target_fcn='create_sref_by_elements')
+            self.main_window.design_delegator.message_delivery(message)
 
+            self.get_module_name_widget.close()
+
+        self.get_module_name_widget = QWidget()
+
+        self.module_name = QLineEdit()
+        ok_button = QPushButton()
+        ok_button.setText('OK')
+        ok_button.clicked.connect(send_module_name)
+
+        hbox = QHBoxLayout()
+        vbox = QVBoxLayout()
+
+        hbox.addSpacing(200)
+        hbox.addWidget(ok_button)
+
+        vbox.addWidget(self.module_name)
+        vbox.addLayout(hbox)
+
+        self.get_module_name_widget.setLayout(vbox)
+        self.get_module_name_widget.show()

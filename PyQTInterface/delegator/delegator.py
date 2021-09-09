@@ -1,4 +1,5 @@
 import warnings
+import traceback
 
 
 class DelegateMessage:
@@ -48,4 +49,5 @@ class Delegator:
             arguments = message.get_arguments()
             method(*arguments[0],**arguments[1])
         except Exception as e:
+            traceback.print_exc()
             warnings.warn(str(e))

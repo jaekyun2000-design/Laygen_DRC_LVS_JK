@@ -108,9 +108,6 @@ class _MainWindow(QMainWindow):
         self._DummyConstraints = variable_manager.DummyConstraints()
         self.variable_store_list = list()
 
-
-
-
     def initUI(self):
 
         print("***************************Initializing Graphic Interface Start")
@@ -540,8 +537,6 @@ class _MainWindow(QMainWindow):
 
         ##################Extra widget initialization #########################
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard, purpose='init')
-        self.dockContentWidget3.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
-        self.dockContentWidget3_2.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
         self.calculator_window.send_dummyconstraints_signal.connect(self.calculator_window.storePreset)
         self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
         self.calculator_window.returnLayer_signal.connect(self.get_hierarchy_return_layer)
@@ -555,8 +550,15 @@ class _MainWindow(QMainWindow):
         self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
         self.vw.send_variable_signal.connect(self.send_array_variable)
 
+        self.conditional_stmt_window = ConditionalStatement.ConditionStmtWidget()
+        self.condition_expression_window = ConditionalStatement.ConditionExpressionWidget()
+
+        self.dockContentWidget3.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
+        self.dockContentWidget3_2.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
         self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
         self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
+        self.dockContentWidget3.send_dummy_ast_id_for_condition_signal.connect(self.conditional_stmt_window.show_list)
+        self.dockContentWidget3_2.send_dummy_ast_id_for_condition_signal.connect(self.conditional_stmt_window.init_tui)
 
         ################ Logging Message Dock Widget setting ####################
         dockWidget4ForLoggingMessage = QDockWidget("Logging Message")
@@ -566,6 +568,9 @@ class _MainWindow(QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea, dockWidget4ForLoggingMessage)
 
         print("******************************Initializing Graphic Interface Complete")
+
+    def create_new_window(self, dict, key):
+        dict[key] = _MainWindow()
 
     def new_main_window(self):
         selected_items = self.scene.selectedItems()
@@ -593,7 +598,7 @@ class _MainWindow(QMainWindow):
 
 
                 self.module_dict[tmp_module_name].set_module_name(tmp_module_name)
-                self.module_dict[tmp_module_name].show()
+                # self.module_dict[tmp_module_name].show()
                 self.module_dict[tmp_module_name].module_dict = self.module_dict
                 self.module_dict[tmp_module_name].module_name_list = self.module_name_list
 
@@ -633,10 +638,8 @@ class _MainWindow(QMainWindow):
     def calculator(self):
         self.calculator_window.set_preset_window()
         self.calculator_window.show()
-        print(self.calculator_window.presetDict)
 
     def condition_expression(self):
-        self.condition_expression_window = ConditionalStatement.ConditionExpressionWidget()
         self.condition_expression_window.show()
         self.condition_expression_window.send_output_dict_signal.connect(self.create_condition_exp)
 
@@ -668,7 +671,6 @@ class _MainWindow(QMainWindow):
                                                          _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
     def condition_stmt(self):
-        self.conditional_stmt_window = ConditionalStatement.ConditionStmtWidget()
         self.conditional_stmt_window.show()
         self.conditional_stmt_window.send_output_list_signal.connect(self.create_condition_stmt)
 
@@ -2050,6 +2052,10 @@ class _MainWindow(QMainWindow):
                                                               _ast=self._QTObj._qtProject._DesignConstraint[module][id]._ast, id=id,
                                                                 dummy_constraints = self._DummyConstraints)
             if design_dict['parameter']:
+                if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
+                    hierarchy_key = design_dict['parameter']._DesignParameter['_DesignObj_Name'] + '/' + str(
+                        design_dict[
+                            'parameter']._id)
                 if original_dp_id != design_dict['parameter_id']:
                     self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
@@ -2065,6 +2071,10 @@ class _MainWindow(QMainWindow):
                                                                     mother_id]._ast, id=mother_id,
                                                                  dummy_constraints = self._DummyConstraints)
             if design_dict['parameter']:
+                if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
+                    hierarchy_key = design_dict['parameter']._DesignParameter['_DesignObj_Name'] + '/' + str(
+                        design_dict[
+                            'parameter']._id)
                 if original_dp_id != design_dict['parameter_id']:
                     self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
             try:
@@ -2074,6 +2084,12 @@ class _MainWindow(QMainWindow):
                     self.updateGraphicItem(visualItem)
             except:
                 traceback.print_exc()
+
+        if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
+            new_key = design_dict['parameter']._DesignParameter['_DesignObj_Name'] + '/' + str(design_dict['parameter']._ElementName)
+
+            if hierarchy_key in self.entireHierarchy[self._CurrentModuleName]:
+                self.entireHierarchy[self._CurrentModuleName][new_key] = self.entireHierarchy[self._CurrentModuleName].pop(hierarchy_key)
 
     def deliveryDesignParameter(self):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()

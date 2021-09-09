@@ -1,6 +1,7 @@
 import warnings
 import ast
 import astunparse
+import copy
 
 from PyQTInterface.delegator import delegator
 from PyQTInterface import VisualizationItem
@@ -176,3 +177,26 @@ class DesignDelegator(delegator.Delegator):
     def convert_elements_to_sref(self, vis_item_list):
         for vis in vis_item_list:
             self.delete_qt_parameter(vis._id)
+
+    def create_sref_by_elements(self, vis_item_dict):
+        for key, value in vis_item_dict.items():
+            tmp_module_name = key
+            vis_item_list = value
+
+        def create_new_window(tmp_module_name, vis_item_list):
+            self.main_window.module_name_list.append(tmp_module_name)
+            self.main_window.create_new_window(self.main_window.module_dict, tmp_module_name)
+            new_project = self.main_window.module_dict[tmp_module_name]
+
+            for vis_item in vis_item_list:
+                qt_dp = copy.deepcopy(self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName][vis_item._id])
+                new_project.design_delegator.create_vs_item(qt_dp)
+
+            self.main_window.module_dict[tmp_module_name].set_module_name(tmp_module_name)
+            self.main_window.module_dict[tmp_module_name].module_dict = self.main_window.module_dict
+            self.main_window.module_dict[tmp_module_name].module_name_list = self.main_window.module_name_list
+            self.main_window.hide()
+
+        create_new_window(tmp_module_name, vis_item_list)
+
+
