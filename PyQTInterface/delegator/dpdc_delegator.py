@@ -5,6 +5,9 @@ import copy
 
 from PyQTInterface.delegator import delegator
 from PyQTInterface import VisualizationItem
+from powertool import topAPI
+import user_setup
+import numpy as np
 
 class DesignDelegator(delegator.Delegator):
     def __init__(self, main_window):
@@ -199,4 +202,28 @@ class DesignDelegator(delegator.Delegator):
 
         create_new_window(tmp_module_name, vis_item_list)
 
+    def build_layer_matrix_by_ids(self, dp_names):
+        tmp_qt_dp = dict()
+        for dp_name in dp_names:
+            tmp_qt_dp[dp_name] = copy.deepcopy(self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName][dp_name])
+        lay_mat = topAPI.layer_to_matrix.LayerToMatrix(user_setup.matrix_x_step, user_setup.matrix_y_step)
+        lay_mat.load_qt_parameters(tmp_qt_dp)
+
+
+    def detect_cell(self, matrix_by_layer):
+        stacked_matrix = None
+        for layer in user_setup.layer_list:
+            if type(stacked_matrix) == np.darray:
+                if layer in matrix_by_layer:
+                    stacked_matrix = np.append(stacked_matrix, [matrix_by_layer[layer]], axis=0)
+                else:
+                    stacked_matrix = np.append(stacked_matrix, [np.zeros(user_setup.matrix_x_step, user_setup.matrix_y_step)], axis=0)
+            else:
+                if layer in matrix_by_layer:
+                    stacked_matrix = np.array([matrix_by_layer[layer]])
+                else:
+                    stacked_matrix = np.array([np.zeros(user_setup.matrix_x_step, user_setup.matrix_y_step)])
+
+            cell_data = np.array([stacked_matrix])
+            cell_data = cell_data.reshape((1, user_setup.matrix_y_step,user_setup.matrix_y_step, len(user_setup.layer_list)))
 
