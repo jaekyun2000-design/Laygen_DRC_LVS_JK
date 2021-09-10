@@ -904,6 +904,8 @@ class LayoutReader:
                 x_width = dp['_XWidth']
                 y_width = dp['_YWidth']
                 layer_name = LayerReader._LayerName_unified[str(dp['_Layer'])]
+                if '_XYCoordinatesProjection' not in dp or not dp['_XYCoordinatesProjection']:
+                    return idx
                 x_min = min([xy[0] for xy in dp['_XYCoordinatesProjection'][0]])
                 y_min = min([xy[1] for xy in dp['_XYCoordinatesProjection'][0]])
                 lb_xy = [x_min,y_min]
