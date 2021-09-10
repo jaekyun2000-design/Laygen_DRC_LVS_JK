@@ -22,6 +22,7 @@ for name, obj in inspect.getmembers(tmp):
                     continue
                 arg_list.append(key)
             drc_dict[func_name] = dict(func_obj = func_obj, motherClass = name, arg_list = arg_list)
+            arg_list.clear()
 
 
 for drcName, obj in drc_dict.items():

@@ -2085,11 +2085,15 @@ class _MainWindow(QMainWindow):
             except:
                 traceback.print_exc()
 
-        if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
-            new_key = design_dict['parameter']._DesignParameter['_DesignObj_Name'] + '/' + str(design_dict['parameter']._ElementName)
+                if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
+                    new_key = design_dict['parameter']._DesignParameter['_DesignObj_Name'] + '/' + str(
+                        design_dict['parameter']._ElementName)
 
-            if hierarchy_key in self.entireHierarchy[self._CurrentModuleName]:
-                self.entireHierarchy[self._CurrentModuleName][new_key] = self.entireHierarchy[self._CurrentModuleName].pop(hierarchy_key)
+                    if hierarchy_key in self.entireHierarchy[self._CurrentModuleName]:
+                        self.entireHierarchy[self._CurrentModuleName][new_key] = self.entireHierarchy[
+                            self._CurrentModuleName].pop(hierarchy_key)
+
+
 
     def deliveryDesignParameter(self):
         deliveryParameter = self.dockContentWidget2.DeliveryItem()
