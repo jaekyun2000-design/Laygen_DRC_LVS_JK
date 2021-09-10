@@ -209,7 +209,7 @@ class DesignDelegator(delegator.Delegator):
             tmp_qt_dp[dp_name] = copy.deepcopy(self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName][dp_name])
         lay_mat = topAPI.layer_to_matrix.LayerToMatrix(user_setup.matrix_x_step, user_setup.matrix_y_step)
         lay_mat.load_qt_parameters(tmp_qt_dp)
-        self.detect_cell(lay_mat.matrix_by_layer)
+        return self.detect_cell(lay_mat.matrix_by_layer)
 
 
     def detect_cell(self, matrix_by_layer):
@@ -236,6 +236,7 @@ class DesignDelegator(delegator.Delegator):
 
 
         print(f'detection result: {user_setup.data_type_list[idx-1]}')
+        return user_setup.data_type_list[idx-1]
 
 
 

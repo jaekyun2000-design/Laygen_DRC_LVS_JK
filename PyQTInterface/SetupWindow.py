@@ -743,6 +743,9 @@ class _LoadSRefWindow(QWidget):
             self.par_valueForLineEdit[i].setText(str(value))
             i += 1
 
+    def update_library(self, library_name):
+        self.library_input.setCurrentText(library_name)
+
     def updateUI_for_array(self):
         print(self.array_dict)
         # self.name_input.setText(self._DesignParameter['_ElementName'])

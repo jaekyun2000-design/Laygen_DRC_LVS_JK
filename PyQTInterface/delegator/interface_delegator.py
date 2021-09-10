@@ -105,9 +105,10 @@ class WidgetDelegator(delegator.Delegator):
         def assign_gen():
             dp_ids = [vis_item._ElementName for vis_item in vis_item_list]
             if user_setup.DL_FEATURE:
-                self.main_window.design_delegator.build_layer_matrix_by_ids(dp_ids)
+                library_name = self.main_window.design_delegator.build_layer_matrix_by_ids(dp_ids)
             self.choice_widget.close()
             self.ls = SetupWindow._LoadSRefWindow(purpose='main_load')
+            self.ls.update_library(library_name)
             self.ls.show()
             self.ls.send_DesignConstraint_signal.connect(self.main_window.srefCreate)
             self.ls.send_DesignConstraint_signal.connect(delievery_message)
