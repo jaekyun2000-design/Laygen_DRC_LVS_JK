@@ -135,14 +135,24 @@ class GeometricField:
                 # base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][0])
                 # sub_reflect = reflect.dot(convert_reflect_to_matrix(dp['_Reflect']))
                 # sub_angle = angle.dot(convert_angle_to_matrix(dp['_Angle']))
-                for name, sub_qt_dp in dp['_ModelStructure'].items():
-                    sub_dp = sub_qt_dp._DesignParameter
-                    if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 2 or sub_dp['_DesignParametertype'] == 3:
-                        structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
-                        structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
-                        structure_hierarchy_tmp.append(name)
-                        self.qt_design_parameter_projection(sub_qt_dp, structure_hierarchy=structure_hierarchy_tmp,
-                                                            reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
+                if '_ModelStructure' in dp:
+                    for name, sub_qt_dp in dp['_ModelStructure'].items():
+                        sub_dp = sub_qt_dp._DesignParameter
+                        if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 2 or sub_dp['_DesignParametertype'] == 3:
+                            structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
+                            structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
+                            structure_hierarchy_tmp.append(name)
+                            self.qt_design_parameter_projection(sub_qt_dp, structure_hierarchy=structure_hierarchy_tmp,
+                                                                reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
+                else:
+                    for name, sub_qt_dp in dp['_DesignObj'].items():
+                        sub_dp = sub_qt_dp._DesignParameter
+                        if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 2 or sub_dp['_DesignParametertype'] == 3:
+                            structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
+                            structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
+                            structure_hierarchy_tmp.append(name)
+                            self.qt_design_parameter_projection(sub_qt_dp, structure_hierarchy=structure_hierarchy_tmp,
+                                                                reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
 
     def xy_projection_to_main_coordinates_system(self, designParameter):
         for name, dp in designParameter.items():

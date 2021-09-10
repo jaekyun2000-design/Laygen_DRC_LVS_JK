@@ -945,8 +945,12 @@ class LayoutReader:
                     self.x_max = max(self.x_max, x_max) if self.x_max else x_max
                     self.y_max = max(self.y_max, y_max) if self.y_max else y_max
             elif dp['_DesignParametertype'] == 3:
-                for sub_dp in dp['_ModelStructure'].values():
-                    idx = create_layer_element_by_dp(sub_dp._DesignParameter,idx)
+                if '_ModelStructure' in dp:
+                    for sub_dp in dp['_ModelStructure'].values():
+                        idx = create_layer_element_by_dp(sub_dp._DesignParameter,idx)
+                else:
+                    for sub_dp in dp['_DesignObj'].values():
+                        idx = create_layer_element_by_dp(sub_dp._DesignParameter,idx)
             return idx
 
         idx = 0
