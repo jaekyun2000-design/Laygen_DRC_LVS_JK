@@ -333,7 +333,7 @@ class ExpressionCalculator(QWidget):
                 for item in self.drc_dict[_tmp_parent_text][_tmp_item_text]:
                     _tmp_rule = _tmp_rule + item + '=None,'
 
-                _tmp_rule = '(' + _tmp_rule[:-2] + ')'
+                _tmp_rule = '(' + _tmp_rule[:-1] + ')'
                 if self.value_flag:
                     self.equationList[-1] = 'drc.' + self.DRCWindow.currentItem().text(0) + _tmp_rule
                 else:
