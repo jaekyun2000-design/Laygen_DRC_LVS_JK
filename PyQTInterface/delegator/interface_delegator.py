@@ -103,7 +103,8 @@ class WidgetDelegator(delegator.Delegator):
             self.main_window.design_delegator.message_delivery(message)
 
         def assign_gen():
-            dp_ids = [vis_item._ElementName for vis_item in vis_item_list]
+            # dp_ids = [vis_item._ElementName for vis_item in vis_item_list]
+            dp_ids = [vis_item._ItemTraits['_ElementName'] for vis_item in vis_item_list]
             if user_setup.DL_FEATURE:
                 library_name = self.main_window.design_delegator.build_layer_matrix_by_ids(dp_ids)
             self.choice_widget.close()
