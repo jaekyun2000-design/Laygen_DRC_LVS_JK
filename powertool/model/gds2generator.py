@@ -1006,6 +1006,25 @@ class LayoutReader:
                     idx = create_layer_element_by_dp(sub_dp,idx)
             return idx
 
+        idx = 0
+        for dp in gds2gen.root_cell._DesignParameter.values():
+            create_layer_element_by_dp(dp, idx)
+
+    def __len__(self):
+        length = 0
+        for elements_list in self.layer_elements.values():
+            length += len(elements_list)
+        return length
+
+
+
+class element_node:
+    def __init__(self,layer_name,x_width,y_width,lb_xy, idx):
+        self.layer_name = layer_name
+        self.x_width = x_width
+        self.y_width = y_width
+        self.lb_xy = lb_xy
+        self.idx = idx
 
 if __name__ == '__main__':
     # gds2gen = GDS2Generator()
