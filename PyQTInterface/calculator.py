@@ -331,7 +331,7 @@ class ExpressionCalculator(QWidget):
         if self.DRCWindow.currentItem().childCount() == 0:
             if type(self.drc_dict[_tmp_parent_text][_tmp_item_text]) == list:
                 for item in self.drc_dict[_tmp_parent_text][_tmp_item_text]:
-                    _tmp_rule = _tmp_rule + item + ' = None, '
+                    _tmp_rule = _tmp_rule + item + '=None, '
 
                 _tmp_rule = '(' + _tmp_rule[:-2] + ')'
                 if self.value_flag:
