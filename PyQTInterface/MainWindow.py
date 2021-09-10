@@ -558,7 +558,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
         self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
         self.dockContentWidget3.send_dummy_ast_id_for_condition_signal.connect(self.conditional_stmt_window.show_list)
-        self.dockContentWidget3_2.send_dummy_ast_id_for_condition_signal.connect(self.conditional_stmt_window.init_tui)
+        self.dockContentWidget3_2.send_dummy_ast_id_for_condition_signal.connect(self.conditional_stmt_window.init_ui)
 
         ################ Logging Message Dock Widget setting ####################
         dockWidget4ForLoggingMessage = QDockWidget("Logging Message")
@@ -1531,7 +1531,7 @@ class _MainWindow(QMainWindow):
         print("########################################################################################")
         if len(self._QTObj._qtProject._DesignParameter) == 0:
             self._QTObj._qtProject._DesignParameter[_moduleName] = dict()
-            _newParameterID = self._CurrentModuleName + str(0)
+            _newParameterID = tmp_dp_dict['_ElementName'] if tmp_dp_dict['_ElementName'] else self._CurrentModuleName + str(0)
             _tmpQtDpObj = QTInterfaceWithAST.QtDesignParameter(_id=_newParameterID,
                                                      _type= 3,
                                                     _ParentName=_moduleName,
@@ -1542,7 +1542,7 @@ class _MainWindow(QMainWindow):
             print("*************************************************************************************")
         else:
             _designParameterID = self._QTObj._qtProject._getDesignConstraintId(_moduleName)
-            _newParameterID = (_moduleName + str(_designParameterID))
+            _newParameterID = tmp_dp_dict['_ElementName'] if tmp_dp_dict['_ElementName'] else self._CurrentModuleName + str(0)
             _tmpQtDpObj = QTInterfaceWithAST.QtDesignParameter(_id=_newParameterID,
                                                      _type= 3,
                                                     _ParentName=_moduleName,
