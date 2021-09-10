@@ -25,3 +25,5 @@ def create_element_detector_model():
     print(weight_file)
     model.load_weights(weight_file)
     return model
+
+model = None

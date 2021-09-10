@@ -1672,7 +1672,7 @@ class _MainWindow(QMainWindow):
 
     def create_dc_vi_from_top_dp(self, hierarchy):
 
-        self.fc = SetupWindow._FlatteningCell(hierarchy)
+        self.fc = SetupWindow._FlatteningCell(hierarchy, self._QTObj._qtProject._DesignParameter)
         self.fc.show()
         flattening_dict = self.fc.ok_button_accepted()
         self.fc.destroy()

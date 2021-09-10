@@ -23,10 +23,12 @@ import copy
 from PyCodes import userDefineExceptions
 from PyCodes import EnvForClientSetUp
 from PyCodes import QTInterfaceWithAST
-
+import user_setup
 from generatorLib import generator_model_api
+from powertool import topAPI
 import traceback
 import re, ast, time, sys
+from delegator import dpdc_delegator
 
 debugFlag = True
 
@@ -4027,14 +4029,15 @@ class _FlatteningCell(QWidget):
     send_flattendict_signal = pyqtSignal(dict)
     # send_ok_signal = pyqtSignal()
 
-    def __init__(self,  _hierarchydict):
+    def __init__(self,  _hierarchydict, dp):
         self.grouping = False
         try:
-            sys.path.append('..\VariableSuggestion-git')
-            import topAPI
-            # topAPI.gds2generator.CellInspector()
+            if user_setup.DL_FEATURE:
+                if not topAPI.element_predictor.model:
+                    topAPI.element_predictor.model = topAPI.element_predictor.create_element_detector_model()
+            else:
+                self.inspector = topAPI.gds2generator.CellInspector()
             self.grouping = True
-            self.inspector = topAPI.gds2generator.CellInspector()
         except:
             import traceback
             traceback.print_exc()
@@ -4044,6 +4047,7 @@ class _FlatteningCell(QWidget):
         self.model = QTreeWidget()
         self.model.setColumnCount(5)
         self.model.setHeaderLabels(['Design Object', 'Cell Name', 'Flatten Option', 'Macro Cell', 'Generator Name'])
+        self.dp = dp
         self.itemlist = list()
         self.combolist = list(generator_model_api.class_dict.keys())
         self.initUI()
@@ -4133,11 +4137,19 @@ class _FlatteningCell(QWidget):
         combo.setEnabled(True)
 
         if self.grouping:
-            module_name = self.inspector.convert_pcell_name_to_generator_name(item.text(0))
-            print(module_name, item.text(0))
-            module_index = combo.findText(module_name)
-            if module_index != -1:
-                combo.setCurrentIndex(module_index)
+            if user_setup.DL_FEATURE:
+                tmp_dp = self.dp[item.text(0)]
+                tmp_delegator = dpdc_delegator.DesignDelegator(None)
+                library_name = tmp_delegator.build_layer_matrix_by_dps(tmp_dp)
+                module_index = combo.findText(library_name)
+                if module_index != -1:
+                    combo.setCurrentIndex(module_index)
+            else:
+                module_name = self.inspector.convert_pcell_name_to_generator_name(item.text(0))
+                print(module_name, item.text(0))
+                module_index = combo.findText(module_name)
+                if module_index != -1:
+                    combo.setCurrentIndex(module_index)
 
         flattenCheck.stateChanged.connect(self.ActivateCombobox)
         macroCheck.stateChanged.connect(self.ActivateCombobox)

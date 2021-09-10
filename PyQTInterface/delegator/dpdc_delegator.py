@@ -203,6 +203,10 @@ class DesignDelegator(delegator.Delegator):
         create_new_window(tmp_module_name, vis_item_list)
 
     def build_layer_matrix_by_ids(self, dp_names):
+        """
+        input: qt_dp_names
+        output: cell type prediction result str
+        """
         print(f'target_dps: {dp_names}')
         tmp_qt_dp = dict()
         for dp_name in dp_names:
@@ -211,6 +215,14 @@ class DesignDelegator(delegator.Delegator):
         lay_mat.load_qt_parameters(tmp_qt_dp)
         return self.detect_cell(lay_mat.matrix_by_layer)
 
+    def build_layer_matrix_by_dps(self, qt_dp_dict):
+        """
+        input: dp_dictionary
+        output: cell type prediction result str
+        """
+        lay_mat = topAPI.layer_to_matrix.LayerToMatrix(user_setup.matrix_x_step, user_setup.matrix_y_step)
+        lay_mat.load_qt_parameters(qt_dp_dict)
+        return self.detect_cell(lay_mat.matrix_by_layer)
 
     def detect_cell(self, matrix_by_layer):
         stacked_matrix = None
@@ -229,9 +241,12 @@ class DesignDelegator(delegator.Delegator):
 
             cell_data = np.array([stacked_matrix])
         cell_data = cell_data.reshape((1, user_setup.matrix_y_step,user_setup.matrix_y_step, len(user_setup.layer_list)))
-        if 'model' not in self.__dict__:
-            self.model = topAPI.element_predictor.create_element_detector_model()
-        result = self.model.predict(cell_data)
+        if not topAPI.element_predictor.model:
+            topAPI.element_predictor.model = topAPI.element_predictor.create_element_detector_model()
+        # if 'model' not in self.__dict__:
+        #     self.model = topAPI.element_predictor.create_element_detector_model()
+        # result = self.model.predict(cell_data)
+        result = topAPI.element_predictor.model.predict(cell_data)
         idx = np.argmax(result)
 
 
