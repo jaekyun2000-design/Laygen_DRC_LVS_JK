@@ -903,7 +903,10 @@ class LayoutReader:
             if dp['_DesignParametertype'] == 1:
                 x_width = dp['_XWidth']
                 y_width = dp['_YWidth']
-                layer_name = LayerReader._LayerName_unified[str(dp['_Layer'])]
+                if '_LayerUnifiedName' in dp:
+                    layer_name = dp['_LayerUnifiedName']
+                else:
+                    layer_name = LayerReader._LayerName_unified[str(dp['_Layer'])]
                 if '_XYCoordinatesProjection' not in dp or not dp['_XYCoordinatesProjection']:
                     return idx
                 x_min = min([xy[0] for xy in dp['_XYCoordinatesProjection'][0]])
@@ -933,7 +936,10 @@ class LayoutReader:
                     rt_xy = [x_max, y_max]
                     x_width = x_max - x_min
                     y_width = y_max - y_min
-                    layer_name = LayerReader._LayerName_unified[str(dp['_Layer'])]
+                    if '_LayerUnifiedName' in dp:
+                        layer_name = dp['_LayerUnifiedName']
+                    else:
+                        layer_name = LayerReader._LayerName_unified[str(dp['_Layer'])]
                     if layer_name in self.layer_elements:
                         self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
                     else:
