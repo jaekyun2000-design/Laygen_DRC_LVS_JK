@@ -231,14 +231,14 @@ class DesignDelegator(delegator.Delegator):
         for layer in user_setup.layer_list:
             if type(stacked_matrix) == np.ndarray:
                 if layer in matrix_by_layer:
-                    stacked_matrix = np.append(stacked_matrix, [matrix_by_layer[layer]], axis=0)
+                    stacked_matrix = np.append(stacked_matrix, np.expand_dims(matrix_by_layer[layer],2), axis=2)
                 else:
-                    stacked_matrix = np.append(stacked_matrix, [np.zeros((user_setup.matrix_x_step, user_setup.matrix_y_step))], axis=0)
+                    stacked_matrix = np.append(stacked_matrix, np.expand_dims(np.zeros((user_setup.matrix_x_step, user_setup.matrix_y_step)),2), axis=2)
             else:
                 if layer in matrix_by_layer:
-                    stacked_matrix = np.array([matrix_by_layer[layer]])
+                    stacked_matrix = np.expand_dims(matrix_by_layer[layer], 2)
                 else:
-                    stacked_matrix = np.array([np.zeros((user_setup.matrix_x_step, user_setup.matrix_y_step))])
+                    stacked_matrix = np.expand_dims(np.zeros((user_setup.matrix_x_step, user_setup.matrix_y_step)),2)
 
             cell_data = np.array([stacked_matrix])
         cell_data = cell_data.reshape((1, user_setup.matrix_y_step,user_setup.matrix_y_step, len(user_setup.layer_list)))
