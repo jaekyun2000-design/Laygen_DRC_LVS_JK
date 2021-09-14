@@ -546,13 +546,16 @@ class _VisualizationItem(QGraphicsItemGroup):
         DisplayInfo = DisplayReader._DisplayDict
 
         if blockTraits['_Layer'] is not None: #Load GDS case
-            if '_DatatypeName' not in blockTraits or not blockTraits['_DatatypeName']:
-                if 'crit' in blockTraits['_LayerUnifiedName']:
-                    blockTraits['_DatatypeName'] = '_crit'
-                elif 'pin' in blockTraits['_LayerUnifiedName']:
-                    blockTraits['_DatatypeName'] = '_pin'
-                else:
-                    blockTraits['_DatatypeName'] = '_drawing'
+            try:
+                if '_DatatypeName' not in blockTraits or not blockTraits['_DatatypeName']:
+                    if 'crit' in blockTraits['_LayerUnifiedName']:
+                        blockTraits['_DatatypeName'] = '_crit'
+                    elif 'pin' in blockTraits['_LayerUnifiedName']:
+                        blockTraits['_DatatypeName'] = '_pin'
+                    else:
+                        blockTraits['_DatatypeName'] = '_drawing'
+            except:
+                print('debug')
 
             layer_data_name = blockTraits['_LayerName']+blockTraits['_DatatypeName']
             if layer_data_name not in DisplayReader._DisplayDict:
@@ -564,6 +567,8 @@ class _VisualizationItem(QGraphicsItemGroup):
             blockTraits['_LineSize'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['LineStyle']['size']
 
         if self._ItemTraits['_DesignParametertype'] == 1:                              # Boundary Case
+            if blockTraits['_LayerUnifiedName'] is None:
+                return
             tmpBlock = _RectBlock()
             tmpBlock.updateTraits(blockTraits)
             tmpBlock.setPos(_XYCoordinatesPair[0] - blockTraits['_Width']/2,_XYCoordinatesPair[1] - blockTraits['_Height']/2)
@@ -618,6 +623,8 @@ class _VisualizationItem(QGraphicsItemGroup):
 
 
         elif self._ItemTraits['_DesignParametertype'] == 2:                            # Path Case
+            if blockTraits['_LayerUnifiedName'] is None:
+                return
             for i in range(0,len(_XYCoordinatesPair)-1):
                 if float(_XYCoordinatesPair[i][0]) == float(_XYCoordinatesPair[i+1][0]):          #Vertical Case
                     Xmin = _XYCoordinatesPair[i][0] - self._ItemTraits['_Width']/2

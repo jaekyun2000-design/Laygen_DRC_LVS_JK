@@ -66,10 +66,13 @@ class QtDesignParameter:
                     self._DesignParameter['_DatatypeName'] = '_' + LayerReader._LayDatNameTmp[layer_number][data_number][1]
                 else:
                     pass
+            elif '_Layer' in self._DesignParameter and self._DesignParameter['_Layer'] is None:
+                self._DesignParameter['_LayerUnifiedName'] = None
             else:
                 if '_LayerUnifiedName' in self._DesignParameter:
                     self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
                     self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
+
         except:
             traceback.print_exc()
             print(f'debug: layer_number={layer_number}, data_number={data_number}')
