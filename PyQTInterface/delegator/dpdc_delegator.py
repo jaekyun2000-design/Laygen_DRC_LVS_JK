@@ -179,7 +179,8 @@ class DesignDelegator(delegator.Delegator):
 
     def convert_elements_to_sref(self, vis_item_list):
         for vis in vis_item_list:
-            self.delete_qt_parameter(vis._id)
+            if vis._id:
+                self.delete_qt_parameter(vis._id)
 
     def create_sref_by_elements(self, vis_item_dict):
         for key, value in vis_item_dict.items():

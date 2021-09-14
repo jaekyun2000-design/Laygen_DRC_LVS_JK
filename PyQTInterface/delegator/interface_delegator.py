@@ -109,7 +109,8 @@ class WidgetDelegator(delegator.Delegator):
                 library_name = self.main_window.design_delegator.build_layer_matrix_by_ids(dp_ids)
             self.choice_widget.close()
             self.ls = SetupWindow._LoadSRefWindow(purpose='main_load')
-            self.ls.update_library(library_name)
+            if user_setup.DL_FEATURE:
+                self.ls.update_library(library_name)
             self.ls.show()
             self.ls.send_DesignConstraint_signal.connect(self.main_window.srefCreate)
             self.ls.send_DesignConstraint_signal.connect(delievery_message)
