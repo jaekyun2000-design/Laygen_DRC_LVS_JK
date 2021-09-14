@@ -249,8 +249,6 @@ class DesignDelegator(delegator.Delegator):
         result = topAPI.element_predictor.model.predict(cell_data)
         idx = np.argmax(result)
 
-
-        print(f'detection result: {user_setup.data_type_list[idx-1]}')
         return user_setup.data_type_list[idx-1]
 
 
