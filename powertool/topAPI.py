@@ -8,5 +8,6 @@ from powertool.model import inspector
 from powertool.model import naming_refactor
 from powertool.model import layer_to_matrix
 from powertool.model import element_predictor
+from powertool.model import parameter_predictor
 
 # CellInspector = gds2generator.CellInspector

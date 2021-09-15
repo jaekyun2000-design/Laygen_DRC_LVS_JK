@@ -214,7 +214,8 @@ class DesignDelegator(delegator.Delegator):
             tmp_qt_dp[dp_name] = copy.deepcopy(self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName][dp_name])
         lay_mat = topAPI.layer_to_matrix.LayerToMatrix(user_setup.matrix_x_step, user_setup.matrix_y_step)
         lay_mat.load_qt_parameters(tmp_qt_dp)
-        return self.detect_cell(lay_mat.matrix_by_layer)
+        cell_size = lay_mat.get_cell_size()
+        return self.detect_cell(lay_mat.matrix_by_layer, cell_size)
 
     def build_layer_matrix_by_dps(self, qt_dp_dict):
         """
@@ -223,9 +224,10 @@ class DesignDelegator(delegator.Delegator):
         """
         lay_mat = topAPI.layer_to_matrix.LayerToMatrix(user_setup.matrix_x_step, user_setup.matrix_y_step)
         lay_mat.load_qt_parameters(qt_dp_dict)
-        return self.detect_cell(lay_mat.matrix_by_layer)
+        cell_size = lay_mat.get_cell_size()
+        return self.detect_cell(lay_mat.matrix_by_layer, cell_size)
 
-    def detect_cell(self, matrix_by_layer):
+    def detect_cell(self, matrix_by_layer, cell_size=None):
         stacked_matrix = None
         cell_data = None
         for layer in user_setup.layer_list:
@@ -250,8 +252,20 @@ class DesignDelegator(delegator.Delegator):
         result = topAPI.element_predictor.model.predict(cell_data)
         idx = np.argmax(result)
 
-        return user_setup.data_type_list[idx-1]
+        prediction_cell_type = user_setup.data_type_list[idx-1]
+        if prediction_cell_type == 'NMOSWithDummy':
+             self.detect_parameters_nmos_debug(cell_data, cell_size)
+        return user_setup.data_type_list[idx - 1]
 
+
+    def detect_parameters_nmos_debug(self, cell_data, cell_size=None):
+        if not topAPI.parameter_predictor.nmos_model:
+            pass
+        model = topAPI.parameter_predictor.nmos_model
+        results = model.predict(cell_data)
+        print(results)
+        transformed_output = topAPI.parameter_predictor.transform_outputs(results, cell_size)
+        print(transformed_output)
 
 
 
