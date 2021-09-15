@@ -2,6 +2,7 @@
 
 # Required module
 ```sh
+#python_version = 3.8
 $ pip install astunparse PyQt5 intervaltree sklearn matplotlib pandas
 
 #To use optional features

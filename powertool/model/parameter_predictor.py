@@ -6,6 +6,7 @@ import numpy as np
 import user_setup
 import os
 
+
 def convert_org_value(predict, ms=None, scale=None, cell_size=None):
     def inverse(k, mean, std):
         return k*std + mean
@@ -22,6 +23,7 @@ def convert_org_value(predict, ms=None, scale=None, cell_size=None):
     result = np.rint(result).astype(np.int64)
     return result
 
+
 def transform_outputs(predict_list, cell_size=None, model=None ):
     import powertool.dl_models.tsmc65.nmos.info as info
     output_dict = dict()
@@ -32,4 +34,6 @@ def transform_outputs(predict_list, cell_size=None, model=None ):
         output_dict[output] = convert_org_value(predict, ms, scale, cell_size)
     return output_dict
 
-nmos_model = tensorflow.keras.models.load_model('powertool/dl_models/tsmc65/nmos')
+
+if user_setup.DL_FEATURE:
+    nmos_model = tensorflow.keras.models.load_model('powertool/dl_models/tsmc65/nmos')
