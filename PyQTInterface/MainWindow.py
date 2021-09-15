@@ -269,6 +269,9 @@ class _MainWindow(QMainWindow):
         self.scene.send_deleteItem_signal.connect(self.deleteDesignParameter)
         self.scene.selectionChanged.connect(self.scene.send_item_list)
         self.scene.send_show_variable_signal.connect(self.variableVisual.toggleVariableVisualization)
+        self.scene.send_move_item_signal.connect(self.transfer_delegator.get_xy_difference)
+        self.scene.send_mouse_move_xy_signal.connect(self.transfer_delegator.get_mouse_point)
+        self.scene.send_xy_signal.connect(self.transfer_delegator.get_click_point)
 
         ################# Right Dock Widget setting ####################
         dockWidget1 = QDockWidget("Element")
@@ -2938,6 +2941,7 @@ class _CustomScene(QGraphicsScene):
     send_xyCoordinate_signal = pyqtSignal(QGraphicsSceneMouseEvent)
     send_xy_signal = pyqtSignal(list)
     send_itemList_signal = pyqtSignal(list)
+    send_move_item_signal = pyqtSignal(list, list, str)
     send_parameterIDList_signal = pyqtSignal(list,int)
     send_move_signal = pyqtSignal(QPointF)
     send_moveDone_signal = pyqtSignal()
@@ -3107,8 +3111,37 @@ class _CustomScene(QGraphicsScene):
                 _ID = deleteItem._ItemTraits['_id']
                 self.send_deleteItem_signal.emit(_ID)
         elif QKeyEvent.key() == Qt.Key_M:
-            self.moveFlag = True
-            pass
+            move_items = self.selectedItems()
+            bounding_rect_dict = dict(top=float('-inf'),bottom=float('inf'),left=float('inf'),right=float('-inf'))
+            for item in move_items:
+                if type(item) == VisualizationItem._VisualizationItem:
+                    for key in item.bounding_rect_dict:
+                        if key == 'left' or key == 'bottom':
+                           if item.bounding_rect_dict[key] < bounding_rect_dict[key]:
+                               bounding_rect_dict[key] = item.bounding_rect_dict[key]
+                        elif key == 'right' or key == 'top':
+                            if item.bounding_rect_dict[key] > bounding_rect_dict[key]:
+                                bounding_rect_dict[key] = item.bounding_rect_dict[key]
+
+            center_point = [(bounding_rect_dict['left']+bounding_rect_dict['right'])/2, (bounding_rect_dict['top']+bounding_rect_dict['bottom'])/2]
+            self.send_move_item_signal.emit(move_items, center_point, 'move')
+            # self.moveFlag = True
+            # pass
+        elif QKeyEvent.key() == Qt.Key_C: #variable Call with XYCoordinates DesignParameter
+            copy_items = self.selectedItems()
+            bounding_rect_dict = dict(top=float('-inf'),bottom=float('inf'),left=float('inf'),right=float('-inf'))
+            for item in copy_items:
+                if type(item) == VisualizationItem._VisualizationItem:
+                    for key in item.bounding_rect_dict:
+                        if key == 'left' or key == 'bottom':
+                           if item.bounding_rect_dict[key] < bounding_rect_dict[key]:
+                               bounding_rect_dict[key] = item.bounding_rect_dict[key]
+                        elif key == 'right' or key == 'top':
+                            if item.bounding_rect_dict[key] > bounding_rect_dict[key]:
+                                bounding_rect_dict[key] = item.bounding_rect_dict[key]
+
+            center_point = [(bounding_rect_dict['left']+bounding_rect_dict['right'])/2, (bounding_rect_dict['top']+bounding_rect_dict['bottom'])/2]
+            self.send_move_item_signal.emit(copy_items, center_point, 'copy')
         elif QKeyEvent.key() == Qt.Key_D: #variableDefine With DesignParameter
             itemList = self.selectedItems()
             parameterIDList = list()
@@ -3141,14 +3174,14 @@ class _CustomScene(QGraphicsScene):
                     continue
                 parameterIDList.append(item._ItemTraits['_id'])
             self.send_parameterIDList_signal.emit(parameterIDList,3)
-        elif QKeyEvent.key() == Qt.Key_C: #variable Call with XYCoordinates DesignParameter
-            itemList = self.selectedItems()
-            parameterIDList = list()
-            for item in itemList:
-                if type(item) == VisualizationItem._RectBlock:
-                    continue
-                parameterIDList.append(item._ItemTraits['_id'])
-            self.send_parameterIDList_signal.emit(parameterIDList,4)
+        # elif QKeyEvent.key() == Qt.Key_C: #variable Call with XYCoordinates DesignParameter
+        #     itemList = self.selectedItems()
+        #     parameterIDList = list()
+        #     for item in itemList:
+        #         if type(item) == VisualizationItem._RectBlock:
+        #             continue
+        #         parameterIDList.append(item._ItemTraits['_id'])
+        #     self.send_parameterIDList_signal.emit(parameterIDList,4)
         elif QKeyEvent.key() == Qt.Key_H: #variable Call with XYCoordinates DesignParameter
             itemList = self.selectedItems()
             parameterIDList = list()

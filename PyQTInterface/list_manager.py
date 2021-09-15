@@ -344,7 +344,7 @@ class layerListItemModel(QStandardItemModel):
             item = QStandardItem(layer)
             item.setEditable(False)
             item.setTextAlignment(Qt.AlignCenter)
-            item.setSizeHint(QSize(165, 0))
+            item.setSizeHint(QSize(130, 0))
 
             itemv = QStandardItem(layer)
             itemv.setCheckable(True)
@@ -392,6 +392,8 @@ class layerListItemModel(QStandardItemModel):
 
             item = QStandardItem(layer)
             item.setEditable(False)
+            item.setTextAlignment(Qt.AlignCenter)
+            item.setSizeHint(QSize(130, 0))
 
             itemv = QStandardItem(layer)
             itemv.setCheckable(True)

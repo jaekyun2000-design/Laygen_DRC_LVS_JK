@@ -310,6 +310,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                                 )
             )
             self.block = []
+            self.bounding_rect_dict = dict(top=0,bottom=0,left=0,right=0)
             # self._BlockGroup = None,
         else:
             self.block = []
@@ -497,7 +498,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
         try:
             remove_item_list = []
-            for i in range(0,len(self.block)):
+            for i in range(len(self.block)):
                 # remove_item_list.append(self.block[i])
                 self.removeFromGroup(self.block[i])
             for child in self.childItems():
@@ -529,6 +530,10 @@ class _VisualizationItem(QGraphicsItemGroup):
         except:
             traceback.print_exc()
         return remove_item_list
+
+    def remove_block_from_group(self, remove_item):
+        for i in range(len(remove_item.block)):
+            self.removeFromGroup(remove_item.block[i])
 
     def updateDesignObj(self,visualItem):
         self._ItemTraits['_VisualizationItems'].append(visualItem)
@@ -601,6 +606,11 @@ class _VisualizationItem(QGraphicsItemGroup):
 
             self.block.append(tmpBlock)
             self.addToGroup(tmpBlock)
+
+            self.bounding_rect_dict = dict(top=self.boundingRect().bottom(),
+                                           bottom=self.boundingRect().top(),
+                                           left=self.boundingRect().left(),
+                                           right=self.boundingRect().right())
 
             ############################ Variable Visualization Start ############################
 
@@ -713,6 +723,11 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.block[-1].setPos(Xmin*scaleValue,Ymin*scaleValue)
                 self.addToGroup(self.block[-1])
 
+            self.bounding_rect_dict = dict(top=self.boundingRect().bottom(),
+                                           bottom=self.boundingRect().top(),
+                                           left=self.boundingRect().left(),
+                                           right=self.boundingRect().right())
+
             ############################ Variable Visualization Start ############################
             self.XYVariable = list()
             self._ItemTraits['variable_info']['XY'] = list()
@@ -735,6 +750,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
         elif self._ItemTraits['_DesignParametertype'] == 3:                #SRef Case
             self.index = idx
+            tmp_vs_item_group = QGraphicsItemGroup()
             for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
                 sub_element_vi = _VisualizationItem()
                 sub_element_vi._NoVariableFlag = True
@@ -771,8 +787,14 @@ class _VisualizationItem(QGraphicsItemGroup):
                             rot = 360 - self._ItemTraits['_Angle']
                             sub_element_vi.setRotation(rot)
 
+                tmp_vs_item_group.addToGroup(sub_element_vi)
                 self.addToGroup(sub_element_vi)
                 self.sub_element_dict[sub_element_dp_name+f'[{idx}]'] = sub_element_vi
+
+            self.bounding_rect_dict = dict(top=tmp_vs_item_group.boundingRect().bottom(),
+                                           bottom=tmp_vs_item_group.boundingRect().top(),
+                                           left=tmp_vs_item_group.boundingRect().left(),
+                                           right=tmp_vs_item_group.boundingRect().right())
 
             ############################ Variable Visualization Start ############################
 
@@ -876,6 +898,11 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self.block.append(_point)
                     self.addToGroup(self.text)
                     self.addToGroup(_point)
+
+            self.bounding_rect_dict = dict(top=self.boundingRect().bottom(),
+                                           bottom=self.boundingRect().top(),
+                                           left=self.boundingRect().left(),
+                                           right=self.boundingRect().right())
 
         else:
             print("WARNING1: Unvalid DataType Detected!")
@@ -1041,7 +1068,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.paramVariable.setFont(font)
 
                 self.XYVariable.setPos(self._ItemTraits['_XYCoordinates'][0][0]-6, self._ItemTraits['_XYCoordinates'][0][1]+10)
-                self.paramVariable.setPos(self.boundingRect().bottomLeft().x() + 20, self.boundingRect().bottomLeft().y() - 20)
+                self.paramVariable.setPos(self.bounding_rect_dict['left'] + 20, self.bounding_rect_dict['top'] - 20)
 
                 self.XYVariable.setDefaultTextColor(Qt.GlobalColor.red)
                 self.paramVariable.setDefaultTextColor(Qt.GlobalColor.red)
