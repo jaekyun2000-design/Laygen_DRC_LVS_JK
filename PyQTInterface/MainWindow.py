@@ -1572,6 +1572,7 @@ class _MainWindow(QMainWindow):
             print("########################################################################################")
             print(f"                CUSTOM SREF DP / DC / VisualItem Creation Fail!                        ")
             print("########################################################################################")
+            self.ls.maintain_window(False)
             return
         _module = self._QTObj._qtProject._DesignParameter[_moduleName]
         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',

@@ -215,7 +215,8 @@ class DesignDelegator(delegator.Delegator):
                     else:
                         break
 
-                if _id_num == '':
+                if j == -1:
+                    _id = _id + '_'
                     _id_num = '-1'
                 new_id = _id[:j] + '_' + str(int(_id_num)+1)
 
