@@ -2975,6 +2975,7 @@ class _CustomScene(QGraphicsScene):
         self.oldPos = QPointF(0,0)
         self.itemList = list()
         self.nslist = list()
+        self.tmp_item_dict = dict()
         cursor_item = QPixmap(1,1)
         cursor_item.fill(Qt.yellow)
         self.cursor_item = self.addPixmap(cursor_item)
@@ -3208,11 +3209,11 @@ class _CustomScene(QGraphicsScene):
             itemList = self.selectedItems()
             for item in itemList:
                 if item._ItemTraits['_DesignParametertype'] == 1:
-                    self.ungroup_indexed_item()
+                    self.tmp_item_dict = self.ungroup_indexed_item()
                 elif item._ItemTraits['_DesignParametertype'] == 2:
                     print('not yet')
                     print(item)
-                    self.ungroup_indexed_item()
+                    self.tmp_item_dict = self.ungroup_indexed_item()
                 elif item._ItemTraits['_DesignParametertype'] == 3:
                     print('not yet')
         elif QKeyEvent.key() == Qt.Key_O:
@@ -3230,6 +3231,12 @@ class _CustomScene(QGraphicsScene):
                         self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.index])
                 except:
                     pass
+        elif QKeyEvent.key() == Qt.Key_R:
+            for item, children in self.tmp_item_dict.items():
+                for child_item in children:
+                    item.addToGroup(child_item)
+                    self.removeItem(child_item)
+                self.addItem(item)
 
         super().keyPressEvent(QKeyEvent)
 
@@ -3326,24 +3333,29 @@ class _CustomScene(QGraphicsScene):
         return structure_dict
 
     def ungroup_indexed_item(self):
+        tmp_idx_item_dict = dict()
         for item in self.selectedItems():
             if type(item) == VisualizationItem._VisualizationItem:
                 if item._PathUngroupedFlag or (len(item._ItemTraits['_XYCoordinates']) == 1 and item._ItemTraits['_DesignParametertype'] == 2):
                     if len(item.block) != 1:
+                        tmp_idx_item_dict[item] = list()
                         for child in item.childItems():
                             if type(child) == VisualizationItem._RectBlock:
                                 tmp_vs_item = child.independent_from_group()
                                 self.addItem(tmp_vs_item)
                                 tmp_vs_item._PathUngroupedFlag = True
+                                tmp_idx_item_dict[item].append(child)
 
                             self.removeItem(item)
                 elif len(item._ItemTraits['_XYCoordinates']) > 1:
                     if item._ItemTraits['_DesignParametertype'] == 1:
                         # map(lambda child: child.setFlag(QGraphicsItem.ItemIsSelectable, True), item.childItems())
+                        tmp_idx_item_dict[item] = list()
                         for child in item.childItems():
                             if type(child) == VisualizationItem._RectBlock:
                                 tmp_vs_item = child.independent_from_group()
                                 self.addItem(tmp_vs_item)
+                                tmp_idx_item_dict[item].append(child)
                         # map(lambda child: child.independent_from_group(self), item.childItems())
                     elif item._ItemTraits['_DesignParametertype'] == 2:
                         rect_counts_for_connected_path = [len(xy) - 1 for xy in item._ItemTraits['_XYCoordinates']]
@@ -3353,6 +3365,7 @@ class _CustomScene(QGraphicsScene):
                             rect_count = rect_counts_for_connected_path.pop(0)
                             count = 0
                             print(item.childItems())
+                            tmp_idx_item_dict[item] = list()
                             for child in item.childItems():
                                 if type(child) == VisualizationItem._RectBlock:
                                     tmp_vs_item = child.independent_path_from_group(tmp_vs_item)
@@ -3362,6 +3375,7 @@ class _CustomScene(QGraphicsScene):
                                         tmp_vs_item._PathUngroupedFlag = True
                                         count = 0
                                         tmp_vs_item = None
+                                        tmp_idx_item_dict[item].append(child)
                                         if rect_counts_for_connected_path:
                                             rect_count = rect_counts_for_connected_path.pop(0)
 
@@ -3370,6 +3384,7 @@ class _CustomScene(QGraphicsScene):
                 else:
                     print('Only one index exist.')
                     print(item._ItemTraits['_XYCoordinates'])
+            return tmp_idx_item_dict
 
 
 class _VersatileWindow(QWidget):
