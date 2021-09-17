@@ -3092,9 +3092,10 @@ class _CustomScene(QGraphicsScene):
         super().mousePressEvent(event)
 
     def send_item_list(self):
-        itemList = self.selectedItems()
+        # itemList = self.selectedItems()
         # print(itemList)
-        self.send_itemList_signal.emit(itemList)
+        # self.send_itemList_signal.emit(itemList)
+        self.send_itemList_signal.emit(self.point_items_memory)
         pass
 
 
