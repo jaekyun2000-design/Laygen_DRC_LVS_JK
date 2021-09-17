@@ -2970,7 +2970,7 @@ class _CustomScene(QGraphicsScene):
             self.addLine(QLineF(-1000000,0,1000000,0),pen)
             self.addLine(QLineF(0,-1000000,0,1000000),pen)
 
-        self.moveFlag = False
+        # self.moveFlag = False
         self.listIgnoreFlag = False
         self.oldPos = QPointF(0,0)
         self.itemList = list()
@@ -3244,9 +3244,9 @@ class _CustomScene(QGraphicsScene):
 
     def mouseMoveEvent(self, QGraphicsSceneMouseEvent):
         super(_CustomScene, self).mouseMoveEvent(QGraphicsSceneMouseEvent)
-        delta = QPointF(QGraphicsSceneMouseEvent.scenePos()-self.oldPos)
-        if self.moveFlag is True:
-            self.send_move_signal.emit(delta)
+        # delta = QPointF(QGraphicsSceneMouseEvent.scenePos()-self.oldPos)
+        # if self.moveFlag is True:
+        #     self.send_move_signal.emit(delta)
         self.oldPos = QGraphicsSceneMouseEvent.scenePos()
 
         snap = user_setup.MIN_SNAP_SPACING

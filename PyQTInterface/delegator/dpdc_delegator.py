@@ -244,6 +244,7 @@ class DesignDelegator(delegator.Delegator):
                 vs_item.setPos(0,0)
 
                 self.create_qt_parameter(dp_dict)
+                self.main_window.scene.removeItem(vs_item)
 
     def delete_qt_parameter(self, dp_name, delete_dc=True):
         dp_module = self.main_window._CurrentModuleName
