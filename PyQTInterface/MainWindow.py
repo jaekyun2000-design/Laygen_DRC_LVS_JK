@@ -138,8 +138,8 @@ class _MainWindow(QMainWindow):
         UpdateGDSAction = QAction("Update constraint",self)
         setup_action = QAction("Setup",self)
 
-        newAction.setShortcut('Ctrl+N')
-        newAction.triggered.connect(self.newProject)
+        # newAction.setShortcut('Ctrl+N')
+        # newAction.triggered.connect(self.newProject)
 
         loadAction.setShortcut('Ctrl+L')
         loadAction.triggered.connect(self.loadProject)
@@ -158,6 +158,9 @@ class _MainWindow(QMainWindow):
 
         UpdateGDSAction.setShortcut('Ctrl+U')
         UpdateGDSAction.triggered.connect(self.runConstraint_for_update)
+
+        newAction.setShortcut('Ctrl+C')
+        newAction.triggered.connect(self.create_generator_file)
 
         setup_action.triggered.connect(self.run_setup_update)
 
@@ -571,6 +574,37 @@ class _MainWindow(QMainWindow):
         self.addDockWidget(Qt.BottomDockWidgetArea, dockWidget4ForLoggingMessage)
 
         print("******************************Initializing Graphic Interface Complete")
+
+    def create_generator_file(self):
+        library_list = []
+        additional_import_code = ''
+        constraint_names = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
+        constraint_ids = [item.text() for item in constraint_names]
+        for ids in constraint_ids:
+            single_module = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][ids]
+            module_lib = single_module._ast.__dict__['library']
+            library_list.append(module_lib)
+        cal_code = self.encodeConstraint()
+        print(cal_code)
+        import_default_code = "import StickDiagram\nimport DesignParameters\nimport copy\nimport DRC\n"
+        for libraries in library_list:
+            additional_import_code += f"import {libraries}\n"
+
+        import_code = import_default_code + additional_import_code
+        class_declaration_code = f"class {self._CurrentModuleName}(StickDiagram._StickDiagram):\n" \
+                                 f"\tdef __init__(self._DesignParameter=None, _Name='{self._CurrentModuleName}'\n" \
+                                 f"\t\tif _DesignParameter != None:\n" \
+                                 f"\t\t\tself._DesignParameter = _DesignParameter\n" \
+                                 f"\t\telse:\n" \
+                                 f"\t\t\tself._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))"
+        self.user_variables = variableWindow._createNewDesignVariable.variableDict.values()
+        user_variable_sentence = ",".join(
+            [f'{variable_dict["DV"]}={variable_dict["value"] if variable_dict["value"] != "" else None}' for
+             variable_dict in self.user_variables])
+        fcn_define_code = 'def _CalculateDesignParameter(self,' + user_variable_sentence + '):\n\tpass'
+        tmp_ast = ast.parse(fcn_define_code)
+
+        # _calculation_declaration_code =
 
     def create_new_window(self, dict, key):
         dict[key] = _MainWindow()
@@ -1558,6 +1592,7 @@ class _MainWindow(QMainWindow):
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter = tmp_dp_dict
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_id'] = _newParameterID
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_DesignObj'] = _dp['_DesignObj']
+            self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_DesignObj_Name'] = tmp_dp_dict['_ElementName']
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_DesignParametertype'] = 3
             # self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_ElementName'] = _newParameterID
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['_XYCoordinates'] = _dp['_XYCoordinates']
@@ -1568,6 +1603,7 @@ class _MainWindow(QMainWindow):
             self._QTObj._qtProject._DesignParameter[_moduleName][_newParameterID]._DesignParameter['parameters'] = _AST.parameters
 
         except:
+            traceback.print_exc()
             self.dockContentWidget4ForLoggingMessage._InfoMessage(" Not enough Parameters Given!")
             print("########################################################################################")
             print(f"                CUSTOM SREF DP / DC / VisualItem Creation Fail!                        ")
