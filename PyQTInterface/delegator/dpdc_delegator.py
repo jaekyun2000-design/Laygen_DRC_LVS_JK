@@ -212,7 +212,7 @@ class DesignDelegator(delegator.Delegator):
         tmp_qt_dp = dict()
         for dp_name in dp_names:
             tmp_qt_dp[dp_name] = copy.deepcopy(self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName][dp_name])
-        lay_mat = topAPI.layer_to_matrix.LayerToMatrix(user_setup.matrix_x_step, user_setup.matrix_y_step)
+        lay_mat = topAPI.layer_to_matrix.LayerToMatrix(user_setup.matrix_x_step, user_setup.matrix_y_step, user_setup.layer_list)
         lay_mat.load_qt_parameters(tmp_qt_dp)
         cell_size = lay_mat.get_cell_size()
         return self.detect_cell(lay_mat.matrix_by_layer, cell_size)
@@ -222,7 +222,7 @@ class DesignDelegator(delegator.Delegator):
         input: dp_dictionary
         output: cell type prediction result str
         """
-        lay_mat = topAPI.layer_to_matrix.LayerToMatrix(user_setup.matrix_x_step, user_setup.matrix_y_step)
+        lay_mat = topAPI.layer_to_matrix.LayerToMatrix(user_setup.matrix_x_step, user_setup.matrix_y_step, user_setup.layer_list)
         lay_mat.load_qt_parameters(qt_dp_dict)
         cell_size = lay_mat.get_cell_size()
         return self.detect_cell(lay_mat.matrix_by_layer, cell_size)
@@ -232,18 +232,25 @@ class DesignDelegator(delegator.Delegator):
         cell_data = None
         for layer in user_setup.layer_list:
             if type(stacked_matrix) == np.ndarray:
-                if layer in matrix_by_layer:
-                    stacked_matrix = np.append(stacked_matrix, np.expand_dims(matrix_by_layer[layer],2), axis=2)
-                else:
-                    stacked_matrix = np.append(stacked_matrix, np.expand_dims(np.zeros((user_setup.matrix_x_step, user_setup.matrix_y_step)),2), axis=2)
+                stacked_matrix = np.append(stacked_matrix, np.expand_dims(np.array(matrix_by_layer[layer]),2), axis=2)
             else:
-                if layer in matrix_by_layer:
-                    stacked_matrix = np.expand_dims(matrix_by_layer[layer], 2)
-                else:
-                    stacked_matrix = np.expand_dims(np.zeros((user_setup.matrix_x_step, user_setup.matrix_y_step)),2)
+                stacked_matrix = np.expand_dims(np.array(matrix_by_layer[layer]),2)
+            # if type(stacked_matrix) == np.ndarray:
+            #     if layer in matrix_by_layer:
+            #         stacked_matrix = np.append(stacked_matrix, np.expand_dims(np.array(matrix_by_layer[layer]),2), axis=2)
+            #     else:
+            #         stacked_matrix = np.append(stacked_matrix, np.expand_dims(np.zeros((user_setup.matrix_x_step, user_setup.matrix_y_step)),2), axis=2)
+            # else:
+            #     if layer in matrix_by_layer:
+            #         stacked_matrix = np.expand_dims(np.array(matrix_by_layer[layer]), 2)
+            #     else:
+            #         stacked_matrix = np.expand_dims(np.zeros((user_setup.matrix_x_step, user_setup.matrix_y_step)),2)
 
-            cell_data = np.array([stacked_matrix])
-        cell_data = cell_data.reshape((1, user_setup.matrix_y_step,user_setup.matrix_y_step, len(user_setup.layer_list)))
+        cell_data = np.array([stacked_matrix])
+        import matplotlib.pyplot as plt
+        plt.imshow(cell_data[0, :, :, 3:6])
+        plt.show()
+        # cell_data = cell_data.reshape((1, user_setup.matrix_y_step,user_setup.matrix_y_step, len(user_setup.layer_list)))
         if not topAPI.element_predictor.model:
             topAPI.element_predictor.model = topAPI.element_predictor.create_element_detector_model()
         # if 'model' not in self.__dict__:
@@ -262,6 +269,7 @@ class DesignDelegator(delegator.Delegator):
         if not topAPI.parameter_predictor.nmos_model:
             pass
         model = topAPI.parameter_predictor.nmos_model
+
         results = model.predict(cell_data)
         print(results)
         transformed_output = topAPI.parameter_predictor.transform_outputs(results, cell_size)

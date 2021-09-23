@@ -25,7 +25,7 @@ def convert_org_value(predict, ms=None, scale=None, cell_size=None):
 
 
 def transform_outputs(predict_list, cell_size=None, model=None ):
-    import powertool.dl_models.tsmc65.nmos.info as info
+    import powertool.dl_models.tsmc65.nmos_tsmc65.info as info
     output_dict = dict()
     for i, output in enumerate(info.outputs):
         predict = predict_list[i]
@@ -36,4 +36,4 @@ def transform_outputs(predict_list, cell_size=None, model=None ):
 
 
 if user_setup.DL_FEATURE:
-    nmos_model = tensorflow.keras.models.load_model('powertool/dl_models/tsmc65/nmos')
+    nmos_model = tensorflow.keras.models.load_model('powertool/dl_models/tsmc65/nmos_tsmc65')
