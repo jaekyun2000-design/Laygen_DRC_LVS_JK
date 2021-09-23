@@ -2,6 +2,7 @@ import warnings
 import ast
 import astunparse
 import copy
+import re
 
 from PyQTInterface.delegator import delegator
 from PyQTInterface import VisualizationItem
@@ -101,8 +102,8 @@ class DesignDelegator(delegator.Delegator):
 
 
         for key in dp_dict:
-            self.main_window._QTObj._qtProject.dp_dict[module][legacy_id]._setDesignParameterValue(_index = key, _value= dp_dict[key])
-        self.main_window._QTObj._qtProject.dp_dict[module][legacy_id]._setDesignParameterName(dp_dict['_ElementName'])
+            self.main_window._QTObj._qtProject._DesignParameter[module][legacy_id]._setDesignParameterValue(_index = key, _value= dp_dict[key])
+        self.main_window._QTObj._qtProject._DesignParameter[module][legacy_id]._setDesignParameterName(dp_dict['_ElementName'])
         design_dict = self.main_window._QTObj._qtProject._update_design(design_type='parameter', module_name=self.main_window._CurrentModuleName,
                                                           dp_dict=dp_dict, id=legacy_id, element_manager_update =element_manager_update,)
         design_dict['parameter'].update_unified_expression()
@@ -155,13 +156,95 @@ class DesignDelegator(delegator.Delegator):
         id = qt_design_parameter._id
 
         if id in self.main_window.visualItemDict:
-            self.main_window.visualItemDict[id].updateTraits(qt_design_parameter._DesignParameter)
+            remove_item_list = self.main_window.visualItemDict[id].updateTraits(qt_design_parameter._DesignParameter)
+            for remove_item in remove_item_list:
+                self.main_window.scene.removeItem(remove_item)
+                self.main_window.visualItemDict[id].remove_block_from_group(remove_item)
             self.main_window.visualItemDict[id]._id = id
             self.main_window.visualItemDict[id]._ItemTraits['_id'] = id
             self.main_window.visualItemDict[id]._ItemTraits['_ElementName'] = id
+            self.main_window.visualItemDict[id]._CreateFlag = False
             self.main_window.updateGraphicItem(self.main_window.visualItemDict[id])
             return self.main_window.visualItemDict[id]
         return None
+
+    def move_vs_item(self, vs_item_list, center_xy, mouse_xy, create):
+        if create:
+            for vs_item in vs_item_list:
+                x = mouse_xy[0] - center_xy[0]
+                y = mouse_xy[1] - center_xy[1]
+                self.main_window.visualItemDict[vs_item._id].setPos(x,y)
+        else:
+            for vs_item in vs_item_list:
+                qt_dp = copy.deepcopy(self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName][vs_item._id])
+                dp_dict = qt_dp._DesignParameter
+                if dp_dict['_DesignParametertype'] == 1 or dp_dict['_DesignParametertype'] == 3:
+                    x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][0]
+                    y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][1]
+                    dp_dict['_XYCoordinates'] = [[x,y]]
+                elif dp_dict['_DesignParametertype'] == 2:
+                    for i in range(len(dp_dict['_XYCoordinates'][0])):
+                        x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][i][0]
+                        y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][i][1]
+                        dp_dict['_XYCoordinates'][0].pop(i)
+                        dp_dict['_XYCoordinates'][0].insert(i, [x,y])
+
+                self.main_window.visualItemDict[vs_item._id].setPos(0,0)
+
+                self.update_qt_parameter(dp_dict)
+
+    def copy_vs_item(self, vs_item_list, center_xy, mouse_xy, create):
+        if create:
+            for vs_item in vs_item_list:
+                x = mouse_xy[0] - center_xy[0]
+                y = mouse_xy[1] - center_xy[1]
+                vs_item.setPos(x,y)
+        else:
+            for vs_item in vs_item_list:
+                _id = vs_item._ItemTraits['_ElementName']
+                qt_dp = copy.deepcopy(self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName][_id])
+                dp_dict = qt_dp._DesignParameter
+                _id_num = ''
+                for i in range(len(_id)):
+                    j = -(i+1)
+                    if dp_dict['_id'][j] == '_':
+                        break
+                    elif re.search('[0-9]', dp_dict['_id'][j]):
+                        _id_num = dp_dict['_id'][j] + _id_num
+                        continue
+                    else:
+                        break
+
+                if j == -1:
+                    _id = _id + '_'
+                    _id_num = '-1'
+                new_id = _id[:j] + '_' + str(int(_id_num)+1)
+
+                while True:
+                    if new_id in self.main_window._QTObj._qtProject._ElementManager.dp_id_to_dc_id:
+                        _id_num = str(int(_id_num)+1)
+                        new_id = _id[:j] + '_' + str(int(_id_num)+1)
+                    else:
+                        break
+
+                dp_dict['_ElementName'] = new_id
+                dp_dict['_id'] = new_id
+
+                if dp_dict['_DesignParametertype'] == 1 or dp_dict['_DesignParametertype'] == 3:
+                    x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][0]
+                    y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][1]
+                    dp_dict['_XYCoordinates'] = [[x,y]]
+                elif dp_dict['_DesignParametertype'] == 2:
+                    for i in range(len(dp_dict['_XYCoordinates'][0])):
+                        x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][i][0]
+                        y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][i][1]
+                        dp_dict['_XYCoordinates'][0].pop(i)
+                        dp_dict['_XYCoordinates'][0].insert(i, [x,y])
+
+                vs_item.setPos(0,0)
+
+                self.create_qt_parameter(dp_dict)
+                self.main_window.scene.removeItem(vs_item)
 
     def delete_qt_parameter(self, dp_name, delete_dc=True):
         dp_module = self.main_window._CurrentModuleName
@@ -194,11 +277,12 @@ class DesignDelegator(delegator.Delegator):
 
             for vis_item in vis_item_list:
                 qt_dp = copy.deepcopy(self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName][vis_item._id])
-                new_project.design_delegator.create_vs_item(qt_dp)
+                new_project.design_delegator.create_qt_parameter(qt_dp._DesignParameter)
 
             self.main_window.module_dict[tmp_module_name].set_module_name(tmp_module_name)
             self.main_window.module_dict[tmp_module_name].module_dict = self.main_window.module_dict
             self.main_window.module_dict[tmp_module_name].module_name_list = self.main_window.module_name_list
+
             self.main_window.hide()
 
         create_new_window(tmp_module_name, vis_item_list)

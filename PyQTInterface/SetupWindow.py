@@ -608,6 +608,7 @@ class _LoadSRefWindow(QWidget):
         super().__init__()
         self.purpose = purpose
         self.create = False
+        self.option = True
         self.par_valueForLineEdit = []
         self.par_button_for_cal = []
         self.paramDict = dict()
@@ -848,7 +849,13 @@ class _LoadSRefWindow(QWidget):
         #     tmpAST._id = self._DesignParameter['_id']
         #     self.send_DesignConstraint_signal.emit(self._DesignParameter)
 
-        self.destroy()
+        if self.option:
+            self.destroy()
+        else:
+            self.option = True
+
+    def maintain_window(self, option):
+        self.option = option
 
     def cancel_button_accepted(self):
         self.destroy()
