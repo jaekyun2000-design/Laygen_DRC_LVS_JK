@@ -609,7 +609,12 @@ class _MainWindow(QMainWindow):
         fcn_define_code = 'def _CalculateDesignParameter(self,' + user_variable_sentence + '):\n'
         cal_code = re.sub("\n","\n\t",cal_code)
         final_code = import_code + class_declaration_code + fcn_define_code + f"\t{cal_code}"
-        print(final_code)
+
+        file_write_flag = False
+        if file_write_flag:
+            f = open(f"./generatorLib/generator_models/{self._CurrentModuleName}.py","w")
+            f.write(final_code)
+            f.close()
 
     def create_new_window(self, dict, key):
         dict[key] = _MainWindow()
