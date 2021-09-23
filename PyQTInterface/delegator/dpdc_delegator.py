@@ -356,6 +356,7 @@ class DesignDelegator(delegator.Delegator):
 
         results = model.predict(cell_data)
         print(results)
+        print(cell_size)
         transformed_output = topAPI.parameter_predictor.transform_outputs(results, cell_size)
         print(transformed_output)
 
