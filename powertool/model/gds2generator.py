@@ -909,47 +909,66 @@ class LayoutReader:
                     layer_name = LayerReader._LayerName_unified[str(dp['_Layer'])]
                 if '_XYCoordinatesProjection' not in dp or not dp['_XYCoordinatesProjection']:
                     return idx
-                x_min = min([xy[0] for xy in dp['_XYCoordinatesProjection'][0]])
-                y_min = min([xy[1] for xy in dp['_XYCoordinatesProjection'][0]])
-                lb_xy = [x_min,y_min]
-                if layer_name in self.layer_elements:
-                    self.layer_elements[layer_name].append(element_node(layer_name,x_width,y_width,lb_xy,idx))
-                else:
-                    self.layer_elements[layer_name] = []
-                    self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy,idx))
-                idx += 1
 
-                x_max = x_min + dp['_XWidth']
-                y_max = y_min + dp['_YWidth']
-                self.x_min = min(self.x_min,x_min) if self.x_min else x_min
-                self.y_min = min(self.y_min,y_min) if self.y_min else y_min
-                self.x_max = max(self.x_max,x_max) if self.x_max else x_max
-                self.y_max = max(self.y_max,y_max) if self.y_max else y_max
-
-            elif dp['_DesignParametertype'] == 2:
-                for path_xy_point in dp['_XYCoordinatesProjection'][0]:
-                    x_min = min([xy[0] for xy in path_xy_point])
-                    y_min = min([xy[1] for xy in path_xy_point])
-                    lb_xy = [x_min, y_min]
-                    x_max = max([xy[0] for xy in path_xy_point])
-                    y_max = max([xy[1] for xy in path_xy_point])
-                    rt_xy = [x_max, y_max]
-                    x_width = x_max - x_min
-                    y_width = y_max - y_min
-                    if '_LayerUnifiedName' in dp:
-                        layer_name = dp['_LayerUnifiedName']
-                    else:
-                        layer_name = LayerReader._LayerName_unified[str(dp['_Layer'])]
+                for xy_series in dp['_XYCoordinatesProjection']:
+                    x_min = min([xy[0] for xy in xy_series])
+                    y_min = min([xy[1] for xy in xy_series])
+                    lb_xy = [x_min,y_min]
                     if layer_name in self.layer_elements:
-                        self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
+                        self.layer_elements[layer_name].append(element_node(layer_name,x_width,y_width,lb_xy,idx))
                     else:
                         self.layer_elements[layer_name] = []
-                        self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
+                        self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy,idx))
                     idx += 1
-                    self.x_min = min(self.x_min, x_min) if self.x_min else x_min
-                    self.y_min = min(self.y_min, y_min) if self.y_min else y_min
-                    self.x_max = max(self.x_max, x_max) if self.x_max else x_max
-                    self.y_max = max(self.y_max, y_max) if self.y_max else y_max
+
+                    x_max = x_min + dp['_XWidth']
+                    y_max = y_min + dp['_YWidth']
+                    self.x_min = min(self.x_min,x_min) if self.x_min else x_min
+                    self.y_min = min(self.y_min,y_min) if self.y_min else y_min
+                    self.x_max = max(self.x_max,x_max) if self.x_max else x_max
+                    self.y_max = max(self.y_max,y_max) if self.y_max else y_max
+#                 x_min = min([xy[0] for xy in dp['_XYCoordinatesProjection'][0]])
+#                 y_min = min([xy[1] for xy in dp['_XYCoordinatesProjection'][0]])
+#                 lb_xy = [x_min,y_min]
+#                 if layer_name in self.layer_elements:
+#                     self.layer_elements[layer_name].append(element_node(layer_name,x_width,y_width,lb_xy,idx))
+#                 else:
+#                     self.layer_elements[layer_name] = []
+#                     self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy,idx))
+#                 idx += 1
+#
+#                 x_max = x_min + dp['_XWidth']
+#                 y_max = y_min + dp['_YWidth']
+#                 self.x_min = min(self.x_min,x_min) if self.x_min else x_min
+#                 self.y_min = min(self.y_min,y_min) if self.y_min else y_min
+#                 self.x_max = max(self.x_max,x_max) if self.x_max else x_max
+#                 self.y_max = max(self.y_max,y_max) if self.y_max else y_max
+
+            elif dp['_DesignParametertype'] == 2:
+                for xy_series in dp['_XYCoordinatesProjection']:
+                    for path_xy_point in xy_series:
+                        x_min = min([xy[0] for xy in path_xy_point])
+                        y_min = min([xy[1] for xy in path_xy_point])
+                        lb_xy = [x_min, y_min]
+                        x_max = max([xy[0] for xy in path_xy_point])
+                        y_max = max([xy[1] for xy in path_xy_point])
+                        rt_xy = [x_max, y_max]
+                        x_width = x_max - x_min
+                        y_width = y_max - y_min
+                        if '_LayerUnifiedName' in dp:
+                            layer_name = dp['_LayerUnifiedName']
+                        else:
+                            layer_name = LayerReader._LayerName_unified[str(dp['_Layer'])]
+                        if layer_name in self.layer_elements:
+                            self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
+                        else:
+                            self.layer_elements[layer_name] = []
+                            self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
+                        idx += 1
+                        self.x_min = min(self.x_min, x_min) if self.x_min else x_min
+                        self.y_min = min(self.y_min, y_min) if self.y_min else y_min
+                        self.x_max = max(self.x_max, x_max) if self.x_max else x_max
+                        self.y_max = max(self.y_max, y_max) if self.y_max else y_max
             elif dp['_DesignParametertype'] == 3:
                 if '_ModelStructure' in dp:
                     for sub_dp in dp['_ModelStructure'].values():

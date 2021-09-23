@@ -63,6 +63,8 @@ class LayerToMatrix:
 
     def get_cell_size(self):
         return dict(width=self.cell_width, height=self.cell_height)
+        # return dict(width=self.offset[0] + self.x_step_size*self.matrix_size[1],
+        #             height=self.offset[1] + self.y_step_size*self.matrix_size[0])
 
 
 if __name__ == '__main__':
