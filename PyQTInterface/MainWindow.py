@@ -585,7 +585,7 @@ class _MainWindow(QMainWindow):
             module_lib = single_module._ast.__dict__['library']
             library_list.append(module_lib)
         cal_code = self.encodeConstraint()
-        cal_code = f"_DRCObj = DRC.DRC()\n" \
+        cal_code = f"\n_DRCObj = DRC.DRC()\n" \
                    f"_Name = '{self._CurrentModuleName}'\n" \
                    f"{cal_code}"
         import_default_code = "from generatorLib import StickDiagram\n" \
@@ -606,8 +606,8 @@ class _MainWindow(QMainWindow):
         user_variable_sentence = ",".join(
             [f'{variable_dict["DV"]}={variable_dict["value"] if variable_dict["value"] != "" else None}' for
              variable_dict in self.user_variables])
-        fcn_define_code = 'def _CalculateDesignParameter(self,' + user_variable_sentence + '):\n'
-        cal_code = re.sub("\n","\n\t",cal_code)
+        fcn_define_code = '\tdef _CalculateDesignParameter(self,' + user_variable_sentence + '):\n'
+        cal_code = re.sub("\n","\n\t\t",cal_code)
         final_code = import_code + class_declaration_code + fcn_define_code + f"\t{cal_code}"
 
         file_write_flag = True
