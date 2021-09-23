@@ -138,8 +138,8 @@ class _MainWindow(QMainWindow):
         UpdateGDSAction = QAction("Update constraint",self)
         setup_action = QAction("Setup",self)
 
-        # newAction.setShortcut('Ctrl+N')
-        # newAction.triggered.connect(self.newProject)
+        newAction.setShortcut('Ctrl+N')
+        newAction.triggered.connect(self.newProject)
 
         loadAction.setShortcut('Ctrl+L')
         loadAction.triggered.connect(self.loadProject)
@@ -588,9 +588,12 @@ class _MainWindow(QMainWindow):
         cal_code = f"_DRCObj = DRC.DRC()\n" \
                    f"_Name = '{self._CurrentModuleName}'\n" \
                    f"{cal_code}"
-        import_default_code = "import StickDiagram\nimport DesignParameters\nimport copy\nimport DRC\n"
+        import_default_code = "from generatorLib import StickDiagram\n" \
+                              "from generatorLib import DesignParameters\n" \
+                              "import copy\n" \
+                              "from generatorLib import DRC\n"
         for libraries in library_list:
-            additional_import_code += f"import {libraries}\n"
+            additional_import_code += f"from generatorLib.generator_models import {libraries}\n"
 
         import_code = import_default_code + additional_import_code + '\n'
         class_declaration_code = f"class {self._CurrentModuleName}(StickDiagram._StickDiagram):\n" \
@@ -607,7 +610,6 @@ class _MainWindow(QMainWindow):
         cal_code = re.sub("\n","\n\t",cal_code)
         final_code = import_code + class_declaration_code + fcn_define_code + f"\t{cal_code}"
         print(final_code)
-        # _calculation_declaration_code =
 
     def create_new_window(self, dict, key):
         dict[key] = _MainWindow()
