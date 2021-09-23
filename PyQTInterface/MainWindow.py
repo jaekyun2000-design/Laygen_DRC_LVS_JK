@@ -597,7 +597,7 @@ class _MainWindow(QMainWindow):
 
         import_code = import_default_code + additional_import_code + '\n'
         class_declaration_code = f"class {self._CurrentModuleName}(StickDiagram._StickDiagram):\n" \
-                                 f"\tdef __init__(self._DesignParameter=None, _Name='{self._CurrentModuleName}'\n" \
+                                 f"\tdef __init__(self, _DesignParameter=None, _Name='{self._CurrentModuleName}'):\n" \
                                  f"\t\tif _DesignParameter != None:\n" \
                                  f"\t\t\tself._DesignParameter = _DesignParameter\n" \
                                  f"\t\telse:\n" \
@@ -610,9 +610,9 @@ class _MainWindow(QMainWindow):
         cal_code = re.sub("\n","\n\t",cal_code)
         final_code = import_code + class_declaration_code + fcn_define_code + f"\t{cal_code}"
 
-        file_write_flag = False
+        file_write_flag = True
         if file_write_flag:
-            f = open(f"./generatorLib/generator_models/{self._CurrentModuleName}.py","w")
+            f = open(f"./generatorLib/generator_models/{self._CurrentModuleName}.py", "w")
             f.write(final_code)
             f.close()
 
