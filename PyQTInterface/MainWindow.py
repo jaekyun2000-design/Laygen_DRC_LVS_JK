@@ -585,25 +585,28 @@ class _MainWindow(QMainWindow):
             module_lib = single_module._ast.__dict__['library']
             library_list.append(module_lib)
         cal_code = self.encodeConstraint()
-        print(cal_code)
+        cal_code = f"_DRCObj = DRC.DRC()\n" \
+                   f"_Name = '{self._CurrentModuleName}'\n" \
+                   f"{cal_code}"
         import_default_code = "import StickDiagram\nimport DesignParameters\nimport copy\nimport DRC\n"
         for libraries in library_list:
             additional_import_code += f"import {libraries}\n"
 
-        import_code = import_default_code + additional_import_code
+        import_code = import_default_code + additional_import_code + '\n'
         class_declaration_code = f"class {self._CurrentModuleName}(StickDiagram._StickDiagram):\n" \
                                  f"\tdef __init__(self._DesignParameter=None, _Name='{self._CurrentModuleName}'\n" \
                                  f"\t\tif _DesignParameter != None:\n" \
                                  f"\t\t\tself._DesignParameter = _DesignParameter\n" \
                                  f"\t\telse:\n" \
-                                 f"\t\t\tself._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))"
+                                 f"\t\t\tself._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))\n"
         self.user_variables = variableWindow._createNewDesignVariable.variableDict.values()
         user_variable_sentence = ",".join(
             [f'{variable_dict["DV"]}={variable_dict["value"] if variable_dict["value"] != "" else None}' for
              variable_dict in self.user_variables])
-        fcn_define_code = 'def _CalculateDesignParameter(self,' + user_variable_sentence + '):\n\tpass'
-        tmp_ast = ast.parse(fcn_define_code)
-
+        fcn_define_code = 'def _CalculateDesignParameter(self,' + user_variable_sentence + '):\n'
+        cal_code = re.sub("\n","\n\t",cal_code)
+        final_code = import_code + class_declaration_code + fcn_define_code + f"\t{cal_code}"
+        print(final_code)
         # _calculation_declaration_code =
 
     def create_new_window(self, dict, key):

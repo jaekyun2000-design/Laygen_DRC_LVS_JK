@@ -220,7 +220,7 @@ class ElementTransformer(ast.NodeTransformer):
     def visit_Boundary(self,node):
         syntax = self.xy_syntax_checker(node)
         if syntax == 'ast':
-            syntax = 'string'
+            syntax = ''
         for field in node._fields:
             if node.__dict__[field] == '' or node.__dict__[field] == None:
                 raise ValueError(f"Not valid \'{field}\' value : {node.__dict__[field]}")
@@ -251,7 +251,7 @@ class ElementTransformer(ast.NodeTransformer):
     def visit_Path(self,node):
         syntax = self.xy_syntax_checker(node)
         if syntax == 'ast':
-            syntax = 'string'
+            syntax = ''
         for field in node._fields:
             if node.__dict__[field] == '' or node.__dict__[field] == None:
                 raise Exception(f"Not valid {field} value : {node.__dict__[field]}")
@@ -278,7 +278,7 @@ class ElementTransformer(ast.NodeTransformer):
         syntax = self.xy_syntax_checker(node)
         print(f'debug: {syntax}')
         if syntax == 'ast':
-            syntax = 'string'
+            syntax = ''
         parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
 
 
@@ -345,6 +345,7 @@ def run_transformer(source_ast):
 
 
 if __name__ == '__main__':
+
     a = Boundary()
     b = Path()
     # c = Sref()
