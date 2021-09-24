@@ -344,7 +344,7 @@ class DesignDelegator(delegator.Delegator):
         idx = np.argmax(result)
 
         prediction_cell_type = user_setup.data_type_list[idx-1]
-        if prediction_cell_type == 'NMOSWithDummy':
+        if prediction_cell_type in ['NMOSWithDummy','PMOSWithDummy']:
              self.detect_parameters_nmos_debug(cell_data, cell_size)
         return user_setup.data_type_list[idx - 1]
 

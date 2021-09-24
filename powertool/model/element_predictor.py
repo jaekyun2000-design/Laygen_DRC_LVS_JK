@@ -6,6 +6,9 @@ import os
 import tensorflow
 
 def create_element_detector_model():
-    return tensorflow.keras.models.load_model('powertool/dl_models/tsmc65/cell_detection')
+    if user_setup.matrix_x_step == 128:
+        return tensorflow.keras.models.load_model('powertool/dl_models/tsmc65/cell_detection')
+    else:
+        return tensorflow.keras.models.load_model('powertool/dl_models/tsmc65/cell_detection_256')
 
 model = None
