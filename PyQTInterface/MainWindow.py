@@ -662,15 +662,35 @@ class _MainWindow(QMainWindow):
         # self.send_create_new_window_signal.emit()
         # print('send end')
     def add_constraint_view(self):
+
         self.c_view_configuration = QWidget()
-        form_layout = QFormLayout()
         config_list = ['Fcn Name']
+        fcn_str = QLineEdit()
+        form_layout = QFormLayout()
         for config_item in config_list:
-            form_layout.addRow(config_item, QLineEdit())
+            form_layout.addRow(config_item, fcn_str)
+
+        cb = QComboBox(self.c_view_configuration)
+        cb.addItem('from dp')
+        cb.addItem('from dc')
+
+        ok_button = QPushButton()
+        ok_button.setText('OK')
+
+        form_layout.addRow('Options', cb)
+        form_layout.addRow(ok_button)
+
         self.c_view_configuration.setLayout(form_layout)
         self.c_view_configuration.show()
-        calculation_fcn_name = 'CalculateC2FF'
 
+        ok_button.clicked.connect(lambda tmp: self.create_new_constraint_widget(cb.currentText(), fcn_str.text()))
+
+
+    def create_new_constraint_widget(self, mode, fcn_name):
+        print(mode, fcn_name)
+        self.c_view_configuration.destroy()
+
+        pass
 
 
     def run_setup_update(self):
