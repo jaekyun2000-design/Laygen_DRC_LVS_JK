@@ -1,6 +1,7 @@
 import ast
 import sys
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 dir_check=os.getcwd()
 if 'PyQTInterface' in dir_check:
     os.chdir('..')
