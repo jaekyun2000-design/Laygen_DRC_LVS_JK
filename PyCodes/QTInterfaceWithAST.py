@@ -489,8 +489,8 @@ class QtProject:
         self._LogMessageHandler = _LogMessageHandler
         self._ElementManager = element_manager.ElementManager()
 
-        self._DesignConstraint_topology_dict = dict(func1 = None, func2 = None, func3 = None)
-        self._ElementManager_topology_dict = dict(func1 = None, func2 = None, func3 = None)
+        self._DesignConstraint_topology_dict = dict()
+        self._ElementManager_topology_dict = dict()
 
         # designParameter Definition
         # self._DesignParameter["designParameterName"]  = dict(

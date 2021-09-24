@@ -671,8 +671,8 @@ class _MainWindow(QMainWindow):
             form_layout.addRow(config_item, fcn_str)
 
         cb = QComboBox(self.c_view_configuration)
-        cb.addItem('from dp')
-        cb.addItem('from dc')
+        cb.addItem('from DP')
+        cb.addItem('from original DC')
 
         ok_button = QPushButton()
         ok_button.setText('OK')
@@ -687,10 +687,53 @@ class _MainWindow(QMainWindow):
 
 
     def create_new_constraint_widget(self, mode, fcn_name):
-        print(mode, fcn_name)
+        print(f'********************************Creating New Constraint Widget\n'
+              f'Adding New Constraint {mode}, function name: {fcn_name}')
         self.c_view_configuration.destroy()
 
-        pass
+        """
+        Save original function name and dc, element manager inside topology dictionaries
+        """
+        if len(self._QTObj._qtProject._DesignConstraint_topology_dict) == 0:
+            """
+            Creating Second Tab: Add Original Project Information
+            """
+            self._QTObj._qtProject._DesignConstraint_topology_dict['CalculateDesignParameter'] = copy.deepcopy(self._QTObj._qtProject._DesignConstraint)
+            self._QTObj._qtProject._ElementManager_topology_dict['CalculateDesignParameter'] = copy.deepcopy(self._QTObj._qtProject._ElementManager)
+            self.original_fcn_name = fcn_name
+            print("Design Constraints inside first tab is saved inside topology dictionary")
+        else:
+            self._QTObj._qtProject._DesignConstraint_topology_dict[self.original_fcn_name] = copy.deepcopy(self._QTObj._qtProject._DesignConstraint)
+            self._QTObj._qtProject._ElementManager_topology_dict[self.original_fcn_name] = copy.deepcopy(self._QTObj._qtProject._ElementManager)
+            print(f"Design Constraints inside {self.original_fcn_name} tab is saved inside topology dictionary")
+            self.original_fcn_name = fcn_name
+
+
+
+        print("################################ Creating New DC, Element Manager#####################################")
+        if mode == 'from DP':
+            self._QTObj._qtProject._DesignConstraint.clear()
+            self._QTObj._qtProject._ElementManager.dc_id_to_dp_id.clear()
+            self._QTObj._qtProject._ElementManager.dp_id_to_dc_id.clear()
+            self._QTObj._qtProject._ElementManager.dc_id_to_dp_id.clear()
+            current_dp_dict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
+            for name, dp in current_dp_dict.items():
+                tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(dp)
+                if tmpAST == None:
+                    continue
+                design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                  module_name=self._CurrentModuleName,
+                                                                  _ast=tmpAST, element_manager_update=False)
+                # self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                #                                                  _parentName=self._CurrentModuleName,
+                #                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+                # tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
+                self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=name, dc_id=design_dict['constraint_id'])
+
+            pass
+        elif mode == 'from original DC':
+            pass
+
 
 
     def run_setup_update(self):
