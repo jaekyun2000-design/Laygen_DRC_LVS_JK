@@ -3217,9 +3217,8 @@ class _CustomScene(QGraphicsScene):
         # itemList = self.selectedItems()
         # print(itemList)
         # self.send_itemList_signal.emit(itemList)
+        # print(self.point_items_memory)
         self.send_itemList_signal.emit(self.point_items_memory)
-        pass
-
 
     def dragEnterEvent(self, event: 'QGraphicsSceneDragDropEvent') -> None:
         event.accept()

@@ -2401,7 +2401,7 @@ class _SelectedDesignListWidget(QListWidget):
                 # tmpName = item._ElementName
                 self.itemDict[tmpName] = item
                 self.idDict[tmpName] = item._ItemTraits['_id']
-                item.setSelected(True)
+                # item.setSelected(True)
                 # print(item.isSelected())
 
                 if not self.findItems(tmpName, Qt.MatchExactly):  # Check whether it is empty or not
