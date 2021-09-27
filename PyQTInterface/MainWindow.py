@@ -139,8 +139,8 @@ class _MainWindow(QMainWindow):
         UpdateGDSAction = QAction("Update constraint",self)
         setup_action = QAction("Setup",self)
 
-        newAction.setShortcut('Ctrl+N')
-        newAction.triggered.connect(self.newProject)
+        # newAction.setShortcut('Ctrl+N')
+        # newAction.triggered.connect(self.newProject)
 
         loadAction.setShortcut('Ctrl+L')
         loadAction.triggered.connect(self.loadProject)
@@ -611,7 +611,13 @@ class _MainWindow(QMainWindow):
         cal_code = re.sub("\n","\n\t\t",cal_code)
         final_code = import_code + class_declaration_code + fcn_define_code + f"\t{cal_code}"
 
-        file_write_flag = False
+        self.writing_flag = QMessageBox()
+        reply = self.writing_flag.question(self,"QMessageBox", "Save code as a Generator File?", QMessageBox.Yes | QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            file_write_flag = True
+        elif reply == QMessageBox.No:
+            file_write_flag = False
+
         if file_write_flag:
             f = open(f"./generatorLib/generator_models/{self._CurrentModuleName}.py", "w")
             f.write(final_code)
@@ -743,7 +749,18 @@ class _MainWindow(QMainWindow):
         self.original_fcn_name = fcn_name
 
         # Design Parameter Process Start
+        self.dp_preserve_flag = QMessageBox()
+        reply = self.dp_preserve_flag.question(self,"QMessageBox", "Save current DP Information?",
+                                               QMessageBox.Yes | QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            dp_preserve = True
+        elif reply == QMessageBox.No:
+            dp_preserve = False
 
+        if dp_preserve:
+            print('dp_preserved')
+        else:
+            print('dp_discarded')
 
     def run_setup_update(self):
         self.setup_widget = QWidget()
