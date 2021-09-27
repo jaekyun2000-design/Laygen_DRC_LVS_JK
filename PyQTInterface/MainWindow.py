@@ -611,7 +611,7 @@ class _MainWindow(QMainWindow):
         cal_code = re.sub("\n","\n\t\t",cal_code)
         final_code = import_code + class_declaration_code + fcn_define_code + f"\t{cal_code}"
 
-        file_write_flag = True
+        file_write_flag = False
         if file_write_flag:
             f = open(f"./generatorLib/generator_models/{self._CurrentModuleName}.py", "w")
             f.write(final_code)
@@ -730,11 +730,19 @@ class _MainWindow(QMainWindow):
                 #                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
                 # tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
                 self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=name, dc_id=design_dict['constraint_id'])
-
-            pass
         elif mode == 'from original DC':
             pass
 
+    def dp_process_bw_tabs(self,fcn_name):
+        self._QTObj._qtProject._DesignConstraint_topology_dict[self.original_fcn_name] = copy.deepcopy(self._QTObj._qtProject._DesignConstraint)
+        self._QTObj._qtProject._ElementManager_topology_dict[self.original_fcn_name] = copy.deepcopy(self._QTObj._qtProject._ElementManager)
+
+        self._QTObj._qtProject._DesignConstraint = self._QTObj._qtProject._DesignConstraint_topology_dict[fcn_name]
+        self._QTObj._qtProject._ElementManager = self._QTObj._qtProject._ElementManager_topology_dict[fcn_name]
+        print(f"Original {self.original_fcn_name} tab info successfully saved. Process Changed into {fcn_name} tab.")
+        self.original_fcn_name = fcn_name
+
+        # Design Parameter Process Start
 
 
     def run_setup_update(self):
