@@ -9,7 +9,7 @@ GDS2GEN = True
 
 #########################################################
 # for cell detector model setup #
-DL_FEATURE = True
+DL_FEATURE = False
 
 matrix_x_step = 256
 matrix_y_step = 256
