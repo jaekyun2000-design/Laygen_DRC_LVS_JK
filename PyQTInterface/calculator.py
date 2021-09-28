@@ -2,6 +2,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+
+import user_setup
 import warnings
 import re
 import copy
@@ -234,15 +236,7 @@ class ExpressionCalculator(QWidget):
         DRCText.setAlignment(Qt.AlignCenter)
         self.DRCWindow = QTreeWidget()
         self.DRCWindow.setHeaderLabel('')
-        self.drc_dict = drc_api.drc_classified_dict
-        for layer in self.drc_dict.keys():
-            top = QTreeWidgetItem([layer])
-            self.DRCTreeItemDict[layer] = top
-            for key in self.drc_dict[layer]:
-                 tmpItem = QTreeWidgetItem(top,[key])
-            self.DRCWindow.addTopLevelItem(top)
-
-        self.DRCWindow.itemClicked.connect(self.DRC_click)
+        self.get_drc_dict()
 
         # DRCButton = QPushButton("DRC")
 
@@ -311,6 +305,24 @@ class ExpressionCalculator(QWidget):
     #     else:
     #         self.DRCWindow.hide()
     #         self.setFixedWidth(580)
+
+    def get_drc_dict(self):
+        while True:
+            if self.DRCWindow.itemAt(0,0) is None:
+                break
+            else:
+                self.DRCWindow.takeTopLevelItem(0)
+
+        self.drc_dict = drc_api.drc_classified_dict
+
+        for layer in self.drc_dict.keys():
+            top = QTreeWidgetItem([layer])
+            self.DRCTreeItemDict[layer] = top
+            for key in self.drc_dict[layer]:
+                 tmpItem = QTreeWidgetItem(top,[key])
+            self.DRCWindow.addTopLevelItem(top)
+
+        self.DRCWindow.itemClicked.connect(self.DRC_click)
 
     def ExtendPresetWidget(self):
         if self.presetWindow.isHidden():

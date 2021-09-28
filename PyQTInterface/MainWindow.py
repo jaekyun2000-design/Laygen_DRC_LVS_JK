@@ -83,6 +83,7 @@ class _MainWindow(QMainWindow):
     send_width_height_ast_signal = pyqtSignal(str, ast.AST)
     send_sref_param_signal = pyqtSignal(str, ast.AST)
     send_create_new_window_signal = pyqtSignal()
+    send_tech_node_changed_signal = pyqtSignal()
 
     def __init__(self):
         super(_MainWindow, self).__init__()
@@ -548,6 +549,7 @@ class _MainWindow(QMainWindow):
         self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
         self.calculator_window.returnLayer_signal.connect(self.get_hierarchy_return_layer)
         self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
+        self.send_tech_node_changed_signal.connect(self.calculator_window.get_drc_dict)
 
         self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array")
         self.vw.send_output_dict_signal.connect(self.create_variable)
@@ -904,7 +906,7 @@ class _MainWindow(QMainWindow):
                 from generatorLib import drc_api
                 drc_api.run_for_process_update()
                 test =  drc_api.drc_classified_dict
-
+                self.send_tech_node_changed_signal.emit()
 
 
                 if self._CurrentModuleName in self._QTObj._qtProject._DesignParameter:

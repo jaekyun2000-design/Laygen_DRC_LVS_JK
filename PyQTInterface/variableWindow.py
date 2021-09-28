@@ -8,6 +8,8 @@ from PyQTInterface  import VisualizationItem
 from PyQTInterface import SetupWindow
 from PyQTInterface  import VariableVisualItem
 from PyQTInterface import calculator
+import user_setup
+
 import warnings
 import traceback
 from PyCodes import ASTmodule
@@ -927,6 +929,8 @@ class _DesignVariableManagerWindow(QWidget):
         _valueitemid = _valueindex.data()
         _nameitemid = _nameindex.data()
         _changedvariabledict = dict(DV=_nameitemid, value=_valueitemid)
+        if _nameitemid == 'min_spacing':
+            user_setup.MIN_SNAP_SPACING = int(_valueitemid)
         for _vid, _varInfo in self.variableDict.items():
             _varName = list(_varInfo.values())[0]
             if (_changedvariabledict['DV'] == _varName):
@@ -1063,8 +1067,8 @@ class _DesignVariableManagerWindow(QWidget):
 class _createNewDesignVariable(QWidget):
 
     send_variable_signal = pyqtSignal(list, str)
-    variableDict = dict()
-    idDict = dict()
+    variableDict = dict(dummy_vid=dict(DV='min_spacing', value=str(user_setup.MIN_SNAP_SPACING)))
+    idDict = dict(min_spacing=dict(vid='dummy_vid', id=list()))
 
     def __init__(self):
         super().__init__()
