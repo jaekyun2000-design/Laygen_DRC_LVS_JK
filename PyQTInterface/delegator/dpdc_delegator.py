@@ -36,7 +36,7 @@ class DesignDelegator(delegator.Delegator):
         """
         if constraint_ast:
             design_dict = self.main_window._QTObj._qtProject._feed_design(design_type='constraint',
-                                                                          odule_name= self.main_window._CurrentModuleName,
+                                                                          module_name=self.main_window._CurrentModuleName,
                                                                           _ast=constraint_ast)
             self.control_constraint_tree_view(design_dict['constraint_id'])
             if design_dict['parameter']:
@@ -274,12 +274,13 @@ class DesignDelegator(delegator.Delegator):
             self.main_window.module_name_list.append(tmp_module_name)
             self.main_window.create_new_window(self.main_window.module_dict, tmp_module_name)
             new_project = self.main_window.module_dict[tmp_module_name]
+            new_project._CurrentModuleName = tmp_module_name
+            self.main_window.module_dict[tmp_module_name].set_module_name(tmp_module_name)
 
             for vis_item in vis_item_list:
                 qt_dp = copy.deepcopy(self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName][vis_item._id])
                 new_project.design_delegator.create_qt_parameter(qt_dp._DesignParameter)
 
-            self.main_window.module_dict[tmp_module_name].set_module_name(tmp_module_name)
             self.main_window.module_dict[tmp_module_name].module_dict = self.main_window.module_dict
             self.main_window.module_dict[tmp_module_name].module_name_list = self.main_window.module_name_list
 
