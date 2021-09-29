@@ -768,9 +768,10 @@ class _MainWindow(QMainWindow):
         hbox_for_tab.addLayout(vboxLayout)
         hbox_for_tab.addWidget(self.new_dock_widget_content_can)
         widget_for_tab.setLayout(hbox_for_tab)
-        self.bottom_dock_tab_widget.addTab(widget_for_tab, fcn_name)
+        idx = self.bottom_dock_tab_widget.addTab(widget_for_tab, fcn_name)
         self.new_dock_widget_content_gen.setStyleSheet('background-color:rgb(255,255,255);')
         self.new_dock_widget_content_can.setStyleSheet('background-color:rgb(255,255,255);')
+        self.bottom_dock_tab_widget.setCurrentIndex(idx)
 
     def bottom_dock_tab_changed(self, idx):
         fcn_name = self.bottom_dock_tab_widget.tabText(idx)
