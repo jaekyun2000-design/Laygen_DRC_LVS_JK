@@ -786,7 +786,7 @@ class _MainWindow(QMainWindow):
                 if dp_name not in list(self._QTObj._qtProject._ElementManager['elementParameterDict'][self._CurrentModuleName].keys()):
                     del self._QTObj._qtProject._DesignParameter[dp_name]
 
-            self._QTObj._qtProject._ElementManager['elementParameterDict'] = copy.deepcopy(self._QTObj._qtProject._DesignParameter)
+        self._QTObj._qtProject._ElementManager['elementParameterDict'] = copy.deepcopy(self._QTObj._qtProject._DesignParameter)
 
     def run_setup_update(self):
         self.setup_widget = QWidget()
