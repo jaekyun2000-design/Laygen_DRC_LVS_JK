@@ -422,6 +422,10 @@ class _MainWindow(QMainWindow):
         self.addDockWidget(Qt.LeftDockWidgetArea,dockWidget2)
 
         ################# Bottom Dock Widget setting ####################
+        self.bottom_dock_tab_widget = QTabWidget()
+        self.bottom_dock_tab_widget.setStyleSheet('background-color:rgb(240,240,240);')
+        self.bottom_dock_tab_widget.currentChanged.connect(self.bottom_dock_tab_changed)
+
         dockWidget3 = QDockWidget("Design Constraint")
         layoutWidget = QWidget()
         self.dockContentWidget3 = SetupWindow._ConstraintTreeViewWidgetAST("Generator")
@@ -514,10 +518,19 @@ class _MainWindow(QMainWindow):
 
         # self.dockContentWidget3.setDragDropMode(self.dockContectWidget3.MyOwnDragDropMove)
 
+        widget_for_tab = QWidget()
+        hbox_for_tab = QHBoxLayout()
+        hbox_for_tab.addWidget(self.dockContentWidget3)
+        hbox_for_tab.addLayout(vboxLayout)
+        hbox_for_tab.addWidget(self.dockContentWidget3_2)
+        widget_for_tab.setLayout(hbox_for_tab)
+        self.bottom_dock_tab_widget.addTab(widget_for_tab, 'calculate DP')
+        self.dockContentWidget3.setStyleSheet('background-color:rgb(255,255,255);')
+        self.dockContentWidget3_2.setStyleSheet('background-color:rgb(255,255,255);')
+
         gridOnDock3 = QHBoxLayout()
-        gridOnDock3.addWidget(self.dockContentWidget3)
-        gridOnDock3.addLayout(vboxLayout)
-        gridOnDock3.addWidget(self.dockContentWidget3_2)
+        gridOnDock3.addWidget(self.bottom_dock_tab_widget)
+        # gridOnDock3.addWidget(widget_for_tab)
         gridOnDock3.addLayout(VBoxForPeriButton)
 
         layoutWidget.setLayout(gridOnDock3)
@@ -539,8 +552,6 @@ class _MainWindow(QMainWindow):
         self.condition_expression_button.clicked.connect(self.condition_expression)
         self.conditional_stmt_button.clicked.connect(self.condition_stmt)
         self.add_constraint_view_button.clicked.connect(self.add_constraint_view)
-
-        self.bottom_dock_list.append(dockWidget3)
 
         ##################Extra widget initialization #########################
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard, purpose='init')
@@ -700,9 +711,6 @@ class _MainWindow(QMainWindow):
         ok_button.clicked.connect(lambda tmp: self.create_new_constraint_widget(cb.currentText(), fcn_str.text()))
 
     def create_new_bottom_dock_widget(self, fcn_name):
-        ################# Bottom Dock Widget setting ####################
-        new_dock_widget = QDockWidget(fcn_name)
-        layoutWidget = QWidget()
         self.new_dock_widget_content_gen = SetupWindow._ConstraintTreeViewWidgetAST("Generator")
         self.new_dock_widget_content_can = SetupWindow._ConstraintTreeViewWidgetAST("Candidate")
 
@@ -754,53 +762,19 @@ class _MainWindow(QMainWindow):
         vboxLayout.addWidget(self.sendRightButton)
         vboxLayout.addStretch(4)
 
-        VBoxForPeriButton = QVBoxLayout()
-        self.createConstraintWithPyCodeButton = QPushButton("PyCode")
-        self.createConstraintButtonAST = QPushButton("CreateAST")
-        self.createConstraintButtonCUSTOM = QPushButton("Element(Custom)")
-        self.createVariableButtonCUSTOM = QPushButton("Variable(Custom)")
-        self.saveConstraintAsPickleButton = QPushButton("SaveAs...(pickle)")
-        self.variableCallButton = QPushButton("variableCall")
-        self.calculatorButton = QPushButton("XYCalculator")
-        self.condition_expression_button = QPushButton("condition exp debug")
-        self.conditional_stmt_button = QPushButton("condition stmt debug")
-        self.add_constraint_view_button = QPushButton("add constraint view")
+        widget_for_tab = QWidget()
+        hbox_for_tab = QHBoxLayout()
+        hbox_for_tab.addWidget(self.new_dock_widget_content_gen)
+        hbox_for_tab.addLayout(vboxLayout)
+        hbox_for_tab.addWidget(self.new_dock_widget_content_can)
+        widget_for_tab.setLayout(hbox_for_tab)
+        self.bottom_dock_tab_widget.addTab(widget_for_tab, fcn_name)
+        self.new_dock_widget_content_gen.setStyleSheet('background-color:rgb(255,255,255);')
+        self.new_dock_widget_content_can.setStyleSheet('background-color:rgb(255,255,255);')
 
-        VBoxForPeriButton.addStretch(3)
-        VBoxForPeriButton.addWidget(self.createConstraintWithPyCodeButton)
-        VBoxForPeriButton.addWidget(self.createConstraintButtonAST)
-        VBoxForPeriButton.addWidget(self.createConstraintButtonCUSTOM)
-        VBoxForPeriButton.addWidget(self.createVariableButtonCUSTOM)
-        VBoxForPeriButton.addWidget(self.saveConstraintAsPickleButton)
-        VBoxForPeriButton.addWidget(self.variableCallButton)
-        VBoxForPeriButton.addWidget(self.calculatorButton)
-        VBoxForPeriButton.addWidget(self.condition_expression_button)
-        VBoxForPeriButton.addWidget(self.conditional_stmt_button)
-        VBoxForPeriButton.addWidget(self.add_constraint_view_button)
-        VBoxForPeriButton.addStretch(3)
-
-        self.createConstraintWithPyCodeButton.clicked.connect(self.widget_delegator.makePyCodeWindow)
-        self.createConstraintButtonAST.clicked.connect(self.widget_delegator.makeConstraintWindowAST)
-        self.createConstraintButtonCUSTOM.clicked.connect(self.widget_delegator.makeConstraintWindowCUSTOM)
-        self.createVariableButtonCUSTOM.clicked.connect(self.widget_delegator.makeVariableWindowCUSTOM)
-        self.saveConstraintAsPickleButton.clicked.connect(self.saveConstraintP)
-        self.calculatorButton.clicked.connect(self.calculator)
-        self.condition_expression_button.clicked.connect(self.condition_expression)
-        self.conditional_stmt_button.clicked.connect(self.condition_stmt)
-        self.add_constraint_view_button.clicked.connect(self.add_constraint_view)
-
-        gridOnDock3 = QHBoxLayout()
-        gridOnDock3.addWidget(self.new_dock_widget_content_gen)
-        gridOnDock3.addLayout(vboxLayout)
-        gridOnDock3.addWidget(self.new_dock_widget_content_can)
-        gridOnDock3.addLayout(VBoxForPeriButton)
-
-        layoutWidget.setLayout(gridOnDock3)
-        new_dock_widget.setWidget(layoutWidget)
-
-        self.bottom_dock_list.append(new_dock_widget)
-
-        self.tabifyDockWidget(self.bottom_dock_list[-2],self.bottom_dock_list[-1])
+    def bottom_dock_tab_changed(self, idx):
+        fcn_name = self.bottom_dock_tab_widget.tabText(idx)
+        self.dp_process_bw_tabs(fcn_name)
 
     def create_new_constraint_widget(self, mode, fcn_name):
         print(f'********************************Creating New Constraint Widget\n'
