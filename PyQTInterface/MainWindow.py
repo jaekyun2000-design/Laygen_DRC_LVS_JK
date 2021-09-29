@@ -95,6 +95,7 @@ class _MainWindow(QMainWindow):
         self._ProjectName = None
         self._CurrentModuleName = None
         self.gloabal_clipboard = QGuiApplication.clipboard()
+        self.bottom_dock_list = list()
         self.initUI()
         self.easyDebugMode()
         self.progrseeBar_unstable = True
@@ -434,7 +435,6 @@ class _MainWindow(QMainWindow):
 
         self.sendDownButton.clicked.connect(self.deliveryDesignParameter)
 
-
         self.sendLeftButton.clicked.connect(self.dockContentWidget3_2.checkSend)
         self.dockContentWidget3_2.send_SendID_signal.connect(self.dockContentWidget3.receiveConstraintID)
         self.dockContentWidget3_2.send_ReceiveDone_signal.connect(self.dockContentWidget3.removeCurrentIndexItem)
@@ -447,9 +447,6 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_DataChanged_signal.connect(self.constraint_data_changed)
         self.dockContentWidget3_2.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3_2.get_dp_highlight_dc)
-
-
-
 
         self.sendRightButton.clicked.connect(self.dockContentWidget3.checkSend)
         self.dockContentWidget3.send_SendID_signal.connect(self.dockContentWidget3_2.receiveConstraintID)
@@ -542,6 +539,7 @@ class _MainWindow(QMainWindow):
         self.conditional_stmt_button.clicked.connect(self.condition_stmt)
         self.add_constraint_view_button.clicked.connect(self.add_constraint_view)
 
+        self.bottom_dock_list.append(dockWidget3)
 
         ##################Extra widget initialization #########################
         self.calculator_window = calculator.ExpressionCalculator(clipboard=self.gloabal_clipboard, purpose='init')
@@ -694,11 +692,115 @@ class _MainWindow(QMainWindow):
 
         ok_button.clicked.connect(lambda tmp: self.create_new_constraint_widget(cb.currentText(), fcn_str.text()))
 
+    def create_new_bottom_dock_widget(self, fcn_name):
+        ################# Bottom Dock Widget setting ####################
+        new_dock_widget = QDockWidget(fcn_name)
+        layoutWidget = QWidget()
+        self.new_dock_widget_content_gen = SetupWindow._ConstraintTreeViewWidgetAST("Generator")
+        self.new_dock_widget_content_can = SetupWindow._ConstraintTreeViewWidgetAST("Candidate")
+
+        self.sendDownButton = QPushButton()
+        self.sendDownButton.setIcon(QCommonStyle().standardIcon(QStyle.SP_ArrowDown))
+        self.sendLeftButton = QPushButton()
+        self.sendLeftButton.setIcon(QCommonStyle().standardIcon(QStyle.SP_ArrowLeft))
+        self.sendRightButton = QPushButton()
+        self.sendRightButton.setIcon(QCommonStyle().standardIcon(QStyle.SP_ArrowRight))
+
+        self.sendDownButton.clicked.connect(self.deliveryDesignParameter)
+
+        self.sendLeftButton.clicked.connect(self.new_dock_widget_content_can.checkSend)
+        self.new_dock_widget_content_can.send_SendID_signal.connect(self.new_dock_widget_content_gen.receiveConstraintID)
+        self.new_dock_widget_content_can.send_ReceiveDone_signal.connect(self.new_dock_widget_content_gen.removeCurrentIndexItem)
+        self.new_dock_widget_content_can.send_SendCopyConstraint_signal.connect(self.constraintToTemplateHandler)
+        self.new_dock_widget_content_can.send_UpdateDesignConstraintID_signal.connect(self.get_constraint_update_design)
+        self.new_dock_widget_content_can.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate2)
+        self.new_dock_widget_content_can.send_RequestDesignConstraint_signal.connect(self.constraintConvey)
+        self.new_dock_widget_content_can.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
+        self.new_dock_widget_content_can.send_RequestElementManger_signal.connect(self.convey_element_manager)
+        self.new_dock_widget_content_can.send_DataChanged_signal.connect(self.constraint_data_changed)
+        self.new_dock_widget_content_can.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
+        self.scene.send_parameterIDList_signal.connect(self.new_dock_widget_content_can.get_dp_highlight_dc)
+
+        self.sendRightButton.clicked.connect(self.new_dock_widget_content_gen.checkSend)
+        self.new_dock_widget_content_gen.send_SendID_signal.connect(self.new_dock_widget_content_can.receiveConstraintID)
+        self.new_dock_widget_content_gen.send_ReceiveDone_signal.connect(self.new_dock_widget_content_can.removeCurrentIndexItem)
+        self.new_dock_widget_content_gen.send_RootDesignConstraint_signal.connect(self.setRootConstraint)
+        self.new_dock_widget_content_gen.send_SendCopyConstraint_signal.connect(self.constraintToTemplateHandler)
+        self.new_dock_widget_content_gen.send_UpdateDesignConstraintID_signal.connect(self.get_constraint_update_design)
+        self.new_dock_widget_content_gen.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate1)
+        self.new_dock_widget_content_gen.send_RequestDesignConstraint_signal.connect(self.constraintConvey)
+        self.new_dock_widget_content_gen.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
+        self.new_dock_widget_content_gen.send_RequestElementManger_signal.connect(self.convey_element_manager)
+        self.new_dock_widget_content_gen.send_DataChanged_signal.connect(self.constraint_data_changed)
+        self.new_dock_widget_content_gen.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
+        self.scene.send_parameterIDList_signal.connect(self.new_dock_widget_content_gen.get_dp_highlight_dc)
+
+        self.sendLeftButton.clicked.connect(self.new_dock_widget_content_gen.clearSelection)
+        self.sendLeftButton.clicked.connect(self.new_dock_widget_content_can.clearSelection)
+        self.sendRightButton.clicked.connect(self.new_dock_widget_content_gen.clearSelection)
+        self.sendRightButton.clicked.connect(self.new_dock_widget_content_can.clearSelection)
+
+        vboxLayout = QVBoxLayout()
+        vboxLayout.addWidget(self.sendDownButton)
+        vboxLayout.addStretch(3)
+        vboxLayout.addWidget(self.sendLeftButton)
+        vboxLayout.addWidget(self.sendRightButton)
+        vboxLayout.addStretch(4)
+
+        VBoxForPeriButton = QVBoxLayout()
+        self.createConstraintWithPyCodeButton = QPushButton("PyCode")
+        self.createConstraintButtonAST = QPushButton("CreateAST")
+        self.createConstraintButtonCUSTOM = QPushButton("Element(Custom)")
+        self.createVariableButtonCUSTOM = QPushButton("Variable(Custom)")
+        self.saveConstraintAsPickleButton = QPushButton("SaveAs...(pickle)")
+        self.variableCallButton = QPushButton("variableCall")
+        self.calculatorButton = QPushButton("XYCalculator")
+        self.condition_expression_button = QPushButton("condition exp debug")
+        self.conditional_stmt_button = QPushButton("condition stmt debug")
+        self.add_constraint_view_button = QPushButton("add constraint view")
+
+        VBoxForPeriButton.addStretch(3)
+        VBoxForPeriButton.addWidget(self.createConstraintWithPyCodeButton)
+        VBoxForPeriButton.addWidget(self.createConstraintButtonAST)
+        VBoxForPeriButton.addWidget(self.createConstraintButtonCUSTOM)
+        VBoxForPeriButton.addWidget(self.createVariableButtonCUSTOM)
+        VBoxForPeriButton.addWidget(self.saveConstraintAsPickleButton)
+        VBoxForPeriButton.addWidget(self.variableCallButton)
+        VBoxForPeriButton.addWidget(self.calculatorButton)
+        VBoxForPeriButton.addWidget(self.condition_expression_button)
+        VBoxForPeriButton.addWidget(self.conditional_stmt_button)
+        VBoxForPeriButton.addWidget(self.add_constraint_view_button)
+        VBoxForPeriButton.addStretch(3)
+
+        self.createConstraintWithPyCodeButton.clicked.connect(self.widget_delegator.makePyCodeWindow)
+        self.createConstraintButtonAST.clicked.connect(self.widget_delegator.makeConstraintWindowAST)
+        self.createConstraintButtonCUSTOM.clicked.connect(self.widget_delegator.makeConstraintWindowCUSTOM)
+        self.createVariableButtonCUSTOM.clicked.connect(self.widget_delegator.makeVariableWindowCUSTOM)
+        self.saveConstraintAsPickleButton.clicked.connect(self.saveConstraintP)
+        self.calculatorButton.clicked.connect(self.calculator)
+        self.condition_expression_button.clicked.connect(self.condition_expression)
+        self.conditional_stmt_button.clicked.connect(self.condition_stmt)
+        self.add_constraint_view_button.clicked.connect(self.add_constraint_view)
+
+        gridOnDock3 = QHBoxLayout()
+        gridOnDock3.addWidget(self.new_dock_widget_content_gen)
+        gridOnDock3.addLayout(vboxLayout)
+        gridOnDock3.addWidget(self.new_dock_widget_content_can)
+        gridOnDock3.addLayout(VBoxForPeriButton)
+
+        layoutWidget.setLayout(gridOnDock3)
+        new_dock_widget.setWidget(layoutWidget)
+
+        self.bottom_dock_list.append(new_dock_widget)
+
+        self.tabifyDockWidget(self.bottom_dock_list[-2],self.bottom_dock_list[-1])
 
     def create_new_constraint_widget(self, mode, fcn_name):
         print(f'********************************Creating New Constraint Widget\n'
               f'Adding New Constraint {mode}, function name: {fcn_name}')
         self.c_view_configuration.destroy()
+
+        self.create_new_bottom_dock_widget(fcn_name)
 
         """
         Save original function name and dc, element manager inside topology dictionaries
