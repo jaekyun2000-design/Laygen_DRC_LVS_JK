@@ -712,8 +712,11 @@ class _MainWindow(QMainWindow):
         ok_button.clicked.connect(lambda tmp: self.create_new_constraint_widget(cb.currentText(), fcn_str.text()))
 
     def create_new_bottom_dock_widget(self, fcn_name):
-        self.new_dock_widget_content_gen = SetupWindow._ConstraintTreeViewWidgetAST("Generator")
-        self.new_dock_widget_content_can = SetupWindow._ConstraintTreeViewWidgetAST("Candidate")
+        self.dockContentWidget3.blockSignals(True)
+        self.dockContentWidget3_2.blockSignals(True)
+
+        self.dockContentWidget3 = SetupWindow._ConstraintTreeViewWidgetAST("Generator")
+        self.dockContentWidget3_2 = SetupWindow._ConstraintTreeViewWidgetAST("Candidate")
 
         self.sendDownButton = QPushButton()
         self.sendDownButton.setIcon(QCommonStyle().standardIcon(QStyle.SP_ArrowDown))
@@ -724,37 +727,37 @@ class _MainWindow(QMainWindow):
 
         self.sendDownButton.clicked.connect(self.deliveryDesignParameter)
 
-        self.sendLeftButton.clicked.connect(self.new_dock_widget_content_can.checkSend)
-        self.new_dock_widget_content_can.send_SendID_signal.connect(self.new_dock_widget_content_gen.receiveConstraintID)
-        self.new_dock_widget_content_can.send_ReceiveDone_signal.connect(self.new_dock_widget_content_gen.removeCurrentIndexItem)
-        self.new_dock_widget_content_can.send_SendCopyConstraint_signal.connect(self.constraintToTemplateHandler)
-        self.new_dock_widget_content_can.send_UpdateDesignConstraintID_signal.connect(self.get_constraint_update_design)
-        self.new_dock_widget_content_can.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate2)
-        self.new_dock_widget_content_can.send_RequestDesignConstraint_signal.connect(self.constraintConvey)
-        self.new_dock_widget_content_can.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
-        self.new_dock_widget_content_can.send_RequestElementManger_signal.connect(self.convey_element_manager)
-        self.new_dock_widget_content_can.send_DataChanged_signal.connect(self.constraint_data_changed)
-        self.new_dock_widget_content_can.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
-        self.scene.send_parameterIDList_signal.connect(self.new_dock_widget_content_can.get_dp_highlight_dc)
+        self.sendLeftButton.clicked.connect(self.dockContentWidget3_2.checkSend)
+        self.dockContentWidget3_2.send_SendID_signal.connect(self.dockContentWidget3.receiveConstraintID)
+        self.dockContentWidget3_2.send_ReceiveDone_signal.connect(self.dockContentWidget3.removeCurrentIndexItem)
+        self.dockContentWidget3_2.send_SendCopyConstraint_signal.connect(self.constraintToTemplateHandler)
+        self.dockContentWidget3_2.send_UpdateDesignConstraintID_signal.connect(self.get_constraint_update_design)
+        self.dockContentWidget3_2.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate2)
+        self.dockContentWidget3_2.send_RequestDesignConstraint_signal.connect(self.constraintConvey)
+        self.dockContentWidget3_2.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
+        self.dockContentWidget3_2.send_RequestElementManger_signal.connect(self.convey_element_manager)
+        self.dockContentWidget3_2.send_DataChanged_signal.connect(self.constraint_data_changed)
+        self.dockContentWidget3_2.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
+        self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3_2.get_dp_highlight_dc)
 
-        self.sendRightButton.clicked.connect(self.new_dock_widget_content_gen.checkSend)
-        self.new_dock_widget_content_gen.send_SendID_signal.connect(self.new_dock_widget_content_can.receiveConstraintID)
-        self.new_dock_widget_content_gen.send_ReceiveDone_signal.connect(self.new_dock_widget_content_can.removeCurrentIndexItem)
-        self.new_dock_widget_content_gen.send_RootDesignConstraint_signal.connect(self.setRootConstraint)
-        self.new_dock_widget_content_gen.send_SendCopyConstraint_signal.connect(self.constraintToTemplateHandler)
-        self.new_dock_widget_content_gen.send_UpdateDesignConstraintID_signal.connect(self.get_constraint_update_design)
-        self.new_dock_widget_content_gen.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate1)
-        self.new_dock_widget_content_gen.send_RequestDesignConstraint_signal.connect(self.constraintConvey)
-        self.new_dock_widget_content_gen.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
-        self.new_dock_widget_content_gen.send_RequestElementManger_signal.connect(self.convey_element_manager)
-        self.new_dock_widget_content_gen.send_DataChanged_signal.connect(self.constraint_data_changed)
-        self.new_dock_widget_content_gen.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
-        self.scene.send_parameterIDList_signal.connect(self.new_dock_widget_content_gen.get_dp_highlight_dc)
+        self.sendRightButton.clicked.connect(self.dockContentWidget3.checkSend)
+        self.dockContentWidget3.send_SendID_signal.connect(self.dockContentWidget3_2.receiveConstraintID)
+        self.dockContentWidget3.send_ReceiveDone_signal.connect(self.dockContentWidget3_2.removeCurrentIndexItem)
+        self.dockContentWidget3.send_RootDesignConstraint_signal.connect(self.setRootConstraint)
+        self.dockContentWidget3.send_SendCopyConstraint_signal.connect(self.constraintToTemplateHandler)
+        self.dockContentWidget3.send_UpdateDesignConstraintID_signal.connect(self.get_constraint_update_design)
+        self.dockContentWidget3.send_UpdateDesignConstraint_signal.connect(self.constraintUpdate1)
+        self.dockContentWidget3.send_RequestDesignConstraint_signal.connect(self.constraintConvey)
+        self.dockContentWidget3.send_deleteConstraint_signal.connect(self.deleteDesignConstraint)
+        self.dockContentWidget3.send_RequestElementManger_signal.connect(self.convey_element_manager)
+        self.dockContentWidget3.send_DataChanged_signal.connect(self.constraint_data_changed)
+        self.dockContentWidget3.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
+        self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3.get_dp_highlight_dc)
 
-        self.sendLeftButton.clicked.connect(self.new_dock_widget_content_gen.clearSelection)
-        self.sendLeftButton.clicked.connect(self.new_dock_widget_content_can.clearSelection)
-        self.sendRightButton.clicked.connect(self.new_dock_widget_content_gen.clearSelection)
-        self.sendRightButton.clicked.connect(self.new_dock_widget_content_can.clearSelection)
+        self.sendLeftButton.clicked.connect(self.dockContentWidget3.clearSelection)
+        self.sendLeftButton.clicked.connect(self.dockContentWidget3_2.clearSelection)
+        self.sendRightButton.clicked.connect(self.dockContentWidget3.clearSelection)
+        self.sendRightButton.clicked.connect(self.dockContentWidget3_2.clearSelection)
 
         vboxLayout = QVBoxLayout()
         vboxLayout.addWidget(self.sendDownButton)
@@ -765,16 +768,25 @@ class _MainWindow(QMainWindow):
 
         widget_for_tab = QWidget()
         hbox_for_tab = QHBoxLayout()
-        hbox_for_tab.addWidget(self.new_dock_widget_content_gen)
+        hbox_for_tab.addWidget(self.dockContentWidget3)
         hbox_for_tab.addLayout(vboxLayout)
-        hbox_for_tab.addWidget(self.new_dock_widget_content_can)
+        hbox_for_tab.addWidget(self.dockContentWidget3_2)
         widget_for_tab.setLayout(hbox_for_tab)
         idx = self.bottom_dock_tab_widget.addTab(widget_for_tab, fcn_name)
-        self.new_dock_widget_content_gen.setStyleSheet('background-color:rgb(255,255,255);')
-        self.new_dock_widget_content_can.setStyleSheet('background-color:rgb(255,255,255);')
+        self.dockContentWidget3.setStyleSheet('background-color:rgb(255,255,255);')
+        self.dockContentWidget3_2.setStyleSheet('background-color:rgb(255,255,255);')
         self.bottom_dock_tab_widget.setCurrentIndex(idx)
 
     def bottom_dock_tab_changed(self, idx):
+        for tab_idx in range(self.bottom_dock_tab_widget.count()):
+            self.bottom_dock_tab_widget.widget(tab_idx).layout().itemAt(0).widget().blockSignals(True)
+            self.bottom_dock_tab_widget.widget(tab_idx).layout().itemAt(2).widget().blockSignals(True)
+
+        self.dockContentWidget3 = self.bottom_dock_tab_widget.widget(idx).layout().itemAt(0).widget()
+        self.dockContentWidget3_2 = self.bottom_dock_tab_widget.widget(idx).layout().itemAt(2).widget()
+
+        self.dockContentWidget3.blockSignals(False)
+        self.dockContentWidget3_2.blockSignals(False)
         fcn_name = self.bottom_dock_tab_widget.tabText(idx)
         self.dp_process_bw_tabs(fcn_name)
 
@@ -822,7 +834,7 @@ class _MainWindow(QMainWindow):
                 design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
                                                                   module_name=self._CurrentModuleName,
                                                                   _ast=tmpAST, element_manager_update=False)
-                self.new_dock_widget_content_can.createNewConstraintAST(_id=design_dict['constraint_id'],
+                self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
                                                                  _parentName=self._CurrentModuleName,
                                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
                 tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
