@@ -202,6 +202,7 @@ class _MainWindow(QMainWindow):
 
         self.module_name_list = []
         self.module_dict = {self._CurrentModuleName: self} if self._CurrentModuleName else dict()
+        self.entireHierarchy = dict()
 
         moduleMenu = menubar.addMenu("&Module")
         # self.moduleListSubMenu = moduleMenu.addMenu('&Module List')
@@ -659,11 +660,17 @@ class _MainWindow(QMainWindow):
                 self.module_dict[tmp_module_name].module_name_list = self.module_name_list
 
                 hierarchy_key = selected_qt_dp._DesignParameter['_DesignObj_Name'] + '/' + tmp_module_name
+                if len(self.entireHierarchy) == 0:
+                    """
+                    case when sref load is used (not load gds!)
+                    """
+                    hierarchy = new_project._QTObj._qtProject._getEntireHierarchy()
 
-                if self.entireHierarchy[self._CurrentModuleName][hierarchy_key] is None:
-                    hierarchy = {tmp_module_name : dict()}
                 else:
-                    hierarchy = {tmp_module_name : self.entireHierarchy[self._CurrentModuleName][hierarchy_key]}
+                    if self.entireHierarchy[self._CurrentModuleName][hierarchy_key] is None:
+                        hierarchy = {tmp_module_name : dict()}
+                    else:
+                        hierarchy = {tmp_module_name : self.entireHierarchy[self._CurrentModuleName][hierarchy_key]}
                 new_project.create_dc_vi_from_top_dp(hierarchy)
                 self.hide()
 
@@ -1157,11 +1164,11 @@ class _MainWindow(QMainWindow):
             addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
             topCellName = addedModulelist[-1]
             lastSrefName = list(self._QTObj._qtProject._DesignParameter[topCellName].keys())[-1]
-            numberOfCells = int(re.findall('\d+', lastSrefName)[0])
+            # numberOfCells = int(re.findall('\d+', lastSrefName)[0])
             tmpDict = dict()
-            print("             #######################################################################               ")
-            print(f"               There are '{numberOfCells + 1}' cells inside '{topCellName}' cell                  ")
-            print("             #######################################################################               ")
+            # print("             #######################################################################               ")
+            # print(f"               There are '{numberOfCells + 1}' cells inside '{topCellName}' cell                  ")
+            # print("             #######################################################################               ")
             for _id, _elements in self._QTObj._qtProject._DesignParameter[topCellName].items():
                 if _elements._DesignParameter['_DesignParametertype'] == 3:                      # Sref inside top cell
                     _childName = _elements._DesignParameter['_DesignObj_Name']

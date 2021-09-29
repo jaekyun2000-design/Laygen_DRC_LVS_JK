@@ -2302,6 +2302,21 @@ class QtProject:
                     continue
             if tmpstack == []:                      # No Sref cell inside 'searchmodule' ( i.e, Sref Lowest Hierarchy)
                 hierarchyDict[searchmodule] = None
+            # else:       # input : dp_dict
+            #     hierarchyDict[list(searchmodule.keys())[0]] = dict()
+            #     for _id, element in searchmodule.items():
+            #         if element._DesignParameter['_DesignParametertype'] == 3:
+            #             subcell = element._DesignParameter['_DesignObj_Name']
+            #             subcellName = element._DesignParameter['_ElementName']
+            #             tmpstack.append(subcell)
+            #             tmpHierarchyDict2 = self._getEntireHierarchy(subcell)
+            #             for key, value in tmpHierarchyDict2.items():
+            #                 newName = key + '/' + subcellName
+            #                 hierarchyDict[searchmodule][newName] = value
+            #         else:
+            #             continue
+            #     if tmpstack == []:                      # No Sref cell inside 'searchmodule' ( i.e, Sref Lowest Hierarchy)
+            #         hierarchyDict[searchmodule] = None
         return hierarchyDict
 
     def _subHierarchyForDesignParameter(self, _ParentName=None, _id=None, _MaxSearchDepth=None):
