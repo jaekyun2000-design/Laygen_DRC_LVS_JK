@@ -718,6 +718,8 @@ class _MainWindow(QMainWindow):
             self.original_fcn_name = fcn_name
 
 
+        self._QTObj._qtProject._ElementManager['elementParameterDict'] = copy.deepcopy(self._QTObj._qtProject._DesignParameter)
+
 
         print("################################ Creating New DC, Element Manager#####################################")
         if mode == 'from DP':
@@ -761,8 +763,30 @@ class _MainWindow(QMainWindow):
 
         if dp_preserve:
             print('dp_preserved')
+            """
+            dp를 preserve할 경우 현재는 있지만 기존에는 없는 dp에 대해서만 dc 생성
+            """
+            for dp_name, dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].items():
+                if dp_name not in list(self._QTObj._qtProject._ElementManager['elementParameterDict'][self._CurrentModuleName].keys()):
+                    tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(dp)
+                    design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                                                                      module_name=self._CurrentModuleName,
+                                                                      _ast=tmpAST, element_manager_update=False)
+                    self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                     _parentName=self._CurrentModuleName,
+                                                                     _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+                    tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
+                    self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=dp_name, dc_id=design_dict['constraint_id'])
         else:
             print('dp_discarded')
+            """
+            dp정보를 날릴 경우 현재와 과거 dp를 비교하여 없는 dp는 현재 dp목록에서 삭제시킨다.
+            """
+            for dp_name, dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].items():
+                if dp_name not in list(self._QTObj._qtProject._ElementManager['elementParameterDict'][self._CurrentModuleName].keys()):
+                    del self._QTObj._qtProject._DesignParameter[dp_name]
+
+            self._QTObj._qtProject._ElementManager['elementParameterDict'] = copy.deepcopy(self._QTObj._qtProject._DesignParameter)
 
     def run_setup_update(self):
         self.setup_widget = QWidget()
