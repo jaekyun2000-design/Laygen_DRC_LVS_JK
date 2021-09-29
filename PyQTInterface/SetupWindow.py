@@ -2400,7 +2400,7 @@ class _SelectedDesignListWidget(QListWidget):
                     continue
                 # tmpName = item._ElementName
                 self.itemDict[tmpName] = item
-                self.idDict[tmpName] = item._ItemTraits['_id']
+                self.idDict[tmpName] = item._ItemTraits['_ElementName']
                 # item.setSelected(True)
                 # print(item.isSelected())
 

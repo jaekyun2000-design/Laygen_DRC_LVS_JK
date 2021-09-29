@@ -1265,12 +1265,12 @@ class _MainWindow(QMainWindow):
             ########################################## 1. Initial Condition ############################################
             addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
             topCellName = addedModulelist[-1]
-            lastSrefName = list(self._QTObj._qtProject._DesignParameter[topCellName].keys())[-1]
+            number_of_cells = len(self._QTObj._qtProject._DesignParameter[topCellName].values())
             # numberOfCells = int(re.findall('\d+', lastSrefName)[0])
             tmpDict = dict()
-            # print("             #######################################################################               ")
-            # print(f"               There are '{numberOfCells + 1}' cells inside '{topCellName}' cell                  ")
-            # print("             #######################################################################               ")
+            print("             #######################################################################               ")
+            print(f"               There are '{number_of_cells}' cells inside '{topCellName}' cell                  ")
+            print("             #######################################################################               ")
             for _id, _elements in self._QTObj._qtProject._DesignParameter[topCellName].items():
                 if _elements._DesignParameter['_DesignParametertype'] == 3:                      # Sref inside top cell
                     _childName = _elements._DesignParameter['_DesignObj_Name']
