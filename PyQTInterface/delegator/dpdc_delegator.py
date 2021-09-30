@@ -201,7 +201,6 @@ class DesignDelegator(delegator.Delegator):
                     dp_dict['_XYCoordinates'] = [[x,y]]
                 elif dp_dict['_DesignParametertype'] == 2:
                     for i in range(len(dp_dict['_XYCoordinates'][0])):
-
                         tmp_x = mouse_xy[0] - center_xy[0]
                         tmp_y = mouse_xy[1] - center_xy[1]
                         if user_setup._Snap_mode == 'orthogonal':
@@ -214,7 +213,6 @@ class DesignDelegator(delegator.Delegator):
                         elif user_setup._Snap_mode == 'any_angle':
                             x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][i][0]
                             y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][i][1]
-
                         dp_dict['_XYCoordinates'][0].pop(i)
                         dp_dict['_XYCoordinates'][0].insert(i, [x,y])
 
@@ -227,6 +225,13 @@ class DesignDelegator(delegator.Delegator):
             for vs_item in vs_item_list:
                 x = mouse_xy[0] - center_xy[0]
                 y = mouse_xy[1] - center_xy[1]
+                if user_setup._Snap_mode == 'orthogonal':
+                    if abs(x) > abs(y):
+                        y = 0
+                    else:
+                        x = 0
+                elif user_setup._Snap_mode == 'any_angle':
+                    pass
                 vs_item.setPos(x,y)
         else:
             for vs_item in vs_item_list:
@@ -260,13 +265,33 @@ class DesignDelegator(delegator.Delegator):
                 dp_dict['_id'] = new_id
 
                 if dp_dict['_DesignParametertype'] == 1 or dp_dict['_DesignParametertype'] == 3:
-                    x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][0]
-                    y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][1]
+                    tmp_x = mouse_xy[0] - center_xy[0]
+                    tmp_y = mouse_xy[1] - center_xy[1]
+                    if user_setup._Snap_mode == 'orthogonal':
+                        if abs(tmp_x) > abs(tmp_y):
+                            x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][0]
+                            y = dp_dict['_XYCoordinates'][0][1]
+                        else:
+                            x = dp_dict['_XYCoordinates'][0][0]
+                            y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][1]
+                    elif user_setup._Snap_mode == 'any_angle':
+                        x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][0]
+                        y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][1]
                     dp_dict['_XYCoordinates'] = [[x,y]]
                 elif dp_dict['_DesignParametertype'] == 2:
                     for i in range(len(dp_dict['_XYCoordinates'][0])):
-                        x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][i][0]
-                        y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][i][1]
+                        tmp_x = mouse_xy[0] - center_xy[0]
+                        tmp_y = mouse_xy[1] - center_xy[1]
+                        if user_setup._Snap_mode == 'orthogonal':
+                            if abs(tmp_x) > abs(tmp_y):
+                                x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][i][0]
+                                y = dp_dict['_XYCoordinates'][0][i][1]
+                            else:
+                                x = dp_dict['_XYCoordinates'][0][i][0]
+                                y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][i][1]
+                        elif user_setup._Snap_mode == 'any_angle':
+                            x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][i][0]
+                            y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][i][1]
                         dp_dict['_XYCoordinates'][0].pop(i)
                         dp_dict['_XYCoordinates'][0].insert(i, [x,y])
 
