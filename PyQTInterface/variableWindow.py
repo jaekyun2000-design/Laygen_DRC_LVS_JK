@@ -1130,7 +1130,7 @@ class _createNewDesignVariable(QWidget):
 
     def addDVtodict(self, DV, type, value):
         vid_list = list(self.variableDict.keys())
-        if vid_list == []:
+        if vid_list == ['dummy_vid']:
             vid = 'vid0'
         else:
             tmp = int(vid_list[-1][3:])+1

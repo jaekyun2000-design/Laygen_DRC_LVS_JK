@@ -388,12 +388,12 @@ class _MainWindow(QMainWindow):
         hboxOnDock3.addSpacing(60)
         hboxOnDock3.addWidget(Y_label)
         hboxOnDock3.addWidget(Y_value)
-        hboxOnDock3.addWidget(snap_option_button)
         hboxOnDock3.addSpacing(20)
         vboxOnDock1.addLayout(hboxOnDock1)
         vboxOnDock1.addLayout(hboxOnDock2)
         vboxOnDock1.addWidget(blackmode_box)
         vboxOnDock1.addLayout(hboxOnDock3)
+        vboxOnDock1.addWidget(snap_option_button)
         vboxOnDock1.addStretch(10)
 
         dockContentWidget1.setLayout(vboxOnDock1)

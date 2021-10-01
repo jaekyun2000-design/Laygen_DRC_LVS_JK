@@ -1,4 +1,4 @@
-_Technology='TSMC65nm'
+_Technology='SS28nm'
 _Night_mode = True
 _Snap_mode = 'orthogonal' # orthogonal or any_angle
 DEBUG = True
