@@ -82,7 +82,6 @@ class _MainWindow(QMainWindow):
     send_visibleCanState_signal = pyqtSignal(int, list)
     send_width_height_ast_signal = pyqtSignal(str, ast.AST)
     send_sref_param_signal = pyqtSignal(str, ast.AST)
-    send_create_new_window_signal = pyqtSignal()
     send_tech_node_changed_signal = pyqtSignal()
 
     def __init__(self):
@@ -346,6 +345,17 @@ class _MainWindow(QMainWindow):
 
         self.scene.send_mouse_move_xy_signal.connect(get_mouse)
 
+        def change_snap_mode():
+            if user_setup._Snap_mode == 'orthogonal':
+                user_setup._Snap_mode = 'any_angle'
+            elif user_setup._Snap_mode == 'any_angle':
+                user_setup._Snap_mode = 'orthogonal'
+            snap_option_button.setText(user_setup._Snap_mode)
+
+        snap_option_button = QPushButton()
+        snap_option_button.setText(user_setup._Snap_mode)
+        snap_option_button.clicked.connect(change_snap_mode)
+
         ########## Second tab ############
         self.dv = variableWindow._DesignVariableManagerWindow(dict())
         self.dvstate = True
@@ -378,6 +388,7 @@ class _MainWindow(QMainWindow):
         hboxOnDock3.addSpacing(60)
         hboxOnDock3.addWidget(Y_label)
         hboxOnDock3.addWidget(Y_value)
+        hboxOnDock3.addWidget(snap_option_button)
         hboxOnDock3.addSpacing(20)
         vboxOnDock1.addLayout(hboxOnDock1)
         vboxOnDock1.addLayout(hboxOnDock2)

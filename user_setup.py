@@ -1,5 +1,6 @@
 _Technology='TSMC65nm'
 _Night_mode = True
+_Snap_mode = 'orthogonal' # orthogonal or any_angle
 DEBUG = True
 MIN_SNAP_SPACING = 5
 GDS2GEN = True
