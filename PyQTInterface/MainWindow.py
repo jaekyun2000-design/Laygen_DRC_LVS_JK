@@ -832,7 +832,6 @@ class _MainWindow(QMainWindow):
             self._QTObj._qtProject._ElementManager = copy.deepcopy(self._QTObj._qtProject._ElementManager_topology_dict[self.original_fcn_name])
         elif mode == 'from DP':
             current_dp_dict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
-            # self._QTObj._qtProject._ElementManager_topology_dict[fcn_name] = element_manager.ElementManager()
             for name, dp in current_dp_dict.items():
                 tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(dp)
                 if tmpAST == None:
@@ -843,7 +842,6 @@ class _MainWindow(QMainWindow):
                 self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
                                                                  _parentName=self._CurrentModuleName,
                                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-                # self._QTObj._qtProject._ElementManager_topology_dict[fcn_name].load_dp_dc_id(dp_id=name, dc_id=design_dict['constraint_id'])
                 self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=name,dc_id=design_dict['constraint_id'])
 
         self.element_parameter_dict = copy.deepcopy(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
@@ -901,8 +899,8 @@ class _MainWindow(QMainWindow):
 
                 for dp_name in list_to_remove:
                     del self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name]
+                    self.scene.removeItem(self.visualItemDict[dp_name])
 
-                self.updateDesignParameter(_DesignParameter = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName], element_manager_update=True)
 
         self.element_parameter_dict = copy.deepcopy(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
         self.original_fcn_name = fcn_name
