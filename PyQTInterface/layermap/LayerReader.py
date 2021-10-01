@@ -920,6 +920,8 @@ def run_for_process_update():
         _LayerMapping.update({'PLVT': _LayerMappingTmp[('VTL_P', 'drawing')]})
     if _Technology == 'SS28nm':
         _LayerMapping.update({'SLVT': _LayerMappingTmp[('SLVT', 'drawing')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'RVT': _LayerMappingTmp[('RVT', 'drawing')]})
 
     
 
