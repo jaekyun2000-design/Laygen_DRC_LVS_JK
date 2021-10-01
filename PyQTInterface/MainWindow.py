@@ -204,6 +204,7 @@ class _MainWindow(QMainWindow):
         self.module_dict = {self._CurrentModuleName: self} if self._CurrentModuleName else dict()
         self.entireHierarchy = dict()
         self.original_fcn_name = "CalculateDesignParameter"
+        self.element_parameter_dict = dict()
 
         moduleMenu = menubar.addMenu("&Module")
         # self.moduleListSubMenu = moduleMenu.addMenu('&Module List')
@@ -699,7 +700,7 @@ class _MainWindow(QMainWindow):
         # self.send_create_new_window_signal.emit()
         # print('send end')
     def add_constraint_view(self):
-
+        self.add_constraint_view_flag = True
         self.c_view_configuration = QWidget()
         config_list = ['Fcn Name']
         fcn_str = QLineEdit()
@@ -803,14 +804,35 @@ class _MainWindow(QMainWindow):
 
     def create_new_constraint_widget(self, mode, fcn_name):
         print(f'********************************Creating New Constraint Widget\n'
-              f'Adding New Constraint {mode}, function name: {fcn_name}')
+              f'Adding New Constraint {mode}, function name: \"{fcn_name}\"')
         self.c_view_configuration.destroy()
 
+        if len(self._QTObj._qtProject._DesignConstraint_topology_dict) == 0:
+            """
+            Creating Second Tab: Add Original Project Information
+            """
+            self._QTObj._qtProject._DesignConstraint_topology_dict['CalculateDesignParameter'] = copy.deepcopy(self._QTObj._qtProject._DesignConstraint)
+            self._QTObj._qtProject._ElementManager_topology_dict['CalculateDesignParameter'] = copy.deepcopy(self._QTObj._qtProject._ElementManager)
+            print("Design Constraints inside first tab is saved inside topology dictionary")
+        else:
+            self._QTObj._qtProject._DesignConstraint_topology_dict[self.original_fcn_name] = copy.deepcopy(self._QTObj._qtProject._DesignConstraint)
+            self._QTObj._qtProject._ElementManager_topology_dict[self.original_fcn_name] = copy.deepcopy(self._QTObj._qtProject._ElementManager)
+            print(f"Design Constraints inside {self.original_fcn_name} tab is saved inside topology dictionary")
+
+        self.create_new_bottom_dock_widget(fcn_name)
+
+        if len(self._QTObj._qtProject._DesignParameter) == 0:
+            self.warning = QMessageBox()
+            self.warning.setText("No Elements to copy!")
+            self.warning.show()
+            return
+
         if mode == 'from DC':
-            self._QTObj._qtProject._DesignConstraint_topology_dict[fcn_name] = copy.deepcopy(self._QTObj._qtProject._DesignConstraint)
-            self._QTObj._qtProject._ElementManager_topology_dict[fcn_name] = copy.deepcopy(self._QTObj._qtProject._ElementManager)
+            self._QTObj._qtProject._DesignConstraint = copy.deepcopy(self._QTObj._qtProject._DesignConstraint_topology_dict[self.original_fcn_name])
+            self._QTObj._qtProject._ElementManager = copy.deepcopy(self._QTObj._qtProject._ElementManager_topology_dict[self.original_fcn_name])
         elif mode == 'from DP':
             current_dp_dict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
+            # self._QTObj._qtProject._ElementManager_topology_dict[fcn_name] = element_manager.ElementManager()
             for name, dp in current_dp_dict.items():
                 tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(dp)
                 if tmpAST == None:
@@ -818,71 +840,29 @@ class _MainWindow(QMainWindow):
                 design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
                                                                   module_name=self._CurrentModuleName,
                                                                   _ast=tmpAST, element_manager_update=False)
-                self._QTObj._qtProject._ElementManager_topology_dict[fcn_name] = element_manager.ElementManager()
-                self._QTObj._qtProject._ElementManager_topology_dict[fcn_name].load_dp_dc_id(dp_id=name, dc_id=design_dict['constraint_id'])
+                self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                                                                 _parentName=self._CurrentModuleName,
+                                                                 _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+                # self._QTObj._qtProject._ElementManager_topology_dict[fcn_name].load_dp_dc_id(dp_id=name, dc_id=design_dict['constraint_id'])
+                self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=name,dc_id=design_dict['constraint_id'])
 
-        self.create_new_bottom_dock_widget(fcn_name)
-
-        #
-        # """
-        # Save original function name and dc, element manager inside topology dictionaries
-        # """
-        if len(self._QTObj._qtProject._DesignConstraint_topology_dict) == 0:
-            """
-            Creating Second Tab: Add Original Project Information
-            """
-            self._QTObj._qtProject._DesignConstraint_topology_dict['CalculateDesignParameter'] = copy.deepcopy(self._QTObj._qtProject._DesignConstraint)
-            self._QTObj._qtProject._ElementManager_topology_dict['CalculateDesignParameter'] = copy.deepcopy(self._QTObj._qtProject._ElementManager)
-            self.original_fcn_name = fcn_name
-            print("Design Constraints inside first tab is saved inside topology dictionary")
-        else:
-            self._QTObj._qtProject._DesignConstraint_topology_dict[self.original_fcn_name] = copy.deepcopy(self._QTObj._qtProject._DesignConstraint)
-            self._QTObj._qtProject._ElementManager_topology_dict[self.original_fcn_name] = copy.deepcopy(self._QTObj._qtProject._ElementManager)
-            print(f"Design Constraints inside {self.original_fcn_name} tab is saved inside topology dictionary")
-            self.original_fcn_name = fcn_name
-
-        self._QTObj._qtProject._ElementManager.elementParameterDict = copy.deepcopy(self._QTObj._qtProject._DesignParameter)
-        self.create_new_bottom_dock_widget(fcn_name)
-
-
-        # TODO: dockContentWidget 3-2, 3에 추가할 list뽑아서 dc 추가 진행
-        #
-        #
-        #
-        #
-        # if len(self._QTObj._qtProject._DesignParameter) == 0:
-        #     return
-        # if mode == 'from DP':
-        #     print("############################## Creating New DC, Element Manager###################################")
-        #     self._QTObj._qtProject._DesignConstraint.clear()
-        #     self._QTObj._qtProject._ElementManager.dc_id_to_dp_id.clear()
-        #     self._QTObj._qtProject._ElementManager.dp_id_to_dc_id.clear()
-        #     self._QTObj._qtProject._ElementManager.dc_id_to_dp_id.clear()
-        #     current_dp_dict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
-        #     for name, dp in current_dp_dict.items():
-        #         tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(dp)
-        #         if tmpAST == None:
-        #             continue
-        #         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
-        #                                                           module_name=self._CurrentModuleName,
-        #                                                           _ast=tmpAST, element_manager_update=False)
-        #         self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
-        #                                                          _parentName=self._CurrentModuleName,
-        #                                                          _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-        #         tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
-        #         self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=name, dc_id=design_dict['constraint_id'])
-
+        self.element_parameter_dict = copy.deepcopy(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        self.original_fcn_name = fcn_name
 
     def dp_process_bw_tabs(self,fcn_name):
+        if self._QTObj._qtProject == None or self.add_constraint_view_flag == True:
+            self.add_constraint_view_flag = False
+            return
+
         self._QTObj._qtProject._DesignConstraint_topology_dict[self.original_fcn_name] = copy.deepcopy(self._QTObj._qtProject._DesignConstraint)
         self._QTObj._qtProject._ElementManager_topology_dict[self.original_fcn_name] = copy.deepcopy(self._QTObj._qtProject._ElementManager)
 
         self._QTObj._qtProject._DesignConstraint = self._QTObj._qtProject._DesignConstraint_topology_dict[fcn_name]
         self._QTObj._qtProject._ElementManager = self._QTObj._qtProject._ElementManager_topology_dict[fcn_name]
         print(f"Original {self.original_fcn_name} tab info successfully saved. Process Changed into {fcn_name} tab.")
-        self.original_fcn_name = fcn_name
 
-        original_dp_set = set(list(self._QTObj._qtProject._ElementManager.elementParameterDict.keys()))
+
+        original_dp_set = set(list(self.element_parameter_dict.keys()))
         target_dp_set = set(list(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].keys()))
         if original_dp_set != target_dp_set:
             self.dp_preserve_flag = QMessageBox()
@@ -899,7 +879,7 @@ class _MainWindow(QMainWindow):
                 dp를 preserve할 경우 현재는 있지만 기존에는 없는 dp에 대해서만 dc 생성
                 """
                 for dp_name, dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].items():
-                    if dp_name not in list(self._QTObj._qtProject._ElementManager.elementParameterDict.keys()):
+                    if dp_name not in list(self.element_parameter_dict.keys()):
                         tmpAST = self._QTObj._qtProject._ElementManager.get_dp_return_ast(dp)
                         design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
                                                                           module_name=self._CurrentModuleName,
@@ -916,15 +896,16 @@ class _MainWindow(QMainWindow):
                 """
                 list_to_remove = []
                 for dp_name, dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].items():
-                    if dp_name not in list(self._QTObj._qtProject._ElementManager.elementParameterDict.keys()):
+                    if dp_name not in list(self.element_parameter_dict.keys()):
                         list_to_remove.append(dp_name)
 
                 for dp_name in list_to_remove:
                     del self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name]
-                    #TODO: dp는 사라져도 vi까지 사라지게 처리해야 함
 
-        self._QTObj._qtProject._ElementManager.elementParameterDict = copy.deepcopy(self._QTObj._qtProject._DesignParameter)
+                self.updateDesignParameter(_DesignParameter = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName], element_manager_update=True)
 
+        self.element_parameter_dict = copy.deepcopy(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        self.original_fcn_name = fcn_name
     def run_setup_update(self):
         self.setup_widget = QWidget()
         form_layout = QFormLayout()
