@@ -1005,8 +1005,11 @@ class _DesignVariableManagerWindow(QWidget):
 
         if _name in self.idDict:
             if _type == 'add':
-                self.model.appendRow(name)
-                self.model.setItem(self.model.rowCount() - 1, 1, value)
+                if _name == 'min_spacing':
+                    self.model.setItem(0, 1, value)
+                else:
+                    self.model.appendRow(name)
+                    self.model.setItem(self.model.rowCount() - 1, 1, value)
             elif _type == 'edit':
                 self.model.setItem(self.selectedRow, 1, value)
             elif _type == 'delete':
