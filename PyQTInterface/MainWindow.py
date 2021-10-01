@@ -819,17 +819,34 @@ class _MainWindow(QMainWindow):
             self._QTObj._qtProject._ElementManager_topology_dict[self.original_fcn_name] = copy.deepcopy(self._QTObj._qtProject._ElementManager)
             print(f"Design Constraints inside {self.original_fcn_name} tab is saved inside topology dictionary")
 
-        self.create_new_bottom_dock_widget(fcn_name)
-
         if len(self._QTObj._qtProject._DesignParameter) == 0:
             self.warning = QMessageBox()
             self.warning.setText("No Elements to copy!")
             self.warning.show()
             return
 
-        if mode == 'from DC':
+        constraint_names_gen = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
+        constraint_ids_gen = [item.text() for item in constraint_names_gen]
+
+        constraint_names_can = self.dockContentWidget3_2.model.findItems('', Qt.MatchContains, 1)
+        constraint_ids_can = [item.text() for item in constraint_names_can]
+
+
+        self.create_new_bottom_dock_widget(fcn_name)
+
+
+
+        if mode == 'from original DC':
             self._QTObj._qtProject._DesignConstraint = copy.deepcopy(self._QTObj._qtProject._DesignConstraint_topology_dict[self.original_fcn_name])
             self._QTObj._qtProject._ElementManager = copy.deepcopy(self._QTObj._qtProject._ElementManager_topology_dict[self.original_fcn_name])
+            for dc_id in constraint_ids_can:
+                self.dockContentWidget3_2.createNewConstraintAST(_id=dc_id,
+                                                             _parentName=self._CurrentModuleName,
+                                                             _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+            for dc_id in constraint_ids_gen:
+                self.dockContentWidget3.createNewConstraintAST(_id=dc_id,
+                                                             _parentName=self._CurrentModuleName,
+                                                             _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
         elif mode == 'from DP':
             current_dp_dict = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
             for name, dp in current_dp_dict.items():
