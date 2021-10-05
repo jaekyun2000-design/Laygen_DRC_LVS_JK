@@ -2564,7 +2564,7 @@ class _MainWindow(QMainWindow):
                                                                       module_name=self._CurrentModuleName,
                                                                       _ast=_ASTobj, element_manager_update=True)
                     self.calculator_window.send_dummyconstraints_signal.emit(info_dict, _newConstraintID)
-                    self.calculator_window.send_path_row_xy_signal.emit(info_dict, _newConstraintID)
+                    self.calculator_window.send_path_row_xy_signal.emit(_ASTobj, _newConstraintID)
                 except:
                     raise Exception("Sending XYCoordinate For Path Failed!")
                     traceback.print_exc()
