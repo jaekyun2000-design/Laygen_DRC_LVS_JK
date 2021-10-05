@@ -922,6 +922,10 @@ class QtProject:
                             _tmpId = _tmpElement._GDS_ELEMENT_NAME
                         else:
                             try:
+                                # if str(_tmpElement._ELEMENTS._DATATYPE.datatype) not in LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)]:
+                                #     warnings.warn(f'LayerReader has layer common name info but data info is insufficient.'
+                                #                   f' layer:{_tmpElement._ELEMENTS._LAYER.layer}, data:{_tmpElement._ELEMENTS._DATATYPE.datatype}')
+                                #     _tmpElement._ELEMENTS._DATATYPE.datatype = list(LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)].keys())[0]
                                 element_name = LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][str(_tmpElement._ELEMENTS._DATATYPE.datatype)] + '_boundary'
                                 if element_name not in element_name_count:
                                     element_name_count[element_name] = 0
@@ -933,6 +937,7 @@ class QtProject:
                                 self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName,
                                                                _ElementName=tmp_element_name)
                             except:
+                                traceback.print_exc()
                                 warnings.warn(f'LayerReader does not have info about Layer: {_tmpElement._ELEMENTS._LAYER.layer} and Dtype: {_tmpElement._ELEMENTS._DATATYPE.datatype}. ')
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                             "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
@@ -952,8 +957,11 @@ class QtProject:
                             _tmpId = _tmpElement._GDS_ELEMENT_NAME
                         else:
                             try:
-                                element_name = LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][
-                                                   str(_tmpElement._ELEMENTS._DATATYPE.datatype)] + '_path'
+                                # if str(_tmpElement._ELEMENTS._DATATYPE.datatype) not in LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)]:
+                                #     warnings.warn(f'LayerReader has layer common name info but data info is insufficient.'
+                                #                   f' layer:{_tmpElement._ELEMENTS._LAYER.layer}, data:{_tmpElement._ELEMENTS._DATATYPE.datatype}')
+                                #     _tmpElement._ELEMENTS._DATATYPE.datatype = list(LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)].keys())[0]
+                                element_name = LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][str(_tmpElement._ELEMENTS._DATATYPE.datatype)] + '_path'
                                 if element_name not in element_name_count:
                                     element_name_count[element_name] = 0
                                 else:
@@ -1019,15 +1027,16 @@ class QtProject:
                             _tmpElement._ELEMENTS._TEXTBODY._PRESENTATION.font,
                             _tmpElement._ELEMENTS._TEXTBODY._PRESENTATION.vertical_presentation,
                             _tmpElement._ELEMENTS._TEXTBODY._PRESENTATION.horizontal_presentation]
-                        self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Reflect"] = [
-                            _tmpElement._ELEMENTS._TEXTBODY._STRANS._STRANS.reflection,
-                            _tmpElement._ELEMENTS._TEXTBODY._STRANS._STRANS.abs_mag,
-                            _tmpElement._ELEMENTS._TEXTBODY._STRANS._STRANS.abs_angle]
-                        self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
-                            "_Mag"] = _tmpElement._ELEMENTS._TEXTBODY._STRANS._MAG.mag
-                        # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Angle"] = _tmpElement._ELEMENTS._TEXTBODY._STRANS._ANGLE.angle
-                        self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
-                            "_TEXT"] = _tmpElement._ELEMENTS._TEXTBODY._STRING.string_data
+                        if _tmpElement._ELEMENTS._TEXTBODY._STRANS is not None:
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Reflect"] = [
+                                _tmpElement._ELEMENTS._TEXTBODY._STRANS._STRANS.reflection,
+                                _tmpElement._ELEMENTS._TEXTBODY._STRANS._STRANS.abs_mag,
+                                _tmpElement._ELEMENTS._TEXTBODY._STRANS._STRANS.abs_angle]
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                                "_Mag"] = _tmpElement._ELEMENTS._TEXTBODY._STRANS._MAG.mag
+                            # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Angle"] = _tmpElement._ELEMENTS._TEXTBODY._STRANS._ANGLE.angle
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                                "_TEXT"] = _tmpElement._ELEMENTS._TEXTBODY._STRING.string_data
 
                     self._DesignParameter[_tmpStructureName][_tmpId].update_unified_expression()
 
