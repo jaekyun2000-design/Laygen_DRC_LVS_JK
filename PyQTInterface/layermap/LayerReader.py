@@ -21,6 +21,7 @@ def run_for_process_update():
     global _LayerNum2CommonName
     global _LayerName_unified
     global _LayDatNumToName
+    global _LayerExtendedMapping
 
 
     _Technology = user_setup._Technology
@@ -958,10 +959,13 @@ def run_for_process_update():
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'text': (None, None)})
 
+
+
     _LayerMapFile.close()
 
     _LayerName_unified = _LayerNumber2UnifiedLayerName(_LayerMapping)
-    _LayDatNumToName = _LayDatNumber2UnifiedLayerName(_LayerMapping)
+    _LayDatNumToName = _LayDatNumber2UnifiedLayerName(_LayerMapping, _LayerMappingTmp)
+    _LayerExtendedMapping = _ExtendLayerMapping(_LayerMapping, _LayerMappingTmp)
     print("******Layer Map file load Complete")
 
 
@@ -1067,7 +1071,7 @@ def _LayerNumber2UnifiedLayerName(_LayerMapping):
         _LayerNum2Name[i] = layerName
     return _LayerNum2Name
 
-def _LayDatNumber2UnifiedLayerName(_LayerMapping):
+def _LayDatNumber2UnifiedLayerName(_LayerMapping, org_layer_map):
     _LayDatNum2Name = dict()
     for _LayerCommonName in _LayerMapping:
         if _LayerMapping[_LayerCommonName] == None:
@@ -1081,6 +1085,21 @@ def _LayDatNumber2UnifiedLayerName(_LayerMapping):
             _LayDatNum2Name[i][j] = _LayerCommonName
     return _LayDatNum2Name
 
+def _ExtendLayerMapping(_LayerMapping, org_layer_map):
+    org_layer_name_map = dict()
+    for org_layer_name_tuple, values in org_layer_map.items():
+        if org_layer_name_tuple[0] in org_layer_name_map:
+            org_layer_name_map[org_layer_name_tuple[0]].append(values)
+        else:
+            org_layer_name_map[org_layer_name_tuple[0]] = [values]
+
+    extended_layer_mapping = dict()
+    for layer_common_name, values in _LayerMapping.items():
+        extended_layer_mapping[layer_common_name] = dict()
+
+        if values[-1] in org_layer_name_map:
+            extended_layer_mapping[layer_common_name] = org_layer_name_map[values[-1]]
+    return extended_layer_mapping
 
 #######################
 
