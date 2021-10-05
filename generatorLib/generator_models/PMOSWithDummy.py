@@ -13,25 +13,6 @@ class _PMOS(StickDiagram._StickDiagram):
             self._DesignParameter = _DesignParameter
         else:
             self._DesignParameter = dict(
-                _ODLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['DIFF'][0],_Datatype=DesignParameters._LayerMapping['DIFF'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),  # boundary type:1, #path type:2, #sref type: 3, #gds data type: 4, #Design Name data type: 5,  #other data type: ?
-                _PODummyLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],_Datatype=DesignParameters._LayerMapping['POLY'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
-                _POLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],_Datatype=DesignParameters._LayerMapping['POLY'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
-                _Met1Layer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
-                _PPLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PIMP'][0],_Datatype=DesignParameters._LayerMapping['PIMP'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
-                _COLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['CONT'][0],_Datatype=DesignParameters._LayerMapping['CONT'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
-
-                _PLVTLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PLVT'][0], _Datatype=DesignParameters._LayerMapping['PLVT'][1], _XYCoordinates=[], _XWidth=400, _YWidth=400),
-                _PHVTLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PHVT'][0], _Datatype=DesignParameters._LayerMapping['PHVT'][1], _XYCoordinates=[], _XWidth=400, _YWidth=400),
-
-                _ODLayerPINDrawing=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RXPIN'][0], _Datatype=DesignParameters._LayerMapping['RXPIN'][1], _XYCoordinates=[], _XWidth=400, _YWidth=400),
-                _SLVTLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['SLVT'][0],_Datatype=DesignParameters._LayerMapping['SLVT'][1], _XYCoordinates=[], _XWidth=400, _YWidth=400),
-                _LVTLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['LVT'][0], _Datatype=DesignParameters._LayerMapping['LVT'][1], _XYCoordinates=[], _XWidth=400, _YWidth=400),
-                _RVTLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RVT'][0], _Datatype=DesignParameters._LayerMapping['RVT'][1], _XYCoordinates=[], _XWidth=400, _YWidth=400),
-                _HVTLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['HVT'][0], _Datatype=DesignParameters._LayerMapping['HVT'][1], _XYCoordinates=[], _XWidth=400, _YWidth=400),
-                _POLayerPINDrawing=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PCPIN'][0], _Datatype=DesignParameters._LayerMapping['PCPIN'][1], _XYCoordinates=[], _XWidth=400, _YWidth=400),
-                _METAL1PINDrawing=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['M1PIN'][0], _Datatype=DesignParameters._LayerMapping['M1PIN'][1], _XYCoordinates=[], _XWidth=400, _YWidth=400),
-                _PCCRITLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PCCRIT'][0], _Datatype=DesignParameters._LayerMapping['PCCRIT'][1], _XYCoordinates=[], _XWidth=400, _YWidth=400),
-
                 _Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None),
                 _XYCoordinatePMOSSupplyRouting=dict(_DesignParametertype=7,_XYCoordinates=[]),_XYCoordinatePMOSOutputRouting=dict(_DesignParametertype=7,_XYCoordinates=[]),_XYCoordinatePMOSGateRouting=dict(_DesignParametertype=7,_XYCoordinates=[]),
             )
@@ -41,6 +22,29 @@ class _PMOS(StickDiagram._StickDiagram):
 
     # Input Variable
     def _CalculatePMOSDesignParameter(self, _PMOSNumberofGate=None, _PMOSChannelWidth=None, _PMOSChannellength=None, _PMOSDummy=False, _XVT=None):
+        self._DesignParameter['_ODLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['DIFF'][0],
+                                                                             _Datatype=DesignParameters._LayerMapping['DIFF'][1],
+                                                                             _XYCoordinates=[], _XWidth=400,
+                                                                             _YWidth=400)  # boundary type:1, #path type:2, #sref type: 3, #gds data type: 4, #Design Name data type: 5,  #other data type: ?
+        self._DesignParameter['_PODummyLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],
+                                                                                  _Datatype=DesignParameters._LayerMapping['POLY'][1],
+                                                                                  _XYCoordinates=[], _XWidth=400, _YWidth=400)
+        self._DesignParameter['_POLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],
+                                                                             _Datatype=DesignParameters._LayerMapping['POLY'][1],
+                                                                             _XYCoordinates=[], _XWidth=400, _YWidth=400)
+        self._DesignParameter['_SLVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['SLVT'][0],
+                                                      _Datatype=DesignParameters._LayerMapping['SLVT'][1],
+                                                      _XYCoordinates=[], _XWidth=400, _YWidth=400)
+        self._DesignParameter['_LVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['LVT'][0],
+                                                     _Datatype=DesignParameters._LayerMapping['LVT'][1],
+                                                     _XYCoordinates=[], _XWidth=400, _YWidth=400)
+        self._DesignParameter['_RVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RVT'][0],
+                                                     _Datatype=DesignParameters._LayerMapping['RVT'][1],
+                                                     _XYCoordinates=[], _XWidth=400, _YWidth=400)
+        self._DesignParameter['_HVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['HVT'][0],
+                                                     _Datatype=DesignParameters._LayerMapping['HVT'][1],
+                                                     _XYCoordinates=[], _XWidth=400, _YWidth=400)
+
         print ('#########################################################################################################')
         print ('                                    {}  PMOS Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name']))
         print ('#########################################################################################################')
@@ -121,11 +125,18 @@ class _PMOS(StickDiagram._StickDiagram):
 
             tmpXYs.append(_xycoordinatetmp)
 
+
+        self._DesignParameter['_Met1Layer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],
+                                                                               _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                                                                               _XYCoordinates=[], _XWidth=400, _YWidth=400)
         self._DesignParameter['_Met1Layer']['_XWidth'] = _DRCObj._CoMinWidth + 2 * _DRCObj._Metal1MinEnclosureCO
         self._DesignParameter['_Met1Layer']['_YWidth'] = self._DesignParameter['_ODLayer']['_YWidth']
         self._DesignParameter['_Met1Layer']['_XYCoordinates'] = tmpXYs
 
         if DesignParameters._Technology == 'SS28nm':
+            self._DesignParameter['_METAL1PINDrawing'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['M1PIN'][0],
+                                                                                          _Datatype=DesignParameters._LayerMapping['M1PIN'][1],
+                                                                                          _XYCoordinates=[], _XWidth=400, _YWidth=400)
             self._DesignParameter['_METAL1PINDrawing']['_XWidth'] = self._DesignParameter['_Met1Layer']['_XWidth']
             self._DesignParameter['_METAL1PINDrawing']['_YWidth'] = self._DesignParameter['_Met1Layer']['_YWidth']
             self._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'] = self._DesignParameter['_Met1Layer']['_XYCoordinates']
@@ -165,6 +176,9 @@ class _PMOS(StickDiagram._StickDiagram):
 
                 tmpXYs.append(_xycoordinatetmp)
 
+        self._DesignParameter['_COLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['CONT'][0],
+                                                                             _Datatype=DesignParameters._LayerMapping['CONT'][1],
+                                                                             _XYCoordinates=[], _XWidth=400, _YWidth=400)
         self._DesignParameter['_COLayer']['_YWidth'] = _DRCObj._CoMinWidth
         self._DesignParameter['_COLayer']['_XWidth'] = _DRCObj._CoMinWidth
         self._DesignParameter['_COLayer']['_XYCoordinates'] = tmpXYs
@@ -172,6 +186,9 @@ class _PMOS(StickDiagram._StickDiagram):
 
         print ('#############################     PIMP (PP/BP) Layer Calculation    ####################')  # Need to check
 
+        self._DesignParameter['_PPLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PIMP'][0],
+                                                                             _Datatype=DesignParameters._LayerMapping['PIMP'][1],
+                                                                             _XYCoordinates=[], _XWidth=400, _YWidth=400)
         self._DesignParameter['_PPLayer']['_XYCoordinates'] = _XYCoordinateOfPMOS
         self._DesignParameter['_PPLayer']['_YWidth'] = self._DesignParameter['_POLayer']['_YWidth'] + 2 * _DRCObj._PpMinEnclosureOfPo
 
@@ -217,6 +234,9 @@ class _PMOS(StickDiagram._StickDiagram):
         # ?
         if DesignParameters._Technology == 'SS28nm':  # ?
             print ('#############################     PCCRIT Layer Calculation    ##############################################')
+            self._DesignParameter['_PCCRITLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PCCRIT'][0],
+                                                                                     _Datatype=DesignParameters._LayerMapping['PCCRIT'][1],
+                                                                                     _XYCoordinates=[], _XWidth=400, _YWidth=400)
             if self._DesignParameter['_POLayer']['_XWidth'] in (30, 34):
                 self._DesignParameter['_PCCRITLayer']['_XWidth'] = _PMOSNumberofGate * _LengthPMOSBtwMet1 + _DRCObj._CoMinWidth + 2 * _DRCObj._CoMinEnclosureByOD + 2 * _DRCObj._PCCRITExtension
                 self._DesignParameter['_PCCRITLayer']['_YWidth'] = self._DesignParameter['_ODLayer']['_YWidth'] + 2 * _DRCObj._PCCRITExtension
@@ -230,11 +250,11 @@ class _PMOS(StickDiagram._StickDiagram):
         print ('#########################     Supply Routing Coordinates Calculation   ##################################')
         tmpXYs = []
         if (_PMOSNumberofGate % 2) == 0:
-            for i in range(0, _PMOSNumberofGate / 2 + 1):
+            for i in range(0, _PMOSNumberofGate // 2 + 1):
                 tmpXYs.append([_XYCoordinateOfPMOS[0][0] - _PMOSNumberofGate / 2 * _LengthPMOSBtwMet1 + i * 2 * _LengthPMOSBtwMet1,
                             _XYCoordinateOfPMOS[0][1]])
         elif (_PMOSNumberofGate % 2) == 1:
-            for i in range(0,(_PMOSNumberofGate - 1) / 2 + 1):
+            for i in range(0,(_PMOSNumberofGate - 1) // 2 + 1):
                 tmpXYs.append([_XYCoordinateOfPMOS[0][0] - ((_PMOSNumberofGate + 1) / 2 - 0.5) * _LengthPMOSBtwMet1 + i * 2 * _LengthPMOSBtwMet1,
                             _XYCoordinateOfPMOS[0][1]])
 
@@ -244,11 +264,11 @@ class _PMOS(StickDiagram._StickDiagram):
         print ('#########################     Output Routing Coordinates Calculation    ##################################')
         tmpXYs = []
         if (_PMOSNumberofGate % 2) == 0:
-            for i in range(0, _PMOSNumberofGate / 2):
+            for i in range(0, _PMOSNumberofGate // 2):
                 tmpXYs.append([_XYCoordinateOfPMOS[0][0] - _PMOSNumberofGate / 2 * _LengthPMOSBtwMet1 + (i * 2 + 1) * _LengthPMOSBtwMet1,
                                _XYCoordinateOfPMOS[0][1]])
         else:
-            for i in range(0, (_PMOSNumberofGate - 1) / 2 + 1):
+            for i in range(0, (_PMOSNumberofGate - 1) // 2 + 1):
                 tmpXYs.append([_XYCoordinateOfPMOS[0][0] - ((_PMOSNumberofGate + 1) / 2 - 0.5) * _LengthPMOSBtwMet1 + (i * 2 + 1) * _LengthPMOSBtwMet1,
                                _XYCoordinateOfPMOS[0][1]])
 
@@ -270,6 +290,9 @@ class _PMOS(StickDiagram._StickDiagram):
 
         if DesignParameters._Technology == 'SS28nm':  # ?
             print ('##################################################### Diff Pin Generation & Coordinates ####################################################')
+            self._DesignParameter['_ODLayerPINDrawing'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RXPIN'][0],
+                                                                                           _Datatype=DesignParameters._LayerMapping['RXPIN'][1],
+                                                                                           _XYCoordinates=[], _XWidth=400, _YWidth=400)
             self._DesignParameter['_ODLayerPINDrawing']['_XWidth'] = self._DesignParameter['_ODLayer']['_XWidth'] / 2 - (self._DesignParameter['_XYCoordinatePMOSGateRouting']['_XYCoordinates'][-1][0] + self._DesignParameter['_POLayer']['_XWidth'] / 2)
             self._DesignParameter['_ODLayerPINDrawing']['_YWidth'] = self._DesignParameter['_ODLayer']['_YWidth']
 
@@ -280,6 +303,9 @@ class _PMOS(StickDiagram._StickDiagram):
 
 
             print ('##################################################### POLayer Pin Generation & Coordinates ####################################################')
+            self._DesignParameter['_POLayerPINDrawing'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PCPIN'][0],
+                                                                                           _Datatype=DesignParameters._LayerMapping['PCPIN'][1],
+                                                                                           _XYCoordinates=[], _XWidth=400, _YWidth=400)
             self._DesignParameter['_POLayerPINDrawing']['_XWidth'] = self._DesignParameter['_POLayer']['_XWidth']
             self._DesignParameter['_POLayerPINDrawing']['_YWidth'] = (self._DesignParameter['_POLayer']['_YWidth'] - self._DesignParameter['_ODLayer']['_YWidth']) / 2
             tmp1 = []
