@@ -4153,7 +4153,6 @@ class _FlatteningCell(QWidget):
                     combo.setCurrentIndex(module_index)
             else:
                 module_name = self.inspector.convert_pcell_name_to_generator_name(item.text(0))
-                print(module_name, item.text(0))
                 module_index = combo.findText(module_name)
                 if module_index != -1:
                     combo.setCurrentIndex(module_index)

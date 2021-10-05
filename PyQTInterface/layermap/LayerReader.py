@@ -21,15 +21,18 @@ def run_for_process_update():
     global _LayerNum2CommonName
     global _LayerName_unified
     global _LayDatNumToName
+    global _LayerExtendedMapping
+    global _ExtendLayerMappingTmp
 
 
     _Technology = user_setup._Technology
 
     if _Technology == 'SS28nm':
         _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/SS28nm/cmos28lp_tech.layermap')
-        _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
+        _LayerMappingTmp, _ExtendLayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
         _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
-        _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
+        # _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
+        _LayDatNameTmp = _ExtendLayDatNum2LayDatName(_ExtendLayerMappingTmp)
         _LayerNum2CommonName = _LayerNumber2CommonLayerName(_LayerMappingTmp)
     elif _Technology == 'TSMC180nm':
         _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/tsmc18rf.layermap')
@@ -943,7 +946,10 @@ def run_for_process_update():
     if _Technology == 'SS28nm':
         _LayerMapping.update({'M1PIN': _LayerMappingTmp[('M1', 'pin')]})
 
-    
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'ALPHA': _LayerMappingTmp[('ALPHA', 'drawing')]})
+
+
 
     if _Technology == 'TSMC180nm':
         _LayerMapping.update({'text': (None, None)})
@@ -958,10 +964,14 @@ def run_for_process_update():
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'text': (None, None)})
 
+
+
     _LayerMapFile.close()
 
     _LayerName_unified = _LayerNumber2UnifiedLayerName(_LayerMapping)
-    _LayDatNumToName = _LayDatNumber2UnifiedLayerName(_LayerMapping)
+    # _LayDatNumToName = _LayDatNumber2UnifiedLayerName(_LayerMapping, _LayerMappingTmp)
+    _LayerExtendedMapping = _ExtendLayerMapping(_LayerMapping, _ExtendLayerMappingTmp)
+    _LayDatNumToName = _ExtendLayDatNumber2UnifiedLayerName(_LayerExtendedMapping)
     print("******Layer Map file load Complete")
 
 
@@ -997,6 +1007,7 @@ def _ReadLayerMapFile(_LayerMapFile, CadenceVersion ):
 
     elif CadenceVersion== 'VIRTUOSO':
         _newLayerMapDictionary={}
+        _extendLayerMap = {}
         linenum=len(_LayerMapFile.readlines())
         _LayerMapFile.seek(0)
 
@@ -1012,8 +1023,13 @@ def _ReadLayerMapFile(_LayerMapFile, CadenceVersion ):
                 # The line is blink. skip the current step:', tmp
             else:
                 tmp2=tmp.split()
-                _newLayerMapDictionary[(tmp2[0],tmp2[1])]=(int(tmp2[2]), int(tmp2[3]),tmp2[0])
-        return _newLayerMapDictionary
+                _newLayerMapDictionary[(tmp2[0], tmp2[1])] = (int(tmp2[2]), int(tmp2[3]), tmp2[0])
+                if (tmp2[0], tmp2[1]) in _extendLayerMap:
+                    _extendLayerMap[(tmp2[0], tmp2[1])].append((int(tmp2[2]), int(tmp2[3]), tmp2[0]))
+                else:
+                    _extendLayerMap[(tmp2[0], tmp2[1])] = [(int(tmp2[2]), int(tmp2[3]), tmp2[0])]
+
+        return _newLayerMapDictionary, _extendLayerMap
     else :
         print('CadenceVersion has incorrect value')
 
@@ -1042,6 +1058,19 @@ def _LayDatNum2LayDatName(_LayerMapping):
             _LayerNumAndDat2Name[lay_num][dat_num] = _LayDatName
     return _LayerNumAndDat2Name
 
+def _ExtendLayDatNum2LayDatName(_ExtendLayerMapping):
+    _LayerNumAndDat2Name = dict()
+
+    for _LayDatName_key, values_list in _ExtendLayerMapping.items():
+        for values in values_list:
+            lay_num = str(values[0])
+            dat_num = str(values[1])
+            if lay_num not in _LayerNumAndDat2Name:
+                _LayerNumAndDat2Name[lay_num] = dict()
+            if dat_num not in _LayerNumAndDat2Name[lay_num]:
+                _LayerNumAndDat2Name[lay_num][dat_num] = _LayDatName_key
+    return _LayerNumAndDat2Name
+
 
 def _LayerNumber2CommonLayerName(_LayerMapping):
 
@@ -1067,7 +1096,7 @@ def _LayerNumber2UnifiedLayerName(_LayerMapping):
         _LayerNum2Name[i] = layerName
     return _LayerNum2Name
 
-def _LayDatNumber2UnifiedLayerName(_LayerMapping):
+def _LayDatNumber2UnifiedLayerName(_LayerMapping, org_layer_map):
     _LayDatNum2Name = dict()
     for _LayerCommonName in _LayerMapping:
         if _LayerMapping[_LayerCommonName] == None:
@@ -1081,6 +1110,37 @@ def _LayDatNumber2UnifiedLayerName(_LayerMapping):
             _LayDatNum2Name[i][j] = _LayerCommonName
     return _LayDatNum2Name
 
+def _ExtendLayDatNumber2UnifiedLayerName(_ExtendLayerMapping):
+    _LayDatNum2Name = dict()
+    for _LayerCommonName, value_list in _ExtendLayerMapping.items():
+        if not value_list:
+            # warnings.warn(f'Current Layer {_LayerCommonName} does not match any layer in current technology node.')
+            continue
+        for values in value_list:
+            i = str(values[0])
+            if i not in _LayDatNum2Name:
+                _LayDatNum2Name[i] = dict()
+            j = str(values[1])
+            if j not in _LayDatNum2Name[i]:
+                _LayDatNum2Name[i][j] = _LayerCommonName
+    return _LayDatNum2Name
+
+
+def _ExtendLayerMapping(_LayerMapping, extend_layer_mapping_tmp):
+    org_layer_name_map = dict()
+    for org_layer_name_tuple, values in extend_layer_mapping_tmp.items():
+        if org_layer_name_tuple[0] in org_layer_name_map:
+            org_layer_name_map[org_layer_name_tuple[0]].extend(values)
+        else:
+            org_layer_name_map[org_layer_name_tuple[0]] = values
+
+    extended_layer_mapping = dict()
+    for layer_common_name, values in _LayerMapping.items():
+        extended_layer_mapping[layer_common_name] = dict()
+
+        if values[-1] in org_layer_name_map:
+            extended_layer_mapping[layer_common_name] = org_layer_name_map[values[-1]]
+    return extended_layer_mapping
 
 #######################
 
