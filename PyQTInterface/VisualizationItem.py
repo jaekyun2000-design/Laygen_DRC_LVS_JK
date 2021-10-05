@@ -672,13 +672,13 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                     if len(_XYCoordinatesPair) == 2:                                                    #Only One Block Case
                         pass
-                    elif i is 0:                                                                                        #There are more than 2 segments and First Block Case
+                    elif i == 0:                                                                                        #There are more than 2 segments and First Block Case
                         if _XYCoordinatesPair[i][0] < _XYCoordinatesPair[i+1][0]:          #Path to Right Case
                             Xwidth -= self._ItemTraits['_Width']/2
                         elif _XYCoordinatesPair[i][0] > _XYCoordinatesPair[i+1][0]:        #Path to Left Case
                             Xwidth -= self._ItemTraits['_Width']/2
                             Xmin += self._ItemTraits['_Width']/2
-                    elif i is len(_XYCoordinatesPair)-2:
+                    elif i == len(_XYCoordinatesPair)-2:
                         if _XYCoordinatesPair[i][0] < _XYCoordinatesPair[i+1][0]:          #Path to Right Case
                             Xmin -= self._ItemTraits['_Width']/2
                             Xwidth += self._ItemTraits['_Width']/2
@@ -765,7 +765,11 @@ class _VisualizationItem(QGraphicsItemGroup):
                 else:
                     if type(sub_element_vi._ItemTraits['_Layer']) == int:
                         # layer = layernum2name[str(sub_element_vi._ItemTraits['_Layer'])]
-                        layer = sub_element_vi._ItemTraits['_LayerUnifiedName']
+                        try:
+                            layer = sub_element_vi._ItemTraits['_LayerUnifiedName']
+                        except:
+                            traceback.print_exc()
+                            print(sub_element_vi._ItemTraits)
                         if layer not in self._subElementLayer:
                             self._subElementLayer[layer] = [sub_element_vi]
                         else:
@@ -773,7 +777,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                     else:
                         self._subElementLayer[sub_element_vi._ItemTraits['_Layer']].append(sub_element_vi)
 
-                if sub_element_vi._ItemTraits['_DesignParametertype'] is not 8:
+                if sub_element_vi._ItemTraits['_DesignParametertype'] != 8:
                     if self._ItemTraits['_Reflect'] == None and self._ItemTraits['_Angle'] == None:
                         pass
                     elif self._ItemTraits['_Reflect'] == [0, 0, 0]:
