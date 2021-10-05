@@ -31,7 +31,8 @@ def run_for_process_update():
         _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/SS28nm/cmos28lp_tech.layermap')
         _LayerMappingTmp, _ExtendLayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
         _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
-        _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
+        # _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
+        _LayDatNameTmp = _ExtendLayDatNum2LayDatName(_ExtendLayerMappingTmp)
         _LayerNum2CommonName = _LayerNumber2CommonLayerName(_LayerMappingTmp)
     elif _Technology == 'TSMC180nm':
         _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/tsmc18rf.layermap')
@@ -1055,6 +1056,19 @@ def _LayDatNum2LayDatName(_LayerMapping):
             _LayerNumAndDat2Name[lay_num] = dict()
         if dat_num not in _LayerNumAndDat2Name[lay_num]:
             _LayerNumAndDat2Name[lay_num][dat_num] = _LayDatName
+    return _LayerNumAndDat2Name
+
+def _ExtendLayDatNum2LayDatName(_ExtendLayerMapping):
+    _LayerNumAndDat2Name = dict()
+
+    for _LayDatName_key, values_list in _ExtendLayerMapping.items():
+        for values in values_list:
+            lay_num = str(values[0])
+            dat_num = str(values[1])
+            if lay_num not in _LayerNumAndDat2Name:
+                _LayerNumAndDat2Name[lay_num] = dict()
+            if dat_num not in _LayerNumAndDat2Name[lay_num]:
+                _LayerNumAndDat2Name[lay_num][dat_num] = _LayDatName_key
     return _LayerNumAndDat2Name
 
 
