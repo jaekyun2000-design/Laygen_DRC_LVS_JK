@@ -85,6 +85,15 @@ class _RectBlock(QGraphicsRectItem):
                      self._BlockTraits["_Width"]*scaleValue,
                      self._BlockTraits["_Height"]*scaleValue )
 
+        if self._BlockTraits["_Pattern"] not in ['X','blank']:
+            color_name = DisplayReader._DisplayDict[self._BlockTraits['_LayerName'] + self._BlockTraits['_DatatypeName']][
+                'Fill'].name
+            color_patt_name = color_name + self._BlockTraits["_Pattern"]
+            if color_patt_name not in DisplayReader._ColorPatternDict:
+                color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName'] + self._BlockTraits['_DatatypeName']][
+                    'Fill']
+                qpix = DisplayReader._PatternDict[self._BlockTraits["_Pattern"]].create_qbit(color)
+                DisplayReader._DisplayDict[color_patt_name] = qpix
 
     def paint(self, painter, option, widget=None):
         # list_manager.layer_visible_flag_dict[self.itemtrait['layer']] is False:
@@ -124,49 +133,7 @@ class _RectBlock(QGraphicsRectItem):
             pen.setStyle(Qt.DotLine)
             pen.setColor(Qt.GlobalColor.darkCyan)
             pen.setWidth(5)
-            # self.setZValue(1)
-        # else:
-        #     self.setZValue(self._BlockTraits['_Layer'])
         painter.setPen(pen)
-
-        # if self._BlockTraits["_Pattern"] == "blank":
-        #     brush.setStyle(Qt.NoBrush)
-        # elif self._BlockTraits["_Pattern"] == "solid":
-        #     brush.setStyle(Qt.SolidPattern)
-        # elif self._BlockTraits["_Pattern"] == "dots":
-        #     brush.setStyle(Qt.Dense1Pattern)
-        # elif self._BlockTraits["_Pattern"] == "dot4":
-        #     brush.setStyle(Qt.Dense6Pattern)
-        # elif self._BlockTraits["_Pattern"] == "hLine":
-        #     brush.setStyle(Qt.HorPattern)
-        # elif self._BlockTraits["_Pattern"] == "vLine":
-        #     brush.setStyle(Qt.VerPattern)
-        # elif self._BlockTraits["_Pattern"] == "cross":
-        #     brush.setStyle(Qt.DiagCrossPattern)
-        # elif self._BlockTraits["_Pattern"] == "grid":
-        #     brush.setStyle(Qt.CrossPattern)
-        # elif self._BlockTraits["_Pattern"] == "slash":
-        #     brush.setStyle(Qt.BDiagPattern)
-        # elif self._BlockTraits["_Pattern"] == "backSlash":
-        #     brush.setStyle(Qt.FDiagPattern)
-        #
-        #
-        # elif self._BlockTraits["_Pattern"] == "stipple0":
-        #     brush.setStyle(Qt.BDiagPattern)
-        # elif self._BlockTraits["_Pattern"] == "dagger":
-        #     brush.setStyle(Qt.Dense7Pattern)
-        # elif self._BlockTraits["_Pattern"] == "brick":
-        #     brush.setStyle(Qt.CrossPattern)
-        #     # brush.setTransform()
-        # else:
-        # #     # dots_bitmap = QBitmap(4,4)
-        # #     # dots_bitmap.fromData(QSize(4,4),b'\x01')
-        # #     # brush.setTexture(dots_bitmap)
-        #     brush.setStyle(Qt.Dense6Pattern)
-
-
-
-
 
         color_name = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill'].name
         color_patt_name =color_name+self._BlockTraits["_Pattern"]
@@ -177,10 +144,10 @@ class _RectBlock(QGraphicsRectItem):
         elif self._BlockTraits["_Pattern"] == 'blank':
             brush.setStyle(Qt.NoBrush)
         else:
-            if color_patt_name not in DisplayReader._ColorPatternDict:
-                color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill']
-                qpix = DisplayReader._PatternDict[self._BlockTraits["_Pattern"]].create_qbit(color)
-                DisplayReader._DisplayDict[color_patt_name] = qpix
+            # if color_patt_name not in DisplayReader._ColorPatternDict:
+            #     color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill']
+            #     qpix = DisplayReader._PatternDict[self._BlockTraits["_Pattern"]].create_qbit(color)
+            #     DisplayReader._DisplayDict[color_patt_name] = qpix
             qpix = DisplayReader._DisplayDict[color_patt_name]
             brush.setTexture(qpix)
 
