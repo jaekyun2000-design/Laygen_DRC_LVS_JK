@@ -992,7 +992,7 @@ class QtProject:
                                 sref_name_count[sref_name] = 0
                             else:
                                 sref_name_count[sref_name] += 1
-                            _tmpId = sref_name
+                            _tmpId = sref_name + str(sref_name_count[sref_name])
                             self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName,
                                                            _ElementName=sref_name+'_'+str(sref_name_count[sref_name]))
                         # print('     monitor for debug: ', _tmpElement._ELEMENTS._SNAME.sname.decode())
@@ -1015,6 +1015,20 @@ class QtProject:
                                 self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                     "_Angle"] = _tmpElement._ELEMENTS._STRANS._ANGLE.angle
                     elif "_TEXT" in vars(_tmpElement._ELEMENTS):
+                        try:
+                            if _tmpElement._GDS_ELEMENT_NAME:
+                                _tmpId = _tmpElement._GDS_ELEMENT_NAME
+                            else:
+                                element_name = LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][
+                                                   str(_tmpElement._ELEMENTS._TEXTBODY._TEXTTYPE.texttype)] + '_text'
+                                if element_name not in element_name_count:
+                                    element_name_count[element_name] = 0
+                                else:
+                                    element_name_count[element_name] += 1
+                                tmp_element_name = element_name + '_' + str(element_name_count[element_name])
+                                _tmpId = tmp_element_name
+                        except:
+                            traceback.print_exc()
                         self._createNewDesignParameter(_id=_tmpId, _type=8, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                             "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
@@ -2193,6 +2207,7 @@ class QtProject:
                         _tmpIdGroup.remove(int(_tmpId[len(_ParentName):]))
                 return min(_tmpIdGroup)
             except:
+                # traceback.print_exc()
                 return userDefineExceptions._UnkownError
 
     def _getDesignConstraintId(self, _ParentName=None, ):
