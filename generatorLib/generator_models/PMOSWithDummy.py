@@ -32,18 +32,16 @@ class _PMOS(StickDiagram._StickDiagram):
         self._DesignParameter['_POLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],
                                                                              _Datatype=DesignParameters._LayerMapping['POLY'][1],
                                                                              _XYCoordinates=[], _XWidth=400, _YWidth=400)
-        self._DesignParameter['_SLVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['SLVT'][0],
-                                                      _Datatype=DesignParameters._LayerMapping['SLVT'][1],
-                                                      _XYCoordinates=[], _XWidth=400, _YWidth=400)
-        self._DesignParameter['_LVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['LVT'][0],
-                                                     _Datatype=DesignParameters._LayerMapping['LVT'][1],
-                                                     _XYCoordinates=[], _XWidth=400, _YWidth=400)
-        self._DesignParameter['_RVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RVT'][0],
-                                                     _Datatype=DesignParameters._LayerMapping['RVT'][1],
-                                                     _XYCoordinates=[], _XWidth=400, _YWidth=400)
-        self._DesignParameter['_HVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['HVT'][0],
-                                                     _Datatype=DesignParameters._LayerMapping['HVT'][1],
-                                                     _XYCoordinates=[], _XWidth=400, _YWidth=400)
+        #
+        # self._DesignParameter['_LVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['LVT'][0],
+        #                                              _Datatype=DesignParameters._LayerMapping['LVT'][1],
+        #                                              _XYCoordinates=[], _XWidth=400, _YWidth=400)
+        # self._DesignParameter['_RVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RVT'][0],
+        #                                              _Datatype=DesignParameters._LayerMapping['RVT'][1],
+        #                                              _XYCoordinates=[], _XWidth=400, _YWidth=400)
+        # self._DesignParameter['_HVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['HVT'][0],
+        #                                              _Datatype=DesignParameters._LayerMapping['HVT'][1],
+        #                                              _XYCoordinates=[], _XWidth=400, _YWidth=400)
 
         print ('#########################################################################################################')
         print ('                                    {}  PMOS Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name']))
@@ -208,7 +206,9 @@ class _PMOS(StickDiagram._StickDiagram):
         # XVT Layer Calculation
         try:
             if (DesignParameters._Technology == 'SS28nm') and _XVT in ('SLVT', 'LVT', 'RVT', 'HVT'):
+
                 _XVTLayer = '_' + _XVT + 'Layer'
+
             elif (DesignParameters._Technology == 'TSMC65nm') and _XVT in ('LVT', 'HVT'):
                 _XVTLayer = '_P' + _XVT + 'Layer'
             elif (DesignParameters._Technology == 'TSMC65nm') and (_XVT == None):
@@ -222,7 +222,12 @@ class _PMOS(StickDiagram._StickDiagram):
                 raise NotImplementedError("Not Implemented in other technology : {}".format(DesignParameters._Technology))
 
             if _XVTLayer != None:
+
                 print ('#############################     {0} Layer Calculation    ##############################################'.format(_XVTLayer))
+                self._DesignParameter[_XVTLayer] = self._BoundaryElementDeclaration(
+                    _Layer=DesignParameters._LayerMapping[_XVT][0],
+                    _Datatype=DesignParameters._LayerMapping[_XVT][1],
+                    _XYCoordinates=[], _XWidth=400, _YWidth=400)
                 self._DesignParameter[_XVTLayer]['_XWidth'] = self._DesignParameter['_ODLayer']['_XWidth'] + 2 * _DRCObj._XvtMinEnclosureOfODX
                 self._DesignParameter[_XVTLayer]['_YWidth'] = self._DesignParameter['_ODLayer']['_YWidth'] + 2 * _DRCObj._XvtMinEnclosureOfODY
                 self._DesignParameter[_XVTLayer]['_XYCoordinates'] = self._DesignParameter['_ODLayer']['_XYCoordinates']

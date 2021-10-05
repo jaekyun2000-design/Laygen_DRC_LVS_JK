@@ -249,15 +249,12 @@ class IrregularTransformer(ast.NodeTransformer):
             _id = node.id
         sentence = '['
         # for _, elementIdList in self._id_to_data_dict.XYPathDict[_id].items():
-        for _, elementIdList in node.info_dict.items():
-            for i in range(len(elementIdList)):
-                tmp_node = XYCoordinate()
-                tmp_node.id = elementIdList[i]
-                tmp_code_ast = self.visit_XYCoordinate(tmp_node)
+        for sub_ast_id, ast_obj in node.info_dict.items():
+                tmp_code_ast = self.visit_XYCoordinate(ast_obj)
                 tmp_code = astunparse.unparse(tmp_code_ast)
                 tmp_code = tmp_code[2:-2]
                 sentence = sentence + tmp_code + ',\n'
-                del tmp_node
+
         sentence = sentence[:-2] + ']'
         final_tripleList = '[' +sentence+ ']'
         tmp = ast.parse(final_tripleList)

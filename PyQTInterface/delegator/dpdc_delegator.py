@@ -68,7 +68,8 @@ class DesignDelegator(delegator.Delegator):
 
     def control_constraint_tree_view(self, constraint_id, channel=2, request='post' ):
         """
-        receive: constraint_id, channel (generator(1) or candidate(2), both(3)), request (post or delete or update)
+        receive: constraint
+        \_id, channel (generator(1) or candidate(2), both(3)), request (post or delete or update)
         process: control constraint info on tree widget
         request: nothing
         return : nothing

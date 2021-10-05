@@ -14,7 +14,7 @@ from generatorLib import drc_api
 class ExpressionCalculator(QWidget):
     send_XYCreated_signal = pyqtSignal(str, dict)
     send_dummyconstraints_signal = pyqtSignal(dict, str)
-    send_path_row_xy_signal = pyqtSignal(dict, str)
+    send_path_row_xy_signal = pyqtSignal("PyQt_PyObject", str)
     send_expression_signal = pyqtSignal(str, str, dict)
     returnLayer_signal = pyqtSignal(list)
     presetDict = dict()
@@ -1167,6 +1167,7 @@ class ExpressionCalculator(QWidget):
 class PathWindow(QWidget):
     send_output_signal = pyqtSignal(dict)
     send_clicked_item_name_signal = pyqtSignal(str)
+    id_ast_match_dict = dict()
 
     def __init__(self, address=None, idlist=None):
         super().__init__()
@@ -1224,7 +1225,8 @@ class PathWindow(QWidget):
     def itemLoad(self, _clickedItem):
         self.send_clicked_item_name_signal.emit(_clickedItem.text())
 
-    def create_row(self, constraint_dict, _id):
+    def create_row(self, _ast, _id):
+        constraint_dict = _ast.info_dict
         row = self.XYCoordinateList.rowCount()
         self.XYCoordinateList.setRowCount(row+1)
         IDtext = QTableWidgetItem(_id)
@@ -1255,18 +1257,28 @@ class PathWindow(QWidget):
             Xcheck.setCheckState(2)
             Ycheck.setCheckState(2)
 
+        self.id_ast_match_dict[_id] = _ast
+
         # CurrentEditPointNum = len(self.XYdictForLineEdit) - 2
         # self.XYdictForLineEdit[CurrentEditPointNum].setText(_id)
         # self.UpdateXYwidget()
 
     def exportButton_accepted(self):
-        output = dict(XYidlist=list())
+        # output = dict(XYidlist=list())
+        #
         self.send_output_signal.connect(self.address.getPathInfo)
         #
-        for idx in range(self.XYCoordinateList.rowCount()):
-            output['XYidlist'].append([self.XYCoordinateList.item(idx,0).text(), self.XYCoordinateList.item(idx,1).checkState(), self.XYCoordinateList.item(idx,2).checkState()])
+        # for idx in range(self.XYCoordinateList.rowCount()):
+        #     output['XYidlist'].append([self.XYCoordinateList.item(idx,0).text(), self.XYCoordinateList.item(idx,1).checkState(), self.XYCoordinateList.item(idx,2).checkState()])
 
-        self.send_output_signal.emit(output)
+        output_dict = dict()
+        for idx in range(self.XYCoordinateList.rowCount()):
+            for id, ast in self.id_ast_match_dict.items():
+                if self.XYCoordinateList.item(idx, 0).text() == id:
+                    output_dict[self.XYCoordinateList.item(idx, 0).text()] = ast
+
+        self.send_output_signal.emit(output_dict)
+        # self.send_output_signal.emit(output)
         self.destroy()
 
     def cancelButton_accepted(self):
