@@ -513,7 +513,9 @@ class _VisualizationItem(QGraphicsItemGroup):
 
 
     def blockGeneration(self,_XYCoordinatesPair=None, idx=None):                                  #This creates visual Block (which maps boundary or Path Item)
-        blockTraits = copy.deepcopy(self._ItemTraits)
+        # blockTraits = copy.deepcopy(self._ItemTraits)
+        blockTraits = deepish_copy(self._ItemTraits)
+
 
         DisplayInfo = DisplayReader._DisplayDict
 
@@ -683,7 +685,9 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self._subElementLayer[layer].append(self)
 
                 self.index = idx
-                block = _RectBlock(copy.deepcopy(blockTraits))
+                # block = _RectBlock(copy.deepcopy(blockTraits))
+                block = _RectBlock(deepish_copy(blockTraits))
+
                 block.index = [idx, i]
 
                 self.block.append(block)  #Block Generation
@@ -1231,7 +1235,6 @@ class _VisualizationItem(QGraphicsItemGroup):
         #
         #
 
-
 class QGraphicsTextItemWObounding(QGraphicsTextItem):
     # pass
     def shape(self):
@@ -1239,6 +1242,20 @@ class QGraphicsTextItemWObounding(QGraphicsTextItem):
 
     # def boundingRect(self) -> QRectF:
     #     return QRect(0,0,0,0)
+
+def deepish_copy(source):
+    out = dict()
+    for key, value in source.items():
+        try:
+            out[key] = value.copy()
+        except AttributeError:
+            try:
+                out[key] = value[:]
+            except TypeError:
+                out[key] = value
+    return out
+
+
 
 
 
