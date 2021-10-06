@@ -4,7 +4,8 @@ _Snap_mode = 'orthogonal' # orthogonal or any_angle
 DEBUG = True
 MIN_SNAP_SPACING = 5
 GDS2GEN = True
-
+MULTI_THREAD = True
+MULTI_THREAD_NUM = 5
 
 
 

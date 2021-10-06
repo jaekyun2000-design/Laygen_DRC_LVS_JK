@@ -1,6 +1,8 @@
 import ast
 import sys
 import os
+import time
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 dir_check=os.getcwd()
 if 'PyQTInterface' in dir_check:
@@ -261,7 +263,7 @@ class _MainWindow(QMainWindow):
         graphicView.name_list_signal.connect(self.save_clipboard)
         self.scene.send_module_name_list_signal.connect(graphicView.name_out_fcn)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
-        self.scene.setMinimumRenderSize(0.1)
+        self.scene.setMinimumRenderSize(1)
         graphicView.centerOn(QPointF(268,-165))
         self.setCentralWidget(graphicView)
         color = Qt.black if user_setup._Night_mode else Qt.white
@@ -2046,18 +2048,40 @@ class _MainWindow(QMainWindow):
                 tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(tmpAST)
                 self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=parameter_id, dc_id=design_dict['constraint_id'])
 
-            ####################################### Visual Item Creation ##########################################
+        ####################################### Visual Item Creation ##########################################
+        if 'MULTI_THREAD' in user_setup.__dict__ and user_setup.MULTI_THREAD:
+            from PyQTInterface import thread
+            multi_thread_num = user_setup.MULTI_THREAD_NUM
+            thread.thread_result = [None] * multi_thread_num
+            thread.finished_work = [0] * multi_thread_num
+            total_len = len(topcell)
+            self.pg_bar = thread.MultiThreadQProgressBar('Creaing vs items...', 'Cancel',0,total_len, self)
+            # self.pg_bar.setRange(0,total_len-1)
+            self.pg_bar.setWindowModality(Qt.WindowModal)
+            self.pg_bar.show()
+            pool = QThreadPool.globalInstance()
+            worker_manager = thread.VSItemRunnableManager(multi_thread_num)
+            worker_manager.signal.every_job_doen_signal.connect(self.create_vs_items_from_thread_memory)
+            pool.start(worker_manager)
+            for i in range(multi_thread_num):
+                idx_range = [int(total_len*i/multi_thread_num), int(total_len*(i+1)/multi_thread_num)]
+                if i == multi_thread_num - 1:
+                    thread_jobs = dict(list(topcell.items())[idx_range[0]:])
+                else:
+                    thread_jobs = dict(list(topcell.items())[idx_range[0]:idx_range[1]])
+                worker = thread.VSItemRunnable(i, thread_jobs)
+                worker.signal.one_job_progress_signal.connect(self.pg_bar.add_count)
+                worker.signal.every_job_doen_signal.connect(worker_manager.add_job_done)
+                pool.start(worker)
+        else:
             if topcell[parameter_id]._DesignParameter['_DesignParametertype'] != 3:
                 visualItem = self.createVisualItemfromDesignParameter(topcell[parameter_id])
                 visual_item_list.append(visualItem)
-                # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
-                # layer = layernum2name[str(tmp_dp_dict['_Layer'])]
                 layer = tmp_dp_dict['_LayerUnifiedName']
                 if layer in self._layerItem:
                     self._layerItem[layer].append(visualItem)
                 else:
                     self._layerItem[layer] = [visualItem]
-
                 self._id_layer_mapping[topcell[parameter_id]._id] = layer
                 self.scene.addItem(visualItem)
             else:
@@ -2065,15 +2089,20 @@ class _MainWindow(QMainWindow):
                 sref_vi.updateDesignParameter(topcell[parameter_id])
                 self.scene.addItem(sref_vi)
                 self.visualItemDict[topcell[parameter_id]._id] = sref_vi
-
                 self._layerItem = sref_vi.returnLayerDict()
-
             self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
 
-                # for i in range(len(sref_vi.returnLayerDict()['PIMP'])):
-                #     print(sref_vi.returnLayerDict()['PIMP'][i]._ItemTraits)
-
         print("############################ Cell DP, DC, VISUALITEM CREATION DONE ################################")
+
+    def create_vs_items_from_thread_memory(self):
+        from PyQTInterface import thread
+        for result_list in thread.thread_result:
+            for vs_item in result_list[0].values():
+                self.scene.addItem(vs_item)
+            self._layerItem.update(result_list[1])
+            self._id_layer_mapping.update(result_list[2])
+        self.pg_bar.set_max()
+
 
     def loadPy(self):
         scf = QFileDialog.getOpenFileName(self, 'Load SourceCode', './sourceCode')
