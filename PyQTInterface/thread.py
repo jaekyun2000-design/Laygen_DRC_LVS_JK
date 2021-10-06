@@ -9,6 +9,7 @@ import user_setup
 
 thread_result = [None] * user_setup.MULTI_THREAD_NUM
 finished_work = [0] * user_setup.MULTI_THREAD_NUM
+job_list = [0] * user_setup.MULTI_THREAD_NUM
 
 class WorkerSignal(QObject):
     one_job_progress_signal = pyqtSignal()
@@ -45,6 +46,7 @@ class VSItemRunnable(QRunnable):
                 vs_item_dict[element_name] = sref_vi
                 layer_dict = sref_vi.returnLayerDict()
             finished_work[int(self.name)] += 1
+            job_list[int(self.name)] += 1
             self.signal.one_job_progress_signal.emit()
 
         thread_result[int(self.name)] = vs_item_dict, layer_dict, id_layer_dict
@@ -136,7 +138,9 @@ class MultiThreadQProgressBar(QProgressDialog):
         super(MultiThreadQProgressBar, self).__init__(label, cancel, min, max, parent)
 
     def add_count(self):
-        self.setValue(self.value()+1)
+        # self.setValue(self.value()+1)
+        self.setValue(sum(job_list))
+
 
     def set_max(self):
         self.setValue(self.maximum())
