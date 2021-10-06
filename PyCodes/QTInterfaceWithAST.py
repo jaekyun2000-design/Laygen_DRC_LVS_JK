@@ -21,6 +21,7 @@ import json
 import re
 from gds_editor_ver3 import gds_stream
 import user_setup
+import lab_feature
 
 
 # import gds_editor_ver3.gds_structures
