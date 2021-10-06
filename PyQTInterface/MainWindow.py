@@ -1979,7 +1979,9 @@ class _MainWindow(QMainWindow):
     def create_dc_vi_from_top_dp(self, hierarchy):
 
         self.fc = SetupWindow._FlatteningCell(hierarchy, self._QTObj._qtProject._DesignParameter)
+        self.fc.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.fc.show()
+
         flattening_dict = self.fc.ok_button_accepted()
         self.fc.destroy()
 
@@ -2057,7 +2059,7 @@ class _MainWindow(QMainWindow):
             total_len = len(topcell)
             self.pg_bar = thread.MultiThreadQProgressBar('Creaing vs items...', 'Cancel',0,total_len, self)
             # self.pg_bar.setRange(0,total_len-1)
-            self.pg_bar.setWindowModality(Qt.WindowModal)
+            self.pg_bar.setWindowModality(Qt.ApplicationModal)
             self.pg_bar.show()
             pool = QThreadPool.globalInstance()
             worker_manager = thread.VSItemRunnableManager(multi_thread_num)
