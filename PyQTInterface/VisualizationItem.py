@@ -337,20 +337,20 @@ class _VisualizationItem(QGraphicsItemGroup):
                 except:
                     pass
             return main_path
-        elif self._type == 3:
-            main_path = QPainterPath()
-            for block in self.childItems():
-                if type(block) != _RectBlock and type(block) != _VisualizationItem:
-                    continue
-                else:
-                    tmp_path = block.shape()
-                    tmp_path.translate(block.pos())
-                    main_path.addPath(tmp_path)
-                    main_path.closeSubpath()
-            # path_item = QGraphicsPathItem(main_path)
-            # path_item.setPen(QPen(Qt.GlobalColor.red,3,Qt.SolidLine))
-            # self.addToGroup(path_item)
-            return main_path
+        # elif self._type == 3:
+        #     main_path = QPainterPath()
+        #     for block in self.childItems():
+        #         if type(block) != _RectBlock and type(block) != _VisualizationItem:
+        #             continue
+        #         else:
+        #             tmp_path = block.shape()
+        #             tmp_path.translate(block.pos())
+        #             main_path.addPath(tmp_path)
+        #             main_path.closeSubpath()
+        #     # path_item = QGraphicsPathItem(main_path)
+        #     # path_item.setPen(QPen(Qt.GlobalColor.red,3,Qt.SolidLine))
+        #     # self.addToGroup(path_item)
+        #     return main_path
         else:
             return super().shape()
 
