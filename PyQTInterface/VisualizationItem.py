@@ -17,7 +17,7 @@ from PyQTInterface import list_manager
 from PyQTInterface import LayerInfo
 from PyQTInterface.layermap import LayerReader
 from PyQTInterface.layermap import DisplayReader
-import PyQt5
+import lab_feature
 
 # from import list_ma
 
@@ -514,7 +514,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
     def blockGeneration(self,_XYCoordinatesPair=None, idx=None):                                  #This creates visual Block (which maps boundary or Path Item)
         # blockTraits = copy.deepcopy(self._ItemTraits)
-        blockTraits = deepish_copy(self._ItemTraits)
+        blockTraits = lab_feature.deepish_copy(self._ItemTraits)
 
 
         DisplayInfo = DisplayReader._DisplayDict
@@ -686,7 +686,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
                 self.index = idx
                 # block = _RectBlock(copy.deepcopy(blockTraits))
-                block = _RectBlock(deepish_copy(blockTraits))
+                block = _RectBlock(lab_feature.deepish_copy(blockTraits))
 
                 block.index = [idx, i]
 
@@ -1243,17 +1243,6 @@ class QGraphicsTextItemWObounding(QGraphicsTextItem):
     # def boundingRect(self) -> QRectF:
     #     return QRect(0,0,0,0)
 
-def deepish_copy(source):
-    out = dict()
-    for key, value in source.items():
-        try:
-            out[key] = value.copy()
-        except AttributeError:
-            try:
-                out[key] = value[:]
-            except TypeError:
-                out[key] = value
-    return out
 
 
 

@@ -55,6 +55,12 @@ class QtDesignParameter:
         # self._DesignModuleLib = None
         ###self._VisualizationItemObj = VisualizationItem._VisualizationItem(_ItemTraits = _ItemTraits)
 
+    def __deepcopy__(self, memodict={}):
+        copy_obj = QtDesignParameter()
+        copy_dict = lab_feature.deepish_copy(self.__dict__)
+        copy_obj.__dict__ = copy_dict
+        return copy_obj
+
     def update_unified_expression(self):
         try:
             if '_Layer' in self._DesignParameter and type(self._DesignParameter['_Layer']) == int:
