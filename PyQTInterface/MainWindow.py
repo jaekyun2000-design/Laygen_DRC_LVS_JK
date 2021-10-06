@@ -222,7 +222,7 @@ class _MainWindow(QMainWindow):
         auto_array_action = QAction("Inspect array", self)
         auto_pathpoint_action = QAction("Inspect path point", self)
         auto_tech_process_change_action = QAction("Change technology node", self)
-        debug_new_window_action = QAction("New window debug", self)
+        create_sub_module_action = QAction("create sub module from sref", self)
 
         auto_array_action.setShortcut('Ctrl+1')
         auto_array_action.triggered.connect(self.inspect_array)
@@ -233,15 +233,15 @@ class _MainWindow(QMainWindow):
         auto_tech_process_change_action.setShortcut('Ctrl+3')
         auto_tech_process_change_action.triggered.connect(self.change_process)
 
-        debug_new_window_action.setShortcut('Ctrl+9')
-        debug_new_window_action.triggered.connect(self.new_main_window)
+        create_sub_module_action.setShortcut('Ctrl+9')
+        create_sub_module_action.triggered.connect(self.new_main_window)
 
         automation_menu = menubar.addMenu("&Automation")
         automation_menu.setObjectName("top_menu_widget")
         automation_menu.addAction(auto_array_action)
         automation_menu.addAction(auto_pathpoint_action)
         automation_menu.addAction(auto_tech_process_change_action)
-        automation_menu.addAction(debug_new_window_action)
+        automation_menu.addAction(create_sub_module_action)
 
         # automation_menu.setStyleSheet("background-color: rgb(178, 41, 100)")
         # self.setStyleSheet("background-color: rgb(178, 41, 100)")
@@ -2076,23 +2076,24 @@ class _MainWindow(QMainWindow):
                 worker.signal.every_job_doen_signal.connect(worker_manager.add_job_done)
                 pool.start(worker)
         else:
-            if topcell[parameter_id]._DesignParameter['_DesignParametertype'] != 3:
-                visualItem = self.createVisualItemfromDesignParameter(topcell[parameter_id])
-                visual_item_list.append(visualItem)
-                layer = tmp_dp_dict['_LayerUnifiedName']
-                if layer in self._layerItem:
-                    self._layerItem[layer].append(visualItem)
+            for parameter_id in topcell.keys():    
+                if topcell[parameter_id]._DesignParameter['_DesignParametertype'] != 3:
+                    visualItem = self.createVisualItemfromDesignParameter(topcell[parameter_id])
+                    visual_item_list.append(visualItem)
+                    layer = tmp_dp_dict['_LayerUnifiedName']
+                    if layer in self._layerItem:
+                        self._layerItem[layer].append(visualItem)
+                    else:
+                        self._layerItem[layer] = [visualItem]
+                    self._id_layer_mapping[topcell[parameter_id]._id] = layer
+                    self.scene.addItem(visualItem)
                 else:
-                    self._layerItem[layer] = [visualItem]
-                self._id_layer_mapping[topcell[parameter_id]._id] = layer
-                self.scene.addItem(visualItem)
-            else:
-                sref_vi = VisualizationItem._VisualizationItem()
-                sref_vi.updateDesignParameter(topcell[parameter_id])
-                self.scene.addItem(sref_vi)
-                self.visualItemDict[topcell[parameter_id]._id] = sref_vi
-                self._layerItem = sref_vi.returnLayerDict()
-            self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
+                    sref_vi = VisualizationItem._VisualizationItem()
+                    sref_vi.updateDesignParameter(topcell[parameter_id])
+                    self.scene.addItem(sref_vi)
+                    self.visualItemDict[topcell[parameter_id]._id] = sref_vi
+                    self._layerItem = sref_vi.returnLayerDict()
+                self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
 
         print("############################ Cell DP, DC, VISUALITEM CREATION DONE ################################")
 
