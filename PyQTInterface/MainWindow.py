@@ -2077,8 +2077,10 @@ class _MainWindow(QMainWindow):
             multi_thread_num = user_setup.MULTI_THREAD_NUM
             thread.thread_result = [None] * multi_thread_num
             thread.finished_work = [0] * multi_thread_num
+            thread.job_list = [0] * multi_thread_num
+
             total_len = len(topcell)
-            self.pg_bar = thread.MultiThreadQProgressBar('Creaing vs items...', 'Cancel',0,total_len, self)
+            self.pg_bar = thread.MultiThreadQProgressBar('Creating vs items...', 'Cancel',0,total_len, self)
             # self.pg_bar.setRange(0,total_len-1)
             self.pg_bar.setWindowModality(Qt.ApplicationModal)
             self.pg_bar.show()
@@ -2123,8 +2125,10 @@ class _MainWindow(QMainWindow):
         for result_list in thread.thread_result:
             for vs_item in result_list[0].values():
                 self.scene.addItem(vs_item)
+                self._layerItem = vs_item.returnLayerDict()
             self._layerItem.update(result_list[1])
             self._id_layer_mapping.update(result_list[2])
+            self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
         self.pg_bar.set_max()
 
 
@@ -3545,7 +3549,7 @@ class _CustomScene(QGraphicsScene):
                     continue
                 parameterIDList.append(item._ItemTraits['_id'])
             self.send_parameterIDList_signal.emit(parameterIDList,5)
-        elif QKeyEvent.key() == Qt.Key_Q: #variable Call with XYCoordinates DesignParameter
+        elif QKeyEvent.key() == Qt.Key_Q:
             itemList = self.selectedItems()
             for item in itemList:
                 self.send_show_variable_signal.emit(item)
