@@ -584,19 +584,19 @@ class _VisualizationItem(QGraphicsItemGroup):
 
             ############################ Variable Visualization Start ############################
 
-            for field in self._ItemTraits['variable_info']:
-                if field == 'XY':
-                    self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
-                elif field == 'width':
-                    self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
-                elif field == 'height':
-                    self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Height'])
-
-            self.widthVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['width'])
-            self.heightVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['height'])
-            self.XYVariable = QGraphicsTextItemWObounding(f"*{self._ItemTraits['variable_info']['XY']}")
-
-            self.setVariable(type='Boundary')
+            # for field in self._ItemTraits['variable_info']:
+            #     if field == 'XY':
+            #         self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
+            #     elif field == 'width':
+            #         self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
+            #     elif field == 'height':
+            #         self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Height'])
+            #
+            # self.widthVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['width'])
+            # self.heightVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['height'])
+            # self.XYVariable = QGraphicsTextItemWObounding(f"*{self._ItemTraits['variable_info']['XY']}")
+            #
+            # self.setVariable(type='Boundary')
 
             ############################ Variable Visualization End ############################
 
@@ -701,22 +701,22 @@ class _VisualizationItem(QGraphicsItemGroup):
                                            right=self.boundingRect().right())
 
             ############################ Variable Visualization Start ############################
-            self.XYVariable = list()
-            self._ItemTraits['variable_info']['XY'] = list()
-
-            for field in self._ItemTraits['variable_info']:
-                if field == 'XY':
-                    self._ItemTraits['variable_info'][field] = self._ItemTraits['_XYCoordinates']
-                elif field == 'width':
-                    self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
-
-            for self.idx in range(len(self._ItemTraits['_XYCoordinates'][0])):
-                if self.idx == 0:
-                    self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]) + '\nwidth: ' + str(self._ItemTraits['variable_info']['width']))
-                else:
-                    self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][-1][self.idx]))
-
-                self.setVariable(type='Path')
+            # self.XYVariable = list()
+            # self._ItemTraits['variable_info']['XY'] = list()
+            #
+            # for field in self._ItemTraits['variable_info']:
+            #     if field == 'XY':
+            #         self._ItemTraits['variable_info'][field] = self._ItemTraits['_XYCoordinates']
+            #     elif field == 'width':
+            #         self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
+            #
+            # for self.idx in range(len(self._ItemTraits['_XYCoordinates'][0])):
+            #     if self.idx == 0:
+            #         self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][0][self.idx]) + '\nwidth: ' + str(self._ItemTraits['variable_info']['width']))
+            #     else:
+            #         self.tmpXY = QGraphicsTextItemWObounding('*' + str(self._ItemTraits['variable_info']['XY'][-1][self.idx]))
+            #
+            #     self.setVariable(type='Path')
 
             ############################ Variable Visualization End ############################
 
@@ -774,18 +774,18 @@ class _VisualizationItem(QGraphicsItemGroup):
 
             ############################ Variable Visualization Start ############################
 
-            for field in self._ItemTraits['variable_info']:
-                if field == 'XY':
-                    self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
-                elif field == 'parameters':
-                    self._ItemTraits['variable_info'][field] = str(self._ItemTraits['parameters'])
-
-            tmpParam = str(self._ItemTraits['variable_info']['parameters']).replace(',', ',\n')
-
-            self.XYVariable = QGraphicsTextItemWObounding('*' + self._ItemTraits['variable_info']['XY'])
-            self.paramVariable = QGraphicsTextItemWObounding(tmpParam)
-
-            self.setVariable(type='Sref')
+            # for field in self._ItemTraits['variable_info']:
+            #     if field == 'XY':
+            #         self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
+            #     elif field == 'parameters':
+            #         self._ItemTraits['variable_info'][field] = str(self._ItemTraits['parameters'])
+            #
+            # tmpParam = str(self._ItemTraits['variable_info']['parameters']).replace(',', ',\n')
+            #
+            # self.XYVariable = QGraphicsTextItemWObounding('*' + self._ItemTraits['variable_info']['XY'])
+            # self.paramVariable = QGraphicsTextItemWObounding(tmpParam)
+            #
+            # self.setVariable(type='Sref')
 
             ############################ Variable Visualization End ############################
 
@@ -811,21 +811,6 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.addToGroup(self.text)
 
                 self._subElementLayer['text'].append(self)
-
-                # text = QPainter()
-                # aa = QRectF(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1],100,100)
-                # print(aa)
-                # print(type(blockTraits['_TEXT'].decode()))
-                # # text.scale(1, -1)
-                # text.setPen(Qt.GlobalColor.red)
-                # font = QFont()
-                # font.setBold(True)
-                # font.setPointSize(10)
-                # # text.setFont(font)
-                # text.drawText(aa, Qt.AlignCenter, 'x')
-                # #
-                # #
-                # print("?")
 
             else:
                 # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
@@ -1143,10 +1128,11 @@ class _VisualizationItem(QGraphicsItemGroup):
 
             if element_name not in tmp_vsitem.sub_element_dict:
                 element_name_with_idx_list = list(filter(lambda x: element_name in x, list(tmp_vsitem.sub_element_dict.keys())))
-                for element in element_name_with_idx_list:
-                    # tmp_vsitem.sub_element_dict[element].setSelected(True)
-                    tmp_vsitem.sub_element_dict[element].set_highlight()
-                return None
+                # for element in element_name_with_idx_list:
+                #     # tmp_vsitem.sub_element_dict[element].setSelected(True)
+                #     tmp_vsitem.sub_element_dict[element].set_highlight()
+                list(map(lambda element: tmp_vsitem.sub_element_dict[element].set_highlight(), element_name_with_idx_list))
+                # return None
             else:
                 tmp_vsitem = tmp_vsitem.sub_element_dict[element_name]
         # tmp_vsitem.setSelected(True)

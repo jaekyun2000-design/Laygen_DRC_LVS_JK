@@ -15,9 +15,11 @@ class TransferDelegator(delegator.Delegator):
     def change_used_variable_name(self, _original_id, _new_id, _id_list):
         _tmp_dict = dict()
         _tmp_dict[_original_id] = _new_id
-        for _id in _id_list:
-            _target_id = self.main_window._QTObj._qtProject._ElementManager.dp_id_to_dc_id[_id]
-            dpdc_delegator.DesignDelegator(self.main_window).update_qt_constraint(target_id=_target_id, updated_variable_dict=_tmp_dict)
+        # for _id in _id_list:
+        #     _target_id = self.main_window._QTObj._qtProject._ElementManager.dp_id_to_dc_id[_id]
+        #     dpdc_delegator.DesignDelegator(self.main_window).update_qt_constraint(target_id=_target_id, updated_variable_dict=_tmp_dict)
+        _target_id_list = list(map(lambda _id: self.main_window._QTObj._qtProject._ElementManager.dp_id_to_dc_id[_id], _id_list))
+        list(map(lambda _target_id: dpdc_delegator.DesignDelegator(self.main_window).update_qt_constraint(target_id=_target_id, updated_variable_dict=_tmp_dict), _target_id_list))
 
     def get_xy_difference(self, vs_item_list, center, purpose):
         if purpose == 'move':

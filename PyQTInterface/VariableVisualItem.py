@@ -31,8 +31,9 @@ class VariableVisualItem(QGraphicsItemGroup):
 
     def addToGroupFromList(self,visual_item_list):
         self.sub_visual_item.extend(visual_item_list)
-        for vsitem in visual_item_list:
-            self.addToGroup(vsitem)
+        # for vsitem in visual_item_list:
+        #     self.addToGroup(vsitem)
+        list(map(lambda vsitem: self.addToGroup(vsitem), visual_item_list))
 
         #
         # self._XYCoordinatesForDisplay = []
@@ -82,6 +83,14 @@ class VariableVisualItem(QGraphicsItemGroup):
 
 
     def toggleVariableVisualization(self, item):
+        # if item._type == 1:
+        #     for field in item._ItemTraits['variable_info']:
+        #         if field == 'XY':
+        #             self._ItemTraits['variable_info'][field]
+        #         elif field == 'width':
+        #             self._ItemTraits['variable_info'][field]
+        #         elif field == 'height':
+        #             self._ItemTraits['variable_info'][field]
         if item._type == 1:
             boolean = item.XYVariable.isVisible()
             if boolean == False:
