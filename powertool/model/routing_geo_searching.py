@@ -468,10 +468,13 @@ class GeometricField:
                                               for node in intersected_node]
             intersected_dp_hierarchy_names.insert(0, dp)
             return intersected_dp_hierarchy_names
+        elif dp['_DesignParametertype'] == 8:
+            return None
 
         vertical_tree = IST(direction='vertical')
         for x_intersection_dp in sorted(self.interval_tree_by_layer[dp['_Layer']][x_min:x_max + 1]):
             vertical_tree.add_element_node(dp=x_intersection_dp.data[0], idx=x_intersection_dp.data[1])
+
 
         intersected_node = sorted(vertical_tree[y_min:y_max + 1])
         del vertical_tree
@@ -529,16 +532,29 @@ class IST(IntervalTree):
                 # xy_points = boundary_dp['_XYCoordinatesProjection']
                 if self.direction == 'horizontal':
                     lo, hi = min([xy[0] for xy in xy_points]), max([xy[0] for xy in xy_points])
+                    if lo == hi:
+                        warnings.warn('Some element has zero width')
+                        return None
                 elif self.direction == 'vertical':
                     lo, hi = min([xy[1] for xy in xy_points]), max([xy[1] for xy in xy_points])
-
+                    if lo == hi:
+                        warnings.warn('Some element has zero height')
+                        return None
                 self.addi(lo, hi, [boundary_dp, idx])
+
+
         elif self.direction == 'vertical':
             xy_points = boundary_dp['_XYCoordinatesProjection'][idx]
             if self.direction == 'horizontal':
                 lo, hi = min([xy[0] for xy in xy_points]), max([xy[0] for xy in xy_points])
+                if lo != hi:
+                    warnings.warn('Some element has zero width')
+                    return None
             elif self.direction == 'vertical':
                 lo, hi = min([xy[1] for xy in xy_points]), max([xy[1] for xy in xy_points])
+                if lo != hi:
+                    warnings.warn('Some element has zero height')
+                    return None
             self.addi(lo, hi, [boundary_dp, idx])
 
 

@@ -225,7 +225,7 @@ class clustering():
         count_list = []
         for set2_ele in set2:
             count_list.append(connection_wo_last_idx.count(list(set2_ele)))
-        max_idx = count_list.index(max(count_list))
+        max_idx = count_list.index(max(count_list)) if count_list else 0
         top_cell_name = list(set2)[max_idx]
         hierarchy_idx = connection_wo_last_idx.index(list(top_cell_name))
         source_reference = connection_wo_last_idx[hierarchy_idx]
@@ -284,7 +284,7 @@ class clustering():
         count_list = []
         for set2_ele in set2:
             count_list.append(connection_wo_last_idx.count(list(set2_ele)))
-        max_idx = count_list.index(max(count_list))
+        max_idx = count_list.index(max(count_list)) if count_list else 0
         top_cell_name = list(set2)[max_idx]
         hierarchy_idx = connection_wo_last_idx.index(list(top_cell_name))
         source_reference = connection_wo_last_idx[hierarchy_idx]
@@ -510,6 +510,8 @@ class determinstic_clustering(clustering):
             dp = qt_dp._DesignParameter
             # if dp['_DesignParametertype'] == 2 or dp['_DesignParametertype'] == 1:
             intersection_info = self.geo_searching.search_intersection(dp)
+            if intersection_info is None:
+                return None
             self.routing_groups.append(intersection_info)
             intersection_matching_dict_by_name[intersection_info[0]['_ElementName']] = intersection_info[1:]
             # if intersection_matching_dict_by_name[intersection_info[0]['_id']]:
