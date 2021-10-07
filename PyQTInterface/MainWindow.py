@@ -103,6 +103,7 @@ class _MainWindow(QMainWindow):
     send_tech_node_changed_signal = pyqtSignal()
 
     def __init__(self):
+        self.test = False
         super(_MainWindow, self).__init__()
         self.setStyleSheet("border-color: rgb(178, 41, 100)")
         self.design_delegator = dpdc_delegator.DesignDelegator(self)
@@ -127,6 +128,8 @@ class _MainWindow(QMainWindow):
         self._VariableIDwithAST = variable_manager.Variable_IDwithAST()
         self._DummyConstraints = variable_manager.DummyConstraints()
         self.variable_store_list = list()
+        self.test = True
+
 
     def initUI(self):
 
