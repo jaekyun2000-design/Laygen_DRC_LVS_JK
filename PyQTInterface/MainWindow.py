@@ -1,3 +1,19 @@
+import tracemalloc
+snapshot = None
+tracemalloc.start()
+def trace_memeory():
+    global snapshot
+    if not snapshot:
+        snapshot = tracemalloc.take_snapshot()
+    else:
+        lines =[]
+        top_stats = tracemalloc.take_snapshot().compare_to(snapshot, 'lineno')
+        for stat in top_stats[:10]:
+            lines.append(str(stat))
+        print('\n'.join(lines), flush=True)
+trace_memeory()
+
+
 import ast
 import sys
 import os
@@ -219,10 +235,14 @@ class _MainWindow(QMainWindow):
 
 
         #Third Menu
+        trace_memory_action = QAction("Inspect memeory (Debuggin)", self)
         auto_array_action = QAction("Inspect array", self)
         auto_pathpoint_action = QAction("Inspect path point", self)
         auto_tech_process_change_action = QAction("Change technology node", self)
         create_sub_module_action = QAction("create sub module from sref", self)
+
+        trace_memory_action.setShortcut('Ctrl+5')
+        trace_memory_action.triggered.connect(trace_memeory)
 
         auto_array_action.setShortcut('Ctrl+1')
         auto_array_action.triggered.connect(self.inspect_array)
@@ -238,6 +258,7 @@ class _MainWindow(QMainWindow):
 
         automation_menu = menubar.addMenu("&Automation")
         automation_menu.setObjectName("top_menu_widget")
+        automation_menu.addAction(trace_memory_action)
         automation_menu.addAction(auto_array_action)
         automation_menu.addAction(auto_pathpoint_action)
         automation_menu.addAction(auto_tech_process_change_action)
