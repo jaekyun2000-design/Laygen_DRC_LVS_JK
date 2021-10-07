@@ -55,8 +55,9 @@ class _RectBlock(QGraphicsRectItem):
             self.updateRect()
 
     def updateTraits(self,_BlockTraits):
-        for key in _BlockTraits.keys():
-            self._BlockTraits[key] = _BlockTraits[key]
+        self._BlockTraits.update(_BlockTraits)
+        # for key in _BlockTraits.keys():
+        #     self._BlockTraits[key] = _BlockTraits[key]
         # self.layerName2paintTrait()
         self.updateRect()
 
@@ -593,7 +594,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
             self.widthVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['width'])
             self.heightVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['height'])
-            self.XYVariable = QGraphicsTextItemWObounding('*' + self._ItemTraits['variable_info']['XY'])
+            self.XYVariable = QGraphicsTextItemWObounding(f"*{self._ItemTraits['variable_info']['XY']}")
 
             self.setVariable(type='Boundary')
 
