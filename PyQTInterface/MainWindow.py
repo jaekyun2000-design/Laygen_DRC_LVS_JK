@@ -366,6 +366,8 @@ class _MainWindow(QMainWindow):
 
             X_value.setText(str(X))
             Y_value.setText(str(Y))
+            XY = str(X) + ',' + str(Y)
+            self.statusBar().showMessage(XY)
 
         self.scene.send_mouse_move_xy_signal.connect(get_mouse)
 
