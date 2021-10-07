@@ -70,7 +70,7 @@ class QtDesignParameter:
                     data_number = str(self._DesignParameter['_Datatype'])
                     self._DesignParameter['_LayerUnifiedName'] = LayerReader._LayDatNumToName[layer_number][data_number]
                     self._DesignParameter['_LayerName'] = LayerReader._LayDatNameTmp[layer_number][data_number][0]
-                    self._DesignParameter['_DatatypeName'] = '_' + LayerReader._LayDatNameTmp[layer_number][data_number][1]
+                    self._DesignParameter['_DatatypeName'] = f"_{LayerReader._LayDatNameTmp[layer_number][data_number][1]}"
                 else:
                     pass
             elif '_Layer' in self._DesignParameter and self._DesignParameter['_Layer'] is None:
@@ -922,7 +922,7 @@ class QtProject:
                         _tmpId = _tmpElement._GDS_ELEMENT_NAME
                     else:
                         _tmpId = self._getDesignParameterId(_ParentName=_tmpStructureName)
-                        _tmpId = _tmpStructureName + str(_tmpId)
+                        _tmpId = f'{_tmpStructureName}{_tmpId}'
                     if "_BOUNDARY" in vars(_tmpElement._ELEMENTS):
                         if _tmpElement._GDS_ELEMENT_NAME:
                             self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
@@ -933,12 +933,12 @@ class QtProject:
                                 #     warnings.warn(f'LayerReader has layer common name info but data info is insufficient.'
                                 #                   f' layer:{_tmpElement._ELEMENTS._LAYER.layer}, data:{_tmpElement._ELEMENTS._DATATYPE.datatype}')
                                 #     _tmpElement._ELEMENTS._DATATYPE.datatype = list(LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)].keys())[0]
-                                element_name = LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][str(_tmpElement._ELEMENTS._DATATYPE.datatype)] + '_boundary'
+                                element_name = f'{LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][str(_tmpElement._ELEMENTS._DATATYPE.datatype)]}_boundary'
                                 if element_name not in element_name_count:
                                     element_name_count[element_name] = 0
                                 else:
                                     element_name_count[element_name] += 1
-                                tmp_element_name = element_name + '_' + str(element_name_count[element_name])
+                                tmp_element_name = f'{element_name}_{element_name_count[element_name]}'
                                 _tmpId = tmp_element_name
 
                                 self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName,
@@ -968,12 +968,12 @@ class QtProject:
                                 #     warnings.warn(f'LayerReader has layer common name info but data info is insufficient.'
                                 #                   f' layer:{_tmpElement._ELEMENTS._LAYER.layer}, data:{_tmpElement._ELEMENTS._DATATYPE.datatype}')
                                 #     _tmpElement._ELEMENTS._DATATYPE.datatype = list(LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)].keys())[0]
-                                element_name = LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][str(_tmpElement._ELEMENTS._DATATYPE.datatype)] + '_path'
+                                element_name = f'{LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][str(_tmpElement._ELEMENTS._DATATYPE.datatype)]}_path'
                                 if element_name not in element_name_count:
                                     element_name_count[element_name] = 0
                                 else:
                                     element_name_count[element_name] += 1
-                                tmp_element_name = element_name + '_' + str(element_name_count[element_name])
+                                tmp_element_name = f'{element_name}_{element_name_count[element_name]}'
                                 _tmpId = tmp_element_name
                                 self._createNewDesignParameter(_id=_tmpId, _type=2, _ParentName=_tmpStructureName, _ElementName=tmp_element_name)
                             except:
@@ -999,9 +999,9 @@ class QtProject:
                                 sref_name_count[sref_name] = 0
                             else:
                                 sref_name_count[sref_name] += 1
-                            _tmpId = sref_name + str(sref_name_count[sref_name])
+                            _tmpId = f'{sref_name}{sref_name_count[sref_name]}'
                             self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName,
-                                                           _ElementName=sref_name+'_'+str(sref_name_count[sref_name]))
+                                                           _ElementName=f'{sref_name}_{sref_name_count[sref_name]}')
                         # print('     monitor for debug: ', _tmpElement._ELEMENTS._SNAME.sname.decode())
                         # print('     monitor for debug: ', _tmpElement._ELEMENTS._XY)
                         _tmpSname = _tmpElement._ELEMENTS._SNAME.sname.decode()
@@ -1026,13 +1026,12 @@ class QtProject:
                             if _tmpElement._GDS_ELEMENT_NAME:
                                 _tmpId = _tmpElement._GDS_ELEMENT_NAME
                             else:
-                                element_name = LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][
-                                                   str(_tmpElement._ELEMENTS._TEXTBODY._TEXTTYPE.texttype)] + '_text'
+                                element_name = f'{LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][str(_tmpElement._ELEMENTS._TEXTBODY._TEXTTYPE.texttype)]}_text'
                                 if element_name not in element_name_count:
                                     element_name_count[element_name] = 0
                                 else:
                                     element_name_count[element_name] += 1
-                                tmp_element_name = element_name + '_' + str(element_name_count[element_name])
+                                tmp_element_name = f'{element_name}_{element_name_count[element_name]}'
                                 _tmpId = tmp_element_name
                         except:
                             traceback.print_exc()
@@ -2312,7 +2311,7 @@ class QtProject:
                     subcellName = element._DesignParameter['_ElementName']
                     tmpHierarchyDict1 = self._getEntireHierarchy(subcell)
                     for key, value in tmpHierarchyDict1.items():
-                        newName = key + '/' + subcellName
+                        newName = f'{key}/{subcellName}'
                         if key in hierarchyDict[addedTopModule].keys():
                             continue
                         else:
@@ -2327,7 +2326,7 @@ class QtProject:
                     tmpstack.append(subcell)
                     tmpHierarchyDict2 = self._getEntireHierarchy(subcell)
                     for key, value in tmpHierarchyDict2.items():
-                        newName = key + '/' + subcellName
+                        newName = f'{key}/{subcellName}'
                         hierarchyDict[searchmodule][newName] = value
                 else:
                     continue
