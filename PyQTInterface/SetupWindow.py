@@ -28,7 +28,7 @@ from generatorLib import generator_model_api
 from powertool import topAPI
 import traceback
 import re, ast, time, sys
-from delegator import dpdc_delegator
+from PyQTInterface.delegator import dpdc_delegator
 
 debugFlag = True
 
