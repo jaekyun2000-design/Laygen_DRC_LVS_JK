@@ -12,7 +12,7 @@ def test_main_window(qtbot):
     window = MainWindow._MainWindow() if not window else window
     window.show()
     qtbot.waitForWindowShown(window)
-    assert window.test == 1
+    assert window.test == True
 
 ##################################test for dp creation##################################
 def test_boundary_window(qtbot):
@@ -24,13 +24,15 @@ def test_boundary_window(qtbot):
     window.bw.clickCount([0,0])
     window.bw.AddBoundaryPointWithMouse([100,100])
     window.bw.clickCount([100,100])
-    qtbot.keyClicks(window.bw.name_input,'test')
+    qtbot.keyClicks(window.bw.name_input,'boundary_test')
     window.bw.on_buttonBox_accepted()
 
     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']
-    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['test']
-    assert window.visualItemDict['test']
-    assert window.visualItemDict['test'] in window.scene.items()
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['boundary_test']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('boundary_test')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window.visualItemDict['boundary_test']
+    assert window.visualItemDict['boundary_test'] in window.scene.items()
 
 
 def test_path_window(qtbot):
@@ -46,12 +48,14 @@ def test_path_window(qtbot):
     window.pw.AddPathPointWithMouse([100,500])
     window.pw.clickCount([100,500])
 
-    qtbot.keyClicks(window.pw.name_input,'test2')
+    qtbot.keyClicks(window.pw.name_input,'path_test')
     window.pw.on_buttonBox_accepted()
 
-    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['test2']
-    assert window.visualItemDict['test2']
-    assert window.visualItemDict['test2'] in window.scene.items()
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['path_test']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('path_test')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window.visualItemDict['path_test']
+    assert window.visualItemDict['path_test'] in window.scene.items()
 
 
 def test_sref_window(qtbot):
@@ -78,6 +82,8 @@ def test_sref_window(qtbot):
     window.ls.on_buttonBox_accepted()
 
     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['sref_test']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('sref_test')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
     assert window.visualItemDict['sref_test']
     assert window.visualItemDict['sref_test'] in window.scene.items()
 
@@ -85,11 +91,37 @@ def test_sref_window(qtbot):
 def test_text_window(qtbot):
     global window
     window = MainWindow._MainWindow() if not window else window
+    window.widget_delegator.makeTextWindow()
+    qtbot.waitForWindowShown(window.txtw)
+    qtbot.keyClicks(window.txtw.name_input, 'text_test')
+    qtbot.keyClicks(window.txtw.text_input, 'TEST TEXT WINDOW')
+    qtbot.keyClicks(window.txtw.width_input, '100')
+    qtbot.keyClicks(window.txtw.XY_input, '0,0')
+
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['text_test']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('text_test')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window.visualItemDict['text_test']
+    assert window.visualItemDict['text_test'] in window.scene.items()
 
 
 def test_pin_window(qtbot):
     global window
     window = MainWindow._MainWindow() if not window else window
+    window.widget_delegator.makePinWindow()
+    qtbot.waitForWindowShown(window.pinw)
+    qtbot.keyClicks(window.pinw.name_input, 'pin_test')
+    qtbot.keyClicks(window.pinw.layer_input, 'METAL1PIN')
+    qtbot.keyClicks(window.pinw.text_input, 'METAL1PIN_test')
+    qtbot.keyClicks(window.pinw.width_input, '100')
+    qtbot.keyClicks(window.pinw.XY_input, '0,0')
+
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['pin_test']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('pin_test')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window.visualItemDict['pin_test']
+    assert window.visualItemDict['pin_test'] in window.scene.items()
+
 
 
 ##################################test for dc creation##################################
@@ -211,7 +243,7 @@ def test_paring_after_convert_create_assign(qtbot):
     window = MainWindow._MainWindow() if not window else window
 
 
-##################################test for scene##################################
+##################################test for scene_visible##################################
 def test_visible(qtbot):
     global window
     window = MainWindow._MainWindow() if not window else window
@@ -296,6 +328,14 @@ def test_elements_convert_create(qtbot):
 
 ##################################test for multimodule##################################
 def test_module_shift(qtbot):
+    global window
+    window = MainWindow._MainWindow() if not window else window
+
+def test_module_create(qtbot):
+    global window
+    window = MainWindow._MainWindow() if not window else window
+
+def test_module_run(qtbot):
     global window
     window = MainWindow._MainWindow() if not window else window
 
