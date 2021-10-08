@@ -1,4 +1,4 @@
-import sys
+import sys, os
 
 from PyQTInterface import MainWindow
 from PyQt5.QtWidgets import QApplication
@@ -6,10 +6,18 @@ from PyQt5.QtWidgets import QApplication
 # window = MainWindow._MainWindow()
 window=None
 
+class HiddenConsole:
+    def __enter__(self):
+        self._original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, 'w')
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout.close()
+        sys.stdout = self._original_stdout
 
 def test_main_window(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
     window.show()
     qtbot.waitForWindowShown(window)
     assert window.test == True
@@ -17,7 +25,8 @@ def test_main_window(qtbot):
 ##################################test for dp creation##################################
 def test_boundary_window(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
     window.widget_delegator.make_boundary_window()
     qtbot.waitForWindowShown(window.bw)
     window.bw.AddBoundaryPointWithMouse([0,0])
@@ -37,7 +46,8 @@ def test_boundary_window(qtbot):
 
 def test_path_window(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
     window.widget_delegator.makePathWindow()
     qtbot.waitForWindowShown(window.pw)
     qtbot.keyClicks(window.pw.width_input, '100')
@@ -60,7 +70,8 @@ def test_path_window(qtbot):
 
 def test_sref_window(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
     window.widget_delegator.loadSRefWindow()
     qtbot.waitForWindowShown(window.ls)
     qtbot.keyClicks(window.ls.name_input, 'sref_test')
@@ -90,7 +101,8 @@ def test_sref_window(qtbot):
 
 def test_text_window(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
     window.widget_delegator.makeTextWindow()
     qtbot.waitForWindowShown(window.txtw)
     qtbot.keyClicks(window.txtw.name_input, 'text_test')
@@ -107,7 +119,8 @@ def test_text_window(qtbot):
 
 def test_pin_window(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
     window.widget_delegator.makePinWindow()
     qtbot.waitForWindowShown(window.pinw)
     qtbot.keyClicks(window.pinw.name_input, 'pin_test')
@@ -127,71 +140,85 @@ def test_pin_window(qtbot):
 ##################################test for dc creation##################################
 def test_create_pycode(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_create_ast(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_create_element(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_create_XYCalculator(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_create_conditionexp(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_create_conditionstmt(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_add_constraint_view_from_dp(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_add_constraint_view_from_dc(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_assign_variable(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 ##################################test for dc execution##################################
 def test_encode_constraint(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 def test_run_constraint_boundary(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_run_constraint_path(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_run_constraint_sref(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_run_constraint_with_variable(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_run_constraint_from_project(qtbot):
@@ -199,270 +226,322 @@ def test_run_constraint_from_project(qtbot):
     pre_defined project load and run...
     '''
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_run_constraint_multi_constraint_view(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 ##################################test for dp-dc pairing##################################
 def test_paring_after_dp_creation(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_paring_after_dc_creation(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_paring_after_project_load(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_paring_after_gds_load(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_paring_after_create_submodule(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_paring_after_convert_sref_assign(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_paring_after_convert_create_assign(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 ##################################test for scene_visible##################################
 def test_visible(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_clickable(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_used_layer(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_generator_show_hide(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_candidate_show_hide(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 ##################################test for project##################################
 def test_project_save(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_project_load(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_load_gds(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 ##################################test for scene_right_click##################################
 def test_elements_array_boundary_relative(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_elements_array_boundary_offset(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_elements_array_path_relative(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_elements_array_path_offset(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_elements_array_sref_relative(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_elements_array_sref_offset(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_elements_convert_assign(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_elements_convert_create(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 ##################################test for multimodule##################################
 def test_module_shift(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 def test_module_create(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 def test_module_run(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 ##################################test for calculator##################################
 def test_calculator_xy_coord(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_calculator_expression(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_calculator_index(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_calculator_drc(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_calculator_number(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_calculator_preset_load(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_calculator_path_xy(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 ##################################test for automation##################################
 def test_inspect_array(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_inspect_path(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_technology_node_change(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_create_submodule_from_sref(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 ##################################test for scene##################################
 def test_boundary_design_edit(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_path_design_edit(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_sref_design_edit(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_text_design_edit(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_pin_design_edit(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_dp_highlight(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_dp_copy(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_dp_move(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 
 ##################################test for dc_constraint_view##################################
 def test_ast_typing(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_ast_shift(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_ast_id_double_click(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_ast_id_highlight(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 def test_ast_id_delete(qtbot):
     global window
-    window = MainWindow._MainWindow() if not window else window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 
