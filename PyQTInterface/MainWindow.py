@@ -8,8 +8,9 @@ def trace_memeory():
     else:
         lines =[]
         top_stats = tracemalloc.take_snapshot().compare_to(snapshot, 'lineno')
-        for stat in top_stats[:10]:
-            lines.append(str(stat))
+        # for stat in top_stats[:10]:
+        #     lines.append(str(stat))
+        lines.extend([str(stat) for stat in top_stats[:10]])
         print('\n'.join(lines), flush=True)
 trace_memeory()
 
@@ -646,8 +647,11 @@ class _MainWindow(QMainWindow):
                               "from generatorLib import DesignParameters\n" \
                               "import copy\n" \
                               "from generatorLib import DRC\n"
-        for libraries in library_list:
-            additional_import_code += f"from generatorLib.generator_models import {libraries}\n"
+        # for libraries in library_list:
+        #     additional_import_code += f"from generatorLib.generator_models import {libraries}\n"
+        from functools import reduce
+        if library_list != []:
+            reduce(lambda additional_import_code, libraries: additional_import_code + f"from generatorLib.generator_models import {libraries}\n", library_list)
 
         import_code = import_default_code + additional_import_code + '\n'
         class_declaration_code = f"class {self._CurrentModuleName}(StickDiagram._StickDiagram):\n" \
@@ -686,8 +690,10 @@ class _MainWindow(QMainWindow):
             self.warning.setText("Select Only One Item")
             self.warning.show()
         else:
-            for selected_item in selected_items:
-                tmp_module_name = selected_item._ElementName
+            # for selected_item in selected_items:
+            #     tmp_module_name = selected_item._ElementName
+            selected_item = selected_items[0]
+            tmp_module_name = selected_item._ElementName
 
             if selected_item._ItemTraits['_DesignParametertype'] != 3:
                 self.warning = QMessageBox()
@@ -733,8 +739,9 @@ class _MainWindow(QMainWindow):
         config_list = ['Fcn Name']
         fcn_str = QLineEdit()
         form_layout = QFormLayout()
-        for config_item in config_list:
-            form_layout.addRow(config_item, fcn_str)
+        # for config_item in config_list:
+        #     form_layout.addRow(config_item, fcn_str)
+        list(map(lambda config_item: form_layout.addRow(config_item, fcn_str), config_list))
 
         cb = QComboBox(self.c_view_configuration)
         cb.addItem('from DP')
@@ -818,9 +825,11 @@ class _MainWindow(QMainWindow):
         self.bottom_dock_tab_widget.setCurrentIndex(idx)
 
     def bottom_dock_tab_changed(self, idx):
-        for tab_idx in range(self.bottom_dock_tab_widget.count()):
-            self.bottom_dock_tab_widget.widget(tab_idx).layout().itemAt(0).widget().blockSignals(True)
-            self.bottom_dock_tab_widget.widget(tab_idx).layout().itemAt(2).widget().blockSignals(True)
+        # for tab_idx in range(self.bottom_dock_tab_widget.count()):
+        #     self.bottom_dock_tab_widget.widget(tab_idx).layout().itemAt(0).widget().blockSignals(True)
+        #     self.bottom_dock_tab_widget.widget(tab_idx).layout().itemAt(2).widget().blockSignals(True)
+        list(map(lambda tab_idx: self.bottom_dock_tab_widget.widget(tab_idx).layout().itemAt(0).widget().blockSignals(True), range(self.bottom_dock_tab_widget.count())))
+        list(map(lambda tab_idx: self.bottom_dock_tab_widget.widget(tab_idx).layout().itemAt(2).widget().blockSignals(True), range(self.bottom_dock_tab_widget.count())))
 
         self.dockContentWidget3 = self.bottom_dock_tab_widget.widget(idx).layout().itemAt(0).widget()
         self.dockContentWidget3_2 = self.bottom_dock_tab_widget.widget(idx).layout().itemAt(2).widget()
@@ -860,7 +869,6 @@ class _MainWindow(QMainWindow):
 
         constraint_names_can = self.dockContentWidget3_2.model.findItems('', Qt.MatchContains, 1)
         constraint_ids_can = [item.text() for item in constraint_names_can]
-
 
         self.create_new_bottom_dock_widget(fcn_name)
 
@@ -939,24 +947,29 @@ class _MainWindow(QMainWindow):
                 """
                 dp정보를 날릴 경우 현재와 과거 dp를 비교하여 없는 dp는 현재 dp목록에서 삭제시킨다.
                 """
-                list_to_remove = []
-                for dp_name, dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].items():
-                    if dp_name not in list(self._QTObj._qtProject._ElementManager_topology_dict[self.original_fcn_name].elementParameterDict.keys()):
-                        list_to_remove.append(dp_name)
+                # list_to_remove = []
+                # for dp_name, dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].items():
+                #     if dp_name not in list(self._QTObj._qtProject._ElementManager_topology_dict[self.original_fcn_name].elementParameterDict.keys()):
+                #         list_to_remove.append(dp_name)
+
+                topology_keys = list(self._QTObj._qtProject._ElementManager_topology_dict[self.original_fcn_name].elementParameterDict.keys())
+                search_keys = list(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].keys())
+                list_to_remove = list(filter(lambda dp_name: dp_name not in topology_keys, search_keys))
 
                 for dp_name in list_to_remove:
                     del self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name]
                     self.scene.removeItem(self.visualItemDict[dp_name])
 
-
         self.self._QTObj._qtProject._ElementManager_topology_dict[fcn_name].elementParameterDict = copy.deepcopy(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
         self.original_fcn_name = fcn_name
+
     def run_setup_update(self):
         self.setup_widget = QWidget()
         form_layout = QFormLayout()
         setup_list = [item for item in dir(user_setup) if not item.startswith("__")]
-        for setup_item in setup_list:
-            form_layout.addRow(setup_item, QLineEdit(str(user_setup.__dict__[setup_item])))
+        # for setup_item in setup_list:
+        #     form_layout.addRow(setup_item, QLineEdit(str(user_setup.__dict__[setup_item])))
+        list(map(lambda setup_item: form_layout.addRow(setup_item, QLineEdit(str(user_setup.__dict__[setup_item]))), setup_list))
         self.setup_widget.setLayout(form_layout)
         self.setup_widget.show()
 
@@ -1018,12 +1031,14 @@ class _MainWindow(QMainWindow):
             output_ast.expression = create_exp_ast_by_dict(info_dict['expression']) if type(info_dict['expression']) == dict \
             else info_dict['expression']
             output_ast.body = []
-            for stmt in info_dict['body']:
-                output_ast.body.append(create_stmt_ast_by_dict(stmt))
+            # for stmt in info_dict['body']:
+            #     output_ast.body.append(create_stmt_ast_by_dict(stmt))
+            output_ast.extend([create_stmt_ast_by_dict(stmt) for stmt in info_dict['body']])
             return output_ast
 
-        for stmt in output_list:
-            condition_stmt_list_ast.body.append(create_stmt_ast_by_dict(stmt))
+        # for stmt in output_list:
+        #     condition_stmt_list_ast.body.append(create_stmt_ast_by_dict(stmt))
+        condition_stmt_list_ast.body.extend(create_stmt_ast_by_dict(stmt) for stmt in output_list)
 
         ast_list = ASTmodule._searchAST(condition_stmt_list_ast)
         idx = ast_list.index(condition_stmt_list_ast)
@@ -1040,8 +1055,9 @@ class _MainWindow(QMainWindow):
                                                          _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
     def get_dc_highlight_dp(self,dc_id):
-        for seleceted_item in self.scene.selectedItems():
-            seleceted_item.setSelected(False)
+        # for seleceted_item in self.scene.selectedItems():
+        #     seleceted_item.setSelected(False)
+        list(map(lambda seleceted_item: seleceted_item.setSelected(False), self.scene.selectedItems()))
         dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
         if dp_id:
             try:
@@ -1097,8 +1113,9 @@ class _MainWindow(QMainWindow):
 
 
                 if self._CurrentModuleName in self._QTObj._qtProject._DesignParameter:
-                    for qt_dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].values():
-                        qt_dp.run_for_process_update()
+                    # for qt_dp in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].values():
+                    #     qt_dp.run_for_process_update()
+                    list(map(lambda qt_dp: qt_dp.run_for_process_update(), self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].values()))
 
                 remove_vs_items = []
                 for dp_name, vs_item in self.visualItemDict.items():
@@ -1161,14 +1178,16 @@ class _MainWindow(QMainWindow):
 
         self.path_point_widget =QListWidget()
         self.path_point_widget.addItems([str(path['_ElementName']) for path in path_list])
+
         self.path_point_widget.itemDoubleClicked.connect(self.show_inspect_path_widget)
         self.path_point_widget.show()
 
     def show_inspect_path_widget(self, path_item):
         row = self.sender().row(path_item)
         reference = copy.deepcopy(self.path_point_reference[row])
-        for ref in reference:
-            self.highlightVI_by_hierarchy_list(ref[0][0])
+        # for ref in reference:
+        #     self.highlightVI_by_hierarchy_list(ref[0][0])
+        list(map(lambda ref: self.highlightVI_by_hierarchy_list(ref[0][0]), reference))
         self.visualItemDict[path_item.text()].set_shallow_highlight()
 
 
@@ -1242,11 +1261,14 @@ class _MainWindow(QMainWindow):
         self.sender().delivery_dummy_constraint(dummy_constraint)
 
     def visualize_inspect_array(self, row):
-        for id in self.log:
-            self.visualItemDict[id].setSelected(False)
-        for id in self.test_purpose_var[row]:
-            self.visualItemDict[id].setSelected(True)
-            self.log.append(id)
+        # for id in self.log:
+        #     self.visualItemDict[id].setSelected(False)
+        list(map(lambda id: self.visualItemDict[id].setSelected(False), self.log))
+        # for id in self.test_purpose_var[row]:
+        #     self.visualItemDict[id].setSelected(True)
+        #     self.log.append(id)
+        list(map(lambda id: self.visualItemDict[id].setSelected(True), self.test_purpose_var[row]))
+        self.log.extend([id for id in self.test_purpose_var[row]])
         print(row)
 
     def inspect_geometry(self):
@@ -2104,7 +2126,7 @@ class _MainWindow(QMainWindow):
                 worker.signal.every_job_doen_signal.connect(worker_manager.add_job_done)
                 pool.start(worker)
         else:
-            for parameter_id in topcell.keys():    
+            for parameter_id in topcell.keys():
                 if topcell[parameter_id]._DesignParameter['_DesignParametertype'] != 3:
                     visualItem = self.createVisualItemfromDesignParameter(topcell[parameter_id])
                     visual_item_list.append(visualItem)
@@ -3447,7 +3469,7 @@ class _CustomScene(QGraphicsScene):
                 #     print(f'4)new point : {items[0]._id}')
                 # else:
                 #     print(f'4)clear')
-                map(lambda item: item.restore_zvalue(), self.point_items_memory)
+                list(map(lambda item: item.restore_zvalue(), self.point_items_memory))
                 self.point_items_memory = items
         else:
             self.point_items_memory = items

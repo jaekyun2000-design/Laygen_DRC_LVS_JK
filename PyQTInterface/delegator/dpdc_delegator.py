@@ -158,9 +158,12 @@ class DesignDelegator(delegator.Delegator):
 
         if id in self.main_window.visualItemDict:
             remove_item_list = self.main_window.visualItemDict[id].updateTraits(qt_design_parameter._DesignParameter)
-            for remove_item in remove_item_list:
-                self.main_window.scene.removeItem(remove_item)
-                self.main_window.visualItemDict[id].remove_block_from_group(remove_item)
+            # for remove_item in remove_item_list:
+            #     self.main_window.scene.removeItem(remove_item)
+            #     self.main_window.visualItemDict[id].remove_block_from_group(remove_item)
+            list(map(lambda remove_item: self.main_window.scene.removeItem(remove_item), remove_item_list))
+            list(map(lambda remove_item: self.main_window.visualItemDict[id].remove_block_from_group(remove_item), remove_item_list))
+
             self.main_window.visualItemDict[id]._id = id
             self.main_window.visualItemDict[id]._ItemTraits['_id'] = id
             self.main_window.visualItemDict[id]._ItemTraits['_ElementName'] = id
@@ -307,8 +310,9 @@ class DesignDelegator(delegator.Delegator):
         dc_id = self.main_window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_name)
 
         deletionItems = [self.main_window.visualItemDict[dp_name]]  # Delete Visual Item
-        for deleteItem in deletionItems:
-            self.main_window.scene.removeItem(deleteItem)
+        # for deleteItem in deletionItems:
+        #     self.main_window.scene.removeItem(deleteItem)
+        list(map(lambda deleteItem: self.main_window.scene.removeItem(deleteItem), deletionItems))
 
         del self.main_window._QTObj._qtProject._DesignParameter[dp_module][dp_name]
 
@@ -316,15 +320,12 @@ class DesignDelegator(delegator.Delegator):
             self.main_window.deleteDesignConstraint(dc_id, delete_dp=False)
 
     def convert_elements_to_sref(self, vis_item_list):
-        for vis in vis_item_list:
-            if vis._id:
-                self.delete_qt_parameter(vis._id)
+        # for vis in vis_item_list:
+        #     if vis._id:
+        #         self.delete_qt_parameter(vis._id)
+        list(map(lambda vis: self.delete_qt_parameter(vis._id), list(filter(lambda vis: vis._id, vis_item_list))))
 
     def create_sref_by_elements(self, vis_item_dict):
-        for key, value in vis_item_dict.items():
-            tmp_module_name = key
-            vis_item_list = value
-
         def create_new_window(tmp_module_name, vis_item_list):
             self.main_window.module_name_list.append(tmp_module_name)
             self.main_window.create_new_window(self.main_window.module_dict, tmp_module_name)
@@ -341,7 +342,7 @@ class DesignDelegator(delegator.Delegator):
 
             self.main_window.hide()
 
-        create_new_window(tmp_module_name, vis_item_list)
+        create_new_window(list(vis_item_dict.items())[0][0], list(vis_item_dict.items())[0][1])
 
     def build_layer_matrix_by_ids(self, dp_names):
         """
@@ -350,8 +351,9 @@ class DesignDelegator(delegator.Delegator):
         """
         print(f'target_dps: {dp_names}')
         tmp_qt_dp = dict()
-        for dp_name in dp_names:
-            tmp_qt_dp[dp_name] = copy.deepcopy(self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName][dp_name])
+        # for dp_name in dp_names:
+        #     tmp_qt_dp[dp_name] = copy.deepcopy(self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName][dp_name])
+        list(map(lambda dp_name: tmp_qt_dp[dp_name], list(map(lambda tmp_dp_name: copy.deepcopy(self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName][tmp_dp_name]), dp_names))))
         lay_mat = topAPI.layer_to_matrix.LayerToMatrix(user_setup.matrix_x_step, user_setup.matrix_y_step, user_setup.layer_list)
         lay_mat.load_qt_parameters(tmp_qt_dp)
         cell_size = lay_mat.get_cell_size()
@@ -387,9 +389,9 @@ class DesignDelegator(delegator.Delegator):
             #         stacked_matrix = np.expand_dims(np.zeros((user_setup.matrix_x_step, user_setup.matrix_y_step)),2)
 
         cell_data = np.array([stacked_matrix])
-        import matplotlib.pyplot as plt
-        plt.imshow(cell_data[0, :, :, 3:6])
-        plt.show()
+        # import matplotlib.pyplot as plt
+        # plt.imshow(cell_data[0, :, :, 3:6])
+        # plt.show()
         # cell_data = cell_data.reshape((1, user_setup.matrix_y_step,user_setup.matrix_y_step, len(user_setup.layer_list)))
         if not topAPI.element_predictor.model:
             topAPI.element_predictor.model = topAPI.element_predictor.create_element_detector_model()
