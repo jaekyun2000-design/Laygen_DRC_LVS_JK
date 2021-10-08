@@ -14,3 +14,8 @@ $ pip install tensorflow==2.5
 ```sh
 python ./PyQTInterface/MainWindow.py
 ```
+
+# Developer test purpose library
+```sh
+$ pip install coverage pytest pytest-qt
+```
