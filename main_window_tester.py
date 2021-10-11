@@ -2,6 +2,7 @@ import sys, os
 
 from PyQTInterface import MainWindow
 from PyQt5.QtWidgets import QApplication
+from PyQt5 import QtCore
 
 # window = MainWindow._MainWindow()
 window=None
@@ -314,19 +315,51 @@ def test_candidate_show_hide(qtbot):
 def test_project_save(qtbot):
     global window
     with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
+        if window:
+            window.close()
+        window = MainWindow._MainWindow()
+        qtbot.addWidget(window)
+        qtbot.waitForWindowShown(window)
+    test_boundary_window(qtbot)
+    test_path_window(qtbot)
+    test_sref_window(qtbot)
+    file_name = './PyQTInterface/Project/test_project'
+    window.saveProject(file_name)
+
+    assert window.test
 
 
-def test_project_load(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
 
+# def test_project_load(qtbot):
+#     global window
+#     with HiddenConsole():
+#         if window:
+#             window.close()
+#         window = MainWindow._MainWindow()
+#         qtbot.addWidget(window)
+#         qtbot.waitForWindowShown(window)
+#     file_name = './PyQTInterface/Project/test_project.bin'
+#     window.loadProject(file_name)
+#     assert window.test
 
 def test_load_gds(qtbot):
     global window
     with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
+        if window:
+            window.close()
+        window = MainWindow._MainWindow()
+        qtbot.addWidget(window)
+        qtbot.waitForWindowShown(window)
+    import user_setup
+    if user_setup._Technology != 'SS28nm':
+        window.request_change_process(None, 'SS28nm')
+    user_setup.MULTI_THREAD = False
+    file_name = './PyQTInterface/GDSFile/RX_term_resistor_v2.gds'
+    window.loadGDS(test=file_name)
+    assert len(window._QTObj._qtProject._DesignParameter['RX_term_resistor_v2']) == 118
+    assert len(window._QTObj._qtProject._DesignConstraint['RX_term_resistor_v2']) == 118
+    assert len(window.scene.items()) == 2640
+
 
 
 ##################################test for scene_right_click##################################

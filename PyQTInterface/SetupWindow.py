@@ -4084,9 +4084,12 @@ class _FlatteningCell(QWidget):
         self.setGeometry(300,300,900,500)
         self.show()
 
-    def ok_button_accepted(self):
+    def ok_button_accepted(self, test=None):
 
-        self.loop_obj.exec_()
+        if test:
+            pass
+        else:
+            self.loop_obj.exec_()
 
         _flatten_dict = dict()
 

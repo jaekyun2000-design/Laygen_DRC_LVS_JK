@@ -1081,10 +1081,9 @@ class _MainWindow(QMainWindow):
         self.process_list_widget.show()
         self.process_list_widget.itemDoubleClicked.connect(self.request_change_process)
 
-    def request_change_process(self, technology_item):
+    def request_change_process(self, technology_item, technology_name = None):
         # technology_name = self.sender().row(technology_item).text()
-        technology_name = technology_item.text()
-        print(technology_name)
+        technology_name = technology_item.text() if not technology_name else technology_name
 
         if user_setup._Technology == technology_name:
             self.message = QMessageBox()
@@ -1769,8 +1768,12 @@ class _MainWindow(QMainWindow):
             print("Load Project Failed")
             self.dockContentWidget4ForLoggingMessage._WarningMessage("Load Project Fail: Unknown")
             pass
-    def loadProject(self):
-        scf = QFileDialog.getOpenFileName(self,'Load Project','./PyQTInterface/Project/')
+    def loadProject(self, test=None):
+        if test:
+            self.test = False
+            scf = [test]
+        else:
+            scf = QFileDialog.getOpenFileName(self,'Load Project','./PyQTInterface/Project/')
 
         try:
             cm = self._CurrentModuleName
@@ -1787,7 +1790,7 @@ class _MainWindow(QMainWindow):
                     vs_item._CreateFlag = False
                     self.updateGraphicItem(vs_item)
             self.dockContentWidget4ForLoggingMessage._InfoMessage("Project Load Done")
-
+            self.test = True
 
         except:
             traceback.print_exc()
@@ -1796,9 +1799,13 @@ class _MainWindow(QMainWindow):
             pass
 
 
-    def saveProject(self):
+    def saveProject(self, test=None):
         # if _fileName == None:
-        scf = QFileDialog.getSaveFileName(self,'Save Project','./PyQTInterface/Project/')
+        if test:
+            self.test = False
+            scf = [test]
+        else:
+            scf = QFileDialog.getSaveFileName(self,'Save Project','./PyQTInterface/Project/')
         # else:
         #     scf = [_fileName]
         try:
@@ -1818,6 +1825,7 @@ class _MainWindow(QMainWindow):
             # json.dump(self,open('./test.json','w'),indent=4, default=self.json_serialize_dump_obs)
 
             print("Project saved")
+            self.test = True
         except:
             traceback.print_exc()
             print("Save Project Failed")
@@ -1985,8 +1993,11 @@ class _MainWindow(QMainWindow):
 
         self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
 
-    def loadGDS(self):
-        scf = QFileDialog.getOpenFileName(self,'Load GDS','./PyQTInterface/GDSFile')
+    def loadGDS(self, test=None):
+        if test:
+            scf = [test]
+        else:
+            scf = QFileDialog.getOpenFileName(self,'Load GDS','./PyQTInterface/GDSFile')
         _fileName=scf[0]
         if _fileName == '':
             print("No File Selected")
@@ -2022,15 +2033,15 @@ class _MainWindow(QMainWindow):
             if DEBUG:
                 print(f'DEBUGGING MODE, idLength= {idLength}')
 
-            self.create_dc_vi_from_top_dp(self.entireHierarchy)
+            self.create_dc_vi_from_top_dp(self.entireHierarchy, test=test)
 
-    def create_dc_vi_from_top_dp(self, hierarchy):
+    def create_dc_vi_from_top_dp(self, hierarchy, test=None):
 
         self.fc = SetupWindow._FlatteningCell(hierarchy, self._QTObj._qtProject._DesignParameter)
         self.fc.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.fc.show()
 
-        flattening_dict = self.fc.ok_button_accepted()
+        flattening_dict = self.fc.ok_button_accepted(test)
         self.fc.destroy()
 
         print("############################ Cell DP, DC, VISUALITEM CREATION START ###############################")
