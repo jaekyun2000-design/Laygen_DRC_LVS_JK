@@ -252,12 +252,46 @@ def test_paring_after_dp_creation(qtbot):
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
 
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+    window.bw.AddBoundaryPointWithMouse([0,0])
+    window.bw.clickCount([0,0])
+    window.bw.AddBoundaryPointWithMouse([100,100])
+    window.bw.clickCount([100,100])
+    qtbot.keyClicks(window.bw.name_input,'pairing_test')
+    window.bw.on_buttonBox_accepted()
+
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('pairing_test')
+    assert dc_id
+    assert window._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id) == 'pairing_test'
+    window.visualItemDict['pairing_test'].setSelected(True)
+    qtbot.keyClicks(window.scene, 'H')
+    idx = window.dockContentWidget3_2.currentIndex().row()
+    assert dc_id == window.dockContentWidget3_2.model.itemAt(idx).children()
+    ## dc에서 찾아서 H키 누르기
 
 def test_paring_after_dc_creation(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
 
+    window.widget_delegator.makeConstraintWindowCUSTOM()
+    qtbot.waitForWindowShown(window.cw)
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(),'pairing_test')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(2).widget(),'PIMP')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(3).widget(),'0,0')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(4).widget(),'100')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(5).widget(),'100')
+    window.cw.on_buttonBox_accepted()
+
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('pairing_test')
+    assert dc_id
+    assert window._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id) == 'pairing_test'
+    window.visualItemDict['pairing_test'].setSelected(True)
+    qtbot.keyClicks(window.scene, 'H')
+    idx = window.dockContentWidget3_2.currentIndex().row()
+    assert dc_id == window.dockContentWidget3_2.model.itemAt(idx).children()
+    ## dc에서 찾아서 H키 누르기
 
 def test_paring_after_project_load(qtbot):
     global window
