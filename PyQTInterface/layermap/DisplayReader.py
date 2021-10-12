@@ -128,6 +128,8 @@ def run_for_process_update():
                     _DisplayDict[split[2]]['drawingNum'] = split[2]
                     _DisplayDict[split[2]]['Stipple'] = split[3]
                     _DisplayDict[split[2]]['LineStyle'] = _LinePatternDict[split[4]]
+                    if len(_DisplayDict[split[2]]['LineStyle']['pattern'])%2 == 1:
+                        _DisplayDict[split[2]]['LineStyle']['pattern'] = _DisplayDict[split[2]]['LineStyle']['pattern']*2
                     _DisplayDict[split[2]]['Fill'] = _ColorDict[split[5]]
                     _DisplayDict[split[2]]['Fill'].name = split[5]
                     _DisplayDict[split[2]]['Outline'] = _ColorDict[split[6]]
