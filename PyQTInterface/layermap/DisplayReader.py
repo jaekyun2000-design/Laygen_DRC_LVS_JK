@@ -160,7 +160,8 @@ def readtechfile():
         techfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC130nm/techfile'
     elif _Technology == 'TSMC350m':
         techfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC350nm/techfile'
-
+    if not os.path.isfile(techfile):
+        return
     with open(techfile, 'rb', 0) as tech:
         lines = tech.readlines()
         techDisplays = False

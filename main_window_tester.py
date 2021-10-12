@@ -675,6 +675,8 @@ def test_technology_node_change(qtbot):
     def test_process(technology):
         if user_setup._Technology != technology:
             window.request_change_process(None, technology)
+        else:
+            return
         test_drc(technology)
         test_layer(technology)
         test_display(technology)
@@ -682,7 +684,7 @@ def test_technology_node_change(qtbot):
 
     test_process('TSMC65nm')
     test_process('SS28nm')
-    test_process('SS28nm')
+    test_process('TSMC65nm')
     test_process('TSMC45nm')
     test_process('TSMC90nm')
 
