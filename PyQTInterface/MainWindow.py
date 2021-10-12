@@ -107,6 +107,7 @@ class _MainWindow(QMainWindow):
         self.test = False
         super(_MainWindow, self).__init__()
         self.setStyleSheet("border-color: rgb(178, 41, 100)")
+        self.module_dict= dict()
         self.design_delegator = dpdc_delegator.DesignDelegator(self)
         self.widget_delegator = interface_delegator.WidgetDelegator(self)
         self.transfer_delegator = transfer_delegator.TransferDelegator(self)
@@ -132,6 +133,7 @@ class _MainWindow(QMainWindow):
         self.test = True
 
     def reset(self):
+        self.module_dict = dict()
         self._ElementManager = element_manager.ElementManager()
         self.design_delegator = dpdc_delegator.DesignDelegator(self)
         self.widget_delegator = interface_delegator.WidgetDelegator(self)

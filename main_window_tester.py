@@ -225,6 +225,12 @@ def test_run_constraint_with_variable(qtbot):
         window = MainWindow._MainWindow() if not window else window
 
 
+def test_run_constraint_for_update(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
 def test_run_constraint_from_project(qtbot):
     '''
     pre_defined project load and run...
@@ -457,23 +463,48 @@ def test_load_gds(qtbot):
 #         window = MainWindow._MainWindow() if not window else window
 #
 #
-# ##################################test for multimodule##################################
-# def test_module_shift(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-# def test_module_create(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-# def test_module_run(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
+##################################test for multimodule##################################
+
+def test_module_create(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+    window.newModule()
+    qtbot.keyClicks(window.nmw.name_input, 'test_module')
+
+    assert 'test_module' in window.module_name_list
+    assert 'test_module' in window.module_dict
+
+
+def test_module_shift(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+    window.newModule()
+    qtbot.keyClicks(window.nmw.name_input, 'test_module')
+    assert 'test_module' in window.module_dict
+    window.moduleManage()
+    assert window.mw.manageListWidget.findItems('test_module')
+    item = window.mw.manageListWidget.findItems('test_module')[0]
+    window.mw.manageListWidget.setCurrentItem(item)
+    window.mw.on_selectBox_accepted()
+    assert window._CurrentModuleName == 'test_module'
+
+    assert 'EasyDebugModule' in window.module_dict
+    window.moduleManage()
+    assert window.mw.manageListWidget.findItems('EasyDebugModule')
+    item = window.mw.manageListWidget.findItems('EasyDebugModule')[0]
+    window.mw.manageListWidget.setCurrentItem(item)
+    window.mw.on_selectBox_accepted()
+    assert window._CurrentModuleName == 'EasyDebugModule'
+
+
+def test_module_run(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
 # ##################################test for calculator##################################
 # def test_calculator_xy_coord(qtbot):
 #     global window
