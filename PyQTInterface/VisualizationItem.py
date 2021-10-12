@@ -2,6 +2,7 @@ import sys
 import os
 import re
 import traceback
+import warnings
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import user_setup
@@ -136,6 +137,13 @@ class _RectBlock(QGraphicsRectItem):
             pen.setWidth(5)
         painter.setPen(pen)
 
+        if self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName'] not in DisplayReader._DisplayDict or\
+            self._BlockTraits["_Pattern"] not in DisplayReader._PatternDict:
+            warnings.warn(f'Current process does not have information about object {self._BlockTraits["_ElementName"]}.')
+            self.hide()
+            return
+        else:
+            self.show()
         color_name = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill'].name
         color_patt_name =color_name+self._BlockTraits["_Pattern"]
 
@@ -535,6 +543,12 @@ class _VisualizationItem(QGraphicsItemGroup):
             layer_data_name = blockTraits['_LayerName']+blockTraits['_DatatypeName']
             if layer_data_name not in DisplayReader._DisplayDict:
                 DisplayReader.readtechfile()
+            if blockTraits['_LayerName']+blockTraits['_DatatypeName'] not in DisplayInfo:
+                warnings.warn(
+                    f'Current process does not have information about object {blockTraits["_ElementName"]}.')
+                self.hide()
+                return
+
             blockTraits['_Color'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['Fill']
             blockTraits['_Outline'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['Outline']
             blockTraits['_Pattern'] =  DisplayInfo[blockTraits['_LayerName']+blockTraits['_DatatypeName']]['Stipple']
