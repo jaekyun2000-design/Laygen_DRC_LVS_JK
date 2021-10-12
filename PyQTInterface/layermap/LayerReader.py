@@ -23,6 +23,17 @@ def run_for_process_update():
     global _LayDatNumToName
     global _LayerExtendedMapping
     global _ExtendLayerMappingTmp
+    _LayerMapping = dict()
+    _LayerMapFile = None
+    _LayerMappingTmp = None
+    _LayerNameTmp = None
+    _LayDatNameTmp = None
+    _LayerNum2CommonName = None
+    _LayerName_unified = None
+    _LayDatNumToName = None
+    _LayerExtendedMapping = None
+    _ExtendLayerMappingTmp = None
+
 
 
     _Technology = user_setup._Technology

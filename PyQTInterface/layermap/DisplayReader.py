@@ -35,6 +35,11 @@ def run_for_process_update():
     global _DRFfile
     global _Technology
     _Technology = user_setup._Technology
+    _DisplayDict = dict()
+    _ColorDict = dict()
+    _PatternDict = dict()
+    _ColorPatternDict = dict()
+    _LinePatternDict = dict()
 
     if _Technology == 'TSMC180nm':
         _DRFfile = _HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/display.drf'

@@ -1132,7 +1132,8 @@ class _MainWindow(QMainWindow):
                 DisplayReader.run_for_process_update()
                 from generatorLib import drc_api
                 drc_api.run_for_process_update()
-                test =  drc_api.drc_classified_dict
+                from generatorLib import DesignParameters
+                DesignParameters.run_for_process_update()
                 self.send_tech_node_changed_signal.emit()
 
 

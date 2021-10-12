@@ -35,6 +35,10 @@ def run_for_process_update():
     global _LayerMapping
     global _LayerMapFile
     global _LayerMappingTmp
+    _LayerMapping=dict()
+    _LayerMapFile = None
+    _LayerMappingTmp = None
+    _Technology = user_setup._Technology
     if _Technology == 'SS28nm':
         _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/SS28nm/cmos28lp_tech.layermap')
         _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
