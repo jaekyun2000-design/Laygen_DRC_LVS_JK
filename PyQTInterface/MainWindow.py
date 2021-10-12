@@ -258,7 +258,7 @@ class _MainWindow(QMainWindow):
         auto_tech_process_change_action.triggered.connect(self.change_process)
 
         create_sub_module_action.setShortcut('Ctrl+9')
-        create_sub_module_action.triggered.connect(self.new_main_window)
+        create_sub_module_action.triggered.connect(self.create_submodule_by_sref)
 
         automation_menu = menubar.addMenu("&Automation")
         automation_menu.setObjectName("top_menu_widget")
@@ -683,7 +683,7 @@ class _MainWindow(QMainWindow):
     def create_new_window(self, dict, key):
         dict[key] = _MainWindow()
 
-    def new_main_window(self):
+    def create_submodule_by_sref(self, test=None):
         selected_items = self.scene.selectedItems()
         if len(selected_items) != 1:
             self.warning = QMessageBox()
@@ -727,7 +727,7 @@ class _MainWindow(QMainWindow):
                         hierarchy = {tmp_module_name : dict()}
                     else:
                         hierarchy = {tmp_module_name : self.entireHierarchy[self._CurrentModuleName][hierarchy_key]}
-                new_project.create_dc_vi_from_top_dp(hierarchy)
+                new_project.create_dc_vi_from_top_dp(hierarchy, test)
                 self.hide()
 
         # print('send!')
@@ -1081,9 +1081,9 @@ class _MainWindow(QMainWindow):
         self.process_list_widget.show()
         self.process_list_widget.itemDoubleClicked.connect(self.request_change_process)
 
-    def request_change_process(self, technology_item, technology_name = None):
+    def request_change_process(self, technology_item, test = None):
         # technology_name = self.sender().row(technology_item).text()
-        technology_name = technology_item.text() if not technology_name else technology_name
+        technology_name = technology_item.text() if not test else test
 
         if user_setup._Technology == technology_name:
             self.message = QMessageBox()
@@ -1098,7 +1098,7 @@ class _MainWindow(QMainWindow):
                                             f"{user_setup._Technology} to {technology_name}.")
             self.message.setStandardButtons(QMessageBox.Cancel | QMessageBox.Ok)
             # self.message.show()
-            choice = self.message.exec()
+            choice = self.message.exec() if not test else QMessageBox.Ok
             if choice == QMessageBox.Ok:
                 user_setup._Technology = technology_name
 

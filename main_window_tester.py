@@ -475,25 +475,168 @@ def test_calculator_path_xy(qtbot):
 def test_inspect_array(qtbot):
     global window
     with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
+        if window:
+            window.close()
+        window = MainWindow._MainWindow()
+        window.show()
+        qtbot.addWidget(window)
+        qtbot.waitForWindowShown(window)
+    import user_setup
+    if user_setup._Technology != 'TSMC65nm':
+        window.request_change_process(None, 'TSMC65nm')
+    user_setup.MULTI_THREAD = False
+    file_name = './PyQTInterface/GDSFile/INV2.gds'
+    window.loadGDS(test=file_name)
+    window.inspect_array()
+    assert window.array_list_widget.count() == 8
 
 def test_inspect_path(qtbot):
     global window
     with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
+        if window:
+            window.close()
+        window = MainWindow._MainWindow()
+        qtbot.addWidget(window)
+        qtbot.waitForWindowShown(window)
+    import user_setup
+    if user_setup._Technology != 'TSMC65nm':
+        window.request_change_process(None, 'TSMC65nm')
+    user_setup.MULTI_THREAD = False
+    file_name = './PyQTInterface/GDSFile/INV2.gds'
+    window.loadGDS(test=file_name)
+    window.inspect_path_point()
+    assert window.path_point_widget.count() == 15
 
 def test_technology_node_change(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+    import user_setup
+    from PyQTInterface.layermap import LayerReader
+    from PyQTInterface.layermap import DisplayReader
+    from generatorLib import drc_api
+    from generatorLib import DesignParameters
+
+
+    def test_drc(technology):
+        drc_test = drc_api.drc_classified_dict
+        every_items = [len(item) for item in drc_test.values()]
+        length = sum(every_items)
+        if technology == 'TSMC65nm':
+            assert length == 153
+        elif technology == 'SS28nm':
+            assert length == 184
+        elif technology == 'TSMC90nm':
+            assert length == 138
+        elif technology == 'TSMC45nm':
+            assert length == 149
+
+    def test_layer(technology):
+        test1 = len(LayerReader._ExtendLayerMappingTmp)
+        test2 = len(LayerReader._LayDatNumToName)
+        test3 = len(LayerReader._LayerNum2CommonName)
+        if technology == 'SS28nm':
+            assert test1 == 1173
+            assert test2 == 29
+            assert test3 == 101
+        elif technology == 'TSMC45nm':
+            assert test1 == 1174
+            assert test2 == 56
+            assert test3 == 179
+        elif technology == 'TSMC65nm':
+            assert test1 == 481
+            assert test2 == 58
+            assert test3 == 166
+        elif technology == 'TSMC90nm':
+            assert test1 == 448
+            assert test2 == 55
+            assert test3 == 166
+
+
+    def test_display(technology):
+        test1 = len(DisplayReader._DisplayDict)
+        test2 = len(DisplayReader._LinePatternDict)
+        test3 = len(DisplayReader._PatternDict)
+
+        if technology == 'SS28nm':
+            assert test1 == 1576
+            assert test2 == 16
+            assert test3 == 120
+        elif technology == 'TSMC45nm':
+            assert test1 == 2201
+            assert test2 == 9
+            assert test3 == 46
+        elif technology == 'TSMC65nm':
+            assert test1 == 933
+            assert test2 == 9
+            assert test3 == 47
+        elif technology == 'TSMC90nm':
+            assert test1 == 931
+            assert test2 == 9
+            assert test3 == 47
+
+    def test_dp(technology):
+        test1 = len(DesignParameters._LayerMapping)
+        test2 = len(DesignParameters._LayerMappingTmp)
+
+        if technology == 'SS28nm':
+            assert test1 == 51
+            assert test2 == 1173
+        elif technology == 'TSMC45nm':
+            assert test1 == 38
+            assert test2 == 1174
+        elif technology == 'TSMC65nm':
+            assert test1 == 40
+            assert test2 == 481
+        elif technology == 'TSMC90nm':
+            assert test1 == 38
+            assert test2 == 448
+
+    def test_process(technology):
+        if user_setup._Technology != technology:
+            window.request_change_process(None, technology)
+        test_drc(technology)
+        test_layer(technology)
+        test_display(technology)
+        test_dp(technology)
+
+    test_process('TSMC65nm')
+    test_process('SS28nm')
+    test_process('SS28nm')
+    test_process('TSMC45nm')
+    test_process('TSMC90nm')
+
+
 
 
 def test_create_submodule_from_sref(qtbot):
     global window
     with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
+        if window:
+            window.close()
+        window = MainWindow._MainWindow()
+        window.show()
+        qtbot.addWidget(window)
+        qtbot.waitForWindowShown(window)
+    import user_setup
+    if user_setup._Technology != 'TSMC65nm':
+        window.request_change_process(None, 'TSMC65nm')
+    user_setup.MULTI_THREAD = False
+    file_name = './PyQTInterface/GDSFile/INV2.gds'
+    window.loadGDS(test=file_name)
+    vs_dict = window.visualItemDict['NMOSInINV_0']
+    vs_dict.setSelected(True)
+    window.create_submodule_by_sref(test=True)
+    assert window.module_dict['NMOSInINV_0']
+    window = window.module_dict['NMOSInINV_0']
+    assert window.module_dict['INV']
+    assert window._QTObj._qtProject._DesignParameter['NMOSInINV_0']
+    assert len(window._QTObj._qtProject._DesignParameter['NMOSInINV_0']) == 32
+    assert len(window._QTObj._qtProject._DesignConstraint['NMOSInINV_0']) == 32
+    item_list = list(window._QTObj._qtProject._DesignParameter['NMOSInINV_0'].keys())
+    for item in item_list:
+        assert window.visualItemDict[item]
+        assert window.visualItemDict[item] in window.scene.items()
 
 
 ##################################test for scene##################################
