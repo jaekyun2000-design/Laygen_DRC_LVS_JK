@@ -131,6 +131,29 @@ class _MainWindow(QMainWindow):
         self.variable_store_list = list()
         self.test = True
 
+    def reset(self):
+        self._ElementManager = element_manager.ElementManager()
+        self.design_delegator = dpdc_delegator.DesignDelegator(self)
+        self.widget_delegator = interface_delegator.WidgetDelegator(self)
+        self.transfer_delegator = transfer_delegator.TransferDelegator(self)
+        self._QTObj = QTInterfaceWithAST.QtInterFace()
+        self._ProjectName = None
+        self._CurrentModuleName = None
+        self.gloabal_clipboard = QGuiApplication.clipboard()
+        self.bottom_dock_list = list()
+        self.easyDebugMode()
+        self.visualItemDict = dict()
+        self.variableList = []
+        self._ASTapi = ASTmodule._Custom_AST_API()
+        self._layerItem = dict()
+        self._id_layer_mapping = dict()
+        self.dvstate = False
+        self._ElementManager = element_manager.ElementManager()
+        self._VariableIDwithAST = variable_manager.Variable_IDwithAST()
+        self._DummyConstraints = variable_manager.DummyConstraints()
+        self.variable_store_list = list()
+        self.test = False
+
 
     def initUI(self):
 

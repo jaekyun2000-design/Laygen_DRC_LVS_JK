@@ -3,6 +3,7 @@ import sys, os
 from PyQTInterface import MainWindow
 from PyQt5.QtWidgets import QApplication
 from PyQt5 import QtCore
+import user_setup
 
 # window = MainWindow._MainWindow()
 window=None
@@ -106,6 +107,7 @@ def test_text_window(qtbot):
         window = MainWindow._MainWindow() if not window else window
     window.widget_delegator.makeTextWindow()
     qtbot.waitForWindowShown(window.txtw)
+    qtbot.addWidget(window.text)
     qtbot.keyClicks(window.txtw.name_input, 'text_test')
     qtbot.keyClicks(window.txtw.text_input, 'TEST TEXT WINDOW')
     qtbot.keyClicks(window.txtw.width_input, '100')
@@ -124,6 +126,7 @@ def test_pin_window(qtbot):
         window = MainWindow._MainWindow() if not window else window
     window.widget_delegator.makePinWindow()
     qtbot.waitForWindowShown(window.pinw)
+    qtbot.addWidget(window.pinw)
     qtbot.keyClicks(window.pinw.name_input, 'pin_test')
     qtbot.keyClicks(window.pinw.layer_input, 'METAL1PIN')
     qtbot.keyClicks(window.pinw.text_input, 'METAL1PIN_test')
@@ -320,27 +323,70 @@ def test_project_save(qtbot):
         window = MainWindow._MainWindow()
         qtbot.addWidget(window)
         qtbot.waitForWindowShown(window)
-    test_boundary_window(qtbot)
-    test_path_window(qtbot)
-    test_sref_window(qtbot)
+    #create boundary
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+    window.bw.AddBoundaryPointWithMouse([0, 0])
+    window.bw.clickCount([0, 0])
+    window.bw.AddBoundaryPointWithMouse([100, 100])
+    window.bw.clickCount([100, 100])
+    qtbot.keyClicks(window.bw.name_input, 'boundary_test')
+    window.bw.on_buttonBox_accepted()
+
+    #create path
+    window.widget_delegator.makePathWindow()
+    qtbot.waitForWindowShown(window.pw)
+    qtbot.keyClicks(window.pw.width_input, '100')
+    window.pw.AddPathPointWithMouse([0, 0])
+    window.pw.clickCount([0, 0])
+    window.pw.AddPathPointWithMouse([100, 0])
+    window.pw.clickCount([100, 0])
+    window.pw.AddPathPointWithMouse([100, 500])
+    window.pw.clickCount([100, 500])
+    qtbot.keyClicks(window.pw.name_input, 'path_test')
+    window.pw.on_buttonBox_accepted()
+
+    #create sref
+    window.widget_delegator.loadSRefWindow()
+    qtbot.waitForWindowShown(window.ls)
+    qtbot.keyClicks(window.ls.name_input, 'sref_test')
+    qtbot.keyClicks(window.ls.XY_input, '1000,1000')
+    qtbot.keyClicks(window.ls.library_input, 'NMOSWithDummy')
+    for idx, par_name in enumerate(window.ls.par_name):
+        if 'Number' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '5')
+        elif 'Width' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '500')
+        elif 'length' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
+        elif '_XVT' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+    window.ls.on_buttonBox_accepted()
+
+
     file_name = './PyQTInterface/Project/test_project'
     window.saveProject(file_name)
-
     assert window.test
 
 
 
-# def test_project_load(qtbot):
-#     global window
-#     with HiddenConsole():
-#         if window:
-#             window.close()
-#         window = MainWindow._MainWindow()
-#         qtbot.addWidget(window)
-#         qtbot.waitForWindowShown(window)
-#     file_name = './PyQTInterface/Project/test_project.bin'
-#     window.loadProject(file_name)
-#     assert window.test
+def test_project_load(qtbot):
+    global window
+    with HiddenConsole():
+        if window:
+            window.close()
+        window = MainWindow._MainWindow()
+    #     qtbot.addWidget(window)
+    #     qtbot.waitForWindowShown(window)
+    file_name = './PyQTInterface/Project/test_project.bin'
+    window.loadProject(file_name)
+    assert window.test
+
+
 
 def test_load_gds(qtbot):
     global window
@@ -348,8 +394,8 @@ def test_load_gds(qtbot):
         if window:
             window.close()
         window = MainWindow._MainWindow()
-        qtbot.addWidget(window)
-        qtbot.waitForWindowShown(window)
+        # qtbot.addWidget(window)
+        # qtbot.waitForWindowShown(window)
     import user_setup
     if user_setup._Technology != 'SS28nm':
         window.request_change_process(None, 'SS28nm')
@@ -362,113 +408,113 @@ def test_load_gds(qtbot):
 
 
 
-##################################test for scene_right_click##################################
-def test_elements_array_boundary_relative(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-def test_elements_array_boundary_offset(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-def test_elements_array_path_relative(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-def test_elements_array_path_offset(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-def test_elements_array_sref_relative(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-def test_elements_array_sref_offset(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-def test_elements_convert_assign(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-def test_elements_convert_create(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-##################################test for multimodule##################################
-def test_module_shift(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-def test_module_create(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-def test_module_run(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-##################################test for calculator##################################
-def test_calculator_xy_coord(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-def test_calculator_expression(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-def test_calculator_index(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-def test_calculator_drc(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-def test_calculator_number(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-def test_calculator_preset_load(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-
-def test_calculator_path_xy(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
+# ##################################test for scene_right_click##################################
+# def test_elements_array_boundary_relative(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# def test_elements_array_boundary_offset(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# def test_elements_array_path_relative(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# def test_elements_array_path_offset(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# def test_elements_array_sref_relative(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# def test_elements_array_sref_offset(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# def test_elements_convert_assign(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# def test_elements_convert_create(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# ##################################test for multimodule##################################
+# def test_module_shift(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+# def test_module_create(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+# def test_module_run(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# ##################################test for calculator##################################
+# def test_calculator_xy_coord(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# def test_calculator_expression(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# def test_calculator_index(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# def test_calculator_drc(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# def test_calculator_number(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# def test_calculator_preset_load(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#
+# def test_calculator_path_xy(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
 
 
 ##################################test for automation##################################
@@ -476,12 +522,13 @@ def test_inspect_array(qtbot):
     global window
     with HiddenConsole():
         if window:
-            window.close()
-        window = MainWindow._MainWindow()
-        window.show()
-        qtbot.addWidget(window)
-        qtbot.waitForWindowShown(window)
-    import user_setup
+            window.reset()
+            # window.close()
+        else:
+            window = MainWindow._MainWindow()
+        # window.show()
+        # qtbot.addWidget(window)
+        # qtbot.waitForWindowShown(window)
     if user_setup._Technology != 'TSMC65nm':
         window.request_change_process(None, 'TSMC65nm')
     user_setup.MULTI_THREAD = False
@@ -494,10 +541,12 @@ def test_inspect_path(qtbot):
     global window
     with HiddenConsole():
         if window:
-            window.close()
-        window = MainWindow._MainWindow()
-        qtbot.addWidget(window)
-        qtbot.waitForWindowShown(window)
+            # window.close()
+            window.reset()
+        else:
+            window = MainWindow._MainWindow()
+        # qtbot.addWidget(window)
+        # qtbot.waitForWindowShown(window)
     import user_setup
     if user_setup._Technology != 'TSMC65nm':
         window.request_change_process(None, 'TSMC65nm')
@@ -613,8 +662,10 @@ def test_create_submodule_from_sref(qtbot):
     global window
     with HiddenConsole():
         if window:
-            window.close()
-        window = MainWindow._MainWindow()
+            window.reset()
+            # window.close()
+        else:
+            window = MainWindow._MainWindow()
         window.show()
         qtbot.addWidget(window)
         qtbot.waitForWindowShown(window)
