@@ -145,10 +145,10 @@ class _RectBlock(QGraphicsRectItem):
         elif self._BlockTraits["_Pattern"] == 'blank':
             brush.setStyle(Qt.NoBrush)
         else:
-            # if color_patt_name not in DisplayReader._ColorPatternDict:
-            #     color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill']
-            #     qpix = DisplayReader._PatternDict[self._BlockTraits["_Pattern"]].create_qbit(color)
-            #     DisplayReader._DisplayDict[color_patt_name] = qpix
+            if color_patt_name not in DisplayReader._ColorPatternDict:
+                color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill']
+                qpix = DisplayReader._PatternDict[self._BlockTraits["_Pattern"]].create_qbit(color)
+                DisplayReader._DisplayDict[color_patt_name] = qpix
             qpix = DisplayReader._DisplayDict[color_patt_name]
             brush.setTexture(qpix)
 
