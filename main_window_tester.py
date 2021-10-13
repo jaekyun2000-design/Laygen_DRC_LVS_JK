@@ -22,6 +22,7 @@ def test_main_window(qtbot):
         window = MainWindow._MainWindow() if not window else window
     window.show()
     qtbot.waitForWindowShown(window)
+    # assert window.test == 1
     assert window.test == True
 
 ##################################test for dp creation##################################
@@ -147,24 +148,66 @@ def test_create_pycode(qtbot):
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
 
+    window.widget_delegator.makePyCodeWindow()
+    qtbot.waitForWindowShown(window.cw)
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(), 'pycode_test')
+    window.cw.on_buttonBox_accepted()
+
 
 def test_create_ast(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
 
+    window.widget_delegator.makeConstraintWindowAST()
+    qtbot.waitForWindowShown(window.cw)
+    qtbot.keyClicks(window.cw.type_input, 'Assign')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(), 'targets')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(2).widget(), 'values')
+    window.cw.on_buttonBox_accepted()
 
 def test_create_element(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+    window.widget_delegator.makeConstraintWindowCUSTOM()
+    qtbot.waitForWindowShown(window.cw)
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(), 'test_boundary')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(2).widget(), 'PIMP')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(3).widget(), '0,0')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(4).widget(), '100')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(5).widget(), '200')
+    window.cw.on_buttonBox_accepted()
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['test_boundary']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('test_boundary')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window.visualItemDict['test_boundary']
+    assert window.visualItemDict['test_boundary'] in window.scene.items()
 
 
 def test_create_XYCalculator(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+    window.calculator()
+    qtbot.waitForWindowShown(window.calculator_window)
 
+    test_create_element(qtbot)
+    window.calculator_window.display.setText("center('test_boundary[0]') + rt('test_boundary[0]') *"
+                                             " width('test_boundary[0]') / bottom('test_boundary[0]') + 2")
+    window.calculator_window.equationList = ["center('test_boundary[0]') + rt('test_boundary[0]') * " \
+                                            "width('test_boundary[0]') / bottom('test_boundary[0]') + 2"]
+    window.calculator_window.xy_button.setChecked(True)
+
+    window.calculator_window.add_clicked()
+    window.calculator_window.y_button.setChecked(True)
+    window.calculator_window.display.setText("center('test_boundary[0]') + rb('test_boundary[0]') *"
+                                             " height('test_boundary[0]') / bottom('test_boundary[0]') + 2")
+    window.calculator_window.equationList = ["center('test_boundary[0]') + rb('test_boundary[0]') * " \
+                                        "height('test_boundary[0]') / bottom('test_boundary[0]') + 2"]
+    window.calculator_window.add_clicked()
+    window.calculator_window.export_clicked()
+    qtbot.stop()
 
 def test_create_conditionexp(qtbot):
     global window

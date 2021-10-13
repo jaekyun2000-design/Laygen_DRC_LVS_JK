@@ -895,6 +895,7 @@ class _MainWindow(QMainWindow):
         constraint_names_can = self.dockContentWidget3_2.model.findItems('', Qt.MatchContains, 1)
         constraint_ids_can = [item.text() for item in constraint_names_can]
 
+
         self.create_new_bottom_dock_widget(fcn_name)
 
 
@@ -985,9 +986,9 @@ class _MainWindow(QMainWindow):
                     del self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name]
                     self.scene.removeItem(self.visualItemDict[dp_name])
 
+
         self.self._QTObj._qtProject._ElementManager_topology_dict[fcn_name].elementParameterDict = copy.deepcopy(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
         self.original_fcn_name = fcn_name
-
     def run_setup_update(self):
         self.setup_widget = QWidget()
         form_layout = QFormLayout()
@@ -2189,10 +2190,8 @@ class _MainWindow(QMainWindow):
         for result_list in thread.thread_result:
             for vs_item in result_list[0].values():
                 self.scene.addItem(vs_item)
-                self._layerItem = vs_item.returnLayerDict()
             self._layerItem.update(result_list[1])
             self._id_layer_mapping.update(result_list[2])
-            self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
         self.pg_bar.set_max()
 
 
@@ -3506,7 +3505,7 @@ class _CustomScene(QGraphicsScene):
                 #     print(f'4)new point : {items[0]._id}')
                 # else:
                 #     print(f'4)clear')
-                list(map(lambda item: item.restore_zvalue(), self.point_items_memory))
+                map(lambda item: item.restore_zvalue(), self.point_items_memory)
                 self.point_items_memory = items
         else:
             self.point_items_memory = items
@@ -3613,7 +3612,7 @@ class _CustomScene(QGraphicsScene):
                     continue
                 parameterIDList.append(item._ItemTraits['_id'])
             self.send_parameterIDList_signal.emit(parameterIDList,5)
-        elif QKeyEvent.key() == Qt.Key_Q:
+        elif QKeyEvent.key() == Qt.Key_Q: #variable Call with XYCoordinates DesignParameter
             itemList = self.selectedItems()
             for item in itemList:
                 self.send_show_variable_signal.emit(item)

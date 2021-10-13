@@ -1745,7 +1745,7 @@ class _ConstraintSetupWindowAST(QWidget):
 
         self.setLayout(vbox)
 
-        self.setWindowTitle('Constarint Setup Window')
+        self.setWindowTitle('Constraint Setup Window')
         self.setGeometry(300,300,500,500)
         self.updateUI()
         self.show()
@@ -2144,7 +2144,7 @@ class _ConstraintSetupWindowPyCode(QWidget):
         #comboItemList = ["pyCode","scriptDefine","libImport","classDefine","classCall","functionDefine","functionCall","argument","statement","forLoop","condition","whileLoop","ifControl","ifLogic","logic","logicOp","expression","op","variableDefine","variableCall","variable",\
         #                 "dictionaryUpdate","dictionaryDefine","dictionaryCall","dictionaryElement","listDefine","listCall","number","string"]
         #comboItemList = ["pyCode","If","While","For","Try","With","FunctionDef","ClassDef"]
-        comboItemList = ['pyCode']
+        comboItemList = ['pyCode', 'scriptDefine']
         #comboItemList = comboItemList + ASTmodule.stmtList
         self.type_input.addItems(comboItemList)
         self.type_input.currentIndexChanged.connect(self.updateUI)

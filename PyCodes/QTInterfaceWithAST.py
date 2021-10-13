@@ -2319,6 +2319,7 @@ class QtProject:
         else:                                                                       # Recursive Search for subcells
             tmpstack = []
             hierarchyDict[searchmodule] = dict()
+
             for _id, element in self._DesignParameter[searchmodule].items():
                 if element._DesignParameter['_DesignParametertype'] == 3:
                     subcell = element._DesignParameter['_DesignObj_Name']
