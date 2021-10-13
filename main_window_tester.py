@@ -259,14 +259,14 @@ def test_sref_edit_window(qtbot):
     sref_widget = window.dockContentWidget2.sw
     sref_widget.name_input.clear()
     qtbot.keyClicks(sref_widget.name_input, 'sref_name_change')
-    qtbot.keyClicks(window.ls.library_input, 'PbodyContact')
-    for idx, par_name in enumerate(window.ls.par_name):
+    qtbot.keyClicks(sref_widget.library_input, 'PbodyContact')
+    for idx, par_name in enumerate(sref_widget.par_name):
         if 'COX' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '10')
+            sref_widget.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(sref_widget.par_valueForLineEdit[idx], '10')
         elif 'COY' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '2')
+            sref_widget.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(sref_widget.par_valueForLineEdit[idx], '2')
     sref_widget.on_buttonBox_accepted()
 
     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['sref_name_change']

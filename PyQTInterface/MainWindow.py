@@ -1990,33 +1990,47 @@ class _MainWindow(QMainWindow):
         print(f"                CUSTOM SREF DP / DC / VisualItem Update Start                        ")
         print("########################################################################################")
 
-        dc_id = ast_with_id._id
-        module = self.get_id_return_module(dc_id, "_DesignConstraint")
+        # dc_id = ast_with_id._id
+        dp_id = ast_with_id._id
+        # module = self.get_id_return_module(dc_id, "_DesignConstraint")
+        module = self._CurrentModuleName
         gds2gen = topAPI.gds2generator.GDS2Generator(False)
         _dp = gds2gen.code_generation_for_subcell(ast_with_id)
         tmp_dp_dict , _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(ast_with_id)
-        dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
+        # dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)
 
-        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_DesignObj'] = _dp['_DesignObj']
-        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_ElementName'] = tmp_dp_dict['_ElementName']
-        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_XYCoordinates'] = _dp['_XYCoordinates']
-        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_ModelStructure'] = _dp['_ModelStructure']
-        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['library'] = tmp_dp_dict['library']
-        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['className'] = tmp_dp_dict['className']
-        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['XY'] = tmp_dp_dict['_XYCoordinates']
-        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['calculate_fcn'] = tmp_dp_dict['calculate_fcn']
-        self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['parameters'] = tmp_dp_dict['parameters']
+        _dp['_id'] = dp_id #set previous element_name
+        dc_id = self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id)
+        _dp['_ElementName'] = ast_with_id.name
+        self.design_delegator.update_qt_parameter(_dp)
+        self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][dc_id]._ast = ast_with_id
+        self.design_delegator.control_constraint_tree_view(dc_id,None,'update')
+
+        # self.design_delegator.update_qt_constraint(dc_id,ast_with_id)
+
+
+
+        # self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_DesignObj'] = _dp['_DesignObj']
+        # self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_ElementName'] = tmp_dp_dict['_ElementName']
+        # self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_XYCoordinates'] = _dp['_XYCoordinates']
+        # self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['_ModelStructure'] = _dp['_ModelStructure']
+        # self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['library'] = tmp_dp_dict['library']
+        # self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['className'] = tmp_dp_dict['className']
+        # self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['XY'] = tmp_dp_dict['_XYCoordinates']
+        # self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['calculate_fcn'] = tmp_dp_dict['calculate_fcn']
+        # self._QTObj._qtProject._DesignParameter[module][dp_id]._DesignParameter['parameters'] = tmp_dp_dict['parameters']
+        # self._QTObj._qtProject._DesignParameter[module][dp_id].update_unified_expression()
 
         print("****************************************************************************************")
         print(f" Update Existing DesignParameters: DesignParameter creation with Name: {dp_id}")
         print("****************************************************************************************")
 
-        sref_vi = VisualizationItem._VisualizationItem()
-        sref_vi.updateDesignParameter(self._QTObj._qtProject._DesignParameter[module][dp_id])
-        self.scene.addItem(sref_vi)
-        self.scene.removeItem(self.visualItemDict[dp_id])
-        self.visualItemDict[dp_id] = sref_vi
-        self._layerItem = sref_vi.returnLayerDict()
+        # sref_vi = VisualizationItem._VisualizationItem()
+        # sref_vi.updateDesignParameter(self._QTObj._qtProject._DesignParameter[module][dp_id])
+        # self.scene.addItem(sref_vi)
+        # self.scene.removeItem(self.visualItemDict[dp_id])
+        # self.visualItemDict[dp_id] = sref_vi
+        # self._layerItem = sref_vi.returnLayerDict()
 
         self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
 
