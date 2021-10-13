@@ -141,6 +141,143 @@ def test_pin_window(qtbot):
     assert window.visualItemDict['pin_test'] in window.scene.items()
 
 
+##################################test for dp edit##################################
+def test_boundary_edit_window(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+    window.bw.AddBoundaryPointWithMouse([0,0])
+    window.bw.clickCount([0,0])
+    window.bw.AddBoundaryPointWithMouse([100,100])
+    window.bw.clickCount([100,100])
+    qtbot.keyClicks(window.bw.name_input,'boundary_edit_test')
+    window.bw.on_buttonBox_accepted()
+
+    # send vs items to selected design item list widget
+    window.dockContentWidget2.UpdateCustomItem([window.visualItemDict['boundary_edit_test']])
+    target_item = window.dockContentWidget2.findItems('boundary_edit_test', QtCore.Qt.MatchFlag.MatchExactly)[0]
+    assert target_item
+
+    window.dockContentWidget2.ModifyingDesign(target_item)
+    assert window.dockContentWidget2.bw
+
+    #change design value
+    boundary_widget = window.dockContentWidget2.bw
+    boundary_widget.name_input.clear()
+    qtbot.keyClicks(boundary_widget.name_input, 'boundary_name_change')
+    idx = boundary_widget.layer_input.findText('METAL1')
+    boundary_widget.layer_input.setCurrentIndex(idx)
+    boundary_widget.on_buttonBox_accepted()
+
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['boundary_name_change']
+    assert 'boundary_edit_test' not in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('boundary_name_change')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window.visualItemDict['boundary_name_change']
+    assert window.visualItemDict['boundary_name_change'] in window.scene.items()
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['boundary_name_change']._DesignParameter['_LayerUnifiedName'] == 'METAL1'
+
+
+def test_path_edit_window(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+    window.widget_delegator.makePathWindow()
+    qtbot.waitForWindowShown(window.pw)
+    qtbot.keyClicks(window.pw.width_input, '100')
+    window.pw.AddPathPointWithMouse([0,0])
+    window.pw.clickCount([0,0])
+    window.pw.AddPathPointWithMouse([100,0])
+    window.pw.clickCount([100,0])
+    window.pw.AddPathPointWithMouse([100,500])
+    window.pw.clickCount([100,500])
+
+    qtbot.keyClicks(window.pw.name_input,'path_edit_test')
+    window.pw.on_buttonBox_accepted()
+
+    # send vs items to selected design item list widget
+    window.dockContentWidget2.UpdateCustomItem([window.visualItemDict['path_edit_test']])
+    target_item = window.dockContentWidget2.findItems('path_edit_test', QtCore.Qt.MatchFlag.MatchExactly)[0]
+    assert target_item
+
+    window.dockContentWidget2.ModifyingDesign(target_item)
+    assert window.dockContentWidget2.pw
+
+    # change design value
+    path_widget = window.dockContentWidget2.pw
+    path_widget.name_input.clear()
+    qtbot.keyClicks(path_widget.name_input, 'path_name_change')
+    idx = path_widget.layer_input.findText('METAL3')
+    path_widget.layer_input.setCurrentIndex(idx)
+    path_widget.on_buttonBox_accepted()
+
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['path_name_change']
+    assert 'path_edit_test' not in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('path_name_change')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window.visualItemDict['path_name_change']
+    assert window.visualItemDict['path_name_change'] in window.scene.items()
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['path_name_change']._DesignParameter[
+               '_LayerUnifiedName'] == 'METAL3'
+
+
+def test_sref_edit_window(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+    window.widget_delegator.loadSRefWindow()
+    qtbot.waitForWindowShown(window.ls)
+    qtbot.keyClicks(window.ls.name_input, 'sref_edit_test')
+    qtbot.keyClicks(window.ls.XY_input, '1000,1000')
+    qtbot.keyClicks(window.ls.library_input, 'NMOSWithDummy')
+    for idx, par_name in enumerate(window.ls.par_name):
+        if 'Number' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '5')
+        elif 'Width' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '500')
+        elif 'length' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
+        elif '_XVT' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+    window.ls.on_buttonBox_accepted()
+
+    # send vs items to selected design item list widget
+    window.dockContentWidget2.UpdateCustomItem([window.visualItemDict['sref_edit_test']])
+    target_item = window.dockContentWidget2.findItems('sref_edit_test', QtCore.Qt.MatchFlag.MatchExactly)[0]
+    assert target_item
+
+    window.dockContentWidget2.ModifyingDesign(target_item)
+    assert window.dockContentWidget2.sw
+
+    # change design value
+    sref_widget = window.dockContentWidget2.sw
+    sref_widget.name_input.clear()
+    qtbot.keyClicks(sref_widget.name_input, 'sref_name_change')
+    qtbot.keyClicks(window.ls.library_input, 'PbodyContact')
+    for idx, par_name in enumerate(window.ls.par_name):
+        if 'COX' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '10')
+        elif 'COY' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '2')
+    sref_widget.on_buttonBox_accepted()
+
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['sref_name_change']
+    assert 'path_edit_test' not in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('sref_name_change')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]._ast
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]._ast.library == 'PbodyContact'
+    assert window.visualItemDict['sref_name_change']
+    assert window.visualItemDict['sref_name_change'] in window.scene.items()
+
 
 ##################################test for dc creation##################################
 def test_create_pycode(qtbot):
