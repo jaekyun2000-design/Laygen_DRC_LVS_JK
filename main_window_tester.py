@@ -886,15 +886,10 @@ def test_inspect_array(qtbot):
     with HiddenConsole():
         if window:
             window.reset()
-            # window.close()
-        else:
-            window = MainWindow._MainWindow()
-        # window.show()
-        # qtbot.addWidget(window)
-        # qtbot.waitForWindowShown(window)
+        window = MainWindow._MainWindow()
     if user_setup._Technology != 'TSMC65nm':
         window.request_change_process(None, 'TSMC65nm')
-    user_setup.MULTI_THREAD = False
+    user_setup.MULTI_THREAD = True
     file_name = './PyQTInterface/GDSFile/INV2.gds'
     window.loadGDS(test=file_name)
     window.inspect_array()
@@ -905,16 +900,14 @@ def test_inspect_path(qtbot):
     global window
     with HiddenConsole():
         if window:
-            # window.close()
             window.reset()
-        else:
-            window = MainWindow._MainWindow()
+        window = MainWindow._MainWindow()
         # qtbot.addWidget(window)
         # qtbot.waitForWindowShown(window)
     import user_setup
     if user_setup._Technology != 'TSMC65nm':
         window.request_change_process(None, 'TSMC65nm')
-    user_setup.MULTI_THREAD = False
+    user_setup.MULTI_THREAD = True
     file_name = './PyQTInterface/GDSFile/INV2.gds'
     window.loadGDS(test=file_name)
     window.inspect_path_point()

@@ -226,6 +226,10 @@ class clustering():
         for set2_ele in set2:
             count_list.append(connection_wo_last_idx.count(list(set2_ele)))
         max_idx = count_list.index(max(count_list)) if count_list else 0
+        ##### if set is empty ####
+        if not set2:
+            return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, layer=layer, index=None,
+                        XY_source_ref=None)
         top_cell_name = list(set2)[max_idx]
         hierarchy_idx = connection_wo_last_idx.index(list(top_cell_name))
         source_reference = connection_wo_last_idx[hierarchy_idx]
@@ -285,6 +289,9 @@ class clustering():
         for set2_ele in set2:
             count_list.append(connection_wo_last_idx.count(list(set2_ele)))
         max_idx = count_list.index(max(count_list)) if count_list else 0
+        if not set2:
+            return dict(x_offset=x_offset, y_offset=y_offset, col=col, row=row, layer=layer, index=None,
+                        XY_source_ref=None)
         top_cell_name = list(set2)[max_idx]
         hierarchy_idx = connection_wo_last_idx.index(list(top_cell_name))
         source_reference = connection_wo_last_idx[hierarchy_idx]
