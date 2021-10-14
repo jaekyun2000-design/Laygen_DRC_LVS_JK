@@ -24,12 +24,14 @@ def test_main_window(qtbot):
     qtbot.waitForWindowShown(window)
     # assert window.test == 1
     assert window.test == True
+    window.reset()
 
 ##################################test for dp creation##################################
 def test_boundary_window(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+    window.show()
     window.widget_delegator.make_boundary_window()
     qtbot.waitForWindowShown(window.bw)
     window.bw.AddBoundaryPointWithMouse([0,0])
@@ -45,6 +47,7 @@ def test_boundary_window(qtbot):
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
     assert window.visualItemDict['boundary_test']
     assert window.visualItemDict['boundary_test'] in window.scene.items()
+    window.reset()
 
 
 def test_path_window(qtbot):
@@ -69,6 +72,7 @@ def test_path_window(qtbot):
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
     assert window.visualItemDict['path_test']
     assert window.visualItemDict['path_test'] in window.scene.items()
+    window.reset()
 
 
 def test_sref_window(qtbot):
@@ -100,6 +104,7 @@ def test_sref_window(qtbot):
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
     assert window.visualItemDict['sref_test']
     assert window.visualItemDict['sref_test'] in window.scene.items()
+    window.reset()
 
 
 def test_text_window(qtbot):
@@ -108,17 +113,20 @@ def test_text_window(qtbot):
         window = MainWindow._MainWindow() if not window else window
     window.widget_delegator.makeTextWindow()
     qtbot.waitForWindowShown(window.txtw)
-    qtbot.addWidget(window.text)
+    # qtbot.addWidget(window.txtw)
     qtbot.keyClicks(window.txtw.name_input, 'text_test')
     qtbot.keyClicks(window.txtw.text_input, 'TEST TEXT WINDOW')
     qtbot.keyClicks(window.txtw.width_input, '100')
-    qtbot.keyClicks(window.txtw.XY_input, '0,0')
+    # qtbot.keyClicks(window.txtw.XY_input, "0,0")
+    window.txtw.DetermineCoordinateWithMouse([0,0])
+    window.txtw.on_buttonBox_accepted()
 
     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['text_test']
     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('text_test')
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
     assert window.visualItemDict['text_test']
     assert window.visualItemDict['text_test'] in window.scene.items()
+    window.reset()
 
 
 def test_pin_window(qtbot):
@@ -127,18 +135,21 @@ def test_pin_window(qtbot):
         window = MainWindow._MainWindow() if not window else window
     window.widget_delegator.makePinWindow()
     qtbot.waitForWindowShown(window.pinw)
-    qtbot.addWidget(window.pinw)
+    # qtbot.addWidget(window.pinw)
     qtbot.keyClicks(window.pinw.name_input, 'pin_test')
     qtbot.keyClicks(window.pinw.layer_input, 'METAL1PIN')
     qtbot.keyClicks(window.pinw.text_input, 'METAL1PIN_test')
     qtbot.keyClicks(window.pinw.width_input, '100')
-    qtbot.keyClicks(window.pinw.XY_input, '0,0')
+    window.pinw.DetermineCoordinateWithMouse([0, 0])
+    window.pinw.on_buttonBox_accepted()
+    # qtbot.keyClicks(window.pinw.XY_input, '0,0')
 
     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['pin_test']
     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('pin_test')
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
     assert window.visualItemDict['pin_test']
     assert window.visualItemDict['pin_test'] in window.scene.items()
+    window.reset()
 
 
 ##################################test for dp edit##################################
@@ -178,7 +189,7 @@ def test_boundary_edit_window(qtbot):
     assert window.visualItemDict['boundary_name_change']
     assert window.visualItemDict['boundary_name_change'] in window.scene.items()
     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['boundary_name_change']._DesignParameter['_LayerUnifiedName'] == 'METAL1'
-
+    window.reset()
 
 def test_path_edit_window(qtbot):
     global window
@@ -221,7 +232,7 @@ def test_path_edit_window(qtbot):
     assert window.visualItemDict['path_name_change'] in window.scene.items()
     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['path_name_change']._DesignParameter[
                '_LayerUnifiedName'] == 'METAL3'
-
+    window.reset()
 
 def test_sref_edit_window(qtbot):
     global window
@@ -277,6 +288,7 @@ def test_sref_edit_window(qtbot):
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]._ast.library == 'PbodyContact'
     assert window.visualItemDict['sref_name_change']
     assert window.visualItemDict['sref_name_change'] in window.scene.items()
+    window.reset()
 
 
 ##################################test for dc creation##################################
@@ -289,7 +301,7 @@ def test_create_pycode(qtbot):
     qtbot.waitForWindowShown(window.cw)
     qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(), 'pycode_test')
     window.cw.on_buttonBox_accepted()
-
+    window.reset()
 
 def test_create_ast(qtbot):
     global window
@@ -302,6 +314,7 @@ def test_create_ast(qtbot):
     qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(), 'targets')
     qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(2).widget(), 'values')
     window.cw.on_buttonBox_accepted()
+    window.reset()
 
 def test_create_element(qtbot):
     global window
@@ -320,30 +333,31 @@ def test_create_element(qtbot):
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
     assert window.visualItemDict['test_boundary']
     assert window.visualItemDict['test_boundary'] in window.scene.items()
+    window.reset()
 
+def test_create_XYCalculator(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+    window.calculator()
+    qtbot.waitForWindowShown(window.calculator_window)
 
-# def test_create_XYCalculator(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#     window.calculator()
-#     qtbot.waitForWindowShown(window.calculator_window)
-#
-#     test_create_element(qtbot)
-#     window.calculator_window.display.setText("center('test_boundary[0]') + rt('test_boundary[0]') *"
-#                                              " width('test_boundary[0]') / bottom('test_boundary[0]') + 2")
-#     window.calculator_window.equationList = ["center('test_boundary[0]') + rt('test_boundary[0]') * " \
-#                                             "width('test_boundary[0]') / bottom('test_boundary[0]') + 2"]
-#     window.calculator_window.xy_button.setChecked(True)
-#
-#     window.calculator_window.add_clicked()
-#     window.calculator_window.y_button.setChecked(True)
-#     window.calculator_window.display.setText("center('test_boundary[0]') + rb('test_boundary[0]') *"
-#                                              " height('test_boundary[0]') / bottom('test_boundary[0]') + 2")
-#     window.calculator_window.equationList = ["center('test_boundary[0]') + rb('test_boundary[0]') * " \
-#                                         "height('test_boundary[0]') / bottom('test_boundary[0]') + 2"]
-#     window.calculator_window.add_clicked()
-#     window.calculator_window.export_clicked()
+    test_create_element(qtbot)
+    window.calculator_window.display.setText("center('test_boundary[0]') + rt('test_boundary[0]') *"
+                                             " width('test_boundary[0]') / bottom('test_boundary[0]') + 2")
+    window.calculator_window.equationList = ["center('test_boundary[0]') + rt('test_boundary[0]') * " \
+                                            "width('test_boundary[0]') / bottom('test_boundary[0]') + 2"]
+    window.calculator_window.xy_button.setChecked(True)
+
+    window.calculator_window.add_clicked()
+    window.calculator_window.y_button.setChecked(True)
+    window.calculator_window.display.setText("center('test_boundary[0]') + rb('test_boundary[0]') *"
+                                             " height('test_boundary[0]') / bottom('test_boundary[0]') + 2")
+    window.calculator_window.equationList = ["center('test_boundary[0]') + rb('test_boundary[0]') * " \
+                                        "height('test_boundary[0]') / bottom('test_boundary[0]') + 2"]
+    window.calculator_window.add_clicked()
+    window.calculator_window.export_clicked()
+    window.reset()
     # qtbot.stop()
 
 def test_create_conditionexp(qtbot):
@@ -441,27 +455,20 @@ def test_paring_after_dp_creation(qtbot):
     qtbot.keyClicks(window.bw.name_input,'pairing_test')
     window.bw.on_buttonBox_accepted()
 
-    ## dp에서 찾아서 H키 누르기
     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('pairing_test')
+    assert dc_id
     assert window._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id) == 'pairing_test'
     window.visualItemDict['pairing_test'].setSelected(True)
-    qtbot.keyClicks(window.centralWidget(), 'H')
-    idx = window.dockContentWidget3_2.currentIndex()
-    assert dc_id == window.dockContentWidget3_2.model.itemFromIndex(idx).text()
-
+    qtbot.keyClicks(window.scene, 'H')
+    idx = window.dockContentWidget3_2.currentIndex().row()
+    assert dc_id == window.dockContentWidget3_2.model.itemAt(idx).children()
     ## dc에서 찾아서 H키 누르기
-    for item_key in list(window.visualItemDict.keys()):
-        window.visualItemDict[item_key].setSelected(False)
-    qtbot.keyClicks(window.dockContentWidget3_2, 'H')
-    for item_key in list(window.visualItemDict.keys()):
-        if window.visualItemDict[item_key].isSelected():
-            dp_id = item_key
-    assert window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id) == dc_id
 
 def test_paring_after_dc_creation(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+        window.reset()
 
     window.widget_delegator.makeConstraintWindowCUSTOM()
     qtbot.waitForWindowShown(window.cw)
@@ -472,27 +479,30 @@ def test_paring_after_dc_creation(qtbot):
     qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(5).widget(),'100')
     window.cw.on_buttonBox_accepted()
 
-    ## dp에서 찾아서 H키 누르기
     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('pairing_test')
+    assert dc_id
     assert window._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id) == 'pairing_test'
     window.visualItemDict['pairing_test'].setSelected(True)
-    qtbot.keyClicks(window.centralWidget(), 'H')
-    idx = window.dockContentWidget3_2.currentIndex()
-    assert dc_id == window.dockContentWidget3_2.model.itemFromIndex(idx).text()
-
+    qtbot.keyClicks(window.scene, 'H')
+    idx = window.dockContentWidget3_2.currentIndex().row()
+    assert dc_id == window.dockContentWidget3_2.model.itemAt(idx).children()
     ## dc에서 찾아서 H키 누르기
-    for item_key in list(window.visualItemDict.keys()):
-        window.visualItemDict[item_key].setSelected(False)
-    qtbot.keyClicks(window.dockContentWidget3_2, 'H')
-    for item_key in list(window.visualItemDict.keys()):
-        if window.visualItemDict[item_key].isSelected():
-            dp_id = item_key
-    assert window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id) == dc_id
 
 def test_paring_after_project_load(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+        window.reset()
+
+    # ### Boundary creation ###
+    # window.widget_delegator.make_boundary_window()
+    # qtbot.waitForWindowShown(window.bw)
+    # window.bw.AddBoundaryPointWithMouse([0,0])
+    # window.bw.clickCount([0,0])
+    # window.bw.AddBoundaryPointWithMouse([100,100])
+    # window.bw.clickCount([100,100])
+    # qtbot.keyClicks(window.bw.name_input,'pairing_test')
+    # window.bw.on_buttonBox_accepted()
 
     ### Project save ###
     file_name = './PyQTInterface/Project/pairing_test'
@@ -504,31 +514,30 @@ def test_paring_after_project_load(qtbot):
     window.nmw.on_makeBox_accepted()
 
     ### Project load ###
-    file_name = './PyQTInterface/Project/pairing_test.bin'
-    window.module_dict['proj_pairing_test'].loadProject(file_name)
+    file_name = './PyQTInterface/Project/pairing_test/pairing_test.bin'
+    window.module_dict['pairing_test'].loadProject(file_name)
 
-    ## dp에서 찾아서 H키 누르기
-    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('pairing_test')
-    assert window._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id) == 'pairing_test'
+    ### Assertion ###
+    dc_id = window.odule_dict['proj_pairing_test']._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('pairing_test')
+    assert dc_id
+    assert window.odule_dict['proj_pairing_test']._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id) == 'pairing_test'
     window.visualItemDict['pairing_test'].setSelected(True)
-    qtbot.keyClicks(window.centralWidget(), 'H')
-    idx = window.dockContentWidget3_2.currentIndex()
-    assert dc_id == window.dockContentWidget3_2.model.itemFromIndex(idx).text()
-
+    qtbot.keyClicks(window.scene, 'H')
+    idx = window.dockContentWidget3_2.currentIndex().row()
+    assert dc_id == window.dockContentWidget3_2.model.itemAt(idx).children()
     ## dc에서 찾아서 H키 누르기
-    for item_key in list(window.visualItemDict.keys()):
-        window.visualItemDict[item_key].setSelected(False)
-    qtbot.keyClicks(window.dockContentWidget3_2, 'H')
-    for item_key in list(window.visualItemDict.keys()):
-        if window.visualItemDict[item_key].isSelected():
-            dp_id = item_key
-    assert window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id) == dc_id
 
 
 def test_paring_after_gds_load(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+        window.reset()
+
+    ### New module ###
+    window.show_module_window()
+    qtbot.keyClicks(window.nmw.name_input, 'gds_pairing_test')
+    window.nmw.on_makeBox_accepted()
 
     ### GDS load ###
     import user_setup
@@ -536,31 +545,23 @@ def test_paring_after_gds_load(qtbot):
         window.request_change_process(None, 'SS28nm')
     user_setup.MULTI_THREAD = False
     file_name = './PyQTInterface/GDSFile/RX_term_resistor_v2.gds'
-    window.loadGDS(test=file_name)
+    window.module_dict['gds_pairing_test'].loadGDS(test=file_name)
 
-    ## dp에서 찾아서 H키 누르기
-    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('METAL2_path_6')
-    assert window._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id) == 'METAL2_path_6'
-    window.visualItemDict['METAL2_path_6'].setSelected(True)
-    qtbot.keyClicks(window.centralWidget(), 'H')
-    idx = window.dockContentWidget3_2.currentIndex()
-    assert dc_id == window.dockContentWidget3_2.model.itemFromIndex(idx).text()
-
+    ### Assertion ::: change dp id later ###
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('pairing_test')
+    assert dc_id
+    assert window._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id) == 'pairing_test'
+    window.visualItemDict['pairing_test'].setSelected(True)
+    qtbot.keyClicks(window.scene, 'H')
+    idx = window.dockContentWidget3_2.currentIndex().row()
+    assert dc_id == window.dockContentWidget3_2.model.itemAt(idx).children()
     ## dc에서 찾아서 H키 누르기
-    for item_key in list(window.visualItemDict.keys()):
-        window.visualItemDict[item_key].setSelected(False)
-    qtbot.keyClicks(window.dockContentWidget3_2, 'H')
-    for item_key in list(window.visualItemDict.keys()):
-        if window.visualItemDict[item_key].isSelected():
-            dp_id = item_key
-    assert window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id) == dc_id
 
 
 def test_paring_after_create_submodule(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
-
 
 
 def test_paring_after_convert_sref_assign(qtbot):
@@ -613,7 +614,7 @@ def test_project_save(qtbot):
         if window:
             window.close()
         window = MainWindow._MainWindow()
-        qtbot.addWidget(window)
+        # qtbot.addWidget(window)
         qtbot.waitForWindowShown(window)
     #create boundary
     window.widget_delegator.make_boundary_window()
@@ -663,7 +664,7 @@ def test_project_save(qtbot):
     file_name = './PyQTInterface/Project/test_project'
     window.saveProject(file_name)
     assert window.test
-
+    window.reset()
 
 
 def test_project_load(qtbot):
@@ -677,7 +678,7 @@ def test_project_load(qtbot):
     file_name = './PyQTInterface/Project/test_project.bin'
     window.loadProject(file_name)
     assert window.test
-
+    window.reset()
 
 
 def test_load_gds(qtbot):
@@ -697,7 +698,7 @@ def test_load_gds(qtbot):
     assert len(window._QTObj._qtProject._DesignParameter['RX_term_resistor_v2']) == 118
     assert len(window._QTObj._qtProject._DesignConstraint['RX_term_resistor_v2']) == 118
     assert len(window.scene.items()) == 2640
-    window.reset()
+    # window.reset()
 
 
 # ##################################test for scene_right_click##################################
@@ -754,10 +755,9 @@ def test_load_gds(qtbot):
 def test_module_create(qtbot):
     global window
     with HiddenConsole():
-        if window:
-            window.reset()
-        else:
+        if not window:
             window = MainWindow._MainWindow()
+    window.reset()
     window.show_module_window()
     qtbot.keyClicks(window.nmw.name_input, 'test_module')
     window.nmw.on_makeBox_accepted()
@@ -768,7 +768,7 @@ def test_module_create(qtbot):
     new_window = window.module_dict['test_module']
     assert 'test_module' in new_window.module_name_list
     assert 'test_module' in new_window.module_dict
-
+    window.reset()
 
 def test_module_shift(qtbot):
     global window
@@ -798,7 +798,7 @@ def test_module_shift(qtbot):
     assert new_window.isVisible()
     assert not window.isVisible()
     assert new_window._CurrentModuleName == 'test_module'
-
+    window.reset()
 
 def test_module_run(qtbot):
     global window
@@ -868,6 +868,7 @@ def test_inspect_array(qtbot):
     window.loadGDS(test=file_name)
     window.inspect_array()
     assert window.array_list_widget.count() == 8
+    window.reset()
 
 def test_inspect_path(qtbot):
     global window
@@ -887,6 +888,8 @@ def test_inspect_path(qtbot):
     window.loadGDS(test=file_name)
     window.inspect_path_point()
     assert window.path_point_widget.count() == 15
+    window.reset()
+
 
 def test_technology_node_change(qtbot):
     global window
@@ -989,20 +992,15 @@ def test_technology_node_change(qtbot):
     test_process('TSMC45nm')
     test_process('TSMC90nm')
 
-
+    window.reset()
 
 
 def test_create_submodule_from_sref(qtbot):
     global window
     with HiddenConsole():
-        if window:
-            window.reset()
-            # window.close()
-        else:
+        if not window:
             window = MainWindow._MainWindow()
         window.show()
-        qtbot.addWidget(window)
-        qtbot.waitForWindowShown(window)
     import user_setup
     if user_setup._Technology != 'TSMC65nm':
         window.request_change_process(None, 'TSMC65nm')
@@ -1023,6 +1021,7 @@ def test_create_submodule_from_sref(qtbot):
         assert window.visualItemDict[item]
         assert window.visualItemDict[item] in window.scene.items()
 
+    window.reset()
 
 ##################################test for scene##################################
 def test_boundary_design_edit(qtbot):
