@@ -493,7 +493,7 @@ def test_paring_after_project_load(qtbot):
     window.saveProject(file_name)
 
     ### New module ###
-    window.newModule()
+    window.show_module_window()
     qtbot.keyClicks(window.nmw.name_input, 'proj_pairing_test')
     window.nmw.on_makeBox_accepted()
 
@@ -518,7 +518,7 @@ def test_paring_after_gds_load(qtbot):
         window = MainWindow._MainWindow() if not window else window
 
     ### New module ###
-    window.newModule()
+    window.show_module_window()
     qtbot.keyClicks(window.nmw.name_input, 'gds_pairing_test')
     window.nmw.on_makeBox_accepted()
 
@@ -739,34 +739,46 @@ def test_module_create(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
-    window.newModule()
+    window.show_module_window()
     qtbot.keyClicks(window.nmw.name_input, 'test_module')
+    window.nmw.on_makeBox_accepted()
 
     assert 'test_module' in window.module_name_list
     assert 'test_module' in window.module_dict
+
+    new_window = window.module_dict['test_module']
+    assert 'test_module' in new_window.module_name_list
+    assert 'test_module' in new_window.module_dict
 
 
 def test_module_shift(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
-    window.newModule()
+    window.reset()
+    window.show_module_window()
     qtbot.keyClicks(window.nmw.name_input, 'test_module')
-    assert 'test_module' in window.module_dict
-    window.moduleManage()
-    assert window.mw.manageListWidget.findItems('test_module')
-    item = window.mw.manageListWidget.findItems('test_module')[0]
-    window.mw.manageListWidget.setCurrentItem(item)
-    window.mw.on_selectBox_accepted()
-    assert window._CurrentModuleName == 'test_module'
+    window.nmw.on_makeBox_accepted()
+    new_window = window.module_dict['test_module']
 
-    assert 'EasyDebugModule' in window.module_dict
+    assert 'EasyDebugModule' in new_window.module_dict
+    new_window.moduleManage()
+    assert new_window.mw.manageListWidget.findItems('EasyDebugModule', QtCore.Qt.MatchFlag.MatchExactly)
+    item = new_window.mw.manageListWidget.findItems('EasyDebugModule', QtCore.Qt.MatchFlag.MatchExactly)[0]
+    new_window.mw.manageListWidget.setCurrentItem(item)
+    new_window.mw.on_selectBox_accepted()
+    assert not new_window.isVisible()
+    assert window.isVisible()
+    assert window._CurrentModuleName == 'EasyDebugModule'
+
     window.moduleManage()
-    assert window.mw.manageListWidget.findItems('EasyDebugModule')
-    item = window.mw.manageListWidget.findItems('EasyDebugModule')[0]
+    assert window.mw.manageListWidget.findItems('test_module', QtCore.Qt.MatchFlag.MatchExactly)
+    item = window.mw.manageListWidget.findItems('test_module', QtCore.Qt.MatchFlag.MatchExactly)[0]
     window.mw.manageListWidget.setCurrentItem(item)
     window.mw.on_selectBox_accepted()
-    assert window._CurrentModuleName == 'EasyDebugModule'
+    assert new_window.isVisible()
+    assert not window.isVisible()
+    assert new_window._CurrentModuleName == 'test_module'
 
 
 def test_module_run(qtbot):
