@@ -4,6 +4,8 @@ import re
 import traceback
 import warnings
 
+import PyQt5.QtGui
+
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 import user_setup
 from PyQt5.QtWidgets import *
@@ -836,6 +838,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                     except:
                         self.text = QGraphicsTextItem(blockTraits['_TEXT'])
 
+                    if not blockTraits['_Color']:
+                        blockTraits['_Color'] = Qt.GlobalColor.white
                     self.text.setDefaultTextColor(blockTraits['_Color'])
                     if blockTraits['_Width'] < 1:
                         fontSize = 1000 * blockTraits['_Width']
