@@ -768,16 +768,14 @@ def test_clickable(qtbot):
     ### Set all non-clickable ###
     qtbot.mouseClick(window.dockContentWidget1_2.clickable_button, QtCore.Qt.LeftButton)
 
-    ### Assertion ###\
-    print(window.visualItemDict['clickable_test'].ItemIsSelectable)
-    # assert not window.visualItemDict['clickable_test'].ItemIsSelectable
+    ### Assertion ###
+    assert not int(window.visualItemDict['clickable_test'].flags() & QtWidgets.QGraphicsItem.ItemIsSelectable) == window.visualItemDict['clickable_test'].ItemIsSelectable
 
     ### Set all clickable ###
     qtbot.mouseClick(window.dockContentWidget1_2.clickable_button, QtCore.Qt.LeftButton)
 
     ### Assertion ###
-    print(window.visualItemDict['clickable_test'].ItemIsSelectable)
-    # assert window.visualItemDict['clickable_test'].ItemIsSelectable
+    assert int(window.visualItemDict['clickable_test'].flags() & QtWidgets.QGraphicsItem.ItemIsSelectable) == window.visualItemDict['clickable_test'].ItemIsSelectable
 
     window.reset()
 
@@ -785,7 +783,50 @@ def test_used_layer(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+    window.show()
 
+    ### Create METAL1 boundary ###
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+    window.bw.AddBoundaryPointWithMouse([0,0])
+    window.bw.clickCount([0,0])
+    window.bw.AddBoundaryPointWithMouse([100,100])
+    window.bw.clickCount([100,100])
+    qtbot.keyClicks(window.bw.layer_input,'METAL1')
+    qtbot.keyClicks(window.bw.name_input,'clickable_test')
+    window.bw.on_buttonBox_accepted()
+
+    ### Create METAL2 boundary ###
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+    window.bw.AddBoundaryPointWithMouse([0,0])
+    window.bw.clickCount([0,0])
+    window.bw.AddBoundaryPointWithMouse([-100,-100])
+    window.bw.clickCount([-100,-100])
+    qtbot.keyClicks(window.bw.layer_input,'METAL2')
+    qtbot.keyClicks(window.bw.name_input,'clickable_test')
+    window.bw.on_buttonBox_accepted()
+
+    ### Create PIMP boundary ###
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+    window.bw.AddBoundaryPointWithMouse([0,0])
+    window.bw.clickCount([0,0])
+    window.bw.AddBoundaryPointWithMouse([100,-100])
+    window.bw.clickCount([100,-100])
+    qtbot.keyClicks(window.bw.layer_input,'PIMP')
+    qtbot.keyClicks(window.bw.name_input,'clickable_test')
+    window.bw.on_buttonBox_accepted()
+
+    ### Set show used layer ###
+    qtbot.mouseClick(window.dockContentWidget1_2.show_layer_option_button, QtCore.Qt.LeftButton)
+
+    ### Assertion ###
+    for i in range(window.dockContentWidget1_2.layer_table_widget.model().rowCount()):
+        assert window.dockContentWidget1_2.layer_table_widget.model().item(i).text() in ['METAL1', 'METAL2', 'PIMP']
+    # assert
+
+    window.reset()
 
 def test_generator_show_hide(qtbot):
     global window
