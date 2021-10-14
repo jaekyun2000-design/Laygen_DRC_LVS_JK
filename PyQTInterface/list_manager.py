@@ -32,15 +32,15 @@ class LayerManager(QWidget):
         self.visible_button = QPushButton("NV")
         self.clickable_button = QPushButton("NC")
 
-        self.relative_or_offset_button = QPushButton()
-        self.relative_or_offset_button.setIcon(QIcon(QPixmap('./image/ON.png')))
-        self.relative_or_offset_button.setIconSize(QSize(50, 30))
-        self.relative_or_offset_button.setFlat(True)
-        self.relative_or_offset_button.setCheckable(True)
-        self.relative_or_offset_button.setChecked(True)
-        self.relative_or_offset_button.setAutoFillBackground(False)
-        self.relative_or_offset_button.toggled.connect(self.button_image_change)
-        self.relative_or_offset_button.setText("Show All Layer")
+        self.show_layer_option_button = QPushButton()
+        self.show_layer_option_button.setIcon(QIcon(QPixmap('./image/ON.png')))
+        self.show_layer_option_button.setIconSize(QSize(50, 30))
+        self.show_layer_option_button.setFlat(True)
+        self.show_layer_option_button.setCheckable(True)
+        self.show_layer_option_button.setChecked(True)
+        self.show_layer_option_button.setAutoFillBackground(False)
+        self.show_layer_option_button.toggled.connect(self.button_image_change)
+        self.show_layer_option_button.setText("Show All Layer")
 
         self.send_toggled_button_signal.connect(self.layer_table_widget.send_used_layer)
 
@@ -60,7 +60,7 @@ class LayerManager(QWidget):
         self.clickable_button.clicked.connect(self.layer_table_widget.macro_check)
 
         top_layout.addLayout(selection_layout)
-        top_layout.addWidget(self.relative_or_offset_button)
+        top_layout.addWidget(self.show_layer_option_button)
         top_layout.addWidget(self.layer_table_widget)
         self.setLayout(top_layout)
 
@@ -128,18 +128,18 @@ class _ManageList(QTableView):
         #     self.model.setItem(self.model.rowCount()-1,1,itemv)
         #     self.model.setItem(self.model.rowCount()-1,2,itemc)
 
-        self.model = layerListItemModel()
-        self.send_used_layer_dict_signal.connect(self.model.toggle_layer_list)
+        self.layer_model = layerListItemModel()
+        self.send_used_layer_dict_signal.connect(self.layer_model.toggle_layer_list)
 
         self.verticalHeader().setVisible(False)
         self.setShowGrid(False)
 
         self.type = 'all'
-        self.setModel(self.model.model_dictionary[self.type])
+        self.setModel(self.layer_model.model_dictionary[self.type])
         self.resizeColumnsToContents()
 
         self.button_text_signal.connect(self.lm.swapButtonText)
-        self.model.model_dictionary[self.type].itemChanged.connect(self.itemChanged)
+        self.layer_model.model_dictionary[self.type].itemChanged.connect(self.itemChanged)
 
     def send_used_layer(self, _type):
         self.type = _type
@@ -147,11 +147,11 @@ class _ManageList(QTableView):
         self.send_used_layer_dict_signal.emit(_type, self._usedlayer)
 
         if _type == 'all':
-            self.setModel(self.model.model_dictionary[_type])
+            self.setModel(self.layer_model.model_dictionary[_type])
         elif _type == 'used':
-            self.setModel(self.model.model_dictionary[_type])
+            self.setModel(self.layer_model.model_dictionary[_type])
 
-        self.model.model_dictionary[self.type].itemChanged.connect(self.itemChanged)
+        self.layer_model.model_dictionary[self.type].itemChanged.connect(self.itemChanged)
 
     def updateLayerList(self, _layerDict):
         self._usedlayer = _layerDict
@@ -181,7 +181,7 @@ class _ManageList(QTableView):
 
     def itemChanged(self, item):
         # try:
-        layer = self.model.model_dictionary[self.type].item(item.index().row()).text()
+        layer = self.layer_model.model_dictionary[self.type].item(item.index().row()).text()
 
         if item.checkState() == 0:
             if item.index().column() == 1:
@@ -192,13 +192,13 @@ class _ManageList(QTableView):
         elif item.checkState() == 2:
             if item.index().column() == 1:
                 self.signal = 'NV'
-                for i in range(self.model.model_dictionary[self.type].rowCount()):
-                    if self.model.model_dictionary[self.type].item(i, 1).checkState() == 0:
+                for i in range(self.layer_model.model_dictionary[self.type].rowCount()):
+                    if self.layer_model.model_dictionary[self.type].item(i, 1).checkState() == 0:
                         self.signal = 'AV'
             elif item.index().column() == 2:
                 self.signal = 'NC'
-                for i in range(self.model.model_dictionary[self.type].rowCount()):
-                    if self.model.model_dictionary[self.type].item(i, 2).checkState() == 0:
+                for i in range(self.layer_model.model_dictionary[self.type].rowCount()):
+                    if self.layer_model.model_dictionary[self.type].item(i, 2).checkState() == 0:
                         self.signal = 'AC'
             self.button_text_signal.emit(self.signal)
 
@@ -312,8 +312,8 @@ class _ManageList(QTableView):
         elif mode == 'off':
             state = Qt.Unchecked
 
-        for row in range(0, self.model.model_dictionary[self.type].rowCount()):
-            self.model.model_dictionary[self.type].item(row, col).setCheckState(state)
+        for row in range(0, self.layer_model.model_dictionary[self.type].rowCount()):
+            self.layer_model.model_dictionary[self.type].item(row, col).setCheckState(state)
 
 
 class layerListItemModel(QStandardItemModel):

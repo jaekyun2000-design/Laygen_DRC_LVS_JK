@@ -346,8 +346,8 @@ class _MainWindow(QMainWindow):
         self.scene.send_xy_signal.connect(self.transfer_delegator.get_click_point)
 
         ################# Right Dock Widget setting ####################
-        dockWidget1 = QDockWidget("Element")
-        dockWidget1.setMaximumHeight(400)
+        self.dockWidget1 = QDockWidget("Element")
+        self.dockWidget1.setMaximumHeight(400)
         dockWidget1_1 = QDockWidget("Layer")
         layoutWidget = QWidget()
         dockContentWidget1 = QWidget()
@@ -469,18 +469,18 @@ class _MainWindow(QMainWindow):
         gridOnDock1.addWidget(dockContentWidget1)
 
         layoutWidget.setLayout(gridOnDock1)
-        dockWidget1.setWidget(layoutWidget)
+        self.dockWidget1.setWidget(layoutWidget)
 
         dockWidget1_1.setWidget(self.dockContentWidget1_2)
 
         dockWidget_tab3 = QDockWidget("Variable")
         dockWidget_tab3.setWidget(self.dv)
 
-        self.addDockWidget(Qt.RightDockWidgetArea, dockWidget1)
+        self.addDockWidget(Qt.RightDockWidgetArea, self.dockWidget1)
         self.addDockWidget(Qt.RightDockWidgetArea, dockWidget1_1)
         self.addDockWidget(Qt.RightDockWidgetArea, dockWidget_tab3)
 
-        self.tabifyDockWidget(dockWidget1, dockWidget1_1)
+        self.tabifyDockWidget(self.dockWidget1, dockWidget1_1)
         self.tabifyDockWidget(dockWidget1_1, dockWidget_tab3)
 
 
@@ -1071,7 +1071,7 @@ class _MainWindow(QMainWindow):
             output_ast.body = []
             # for stmt in info_dict['body']:
             #     output_ast.body.append(create_stmt_ast_by_dict(stmt))
-            output_ast.extend([create_stmt_ast_by_dict(stmt) for stmt in info_dict['body']])
+            output_ast.extend(create_stmt_ast_by_dict(stmt) for stmt in info_dict['body'])
             return output_ast
 
         # for stmt in output_list:
@@ -1306,7 +1306,7 @@ class _MainWindow(QMainWindow):
         #     self.visualItemDict[id].setSelected(True)
         #     self.log.append(id)
         list(map(lambda id: self.visualItemDict[id].setSelected(True), self.test_purpose_var[row]))
-        self.log.extend([id for id in self.test_purpose_var[row]])
+        self.log.extend(id for id in self.test_purpose_var[row])
         print(row)
 
     def inspect_geometry(self):
@@ -1577,9 +1577,8 @@ class _MainWindow(QMainWindow):
             constraint_ids_can.remove(dc_id)
             constraint_ids_can.append(dp_id)
 
-        # for layer in self._layerItem:
-        #     vi_can.extend(self._layerItem[layer])
-        vi_can.extend([self._layerItem[layer] for layer in self._layerItem])
+        for layer in self._layerItem:
+            vi_can.extend(self._layerItem[layer])
 
         for visualItem in vi_can:
             for idx in range(len(constraint_ids_can)):
@@ -1605,9 +1604,8 @@ class _MainWindow(QMainWindow):
             constraint_ids_gen.remove(dc_id)
             constraint_ids_gen.append(dp_id)
 
-        # for layer in self._layerItem:
-        #     vi_gen.extend(self._layerItem[layer])
-        vi_gen.extend([self._layerItem[layer] for layer in self._layerItem])
+        for layer in self._layerItem:
+            vi_gen.extend(self._layerItem[layer])
 
         for idx in range(len(constraint_ids_gen)):
             for visualItem in vi_gen:
@@ -3303,6 +3301,7 @@ class _CustomView(QGraphicsView):
         super().keyPressEvent(QKeyEvent)
 
     def mousePressEvent(self, event) -> None:
+        print()
         if event.button() == Qt.RightButton:
             # print('return')
             return

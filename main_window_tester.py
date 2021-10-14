@@ -77,36 +77,36 @@ def test_path_window(qtbot):
     window.reset()
 
 
-def test_sref_window(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-    window.widget_delegator.loadSRefWindow()
-    qtbot.waitForWindowShown(window.ls)
-    qtbot.keyClicks(window.ls.name_input, 'sref_test')
-    qtbot.keyClicks(window.ls.XY_input, '1000,1000')
-    qtbot.keyClicks(window.ls.library_input, 'NMOSWithDummy')
-    for idx, par_name in enumerate(window.ls.par_name):
-        if 'Number' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '5')
-        elif 'Width' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '500')
-        elif 'length' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
-        elif '_XVT' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
-    window.ls.on_buttonBox_accepted()
-
-    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['sref_test']
-    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('sref_test')
-    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
-    assert window.visualItemDict['sref_test']
-    assert window.visualItemDict['sref_test'] in window.scene.items()
-    window.reset()
+# def test_sref_window(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#     window.widget_delegator.loadSRefWindow()
+#     qtbot.waitForWindowShown(window.ls)
+#     qtbot.keyClicks(window.ls.name_input, 'sref_test')
+#     qtbot.keyClicks(window.ls.XY_input, '1000,1000')
+#     qtbot.keyClicks(window.ls.library_input, 'NMOSWithDummy')
+#     for idx, par_name in enumerate(window.ls.par_name):
+#         if 'Number' in par_name:
+#             window.ls.par_valueForLineEdit[idx].clear()
+#             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '5')
+#         elif 'Width' in par_name:
+#             window.ls.par_valueForLineEdit[idx].clear()
+#             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '500')
+#         elif 'length' in par_name:
+#             window.ls.par_valueForLineEdit[idx].clear()
+#             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
+#         elif '_XVT' in par_name:
+#             window.ls.par_valueForLineEdit[idx].clear()
+#             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+#     window.ls.on_buttonBox_accepted()
+#
+#     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['sref_test']
+#     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('sref_test')
+#     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+#     assert window.visualItemDict['sref_test']
+#     assert window.visualItemDict['sref_test'] in window.scene.items()
+#     window.reset()
 
 
 def test_text_window(qtbot):
@@ -193,104 +193,104 @@ def test_boundary_edit_window(qtbot):
     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['boundary_name_change']._DesignParameter['_LayerUnifiedName'] == 'METAL1'
     window.reset()
 
-def test_path_edit_window(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-    window.widget_delegator.makePathWindow()
-    qtbot.waitForWindowShown(window.pw)
-    qtbot.keyClicks(window.pw.width_input, '100')
-    window.pw.AddPathPointWithMouse([0,0])
-    window.pw.clickCount([0,0])
-    window.pw.AddPathPointWithMouse([100,0])
-    window.pw.clickCount([100,0])
-    window.pw.AddPathPointWithMouse([100,500])
-    window.pw.clickCount([100,500])
-
-    qtbot.keyClicks(window.pw.name_input,'path_edit_test')
-    window.pw.on_buttonBox_accepted()
-
-    # send vs items to selected design item list widget
-    window.dockContentWidget2.UpdateCustomItem([window.visualItemDict['path_edit_test']])
-    target_item = window.dockContentWidget2.findItems('path_edit_test', QtCore.Qt.MatchFlag.MatchExactly)[0]
-    assert target_item
-
-    window.dockContentWidget2.ModifyingDesign(target_item)
-    assert window.dockContentWidget2.pw
-
-    # change design value
-    path_widget = window.dockContentWidget2.pw
-    path_widget.name_input.clear()
-    qtbot.keyClicks(path_widget.name_input, 'path_name_change')
-    idx = path_widget.layer_input.findText('METAL3')
-    path_widget.layer_input.setCurrentIndex(idx)
-    path_widget.on_buttonBox_accepted()
-
-    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['path_name_change']
-    assert 'path_edit_test' not in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
-    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('path_name_change')
-    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
-    assert window.visualItemDict['path_name_change']
-    assert window.visualItemDict['path_name_change'] in window.scene.items()
-    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['path_name_change']._DesignParameter[
-               '_LayerUnifiedName'] == 'METAL3'
-    window.reset()
-
-def test_sref_edit_window(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-    window.widget_delegator.loadSRefWindow()
-    qtbot.waitForWindowShown(window.ls)
-    qtbot.keyClicks(window.ls.name_input, 'sref_edit_test')
-    qtbot.keyClicks(window.ls.XY_input, '1000,1000')
-    qtbot.keyClicks(window.ls.library_input, 'NMOSWithDummy')
-    for idx, par_name in enumerate(window.ls.par_name):
-        if 'Number' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '5')
-        elif 'Width' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '500')
-        elif 'length' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
-        elif '_XVT' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
-    window.ls.on_buttonBox_accepted()
-
-    # send vs items to selected design item list widget
-    window.dockContentWidget2.UpdateCustomItem([window.visualItemDict['sref_edit_test']])
-    target_item = window.dockContentWidget2.findItems('sref_edit_test', QtCore.Qt.MatchFlag.MatchExactly)[0]
-    assert target_item
-
-    window.dockContentWidget2.ModifyingDesign(target_item)
-    assert window.dockContentWidget2.sw
-
-    # change design value
-    sref_widget = window.dockContentWidget2.sw
-    sref_widget.name_input.clear()
-    qtbot.keyClicks(sref_widget.name_input, 'sref_name_change')
-    qtbot.keyClicks(sref_widget.library_input, 'PbodyContact')
-    for idx, par_name in enumerate(sref_widget.par_name):
-        if 'COX' in par_name:
-            sref_widget.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(sref_widget.par_valueForLineEdit[idx], '10')
-        elif 'COY' in par_name:
-            sref_widget.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(sref_widget.par_valueForLineEdit[idx], '2')
-    sref_widget.on_buttonBox_accepted()
-
-    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['sref_name_change']
-    assert 'path_edit_test' not in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
-    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('sref_name_change')
-    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
-    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]._ast
-    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]._ast.library == 'PbodyContact'
-    assert window.visualItemDict['sref_name_change']
-    assert window.visualItemDict['sref_name_change'] in window.scene.items()
-    window.reset()
+# def test_path_edit_window(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#     window.widget_delegator.makePathWindow()
+#     qtbot.waitForWindowShown(window.pw)
+#     qtbot.keyClicks(window.pw.width_input, '100')
+#     window.pw.AddPathPointWithMouse([0,0])
+#     window.pw.clickCount([0,0])
+#     window.pw.AddPathPointWithMouse([100,0])
+#     window.pw.clickCount([100,0])
+#     window.pw.AddPathPointWithMouse([100,500])
+#     window.pw.clickCount([100,500])
+#
+#     qtbot.keyClicks(window.pw.name_input,'path_edit_test')
+#     window.pw.on_buttonBox_accepted()
+#
+#     # send vs items to selected design item list widget
+#     window.dockContentWidget2.UpdateCustomItem([window.visualItemDict['path_edit_test']])
+#     target_item = window.dockContentWidget2.findItems('path_edit_test', QtCore.Qt.MatchFlag.MatchExactly)[0]
+#     assert target_item
+#
+#     window.dockContentWidget2.ModifyingDesign(target_item)
+#     assert window.dockContentWidget2.pw
+#
+#     # change design value
+#     path_widget = window.dockContentWidget2.pw
+#     path_widget.name_input.clear()
+#     qtbot.keyClicks(path_widget.name_input, 'path_name_change')
+#     idx = path_widget.layer_input.findText('METAL3')
+#     path_widget.layer_input.setCurrentIndex(idx)
+#     path_widget.on_buttonBox_accepted()
+#
+#     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['path_name_change']
+#     assert 'path_edit_test' not in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
+#     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('path_name_change')
+#     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+#     assert window.visualItemDict['path_name_change']
+#     assert window.visualItemDict['path_name_change'] in window.scene.items()
+#     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['path_name_change']._DesignParameter[
+#                '_LayerUnifiedName'] == 'METAL3'
+#     window.reset()
+#
+# def test_sref_edit_window(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#     window.widget_delegator.loadSRefWindow()
+#     qtbot.waitForWindowShown(window.ls)
+#     qtbot.keyClicks(window.ls.name_input, 'sref_edit_test')
+#     qtbot.keyClicks(window.ls.XY_input, '1000,1000')
+#     qtbot.keyClicks(window.ls.library_input, 'NMOSWithDummy')
+#     for idx, par_name in enumerate(window.ls.par_name):
+#         if 'Number' in par_name:
+#             window.ls.par_valueForLineEdit[idx].clear()
+#             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '5')
+#         elif 'Width' in par_name:
+#             window.ls.par_valueForLineEdit[idx].clear()
+#             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '500')
+#         elif 'length' in par_name:
+#             window.ls.par_valueForLineEdit[idx].clear()
+#             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
+#         elif '_XVT' in par_name:
+#             window.ls.par_valueForLineEdit[idx].clear()
+#             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+#     window.ls.on_buttonBox_accepted()
+#
+#     # send vs items to selected design item list widget
+#     window.dockContentWidget2.UpdateCustomItem([window.visualItemDict['sref_edit_test']])
+#     target_item = window.dockContentWidget2.findItems('sref_edit_test', QtCore.Qt.MatchFlag.MatchExactly)[0]
+#     assert target_item
+#
+#     window.dockContentWidget2.ModifyingDesign(target_item)
+#     assert window.dockContentWidget2.sw
+#
+#     # change design value
+#     sref_widget = window.dockContentWidget2.sw
+#     sref_widget.name_input.clear()
+#     qtbot.keyClicks(sref_widget.name_input, 'sref_name_change')
+#     qtbot.keyClicks(sref_widget.library_input, 'PbodyContact')
+#     for idx, par_name in enumerate(sref_widget.par_name):
+#         if 'COX' in par_name:
+#             sref_widget.par_valueForLineEdit[idx].clear()
+#             qtbot.keyClicks(sref_widget.par_valueForLineEdit[idx], '10')
+#         elif 'COY' in par_name:
+#             sref_widget.par_valueForLineEdit[idx].clear()
+#             qtbot.keyClicks(sref_widget.par_valueForLineEdit[idx], '2')
+#     sref_widget.on_buttonBox_accepted()
+#
+#     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['sref_name_change']
+#     assert 'path_edit_test' not in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
+#     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('sref_name_change')
+#     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+#     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]._ast
+#     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]._ast.library == 'PbodyContact'
+#     assert window.visualItemDict['sref_name_change']
+#     assert window.visualItemDict['sref_name_change'] in window.scene.items()
+#     window.reset()
 
 
 ##################################test for dc creation##################################
@@ -305,18 +305,18 @@ def test_create_pycode(qtbot):
     window.cw.on_buttonBox_accepted()
     window.reset()
 
-def test_create_ast(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-
-    window.widget_delegator.makeConstraintWindowAST()
-    qtbot.waitForWindowShown(window.cw)
-    qtbot.keyClicks(window.cw.type_input, 'Assign')
-    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(), 'targets')
-    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(2).widget(), 'values')
-    window.cw.on_buttonBox_accepted()
-    window.reset()
+# def test_create_ast(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#
+#     window.widget_delegator.makeConstraintWindowAST()
+#     qtbot.waitForWindowShown(window.cw)
+#     qtbot.keyClicks(window.cw.type_input, 'Assign')
+#     qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(), 'targets')
+#     qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(2).widget(), 'values')
+#     window.cw.on_buttonBox_accepted()
+#     window.reset()
 
 def test_create_element(qtbot):
     global window
@@ -1136,171 +1136,171 @@ def test_calculator_path_xy(qtbot):
 
 
 ##################################test for automation##################################
-def test_inspect_array(qtbot):
-    global window
-    with HiddenConsole():
-        if window:
-            window.reset()
-        window = MainWindow._MainWindow()
-    if user_setup._Technology != 'TSMC65nm':
-        window.request_change_process(None, 'TSMC65nm')
-    user_setup.MULTI_THREAD = True
-    file_name = './PyQTInterface/GDSFile/INV2.gds'
-    window.loadGDS(test=file_name)
-    window.inspect_array()
-    assert window.array_list_widget.count() == 8
-    window.reset()
-
-def test_inspect_path(qtbot):
-    global window
-    with HiddenConsole():
-        if window:
-            window.reset()
-        window = MainWindow._MainWindow()
-        # qtbot.addWidget(window)
-        # qtbot.waitForWindowShown(window)
-    import user_setup
-    if user_setup._Technology != 'TSMC65nm':
-        window.request_change_process(None, 'TSMC65nm')
-    user_setup.MULTI_THREAD = True
-    file_name = './PyQTInterface/GDSFile/INV2.gds'
-    window.loadGDS(test=file_name)
-    window.inspect_path_point()
-    assert window.path_point_widget.count() == 15
-    window.reset()
-
-
-def test_technology_node_change(qtbot):
-    global window
-    with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
-    import user_setup
-    from PyQTInterface.layermap import LayerReader
-    from PyQTInterface.layermap import DisplayReader
-    from generatorLib import drc_api
-    from generatorLib import DesignParameters
-
-
-    def test_drc(technology):
-        drc_test = drc_api.drc_classified_dict
-        every_items = [len(item) for item in drc_test.values()]
-        length = sum(every_items)
-        if technology == 'TSMC65nm':
-            assert length == 153
-        elif technology == 'SS28nm':
-            assert length == 184
-        elif technology == 'TSMC90nm':
-            assert length == 138
-        elif technology == 'TSMC45nm':
-            assert length == 149
-
-    def test_layer(technology):
-        test1 = len(LayerReader._ExtendLayerMappingTmp)
-        test2 = len(LayerReader._LayDatNumToName)
-        test3 = len(LayerReader._LayerNum2CommonName)
-        if technology == 'SS28nm':
-            assert test1 == 1173
-            assert test2 == 29
-            assert test3 == 101
-        elif technology == 'TSMC45nm':
-            assert test1 == 1174
-            assert test2 == 56
-            assert test3 == 179
-        elif technology == 'TSMC65nm':
-            assert test1 == 481
-            assert test2 == 58
-            assert test3 == 166
-        elif technology == 'TSMC90nm':
-            assert test1 == 448
-            assert test2 == 55
-            assert test3 == 166
-
-
-    def test_display(technology):
-        # test1 = len(DisplayReader._DisplayDict)
-        test2 = len(DisplayReader._LinePatternDict)
-        test3 = len(DisplayReader._PatternDict)
-
-        if technology == 'SS28nm':
-            # assert test1 == 1576
-            assert test2 == 16
-            assert test3 == 120
-        elif technology == 'TSMC45nm':
-            # assert test1 == 2201
-            assert test2 == 9
-            assert test3 == 46
-        elif technology == 'TSMC65nm':
-            # assert test1 == 933
-            assert test2 == 9
-            assert test3 == 47
-        elif technology == 'TSMC90nm':
-            # assert test1 == 931
-            assert test2 == 9
-            assert test3 == 47
-
-    def test_dp(technology):
-        test1 = len(DesignParameters._LayerMapping)
-        test2 = len(DesignParameters._LayerMappingTmp)
-
-        if technology == 'SS28nm':
-            assert test1 == 51
-            assert test2 == 1173
-        elif technology == 'TSMC45nm':
-            assert test1 == 38
-            assert test2 == 1174
-        elif technology == 'TSMC65nm':
-            assert test1 == 40
-            assert test2 == 481
-        elif technology == 'TSMC90nm':
-            assert test1 == 38
-            assert test2 == 448
-
-    def test_process(technology):
-        if user_setup._Technology != technology:
-            window.request_change_process(None, technology)
-        else:
-            return
-        test_drc(technology)
-        test_layer(technology)
-        test_display(technology)
-        test_dp(technology)
-
-    test_process('TSMC65nm')
-    test_process('SS28nm')
-    test_process('TSMC65nm')
-    test_process('TSMC45nm')
-    test_process('TSMC90nm')
-
-    window.reset()
-
-
-def test_create_submodule_from_sref(qtbot):
-    global window
-    with HiddenConsole():
-        if not window:
-            window = MainWindow._MainWindow()
-        window.show()
-    import user_setup
-    if user_setup._Technology != 'TSMC65nm':
-        window.request_change_process(None, 'TSMC65nm')
-    user_setup.MULTI_THREAD = False
-    file_name = './PyQTInterface/GDSFile/INV2.gds'
-    window.loadGDS(test=file_name)
-    vs_dict = window.visualItemDict['NMOSInINV_0']
-    vs_dict.setSelected(True)
-    window.create_submodule_by_sref(test=True)
-    assert window.module_dict['NMOSInINV_0']
-    window = window.module_dict['NMOSInINV_0']
-    assert window.module_dict['INV']
-    assert window._QTObj._qtProject._DesignParameter['NMOSInINV_0']
-    assert len(window._QTObj._qtProject._DesignParameter['NMOSInINV_0']) == 32
-    assert len(window._QTObj._qtProject._DesignConstraint['NMOSInINV_0']) == 32
-    item_list = list(window._QTObj._qtProject._DesignParameter['NMOSInINV_0'].keys())
-    for item in item_list:
-        assert window.visualItemDict[item]
-        assert window.visualItemDict[item] in window.scene.items()
-
-    window.reset()
+# def test_inspect_array(qtbot):
+#     global window
+#     with HiddenConsole():
+#         if window:
+#             window.reset()
+#         window = MainWindow._MainWindow()
+#     if user_setup._Technology != 'TSMC65nm':
+#         window.request_change_process(None, 'TSMC65nm')
+#     user_setup.MULTI_THREAD = True
+#     file_name = './PyQTInterface/GDSFile/INV2.gds'
+#     window.loadGDS(test=file_name)
+#     window.inspect_array()
+#     assert window.array_list_widget.count() == 8
+#     window.reset()
+#
+# def test_inspect_path(qtbot):
+#     global window
+#     with HiddenConsole():
+#         if window:
+#             window.reset()
+#         window = MainWindow._MainWindow()
+#         # qtbot.addWidget(window)
+#         # qtbot.waitForWindowShown(window)
+#     import user_setup
+#     if user_setup._Technology != 'TSMC65nm':
+#         window.request_change_process(None, 'TSMC65nm')
+#     user_setup.MULTI_THREAD = True
+#     file_name = './PyQTInterface/GDSFile/INV2.gds'
+#     window.loadGDS(test=file_name)
+#     window.inspect_path_point()
+#     assert window.path_point_widget.count() == 15
+#     window.reset()
+#
+#
+# def test_technology_node_change(qtbot):
+#     global window
+#     with HiddenConsole():
+#         window = MainWindow._MainWindow() if not window else window
+#     import user_setup
+#     from PyQTInterface.layermap import LayerReader
+#     from PyQTInterface.layermap import DisplayReader
+#     from generatorLib import drc_api
+#     from generatorLib import DesignParameters
+#
+#
+#     def test_drc(technology):
+#         drc_test = drc_api.drc_classified_dict
+#         every_items = [len(item) for item in drc_test.values()]
+#         length = sum(every_items)
+#         if technology == 'TSMC65nm':
+#             assert length == 153
+#         elif technology == 'SS28nm':
+#             assert length == 184
+#         elif technology == 'TSMC90nm':
+#             assert length == 138
+#         elif technology == 'TSMC45nm':
+#             assert length == 149
+#
+#     def test_layer(technology):
+#         test1 = len(LayerReader._ExtendLayerMappingTmp)
+#         test2 = len(LayerReader._LayDatNumToName)
+#         test3 = len(LayerReader._LayerNum2CommonName)
+#         if technology == 'SS28nm':
+#             assert test1 == 1173
+#             assert test2 == 29
+#             assert test3 == 101
+#         elif technology == 'TSMC45nm':
+#             assert test1 == 1174
+#             assert test2 == 56
+#             assert test3 == 179
+#         elif technology == 'TSMC65nm':
+#             assert test1 == 481
+#             assert test2 == 58
+#             assert test3 == 166
+#         elif technology == 'TSMC90nm':
+#             assert test1 == 448
+#             assert test2 == 55
+#             assert test3 == 166
+#
+#
+#     def test_display(technology):
+#         # test1 = len(DisplayReader._DisplayDict)
+#         test2 = len(DisplayReader._LinePatternDict)
+#         test3 = len(DisplayReader._PatternDict)
+#
+#         if technology == 'SS28nm':
+#             # assert test1 == 1576
+#             assert test2 == 16
+#             assert test3 == 120
+#         elif technology == 'TSMC45nm':
+#             # assert test1 == 2201
+#             assert test2 == 9
+#             assert test3 == 46
+#         elif technology == 'TSMC65nm':
+#             # assert test1 == 933
+#             assert test2 == 9
+#             assert test3 == 47
+#         elif technology == 'TSMC90nm':
+#             # assert test1 == 931
+#             assert test2 == 9
+#             assert test3 == 47
+#
+#     def test_dp(technology):
+#         test1 = len(DesignParameters._LayerMapping)
+#         test2 = len(DesignParameters._LayerMappingTmp)
+#
+#         if technology == 'SS28nm':
+#             assert test1 == 51
+#             assert test2 == 1173
+#         elif technology == 'TSMC45nm':
+#             assert test1 == 38
+#             assert test2 == 1174
+#         elif technology == 'TSMC65nm':
+#             assert test1 == 40
+#             assert test2 == 481
+#         elif technology == 'TSMC90nm':
+#             assert test1 == 38
+#             assert test2 == 448
+#
+#     def test_process(technology):
+#         if user_setup._Technology != technology:
+#             window.request_change_process(None, technology)
+#         else:
+#             return
+#         test_drc(technology)
+#         test_layer(technology)
+#         test_display(technology)
+#         test_dp(technology)
+#
+#     test_process('TSMC65nm')
+#     test_process('SS28nm')
+#     test_process('TSMC65nm')
+#     test_process('TSMC45nm')
+#     test_process('TSMC90nm')
+#
+#     window.reset()
+#
+#
+# def test_create_submodule_from_sref(qtbot):
+#     global window
+#     with HiddenConsole():
+#         if not window:
+#             window = MainWindow._MainWindow()
+#         window.show()
+#     import user_setup
+#     if user_setup._Technology != 'TSMC65nm':
+#         window.request_change_process(None, 'TSMC65nm')
+#     user_setup.MULTI_THREAD = False
+#     file_name = './PyQTInterface/GDSFile/INV2.gds'
+#     window.loadGDS(test=file_name)
+#     vs_dict = window.visualItemDict['NMOSInINV_0']
+#     vs_dict.setSelected(True)
+#     window.create_submodule_by_sref(test=True)
+#     assert window.module_dict['NMOSInINV_0']
+#     window = window.module_dict['NMOSInINV_0']
+#     assert window.module_dict['INV']
+#     assert window._QTObj._qtProject._DesignParameter['NMOSInINV_0']
+#     assert len(window._QTObj._qtProject._DesignParameter['NMOSInINV_0']) == 32
+#     assert len(window._QTObj._qtProject._DesignConstraint['NMOSInINV_0']) == 32
+#     item_list = list(window._QTObj._qtProject._DesignParameter['NMOSInINV_0'].keys())
+#     for item in item_list:
+#         assert window.visualItemDict[item]
+#         assert window.visualItemDict[item] in window.scene.items()
+#
+#     window.reset()
 
 ##################################test for scene##################################
 def test_boundary_design_edit(qtbot):
@@ -1343,35 +1343,63 @@ def test_dp_copy(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+    window.show()
+    ### Create boundary ###
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+    window.bw.AddBoundaryPointWithMouse([0,0])
+    window.bw.clickCount([0,0])
+    window.bw.AddBoundaryPointWithMouse([100,100])
+    window.bw.clickCount([100,100])
+    qtbot.keyClicks(window.bw.name_input,'copy_test')
+    window.bw.on_buttonBox_accepted()
+
+    ### Connect signal ###
+    window.scene.send_move_item_signal.connect(window.transfer_delegator.get_xy_difference)
+    window.scene.send_mouse_move_xy_signal.connect(window.transfer_delegator.get_mouse_point)
+    window.scene.send_xy_signal.connect(window.transfer_delegator.get_click_point)
+
+    ### Copy item ###
+    window.visualItemDict['copy_test'].setSelected(True)
+    qtbot.keyClicks(window.centralWidget(), 'C')
+    qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton, pos=QtCore.QPoint(680+(-50),350-(-70)))
+
+    ### Assertion ###
+    for dp_id in list(window.visualItemDict.keys()):
+        if dp_id is not None:
+            if 'copy_test' in dp_id:
+                assert window.visualItemDict[dp_id]._ItemTraits['_XYCoordinates'] in [[[50,50]],[[-50,-70]]]
+    window.reset()
 
 
 def test_dp_move(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+    window.show()
+    ### Create boundary ###
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+    window.bw.AddBoundaryPointWithMouse([0,0])
+    window.bw.clickCount([0,0])
+    window.bw.AddBoundaryPointWithMouse([100,100])
+    window.bw.clickCount([100,100])
+    qtbot.keyClicks(window.bw.name_input,'move_test')
+    window.bw.on_buttonBox_accepted()
 
-    ### create sref ###
-    window.widget_delegator.loadSRefWindow()
-    qtbot.waitForWindowShown(window.ls)
-    qtbot.keyClicks(window.ls.name_input, 'sref_test')
-    qtbot.keyClicks(window.ls.XY_input, '-1000,-1000')
-    qtbot.keyClicks(window.ls.library_input, 'NMOSWithDummy')
-    for idx, par_name in enumerate(window.ls.par_name):
-        if 'Number' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '5')
-        elif 'Width' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '500')
-        elif 'length' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
-        elif '_XVT' in par_name:
-            window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
-    window.ls.on_buttonBox_accepted()
-    print(1)
+    ### Connect signal ###
+    window.scene.send_move_item_signal.connect(window.transfer_delegator.get_xy_difference)
+    window.scene.send_mouse_move_xy_signal.connect(window.transfer_delegator.get_mouse_point)
+    window.scene.send_xy_signal.connect(window.transfer_delegator.get_click_point)
 
+    ### Move item ###
+    window.visualItemDict['move_test'].setSelected(True)
+    qtbot.keyClicks(window.centralWidget(), 'M')
+    qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton, pos=QtCore.QPoint(680+(-50),350-(-70)))
+
+    ### Assertion ###
+    assert window.visualItemDict['move_test']._ItemTraits['_XYCoordinates'] == [[-50,-70]]
+    window.reset()
 
 ##################################test for dc_constraint_view##################################
 def test_ast_typing(qtbot):
