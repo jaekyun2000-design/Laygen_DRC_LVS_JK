@@ -237,7 +237,7 @@ class _MainWindow(QMainWindow):
         loadPyCodeAction        = QAction("Load Python source code as Constraint",self)
 
         newModuleAction.setShortcut('Ctrl+M')
-        newModuleAction.triggered.connect(self.newModule)
+        newModuleAction.triggered.connect(self.show_module_window)
 
         loadGDSAction.setShortcut('Ctrl+G')
         loadGDSAction.triggered.connect(self.loadGDS)
@@ -1867,7 +1867,7 @@ class _MainWindow(QMainWindow):
             return obj.json_dump_obj()
         return obj
 
-    def newModule(self):
+    def show_module_window(self):
         if self._QTObj._qtProject == None:
             self.warning = QMessageBox()
             self.warning.setText("There is no Project")
@@ -1875,8 +1875,19 @@ class _MainWindow(QMainWindow):
         else:
             self.nmw = _VersatileWindow("NewModule")
             self.nmw.show()
-            self.nmw.send_Name_signal.connect(self.updateModule)
+            self.nmw.send_Name_signal.connect(self.create_new_module)
 
+    def create_new_module(self, updateModule):
+        self.module_name_list.append(updateModule)
+        self.module_dict[updateModule] = _MainWindow()
+        new_project = self.module_dict[updateModule]
+        new_project._QTObj._qtProject._DesignParameter = dict()
+
+        self.module_dict[updateModule].set_module_name(updateModule)
+        self.module_dict[updateModule].show()
+        self.module_dict[updateModule].module_dict = self.module_dict
+        self.module_dict[updateModule].module_name_list = self.module_name_list
+        self.hide()
 
     def set_module_name(self, module_name):
         if self._CurrentModuleName in self.module_name_list:
