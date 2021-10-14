@@ -159,6 +159,8 @@ class _MainWindow(QMainWindow):
         self.test = False
         self.dockContentWidget3.model.clear()
         self.dockContentWidget3_2.model.clear()
+        self.scene.clear()
+        self.close()
 
     def initUI(self):
 
@@ -1732,8 +1734,8 @@ class _MainWindow(QMainWindow):
             del self.pw
         if obj == 'dv':
             del self.dv
-        if obj == 'txtw':
-            del self.txtw
+        # if obj == 'txtw':
+        #     del self.txtw
         if obj == 'pinw':
             del self.pinw
         if obj == 'ls':

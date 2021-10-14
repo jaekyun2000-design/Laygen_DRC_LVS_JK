@@ -85,9 +85,9 @@ class ElementManager:
         elif dp_dict['_DesignParametertype'] == 8:  #TEXT
             tmpAST = element_ast.Text()
             for key in element_ast.Text._fields:
-                if key == 'id':
-                    tmpAST.__dict__[key] = dp_dict['_id']
-                elif key == 'name':
+                # if key == 'id':
+                #     tmpAST.__dict__[key] = dp_dict['_id']
+                if key == 'name':
                     tmpAST.__dict__[key] = dp_dict['_ElementName']
                 elif key == 'layer':
                     tmpAST.__dict__[key] = dp_dict['_LayerUnifiedName']

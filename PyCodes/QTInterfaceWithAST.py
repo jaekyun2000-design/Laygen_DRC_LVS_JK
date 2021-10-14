@@ -64,6 +64,8 @@ class QtDesignParameter:
 
     def update_unified_expression(self):
         try:
+            if self._type == 8 and self._DesignParameter['_Layer']==None:
+                return None
             if '_Layer' in self._DesignParameter and type(self._DesignParameter['_Layer']) == int:
                 layer_number = str(self._DesignParameter['_Layer'])
                 if '_Datatype' in self._DesignParameter and self._DesignParameter['_Datatype'] is not None:

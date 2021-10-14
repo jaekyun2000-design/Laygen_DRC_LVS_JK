@@ -921,14 +921,17 @@ class _TextSetupWindow(QWidget):
         okButton.clicked.connect(self.on_buttonBox_accepted)
         cancelButton.clicked.connect(self.cancel_button_accepted)
 
+        self.name = None
         self.text = None
         self.mag = None
         self.XY_input = []
 
+        nameLabel = QLabel("Name")
         textLabel = QLabel("Text")
         magLabel = QLabel("Width")
         XYLabel = QLabel("XY")
 
+        self.name_input = QLineEdit()
         self.text_input = QLineEdit()
         self.width_input = QLineEdit()
         self.XY_input.append(QLineEdit())
@@ -937,10 +940,12 @@ class _TextSetupWindow(QWidget):
         self.setupVboxColumn2 = QVBoxLayout()
         setupBox = QHBoxLayout()
 
+        self.setupVboxColumn1.addWidget(nameLabel)
         self.setupVboxColumn1.addWidget(textLabel)
         self.setupVboxColumn1.addWidget(magLabel)
         self.setupVboxColumn1.addWidget(XYLabel)
 
+        self.setupVboxColumn2.addWidget(self.name_input)
         self.setupVboxColumn2.addWidget(self.text_input)
         self.setupVboxColumn2.addWidget(self.width_input)
         self.setupVboxColumn2.addWidget(self.XY_input[0])
@@ -992,7 +997,7 @@ class _TextSetupWindow(QWidget):
                         self.warning.setText("Invalid XY Coordinates")
                         self.warning.show()
 
-            self._DesignParameter['_ElementName'] = self.text_input.text()
+            self._DesignParameter['_ElementName'] = self.name_input.text()
             if self._DesignParameter['_ElementName'] == '':
                 raise NotImplementedError
             self._DesignParameter['_TEXT'] = self.text_input.text()
@@ -1025,7 +1030,7 @@ class _TextSetupWindow(QWidget):
         qt_dp = QTInterfaceWithAST.QtDesignParameter()
         for key, value in self._DesignParameter.items():
             qt_dp._setDesignParameterValue(key, value)
-        qt_dp.update_unified_expression()
+        # qt_dp.update_unified_expression()
 
         self.visualItem.updateDesignParameter(qt_dp)
         # self.visualItem.updateTraits(self._DesignParameter)
@@ -1075,16 +1080,19 @@ class _PinSetupWindow(QWidget):
         okButton.clicked.connect(self.on_buttonBox_accepted)
         cancelButton.clicked.connect(self.cancel_button_accepted)
 
+        self.name = None
         self.layer = None
         self.text = None
         self.mag = None
         self.XY_input = []
 
+        nameLabel = QLabel("Name")
         layerLabel = QLabel("Layer")
         textLabel = QLabel("Text")
         magLabel = QLabel("Width")
         XYLabel = QLabel("XY")
 
+        self.name_input = QLineEdit()
         self.layer_input = QComboBox()
         self.text_input = QLineEdit()
         self.width_input = QLineEdit()
@@ -1100,11 +1108,13 @@ class _PinSetupWindow(QWidget):
         self.setupVboxColumn2 = QVBoxLayout()
         setupBox = QHBoxLayout()
 
+        self.setupVboxColumn1.addWidget(nameLabel)
         self.setupVboxColumn1.addWidget(layerLabel)
         self.setupVboxColumn1.addWidget(textLabel)
         self.setupVboxColumn1.addWidget(magLabel)
         self.setupVboxColumn1.addWidget(XYLabel)
 
+        self.setupVboxColumn2.addWidget(self.name_input)
         self.setupVboxColumn2.addWidget(self.layer_input)
         self.setupVboxColumn2.addWidget(self.text_input)
         self.setupVboxColumn2.addWidget(self.width_input)
@@ -1134,6 +1144,7 @@ class _PinSetupWindow(QWidget):
 
 
     def updateUI(self):
+        self.name_input.setText(self._DesignParameter['_ElementName'])
         self.text_input.setText(self._DesignParameter['_TEXT'])
         self.width_input.setText(str(self._DesignParameter['_Width']))
         self.XY_input[0].setText(str(self._DesignParameter['_XYCoordinates'][0][0])+','+str(self._DesignParameter['_XYCoordinates'][0][1]))
@@ -1156,7 +1167,7 @@ class _PinSetupWindow(QWidget):
                     self.warning.setText("Invalid XY Coordinates")
 
         try:
-            self._DesignParameter['_ElementName'] = self.text_input.text()
+            self._DesignParameter['_ElementName'] = self.name_input.text()
             if self._DesignParameter['_ElementName'] == '':
                 raise NotImplementedError
             self._DesignParameter['_TEXT'] = self.text_input.text()
