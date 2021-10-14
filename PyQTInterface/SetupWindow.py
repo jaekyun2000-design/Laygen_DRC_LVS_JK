@@ -196,7 +196,7 @@ class _BoundarySetupWindow(QWidget):
             self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
             self._DesignParameter['_Layer'] = None
 
-            if self.visualItem._type:
+            if 'visualItem' in self.__dict__ and self.visualItem._type:
                 self.send_DestroyTmpVisual_signal.emit(self.visualItem)
 
             self.send_BoundaryDesign_signal.emit(self._DesignParameter)
