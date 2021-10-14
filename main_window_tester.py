@@ -1256,6 +1256,7 @@ def test_ast_id_delete(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+    assert False
 
 
 
