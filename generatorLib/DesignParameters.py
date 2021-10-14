@@ -908,30 +908,47 @@ def run_for_process_update():
     if _Technology == 'TSMC65nm':
         _LayerMapping.update({'NLVT': _LayerMappingTmp[('VTL_N', 'drawing')]})
     if _Technology == 'SS28nm':
+        _LayerMapping.update({'NLVT': (None, None)})
+    if _Technology == 'SS28nm':
         _LayerMapping.update({'LVT': _LayerMappingTmp[('LVT', 'drawing')]})
+    if _Technology == 'TSMC65nm':
+        _LayerMapping.update({'LVT': (None, None)})
     if _Technology == 'SS28nm':
         _LayerMapping.update({'HVT': _LayerMappingTmp[('HVT', 'drawing')]})
     if _Technology == 'TSMC65nm':
+        _LayerMapping.update({'HVT': (None, None)})
+    if _Technology == 'TSMC65nm':
         _LayerMapping.update({'PLVT': _LayerMappingTmp[('VTL_P', 'drawing')]})
     if _Technology == 'SS28nm':
+        _LayerMapping.update({'PLVT': (None, None)})
+    if _Technology == 'SS28nm':
         _LayerMapping.update({'SLVT': _LayerMappingTmp[('SLVT', 'drawing')]})
+    if _Technology == 'TSMC65nm':
+        _LayerMapping.update({'SLVT': (None, None)})
     if _Technology == 'SS28nm':
         _LayerMapping.update({'RVT': _LayerMappingTmp[('RVT', 'drawing')]})
+    if _Technology == 'TSMC65nm':
+        _LayerMapping.update({'RVT': (None, None)})
 
-    
+
 
     if _Technology == 'SS28nm':
         _LayerMapping.update({'RXPIN': _LayerMappingTmp[('RX', 'pin')]})
+    if _Technology == 'TSMC65nm':
+        _LayerMapping.update({'RXPIN': _LayerMappingTmp[('OD', 'pin')]})
 
     
 
     if _Technology == 'SS28nm':
         _LayerMapping.update({'PCPIN': _LayerMappingTmp[('PC', 'pin')]})
-
+    if _Technology == 'TSMC65nm':
+        _LayerMapping.update({'PCPIN': _LayerMappingTmp[('PO', 'pin')]})
     
 
     if _Technology == 'SS28nm':
         _LayerMapping.update({'PCCRIT': _LayerMappingTmp[('PC', 'crit')]})
+    if _Technology == 'TSMC65nm':
+        _LayerMapping.update({'PCCRIT': (None, None)})
 
     
 

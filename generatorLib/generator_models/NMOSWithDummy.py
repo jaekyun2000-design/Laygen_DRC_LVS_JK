@@ -37,12 +37,12 @@ class _NMOS(StickDiagram._StickDiagram):
         self._DesignParameter['_ODLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['DIFF'][0],
                                                                              _Datatype=DesignParameters._LayerMapping['DIFF'][1],
                                                                              _XYCoordinates=[], _XWidth=400, _YWidth=400)
-        self._DesignParameter['_ODLayerPINDrawing'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RXPIN'][0],
-                                                                                       _Datatype=DesignParameters._LayerMapping['RXPIN'][1],
-                                                                                       _XYCoordinates=[], _XWidth=400, _YWidth=400)
         self._DesignParameter['_PODummyLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],
                                                                                   _Datatype=DesignParameters._LayerMapping['POLY'][1],
                                                                                   _XYCoordinates=[], _XWidth=400, _YWidth=400)
+        self._DesignParameter['_POLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],
+                                                                             _Datatype=DesignParameters._LayerMapping['POLY'][1],
+                                                                             _XYCoordinates=[], _XWidth=400, _YWidth=400)
         self._DesignParameter['_SLVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['SLVT'][0],
                                                                                _Datatype=DesignParameters._LayerMapping['SLVT'][1],
                                                                                _XYCoordinates=[], _XWidth=400, _YWidth=400)
@@ -55,9 +55,12 @@ class _NMOS(StickDiagram._StickDiagram):
         self._DesignParameter['_HVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['HVT'][0],
                                                                               _Datatype=DesignParameters._LayerMapping['HVT'][1],
                                                                               _XYCoordinates=[], _XWidth=400, _YWidth=400)
-        self._DesignParameter['_POLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],
-                                                                             _Datatype=DesignParameters._LayerMapping['POLY'][1],
-                                                                             _XYCoordinates=[], _XWidth=400, _YWidth=400)
+        self._DesignParameter['_NLVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['NLVT'][0],
+                                                                               _Datatype=DesignParameters._LayerMapping['NLVT'][1],
+                                                                               _XYCoordinates=[], _XWidth=400, _YWidth=400)
+        self._DesignParameter['_PLVTLayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PLVT'][0],
+                                                                              _Datatype=DesignParameters._LayerMapping['PLVT'][1],
+                                                                              _XYCoordinates=[], _XWidth=400, _YWidth=400)
 
         print ('#########################################################################################################')
         print ('                                    {}  NMOS Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name']))
@@ -318,7 +321,9 @@ class _NMOS(StickDiagram._StickDiagram):
 
 
         print ('##################################################### Diff Pin Generation & Coordinates ####################################################')
-
+        self._DesignParameter['_ODLayerPINDrawing'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RXPIN'][0],
+                                                                                       _Datatype=DesignParameters._LayerMapping['RXPIN'][1],
+                                                                                       _XYCoordinates=[], _XWidth=400, _YWidth=400)
         self._DesignParameter['_ODLayerPINDrawing']['_XWidth'] = self._DesignParameter['_ODLayer']['_XWidth'] / 2 - (self._DesignParameter['_XYCoordinateNMOSGateRouting']['_XYCoordinates'][-1][0] + self._DesignParameter['_POLayer']['_XWidth'] / 2)
         self._DesignParameter['_ODLayerPINDrawing']['_YWidth'] = self._DesignParameter['_ODLayer']['_YWidth']
         self._DesignParameter['_ODLayerPINDrawing']['_XYCoordinates'] = [[(self._DesignParameter['_ODLayer']['_XWidth'] / 2 + (self._DesignParameter['_XYCoordinateNMOSGateRouting']['_XYCoordinates'][-1][0] + self._DesignParameter['_POLayer']['_XWidth'] / 2)) / 2, _XYCoordinateOfNMOS[0][1]],
