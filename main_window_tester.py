@@ -681,7 +681,7 @@ def test_load_gds(qtbot):
     assert len(window._QTObj._qtProject._DesignParameter['RX_term_resistor_v2']) == 118
     assert len(window._QTObj._qtProject._DesignConstraint['RX_term_resistor_v2']) == 118
     assert len(window.scene.items()) == 2640
-
+    window.reset()
 
 
 # ##################################test for scene_right_click##################################
@@ -738,7 +738,10 @@ def test_load_gds(qtbot):
 def test_module_create(qtbot):
     global window
     with HiddenConsole():
-        window = MainWindow._MainWindow() if not window else window
+        if window:
+            window.reset()
+        else:
+            window = MainWindow._MainWindow()
     window.show_module_window()
     qtbot.keyClicks(window.nmw.name_input, 'test_module')
     window.nmw.on_makeBox_accepted()
