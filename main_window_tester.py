@@ -824,7 +824,6 @@ def test_used_layer(qtbot):
     ### Assertion ###
     for i in range(window.dockContentWidget1_2.layer_table_widget.model().rowCount()):
         assert window.dockContentWidget1_2.layer_table_widget.model().item(i).text() in ['METAL1', 'METAL2', 'PIMP']
-    # assert
 
     window.reset()
 
@@ -832,12 +831,66 @@ def test_generator_show_hide(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+    window.show()
+    ### Create METAL1 boundary ###
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+    window.bw.AddBoundaryPointWithMouse([0,0])
+    window.bw.clickCount([0,0])
+    window.bw.AddBoundaryPointWithMouse([100,100])
+    window.bw.clickCount([100,100])
+    qtbot.keyClicks(window.bw.layer_input,'METAL1')
+    qtbot.keyClicks(window.bw.name_input,'gen_show_test')
+    window.bw.on_buttonBox_accepted()
 
+    ### Send to generator dc ###
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('gen_show_test')
+    for i in range(window.dockContentWidget3_2.model.rowCount()):
+        if window.dockContentWidget3_2.model.item(i,1).text() == dc_id:
+            window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
+    qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
+
+    ### Set generator non-visible ###
+    qtbot.mouseClick(window.dockWidget1.widget().layout().itemAt(0).widget().layout().itemAt(8).itemAt(0).widget(), QtCore.Qt.LeftButton)
+
+    ### Assertion ###
+    assert not window.visualItemDict['gen_show_test'].isVisible()
+
+    ### Set generator visible ###
+    qtbot.mouseClick(window.dockWidget1.widget().layout().itemAt(0).widget().layout().itemAt(8).itemAt(0).widget(), QtCore.Qt.LeftButton)
+
+    ### Assertion ###
+    assert window.visualItemDict['gen_show_test'].isVisible()
+    window.reset()
 
 def test_candidate_show_hide(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+    window.show()
+    ### Create METAL1 boundary ###
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+    window.bw.AddBoundaryPointWithMouse([0,0])
+    window.bw.clickCount([0,0])
+    window.bw.AddBoundaryPointWithMouse([100,100])
+    window.bw.clickCount([100,100])
+    qtbot.keyClicks(window.bw.layer_input,'METAL1')
+    qtbot.keyClicks(window.bw.name_input,'can_show_test')
+    window.bw.on_buttonBox_accepted()
+
+    ### Set candidate non-visible ###
+    qtbot.mouseClick(window.dockWidget1.widget().layout().itemAt(0).widget().layout().itemAt(8).itemAt(2).widget(), QtCore.Qt.LeftButton)
+
+    ### Assertion ###
+    assert not window.visualItemDict['can_show_test'].isVisible()
+
+    ### Set candidate visible ###
+    qtbot.mouseClick(window.dockWidget1.widget().layout().itemAt(0).widget().layout().itemAt(8).itemAt(2).widget(), QtCore.Qt.LeftButton)
+
+    ### Assertion ###
+    assert window.visualItemDict['can_show_test'].isVisible()
+    window.reset()
 
 
 ##################################test for project##################################
