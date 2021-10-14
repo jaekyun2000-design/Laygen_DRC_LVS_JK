@@ -1570,8 +1570,9 @@ class _MainWindow(QMainWindow):
             constraint_ids_can.remove(dc_id)
             constraint_ids_can.append(dp_id)
 
-        for layer in self._layerItem:
-            vi_can.extend(self._layerItem[layer])
+        # for layer in self._layerItem:
+        #     vi_can.extend(self._layerItem[layer])
+        vi_can.extend([self._layerItem[layer] for layer in self._layerItem])
 
         for visualItem in vi_can:
             for idx in range(len(constraint_ids_can)):
@@ -1597,8 +1598,9 @@ class _MainWindow(QMainWindow):
             constraint_ids_gen.remove(dc_id)
             constraint_ids_gen.append(dp_id)
 
-        for layer in self._layerItem:
-            vi_gen.extend(self._layerItem[layer])
+        # for layer in self._layerItem:
+        #     vi_gen.extend(self._layerItem[layer])
+        vi_gen.extend([self._layerItem[layer] for layer in self._layerItem])
 
         for idx in range(len(constraint_ids_gen)):
             for visualItem in vi_gen:
@@ -1907,8 +1909,12 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3._CurrentModuleName = module_name
         self.dockContentWidget3_2._CurrentModuleName = module_name
 
-
     def updateModule(self,ModuleName):
+        if ModuleName not in self.module_name_list:
+            self.module_name_list.append(ModuleName)
+            self.module_dict[ModuleName] = _MainWindow()
+            self.module_dict[ModuleName].module_dict = self.module_dict
+            self.module_dict[ModuleName].module_name_list = self.module_name_list
         self.hide()
         self.module_dict[ModuleName].show()
 

@@ -196,10 +196,8 @@ class _BoundarySetupWindow(QWidget):
             self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
             self._DesignParameter['_Layer'] = None
 
-            try:
+            if self.visualItem._type:
                 self.send_DestroyTmpVisual_signal.emit(self.visualItem)
-            except:
-                pass
 
             self.send_BoundaryDesign_signal.emit(self._DesignParameter)
             message = delegator.DelegateMessage(arguments=[self._DesignParameter], target_fcn='create_qt_parameter')
