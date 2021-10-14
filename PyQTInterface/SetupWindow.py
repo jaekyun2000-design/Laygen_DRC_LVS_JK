@@ -3831,9 +3831,9 @@ class _LogMessageWindow(QDialog, QPlainTextEdit):
         logTextBox = QtTextEditLogger(self)
         # You can format what is printed to text box
         logTextBox.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-        logging.getLogger().addHandler(logTextBox)
+        # logging.getLogger().addHandler(logTextBox)
         # You can control the logging level
-        logging.getLogger().setLevel(logging.DEBUG)
+        # logging.getLogger().setLevel(logging.DEBUG)
 
         #self._button = QPushButton(self)
         #self._button.setText('Test Me')

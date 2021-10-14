@@ -102,6 +102,7 @@ class _MainWindow(QMainWindow):
     send_width_height_ast_signal = pyqtSignal(str, ast.AST)
     send_sref_param_signal = pyqtSignal(str, ast.AST)
     send_tech_node_changed_signal = pyqtSignal()
+    send_init_signal = pyqtSignal()
 
     def __init__(self):
         self.test = False
@@ -132,6 +133,7 @@ class _MainWindow(QMainWindow):
         self._DummyConstraints = variable_manager.DummyConstraints()
         self.variable_store_list = list()
         self.test = True
+        self.send_init_signal.emit()
 
     def reset(self):
         self.module_dict = dict()
