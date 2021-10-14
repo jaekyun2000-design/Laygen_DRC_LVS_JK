@@ -162,6 +162,11 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3.model.clear()
         self.dockContentWidget3_2.model.clear()
         self.scene.clear()
+        VisualizationItem._VisualizationItem._compareLayer = dict()
+        VisualizationItem._VisualizationItem._subElementLayer = dict()
+        for layer in LayerReader._LayerMapping:
+            VisualizationItem._VisualizationItem._subElementLayer[layer] = list()
+        VisualizationItem._VisualizationItem._subElementLayer['SRef'] = list()
         self.close()
 
     def initUI(self):

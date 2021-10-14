@@ -3,6 +3,7 @@ import sys, os
 from PyQTInterface import MainWindow
 from PyQt5.QtWidgets import QApplication
 from PyQt5 import QtCore
+from PyQt5 import QtWidgets
 import user_setup
 
 # window = MainWindow._MainWindow()
@@ -76,36 +77,36 @@ def test_path_window(qtbot):
     window.reset()
 
 
-# def test_sref_window(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#     window.widget_delegator.loadSRefWindow()
-#     qtbot.waitForWindowShown(window.ls)
-#     qtbot.keyClicks(window.ls.name_input, 'sref_test')
-#     qtbot.keyClicks(window.ls.XY_input, '1000,1000')
-#     qtbot.keyClicks(window.ls.library_input, 'NMOSWithDummy')
-#     for idx, par_name in enumerate(window.ls.par_name):
-#         if 'Number' in par_name:
-#             window.ls.par_valueForLineEdit[idx].clear()
-#             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '5')
-#         elif 'Width' in par_name:
-#             window.ls.par_valueForLineEdit[idx].clear()
-#             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '500')
-#         elif 'length' in par_name:
-#             window.ls.par_valueForLineEdit[idx].clear()
-#             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
-#         elif '_XVT' in par_name:
-#             window.ls.par_valueForLineEdit[idx].clear()
-#             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
-#     window.ls.on_buttonBox_accepted()
-#
-#     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['sref_test']
-#     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('sref_test')
-#     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
-#     assert window.visualItemDict['sref_test']
-#     assert window.visualItemDict['sref_test'] in window.scene.items()
-#     window.reset()
+def test_sref_window(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+    window.widget_delegator.loadSRefWindow()
+    qtbot.waitForWindowShown(window.ls)
+    qtbot.keyClicks(window.ls.name_input, 'sref_test')
+    qtbot.keyClicks(window.ls.XY_input, '1000,1000')
+    qtbot.keyClicks(window.ls.library_input, 'NMOSWithDummy')
+    for idx, par_name in enumerate(window.ls.par_name):
+        if 'Number' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '5')
+        elif 'Width' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '500')
+        elif 'length' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
+        elif '_XVT' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+    window.ls.on_buttonBox_accepted()
+
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['sref_test']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('sref_test')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window.visualItemDict['sref_test']
+    assert window.visualItemDict['sref_test'] in window.scene.items()
+    window.reset()
 
 
 def test_text_window(qtbot):
@@ -721,13 +722,64 @@ def test_visible(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+    window.show()
+    ### Create METAL1 boundary ###
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+    window.bw.AddBoundaryPointWithMouse([0,0])
+    window.bw.clickCount([0,0])
+    window.bw.AddBoundaryPointWithMouse([100,100])
+    window.bw.clickCount([100,100])
+    qtbot.keyClicks(window.bw.layer_input,'METAL1')
+    qtbot.keyClicks(window.bw.name_input,'visible_test')
+    window.bw.on_buttonBox_accepted()
+
+    ### Set all non-visible ###
+    qtbot.mouseClick(window.dockContentWidget1_2.visible_button, QtCore.Qt.LeftButton)
+
+    ### Assertion ###
+    assert not window.visualItemDict['visible_test'].isVisible()
+
+    ### Set all visible ###
+    qtbot.mouseClick(window.dockContentWidget1_2.visible_button, QtCore.Qt.LeftButton)
+
+    ### Assertion ###
+    assert window.visualItemDict['visible_test'].isVisible()
+    window.reset()
 
 
 def test_clickable(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow() if not window else window
+    window.show()
 
+    ### Create METAL1 boundary ###
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+    window.bw.AddBoundaryPointWithMouse([0,0])
+    window.bw.clickCount([0,0])
+    window.bw.AddBoundaryPointWithMouse([100,100])
+    window.bw.clickCount([100,100])
+    qtbot.keyClicks(window.bw.layer_input,'METAL1')
+    qtbot.keyClicks(window.bw.name_input,'clickable_test')
+    window.bw.on_buttonBox_accepted()
+
+    ### Set all non-clickable ###
+    qtbot.mouseClick(window.dockContentWidget1_2.clickable_button, QtCore.Qt.LeftButton)
+
+    ### Assertion ###\
+    print(window.visualItemDict['clickable_test'].ItemIsSelectable)
+    # assert not window.visualItemDict['clickable_test'].ItemIsSelectable
+
+    ### Set all clickable ###
+    qtbot.mouseClick(window.dockContentWidget1_2.clickable_button, QtCore.Qt.LeftButton)
+
+    ### Assertion ###
+    print(window.visualItemDict['clickable_test'].ItemIsSelectable)
+    # assert window.visualItemDict['clickable_test'].ItemIsSelectable
+
+    window.reset()
 
 def test_used_layer(qtbot):
     global window

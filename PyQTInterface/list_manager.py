@@ -272,6 +272,7 @@ class _ManageList(QTableView):
                     try:
                         x.setFlag(QGraphicsItem.ItemIsSelectable, False)
                     except:
+                        traceback.print_exc()
                         continue
                 self.send_listInLayer_signal.emit(Visualitem)
 
