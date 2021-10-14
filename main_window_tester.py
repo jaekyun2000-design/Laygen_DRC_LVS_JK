@@ -153,43 +153,43 @@ def test_pin_window(qtbot):
 
 
 ##################################test for dp edit##################################
-# def test_boundary_edit_window(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#     window.widget_delegator.make_boundary_window()
-#     qtbot.waitForWindowShown(window.bw)
-#     window.bw.AddBoundaryPointWithMouse([0,0])
-#     window.bw.clickCount([0,0])
-#     window.bw.AddBoundaryPointWithMouse([100,100])
-#     window.bw.clickCount([100,100])
-#     qtbot.keyClicks(window.bw.name_input,'boundary_edit_test')
-#     window.bw.on_buttonBox_accepted()
-#
-#     # send vs items to selected design item list widget
-#     window.dockContentWidget2.UpdateCustomItem([window.visualItemDict['boundary_edit_test']])
-#     target_item = window.dockContentWidget2.findItems('boundary_edit_test', QtCore.Qt.MatchFlag.MatchExactly)[0]
-#     assert target_item
-#
-#     window.dockContentWidget2.ModifyingDesign(target_item)
-#     assert window.dockContentWidget2.bw
-#
-#     #change design value
-#     boundary_widget = window.dockContentWidget2.bw
-#     boundary_widget.name_input.clear()
-#     qtbot.keyClicks(boundary_widget.name_input, 'boundary_name_change')
-#     idx = boundary_widget.layer_input.findText('METAL1')
-#     boundary_widget.layer_input.setCurrentIndex(idx)
-#     boundary_widget.on_buttonBox_accepted()
-#
-#     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['boundary_name_change']
-#     assert 'boundary_edit_test' not in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
-#     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('boundary_name_change')
-#     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
-#     assert window.visualItemDict['boundary_name_change']
-#     assert window.visualItemDict['boundary_name_change'] in window.scene.items()
-#     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['boundary_name_change']._DesignParameter['_LayerUnifiedName'] == 'METAL1'
-#     window.reset()
+def test_boundary_edit_window(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+    window.bw.AddBoundaryPointWithMouse([0,0])
+    window.bw.clickCount([0,0])
+    window.bw.AddBoundaryPointWithMouse([100,100])
+    window.bw.clickCount([100,100])
+    qtbot.keyClicks(window.bw.name_input,'boundary_edit_test')
+    window.bw.on_buttonBox_accepted()
+
+    # send vs items to selected design item list widget
+    window.dockContentWidget2.UpdateCustomItem([window.visualItemDict['boundary_edit_test']])
+    target_item = window.dockContentWidget2.findItems('boundary_edit_test', QtCore.Qt.MatchFlag.MatchExactly)[0]
+    assert target_item
+
+    window.dockContentWidget2.ModifyingDesign(target_item)
+    assert window.dockContentWidget2.bw
+
+    #change design value
+    boundary_widget = window.dockContentWidget2.bw
+    boundary_widget.name_input.clear()
+    qtbot.keyClicks(boundary_widget.name_input, 'boundary_name_change')
+    idx = boundary_widget.layer_input.findText('METAL1')
+    boundary_widget.layer_input.setCurrentIndex(idx)
+    boundary_widget.on_buttonBox_accepted()
+
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['boundary_name_change']
+    assert 'boundary_edit_test' not in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('boundary_name_change')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window.visualItemDict['boundary_name_change']
+    assert window.visualItemDict['boundary_name_change'] in window.scene.items()
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['boundary_name_change']._DesignParameter['_LayerUnifiedName'] == 'METAL1'
+    window.reset()
 
 def test_path_edit_window(qtbot):
     global window
@@ -732,55 +732,55 @@ def test_load_gds(qtbot):
     # window.reset()
 
 
-# ##################################test for scene_right_click##################################
-# def test_elements_array_boundary_relative(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
-# def test_elements_array_boundary_offset(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
-# def test_elements_array_path_relative(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
-# def test_elements_array_path_offset(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
-# def test_elements_array_sref_relative(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
-# def test_elements_array_sref_offset(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
-# def test_elements_convert_assign(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
-# def test_elements_convert_create(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
+##################################test for scene_right_click##################################
+def test_elements_array_boundary_relative(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
+def test_elements_array_boundary_offset(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
+def test_elements_array_path_relative(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
+def test_elements_array_path_offset(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
+def test_elements_array_sref_relative(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
+def test_elements_array_sref_offset(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
+def test_elements_convert_assign(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
+def test_elements_convert_create(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
 ##################################test for multimodule##################################
 
 def test_module_create(qtbot):
@@ -837,47 +837,47 @@ def test_module_run(qtbot):
         window = MainWindow._MainWindow() if not window else window
 
 
-# ##################################test for calculator##################################
-# def test_calculator_xy_coord(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
-# def test_calculator_expression(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
-# def test_calculator_index(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
-# def test_calculator_drc(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
-# def test_calculator_number(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
-# def test_calculator_preset_load(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
-#
-#
-# def test_calculator_path_xy(qtbot):
-#     global window
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow() if not window else window
+##################################test for calculator##################################
+def test_calculator_xy_coord(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
+def test_calculator_expression(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
+def test_calculator_index(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
+def test_calculator_drc(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
+def test_calculator_number(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
+def test_calculator_preset_load(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
+
+
+def test_calculator_path_xy(qtbot):
+    global window
+    with HiddenConsole():
+        window = MainWindow._MainWindow() if not window else window
 
 
 ##################################test for automation##################################
