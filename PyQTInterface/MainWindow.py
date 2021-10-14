@@ -2060,6 +2060,7 @@ class _MainWindow(QMainWindow):
 
         _moduleName = _fileName.replace(".gds","")
         _moduleName = _moduleName.split('/')[-1]
+        self.set_module_name(_moduleName)
         originalModuleList = set(self._QTObj._qtProject._DesignParameter)
         # self.dockContentWidget4ForLoggingMessage._InfoMessage("Load GDS File Starts.")
         print("**************************File Load From Legacy Start")
