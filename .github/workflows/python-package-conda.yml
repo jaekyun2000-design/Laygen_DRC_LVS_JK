@@ -26,7 +26,7 @@ jobs:
         pip install coverage pytest pytest-qt
     - name: Test with pytest
       run: |
-        python main_window_tester.py test
+        pytest --doctest-modules --junitxml-junit/test-results.xml --cov=. --cov-report=xml
     - name: action-slack
       uses: 8398a7/action-slack@v3
       with:
