@@ -169,6 +169,13 @@ class _MainWindow(QMainWindow):
         VisualizationItem._VisualizationItem._subElementLayer['SRef'] = list()
         self.close()
 
+    def vsitem_dict_initialization(self):
+        VisualizationItem._VisualizationItem._compareLayer = dict()
+        VisualizationItem._VisualizationItem._subElementLayer = dict()
+        for layer in LayerReader._LayerMapping:
+            VisualizationItem._VisualizationItem._subElementLayer[layer] = list()
+        VisualizationItem._VisualizationItem._subElementLayer['SRef'] = list()
+
     def initUI(self):
 
         print("***************************Initializing Graphic Interface Start")
@@ -3558,7 +3565,7 @@ class _CustomScene(QGraphicsScene):
         # itemList = self.selectedItems()
         # print(itemList)
         # self.send_itemList_signal.emit(itemList)
-        # print(self.point_items_memory)
+        print(self.point_items_memory)
         self.send_itemList_signal.emit(self.point_items_memory)
 
     def dragEnterEvent(self, event: 'QGraphicsSceneDragDropEvent') -> None:
