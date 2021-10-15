@@ -748,17 +748,18 @@ class _LoadSRefWindow(QWidget):
         self.library_input.setCurrentText(library_name)
 
     def updateUI_for_array(self):
-        print(self.array_dict)
-        # self.name_input.setText(self._DesignParameter['_ElementName'])
-        self.library_input.setCurrentText(self.array_dict['library'])
-        self.class_name_input.setText(self.array_dict['className'])
-        # self.XY_input.setText(str(self._DesignParameter['_XYCoordinates'][0][0])+','+str(self._DesignParameter['_XYCoordinates'][0][1]))
-        if 'calculate_fcn' in self.array_dict.keys():
-            self.cal_fcn_input.setCurrentText(self.array_dict['calculate_fcn'])
-        i = 0
-        for value in self.array_dict['parameters'].values():
-            self.par_valueForLineEdit[i].setText(str(value))
-            i += 1
+        if self.array_dict:
+            print(self.array_dict)
+            # self.name_input.setText(self._DesignParameter['_ElementName'])
+            self.library_input.setCurrentText(self.array_dict['library'])
+            self.class_name_input.setText(self.array_dict['className'])
+            # self.XY_input.setText(str(self._DesignParameter['_XYCoordinates'][0][0])+','+str(self._DesignParameter['_XYCoordinates'][0][1]))
+            if 'calculate_fcn' in self.array_dict.keys():
+                self.cal_fcn_input.setCurrentText(self.array_dict['calculate_fcn'])
+            i = 0
+            for value in self.array_dict['parameters'].values():
+                self.par_valueForLineEdit[i].setText(str(value))
+                i += 1
 
     def updateClassName(self):
         self.class_name_input.setText(generator_model_api.class_name_dict[self.library_input.currentText()])

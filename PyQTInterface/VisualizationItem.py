@@ -967,11 +967,11 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self._ItemTraits['variable_info'][field] = _ast.XY
                 elif field == 'parameters':
                     self._ItemTraits['variable_info'][field] = _ast.parameters
-            self.XYVariable.setVisible(False)
-            self.paramVariable.setVisible(False)
+            # self.XYVariable.setVisible(False)
+            # self.paramVariable.setVisible(False)
 
-            self.block.remove(self.XYVariable)
-            self.block.remove(self.paramVariable)
+            # self.block.remove(self.XYVariable)
+            # self.block.remove(self.paramVariable)
 
             tmpParam = str(_ast.parameters).replace(',', ',\n')
 
