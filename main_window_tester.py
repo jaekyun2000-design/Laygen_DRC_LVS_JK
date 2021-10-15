@@ -1319,13 +1319,13 @@ def test_text_design_edit(qtbot):
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
+
     ### Create text ###
     window.widget_delegator.makeTextWindow()
     qtbot.waitForWindowShown(window.txtw)
     qtbot.keyClicks(window.txtw.name_input,'text_edit_test')
     qtbot.keyClicks(window.txtw.text_input,'text_edit_test')
     qtbot.keyClicks(window.txtw.width_input,'10')
-    # qtbot.keyClicks(window.txtw.XY_input,'0,0')
     window.txtw.DetermineCoordinateWithMouse([100,100])
     window.txtw.on_buttonBox_accepted()
 
@@ -1353,14 +1353,51 @@ def test_text_design_edit(qtbot):
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
     assert window.visualItemDict['text_name_change']
     assert window.visualItemDict['text_name_change'] in window.scene.items()
-    # assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['text_name_change']._DesignParameter['_LayerUnifiedName'] == 'METAL1'
-    
 
 
 def test_pin_design_edit(qtbot):
     global window
     with HiddenConsole():
         window = MainWindow._MainWindow()
+    window.show()
+
+    ### Create pin ###
+    window.widget_delegator.makePinWindow()
+    qtbot.waitForWindowShown(window.pinw)
+    qtbot.keyClicks(window.pinw.name_input,'pin_edit_test')
+    qtbot.keyClicks(window.pinw.layer_input,'METAL1PIN')
+    qtbot.keyClicks(window.pinw.text_input,'pin_edit_test')
+    qtbot.keyClicks(window.pinw.width_input,'10')
+    window.pinw.DetermineCoordinateWithMouse([100,100])
+    window.pinw.on_buttonBox_accepted()
+
+    ### Selecte pin ###
+    window.dockContentWidget2.UpdateCustomItem([window.visualItemDict['pin_edit_test']])
+    target_item = window.dockContentWidget2.findItems('pin_edit_test', QtCore.Qt.MatchFlag.MatchExactly)[0]
+    assert target_item
+
+    window.dockContentWidget2.ModifyingDesign(target_item)
+    assert window.dockContentWidget2.pinw
+
+    ### Edit design ###
+    test_widget = window.dockContentWidget2.pinw
+    test_widget.name_input.clear()
+    test_widget.text_input.clear()
+    test_widget.width_input.clear()
+    qtbot.keyClicks(test_widget.name_input, 'pin_name_change')
+    qtbot.keyClicks(test_widget.text_input, 'pin_name_change')
+    qtbot.keyClicks(test_widget.width_input, '20')
+    idx = test_widget.layer_input.findText('METAL2PIN')
+    test_widget.layer_input.setCurrentIndex(idx)
+    test_widget.on_buttonBox_accepted()
+
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['pin_name_change']
+    assert 'pin_edit_test' not in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('pin_name_change')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window.visualItemDict['pin_name_change']
+    assert window.visualItemDict['pin_name_change'] in window.scene.items()
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['pin_name_change']._DesignParameter['_LayerUnifiedName'] == 'METAL2PIN'
 
 
 # def test_dp_highlight(qtbot):
