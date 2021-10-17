@@ -1,13 +1,13 @@
 import sys, os
 
 from PyQTInterface import MainWindow
-from PyQt5.QtWidgets import QApplication
 from PyQt5 import QtCore
-from PyQt5 import QtWidgets
-from PyQt5 import QtGui
 import user_setup
+from PyQt5 import QtGui
+from PyQt5 import QtWidgets
+user_setup.DL_FEATURE=False
 
-# window = MainWindow._MainWindow()
+
 window=None
 
 class HiddenConsole:
@@ -19,7 +19,7 @@ class HiddenConsole:
         sys.stdout = self._original_stdout
 
 def test_main_window(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -29,7 +29,7 @@ def test_main_window(qtbot):
 
 ##################################test for dp creation##################################
 def test_boundary_window(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -51,7 +51,7 @@ def test_boundary_window(qtbot):
 
 
 def test_path_window(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -77,7 +77,7 @@ def test_path_window(qtbot):
 
 
 def test_sref_window(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.widget_delegator.loadSRefWindow()
@@ -105,11 +105,11 @@ def test_sref_window(qtbot):
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
     assert window.visualItemDict['sref_test']
     assert window.visualItemDict['sref_test'] in window.scene.items()
-    
+
 
 
 def test_text_window(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.widget_delegator.makeTextWindow()
@@ -127,11 +127,11 @@ def test_text_window(qtbot):
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
     assert window.visualItemDict['text_test']
     assert window.visualItemDict['text_test'] in window.scene.items()
-    
+
 
 
 def test_pin_window(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.widget_delegator.makePinWindow()
@@ -150,12 +150,12 @@ def test_pin_window(qtbot):
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
     assert window.visualItemDict['pin_test']
     assert window.visualItemDict['pin_test'] in window.scene.items()
-    
+
 
 
 ##################################test for dp edit##################################
 def test_boundary_edit_window(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.widget_delegator.make_boundary_window()
@@ -190,10 +190,10 @@ def test_boundary_edit_window(qtbot):
     assert window.visualItemDict['boundary_name_change']
     assert window.visualItemDict['boundary_name_change'] in window.scene.items()
     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['boundary_name_change']._DesignParameter['_LayerUnifiedName'] == 'METAL1'
-    
+
 
 def test_path_edit_window(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.widget_delegator.makePathWindow()
@@ -233,10 +233,10 @@ def test_path_edit_window(qtbot):
     assert window.visualItemDict['path_name_change'] in window.scene.items()
     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['path_name_change']._DesignParameter[
                '_LayerUnifiedName'] == 'METAL3'
-    
+
 
 def test_sref_edit_window(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.widget_delegator.loadSRefWindow()
@@ -289,12 +289,12 @@ def test_sref_edit_window(qtbot):
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]._ast.library == 'PbodyContact'
     assert window.visualItemDict['sref_name_change']
     assert window.visualItemDict['sref_name_change'] in window.scene.items()
-    
+
 
 
 ##################################test for dc creation##################################
 def test_create_pycode(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
@@ -302,10 +302,10 @@ def test_create_pycode(qtbot):
     qtbot.waitForWindowShown(window.cw)
     qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(), 'pycode_test')
     window.cw.on_buttonBox_accepted()
-    
+
 
 def test_create_ast(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
@@ -315,10 +315,10 @@ def test_create_ast(qtbot):
     qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(), 'targets')
     qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(2).widget(), 'values')
     window.cw.on_buttonBox_accepted()
-    
+
 
 def test_create_element(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.widget_delegator.makeConstraintWindowCUSTOM()
@@ -334,10 +334,10 @@ def test_create_element(qtbot):
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
     assert window.visualItemDict['test_boundary']
     assert window.visualItemDict['test_boundary'] in window.scene.items()
-    
+
 
 def test_create_XYCalculator(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.calculator()
@@ -358,70 +358,70 @@ def test_create_XYCalculator(qtbot):
                                         "height('test_boundary[0]') / bottom('test_boundary[0]') + 2"]
     window.calculator_window.add_clicked()
     window.calculator_window.export_clicked()
-    
+
     # qtbot.stop()
 
 def test_create_conditionexp(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_create_conditionstmt(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_add_constraint_view_from_dp(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_add_constraint_view_from_dc(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_assign_variable(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 ##################################test for dc execution##################################
 def test_encode_constraint(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 def test_run_constraint_boundary(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_run_constraint_path(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_run_constraint_sref(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_run_constraint_with_variable(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_run_constraint_for_update(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
@@ -430,20 +430,20 @@ def test_run_constraint_from_project(qtbot):
     '''
     pre_defined project load and run...
     '''
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_run_constraint_multi_constraint_view(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 ##################################test for dp-dc pairing##################################
 def test_paring_after_dp_creation(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -472,10 +472,10 @@ def test_paring_after_dp_creation(qtbot):
         if window.visualItemDict[item_key].isSelected():
             dp_id = item_key
     assert window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id) == dc_id
-    
+
 
 def test_paring_after_dc_creation(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -504,10 +504,10 @@ def test_paring_after_dc_creation(qtbot):
         if window.visualItemDict[item_key].isSelected():
             dp_id = item_key
     assert window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id) == dc_id
-    
+
 
 def test_paring_after_project_load(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -550,10 +550,10 @@ def test_paring_after_project_load(qtbot):
         if window.visualItemDict[item_key].isSelected():
             dp_id = item_key
     assert window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id) == dc_id
-    
+
 
 def test_paring_after_gds_load(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -581,10 +581,10 @@ def test_paring_after_gds_load(qtbot):
         if window.visualItemDict[item_key].isSelected():
             dp_id = item_key
     assert window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id) == dc_id
-    
+
 
 def test_paring_after_create_submodule(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -618,10 +618,10 @@ def test_paring_after_create_submodule(qtbot):
         if window.visualItemDict[item_key].isSelected():
             dp_id = item_key
     assert window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id) == dc_id
-    
+
 
 def test_paring_after_convert_sref_assign(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -674,10 +674,10 @@ def test_paring_after_convert_sref_assign(qtbot):
         if window.visualItemDict[item_key].isSelected():
             dp_id = item_key
     assert window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id) == dc_id
-    
+
 
 def test_paring_after_convert_create_assign(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -714,11 +714,11 @@ def test_paring_after_convert_create_assign(qtbot):
         if window.visualItemDict[item_key].isSelected():
             dp_id = item_key
     assert window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id) == dc_id
-    
+
 
 ##################################test for scene_visible##################################
 def test_visible(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -744,11 +744,11 @@ def test_visible(qtbot):
 
     ### Assertion ###
     assert window.visualItemDict['visible_test'].isVisible()
-    
+
 
 
 def test_clickable(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -779,10 +779,10 @@ def test_clickable(qtbot):
     ### Assertion ###
     assert int(window.visualItemDict['clickable_test'].flags() & QtWidgets.QGraphicsItem.ItemIsSelectable) == window.visualItemDict['clickable_test'].ItemIsSelectable
 
-    
+
 
 def test_used_layer(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -832,7 +832,7 @@ def test_used_layer(qtbot):
 
 
 def test_generator_show_hide(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -865,10 +865,10 @@ def test_generator_show_hide(qtbot):
 
     ### Assertion ###
     assert window.visualItemDict['gen_show_test'].isVisible()
-    
+
 
 def test_candidate_show_hide(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -894,12 +894,12 @@ def test_candidate_show_hide(qtbot):
 
     ### Assertion ###
     assert window.visualItemDict['can_show_test'].isVisible()
-    
+
 
 
 ##################################test for project##################################
 def test_project_save(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
         # qtbot.addWidget(window)
@@ -952,11 +952,11 @@ def test_project_save(qtbot):
     file_name = './PyQTInterface/Project/test_project'
     window.saveProject(file_name)
     assert window.test
-    
+
 
 
 def test_project_load(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     #     qtbot.addWidget(window)
@@ -964,11 +964,11 @@ def test_project_load(qtbot):
     file_name = './PyQTInterface/Project/test_project.bin'
     window.loadProject(file_name)
     assert window.test
-    
+
 
 
 def test_load_gds(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
         # qtbot.addWidget(window)
@@ -982,11 +982,12 @@ def test_load_gds(qtbot):
     assert len(window._QTObj._qtProject._DesignParameter['RX_term_resistor_v2']) == 118
     assert len(window._QTObj._qtProject._DesignConstraint['RX_term_resistor_v2']) == 118
     assert len(window.scene.items()) == 2640
+    #
 
 
 ##################################test for scene_right_click##################################
 def test_elements_array_boundary_relative(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     ### Create source sref ###
@@ -1037,7 +1038,7 @@ def test_elements_array_boundary_relative(qtbot):
 
 
 def test_elements_array_path_relative(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     ### Create source sref ###
@@ -1112,7 +1113,7 @@ def test_elements_array_path_relative(qtbot):
 
 
 def test_elements_array_sref_relative(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     ### Create source sref ###
@@ -1172,31 +1173,31 @@ def test_elements_array_sref_relative(qtbot):
 
 
 def test_elements_array_boundary_offset(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_elements_array_path_offset(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_elements_array_sref_offset(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_elements_convert_assign(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_elements_convert_create(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
@@ -1204,11 +1205,9 @@ def test_elements_convert_create(qtbot):
 ##################################test for multimodule##################################
 
 def test_module_create(qtbot):
-    global window
     with HiddenConsole():
-        if not window:
-            window = MainWindow._MainWindow()
-    
+        window = MainWindow._MainWindow()
+
     window.show_module_window()
     qtbot.keyClicks(window.nmw.name_input, 'test_module')
     window.nmw.on_makeBox_accepted()
@@ -1219,13 +1218,13 @@ def test_module_create(qtbot):
     new_window = window.module_dict['test_module']
     assert 'test_module' in new_window.module_name_list
     assert 'test_module' in new_window.module_dict
-    
+
 
 def test_module_shift(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
-    
+
     window.show_module_window()
     qtbot.keyClicks(window.nmw.name_input, 'test_module')
     window.nmw.on_makeBox_accepted()
@@ -1249,73 +1248,73 @@ def test_module_shift(qtbot):
     assert new_window.isVisible()
     assert not window.isVisible()
     assert new_window._CurrentModuleName == 'test_module'
-    
+
 
 def test_module_run(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 ##################################test for calculator##################################
 def test_calculator_xy_coord(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_calculator_expression(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_calculator_index(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_calculator_drc(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_calculator_number(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_calculator_preset_load(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_calculator_path_xy(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 ##################################test for automation##################################
 def test_inspect_array(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     if user_setup._Technology != 'TSMC65nm':
         window.request_change_process(None, 'TSMC65nm')
-    user_setup.MULTI_THREAD = True
+    user_setup.MULTI_THREAD = False
     file_name = './PyQTInterface/GDSFile/INV2.gds'
     window.loadGDS(test=file_name)
     window.inspect_array()
     assert window.array_list_widget.count() == 8
-    
+
 
 def test_inspect_path(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
         # qtbot.addWidget(window)
@@ -1323,16 +1322,15 @@ def test_inspect_path(qtbot):
     import user_setup
     if user_setup._Technology != 'TSMC65nm':
         window.request_change_process(None, 'TSMC65nm')
-    user_setup.MULTI_THREAD = True
+    user_setup.MULTI_THREAD = False
     file_name = './PyQTInterface/GDSFile/INV2.gds'
     window.loadGDS(test=file_name)
     window.inspect_path_point()
     assert window.path_point_widget.count() == 15
-    
+
 
 
 def test_technology_node_change(qtbot):
-    global window
     with HiddenConsole():
         window = MainWindow._MainWindow()
     import user_setup
@@ -1404,7 +1402,7 @@ def test_technology_node_change(qtbot):
         test2 = len(DesignParameters._LayerMappingTmp)
 
         if technology == 'SS28nm':
-            assert test1 == 51
+            assert test1 == 53
             assert test2 == 1173
         elif technology == 'TSMC45nm':
             assert test1 == 38
@@ -1432,14 +1430,12 @@ def test_technology_node_change(qtbot):
     test_process('TSMC45nm')
     test_process('TSMC90nm')
 
-    
+
 
 
 def test_create_submodule_from_sref(qtbot):
-    global window
     with HiddenConsole():
-        if not window:
-            window = MainWindow._MainWindow()
+        window = MainWindow._MainWindow()
         window.show()
     import user_setup
     if user_setup._Technology != 'TSMC65nm':
@@ -1461,29 +1457,29 @@ def test_create_submodule_from_sref(qtbot):
         assert window.visualItemDict[item]
         assert window.visualItemDict[item] in window.scene.items()
 
-    
+
 
 ##################################test for scene##################################
 # def test_boundary_design_edit(qtbot):
-#     global window
+#
 #     with HiddenConsole():
 #         window = MainWindow._MainWindow()
 #
 #
 # def test_path_design_edit(qtbot):
-#     global window
+#
 #     with HiddenConsole():
 #         window = MainWindow._MainWindow()
 #
 #
 # def test_sref_design_edit(qtbot):
-#     global window
+#
 #     with HiddenConsole():
 #         window = MainWindow._MainWindow()
 
 
 def test_text_design_edit(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -1524,7 +1520,7 @@ def test_text_design_edit(qtbot):
 
 
 def test_pin_design_edit(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -1569,13 +1565,13 @@ def test_pin_design_edit(qtbot):
 
 
 # def test_dp_highlight(qtbot):
-#     global window
+#
 #     with HiddenConsole():
 #         window = MainWindow._MainWindow()
 
 
 def test_dp_copy(qtbot):
-    global window
+    user_setup._Snap_mode='any_angle'
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -1600,13 +1596,18 @@ def test_dp_copy(qtbot):
     qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton, pos=window.centralWidget().mapFromScene(QtCore.QPoint(0,0)))
 
     ### Assertion ###
-    for dp_id in list(window.visualItemDict.keys()):
-        if dp_id is not None:
-            if 'copy_test' in dp_id:
-                assert window.visualItemDict[dp_id]._ItemTraits['_XYCoordinates'] in [[[50,50]],[[0,0]]]
+    assert 'copy_test' in window.visualItemDict
+    assert 'copy_test_0' in window.visualItemDict
+    assert window.visualItemDict['copy_test']._ItemTraits['_XYCoordinates'] in [[[50,50]], [[50.,50.]]]
+    assert window.visualItemDict['copy_test_0']._ItemTraits['_XYCoordinates'] in [[[0,0]], [[0.,0.]]]
+
+    # for dp_id in list(window.visualItemDict.keys()):
+    #     if dp_id is not None:
+    #         if 'copy_test' in dp_id:
+    #             assert window.visualItemDict[dp_id]._ItemTraits['_XYCoordinates'] in [[[50,50]],[[0.,0.]]]
 
 def test_dp_move(qtbot):
-    global window
+    user_setup._Snap_mode = 'any_angle'
     with HiddenConsole():
         window = MainWindow._MainWindow()
     window.show()
@@ -1635,34 +1636,33 @@ def test_dp_move(qtbot):
 
 ##################################test for dc_constraint_view##################################
 def test_ast_typing(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_ast_shift(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_ast_id_double_click(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_ast_id_highlight(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
 
 def test_ast_id_delete(qtbot):
-    global window
+
     with HiddenConsole():
         window = MainWindow._MainWindow()
-    assert False
 
 
 
