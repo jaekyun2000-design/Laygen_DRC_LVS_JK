@@ -1,10 +1,10 @@
-import tensorflow
-
-from powertool.model.layer_to_matrix import LayerToMatrix
-from keras import models, layers
-import numpy as np
 import user_setup
-import os
+if user_setup.DL_FEATURE:
+    from powertool.model.layer_to_matrix import LayerToMatrix
+    from keras import models, layers
+    import numpy as np
+    import os
+    import tensorflow
 
 
 def convert_org_value(predict, ms=None, scale=None, cell_size=None):

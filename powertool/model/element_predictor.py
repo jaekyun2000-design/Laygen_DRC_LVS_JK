@@ -1,9 +1,10 @@
-from powertool.model.layer_to_matrix import LayerToMatrix
-from keras import models, layers
-import numpy as np
 import user_setup
-import os
-import tensorflow
+if user_setup.DL_FEATURE:
+    from powertool.model.layer_to_matrix import LayerToMatrix
+    from keras import models, layers
+    import numpy as np
+    import os
+    import tensorflow
 
 def create_element_detector_model():
     if user_setup.matrix_x_step == 128:
