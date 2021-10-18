@@ -255,8 +255,8 @@ class GDS2Generator():
             structure._DesignParameter[element_name] = StickDiagram._StickDiagram()._SrefElementDeclaration(
                 # _XYCoordinates=copy.deepcopy(element._DesignParameter['_XYCoordinates']),
                 _XYCoordinates=[],
-                _Reflect= copy.deepcopy(element._DesignParameter['_Reflect']),
-                _Angle=copy.deepcopy(element._DesignParameter['_Angle']),
+                _Reflect= copy.deepcopy(element._DesignParameter['_Reflect']) if '_Reflect' in element._DesignParameter else None,
+                _Angle=copy.deepcopy(element._DesignParameter['_Angle'] if '_Angle' in element._DesignParameter else None),
                 _ElementName= copy.deepcopy(element._DesignParameter['_ElementName'])
             )[0]
             structure._DesignParameter[element_name]['_id'] = element._id
