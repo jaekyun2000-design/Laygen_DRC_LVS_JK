@@ -293,6 +293,7 @@ class GDS2Generator():
         exec(self.code,globals(),locals())
 
         # self.root_cell._CalculateDesignParameter = types.MethodType(_CalculateDesignParameter, self.root_cell)
+        print(self.code)
         self.root_cell._CalculateDesignParameter()
 
 
