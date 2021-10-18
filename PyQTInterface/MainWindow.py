@@ -1523,6 +1523,7 @@ class _MainWindow(QMainWindow):
         '''
         self.dockContentWidget3.blockSignals(True)
         try:
+            error_id = None
             debugger_gds2gen = topAPI.gds2generator.GDS2Generator(True)
             debugger_gds2gen.load_qt_project(self)
             debugger_gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter, self._CurrentModuleName)
@@ -1531,7 +1532,7 @@ class _MainWindow(QMainWindow):
             constraint_names = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
             constraint_ids = [item.text() for item in constraint_names]
             ast_list = []
-            error_id = None
+
             for _id in constraint_ids:
                 error_id = _id
                 ast_list.append(self._QTObj._qtProject._DesignConstraint[module][_id]._ast)
@@ -1545,8 +1546,9 @@ class _MainWindow(QMainWindow):
                 working_code = code
         except Exception as e:
             error_log = traceback.format_exc()
-            self.dockContentWidget3.set_errored_constraint_id(error_id, 'dynamic', error_log, e)
-            self.dockContentWidget3.blockSignals(False)
+            if error_id:
+                self.dockContentWidget3.set_errored_constraint_id(error_id, 'dynamic', error_log, e)
+                self.dockContentWidget3.blockSignals(False)
             if 'working_code' in locals():
                 return working_code
             else:
