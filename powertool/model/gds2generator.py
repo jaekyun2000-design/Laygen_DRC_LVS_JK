@@ -26,6 +26,7 @@ class GDS2Generator():
         self.cell_dp_dict = collections.OrderedDict()
         self.element_parameter_dict = dict()
         self.root_cell = None
+        self.code = None
         # self.layer_num2name = LayerReader._LayerNumber2LayerName(LayerReader._LayerMapping)
 
         # if debug:
