@@ -1133,46 +1133,46 @@ def test_elements_array_sref_relative(qtbot):
             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '1')
     window.ls.on_buttonBox_accepted()
 
-    # ### Create relative boundary array ###
-    # window.createVariable('sref_array')
-    # qtbot.waitForWindowShown(window.vw)
-    # test_widget = window.vw.variable_widget
-    # test_widget.request_show('sref', 'relative')
-    # row_layout = test_widget.widget_dictionary['srefrelative'].layout()
-    # qtbot.keyClicks(row_layout.itemAt(0).itemAt(1).widget(), 'sref_relative_array_test')
-    # QtGui.QGuiApplication.clipboard().setText("['source[0]', '_COLayer[0]']")
-    # qtbot.mouseClick(row_layout.itemAt(1).itemAt(2).widget(), QtCore.Qt.LeftButton)
-    # qtbot.waitForWindowShown(test_widget.cal)
-    # qtbot.mouseClick(test_widget.cal.center_buttons, QtCore.Qt.LeftButton)
-    # qtbot.mouseClick(test_widget.cal.layout().itemAtPosition(3,3).widget(), QtCore.Qt.LeftButton)
-    # qtbot.mouseClick(row_layout.itemAt(2).itemAt(2).widget(), QtCore.Qt.LeftButton)
-    # qtbot.waitForWindowShown(test_widget.ls)
-    # for idx, par_name in enumerate(test_widget.ls.par_name):
-    #     if 'COX' in par_name:
-    #         test_widget.ls.par_valueForLineEdit[idx].clear()
-    #         qtbot.keyClicks(test_widget.ls.par_valueForLineEdit[idx], '1')
-    #     elif 'COY' in par_name:
-    #         test_widget.ls.par_valueForLineEdit[idx].clear()
-    #         qtbot.keyClicks(test_widget.ls.par_valueForLineEdit[idx], '3')
-    # test_widget.ls.on_buttonBox_accepted()
-    # window.vw.on_buttonBox_accepted()
-    #
-    # ### Send to generator dc ###
-    # for i in range(window.dockContentWidget3_2.model.rowCount()):
-    #     window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(0).index())
-    #     qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
-    #
-    # window.runConstraint_for_update()
-    #
-    # ### Assertion ###
-    # tmp = window.visualItemDict
-    # assert window.visualItemDict['sref_relative_array_test']
-    # source_XY = list()
-    # for XY in window.visualItemDict['source'].sub_element_dict['_COLayer[0]']._ItemTraits['_XYCoordinates']:
-    #     tmp_XY = [window.visualItemDict['source']._ItemTraits['_XYCoordinates'][0][0]+XY[0],window.visualItemDict['source']._ItemTraits['_XYCoordinates'][0][1]+XY[1]]
-    #     source_XY.append(tmp_XY)
-    # array_XY = window.visualItemDict['sref_relative_array_test']._ItemTraits['_XYCoordinates']
-    # assert source_XY == array_XY
+    ### Create relative boundary array ###
+    window.createVariable('sref_array')
+    qtbot.waitForWindowShown(window.vw)
+    test_widget = window.vw.variable_widget
+    test_widget.request_show('sref', 'relative')
+    row_layout = test_widget.widget_dictionary['srefrelative'].layout()
+    qtbot.keyClicks(row_layout.itemAt(0).itemAt(1).widget(), 'sref_relative_array_test')
+    QtGui.QGuiApplication.clipboard().setText("['source[0]', '_COLayer[0]']")
+    qtbot.mouseClick(row_layout.itemAt(1).itemAt(2).widget(), QtCore.Qt.LeftButton)
+    qtbot.waitForWindowShown(test_widget.cal)
+    qtbot.mouseClick(test_widget.cal.center_buttons, QtCore.Qt.LeftButton)
+    qtbot.mouseClick(test_widget.cal.layout().itemAtPosition(3,3).widget(), QtCore.Qt.LeftButton)
+    qtbot.mouseClick(row_layout.itemAt(2).itemAt(2).widget(), QtCore.Qt.LeftButton)
+    qtbot.waitForWindowShown(test_widget.ls)
+    for idx, par_name in enumerate(test_widget.ls.par_name):
+        if 'COX' in par_name:
+            test_widget.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(test_widget.ls.par_valueForLineEdit[idx], '1')
+        elif 'COY' in par_name:
+            test_widget.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(test_widget.ls.par_valueForLineEdit[idx], '3')
+    test_widget.ls.on_buttonBox_accepted()
+    window.vw.on_buttonBox_accepted()
+
+    ### Send to generator dc ###
+    for i in range(window.dockContentWidget3_2.model.rowCount()):
+        window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(0).index())
+        qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
+
+    window.runConstraint_for_update()
+
+    ### Assertion ###
+    tmp = window.visualItemDict
+    assert window.visualItemDict['sref_relative_array_test']
+    source_XY = list()
+    for XY in window.visualItemDict['source'].sub_element_dict['_COLayer[0]']._ItemTraits['_XYCoordinates']:
+        tmp_XY = [window.visualItemDict['source']._ItemTraits['_XYCoordinates'][0][0]+XY[0],window.visualItemDict['source']._ItemTraits['_XYCoordinates'][0][1]+XY[1]]
+        source_XY.append(tmp_XY)
+    array_XY = window.visualItemDict['sref_relative_array_test']._ItemTraits['_XYCoordinates']
+    assert source_XY == array_XY
 
 
 def test_elements_array_boundary_offset(qtbot):
