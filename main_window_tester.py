@@ -1062,6 +1062,7 @@ def test_elements_array_path_relative(qtbot):
     qtbot.waitForWindowShown(window.ls)
     qtbot.keyClicks(window.ls.name_input, 'target')
     qtbot.keyClicks(window.ls.XY_input, '0,300')
+    qtbot.keyClicks(window.ls.library_input, 'NbodyContact')
     for idx, par_name in enumerate(window.ls.par_name):
         if 'COX' in par_name:
             window.ls.par_valueForLineEdit[idx].clear()
