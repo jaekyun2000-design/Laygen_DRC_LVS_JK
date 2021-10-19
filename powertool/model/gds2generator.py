@@ -143,7 +143,7 @@ class GDS2Generator():
             self.class_name)
         self.cell_dp_dict[self.class_name]._DesignParameter[
             '_GDSFile'] = StickDiagram._StickDiagram()._GDSObjDeclaration()
-
+        warnings.warn(f'Git Actions! class:{self.class_name}')
         self.run_qt_constraint_ast()
 
         dp_dictionary = dict()
@@ -291,10 +291,10 @@ class GDS2Generator():
         self.code += '\nself.root_cell._CalculateDesignParameter = types.MethodType(_CalculateDesignParameter, self.root_cell)'
         self.code = 'for name in self.libraries.class_name_dict:\n' \
                     '\tglobals()[name] = self.libraries.libraries[name]\n' + self.code
+        warnings.warn(f"Actions Debug, {self.code}")
         exec(self.code,globals(),locals())
 
         # self.root_cell._CalculateDesignParameter = types.MethodType(_CalculateDesignParameter, self.root_cell)
-        print(self.code)
         self.root_cell._CalculateDesignParameter()
 
 
