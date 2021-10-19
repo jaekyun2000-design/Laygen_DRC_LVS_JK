@@ -41,6 +41,7 @@ class _RectBlock(QGraphicsRectItem):
         self.highlight_flag = False
         self.pen = QPen()
         self.brush = QBrush()
+        self.flag_memory = False
         # self.setFlag(QGraphicsItem.ItemIsSelectable,False)
         if _BlockTraits is None:
             self._BlockTraits = dict(
@@ -132,6 +133,7 @@ class _RectBlock(QGraphicsRectItem):
             # self._BlockTraits["_Color"].setAlphaF(1)
             # self.setZValue(self.zValue()*10000)
             # print("HighLighted",self.zValue())
+            self.flag_memory = True
             self.pen.setStyle(Qt.SolidLine)
             # pen.setColor(self._BlockTraits["_Outline"])
             color = Qt.GlobalColor.white if user_setup._Night_mode else Qt.GlobalColor.black
@@ -139,13 +141,21 @@ class _RectBlock(QGraphicsRectItem):
             self.pen.setWidth(5)
             # self.setZValue(1)
         elif self.shallow_highlight:
+            self.flag_memory = True
             self.pen.setStyle(Qt.DotLine)
             self.pen.setColor(Qt.GlobalColor.darkGreen)
             self.pen.setWidth(7)
         elif self.hover:
+            self.flag_memory = True
             self.pen.setStyle(Qt.DotLine)
             self.pen.setColor(Qt.GlobalColor.darkCyan)
             self.pen.setWidth(5)
+        elif self.flag_memory:
+            self.flag_memory = False
+            self.pen.setColor(self._BlockTraits["_Outline"])
+            self.pen.setDashPattern(self._BlockTraits['_LinePattern'])
+            self.pen.setWidth(self._BlockTraits['_LineSize'] + 2)
+            self.brush.setColor(self._BlockTraits["_Color"])
         painter.setPen(self.pen)
 
         if self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName'] not in DisplayReader._DisplayDict or\
