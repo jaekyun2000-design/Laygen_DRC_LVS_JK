@@ -39,6 +39,8 @@ class _RectBlock(QGraphicsRectItem):
         self.hover = False
         self.index = None
         self.highlight_flag = False
+        self.pen = QPen()
+        self.brush = QBrush()
         # self.setFlag(QGraphicsItem.ItemIsSelectable,False)
         if _BlockTraits is None:
             self._BlockTraits = dict(
@@ -99,45 +101,52 @@ class _RectBlock(QGraphicsRectItem):
                 qpix = DisplayReader._PatternDict[self._BlockTraits["_Pattern"]].create_qbit(color)
                 DisplayReader._DisplayDict[color_patt_name] = qpix
 
+        self.pen.setColor(self._BlockTraits["_Outline"])
+        self.pen.setDashPattern(self._BlockTraits['_LinePattern'])
+        self.pen.setCapStyle(Qt.RoundCap)
+        self.pen.setWidth(self._BlockTraits['_LineSize'] + 2)
+        self.brush = QBrush()
+        self.brush.setColor(self._BlockTraits["_Color"])
+
     def paint(self, painter, option, widget=None):
         # list_manager.layer_visible_flag_dict[self.itemtrait['layer']] is False:
         #     self.setVisible(False)
 
         self._BlockTraits["_Color"].setAlphaF(1)
 
-        pen = QPen()
-        pen.setColor(self._BlockTraits["_Outline"])
-        pen.setDashPattern(self._BlockTraits['_LinePattern'])
-        pen.setCapStyle(Qt.RoundCap)
-        pen.setWidth(self._BlockTraits['_LineSize']+2)
-        # pen.setStyle(Qt.CustomDashLine)
-
-        # pen.setWidth(5)
-
-        brush = QBrush()
-        brush.setColor(self._BlockTraits["_Color"])
-
-        # print(self.zValue())
+        # pen = QPen()
+        # pen.setColor(self._BlockTraits["_Outline"])
+        # pen.setDashPattern(self._BlockTraits['_LinePattern'])
+        # pen.setCapStyle(Qt.RoundCap)
+        # pen.setWidth(self._BlockTraits['_LineSize']+2)
+        # # pen.setStyle(Qt.CustomDashLine)
+        #
+        # # pen.setWidth(5)
+        #
+        # brush = QBrush()
+        # brush.setColor(self._BlockTraits["_Color"])
+        #
+        # # print(self.zValue())
 
         if self.isSelected() or self.highlight_flag:
             # self._BlockTraits["_Color"].setAlphaF(1)
             # self.setZValue(self.zValue()*10000)
             # print("HighLighted",self.zValue())
-            pen.setStyle(Qt.SolidLine)
+            self.pen.setStyle(Qt.SolidLine)
             # pen.setColor(self._BlockTraits["_Outline"])
             color = Qt.GlobalColor.white if user_setup._Night_mode else Qt.GlobalColor.black
-            pen.setColor(color)
-            pen.setWidth(5)
+            self.pen.setColor(color)
+            self.pen.setWidth(5)
             # self.setZValue(1)
         elif self.shallow_highlight:
-            pen.setStyle(Qt.DotLine)
-            pen.setColor(Qt.GlobalColor.darkGreen)
-            pen.setWidth(7)
+            self.pen.setStyle(Qt.DotLine)
+            self.pen.setColor(Qt.GlobalColor.darkGreen)
+            self.pen.setWidth(7)
         elif self.hover:
-            pen.setStyle(Qt.DotLine)
-            pen.setColor(Qt.GlobalColor.darkCyan)
-            pen.setWidth(5)
-        painter.setPen(pen)
+            self.pen.setStyle(Qt.DotLine)
+            self.pen.setColor(Qt.GlobalColor.darkCyan)
+            self.pen.setWidth(5)
+        painter.setPen(self.pen)
 
         if self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName'] not in DisplayReader._DisplayDict or\
             self._BlockTraits["_Pattern"] not in DisplayReader._PatternDict:
@@ -153,14 +162,14 @@ class _RectBlock(QGraphicsRectItem):
             painter.drawLine(0,0,self._BlockTraits["_Width"],self._BlockTraits["_Height"])
             painter.drawLine(0,self._BlockTraits["_Height"],self._BlockTraits["_Width"],0)
         elif self._BlockTraits["_Pattern"] == 'blank':
-            brush.setStyle(Qt.NoBrush)
+            self.brush.setStyle(Qt.NoBrush)
         else:
             if color_patt_name not in DisplayReader._ColorPatternDict:
                 color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill']
                 qpix = DisplayReader._PatternDict[self._BlockTraits["_Pattern"]].create_qbit(color)
                 DisplayReader._DisplayDict[color_patt_name] = qpix
             qpix = DisplayReader._DisplayDict[color_patt_name]
-            brush.setTexture(qpix)
+            self.brush.setTexture(qpix)
 
         if '_type' in self._BlockTraits and self._BlockTraits['_type'] == 2:
             if self._BlockTraits['_Vertical']:
@@ -178,9 +187,9 @@ class _RectBlock(QGraphicsRectItem):
 
 
 
-        brush.setTransform(QTransform(painter.worldTransform().inverted()[0]))
+        self.brush.setTransform(QTransform(painter.worldTransform().inverted()[0]))
 
-        painter.setBrush(brush)
+        painter.setBrush(self.brush)
 
         painter.drawRect(self.rect())
         painter.setRenderHint(QPainter.Antialiasing)
@@ -330,6 +339,10 @@ class _VisualizationItem(QGraphicsItemGroup):
         #             tmp_rect.translate(block.pos())
         #             main_path.addRect(tmp_rect)
         #     return main_path
+        # if self.parentItem():
+        #     return QPainterPath()
+
+
         if self._type == 1 or self._type == 2:
             main_path = QPainterPath()
             for i, block in enumerate(self.block):
