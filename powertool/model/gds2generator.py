@@ -291,7 +291,8 @@ class GDS2Generator():
         self.code += '\nself.root_cell._CalculateDesignParameter = types.MethodType(_CalculateDesignParameter, self.root_cell)'
         self.code = 'for name in self.libraries.class_name_dict:\n' \
                     '\tglobals()[name] = self.libraries.libraries[name]\n' + self.code
-        warnings.warn(f"Actions Debug, {self.code}")
+        warnings.warn(f"Actions Debug library, {self.libraries.class_name_dict}")
+        warnings.warn(f"Actions Debug, \n{self.code}")
         exec(self.code,globals(),locals())
 
         # self.root_cell._CalculateDesignParameter = types.MethodType(_CalculateDesignParameter, self.root_cell)
