@@ -332,7 +332,7 @@ class _MainWindow(QMainWindow):
         graphicView.name_list_signal.connect(self.save_clipboard)
         self.scene.send_module_name_list_signal.connect(graphicView.name_out_fcn)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
-        self.scene.setMinimumRenderSize(1)
+        self.scene.setMinimumRenderSize(5)
         graphicView.centerOn(QPointF(268,-165))
         self.setCentralWidget(graphicView)
         color = Qt.black if user_setup._Night_mode else Qt.white
