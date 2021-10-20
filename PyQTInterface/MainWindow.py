@@ -17,6 +17,7 @@ trace_memeory()
 
 import ast
 import sys
+import platform
 import os
 import time
 
@@ -509,7 +510,9 @@ class _MainWindow(QMainWindow):
 
         ################# Bottom Dock Widget setting ####################
         self.bottom_dock_tab_widget = QTabWidget()
-        self.bottom_dock_tab_widget.setStyleSheet('background-color:rgb(240,240,240);')
+
+        if platform.system() != 'Darwin':
+            self.bottom_dock_tab_widget.setStyleSheet('background-color:rgb(240,240,240);')
         self.bottom_dock_tab_widget.currentChanged.connect(self.bottom_dock_tab_changed)
 
         dockWidget3 = QDockWidget("Design Constraint")
@@ -611,8 +614,9 @@ class _MainWindow(QMainWindow):
         hbox_for_tab.addWidget(self.dockContentWidget3_2)
         widget_for_tab.setLayout(hbox_for_tab)
         self.bottom_dock_tab_widget.addTab(widget_for_tab, 'CalculateDesignParameter')
-        self.dockContentWidget3.setStyleSheet('background-color:rgb(255,255,255);')
-        self.dockContentWidget3_2.setStyleSheet('background-color:rgb(255,255,255);')
+        if platform.system() != 'Darwin':
+            self.dockContentWidget3.setStyleSheet('background-color:rgb(255,255,255);')
+            self.dockContentWidget3_2.setStyleSheet('background-color:rgb(255,255,255);')
 
         gridOnDock3 = QHBoxLayout()
         gridOnDock3.addWidget(self.bottom_dock_tab_widget)
@@ -864,8 +868,9 @@ class _MainWindow(QMainWindow):
         hbox_for_tab.addWidget(self.dockContentWidget3_2)
         widget_for_tab.setLayout(hbox_for_tab)
         idx = self.bottom_dock_tab_widget.addTab(widget_for_tab, fcn_name)
-        self.dockContentWidget3.setStyleSheet('background-color:rgb(255,255,255);')
-        self.dockContentWidget3_2.setStyleSheet('background-color:rgb(255,255,255);')
+        if platform.system() != 'Darwin':
+            self.dockContentWidget3.setStyleSheet('background-color:rgb(255,255,255);')
+            self.dockContentWidget3_2.setStyleSheet('background-color:rgb(255,255,255);')
         self.bottom_dock_tab_widget.setCurrentIndex(idx)
 
     def bottom_dock_tab_changed(self, idx):
