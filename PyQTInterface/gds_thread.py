@@ -26,6 +26,7 @@ class VSItemRunnable(QRunnable):
         vs_item_dict = dict()
         layer_dict = dict()
         id_layer_dict = dict()
+        print(f'worker {self.name} job start.')
         for element_name, _element in self.topcell.items():
             ####################################### Visual Item Creation ##########################################
             if self.topcell[element_name]._DesignParameter['_DesignParametertype'] != 3:
@@ -50,7 +51,7 @@ class VSItemRunnable(QRunnable):
             self.signal.one_job_progress_signal.emit()
 
         thread_result[int(self.name)] = vs_item_dict, layer_dict, id_layer_dict
-        print(f'worker {self.name} job done')
+        print(f'worker {self.name} job done.')
         self.signal.every_job_doen_signal.emit()
 
 class VSItemRunnableManager(QRunnable):

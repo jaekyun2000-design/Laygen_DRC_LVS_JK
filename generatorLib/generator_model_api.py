@@ -1,6 +1,9 @@
 import glob, os, sys, platform
 import sys, inspect
 
+dir_check=os.getcwd()
+if 'generatorLib' in dir_check or 'PyQTInterface' in dir_check:
+    os.chdir('..')
 sys.path.append('./generatorLib/generator_models')
 print("*********Generator Library Loading Start")
 
