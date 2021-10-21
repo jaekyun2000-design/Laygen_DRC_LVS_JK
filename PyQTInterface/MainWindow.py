@@ -2252,6 +2252,8 @@ class _MainWindow(QMainWindow):
             self._layerItem.update(result_list[1])
             self._id_layer_mapping.update(result_list[2])
         self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
+        self.main_window.dockContentWidget1_2.layer_table_widget.send_listInLayer_signal.connect(
+            self.main_window.scene.getNonselectableLayerList)
         self.pg_bar.set_max()
 
 
