@@ -1421,7 +1421,7 @@ class _MainWindow(QMainWindow):
         else:
             ############################################# 2. Subcell Cases ############################################
             _childName = _sref._DesignParameter['_DesignObj_Name']
-            _newChildName = _childName + '/' + _sref._DesignParameter['_ElementName']
+            _newChildName = f'{_childName}/{_sref._DesignParameter["_ElementName"]}'
             _parentName = _sref._id
             _parentXY = _sref._DesignParameter['_XYCoordinates']
             tmpDict = dict()

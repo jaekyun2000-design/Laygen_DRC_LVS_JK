@@ -924,7 +924,7 @@ class QtProject:
                         _tmpId = _tmpElement._GDS_ELEMENT_NAME
                     else:
                         _tmpId = self._getDesignParameterId(_ParentName=_tmpStructureName)
-                        _tmpId = f'{_tmpStructureName}{_tmpId}'
+                        _tmpId = f'{_tmpStructureName}_{_tmpId}'
                     if "_BOUNDARY" in vars(_tmpElement._ELEMENTS):
                         if _tmpElement._GDS_ELEMENT_NAME:
                             self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
@@ -2303,38 +2303,101 @@ class QtProject:
         :param None (No input required)
         :return: entireHierarchy
         """
-        hierarchyDict = {}
-        if searchmodule == None:                                                    # Initial Condition
-            addedTopModule = list(self._DesignParameter.items())[-1][0]
-            hierarchyDict[addedTopModule] = dict()
-            for _id , element in self._DesignParameter[addedTopModule].items():
-                if element._DesignParameter['_DesignParametertype'] == 3:
-                    subcell = element._DesignParameter['_DesignObj_Name']
-                    subcellName = element._DesignParameter['_ElementName']
-                    tmpHierarchyDict1 = self._getEntireHierarchy(subcell)
-                    for key, value in tmpHierarchyDict1.items():
-                        newName = f'{key}/{subcellName}'
-                        if key in hierarchyDict[addedTopModule].keys():
-                            continue
-                        else:
-                            hierarchyDict[addedTopModule][newName] = value
-        else:                                                                       # Recursive Search for subcells
-            tmpstack = []
-            hierarchyDict[searchmodule] = dict()
-
-            for _id, element in self._DesignParameter[searchmodule].items():
-                if element._DesignParameter['_DesignParametertype'] == 3:
-                    subcell = element._DesignParameter['_DesignObj_Name']
-                    subcellName = element._DesignParameter['_ElementName']
-                    tmpstack.append(subcell)
-                    tmpHierarchyDict2 = self._getEntireHierarchy(subcell)
-                    for key, value in tmpHierarchyDict2.items():
-                        newName = f'{key}/{subcellName}'
-                        hierarchyDict[searchmodule][newName] = value
+        top_module = list(self._DesignParameter.items())[-1][0]
+        # search_list = list(self._DesignParameter[top_module].items())
+        search_list = filter(lambda element_tuple: element_tuple[1]._DesignParameter['_DesignParametertype'] == 3,
+                             list(self._DesignParameter[top_module].items()))
+        search_list = list(search_list)
+        # key_list = [top_module] * len(search_list)
+        hierarchy_dict = {top_module: dict()}
+        hierarchy_dict_list = [hierarchy_dict[top_module]] * len(search_list)
+        while search_list:
+            target = search_list.pop(0)
+            current_dict = hierarchy_dict_list.pop(0)
+            element_name, element = target[0], target[1]
+            # key = key_list.pop(0)
+            if element._DesignParameter['_DesignParametertype'] == 3:
+                sub_sref_cell = filter(lambda element_tuple: element_tuple[1]._DesignParameter['_DesignParametertype'] == 3,
+                                       list(element._DesignParameter['_DesignObj'].items()))
+                sub_sref_cell = list(sub_sref_cell)
+                key_element_name = f'{element._DesignParameter["_DesignObj_Name"]}/{element._DesignParameter["_ElementName"]}'
+                if sub_sref_cell:
+                    current_dict[key_element_name] = dict()
+                    hierarchy_dict_list.extend([current_dict[key_element_name]] * len(sub_sref_cell))
+                    # key_list.extend([element_name] * len(sub_sref_cell))
+                    search_list.extend(sub_sref_cell)
                 else:
-                    continue
-            if tmpstack == []:                      # No Sref cell inside 'searchmodule' ( i.e, Sref Lowest Hierarchy)
-                hierarchyDict[searchmodule] = None
+                    current_dict[key_element_name] = None
+        return hierarchy_dict
+
+
+        # hierarchyDict = {}
+        # if searchmodule == None:                                                    # Initial Condition
+        #     addedTopModule = list(self._DesignParameter.items())[-1][0]
+        #     hierarchyDict[addedTopModule] = dict()
+        #     for element_name, element in self._DesignParameter[addedTopModule].items():
+        #         if element._DesignParameter['_DesignParametertype'] == 3:
+        #             subcell = element._DesignParameter['_DesignObj_Name']
+        #             subcellName = element._DesignParameter['_ElementName']
+        #             tmpHierarchyDict1 = self._getEntireHierarchy(element['_DesignObj'])
+        #             for key, value in tmpHierarchyDict1.items():
+        #                 newName = f'{key}/{subcellName}'
+        #                 if key in hierarchyDict[addedTopModule].keys():
+        #                     continue
+        #                 else:
+        #                     hierarchyDict[addedTopModule][newName] = value
+        # else:                                                                       # Recursive Search for subcells
+        #     tmpstack = []
+        #     for _id, element in searchmodule.items():
+        #         if element._DesignParameter['_DesignParametertype'] == 3:
+        #             subcell = element._DesignParameter['_DesignObj_Name']
+        #             subcellName = element._DesignParameter['_ElementName']
+        #             tmpstack.append(element)
+        #             tmpHierarchyDict2 = self._getEntireHierarchy(element)
+        #             for key, value in tmpHierarchyDict2.items():
+        #                 newName = f'{key}/{subcellName}'
+        #                 hierarchyDict[searchmodule][newName] = value
+        #         else:
+        #             continue
+        #     if tmpstack == []:                      # No Sref cell inside 'searchmodule' ( i.e, Sref Lowest Hierarchy)
+        #         hierarchyDict[searchmodule] = None
+
+        # hierarchyDict = {}
+        # if searchmodule == None:                                                    # Initial Condition
+        #     addedTopModule = list(self._DesignParameter.items())[-1][0]
+        #     hierarchyDict[addedTopModule] = dict()
+        #     for _id , element in self._DesignParameter[addedTopModule].items():
+        #         if element._DesignParameter['_DesignParametertype'] == 3:
+        #             subcell = element._DesignParameter['_DesignObj_Name']
+        #             subcellName = element._DesignParameter['_ElementName']
+        #             tmpHierarchyDict1 = self._getEntireHierarchy(subcell)
+        #             for key, value in tmpHierarchyDict1.items():
+        #                 newName = f'{key}/{subcellName}'
+        #                 if key in hierarchyDict[addedTopModule].keys():
+        #                     continue
+        #                 else:
+        #                     hierarchyDict[addedTopModule][newName] = value
+        # else:                                                                       # Recursive Search for subcells
+        #     tmpstack = []
+        #     hierarchyDict[searchmodule] = dict()
+        #
+        #     for _id, element in self._DesignParameter[searchmodule].items():
+        #         if element._DesignParameter['_DesignParametertype'] == 3:
+        #             subcell = element._DesignParameter['_DesignObj_Name']
+        #             subcellName = element._DesignParameter['_ElementName']
+        #             tmpstack.append(subcell)
+        #             tmpHierarchyDict2 = self._getEntireHierarchy(subcell)
+        #             for key, value in tmpHierarchyDict2.items():
+        #                 newName = f'{key}/{subcellName}'
+        #                 hierarchyDict[searchmodule][newName] = value
+        #         else:
+        #             continue
+        #     if tmpstack == []:                      # No Sref cell inside 'searchmodule' ( i.e, Sref Lowest Hierarchy)
+        #         hierarchyDict[searchmodule] = None
+        #
+        #
+
+
             # else:       # input : dp_dict
             #     hierarchyDict[list(searchmodule.keys())[0]] = dict()
             #     for _id, element in searchmodule.items():

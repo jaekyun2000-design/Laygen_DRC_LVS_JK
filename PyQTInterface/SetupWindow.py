@@ -4105,12 +4105,11 @@ class _FlatteningCell(QWidget):
 
         for item in self.itemlist:
             if self.model.itemWidget(item, 2).checkState() == 2:
-                _flatten_dict[item.text(0) + '/' + item.text(1)] = None
+                _flatten_dict[f'{item.text(0)}/{item.text(1)}'] = None
             elif self.model.itemWidget(item, 3).checkState() == 2:
-                _flatten_dict[item.text(0) + '/' + item.text(1)] = 'MacroCell'
+                _flatten_dict[f'{item.text(0)}/{item.text(1)}'] = 'MacroCell'
             else:
-                _flatten_dict[item.text(0) + '/' + item.text(1)] = self.model.itemWidget(item, 4).currentText()
-
+                _flatten_dict[f'{item.text(0)}/{item.text(1)}'] = self.model.itemWidget(item, 4).currentText()
         print(_flatten_dict)
         return _flatten_dict
 
