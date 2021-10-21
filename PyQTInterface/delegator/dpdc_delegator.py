@@ -56,7 +56,7 @@ class DesignDelegator(delegator.Delegator):
         visual_item.updateDesignParameter(qt_design_parameter)
         visual_item.setBoundingRegionGranularity(1)
         self.main_window.visualItemDict[qt_design_parameter._ElementName] = visual_item
-        visual_item.setToolTip(qt_design_parameter._ElementName + '\n' + str(qt_design_parameter._type))
+        visual_item.setToolTip(f'{qt_design_parameter._ElementName}\n{str(qt_design_parameter._type)}')
 
         self.main_window.updateGraphicItem(visual_item)
         self.main_window.dockContentWidget4ForLoggingMessage._InfoMessage("Design Parameter Created")

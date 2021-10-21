@@ -2245,10 +2245,13 @@ class _MainWindow(QMainWindow):
     def create_vs_items_from_thread_memory(self):
         from PyQTInterface import gds_thread
         for result_list in gds_thread.thread_result:
+            # self.visualItemDict.update(result_list[0])
             for vs_item in result_list[0].values():
-                self.scene.addItem(vs_item)
+                # self.scene.addItem(vs_item)
+                self.updateGraphicItem(vs_item)
             self._layerItem.update(result_list[1])
             self._id_layer_mapping.update(result_list[2])
+        self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
         self.pg_bar.set_max()
 
 
