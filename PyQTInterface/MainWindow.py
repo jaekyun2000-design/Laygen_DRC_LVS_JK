@@ -800,7 +800,7 @@ class _MainWindow(QMainWindow):
         ok_button.setText('OK')
 
         form_layout.addRow('Options', cb)
-        form_layout.addRow(ok_button)
+        form_layout.addRow(' ', ok_button)
 
         self.c_view_configuration.setLayout(form_layout)
         self.c_view_configuration.show()
@@ -1012,7 +1012,7 @@ class _MainWindow(QMainWindow):
                     self.scene.removeItem(self.visualItemDict[dp_name])
 
 
-        self.self._QTObj._qtProject._ElementManager_topology_dict[fcn_name].elementParameterDict = copy.deepcopy(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        self._QTObj._qtProject._ElementManager_topology_dict[fcn_name].elementParameterDict = copy.deepcopy(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
         self.original_fcn_name = fcn_name
     def run_setup_update(self):
         self.setup_widget = QWidget()

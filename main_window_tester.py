@@ -1,5 +1,7 @@
 import sys, os
 
+from PyQt5.QtWidgets import QPushButton
+
 from PyQTInterface import MainWindow
 from PyQt5 import QtCore
 import user_setup
@@ -337,9 +339,9 @@ def test_create_element(qtbot):
 
 
 def test_create_XYCalculator(qtbot):
-
     with HiddenConsole():
         window = MainWindow._MainWindow()
+    # XYCoordinate
     window.calculator()
     qtbot.waitForWindowShown(window.calculator_window)
 
@@ -349,7 +351,6 @@ def test_create_XYCalculator(qtbot):
     window.calculator_window.equationList = ["center('test_boundary[0]') + rt('test_boundary[0]') * " \
                                             "width('test_boundary[0]') / bottom('test_boundary[0]') + 2"]
     window.calculator_window.xy_button.setChecked(True)
-
     window.calculator_window.add_clicked()
     window.calculator_window.y_button.setChecked(True)
     window.calculator_window.display.setText("center('test_boundary[0]') + rb('test_boundary[0]') *"
@@ -359,24 +360,73 @@ def test_create_XYCalculator(qtbot):
     window.calculator_window.add_clicked()
     window.calculator_window.export_clicked()
 
-    # qtbot.stop()
+    # Logic Expression
+    window.calculator()
+    qtbot.waitForWindowShown(window.calculator_window)
+
+    test_create_element(qtbot)
+    window.calculator_window.display.setText("center('test_boundary[0]') + rt('test_boundary[0]') *"
+                                             " width('test_boundary[0]') / bottom('test_boundary[0]') + 2")
+    window.calculator_window.equationList = ["center('test_boundary[0]') + rt('test_boundary[0]') * " \
+                                            "width('test_boundary[0]') / bottom('test_boundary[0]') + 2"]
+    window.calculator_window.y_button.setChecked(True)
+    window.calculator_window.add_clicked()
+    window.calculator_window.y_button.setChecked(True)
+    window.calculator_window.display.setText("center('test_boundary[0]') + rb('test_boundary[0]') *"
+                                             " height('test_boundary[0]') / bottom('test_boundary[0]') + 2")
+    window.calculator_window.equationList = ["center('test_boundary[0]') + rb('test_boundary[0]') * " \
+                                        "height('test_boundary[0]') / bottom('test_boundary[0]') + 2"]
+    window.calculator_window.add_clicked()
+    window.calculator_window.export_clicked()
+
+
+    dc_id_xy = list(window._QTObj._qtProject._DesignConstraint['EasyDebugModule'].keys())[0]
+    dc_id_LE = list(window._QTObj._qtProject._DesignConstraint['EasyDebugModule'].keys())[1]
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id_xy]._ast._type == 'XYCoordinate'
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id_LE]._ast._type == 'LogicExpression'
 
 def test_create_conditionexp(qtbot):
 
     with HiddenConsole():
         window = MainWindow._MainWindow()
-
+    window.condition_expression()
+    qtbot.waitForWindowShown(window.condition_expression_window)
+    window.condition_expression_window.input_widget.add_line('and')
+    qtbot.keyClicks(window.condition_expression_window.input_widget.main_layout.itemAt(0).itemAt(0).itemAt(1).itemAt(0).widget(), 'test1')
+    qtbot.keyClicks(window.condition_expression_window.input_widget.main_layout.itemAt(0).itemAt(2).itemAt(1).itemAt(0).widget(), 'cond1')
+    qtbot.keyClicks(window.condition_expression_window.input_widget.main_layout.itemAt(1).itemAt(0).itemAt(1).itemAt(0).widget(), 'test2')
+    qtbot.keyClicks(window.condition_expression_window.input_widget.main_layout.itemAt(1).itemAt(2).itemAt(1).itemAt(0).widget(), 'cond2')
+    window.condition_expression_window.ok_clicked()
+    dc_id = list(window._QTObj._qtProject._DesignConstraint['EasyDebugModule'].keys())[0]
+    stmt_module = window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert type(window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]._ast) == 'ConditionExpression'
 
 def test_create_conditionstmt(qtbot):
 
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
-
 def test_add_constraint_view_from_dp(qtbot):
 
     with HiddenConsole():
         window = MainWindow._MainWindow()
+
+    import user_setup
+    if user_setup._Technology != 'SS28nm':
+        window.request_change_process(None, 'SS28nm')
+    user_setup.MULTI_THREAD = False
+    file_name = './PyQTInterface/GDSFile/ResistorBank.gds'
+    window.loadGDS(test=file_name)
+    # test_load_gds(qtbot)
+    window.add_constraint_view()
+    qtbot.keyClicks(window.c_view_configuration.layout().itemAt(0,1).widget(), 'test')
+    my_layout = window.c_view_configuration.layout()
+
+    my_layout.itemAt(2, 1).widget().click()
+    assert window._QTObj._qtProject._ElementManager_topology_dict['CalculateDesignParameter']
+    assert window._QTObj._qtProject._DesignConstraint_topology_dict['CalculateDesignParameter']
+
 
 
 def test_add_constraint_view_from_dc(qtbot):
@@ -384,6 +434,24 @@ def test_add_constraint_view_from_dc(qtbot):
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
+    import user_setup
+    if user_setup._Technology != 'SS28nm':
+        window.request_change_process(None, 'SS28nm')
+    user_setup.MULTI_THREAD = False
+    file_name = './PyQTInterface/GDSFile/ResistorBank.gds'
+    window.loadGDS(test=file_name)
+    # test_load_gds(qtbot)
+    window.add_constraint_view()
+    qtbot.keyClicks(window.c_view_configuration.layout().itemAt(0,1).widget(), 'test')
+    my_layout = window.c_view_configuration.layout()
+
+    qtbot.keyClicks(my_layout.itemAt(1,1).widget(), 'from original DC')
+    my_layout.itemAt(2, 1).widget().click()
+
+    assert window._QTObj._qtProject._ElementManager_topology_dict['CalculateDesignParameter']
+    assert window._QTObj._qtProject._DesignConstraint_topology_dict['CalculateDesignParameter']
+    assert len(window._QTObj._qtProject._DesignConstraint_topology_dict['CalculateDesignParameter']) ==\
+        len(window._QTObj._qtProject._DesignConstraint)
 
 def test_assign_variable(qtbot):
 
@@ -396,16 +464,113 @@ def test_encode_constraint(qtbot):
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
+    import user_setup
+    if user_setup._Technology != 'TSMC65nm':
+        window.request_change_process(None, 'TSMC65nm')
+    user_setup.MULTI_THREAD = False
+    file_name = './PyQTInterface/GDSFile/INV2.gds'
+    window.loadGDS(test=file_name)
+    window.min_snap_spacing_change.destroy()
+    vs_dict = window.visualItemDict['NMOSInINV_0']
+    vs_dict.setSelected(True)
+
+    window.widget_delegator.convert_elements_to_sref_widget([vs_dict])
+    qtbot.waitForWindowShown(window.widget_delegator.choice_widget)
+    qtbot.mouseClick(window.widget_delegator.choice_widget.layout().itemAt(0).widget(), QtCore.Qt.LeftButton)
+    qtbot.waitForWindowShown(window.widget_delegator.ls)
+    qtbot.keyClicks(window.widget_delegator.ls.name_input, 'encode_test')
+    qtbot.keyClicks(window.widget_delegator.ls.library_input, 'NMOSWithDummy')
+    qtbot.keyClicks(window.widget_delegator.ls.XY_input, '0,0')
+    for idx, par_name in enumerate(window.widget_delegator.ls.par_name):
+        if 'Number' in par_name:
+            window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '5')
+        elif 'Width' in par_name:
+            window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '500')
+        elif 'length' in par_name:
+            window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '30')
+        elif '_XVT' in par_name:
+            window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '"NVT"')
+    window.widget_delegator.ls.on_buttonBox_accepted()
+
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('encode_test')
+    for i in range(window.dockContentWidget3_2.model.rowCount()):
+        if window.dockContentWidget3_2.model.item(i,1).text() == dc_id:
+            window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
+    qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
+    code = window.encodeConstraint()
+    assert code
+
+
 def test_run_constraint_boundary(qtbot):
 
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
+    window.widget_delegator.makeConstraintWindowCUSTOM()
+    qtbot.waitForWindowShown(window.cw)
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(), 'test_boundary')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(2).widget(), 'PIMP')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(3).widget(), '0,0')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(4).widget(), '100')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(5).widget(), '200')
+    window.cw.on_buttonBox_accepted()
+
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('test_boundary')
+    for i in range(window.dockContentWidget3_2.model.rowCount()):
+        if window.dockContentWidget3_2.model.item(i,1).text() == dc_id:
+            window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
+    qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
+
+    window.dockContentWidget3.setCurrentIndex(window.dockContentWidget3.model.item(0).index().child(3,3))
+    index = window.dockContentWidget3.currentIndex()
+    window.dockContentWidget3.model.setData(index.siblingAtColumn(3), '200')
+
+    # qtbot.mouseClick(window.dockContentWidget3.model.item(0).child(3,3).widget(), QtCore.Qt.LeftButton)
+    # qtbot.keyPress(window, QtCore.Qt.Key_F2)
+    # item = window.dockContentWidget3.model.itemFromIndex(index).text()
+    # window.dockContentWidget3.keyPressEvent(QKeyEvent = Qt.Key_F2)
+    # qtbot.keyClicks(window.dockContentWidget3.model.XY_value_index, '200')
+    # window.dockContentWidget3.model.item(0).index().child(3,3).setText('200')
+    # ow.dockContentWidget3.model.indexFromItem(XY_value_item).text()
+    # qtbot.keyClicks(window.dockContentWidget3.currentIndex().child(3,4).text(), '100,100')
+
+    window.runConstraint()
+    assert window.visualItemDict['test_boundary']
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['test_boundary']
+    # qtbot.stop()
 
 def test_run_constraint_path(qtbot):
 
     with HiddenConsole():
         window = MainWindow._MainWindow()
+
+    window.widget_delegator.makePathWindow()
+    qtbot.waitForWindowShown(window.pw)
+    qtbot.keyClicks(window.pw.width_input, '100')
+    window.pw.AddPathPointWithMouse([0, 0])
+    window.pw.clickCount([0, 0])
+    window.pw.AddPathPointWithMouse([100, 0])
+    window.pw.clickCount([100, 0])
+    window.pw.AddPathPointWithMouse([100, 500])
+    window.pw.clickCount([100, 500])
+
+    qtbot.keyClicks(window.pw.name_input, 'test_path')
+    window.pw.on_buttonBox_accepted()
+
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('test_path')
+    for i in range(window.dockContentWidget3_2.model.rowCount()):
+        if window.dockContentWidget3_2.model.item(i,1).text() == dc_id:
+            window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
+    qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
+    window.runConstraint()
+
+    assert window.visualItemDict['test_path']
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['test_path']
+    # qtbot.stop()
 
 
 def test_run_constraint_sref(qtbot):
@@ -413,6 +578,35 @@ def test_run_constraint_sref(qtbot):
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
+    window.widget_delegator.loadSRefWindow()
+    qtbot.waitForWindowShown(window.ls)
+    qtbot.keyClicks(window.ls.name_input, 'test_sref')
+    qtbot.keyClicks(window.ls.XY_input, '0,0')
+    qtbot.keyClicks(window.ls.library_input, 'NMOSWithDummy')
+    for idx, par_name in enumerate(window.ls.par_name):
+        if 'Number' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '5')
+        elif 'Width' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '500')
+        elif 'length' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
+        elif '_XVT' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+    window.ls.on_buttonBox_accepted()
+    window.ls.destroy()
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('test_sref')
+    for i in range(window.dockContentWidget3_2.model.rowCount()):
+        if window.dockContentWidget3_2.model.item(i,1).text() == dc_id:
+            window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
+    qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
+
+    window.runConstraint()
+
+    # qtbot.stop()
 
 def test_run_constraint_with_variable(qtbot):
 
@@ -425,6 +619,81 @@ def test_run_constraint_for_update(qtbot):
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
+        window.widget_delegator.makeConstraintWindowCUSTOM()
+        qtbot.waitForWindowShown(window.cw)
+        qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(), 'test_boundary')
+        qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(2).widget(), 'PIMP')
+        qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(3).widget(), '0,0')
+        qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(4).widget(), '100')
+        qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(5).widget(), '200')
+        window.cw.on_buttonBox_accepted()
+
+        dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('test_boundary')
+        for i in range(window.dockContentWidget3_2.model.rowCount()):
+            if window.dockContentWidget3_2.model.item(i, 1).text() == dc_id:
+                window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
+        qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
+
+        window.dockContentWidget3.setCurrentIndex(window.dockContentWidget3.model.item(0).index().child(3, 3))
+        index = window.dockContentWidget3.currentIndex()
+        window.dockContentWidget3.model.setData(index.siblingAtColumn(3), '200')
+
+        window.widget_delegator.makePathWindow()
+        qtbot.waitForWindowShown(window.pw)
+        qtbot.keyClicks(window.pw.width_input, '100')
+        window.pw.AddPathPointWithMouse([0, 0])
+        window.pw.clickCount([0, 0])
+        window.pw.AddPathPointWithMouse([100, 0])
+        window.pw.clickCount([100, 0])
+        window.pw.AddPathPointWithMouse([100, 500])
+        window.pw.clickCount([100, 500])
+
+        qtbot.keyClicks(window.pw.name_input, 'test_path')
+        window.pw.on_buttonBox_accepted()
+
+        dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('test_path')
+        for i in range(window.dockContentWidget3_2.model.rowCount()):
+            if window.dockContentWidget3_2.model.item(i, 1).text() == dc_id:
+                window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
+        qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
+
+        window.widget_delegator.loadSRefWindow()
+        qtbot.waitForWindowShown(window.ls)
+        qtbot.keyClicks(window.ls.name_input, 'test_sref')
+        qtbot.keyClicks(window.ls.XY_input, '0,0')
+        qtbot.keyClicks(window.ls.library_input, 'NMOSWithDummy')
+        for idx, par_name in enumerate(window.ls.par_name):
+            if 'Number' in par_name:
+                window.ls.par_valueForLineEdit[idx].clear()
+                qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '5')
+            elif 'Width' in par_name:
+                window.ls.par_valueForLineEdit[idx].clear()
+                qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '500')
+            elif 'length' in par_name:
+                window.ls.par_valueForLineEdit[idx].clear()
+                qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
+            elif '_XVT' in par_name:
+                window.ls.par_valueForLineEdit[idx].clear()
+                qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+        window.ls.on_buttonBox_accepted()
+        window.ls.destroy()
+        dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('test_sref')
+        for i in range(window.dockContentWidget3_2.model.rowCount()):
+            if window.dockContentWidget3_2.model.item(i, 1).text() == dc_id:
+                window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
+        qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
+
+        window.runConstraint_for_update()
+        assert window.visualItemDict['test_boundary']
+        assert window.visualItemDict['test_path']
+        assert window.visualItemDict['test_sref']
+        assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['test_boundary']
+        assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['test_path']
+        assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['test_sref']
+
+        #   Error Log:
+        #    self.code = f'_Name="{self.class_name}"\n' + self.code
+        #    TypeError: can only concatenate str (not "NoneType") to str
 
 def test_run_constraint_from_project(qtbot):
     '''
