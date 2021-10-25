@@ -458,6 +458,28 @@ def test_assign_variable(qtbot):
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
+    window.widget_delegator.makeConstraintWindowCUSTOM()
+    qtbot.waitForWindowShown(window.cw)
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(), 'test_boundary')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(2).widget(), 'PIMP')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(3).widget(), '0,0')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(4).widget(), 'width_test')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(5).widget(), 'length_test')
+    window.cw.on_buttonBox_accepted()
+
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('test_boundary')
+    for i in range(window.dockContentWidget3_2.model.rowCount()):
+        if window.dockContentWidget3_2.model.item(i,1).text() == dc_id:
+            window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
+    qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
+
+    window.dockContentWidget3.setCurrentIndex(window.dockContentWidget3.model.item(0).index().child(2,3))
+    index = window.dockContentWidget3.currentIndex()
+    window.dockContentWidget3.model.setData(index.siblingAtColumn(3), 'XY_test')
+    assert len(window.dv.variableDict) == 4
+
+
+
 ##################################test for dc execution##################################
 def test_encode_constraint(qtbot):
 
@@ -613,6 +635,31 @@ def test_run_constraint_with_variable(qtbot):
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
+    window.widget_delegator.makeConstraintWindowCUSTOM()
+    qtbot.waitForWindowShown(window.cw)
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(1).widget(), 'test_boundary')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(2).widget(), 'PIMP')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(3).widget(), '0,0')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(4).widget(), '100')
+    qtbot.keyClicks(window.cw.setupVboxColumn2.itemAt(5).widget(), 'length_test')
+    window.cw.on_buttonBox_accepted()
+
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('test_boundary')
+    for i in range(window.dockContentWidget3_2.model.rowCount()):
+        if window.dockContentWidget3_2.model.item(i,1).text() == dc_id:
+            window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
+    qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
+
+    window.dockContentWidget3.setCurrentIndex(window.dockContentWidget3.model.item(0).index().child(3,3))
+    index = window.dockContentWidget3.currentIndex()
+    window.dockContentWidget3.model.setData(index.siblingAtColumn(3), 'width_test')
+
+    window.dv.model.setData(window.dv.model.index(1, 1), '100')
+    window.dv.model.setData(window.dv.model.index(2, 1), '200')
+    window.runConstraint_for_update()
+    qtbot.stop()
+    assert window.visualItemDict['test_boundary']
+
 
 def test_run_constraint_for_update(qtbot):
 
@@ -703,7 +750,19 @@ def test_run_constraint_from_project(qtbot):
     with HiddenConsole():
         window = MainWindow._MainWindow()
 
+    window.show()
+    file_name = './PyQTInterface/Project/test_project.bin'
+    window.loadProject(file_name)
 
+    window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.index(0,0))
+    qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
+    # XY_idx = window.dockContentWidget3.model.index(0,0).child(3,0)
+
+    window.dockContentWidget3.model.setData(window.dockContentWidget3.model.index(0,0).child(3, 3), '200')
+
+    window.runConstraint_for_update()
+
+    # qtbot.stop()
 def test_run_constraint_multi_constraint_view(qtbot):
 
     with HiddenConsole():
