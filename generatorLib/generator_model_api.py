@@ -13,7 +13,7 @@ class_name_dict = dict()
 class_function_dict = dict()
 libraries = dict()
 for generator in glob.iglob('./generatorLib/generator_models/*.py'):
-    if platform.system() == 'Linux' or 'Darwin':
+    if platform.system() in ['Linux', 'Darwin']:
         generator_class_name = generator.split('/')[-1][:-3]
     else:
         generator_class_name = generator.split('\\')[1][:-3]
