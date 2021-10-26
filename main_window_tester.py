@@ -657,7 +657,7 @@ def test_run_constraint_with_variable(qtbot):
     window.dv.model.setData(window.dv.model.index(1, 1), '100')
     window.dv.model.setData(window.dv.model.index(2, 1), '200')
     window.runConstraint_for_update()
-    qtbot.stop()
+
     assert window.visualItemDict['test_boundary']
 
 
