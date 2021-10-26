@@ -927,14 +927,13 @@ class QtProject:
                         _tmpId = f'{_tmpStructureName}_{_tmpId}'
                     if "_BOUNDARY" in vars(_tmpElement._ELEMENTS):
                         if _tmpElement._GDS_ELEMENT_NAME:
-                            self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
+                            if len(_tmpElement._ELEMENTS._XY.xy) == 5:
+                                self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
+                            else:
+                                self._createNewDesignParameter(_id=_tmpId, _type=11, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
                             _tmpId = _tmpElement._GDS_ELEMENT_NAME
                         else:
                             try:
-                                # if str(_tmpElement._ELEMENTS._DATATYPE.datatype) not in LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)]:
-                                #     warnings.warn(f'LayerReader has layer common name info but data info is insufficient.'
-                                #                   f' layer:{_tmpElement._ELEMENTS._LAYER.layer}, data:{_tmpElement._ELEMENTS._DATATYPE.datatype}')
-                                #     _tmpElement._ELEMENTS._DATATYPE.datatype = list(LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)].keys())[0]
                                 element_name = f'{LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][str(_tmpElement._ELEMENTS._DATATYPE.datatype)]}_boundary'
                                 if element_name not in element_name_count:
                                     element_name_count[element_name] = 0
@@ -952,12 +951,16 @@ class QtProject:
                             "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                             "_Datatype"] = _tmpElement._ELEMENTS._DATATYPE.datatype
-                        _XYCenter, _XWidth, _YWidth = self._XYCoordinate2CenterCoordinateAndWidth(
-                            _tmpElement._ELEMENTS._XY.xy)
-                        self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_XYCoordinates"].append(
-                            [_XYCenter[0], _XYCenter[1]])
-                        self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_XWidth"] = _XWidth
-                        self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_YWidth"] = _YWidth
+                        if len(_tmpElement._ELEMENTS._XY.xy) == 5:
+                            _XYCenter, _XWidth, _YWidth = self._XYCoordinate2CenterCoordinateAndWidth(
+                                _tmpElement._ELEMENTS._XY.xy)
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_XYCoordinates"].append(
+                                [_XYCenter[0], _XYCenter[1]])
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_XWidth"] = _XWidth
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_YWidth"] = _YWidth
+                        else:
+                            self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_XYCoordinates"].append(
+                                _tmpElement._ELEMENTS._XY.xy)
                         # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Ignore"]
                         # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_ElementName"]
                     elif "_PATH" in vars(_tmpElement._ELEMENTS):

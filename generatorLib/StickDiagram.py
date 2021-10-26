@@ -398,6 +398,19 @@ class _StickDiagram:
                                                                                                                            _WidthY=_DesignParameterInDictionary[_DesignParameter]['_YWidth'],),
                                                                                                                            _ElementName = _DesignParameter)
                                                                                             )
+            elif _DesignParameterInDictionary[_DesignParameter]['_DesignParametertype'] == 11 and _DesignParameterInDictionary[_DesignParameter]['_Ignore']==None:
+                if DesignParameters._Technology!='180nm' and _DesignParameterInDictionary[_DesignParameter]['_Layer'] == DesignParameters._LayerMapping['WELLBODY'][0]:
+                    pass
+                elif DesignParameters._Technology!='065nm' and _DesignParameterInDictionary[_DesignParameter]['_Layer'] == DesignParameters._LayerMapping['PDK'][0] :
+                    pass
+                else :
+                    for _XYCoordinate in _DesignParameterInDictionary[_DesignParameter]['_XYCoordinates']:
+
+                        _DesignParameterInDictionary['_GDSFile']['_GDSFile'][0]._ELEMENTS.append(
+                                                                                            self._CreateGDSBoundaryElement(_Layer= _DesignParameterInDictionary[_DesignParameter]['_Layer'], _Datatype=_DesignParameterInDictionary[_DesignParameter]['_Datatype'],
+                                                                                                                           _XYCoordinates=_DesignParameterInDictionary[_DesignParameter]['_XYCoordinates'],
+                                                                                                                           _ElementName = _DesignParameter)
+                                                                                            )
             elif _DesignParameterInDictionary[_DesignParameter]['_DesignParametertype'] == 2 and _DesignParameterInDictionary[_DesignParameter]['_Ignore']==None:
                 for _XYCoordinates in _DesignParameterInDictionary[_DesignParameter]['_XYCoordinates']:
                     # print 'monitor for debug stickDiagram0: ', _DesignParameterInDictionary[_DesignParameter]['_XYCoordinates']
@@ -485,6 +498,10 @@ class _StickDiagram:
     def _BoundaryElementDeclaration(self, _Layer=None,_Datatype=None, _XYCoordinates=[],_XWidth=None, _YWidth=None, _ElementName=None,):
 
         return dict(_DesignParametertype=1, _Layer=_Layer,_Datatype=_Datatype, _XYCoordinates=_XYCoordinates,_XWidth=_XWidth, _YWidth=_YWidth, _Ignore=None, _ElementName = _ElementName)
+
+    def _PolygonElementDeclaration(self, _Layer=None,_Datatype=None, _XYCoordinates=[],_XWidth=None, _YWidth=None, _ElementName=None,):
+
+        return dict(_DesignParametertype=11, _Layer=_Layer,_Datatype=_Datatype, _XYCoordinates=_XYCoordinates,_XWidth=_XWidth, _YWidth=_YWidth, _Ignore=None, _ElementName = _ElementName)
 
     def _SrefElementDeclaration(self, _DesignObj=None, _XYCoordinates=[], _Reflect=None, _Angle=None, _ElementName = None):
 
