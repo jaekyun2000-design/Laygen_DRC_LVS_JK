@@ -3301,8 +3301,11 @@ class _ConstraintModel(QStandardItemModel):
         self._ConstraintNameList = []
         self._ConstraintDict = dict()
         self._ConstraintItem = dict()
+
         self._Root = None
         self.setColumnCount(5)
+
+        self._CurrentModuleName = None
         # self.testInitial()
 
     def readConstraint(self,rootConstraint):

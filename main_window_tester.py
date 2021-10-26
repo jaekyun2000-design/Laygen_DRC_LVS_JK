@@ -400,7 +400,7 @@ def test_create_conditionexp(qtbot):
     dc_id = list(window._QTObj._qtProject._DesignConstraint['EasyDebugModule'].keys())[0]
     stmt_module = window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
-    assert type(window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]._ast) == 'ConditionExpression'
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]._ast._type == 'ConditionExpression'
 
 def test_create_conditionstmt(qtbot):
 
