@@ -2252,8 +2252,8 @@ class _MainWindow(QMainWindow):
             self._layerItem.update(result_list[1])
             self._id_layer_mapping.update(result_list[2])
         self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
-        self.main_window.dockContentWidget1_2.layer_table_widget.send_listInLayer_signal.connect(
-            self.main_window.scene.getNonselectableLayerList)
+        self.dockContentWidget1_2.layer_table_widget.send_listInLayer_signal.connect(
+            self.scene.getNonselectableLayerList)
         self.pg_bar.set_max()
 
 
@@ -3527,13 +3527,13 @@ class _CustomScene(QGraphicsScene):
 
         before_selected_item = None
         if self.point_items_memory:
-            print(f'1)There is items in memory: {[item._id for item in self.point_items_memory]}')
+            # print(f'1)There is items in memory: {[item._id for item in self.point_items_memory]}')
             if set(items) == set(self.point_items_memory):
                 if self.selectedItems():
                     if len(self.selectedItems()) > 1:
                         super(_CustomScene, self).mousePressEvent(event)
                         return
-                    print(f'2)before_selected_item :{self.selectedItems()[0]._id}')
+                    # print(f'2)before_selected_item :{self.selectedItems()[0]._id}')
                     before_selected_item = self.selectedItems()[0]
                     if before_selected_item in self.point_items_memory:
                         idx = self.point_items_memory.index(before_selected_item)
