@@ -81,6 +81,13 @@ class ElementBlock:
                         0,
                         self.block_traits["_Width"] * scaleValue,
                         self.block_traits["_Height"] * scaleValue)
+        elif self.block_traits['_DesignParametertype'] == 11:
+            idx = 0 # this is temporal...
+            #TODO
+            #get index from Parent!
+            return QPolygonF(
+                [QPointF(p[0], p[1]) for p in self.block_traits['_XYCoordinates'][idx]]
+            )
 
 class _RectBlock(QGraphicsRectItem):
     highlighted_item_list = list()
@@ -93,35 +100,14 @@ class _RectBlock(QGraphicsRectItem):
         self.hover = False
         self.index = None
         self.highlight_flag = False
-        # self.pen = QPen()
-        # self.brush = QBrush()
         self.flag_memory = False
         self.element_info = ElementBlock(_BlockTraits)
-        # self.setFlag(QGraphicsItem.ItemIsSelectable,False)
-        # if _BlockTraits is None:
-        #     self._BlockTraits = dict(
-        #         _Layer = None,
-        #         _LayerName = None,
-        #         _XYCoordinates = None,
-        #         _Width = None,
-        #         _Height = None,
-        #         _Color = None,
-        #         _ItemRef = None, #Reference Of VisualizationItem
-        #
-        #     )
 
-
-        # else:
         if _BlockTraits is not None:
-            # self._BlockTraits = _BlockTraits
             rect = self.element_info.update_traits(_BlockTraits)
             self.setRect(rect)
-            # self.updateRect()
 
     def updateTraits(self,_BlockTraits):
-        # self._BlockTraits.update(_BlockTraits)
-        # self.updateRect()
-
         rect = self.element_info.update_traits(_BlockTraits)
         self.setRect(rect)
 
@@ -268,6 +254,163 @@ class _RectBlock(QGraphicsRectItem):
             color = DisplayInfo[self.element_info.block_traits['_LayerName']+self.element_info.block_traits['_DatatypeName']]['Fill']
         except:
             self.warning=QMessageBox()
+            self.warning.setText("There is no matching QT Color profile")
+            print("Color Traits Error")
+            self.warning.show()
+
+    def restore_zvalue(self):
+        self.setZValue(self.element_info.block_traits['_Layer'])
+
+    def independent_from_group(self):
+        self.original_parent = self.parentItem()
+        tmp_parent_item = _VisualizationItem()
+        tmp_parent_item._ItemTraits = self.original_parent._ItemTraits
+        tmp_parent_item.block.append(self)
+        self.original_parent.removeFromGroup(self)
+        tmp_parent_item.addToGroup(self)
+
+        return tmp_parent_item
+
+    def independent_path_from_group(self, tmp_parent_item=None):
+        self.original_parent = self.parentItem()
+        if tmp_parent_item:
+            pass
+        else:
+            tmp_parent_item = _VisualizationItem()
+            tmp_parent_item._ItemTraits = self.original_parent._ItemTraits
+        tmp_parent_item.block.append(self)
+        self.original_parent.removeFromGroup(self)
+        tmp_parent_item.addToGroup(self)
+
+        return tmp_parent_item
+
+    def set_highlight(self):
+        self.highlight_flag = not self.highlight_flag
+        if self.highlight_flag:
+            self.highlighted_item_list.append(self)
+        else:
+            self.highlighted_item_list.remove(self)
+
+    def set_shallow_highlight(self):
+        self.shallow_highlight = not self.shallow_highlight
+        if self.shallow_highlight:
+            self.shallow_highlight_list.append(self)
+        else:
+            self.shallow_highlight_list.remove(self)
+
+class PolygonBlock(QGraphicsPolygonItem):
+    highlighted_item_list = list()
+    shallow_highlight_list = list()
+
+    def __init__(self, _BlockTraits=None):
+        super().__init__()
+        self.setFlag(QGraphicsItem.ItemIsSelectable, False)
+        self.shallow_highlight = False
+        self.hover = False
+        self.index = None
+        self.highlight_flag = False
+        self.flag_memory = False
+        self.element_info = ElementBlock(_BlockTraits)
+
+        if _BlockTraits is not None:
+            polygon = self.element_info.update_traits(_BlockTraits)
+            self.setPolygon(polygon)
+
+    def updateTraits(self, _BlockTraits):
+        polygon = self.element_info.update_traits(_BlockTraits)
+        self.setPolygon(polygon)
+
+
+    def paint(self, painter, option, widget=None):
+        self.element_info.block_traits["_Color"].setAlphaF(1)
+
+        if self.isSelected() or self.highlight_flag:
+            # self._BlockTraits["_Color"].setAlphaF(1)
+            # self.setZValue(self.zValue()*10000)
+            # print("HighLighted",self.zValue())
+            self.flag_memory = True
+            self.element_info.pen.setStyle(Qt.SolidLine)
+            # pen.setColor(self._BlockTraits["_Outline"])
+            color = Qt.GlobalColor.white if user_setup._Night_mode else Qt.GlobalColor.black
+            self.element_info.pen.setColor(color)
+            self.element_info.pen.setWidth(5)
+            # self.setZValue(1)
+        elif self.shallow_highlight:
+            self.flag_memory = True
+            self.element_info.pen.setStyle(Qt.DotLine)
+            self.element_info.pen.setColor(Qt.GlobalColor.darkGreen)
+            self.element_info.pen.setWidth(7)
+        elif self.hover:
+            self.flag_memory = True
+            self.element_info.pen.setStyle(Qt.DotLine)
+            self.element_info.pen.setColor(Qt.GlobalColor.darkCyan)
+            self.element_info.pen.setWidth(5)
+        elif self.flag_memory:
+            self.flag_memory = False
+            self.element_info.pen.setColor(self.element_info.block_traits["_Outline"])
+            self.element_info.pen.setDashPattern(self.element_info.block_traits['_LinePattern'])
+            self.element_info.pen.setWidth(self.element_info.block_traits['_LineSize'] + 2)
+            self.element_info.brush.setColor(self.element_info.block_traits["_Color"])
+        painter.setPen(self.element_info.pen)
+
+        if self.element_info.block_traits['_LayerName'] + self.element_info.block_traits[
+            '_DatatypeName'] not in DisplayReader._DisplayDict or \
+                self.element_info.block_traits["_Pattern"] not in DisplayReader._PatternDict:
+            warnings.warn(
+                f'Current process does not have information about object {self.element_info.block_traits["_ElementName"]}.')
+            self.hide()
+            return
+        else:
+            self.show()
+        color_name = DisplayReader._DisplayDict[
+            self.element_info.block_traits['_LayerName'] + self.element_info.block_traits['_DatatypeName']]['Fill'].name
+        color_patt_name = color_name + self.element_info.block_traits["_Pattern"]
+
+        if self.element_info.block_traits["_Pattern"] == 'X':
+            painter.drawLine(0, 0, self.element_info.block_traits["_Width"], self.element_info.block_traits["_Height"])
+            painter.drawLine(0, self.element_info.block_traits["_Height"], self.element_info.block_traits["_Width"], 0)
+        elif self.element_info.block_traits["_Pattern"] == 'blank':
+            self.element_info.brush.setStyle(Qt.NoBrush)
+        else:
+            if color_patt_name not in DisplayReader._ColorPatternDict:
+                color = DisplayReader._DisplayDict[
+                    self.element_info.block_traits['_LayerName'] + self.element_info.block_traits['_DatatypeName']][
+                    'Fill']
+                qpix = DisplayReader._PatternDict[self.element_info.block_traits["_Pattern"]].create_qbit(color)
+                DisplayReader._DisplayDict[color_patt_name] = qpix
+            qpix = DisplayReader._DisplayDict[color_patt_name]
+            self.element_info.brush.setTexture(qpix)
+
+        if '_type' in self.element_info.block_traits and self.element_info.block_traits['_type'] == 2:
+            if self.element_info.block_traits['_Vertical']:
+                x1 = self.element_info.block_traits['_Width'] / 2
+                x2 = x1
+                y1 = 0
+                y2 = self.element_info.block_traits['_Height']
+            else:
+                # horizontal
+                x1 = 0
+                x2 = self.element_info.block_traits['_Width']
+                y1 = self.element_info.block_traits['_Height'] / 2
+                y2 = y1
+            painter.drawLine(x1, y1, x2, y2)
+
+        self.element_info.brush.setTransform(QTransform(painter.worldTransform().inverted()[0]))
+
+        painter.setBrush(self.element_info.brush)
+
+        painter.drawPolygon(self.polygon())
+        painter.setRenderHint(QPainter.Antialiasing)
+
+    def layerName2paintTrait(self):
+
+        try:
+            DisplayInfo = DisplayReader._DisplayDict
+            color = \
+            DisplayInfo[self.element_info.block_traits['_LayerName'] + self.element_info.block_traits['_DatatypeName']][
+                'Fill']
+        except:
+            self.warning = QMessageBox()
             self.warning.setText("There is no matching QT Color profile")
             print("Color Traits Error")
             self.warning.show()
@@ -644,6 +787,65 @@ class _VisualizationItem(QGraphicsItemGroup):
             tmpBlock = _RectBlock()
             tmpBlock.updateTraits(blockTraits)
             tmpBlock.setPos(_XYCoordinatesPair[0] - blockTraits['_Width']/2,_XYCoordinatesPair[1] - blockTraits['_Height']/2)
+            tmpBlock.index = [idx]
+
+            # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
+            # layer = layernum2name[str(blockTraits['_Layer'])]
+            layer = blockTraits['_LayerUnifiedName']
+
+            if self in self._compareLayer:
+                if self._compareLayer[self] == layer:
+                    tmpLayer = None
+                else:
+                    tmpLayer = self._compareLayer[self]
+                    self._compareLayer[self] = layer
+            else:
+                tmpLayer = None
+                self._compareLayer[self] = layer
+                if layer not in self._subElementLayer:
+                    self._subElementLayer[layer] = [self]
+                else:
+                    self._subElementLayer[layer].append(self)
+
+            if tmpLayer == None:
+                pass
+            else:
+                if tmpLayer in self._subElementLayer:
+                    self._subElementLayer[tmpLayer].remove(self)
+                self._subElementLayer[layer].append(self)
+
+            self.block.append(tmpBlock)
+            self.addToGroup(tmpBlock)
+
+            self.bounding_rect_dict = dict(top=self.boundingRect().bottom(),
+                                           bottom=self.boundingRect().top(),
+                                           left=self.boundingRect().left(),
+                                           right=self.boundingRect().right())
+
+            ############################ Variable Visualization Start ############################
+
+            # for field in self._ItemTraits['variable_info']:
+            #     if field == 'XY':
+            #         self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_XYCoordinates'])
+            #     elif field == 'width':
+            #         self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Width'])
+            #     elif field == 'height':
+            #         self._ItemTraits['variable_info'][field] = str(self._ItemTraits['_Height'])
+            #
+            # self.widthVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['width'])
+            # self.heightVariable = QGraphicsTextItemWObounding(self._ItemTraits['variable_info']['height'])
+            # self.XYVariable = QGraphicsTextItemWObounding(f"*{self._ItemTraits['variable_info']['XY']}")
+            #
+            # self.setVariable(type='Boundary')
+
+            ############################ Variable Visualization End ############################
+        elif self._ItemTraits['_DesignParametertype'] == 11:                              # Boundary Case
+            if blockTraits['_LayerUnifiedName'] is None:
+                return
+            tmpBlock = PolygonBlock()
+            tmpBlock.updateTraits(blockTraits)
+            tmpBlock.setPos(0,0)
+            # tmpBlock.setPos(_XYCoordinatesPair[0] - blockTraits['_Width']/2,_XYCoordinatesPair[1] - blockTraits['_Height']/2)
             tmpBlock.index = [idx]
 
             # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)

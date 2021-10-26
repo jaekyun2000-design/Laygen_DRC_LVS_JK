@@ -2100,6 +2100,7 @@ class _MainWindow(QMainWindow):
             try:
                 self._QTObj._qtProject._loadDesignsFromGDSlegacy(_file = _fileName, _topModuleName = _moduleName, _reverse=True)
             except:
+                traceback.print_exc()
                 warnings.warn("Invalid Technology")
                 del originalModuleList
                 self._QTObj._qtProject._DesignParameter.clear()

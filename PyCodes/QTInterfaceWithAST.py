@@ -131,6 +131,14 @@ class QtDesignParameter:
             _tmpDesignParameter["_ElementName"] = None
             _tmpDesignParameter["_DesignParametertype"] = 1
             _tmpDesignParameter["_ElementName"] = self._ElementName
+        elif self._type == 11:  # boundary
+            _tmpDesignParameter["_Layer"] = None
+            _tmpDesignParameter["_Datatype"] = None
+            _tmpDesignParameter["_XYCoordinates"] = []
+            _tmpDesignParameter["_Ignore"] = None
+            _tmpDesignParameter["_ElementName"] = None
+            _tmpDesignParameter["_DesignParametertype"] = 11
+            _tmpDesignParameter["_ElementName"] = self._ElementName
         elif self._type == 2:  # path
             _tmpDesignParameter["_Layer"] = None
             _tmpDesignParameter["_Datatype"] = None
@@ -942,8 +950,12 @@ class QtProject:
                                 tmp_element_name = f'{element_name}_{element_name_count[element_name]}'
                                 _tmpId = tmp_element_name
 
-                                self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName,
-                                                               _ElementName=tmp_element_name)
+                                if len(_tmpElement._ELEMENTS._XY.xy) == 5:
+                                    self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName,
+                                                                   _ElementName=_tmpElement._GDS_ELEMENT_NAME)
+                                else:
+                                    self._createNewDesignParameter(_id=_tmpId, _type=11, _ParentName=_tmpStructureName,
+                                                                   _ElementName=_tmpElement._GDS_ELEMENT_NAME)
                             except:
                                 traceback.print_exc()
                                 warnings.warn(f'LayerReader does not have info about Layer: {_tmpElement._ELEMENTS._LAYER.layer} and Dtype: {_tmpElement._ELEMENTS._DATATYPE.datatype}. ')
