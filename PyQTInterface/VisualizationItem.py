@@ -28,6 +28,60 @@ from PyQTInterface import userDefineExceptions
 DEBUG = True
 scaleValue = 1
 
+class ElementBlock:
+    def __init__(self, block_traits=None):
+        if block_traits is None:
+            self.block_traits = dict(_XYCoordinates = None)
+        else:
+            self.block_traits = block_traits
+        self.pen = QPen()
+        self.brush = QBrush()
+
+
+
+    def update_traits(self,block_traits)-> QRect:
+        self.block_traits.update(block_traits)
+
+        if self.block_traits["_XYCoordinates"] is None:
+            self.block_traits["_XYCoordinates"] = [[0, 0]]
+
+        if type(self.block_traits['_Width']) == str:
+            if not self.block_traits["_Width"]:
+                print("ERROR: Unvalid Width")
+                return None
+            self.block_traits['_Width'] = int(self.block_traits['_Width'])
+
+        if type(self.block_traits['_Height']) == str:
+            if not self.block_traits["_Height"]:
+                print("ERROR: Unvalid Height")
+                return None
+            self.block_traits['_Height'] = int(self.block_traits['_Height'])
+
+        if self.block_traits["_Pattern"] not in ['X', 'blank']:
+            color_name = \
+            DisplayReader._DisplayDict[self.block_traits['_LayerName'] + self.block_traits['_DatatypeName']][
+                'Fill'].name
+            color_patt_name = color_name + self.block_traits["_Pattern"]
+            if color_patt_name not in DisplayReader._ColorPatternDict:
+                color = \
+                DisplayReader._DisplayDict[self.block_traits['_LayerName'] + self.block_traits['_DatatypeName']][
+                    'Fill']
+                qpix = DisplayReader._PatternDict[self.block_traits["_Pattern"]].create_qbit(color)
+                DisplayReader._DisplayDict[color_patt_name] = qpix
+
+        self.pen.setColor(self.block_traits["_Outline"])
+        self.pen.setDashPattern(self.block_traits['_LinePattern'])
+        self.pen.setCapStyle(Qt.RoundCap)
+        self.pen.setWidth(self.block_traits['_LineSize'] + 2)
+        self.brush = QBrush()
+        self.brush.setColor(self.block_traits["_Color"])
+
+        if self.block_traits['_DesignParametertype'] in [1,2]:
+            return QRectF(0,
+                        0,
+                        self.block_traits["_Width"] * scaleValue,
+                        self.block_traits["_Height"] * scaleValue)
+
 class _RectBlock(QGraphicsRectItem):
     highlighted_item_list = list()
     shallow_highlight_list = list()
@@ -39,81 +93,84 @@ class _RectBlock(QGraphicsRectItem):
         self.hover = False
         self.index = None
         self.highlight_flag = False
-        self.pen = QPen()
-        self.brush = QBrush()
+        # self.pen = QPen()
+        # self.brush = QBrush()
         self.flag_memory = False
+        self.element_info = ElementBlock(_BlockTraits)
         # self.setFlag(QGraphicsItem.ItemIsSelectable,False)
-        if _BlockTraits is None:
-            self._BlockTraits = dict(
-                _Layer = None,
-                _LayerName = None,
-                _XYCoordinates = None,
-                _Width = None,
-                _Height = None,
-                _Color = None,
-                _ItemRef = None, #Reference Of VisualizationItem
+        # if _BlockTraits is None:
+        #     self._BlockTraits = dict(
+        #         _Layer = None,
+        #         _LayerName = None,
+        #         _XYCoordinates = None,
+        #         _Width = None,
+        #         _Height = None,
+        #         _Color = None,
+        #         _ItemRef = None, #Reference Of VisualizationItem
+        #
+        #     )
 
-            )
 
-
-        else:
-            self._BlockTraits = _BlockTraits
-            self.updateRect()
+        # else:
+        if _BlockTraits is not None:
+            # self._BlockTraits = _BlockTraits
+            rect = self.element_info.update_traits(_BlockTraits)
+            self.setRect(rect)
+            # self.updateRect()
 
     def updateTraits(self,_BlockTraits):
-        self._BlockTraits.update(_BlockTraits)
-        # for key in _BlockTraits.keys():
-        #     self._BlockTraits[key] = _BlockTraits[key]
-        # self.layerName2paintTrait()
-        self.updateRect()
+        # self._BlockTraits.update(_BlockTraits)
+        # self.updateRect()
+
+        rect = self.element_info.update_traits(_BlockTraits)
+        self.setRect(rect)
 
 
-
-    def updateRect(self):
-        # if self._BlockTraits['_DesignParametertype'] is "Boundary" :
-        if self._BlockTraits["_XYCoordinates"] is None:
-            self._BlockTraits["_XYCoordinates"] = [[0,0]]
-
-        if type(self._BlockTraits['_Width']) == str:
-            if not self._BlockTraits["_Width"]:
-                print("ERROR: Unvalid Width")
-                return None
-            self._BlockTraits['_Width'] = int(self._BlockTraits['_Width'])
-
-        if type(self._BlockTraits['_Height']) == str:
-            if not self._BlockTraits["_Height"]:
-                print("ERROR: Unvalid Height")
-                return None
-            self._BlockTraits['_Height'] = int(self._BlockTraits['_Height'])
-
-
-        self.setRect(0,
-                     0,
-                     self._BlockTraits["_Width"]*scaleValue,
-                     self._BlockTraits["_Height"]*scaleValue )
-
-        if self._BlockTraits["_Pattern"] not in ['X','blank']:
-            color_name = DisplayReader._DisplayDict[self._BlockTraits['_LayerName'] + self._BlockTraits['_DatatypeName']][
-                'Fill'].name
-            color_patt_name = color_name + self._BlockTraits["_Pattern"]
-            if color_patt_name not in DisplayReader._ColorPatternDict:
-                color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName'] + self._BlockTraits['_DatatypeName']][
-                    'Fill']
-                qpix = DisplayReader._PatternDict[self._BlockTraits["_Pattern"]].create_qbit(color)
-                DisplayReader._DisplayDict[color_patt_name] = qpix
-
-        self.pen.setColor(self._BlockTraits["_Outline"])
-        self.pen.setDashPattern(self._BlockTraits['_LinePattern'])
-        self.pen.setCapStyle(Qt.RoundCap)
-        self.pen.setWidth(self._BlockTraits['_LineSize'] + 2)
-        self.brush = QBrush()
-        self.brush.setColor(self._BlockTraits["_Color"])
+    # def updateRect(self):
+    #     # if self._BlockTraits['_DesignParametertype'] is "Boundary" :
+    #     if self._BlockTraits["_XYCoordinates"] is None:
+    #         self._BlockTraits["_XYCoordinates"] = [[0,0]]
+    #
+    #     if type(self._BlockTraits['_Width']) == str:
+    #         if not self._BlockTraits["_Width"]:
+    #             print("ERROR: Unvalid Width")
+    #             return None
+    #         self._BlockTraits['_Width'] = int(self._BlockTraits['_Width'])
+    #
+    #     if type(self._BlockTraits['_Height']) == str:
+    #         if not self._BlockTraits["_Height"]:
+    #             print("ERROR: Unvalid Height")
+    #             return None
+    #         self._BlockTraits['_Height'] = int(self._BlockTraits['_Height'])
+    #
+    #
+    #     self.setRect(0,
+    #                  0,
+    #                  self._BlockTraits["_Width"]*scaleValue,
+    #                  self._BlockTraits["_Height"]*scaleValue )
+    #
+    #     if self._BlockTraits["_Pattern"] not in ['X','blank']:
+    #         color_name = DisplayReader._DisplayDict[self._BlockTraits['_LayerName'] + self._BlockTraits['_DatatypeName']][
+    #             'Fill'].name
+    #         color_patt_name = color_name + self._BlockTraits["_Pattern"]
+    #         if color_patt_name not in DisplayReader._ColorPatternDict:
+    #             color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName'] + self._BlockTraits['_DatatypeName']][
+    #                 'Fill']
+    #             qpix = DisplayReader._PatternDict[self._BlockTraits["_Pattern"]].create_qbit(color)
+    #             DisplayReader._DisplayDict[color_patt_name] = qpix
+    #
+    #     self.pen.setColor(self._BlockTraits["_Outline"])
+    #     self.pen.setDashPattern(self._BlockTraits['_LinePattern'])
+    #     self.pen.setCapStyle(Qt.RoundCap)
+    #     self.pen.setWidth(self._BlockTraits['_LineSize'] + 2)
+    #     self.brush = QBrush()
+    #     self.brush.setColor(self._BlockTraits["_Color"])
 
     def paint(self, painter, option, widget=None):
         # list_manager.layer_visible_flag_dict[self.itemtrait['layer']] is False:
         #     self.setVisible(False)
 
-        self._BlockTraits["_Color"].setAlphaF(1)
+        self.element_info.block_traits["_Color"].setAlphaF(1)
 
         # pen = QPen()
         # pen.setColor(self._BlockTraits["_Outline"])
@@ -134,72 +191,72 @@ class _RectBlock(QGraphicsRectItem):
             # self.setZValue(self.zValue()*10000)
             # print("HighLighted",self.zValue())
             self.flag_memory = True
-            self.pen.setStyle(Qt.SolidLine)
+            self.element_info.pen.setStyle(Qt.SolidLine)
             # pen.setColor(self._BlockTraits["_Outline"])
             color = Qt.GlobalColor.white if user_setup._Night_mode else Qt.GlobalColor.black
-            self.pen.setColor(color)
-            self.pen.setWidth(5)
+            self.element_info.pen.setColor(color)
+            self.element_info.pen.setWidth(5)
             # self.setZValue(1)
         elif self.shallow_highlight:
             self.flag_memory = True
-            self.pen.setStyle(Qt.DotLine)
-            self.pen.setColor(Qt.GlobalColor.darkGreen)
-            self.pen.setWidth(7)
+            self.element_info.pen.setStyle(Qt.DotLine)
+            self.element_info.pen.setColor(Qt.GlobalColor.darkGreen)
+            self.element_info.pen.setWidth(7)
         elif self.hover:
             self.flag_memory = True
-            self.pen.setStyle(Qt.DotLine)
-            self.pen.setColor(Qt.GlobalColor.darkCyan)
-            self.pen.setWidth(5)
+            self.element_info.pen.setStyle(Qt.DotLine)
+            self.element_info.pen.setColor(Qt.GlobalColor.darkCyan)
+            self.element_info.pen.setWidth(5)
         elif self.flag_memory:
             self.flag_memory = False
-            self.pen.setColor(self._BlockTraits["_Outline"])
-            self.pen.setDashPattern(self._BlockTraits['_LinePattern'])
-            self.pen.setWidth(self._BlockTraits['_LineSize'] + 2)
-            self.brush.setColor(self._BlockTraits["_Color"])
-        painter.setPen(self.pen)
+            self.element_info.pen.setColor(self.element_info.block_traits["_Outline"])
+            self.element_info.pen.setDashPattern(self.element_info.block_traits['_LinePattern'])
+            self.element_info.pen.setWidth(self.element_info.block_traits['_LineSize'] + 2)
+            self.element_info.brush.setColor(self.element_info.block_traits["_Color"])
+        painter.setPen(self.element_info.pen)
 
-        if self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName'] not in DisplayReader._DisplayDict or\
-            self._BlockTraits["_Pattern"] not in DisplayReader._PatternDict:
-            warnings.warn(f'Current process does not have information about object {self._BlockTraits["_ElementName"]}.')
+        if self.element_info.block_traits['_LayerName']+self.element_info.block_traits['_DatatypeName'] not in DisplayReader._DisplayDict or\
+            self.element_info.block_traits["_Pattern"] not in DisplayReader._PatternDict:
+            warnings.warn(f'Current process does not have information about object {self.element_info.block_traits["_ElementName"]}.')
             self.hide()
             return
         else:
             self.show()
-        color_name = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill'].name
-        color_patt_name =color_name+self._BlockTraits["_Pattern"]
+        color_name = DisplayReader._DisplayDict[self.element_info.block_traits['_LayerName']+self.element_info.block_traits['_DatatypeName']]['Fill'].name
+        color_patt_name =color_name+self.element_info.block_traits["_Pattern"]
 
-        if self._BlockTraits["_Pattern"] == 'X':
-            painter.drawLine(0,0,self._BlockTraits["_Width"],self._BlockTraits["_Height"])
-            painter.drawLine(0,self._BlockTraits["_Height"],self._BlockTraits["_Width"],0)
-        elif self._BlockTraits["_Pattern"] == 'blank':
-            self.brush.setStyle(Qt.NoBrush)
+        if self.element_info.block_traits["_Pattern"] == 'X':
+            painter.drawLine(0,0,self.element_info.block_traits["_Width"],self.element_info.block_traits["_Height"])
+            painter.drawLine(0,self.element_info.block_traits["_Height"],self.element_info.block_traits["_Width"],0)
+        elif self.element_info.block_traits["_Pattern"] == 'blank':
+            self.element_info.brush.setStyle(Qt.NoBrush)
         else:
             if color_patt_name not in DisplayReader._ColorPatternDict:
-                color = DisplayReader._DisplayDict[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill']
-                qpix = DisplayReader._PatternDict[self._BlockTraits["_Pattern"]].create_qbit(color)
+                color = DisplayReader._DisplayDict[self.element_info.block_traits['_LayerName']+self.element_info.block_traits['_DatatypeName']]['Fill']
+                qpix = DisplayReader._PatternDict[self.element_info.block_traits["_Pattern"]].create_qbit(color)
                 DisplayReader._DisplayDict[color_patt_name] = qpix
             qpix = DisplayReader._DisplayDict[color_patt_name]
-            self.brush.setTexture(qpix)
+            self.element_info.brush.setTexture(qpix)
 
-        if '_type' in self._BlockTraits and self._BlockTraits['_type'] == 2:
-            if self._BlockTraits['_Vertical']:
-                x1 = self._BlockTraits['_Width'] / 2
+        if '_type' in self.element_info.block_traits and self.element_info.block_traits['_type'] == 2:
+            if self.element_info.block_traits['_Vertical']:
+                x1 = self.element_info.block_traits['_Width'] / 2
                 x2 = x1
                 y1 = 0
-                y2 = self._BlockTraits['_Height']
+                y2 = self.element_info.block_traits['_Height']
             else:
                 #horizontal
                 x1 = 0
-                x2 = self._BlockTraits['_Width']
-                y1 = self._BlockTraits['_Height']/2
+                x2 = self.element_info.block_traits['_Width']
+                y1 = self.element_info.block_traits['_Height']/2
                 y2 = y1
             painter.drawLine(x1,y1,x2,y2)
 
 
 
-        self.brush.setTransform(QTransform(painter.worldTransform().inverted()[0]))
+        self.element_info.brush.setTransform(QTransform(painter.worldTransform().inverted()[0]))
 
-        painter.setBrush(self.brush)
+        painter.setBrush(self.element_info.brush)
 
         painter.drawRect(self.rect())
         painter.setRenderHint(QPainter.Antialiasing)
@@ -208,7 +265,7 @@ class _RectBlock(QGraphicsRectItem):
 
         try:
             DisplayInfo = DisplayReader._DisplayDict
-            color = DisplayInfo[self._BlockTraits['_LayerName']+self._BlockTraits['_DatatypeName']]['Fill']
+            color = DisplayInfo[self.element_info.block_traits['_LayerName']+self.element_info.block_traits['_DatatypeName']]['Fill']
         except:
             self.warning=QMessageBox()
             self.warning.setText("There is no matching QT Color profile")
@@ -216,7 +273,7 @@ class _RectBlock(QGraphicsRectItem):
             self.warning.show()
 
     def restore_zvalue(self):
-        self.setZValue(self._BlockTraits['_Layer'])
+        self.setZValue(self.element_info.block_traits['_Layer'])
 
     def independent_from_group(self):
         self.original_parent = self.parentItem()
@@ -254,6 +311,7 @@ class _RectBlock(QGraphicsRectItem):
             self.shallow_highlight_list.append(self)
         else:
             self.shallow_highlight_list.remove(self)
+
 
 class _VisualizationItem(QGraphicsItemGroup):
     invalid_layer_signal = pyqtSignal(str)
@@ -911,7 +969,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
         for block in self.block:
             if type(block) == _RectBlock:
-                block.setZValue(block._BlockTraits['_Layer'])
+                block.setZValue(block.element_info.block_traits['_Layer'])
         if self._type == 1 or self._type == 2:
             self.setZValue(self._ItemTraits['_Layer'])
         elif self._type == 3:
