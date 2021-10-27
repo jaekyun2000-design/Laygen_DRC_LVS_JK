@@ -496,10 +496,10 @@ class _MainWindow(QMainWindow):
         ################# Left Dock Widget setting ####################
         dockWidget2 = QDockWidget("Design List")
         self.dockContentWidget2 = SetupWindow._SelectedDesignListWidget()
-        self.dockContentWidget2.send_request_design_obj.connect(lambda element_name:
+        self.dockContentWidget2.send_request_visual_item.connect(lambda element_name:
                                                                 self.dockContentWidget2.update_item_dict(
                                                                 element_name = element_name,
-                                                                element= self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][element_name])
+                                                                element= self.visualItemDict[element_name])
                                                                 )
         self.scene.send_itemList_signal.connect(self.dockContentWidget2.UpdateCustomItem)       # Show the clicked items list
         self.dockContentWidget2.send_UpdateDesignParameter_signal.connect(self.updateDesignParameter)
