@@ -2376,7 +2376,7 @@ class _SelectedDesignListWidget(QListWidget):
     send_UpdateDesignAST_signal = pyqtSignal("PyQt_PyObject")
     send_parameterIDList_signal = pyqtSignal(list,int)
     send_deleteItem_signal = pyqtSignal(str)
-    send_request_design_obj = pyqtSignal(str)
+    send_request_visual_item = pyqtSignal(str)
     # send_Up
 
     def __init__(self):
@@ -2460,7 +2460,7 @@ class _SelectedDesignListWidget(QListWidget):
             element_text = item.text()
 
         if element_text not in self.itemDict:
-            self.send_request_design_obj.emit(element_text)
+            self.send_request_visual_item.emit(element_text)
 
         modifyingObject = self.itemDict[element_text]
 
