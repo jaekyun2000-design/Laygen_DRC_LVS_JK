@@ -2582,9 +2582,9 @@ class _MainWindow(QMainWindow):
 
 
 
-    # def deliveryDesignParameter(self):
-    #     deliveryParameter = self.dockContentWidget2.DeliveryItem()
-    #     self.dockContentWidget3_2.receiveDesignParameter(deliveryParameter)
+    def deliveryDesignParameter(self):
+        deliveryParameter = self.dockContentWidget2.DeliveryItem()
+        self.dockContentWidget3_2.receiveDesignParameter(deliveryParameter)
 
     def send_array_variable(self, variable):
         if variable in self.dv.idDict:
