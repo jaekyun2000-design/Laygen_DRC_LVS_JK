@@ -675,7 +675,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget4ForLoggingMessage = SetupWindow._LogMessageWindow()
         self.dockContentWidget4ForLoggingMessage._InfoMessage("MakeProject")
         dockWidget4ForLoggingMessage.setWidget(self.dockContentWidget4ForLoggingMessage)
-        self.addDockWidget(Qt.BottomDockWidgetArea, dockWidget4ForLoggingMessage)
+        # self.addDockWidget(Qt.BottomDockWidgetArea, dockWidget4ForLoggingMessage)
 
         print("******************************Initializing Graphic Interface Complete")
 
