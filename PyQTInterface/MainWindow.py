@@ -521,14 +521,14 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3 = SetupWindow._ConstraintTreeViewWidgetAST("Generator")
         self.dockContentWidget3_2 = SetupWindow._ConstraintTreeViewWidgetAST("Candidate")
 
-        self.sendDownButton = QPushButton()
-        self.sendDownButton.setIcon(QCommonStyle().standardIcon(QStyle.SP_ArrowDown))
+        # self.sendDownButton = QPushButton()
+        # self.sendDownButton.setIcon(QCommonStyle().standardIcon(QStyle.SP_ArrowDown))
         self.sendLeftButton = QPushButton()
         self.sendLeftButton.setIcon(QCommonStyle().standardIcon(QStyle.SP_ArrowLeft))
         self.sendRightButton = QPushButton()
         self.sendRightButton.setIcon(QCommonStyle().standardIcon(QStyle.SP_ArrowRight))
 
-        self.sendDownButton.clicked.connect(self.deliveryDesignParameter)
+        # self.sendDownButton.clicked.connect(self.deliveryDesignParameter)
 
         self.sendLeftButton.clicked.connect(self.dockContentWidget3_2.checkSend)
         self.dockContentWidget3_2.send_SendID_signal.connect(self.dockContentWidget3.receiveConstraintID)
@@ -563,8 +563,8 @@ class _MainWindow(QMainWindow):
         self.sendRightButton.clicked.connect(self.dockContentWidget3_2.clearSelection)
 
         vboxLayout = QVBoxLayout()
-        vboxLayout.addWidget(self.sendDownButton)
-        vboxLayout.addStretch(3)
+        # vboxLayout.addWidget(self.sendDownButton)
+        vboxLayout.addStretch(4)
         vboxLayout.addWidget(self.sendLeftButton)
         vboxLayout.addWidget(self.sendRightButton)
         vboxLayout.addStretch(4)
@@ -2582,9 +2582,9 @@ class _MainWindow(QMainWindow):
 
 
 
-    def deliveryDesignParameter(self):
-        deliveryParameter = self.dockContentWidget2.DeliveryItem()
-        self.dockContentWidget3_2.receiveDesignParameter(deliveryParameter)
+    # def deliveryDesignParameter(self):
+    #     deliveryParameter = self.dockContentWidget2.DeliveryItem()
+    #     self.dockContentWidget3_2.receiveDesignParameter(deliveryParameter)
 
     def send_array_variable(self, variable):
         if variable in self.dv.idDict:
