@@ -481,50 +481,50 @@ def test_assign_variable(qtbot):
 
 
 ##################################test for dc execution##################################
-# def test_encode_constraint(qtbot):
-#
-#     with HiddenConsole():
-#         window = MainWindow._MainWindow()
-#
-#     import user_setup
-#     if user_setup._Technology != 'TSMC65nm':
-#         window.request_change_process(None, 'TSMC65nm')
-#     user_setup.MULTI_THREAD = False
-#     file_name = './PyQTInterface/GDSFile/INV2.gds'
-#     window.loadGDS(test=file_name)
-#     window.min_snap_spacing_change.destroy()
-#     vs_dict = window.visualItemDict['NMOSInINV_0']
-#     vs_dict.setSelected(True)
-#
-#     window.widget_delegator.convert_elements_to_sref_widget([vs_dict])
-#     qtbot.waitForWindowShown(window.widget_delegator.choice_widget)
-#     qtbot.mouseClick(window.widget_delegator.choice_widget.layout().itemAt(0).widget(), QtCore.Qt.LeftButton)
-#     qtbot.waitForWindowShown(window.widget_delegator.ls)
-#     qtbot.keyClicks(window.widget_delegator.ls.name_input, 'encode_test')
-#     qtbot.keyClicks(window.widget_delegator.ls.library_input, 'NMOSWithDummy')
-#     qtbot.keyClicks(window.widget_delegator.ls.XY_input, '0,0')
-#     for idx, par_name in enumerate(window.widget_delegator.ls.par_name):
-#         if 'Number' in par_name:
-#             window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
-#             qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '5')
-#         elif 'Width' in par_name:
-#             window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
-#             qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '500')
-#         elif 'length' in par_name:
-#             window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
-#             qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '30')
-#         elif '_XVT' in par_name:
-#             window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
-#             qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '"NVT"')
-#     window.widget_delegator.ls.on_buttonBox_accepted()
-#
-#     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('encode_test')
-#     for i in range(window.dockContentWidget3_2.model.rowCount()):
-#         if window.dockContentWidget3_2.model.item(i,1).text() == dc_id:
-#             window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
-#     qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
-#     code = window.encodeConstraint()
-#     assert code
+def test_encode_constraint(qtbot):
+
+    with HiddenConsole():
+        window = MainWindow._MainWindow()
+
+    import user_setup
+    if user_setup._Technology != 'TSMC65nm':
+        window.request_change_process(None, 'TSMC65nm')
+    user_setup.MULTI_THREAD = False
+    file_name = './PyQTInterface/GDSFile/INV2.gds'
+    window.loadGDS(test=file_name)
+    window.min_snap_spacing_change.destroy()
+    vs_dict = window.visualItemDict['NMOSInINV_0']
+    vs_dict.setSelected(True)
+
+    window.widget_delegator.convert_elements_to_sref_widget([vs_dict])
+    qtbot.waitForWindowShown(window.widget_delegator.choice_widget)
+    qtbot.mouseClick(window.widget_delegator.choice_widget.layout().itemAt(0).widget(), QtCore.Qt.LeftButton)
+    qtbot.waitForWindowShown(window.widget_delegator.ls)
+    qtbot.keyClicks(window.widget_delegator.ls.name_input, 'encode_test')
+    qtbot.keyClicks(window.widget_delegator.ls.library_input, 'NMOSWithDummy')
+    qtbot.keyClicks(window.widget_delegator.ls.XY_input, '0,0')
+    for idx, par_name in enumerate(window.widget_delegator.ls.par_name):
+        if 'Number' in par_name:
+            window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '5')
+        elif 'Width' in par_name:
+            window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '500')
+        elif 'length' in par_name:
+            window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '30')
+        elif '_XVT' in par_name:
+            window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '"NVT"')
+    window.widget_delegator.ls.on_buttonBox_accepted()
+
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('encode_test')
+    for i in range(window.dockContentWidget3_2.model.rowCount()):
+        if window.dockContentWidget3_2.model.item(i,1).text() == dc_id:
+            window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
+    qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
+    code = window.encodeConstraint()
+    assert code
 
 
 def test_run_constraint_boundary(qtbot):
