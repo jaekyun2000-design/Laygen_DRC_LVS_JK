@@ -367,6 +367,9 @@ class _MainWindow(QMainWindow):
         # boundaryButton.clicked.connect(self.makeBoundaryWindow)
         boundaryButton.clicked.connect(self.widget_delegator.make_boundary_window)
 
+        polygonButton = QPushButton("Polygon")
+        polygonButton.clicked.connect(self.widget_delegator.make_polygon_window)
+
         pathButton = QPushButton("Path",dockContentWidget1)
         pathButton.clicked.connect(self.widget_delegator.makePathWindow)
 
@@ -444,6 +447,7 @@ class _MainWindow(QMainWindow):
 
         vboxOnDock1.addStretch(10)
         vboxOnDock1.addWidget(boundaryButton)
+        vboxOnDock1.addWidget(polygonButton)
         vboxOnDock1.addWidget(pathButton)
         vboxOnDock1.addWidget(srefButtonL)
         vboxOnDock1.addWidget(TextButton)
@@ -1757,6 +1761,8 @@ class _MainWindow(QMainWindow):
             del self.cw
         if obj == 'bw':
             del self.bw
+        if obj == 'pow':
+            del self.pow
         if obj == 'pw':
             del self.pw
         if obj == 'dv':
@@ -3304,21 +3310,30 @@ class _CustomView(QGraphicsView):
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_F:
-            every_item = self.scene().items()
-            tmp_group_item = QGraphicsItemGroup()
-            for item in every_item:
-                if type(item) == VisualizationItem._VisualizationItem:
-                    item.setSelected(False)
-                    if item._subCellFlag:
-                        pass
-                    else:
-                        tmp_group_item.addToGroup(item)
-            # map(lambda item: tmp_group_item.addToGroup(item), every_item)
+            print(self.scene().fit_in_view_dict)
+            top_left = QPointF(min(self.scene().fit_in_view_dict['left']),max(self.scene().fit_in_view_dict['top']))
+            bottom_right = QPointF(max(self.scene().fit_in_view_dict['right']),min(self.scene().fit_in_view_dict['bottom']))
+            self.fitInView(QRectF(top_left, bottom_right),Qt.KeepAspectRatio)
 
-            self.scene().addItem(tmp_group_item)
-            self.fitInView(tmp_group_item,Qt.KeepAspectRatio)
-            self.scene().destroyItemGroup(tmp_group_item)
-            del tmp_group_item
+            # top_left = QPointF(self.scene().fit_in_view_dict['left'],self.scene().fit_in_view_dict['top'])
+            # bottom_right = QPointF(self.scene().fit_in_view_dict['right'],self.scene().fit_in_view_dict['bottom'])
+            # self.fitInView(QRectF(top_left, bottom_right),Qt.KeepAspectRatio)
+
+            # every_item = self.scene().items()
+            # tmp_group_item = QGraphicsItemGroup()
+            # for item in every_item:
+            #     if type(item) == VisualizationItem._VisualizationItem:
+            #         item.setSelected(False)
+            #         if item._subCellFlag:
+            #             pass
+            #         else:
+            #             tmp_group_item.addToGroup(item)
+            # # map(lambda item: tmp_group_item.addToGroup(item), every_item)
+            #
+            # self.scene().addItem(tmp_group_item)
+            # self.fitInView(tmp_group_item,Qt.KeepAspectRatio)
+            # self.scene().destroyItemGroup(tmp_group_item)
+            # del tmp_group_item
             # self.fitInView(self.scene().ghost_group_item,Qt.KeepAspectRatio)
         elif QKeyEvent.key() == Qt.Key_Z:
             self.fitInView(QRectF(-650,-345,1300,690))
@@ -3471,9 +3486,11 @@ class _CustomScene(QGraphicsScene):
         # self.cursor_item = QGraphicsRectItem(0,0,1,1)
         # self.cursor_item.setBrush(Qt.yellow)
         # self.cursor_item.setPen(Qt.yellow)
-        self.addItem(self.cursor_item)
+        # self.addItem(self.cursor_item)
         self.point_items_memory = []
         self.selected_item_in_memory = None
+        self.fit_in_view_dict = dict(top=list(),bottom=list(),left=list(),right=list())
+        # self.fit_in_view_dict = dict(top=0,bottom=0,left=0,right=0)
         # self.ghost_group_item = QGraphicsItemGroup()
         # self.ghost_group_item.setFlag(f)
         # self.addItem(self.ghost_group_item)
@@ -3579,6 +3596,25 @@ class _CustomScene(QGraphicsScene):
         else:
             self.point_items_memory = items
         super().mousePressEvent(event)
+
+    def addItem(self, QGraphicsItem):
+        super(_CustomScene, self).addItem(QGraphicsItem)
+
+        for key in QGraphicsItem.bounding_rect_dict:
+            self.fit_in_view_dict[key].append(QGraphicsItem.bounding_rect_dict[key])
+        # for key in QGraphicsItem.bounding_rect_dict:
+        #     if key == 'left' or key == 'bottom':
+        #        if QGraphicsItem.bounding_rect_dict[key] < self.fit_in_view_dict[key]:
+        #            self.fit_in_view_dict[key] = QGraphicsItem.bounding_rect_dict[key]
+        #     elif key == 'right' or key == 'top':
+        #         if QGraphicsItem.bounding_rect_dict[key] > self.fit_in_view_dict[key]:
+        #             self.fit_in_view_dict[key] = QGraphicsItem.bounding_rect_dict[key]
+
+    def removeItem(self, QGraphicsItem):
+        super(_CustomScene, self).removeItem(QGraphicsItem)
+
+        for key in QGraphicsItem.bounding_rect_dict:
+            self.fit_in_view_dict[key].remove(QGraphicsItem.bounding_rect_dict[key])
 
     def send_item_list(self):
         # itemList = self.selectedItems()

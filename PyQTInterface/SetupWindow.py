@@ -290,6 +290,284 @@ class _BoundarySetupWindow(QWidget):
         self.mouse = xy
         self.click += 1
 
+
+class _PolygonSetupWindow(QWidget):
+
+    send_PolygonSetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+    send_PolygonDesign_signal = pyqtSignal(dict)
+    send_design_message = pyqtSignal(delegator.DelegateMessage)
+    send_Destroy_signal = pyqtSignal(str)
+    send_Warning_signal = pyqtSignal(str)
+    send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+
+    def __init__(self, PolygonElement = None):
+        super().__init__()
+        self.mouse = None
+        self.click = 0
+        self.initUI()
+
+        if PolygonElement is None:
+            self._DesignParameter = dict(
+                    _ElementName = None,
+                    _Layer = None,
+                    _DesignParametertype = 11,
+                    _XYCoordinates = [],
+                    _Color = None
+                )
+            self.visualItem = VisualizationItem._VisualizationItem()
+            self.tmpDP = copy.deepcopy(self._DesignParameter)
+            self.doubleClickEvent = False
+        else:
+            # self.visualItem = PolygonElement
+            self.visualItem = VisualizationItem._VisualizationItem()
+            self._DesignParameter = PolygonElement._ItemTraits
+            self.updateUI()
+
+    def __del__(self):
+        print("del")
+
+    def initUI(self):
+
+        okButton = QPushButton("OK",self)
+        cancelButton = QPushButton("Cancel",self)
+
+        okButton.clicked.connect(self.on_buttonBox_accepted)
+        cancelButton.clicked.connect(self.cancel_button_accepted)
+
+        self.XYdictForLineEdit = []
+        self.XYdictForLabel = []
+
+        name = QLabel("Name")
+        layer = QLabel("Layer")
+        self.XYdictForLabel.append(QLabel("XY1"))
+        self.XYdictForLabel.append(QLabel("XY2"))
+
+        self.name_input = QLineEdit()
+        self.layer_input = QComboBox()
+        self.XYdictForLineEdit.append(QLineEdit())
+        self.XYdictForLineEdit.append(QLineEdit())
+
+        _Layer = LayerReader._LayerMapping
+        for LayerName in _Layer:
+            if _Layer[LayerName][1] == 0:       ## Layer is drawing
+                self.layer_input.addItem(LayerName)
+        del _Layer
+
+        self.setupVboxColumn1 = QVBoxLayout()
+        self.setupVboxColumn2 = QVBoxLayout()
+        setupBox = QHBoxLayout()
+
+        self.setupVboxColumn1.addWidget(name)
+        self.setupVboxColumn1.addWidget(layer)
+        self.setupVboxColumn1.addWidget(self.XYdictForLabel[0])
+        self.setupVboxColumn1.addWidget(self.XYdictForLabel[1])
+
+
+        self.setupVboxColumn2.addWidget(self.name_input)
+        self.setupVboxColumn2.addWidget(self.layer_input)
+        self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[0])
+        self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[1])
+
+        setupBox.addLayout(self.setupVboxColumn1)
+        setupBox.addLayout(self.setupVboxColumn2)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(2)
+        hbox.addWidget(okButton)
+        hbox.addWidget(cancelButton)
+        # hbox.addStretch(1)
+
+        vbox = QVBoxLayout()
+        vbox.addStretch(1)
+        vbox.addLayout(setupBox)
+        vbox.addStretch(3)
+        vbox.addLayout(hbox)
+        # vbox.addStretch(1)
+
+        self.setLayout(vbox)
+
+        self.setWindowTitle('Polygon Setup Window')
+        self.setGeometry(300,300,500,500)
+        self.show()
+
+    def updateUI(self):
+        self.name_input.setText(self._DesignParameter['_ElementName'])
+        layerIndex = self.layer_input.findText(self._DesignParameter['_LayerUnifiedName'])
+        if layerIndex != -1:
+            self.layer_input.setCurrentIndex(layerIndex)
+        for i in range(len(self._DesignParameter['_XYCoordinates'][0])):
+            CurrentEditPointNum = len(self.XYdictForLineEdit)-2
+            displayString= str(self._DesignParameter['_XYCoordinates'][0][i][0])+','+ str(self._DesignParameter['_XYCoordinates'][0][i][1])
+            self.XYdictForLineEdit[CurrentEditPointNum].setText(displayString)
+            self.UpdateXYwidget()
+
+
+    def cancel_button_accepted(self):
+        # self._DesignParameter = dict(
+        #             _ElementName = None,
+        #             _Layer = None,
+        #             _DesignParametertype = 2,
+        #             _XYCoordinates = [],
+        #             _Width = None,
+        #             _Height = None,
+        #             _Color = None,
+        #             _ItemRef = None, #Reference Of VisualizationItem
+        #         )
+        # self.visualItem.updateTraits(self._DesignParameter)
+        self.send_DestroyTmpVisual_signal.emit(self.visualItem)
+        self.send_Destroy_signal.emit('pow')
+        self.destroy()
+
+    def on_buttonBox_accepted(self):
+        try:
+            self._DesignParameter['_ElementName'] = self.name_input.text()
+            if self._DesignParameter['_ElementName'] == '':
+                raise NotImplementedError
+            self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
+            self._DesignParameter['_Layer'] = None
+            self._DesignParameter['_XYCoordinates'] = [[]]
+
+            for XY in self.XYdictForLineEdit:
+                if not XY.text():
+                    break
+                else:
+                    try:
+
+                        X = int(XY.text().split(',')[0])
+                        Y = int(XY.text().split(',')[1])
+                        self._DesignParameter['_XYCoordinates'][0].append([X, Y])
+                    except:
+                        self.warning = QMessageBox()
+                        self.warning.setIcon(QMessageBox.Warning)
+                        self.warning.setText("Invalid XYCoordinates")
+                        self.warning.show()
+
+            pass
+            self.send_DestroyTmpVisual_signal.emit(self.visualItem)
+            self.send_PolygonDesign_signal.emit(self._DesignParameter)
+            self.destroy()
+            self.send_Destroy_signal.emit('pow')
+            pass
+        except:
+            traceback.print_exc()
+            self.warning = QMessageBox()
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.setText("Invalid Name")
+            self.warning.show()
+
+
+    def keyPressEvent(self, QKeyEvent):
+        if QKeyEvent.key() == Qt.Key_Return:
+            self.on_buttonBox_accepted()
+            self.send_Destroy_signal.emit('pow')
+        elif QKeyEvent.key() == Qt.Key_Escape:
+            # self._DesignParameter = dict(
+            #             _ElementName = None,
+            #             _Layer = None,
+            #             _DesignParametertype = 2,
+            #             _XYCoordinates = [],
+            #             _Width = None,
+            #             _Height = None,
+            #             _Color = None,
+            #             _ItemRef = None, #Reference Of VisualizationItem
+            #         )
+            # self.visualItem.updateTraits(self._DesignParameter)
+            self.destroy()
+            self.send_Destroy_signal.emit('pw')
+
+    def AddPolygonPointWithMouse(self,xy):
+        if self.doubleClickEvent == False:
+            ##### When Click the point, adjust x,y locations #####
+            try:
+                if len(self._DesignParameter['_XYCoordinates']) == 0:
+                    self._DesignParameter['_XYCoordinates'].append([xy])
+                else:
+                    xdistance = abs(xy[0] - self._DesignParameter['_XYCoordinates'][0][-1][0])
+                    ydistance = abs(xy[1] - self._DesignParameter['_XYCoordinates'][0][-1][1])
+
+                    if xdistance < ydistance:
+                        self._DesignParameter['_XYCoordinates'][0].append([self._DesignParameter['_XYCoordinates'][0][-1][0],xy[1]])
+                    else:
+                        self._DesignParameter['_XYCoordinates'][0].append([xy[0],self._DesignParameter['_XYCoordinates'][0][-1][1]])
+
+                # self._DesignParameter['_XYCoordinates'].append([_MouseEvent.scenePos().toPoint().x(),_MouseEvent.scenePos().toPoint().y(),])
+
+                CurrentEditPointNum = len(self.XYdictForLineEdit)-2
+                XYstring = str(self._DesignParameter['_XYCoordinates'][0][-1][0]) + ',' + str(self._DesignParameter['_XYCoordinates'][0][-1][1])
+                self.XYdictForLineEdit[CurrentEditPointNum].setText(XYstring)
+                self.UpdateXYwidget()
+                # self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
+                # self._DesignParameter['_type'] = 11
+                # qt_dp = QTInterfaceWithAST.QtDesignParameter(_type=11)
+                # for key, value in self._DesignParameter.items():
+                #     qt_dp._setDesignParameterValue(key, value)
+                # qt_dp.update_unified_expression()
+                # self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
+                # self.visualItem.updateDesignParameter(qt_dp)
+                # self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
+                # self.send_PolygonSetup_signal.emit(self.visualItem)
+            except:
+                self.warning = QMessageBox()
+                self.warning.setIcon(QMessageBox.Warning)
+                self.warning.setText("Invalid Parameter Input")
+                self.warning.show()
+
+    def UpdateXYwidget(self):
+        CurrentPointNum = len(self.XYdictForLineEdit)
+        NewPointNum = CurrentPointNum + 1
+        LabelText = "XY" + str(NewPointNum)
+
+        self.XYdictForLabel.append(QLabel(LabelText))
+        self.XYdictForLineEdit.append(QLineEdit())
+
+        self.setupVboxColumn1.addWidget(self.XYdictForLabel[-1])
+        self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[-1])
+
+    # def mouseTracking(self, xy):
+    #     if self.mouse is not None:
+    #         if self.doubleClickEvent == False:
+    #             tmp_dp = copy.deepcopy(self._DesignParameter)
+    #             if self.click == 0:
+    #                 xdistance = abs(self.mouse.x() - xy[0])
+    #                 ydistance = abs(self.mouse.y() - xy[1])
+    #
+    #                 if xdistance < ydistance:
+    #                     tmp_dp['_XYCoordinates'] = [[self.mouse,[self.mouse[0],xy[1]]]]
+    #                 else:
+    #                     tmp_dp['_XYCoordinates'] = [[self.mouse,[xy[0],self.mouse[1]]]]
+    #             else:
+    #                 xdistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][0] - xy[0])
+    #                 ydistance = abs(self._DesignParameter['_XYCoordinates'][0][-1][1] - xy[1])
+    #
+    #                 if xdistance < ydistance:
+    #                     if len(tmp_dp['_XYCoordinates'][0]) == 1:
+    #                         tmp_dp['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],xy[1]]]]
+    #                     else:
+    #                         tmp_dp['_XYCoordinates'][0].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[self._DesignParameter['_XYCoordinates'][0][-1][0],xy[1]]][-1])
+    #                 else:
+    #                     if len(tmp_dp['_XYCoordinates'][0]) == 1:
+    #                         tmp_dp['_XYCoordinates'] = [[[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[xy[0],self._DesignParameter['_XYCoordinates'][0][-1][1]]]]
+    #                     else:
+    #                         tmp_dp['_XYCoordinates'][0].append([[self._DesignParameter['_XYCoordinates'][0][-1][0],self._DesignParameter['_XYCoordinates'][0][-1][1]],[xy[0],self._DesignParameter['_XYCoordinates'][0][-1][1]]][-1])
+    #
+    #             tmp_dp['_LayerUnifiedName'] = self.layer_input.currentText()
+    #             tmp_dp['_type'] = 11
+    #             qt_dp = QTInterfaceWithAST.QtDesignParameter(_type=2)
+    #             for key, value in tmp_dp.items():
+    #                 qt_dp._setDesignParameterValue(key, value)
+    #             qt_dp.update_unified_expression()
+    #             self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
+    #             self.visualItem.updateDesignParameter(qt_dp)
+    #             self.send_PolygonSetup_signal.emit(self.visualItem)
+    #             self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
+    #
+    # def clickCount(self, xy):
+    #     self.mouse = xy
+    #     self.click += 1
+    #
+    # def quitCreate(self, doubleClickEvent):
+    #     self.doubleClickEvent = doubleClickEvent
+
 class _PathSetupWindow(QWidget):
 
     send_PathSetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
@@ -529,7 +807,6 @@ class _PathSetupWindow(QWidget):
                 self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
                 self.send_PathSetup_signal.emit(self.visualItem)
             except:
-                print('======a============')
                 self.warning = QMessageBox()
                 self.warning.setIcon(QMessageBox.Warning)
                 self.warning.setText("Invalid Parameter Input")

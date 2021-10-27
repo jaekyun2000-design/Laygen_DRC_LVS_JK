@@ -21,6 +21,18 @@ class WidgetDelegator(delegator.Delegator):
         self.main_window.scene.send_mouse_move_xy_signal.connect(self.main_window.bw.mouseTracking)
         self.main_window.bw.send_Destroy_signal.connect(self.main_window.delete_obj)
 
+    def make_polygon_window(self):
+        self.main_window.pow = SetupWindow._PolygonSetupWindow()
+        self.main_window.pow.show()
+        self.main_window.pow.send_PolygonSetup_signal.connect(self.main_window.updateGraphicItem)
+        self.main_window.pow.send_DestroyTmpVisual_signal.connect(self.main_window.deleteGraphicItem)
+        self.main_window.pow.send_design_message.connect(self.main_window.design_delegator.message_delivery)
+        self.main_window.pow.send_Warning_signal.connect(self.main_window.dockContentWidget4ForLoggingMessage._WarningMessage)
+        self.main_window.scene.send_xy_signal.connect(self.main_window.pow.AddPolygonPointWithMouse)
+        # self.main_window.scene.send_xy_signal.connect(self.main_window.pow.clickCount)
+        # self.main_window.scene.send_mouse_move_xy_signal.connect(self.main_window.pow.mouseTracking)
+        self.main_window.pow.send_Destroy_signal.connect(self.main_window.delete_obj)
+
     def makePathWindow(self):
         self.main_window.scene.itemListClickIgnore(True)
         self.main_window.pw = SetupWindow._PathSetupWindow()
