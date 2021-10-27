@@ -201,13 +201,14 @@ class _RectBlock(QGraphicsRectItem):
             self.element_info.brush.setColor(self.element_info.block_traits["_Color"])
         painter.setPen(self.element_info.pen)
 
-        if self.element_info.block_traits['_LayerName']+self.element_info.block_traits['_DatatypeName'] not in DisplayReader._DisplayDict or\
-            self.element_info.block_traits["_Pattern"] not in DisplayReader._PatternDict:
-            warnings.warn(f'Current process does not have information about object {self.element_info.block_traits["_ElementName"]}.')
-            self.hide()
-            return
-        else:
-            self.show()
+        if self.element_info.block_traits["_Pattern"] not in ['X', 'blank']:
+            if self.element_info.block_traits['_LayerName']+self.element_info.block_traits['_DatatypeName'] not in DisplayReader._DisplayDict or\
+                self.element_info.block_traits["_Pattern"] not in DisplayReader._PatternDict:
+                warnings.warn(f'Current process does not have information about object {self.element_info.block_traits["_ElementName"]}.')
+                self.hide()
+                return
+            else:
+                self.show()
         color_name = DisplayReader._DisplayDict[self.element_info.block_traits['_LayerName']+self.element_info.block_traits['_DatatypeName']]['Fill'].name
         color_patt_name =color_name+self.element_info.block_traits["_Pattern"]
 
@@ -353,15 +354,16 @@ class PolygonBlock(QGraphicsPolygonItem):
             self.element_info.brush.setColor(self.element_info.block_traits["_Color"])
         painter.setPen(self.element_info.pen)
 
-        if self.element_info.block_traits['_LayerName'] + self.element_info.block_traits[
-            '_DatatypeName'] not in DisplayReader._DisplayDict or \
-                self.element_info.block_traits["_Pattern"] not in DisplayReader._PatternDict:
-            warnings.warn(
-                f'Current process does not have information about object {self.element_info.block_traits["_ElementName"]}.')
-            self.hide()
-            return
-        else:
-            self.show()
+        if self.element_info.block_traits["_Pattern"] not in ['X', 'blank']:
+            if self.element_info.block_traits['_LayerName'] + self.element_info.block_traits[
+                '_DatatypeName'] not in DisplayReader._DisplayDict or \
+                    self.element_info.block_traits["_Pattern"] not in DisplayReader._PatternDict:
+                warnings.warn(
+                    f'Current process does not have information about object {self.element_info.block_traits["_ElementName"]}.')
+                self.hide()
+                return
+            else:
+                self.show()
         color_name = DisplayReader._DisplayDict[
             self.element_info.block_traits['_LayerName'] + self.element_info.block_traits['_DatatypeName']]['Fill'].name
         color_patt_name = color_name + self.element_info.block_traits["_Pattern"]
