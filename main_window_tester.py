@@ -1323,7 +1323,7 @@ def test_elements_array_boundary_relative(qtbot):
     qtbot.waitForWindowShown(window.ls)
     qtbot.keyClicks(window.ls.name_input, 'source')
     qtbot.keyClicks(window.ls.XY_input, '0,0')
-    # qtbot.keyClicks(window.ls.library_input, 'NbodyContact')
+    qtbot.keyClicks(window.ls.library_input, 'NbodyContact')
     for idx, par_name in enumerate(window.ls.par_name):
         if 'COX' in par_name:
             window.ls.par_valueForLineEdit[idx].clear()
@@ -1375,7 +1375,7 @@ def test_elements_array_path_relative(qtbot):
     qtbot.waitForWindowShown(window.ls)
     qtbot.keyClicks(window.ls.name_input, 'source')
     qtbot.keyClicks(window.ls.XY_input, '0,0')
-    # qtbot.keyClicks(window.ls.library_input, 'NbodyContact')
+    qtbot.keyClicks(window.ls.library_input, 'NbodyContact')
     for idx, par_name in enumerate(window.ls.par_name):
         if 'COX' in par_name:
             window.ls.par_valueForLineEdit[idx].clear()
@@ -1390,7 +1390,7 @@ def test_elements_array_path_relative(qtbot):
     qtbot.waitForWindowShown(window.ls)
     qtbot.keyClicks(window.ls.name_input, 'target')
     qtbot.keyClicks(window.ls.XY_input, '0,300')
-    # qtbot.keyClicks(window.ls.library_input, 'NbodyContact')
+    qtbot.keyClicks(window.ls.library_input, 'NbodyContact')
     for idx, par_name in enumerate(window.ls.par_name):
         if 'COX' in par_name:
             window.ls.par_valueForLineEdit[idx].clear()
@@ -1452,7 +1452,7 @@ def test_elements_array_sref_relative(qtbot):
     qtbot.waitForWindowShown(window.ls)
     qtbot.keyClicks(window.ls.name_input, 'source')
     qtbot.keyClicks(window.ls.XY_input, '0,0')
-    # qtbot.keyClicks(window.ls.library_input, 'NbodyContact')
+    qtbot.keyClicks(window.ls.library_input, 'NbodyContact')
     for idx, par_name in enumerate(window.ls.par_name):
         if 'COX' in par_name:
             window.ls.par_valueForLineEdit[idx].clear()
@@ -1476,7 +1476,7 @@ def test_elements_array_sref_relative(qtbot):
     qtbot.mouseClick(test_widget.cal.layout().itemAtPosition(3,3).widget(), QtCore.Qt.LeftButton)
     qtbot.mouseClick(row_layout.itemAt(2).itemAt(2).widget(), QtCore.Qt.LeftButton)
     qtbot.waitForWindowShown(test_widget.ls)
-    # qtbot.keyClicks(test_widget.ls.library_input, 'NbodyContact')
+    qtbot.keyClicks(test_widget.ls.library_input, 'NbodyContact')
     for idx, par_name in enumerate(test_widget.ls.par_name):
         if 'COX' in par_name:
             test_widget.ls.par_valueForLineEdit[idx].clear()
