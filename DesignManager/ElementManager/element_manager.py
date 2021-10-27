@@ -30,7 +30,15 @@ class ElementManager:
                     tmpAST.__dict__[key] = dp_dict['_XWidth']
                 elif key == 'height':
                     tmpAST.__dict__[key] = dp_dict['_YWidth']
-
+        elif dp_dict['_DesignParametertype'] == 11:    #Boundary
+            tmpAST = element_ast.Polygon()
+            for key in element_ast._fields:
+                if key == 'name':
+                    tmpAST.__dict__[key] = dp_dict['_ElementName']
+                elif key == 'layer':
+                    tmpAST.__dict__[key] = dp_dict['_LayerUnifiedName']
+                elif key == 'XY':
+                    tmpAST.__dict__[key] = dp_dict['_XYCoordinates']
         elif dp_dict['_DesignParametertype'] == 2:  #Path
             tmpAST = element_ast.Path()
             for key in element_ast.Path._fields:
@@ -169,6 +177,31 @@ class ElementManager:
                     if re.search('[^0-9-.]', str(ast.__dict__['height'])) is None:
                         tmpDP[key] = ast.__dict__['height']
                     # tmpDP[key] = ast.__dict__['height']
+                elif key == '_Ignore':
+                    tmpDP[key] = None
+                elif key == '_ElementName':
+                    tmpDP[key] = ast.__dict__['name']
+        elif ASTmodule._getASTtype(ast) == 'Polygon':
+            tmpDP = dict()
+            for key in KeyManager._Boundarykey.keys():
+                #Invalid case -> not return (like variable expression)
+                #DP only accept determinstic data
+                if key in ['_XYCoordinates']:
+                    if self.discriminate_variable(key,ast):
+                        return None, None
+                if key == '_LayerUnifiedName':
+                    tmpDP[key] = ast.__dict__['layer']
+                elif key == '_DesignParametertype':
+                    tmpDP[key] = 11
+                elif key == '_XYCoordinates':
+                    contain_variable = False
+                    if type(ast.XY) == list:
+                        for idx in range(len(ast.XY)):
+                            if re.search('[^0-9-.]', str(ast.XY[idx][0])) is not None or re.search('[^0-9-.]', str(ast.XY[idx][1])) is not None:
+                                contain_variable = True
+                        if not contain_variable:
+                            tmpDP[key] = ast.XY
+                    # tmpDP[key] = ast.XY
                 elif key == '_Ignore':
                     tmpDP[key] = None
                 elif key == '_ElementName':

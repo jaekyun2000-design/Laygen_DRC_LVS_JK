@@ -40,6 +40,15 @@ class Boundary(ElementNode):
         'height'    # int or str
     )
 
+class Polygon(ElementNode):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'name',     # name str
+        'layer',    # layer name str
+        'XY',       # double list or variable name str
+    )
+
 class Path(ElementNode):
     def __init__(self, *args, **kwargs):
         super().__init__()
