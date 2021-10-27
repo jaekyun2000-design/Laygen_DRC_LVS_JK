@@ -102,6 +102,7 @@ class _RectBlock(QGraphicsRectItem):
         self.highlight_flag = False
         self.flag_memory = False
         self.element_info = ElementBlock(_BlockTraits)
+        self.bounding_rect_dict = dict(top=0,bottom=0,left=0,right=0)
 
         if _BlockTraits is not None:
             rect = self.element_info.update_traits(_BlockTraits)
