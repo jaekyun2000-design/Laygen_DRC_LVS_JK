@@ -2376,6 +2376,7 @@ class _SelectedDesignListWidget(QListWidget):
     send_UpdateDesignAST_signal = pyqtSignal("PyQt_PyObject")
     send_parameterIDList_signal = pyqtSignal(list,int)
     send_deleteItem_signal = pyqtSignal(str)
+    send_request_design_obj = pyqtSignal(str)
     # send_Up
 
     def __init__(self):
@@ -2439,11 +2440,29 @@ class _SelectedDesignListWidget(QListWidget):
         self.itemDict[nameOfCurrent].setSelected(True)
 
 
+
     def DeleteCustomItem(self,item):
         pass
 
-    def ModifyingDesign(self,item):
-        modifyingObject = self.itemDict[item.text()]
+    def update_item_dict(self, element_name, element):
+        self.itemDict[element_name] = element
+
+    def ModifyingDesign(self,item,_=None):
+        '''
+        when user double clicked item at design list (input: widget item)
+        or
+        when user type 'key_H' at scene (input: element name list)
+        --> pop up design element edit widget,
+        '''
+        if type(item) == list:
+            element_text = item[0]
+        else:
+            element_text = item.text()
+
+        if element_text not in self.itemDict:
+            self.send_request_design_obj.emit(element_text)
+
+        modifyingObject = self.itemDict[element_text]
 
         if modifyingObject._ItemTraits['_DesignParametertype'] == 1:
             self.bw = _BoundarySetupWindow(modifyingObject)
