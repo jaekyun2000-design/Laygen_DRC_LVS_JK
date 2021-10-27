@@ -32,7 +32,7 @@ class ElementManager:
                     tmpAST.__dict__[key] = dp_dict['_YWidth']
         elif dp_dict['_DesignParametertype'] == 11:    #Boundary
             tmpAST = element_ast.Polygon()
-            for key in element_ast._fields:
+            for key in element_ast.Polygon._fields:
                 if key == 'name':
                     tmpAST.__dict__[key] = dp_dict['_ElementName']
                 elif key == 'layer':
