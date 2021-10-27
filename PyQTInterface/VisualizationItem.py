@@ -488,6 +488,7 @@ class _VisualizationItem(QGraphicsItemGroup):
         self._PathUngroupedFlag = False
         self._CreateFlag = True
         self.index = None
+        self.bounding_rect_dict = dict(top=0,bottom=0,left=0,right=0)
         if _ItemTraits is None:
             self._ItemTraits = dict(
                 _ElementName = None,
@@ -510,7 +511,6 @@ class _VisualizationItem(QGraphicsItemGroup):
                                 )
             )
             self.block = []
-            self.bounding_rect_dict = dict(top=0,bottom=0,left=0,right=0)
             # self._BlockGroup = None,
         else:
             self.block = []
@@ -1225,13 +1225,13 @@ class _VisualizationItem(QGraphicsItemGroup):
                     self._ItemTraits['variable_info'][field] = _ast.XY
                 elif field == 'width':
                     self._ItemTraits['variable_info'][field] = str(_ast.width)
-            replaceXYVariable = self.XYVariable
-            self.XYVariable = list()
+            # replaceXYVariable = self.XYVariable
+            # self.XYVariable = list()
             for self.idx in range(len(self._ItemTraits['_XYCoordinates'][0])):
-                self.replaceXY = replaceXYVariable[self.idx]
-                self.replaceXY.setVisible(False)
-
-                self.block.remove(self.replaceXY)
+                # self.replaceXY = replaceXYVariable[self.idx]
+                # self.replaceXY.setVisible(False)
+                #
+                # self.block.remove(self.replaceXY)
 
                 if self.idx == 0:
                     if _ast.XY is not None:
