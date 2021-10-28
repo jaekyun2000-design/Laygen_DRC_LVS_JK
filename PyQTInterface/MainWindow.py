@@ -518,6 +518,23 @@ class _MainWindow(QMainWindow):
         dockWidget2.setWidget(self. dockContentWidget2)
         self.addDockWidget(Qt.LeftDockWidgetArea,dockWidget2)
 
+        dockWidget2_2 = QDockWidget("Modifier")
+        self.design_modifier = SetupWindow.DesignModifier()
+        dockWidget2_2.setWidget(self.design_modifier)
+
+        self.addDockWidget(Qt.LeftDockWidgetArea,dockWidget2_2)
+        self.scene.send_selected_list_signal.connect(lambda items: self.design_modifier.update_form(
+            self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName]\
+                [self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(items[0]._id)]))
+        # self.design_modifier.send_update_qt_constraint_signal.connect(lambda target_id, update_dict:
+        #                                                               self.design_delegator.update_qt_constraint(
+        #                                                                   target_id, updated_dict=update_dict
+        #                                                               ))
+        # self.design_modifier.send_update_ast_signal.connect(self.srefUpdate)
+        self.design_modifier.send_update_ast_signal.connect(lambda _ast: self.runConstraint_for_update(
+            code= self.encodeConstraint(_ast)
+        ))
+
         ################# Bottom Dock Widget setting ####################
         self.bottom_dock_tab_widget = QTabWidget()
 
@@ -1571,14 +1588,16 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3.blockSignals(False)
         return None
 
-    def encodeConstraint(self):
+    def encodeConstraint(self, _ast=None):
         try:
-            module = self._CurrentModuleName
-            constraint_names = self.dockContentWidget3.model.findItems('',Qt.MatchContains,1)
-            constraint_ids = [item.text() for item in constraint_names]
-            # topAST = self.transform_constraints([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
-            topAST = ASTmodule.run_transformer([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
-
+            if not _ast:
+                module = self._CurrentModuleName
+                constraint_names = self.dockContentWidget3.model.findItems('',Qt.MatchContains,1)
+                constraint_ids = [item.text() for item in constraint_names]
+                # topAST = self.transform_constraints([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
+                topAST = ASTmodule.run_transformer([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
+            else:
+                topAST = ASTmodule.run_transformer([_ast])
 
             code = astunparse.unparse(topAST)
             print(code)
@@ -2044,7 +2063,7 @@ class _MainWindow(QMainWindow):
         print("########################################################################################")
 
         # dc_id = ast_with_id._id
-        dp_id = ast_with_id._id
+        dp_id = ast_with_id._id #if ast_with_id._id in self._QTObj._qtProject._DesignParameter else ast_with_id.name
         # module = self.get_id_return_module(dc_id, "_DesignConstraint")
         module = self._CurrentModuleName
         gds2gen = topAPI.gds2generator.GDS2Generator(False)
@@ -3454,6 +3473,7 @@ class _CustomScene(QGraphicsScene):
     send_module_name_list_signal = pyqtSignal(list, list)
     send_mouse_move_signal = pyqtSignal(QGraphicsSceneMouseEvent)
     send_mouse_move_xy_signal = pyqtSignal(list)
+    send_selected_list_signal = pyqtSignal(list)
 
     send_show_variable_signal = pyqtSignal(QGraphicsItem)
     send_doubleclick_signal = pyqtSignal(bool)
@@ -3623,6 +3643,16 @@ class _CustomScene(QGraphicsScene):
         # self.send_itemList_signal.emit(itemList)
         print(self.point_items_memory)
         self.send_itemList_signal.emit(self.point_items_memory)
+        selected_items = self.selectedItems()
+        # selected_items = list(filter(lambda item: type(item) == VisualizationItem._VisualizationItem and not item.parentItem(), self.selectedItems()))
+        # if selected_items:
+        #     self.send_selected_list_signal.emit(selected_items)
+        if self.selectedItems():
+            selected_items = list(
+                filter(lambda item: type(item) == VisualizationItem._VisualizationItem and not item.parentItem(),
+                       self.selectedItems()))
+            if selected_items:
+                self.send_selected_list_signal.emit(selected_items)
 
     def dragEnterEvent(self, event: 'QGraphicsSceneDragDropEvent') -> None:
         event.accept()
