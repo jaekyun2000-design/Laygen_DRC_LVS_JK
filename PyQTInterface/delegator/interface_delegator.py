@@ -25,7 +25,7 @@ class WidgetDelegator(delegator.Delegator):
         self.main_window.pow = SetupWindow._PolygonSetupWindow()
         self.main_window.pow.show()
         self.main_window.pow.send_PolygonSetup_signal.connect(self.main_window.updateGraphicItem)
-        self.main_window.pow.send_DestroyTmpVisual_signal.connect(self.main_window.deleteGraphicItem)
+        self.main_window.pow.send_PolygonDesign_signal.connect(self.main_window.createNewDesignParameter)
         self.main_window.pow.send_design_message.connect(self.main_window.design_delegator.message_delivery)
         self.main_window.pow.send_Warning_signal.connect(self.main_window.dockContentWidget4ForLoggingMessage._WarningMessage)
         self.main_window.scene.send_xy_signal.connect(self.main_window.pow.AddPolygonPointWithMouse)
