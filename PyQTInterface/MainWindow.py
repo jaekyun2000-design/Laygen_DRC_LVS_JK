@@ -530,7 +530,10 @@ class _MainWindow(QMainWindow):
         #                                                               self.design_delegator.update_qt_constraint(
         #                                                                   target_id, updated_dict=update_dict
         #                                                               ))
-        self.design_modifier.send_update_ast_signal.connect(self.srefUpdate)
+        # self.design_modifier.send_update_ast_signal.connect(self.srefUpdate)
+        self.design_modifier.send_update_ast_signal.connect(lambda _ast: self.runConstraint_for_update(
+            code= self.encodeConstraint(_ast)
+        ))
 
         ################# Bottom Dock Widget setting ####################
         self.bottom_dock_tab_widget = QTabWidget()
@@ -1585,14 +1588,16 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3.blockSignals(False)
         return None
 
-    def encodeConstraint(self):
+    def encodeConstraint(self, _ast=None):
         try:
-            module = self._CurrentModuleName
-            constraint_names = self.dockContentWidget3.model.findItems('',Qt.MatchContains,1)
-            constraint_ids = [item.text() for item in constraint_names]
-            # topAST = self.transform_constraints([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
-            topAST = ASTmodule.run_transformer([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
-
+            if not _ast:
+                module = self._CurrentModuleName
+                constraint_names = self.dockContentWidget3.model.findItems('',Qt.MatchContains,1)
+                constraint_ids = [item.text() for item in constraint_names]
+                # topAST = self.transform_constraints([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
+                topAST = ASTmodule.run_transformer([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
+            else:
+                topAST = ASTmodule.run_transformer([_ast])
 
             code = astunparse.unparse(topAST)
             print(code)
