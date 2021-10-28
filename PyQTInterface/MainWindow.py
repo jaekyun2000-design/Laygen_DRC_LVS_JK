@@ -534,6 +534,10 @@ class _MainWindow(QMainWindow):
         self.design_modifier.send_update_ast_signal.connect(lambda _ast: self.runConstraint_for_update(
             code= self.encodeConstraint(_ast)
         ))
+        self.design_modifier.send_update_ast_signal.connect(lambda _ast:
+                                                            self.design_delegator.control_constraint_tree_view(
+                                                                _ast._id, channel=3, request='update'
+                                                            ))
 
         ################# Bottom Dock Widget setting ####################
         self.bottom_dock_tab_widget = QTabWidget()
