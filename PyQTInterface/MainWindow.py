@@ -518,6 +518,15 @@ class _MainWindow(QMainWindow):
         dockWidget2.setWidget(self. dockContentWidget2)
         self.addDockWidget(Qt.LeftDockWidgetArea,dockWidget2)
 
+        dockWidget2_2 = QDockWidget("Modifier")
+        self.design_modifier = SetupWindow.DesignModifier()
+        dockWidget2_2.setWidget(self.design_modifier)
+
+        self.addDockWidget(Qt.LeftDockWidgetArea,dockWidget2_2)
+        self.scene.send_selected_list_signal.connect(lambda items: self.design_modifier.update_form(
+            self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName]\
+                [self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(items[0]._id)]))
+
         ################# Bottom Dock Widget setting ####################
         self.bottom_dock_tab_widget = QTabWidget()
 
@@ -3454,6 +3463,7 @@ class _CustomScene(QGraphicsScene):
     send_module_name_list_signal = pyqtSignal(list, list)
     send_mouse_move_signal = pyqtSignal(QGraphicsSceneMouseEvent)
     send_mouse_move_xy_signal = pyqtSignal(list)
+    send_selected_list_signal = pyqtSignal(list)
 
     send_show_variable_signal = pyqtSignal(QGraphicsItem)
     send_doubleclick_signal = pyqtSignal(bool)
@@ -3623,6 +3633,13 @@ class _CustomScene(QGraphicsScene):
         # self.send_itemList_signal.emit(itemList)
         print(self.point_items_memory)
         self.send_itemList_signal.emit(self.point_items_memory)
+        selected_items = self.selectedItems()
+        # selected_items = list(filter(lambda item: type(item) == VisualizationItem._VisualizationItem and not item.parentItem(), self.selectedItems()))
+        # if selected_items:
+        #     self.send_selected_list_signal.emit(selected_items)
+        if self.selectedItems():
+
+            self.send_selected_list_signal.emit(self.selectedItems())
 
     def dragEnterEvent(self, event: 'QGraphicsSceneDragDropEvent') -> None:
         event.accept()

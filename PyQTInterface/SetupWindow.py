@@ -169,7 +169,8 @@ class _BoundarySetupWindow(QWidget):
 
     def cancel_button_accepted(self):
         self.send_Destroy_signal.emit('bw')
-        self.send_DestroyTmpVisual_signal.emit(self.visualItem)
+        if 'visualItem' in self.__dict__:
+            self.send_DestroyTmpVisual_signal.emit(self.visualItem)
         self.destroy()
 
     def on_buttonBox_accepted(self):
@@ -264,7 +265,8 @@ class _BoundarySetupWindow(QWidget):
             self.on_buttonBox_accepted()
             self.send_Destroy_signal.emit('bw')
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.send_DestroyTmpVisual_signal.emit(self.visualItem)
+            if 'visualItem' in self.__dict__:
+                self.send_DestroyTmpVisual_signal.emit(self.visualItem)
             self.destroy()
             self.send_Destroy_signal.emit('bw')
 
@@ -4529,6 +4531,85 @@ class ComboDelegate(QItemDelegate):
 #         super(CheckboxDelegate, self).__init__()
 #
 #     def paint(self):
+#
+class DesignModifier(QWidget):
+    def __init__(self):
+        super(DesignModifier, self).__init__()
+        self.layer_list = LayerReader._LayerMapping
+        self.form_layout_dict = dict()
+        self.field_value_dict = {
+            'Boundary': dict(
+                name=QLineEdit(),
+                layer=QComboBox(),
+                width=QLineEdit(),
+                height=QLineEdit()
+            ),
+            'Polygon': dict(
+                name=QLineEdit(),
+                layer=QComboBox(),
+            ),
+            'Path': dict(
+                name=QLineEdit(),
+                layer=QComboBox(),
+                width=QLineEdit(),
+            ),
+            'Sref': dict(
+            )
+        }
+        self.main_layout = QVBoxLayout()
+        self.create_form()
+        self.setLayout(self.main_layout)
+        self.apply_button = QPushButton('Apply')
+        self.main_layout.addWidget(self.apply_button)
+        # self.form_layout_dict['boundary'].show()
+
+    def create_form(self):
+        for type_name, value_widget_dict in self.field_value_dict.items():
+            tmp_widget = QWidget()
+            layout = QFormLayout()
+            tmp_widget.setLayout(layout)
+            self.form_layout_dict[type_name] = tmp_widget
+            for field_name, input_widget in value_widget_dict.items():
+                layout.addRow(QLabel(field_name), input_widget)
+            self.main_layout.addWidget(tmp_widget)
+            tmp_widget.hide()
+
+    def update_form(self, design_const):
+        update_type = design_const._type
+        if update_type == 'Sref':
+            self.update_sref_form(design_const)
+        for type_name, form_widget in self.form_layout_dict.items():
+            if type_name == update_type:
+                form_widget.show()
+            else:
+                form_widget.hide()
+
+        for field in design_const._ast._fields:
+            if field in self.field_value_dict[update_type]:
+                if type(self.field_value_dict[update_type][field]) == QLineEdit:
+                    self.field_value_dict[update_type][field].setText(str(design_const._ast.__dict__[field]))
+                elif type(self.field_value_dict[update_type][field]) == QComboBox:
+                    self.field_value_dict[update_type][field].clear()
+                    self.field_value_dict[update_type][field].addItems(list(LayerReader._LayerMapping.keys()))
+                    idx = self.field_value_dict[update_type][field].findText(design_const._ast.layer)
+                    self.field_value_dict[update_type][field].setCurrentIndex(idx)
+
+    def update_sref_form(self, design_const):
+        layout = self.form_layout_dict['Sref'].layout()
+        while layout.count() != 0:
+            child = layout.takeAt(0)
+            layout.removeWidget(child.widget())
+            del child
+
+        self.field_value_dict['Sref'].clear()
+        for parameter, value in design_const._ast.parameters.items():
+            input_widget = QLineEdit(str(value))
+            self.field_value_dict['Sref'][parameter] = input_widget
+            layout.addRow(QLabel(parameter), input_widget)
+
+
+
+
 
 def get_id_return_module(id : str, type : str, moduleDict):
     """
