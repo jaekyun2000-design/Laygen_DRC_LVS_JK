@@ -2058,7 +2058,7 @@ class _MainWindow(QMainWindow):
         print("########################################################################################")
 
         # dc_id = ast_with_id._id
-        dp_id = ast_with_id._id if ast_with_id._id in self._QTObj._qtProject._DesignParameter else ast_with_id.name
+        dp_id = ast_with_id._id #if ast_with_id._id in self._QTObj._qtProject._DesignParameter else ast_with_id.name
         # module = self.get_id_return_module(dc_id, "_DesignConstraint")
         module = self._CurrentModuleName
         gds2gen = topAPI.gds2generator.GDS2Generator(False)

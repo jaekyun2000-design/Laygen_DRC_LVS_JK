@@ -4626,10 +4626,12 @@ class DesignModifier(QWidget):
 
         if self.current_ast._type == 'Sref':
             self.current_ast.parameters.update(update_dict)
+            self.current_ast._id = self.current_ast.name
+            self.send_update_ast_signal.emit(self.current_ast)
         else:
             self.current_ast.__dict__.update(update_dict)
+
         # self.send_update_qt_constraint_signal.emit(self.current_design_id, update_dict)
-        self.send_update_ast_signal.emit(self.current_ast)
 
 
 
