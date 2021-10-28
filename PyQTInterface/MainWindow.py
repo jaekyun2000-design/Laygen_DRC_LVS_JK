@@ -3638,8 +3638,11 @@ class _CustomScene(QGraphicsScene):
         # if selected_items:
         #     self.send_selected_list_signal.emit(selected_items)
         if self.selectedItems():
-
-            self.send_selected_list_signal.emit(self.selectedItems())
+            selected_items = list(
+                filter(lambda item: type(item) == VisualizationItem._VisualizationItem and not item.parentItem(),
+                       self.selectedItems()))
+            if selected_items:
+                self.send_selected_list_signal.emit(selected_items)
 
     def dragEnterEvent(self, event: 'QGraphicsSceneDragDropEvent') -> None:
         event.accept()
