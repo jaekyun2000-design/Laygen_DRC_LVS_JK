@@ -121,8 +121,8 @@ class DesignDelegator(delegator.Delegator):
         target_dc = self.main_window._QTObj._qtProject._DesignConstraint[self.main_window._CurrentModuleName][target_id]
         if updated_dict and not updated_ast:
             updated_ast = target_dc._ast
-            for key, value in updated_dict:
-                if key not in updated_ast:
+            for key, value in updated_dict.items():
+                if key not in updated_ast.__dict__:
                     warnings.warn(f"key: {key} is not valid field for ast of {target_id} constraint.")
                 updated_ast.__dict__[key] = value
         if updated_ast:
@@ -161,8 +161,9 @@ class DesignDelegator(delegator.Delegator):
             # for remove_item in remove_item_list:
             #     self.main_window.scene.removeItem(remove_item)
             #     self.main_window.visualItemDict[id].remove_block_from_group(remove_item)
-            list(map(lambda remove_item: self.main_window.scene.removeItem(remove_item), remove_item_list))
-            list(map(lambda remove_item: self.main_window.visualItemDict[id].remove_block_from_group(remove_item), remove_item_list))
+            if remove_item_list:
+                list(map(lambda remove_item: self.main_window.scene.removeItem(remove_item), remove_item_list))
+                list(map(lambda remove_item: self.main_window.visualItemDict[id].remove_block_from_group(remove_item), remove_item_list))
 
             self.main_window.visualItemDict[id]._id = id
             self.main_window.visualItemDict[id]._ItemTraits['_id'] = id

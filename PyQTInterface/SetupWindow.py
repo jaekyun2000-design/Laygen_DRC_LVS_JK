@@ -4533,6 +4533,9 @@ class ComboDelegate(QItemDelegate):
 #     def paint(self):
 #
 class DesignModifier(QWidget):
+    send_update_qt_constraint_signal = pyqtSignal(str, dict)
+    send_update_ast_signal = pyqtSignal("PyQt_PyObject")
+
     def __init__(self):
         super(DesignModifier, self).__init__()
         self.layer_list = LayerReader._LayerMapping
@@ -4560,8 +4563,10 @@ class DesignModifier(QWidget):
         self.create_form()
         self.setLayout(self.main_layout)
         self.apply_button = QPushButton('Apply')
+        self.apply_button.clicked.connect(self.update_constraint)
         self.main_layout.addWidget(self.apply_button)
-        # self.form_layout_dict['boundary'].show()
+        self.current_type = None
+        self.current_ast = None
 
     def create_form(self):
         for type_name, value_widget_dict in self.field_value_dict.items():
@@ -4575,24 +4580,25 @@ class DesignModifier(QWidget):
             tmp_widget.hide()
 
     def update_form(self, design_const):
-        update_type = design_const._type
-        if update_type == 'Sref':
+        self.current_type = design_const._type
+        if self.current_type == 'Sref':
             self.update_sref_form(design_const)
         for type_name, form_widget in self.form_layout_dict.items():
-            if type_name == update_type:
+            if type_name == self.current_type:
                 form_widget.show()
             else:
                 form_widget.hide()
 
         for field in design_const._ast._fields:
-            if field in self.field_value_dict[update_type]:
-                if type(self.field_value_dict[update_type][field]) == QLineEdit:
-                    self.field_value_dict[update_type][field].setText(str(design_const._ast.__dict__[field]))
-                elif type(self.field_value_dict[update_type][field]) == QComboBox:
-                    self.field_value_dict[update_type][field].clear()
-                    self.field_value_dict[update_type][field].addItems(list(LayerReader._LayerMapping.keys()))
-                    idx = self.field_value_dict[update_type][field].findText(design_const._ast.layer)
-                    self.field_value_dict[update_type][field].setCurrentIndex(idx)
+            if field in self.field_value_dict[self.current_type]:
+                if type(self.field_value_dict[self.current_type][field]) == QLineEdit:
+                    self.field_value_dict[self.current_type][field].setText(str(design_const._ast.__dict__[field]))
+                elif type(self.field_value_dict[self.current_type][field]) == QComboBox:
+                    self.field_value_dict[self.current_type][field].clear()
+                    self.field_value_dict[self.current_type][field].addItems(list(LayerReader._LayerMapping.keys()))
+                    idx = self.field_value_dict[self.current_type][field].findText(design_const._ast.layer)
+                    self.field_value_dict[self.current_type][field].setCurrentIndex(idx)
+        self.current_ast = design_const._ast
 
     def update_sref_form(self, design_const):
         layout = self.form_layout_dict['Sref'].layout()
@@ -4606,6 +4612,24 @@ class DesignModifier(QWidget):
             input_widget = QLineEdit(str(value))
             self.field_value_dict['Sref'][parameter] = input_widget
             layout.addRow(QLabel(parameter), input_widget)
+
+    def update_constraint(self):
+        if not self.current_type:
+            return
+
+        update_dict = dict()
+        for field_name, widget in self.field_value_dict[self.current_type].items():
+            if type(widget) == QLineEdit:
+                update_dict[field_name] = widget.text()
+            elif type(widget) == QComboBox:
+                update_dict[field_name] = widget.currentText()
+
+        if self.current_ast._type == 'Sref':
+            self.current_ast.parameters.update(update_dict)
+        else:
+            self.current_ast.__dict__.update(update_dict)
+        # self.send_update_qt_constraint_signal.emit(self.current_design_id, update_dict)
+        self.send_update_ast_signal.emit(self.current_ast)
 
 
 

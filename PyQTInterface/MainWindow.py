@@ -526,6 +526,11 @@ class _MainWindow(QMainWindow):
         self.scene.send_selected_list_signal.connect(lambda items: self.design_modifier.update_form(
             self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName]\
                 [self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(items[0]._id)]))
+        # self.design_modifier.send_update_qt_constraint_signal.connect(lambda target_id, update_dict:
+        #                                                               self.design_delegator.update_qt_constraint(
+        #                                                                   target_id, updated_dict=update_dict
+        #                                                               ))
+        self.design_modifier.send_update_ast_signal.connect(self.srefUpdate)
 
         ################# Bottom Dock Widget setting ####################
         self.bottom_dock_tab_widget = QTabWidget()
@@ -2053,7 +2058,7 @@ class _MainWindow(QMainWindow):
         print("########################################################################################")
 
         # dc_id = ast_with_id._id
-        dp_id = ast_with_id._id
+        dp_id = ast_with_id._id if ast_with_id._id in self._QTObj._qtProject._DesignParameter else ast_with_id.name
         # module = self.get_id_return_module(dc_id, "_DesignConstraint")
         module = self._CurrentModuleName
         gds2gen = topAPI.gds2generator.GDS2Generator(False)
