@@ -143,7 +143,6 @@ class GDS2Generator():
             self.class_name)
         self.cell_dp_dict[self.class_name]._DesignParameter[
             '_GDSFile'] = StickDiagram._StickDiagram()._GDSObjDeclaration()
-        warnings.warn(f'Git Actions! class:{self.class_name}')
         self.run_qt_constraint_ast()
 
         dp_dictionary = dict()
