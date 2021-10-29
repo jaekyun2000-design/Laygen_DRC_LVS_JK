@@ -136,7 +136,10 @@ class _MainWindow(QMainWindow):
         self.variable_store_list = list()
         self.test = True
         self.send_init_signal.emit()
-        self._QTObj._qtProject._ElementManager.signal.dp_name_update_signal.connect(
+        # self._QTObj._qtProject._ElementManager.signal.dp_name_update_signal.connect(
+        #     self.design_delegator.update_vs_item_dict
+        # )
+        element_manager.global_signal.dp_name_update_signal.connect(
             self.design_delegator.update_vs_item_dict
         )
 
