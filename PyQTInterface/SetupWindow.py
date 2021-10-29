@@ -4617,6 +4617,9 @@ class DesignModifier(QWidget):
         if not self.current_type:
             return
 
+        tmp_ast = copy.deepcopy(self.current_ast)
+        # tmp_ast.constraint_id = tmp_ast._id
+        # tmp_ast._id = tmp_ast.name
         update_dict = dict()
         for field_name, widget in self.field_value_dict[self.current_type].items():
             if type(widget) == QLineEdit:
@@ -4625,11 +4628,15 @@ class DesignModifier(QWidget):
                 update_dict[field_name] = widget.currentText()
 
         if self.current_ast._type == 'Sref':
-            self.current_ast.parameters.update(update_dict)
+            #TODO
+            # 이름 필드와 파라미터 필드 구분..
+            tmp_ast.parameters.update(update_dict)
             # self.send_update_ast_signal.emit(self.current_ast)
         else:
-            self.current_ast.__dict__.update(update_dict)
-        self.send_update_ast_signal.emit(self.current_ast)
+            tmp_ast.__dict__.update(update_dict)
+        # self.send_update_ast_signal.emit(self.current_ast)
+        self.send_update_ast_signal.emit(tmp_ast)
+
 
         # self.send_update_qt_constraint_signal.emit(self.current_design_id, update_dict)
 
