@@ -1959,6 +1959,10 @@ class _MainWindow(QMainWindow):
         self.module_dict[updateModule].module_name_list = self.module_name_list
         self.hide()
 
+    def remove_module(self, delete_module_name):
+        self.module_name_list.pop(self.module_name_list.index(delete_module_name))
+        self.module_dict.pop(delete_module_name)
+
     def set_module_name(self, module_name):
         if self._CurrentModuleName in self.module_name_list:
             idx = self.module_name_list.index(self._CurrentModuleName)
