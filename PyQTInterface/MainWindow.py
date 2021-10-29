@@ -817,11 +817,8 @@ class _MainWindow(QMainWindow):
                     else:
                         hierarchy = {tmp_module_name : self.entireHierarchy[self._CurrentModuleName][hierarchy_key]}
 
-                discard_flag = QMessageBox()
-                reply = discard_flag.question(self, "QMessageBox", "Discard Original Project?",
-                                                       QMessageBox.Yes | QMessageBox.No)
-                if reply == QMessageBox.Yes:
-                    self.remove_module(self._CurrentModuleName)
+
+                self.remove_module(self._CurrentModuleName)
                 new_project.create_dc_vi_from_top_dp(hierarchy, test)
                 self.hide()
 

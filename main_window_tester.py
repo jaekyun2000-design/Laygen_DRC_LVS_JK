@@ -561,6 +561,7 @@ def test_encode_constraint(qtbot):
             window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
     qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
     code = window.encodeConstraint()
+    print(code)
     assert code
 
 
