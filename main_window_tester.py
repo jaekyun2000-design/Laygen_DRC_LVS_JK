@@ -293,6 +293,42 @@ def test_sref_edit_window(qtbot):
     assert window.visualItemDict['sref_name_change'] in window.scene.items()
 
 
+def test_modifier_boundary(qtbot):
+
+    with HiddenConsole():
+        window = MainWindow._MainWindow()
+    window.widget_delegator.make_boundary_window()
+    qtbot.waitForWindowShown(window.bw)
+
+    qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
+                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(-100,-100)))
+    qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
+                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(100,100)))
+    # window.bw.AddBoundaryPointWithMouse([-100,-100])
+    # window.bw.clickCount([-100,-100])
+    # window.bw.AddBoundaryPointWithMouse([100,100])
+    # window.bw.clickCount([100,100])
+    qtbot.keyClicks(window.bw.name_input,'boundary_modifier_test')
+    window.bw.on_buttonBox_accepted()
+
+    qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
+                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(0,0)))
+    window.design_modifier.field_value_dict['Boundary']['name'].clear()
+    qtbot.keyClicks(window.design_modifier.field_value_dict['Boundary']['name'], 'modified_boundary')
+    window.design_modifier.field_value_dict['Boundary']['width'].clear()
+    qtbot.keyClicks(window.design_modifier.field_value_dict['Boundary']['width'], '700')
+    qtbot.keyClicks(window.design_modifier.field_value_dict['Boundary']['layer'], 'METAL1')
+    qtbot.mouseClick(window.design_modifier.apply_button, QtCore.Qt.LeftButton)
+
+
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['modified_boundary']
+    assert not 'boundary_modifier_test' in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('modified_boundary')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window.visualItemDict['modified_boundary']
+    assert window.visualItemDict['modified_boundary'] in window.scene.items()
+
 
 ##################################test for dc creation##################################
 def test_create_pycode(qtbot):
