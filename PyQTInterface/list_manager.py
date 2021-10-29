@@ -5,7 +5,7 @@ from PyQTInterface.layermap import LayerReader
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
-
+from PyQTInterface import VisualizationItem
 import traceback
 
 
@@ -92,7 +92,8 @@ class _ManageList(QTableView):
         super().__init__()
         self.lm = LMaddress
         self._layerList = list()
-        self._usedlayer = dict()
+        # self._usedlayer = dict()
+        self._usedlayer = VisualizationItem._VisualizationItem._subElementLayer
         self.visibleGenControl = True
         self.visibleCanControl = True
         self.initUI()

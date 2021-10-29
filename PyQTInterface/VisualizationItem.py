@@ -530,6 +530,7 @@ class _VisualizationItem(QGraphicsItemGroup):
             else:
                 self.blockGeneration()
 
+
     # def paint(self, painter, option, widget) -> None:
     #     super(_VisualizationItem, self).paint(painter, option, widget)
     #     if self._subSrefVisualItem != None:
