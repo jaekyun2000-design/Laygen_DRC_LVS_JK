@@ -209,7 +209,7 @@ class DesignDelegator(delegator.Delegator):
                         x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][0]
                         y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][1]
                     dp_dict['_XYCoordinates'] = [[x,y]]
-                elif dp_dict['_DesignParametertype'] == 2:
+                elif dp_dict['_DesignParametertype'] == 2 or dp_dict['_DesignParametertype'] == 11:
                     for i in range(len(dp_dict['_XYCoordinates'][0])):
                         tmp_x = mouse_xy[0] - center_xy[0]
                         tmp_y = mouse_xy[1] - center_xy[1]
@@ -288,7 +288,8 @@ class DesignDelegator(delegator.Delegator):
                         x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][0]
                         y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][1]
                     dp_dict['_XYCoordinates'] = [[x,y]]
-                elif dp_dict['_DesignParametertype'] == 2:
+                elif dp_dict['_DesignParametertype'] == 2 or dp_dict['_DesignParametertype'] == 11:
+                    tmp_xy = list()
                     for i in range(len(dp_dict['_XYCoordinates'][0])):
                         tmp_x = mouse_xy[0] - center_xy[0]
                         tmp_y = mouse_xy[1] - center_xy[1]
@@ -302,8 +303,10 @@ class DesignDelegator(delegator.Delegator):
                         elif user_setup._Snap_mode == 'any_angle':
                             x = mouse_xy[0] - center_xy[0] + dp_dict['_XYCoordinates'][0][i][0]
                             y = mouse_xy[1] - center_xy[1] + dp_dict['_XYCoordinates'][0][i][1]
-                        dp_dict['_XYCoordinates'][0].pop(i)
-                        dp_dict['_XYCoordinates'][0].insert(i, [x,y])
+                        tmp_xy.append([x,y])
+                        # dp_dict['_XYCoordinates'][0].pop(i)
+                        # dp_dict['_XYCoordinates'][0].insert(i, [x,y])
+                    dp_dict['_XYCoordinates'] = [tmp_xy]
 
                 vs_item.setPos(0,0)
 

@@ -3547,7 +3547,6 @@ class _CustomScene(QGraphicsScene):
         for s_highlighted_rectblock in VisualizationItem._RectBlock.shallow_highlight_list:
             s_highlighted_rectblock.shallow_highlight = False
 
-
         snap = user_setup.MIN_SNAP_SPACING
         x_point = int(int(event.scenePos().toPoint().x() / snap) * snap)
         y_point = int(int(event.scenePos().toPoint().y() / snap) * snap)
