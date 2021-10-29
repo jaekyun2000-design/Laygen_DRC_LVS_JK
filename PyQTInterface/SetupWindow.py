@@ -197,7 +197,7 @@ class _BoundarySetupWindow(QWidget):
             self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
             self._DesignParameter['_Layer'] = None
 
-            if 'visualItem' in self.__dict__ and self.visualItem._type:
+            if 'visualItem' in self.__dict__:
                 self.send_DestroyTmpVisual_signal.emit(self.visualItem)
 
             self.send_BoundaryDesign_signal.emit(self._DesignParameter)
@@ -405,17 +405,6 @@ class _PolygonSetupWindow(QWidget):
 
 
     def cancel_button_accepted(self):
-        # self._DesignParameter = dict(
-        #             _ElementName = None,
-        #             _Layer = None,
-        #             _DesignParametertype = 2,
-        #             _XYCoordinates = [],
-        #             _Width = None,
-        #             _Height = None,
-        #             _Color = None,
-        #             _ItemRef = None, #Reference Of VisualizationItem
-        #         )
-        # self.visualItem.updateTraits(self._DesignParameter)
         self.send_DestroyTmpVisual_signal.emit(self.visualItem)
         self.send_Destroy_signal.emit('pow')
         self.destroy()
@@ -444,12 +433,9 @@ class _PolygonSetupWindow(QWidget):
                         self.warning.setText("Invalid XYCoordinates")
                         self.warning.show()
 
-            pass
-            self.send_DestroyTmpVisual_signal.emit(self.visualItem)
             self.send_PolygonDesign_signal.emit(self._DesignParameter)
             self.destroy()
             self.send_Destroy_signal.emit('pow')
-            pass
         except:
             traceback.print_exc()
             self.warning = QMessageBox()
@@ -463,19 +449,8 @@ class _PolygonSetupWindow(QWidget):
             self.on_buttonBox_accepted()
             self.send_Destroy_signal.emit('pow')
         elif QKeyEvent.key() == Qt.Key_Escape:
-            # self._DesignParameter = dict(
-            #             _ElementName = None,
-            #             _Layer = None,
-            #             _DesignParametertype = 2,
-            #             _XYCoordinates = [],
-            #             _Width = None,
-            #             _Height = None,
-            #             _Color = None,
-            #             _ItemRef = None, #Reference Of VisualizationItem
-            #         )
-            # self.visualItem.updateTraits(self._DesignParameter)
             self.destroy()
-            self.send_Destroy_signal.emit('pw')
+            self.send_Destroy_signal.emit('pow')
 
     def AddPolygonPointWithMouse(self,xy):
         if self.doubleClickEvent == False:
@@ -498,16 +473,6 @@ class _PolygonSetupWindow(QWidget):
                 XYstring = str(self._DesignParameter['_XYCoordinates'][0][-1][0]) + ',' + str(self._DesignParameter['_XYCoordinates'][0][-1][1])
                 self.XYdictForLineEdit[CurrentEditPointNum].setText(XYstring)
                 self.UpdateXYwidget()
-                # self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
-                # self._DesignParameter['_type'] = 11
-                # qt_dp = QTInterfaceWithAST.QtDesignParameter(_type=11)
-                # for key, value in self._DesignParameter.items():
-                #     qt_dp._setDesignParameterValue(key, value)
-                # qt_dp.update_unified_expression()
-                # self.visualItem._ItemTraits['_XYCoordinates'] = self._DesignParameter['_XYCoordinates']
-                # self.visualItem.updateDesignParameter(qt_dp)
-                # self.visualItem.setFlag(QGraphicsItemGroup.ItemIsSelectable,False)
-                # self.send_PolygonSetup_signal.emit(self.visualItem)
             except:
                 self.warning = QMessageBox()
                 self.warning.setIcon(QMessageBox.Warning)
