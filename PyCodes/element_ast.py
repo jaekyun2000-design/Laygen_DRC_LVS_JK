@@ -5,7 +5,7 @@ import warnings
 import astunparse
 from PyCodes import variable_ast
 # listTypeData = ['Lib','tb','PlaceDef','RouteDef','DRCDef','Iteration','P_R']
-custom_ast_list = ['Generator','Sref','Boundary','Path', 'Text', 'MacroCell']
+custom_ast_list = ['Generator','Sref','Boundary','Path', 'Text', 'MacroCell', 'Polygon']
 #--start constants--
 
 class Generator(ast.AST):
@@ -340,6 +340,44 @@ class ElementTransformer(ast.NodeTransformer):
         print(sentence)
         tmp = ast.parse(sentence)
         return tmp.body[0]
+
+    def visit_Polygon(self,node):
+        """
+        field:
+            name
+            layer
+            XY
+        """
+        syntax = self.xy_syntax_checker(node)
+        if syntax == 'ast':
+            syntax = ''
+        for field in node._fields:
+            if node.__dict__[field] == '' or node.__dict__[field] == None:
+                raise ValueError(f"Not valid \'{field}\' value : {node.__dict__[field]}")
+            if isinstance(node.__dict__[field], ast.AST):
+                tmp_ast = run_transformer(node.__dict__[field])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
+            elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
+                tmp_ast = run_transformer(node.__dict__[field][0])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
+
+        if syntax == 'list':  # or syntax == 'string':
+            tmp_xy = str(node.XY).replace("'", "")
+            sentence = f"self._DesignParameter['{node.name}'] = self._PolygonElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0]," \
+                       f"_Datatype = DesignParameters._LayerMapping['{node.layer}'][1])\n"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
+        elif syntax == 'string':
+            tmp_xy = str(node.XY[0]).replace("'", "")
+            sentence = f"self._DesignParameter['{node.name}'] = self._PolygonElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0]," \
+                       f"_Datatype = DesignParameters._LayerMapping['{node.layer}'][1])\n"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}\n"
+        else:
+            sentence = f"self._DesignParameter['{node.name}'] = self._PolygonElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0]," \
+                       f"_Datatype = DesignParameters._LayerMapping['{node.layer}'][1])\n"
+            sentence += f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}\n"
+            # print(sentence)
+        tmp = ast.parse(sentence)
+        return tmp.body
 
 def run_transformer(source_ast):
     module_ast = ast.Module()

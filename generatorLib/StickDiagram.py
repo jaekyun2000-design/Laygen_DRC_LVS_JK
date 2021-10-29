@@ -499,9 +499,9 @@ class _StickDiagram:
 
         return dict(_DesignParametertype=1, _Layer=_Layer,_Datatype=_Datatype, _XYCoordinates=_XYCoordinates,_XWidth=_XWidth, _YWidth=_YWidth, _Ignore=None, _ElementName = _ElementName)
 
-    def _PolygonElementDeclaration(self, _Layer=None,_Datatype=None, _XYCoordinates=[],_XWidth=None, _YWidth=None, _ElementName=None,):
+    def _PolygonElementDeclaration(self, _Layer=None,_Datatype=None, _XYCoordinates=[], _ElementName=None,):
 
-        return dict(_DesignParametertype=11, _Layer=_Layer,_Datatype=_Datatype, _XYCoordinates=_XYCoordinates,_XWidth=_XWidth, _YWidth=_YWidth, _Ignore=None, _ElementName = _ElementName)
+        return dict(_DesignParametertype=11, _Layer=_Layer,_Datatype=_Datatype, _XYCoordinates=_XYCoordinates, _Ignore=None, _ElementName = _ElementName)
 
     def _SrefElementDeclaration(self, _DesignObj=None, _XYCoordinates=[], _Reflect=None, _Angle=None, _ElementName = None):
 
