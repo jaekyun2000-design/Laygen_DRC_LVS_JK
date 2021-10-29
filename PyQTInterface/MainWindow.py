@@ -136,6 +136,7 @@ class _MainWindow(QMainWindow):
         self.variable_store_list = list()
         self.test = True
         self.send_init_signal.emit()
+
         # self._QTObj._qtProject._ElementManager.signal.dp_name_update_signal.connect(
         #     self.design_delegator.update_vs_item_dict
         # )
@@ -815,12 +816,15 @@ class _MainWindow(QMainWindow):
                         hierarchy = {tmp_module_name : dict()}
                     else:
                         hierarchy = {tmp_module_name : self.entireHierarchy[self._CurrentModuleName][hierarchy_key]}
+
+                discard_flag = QMessageBox()
+                reply = discard_flag.question(self, "QMessageBox", "Discard Original Project?",
+                                                       QMessageBox.Yes | QMessageBox.No)
+                if reply == QMessageBox.Yes:
+                    self.remove_module(self._CurrentModuleName)
                 new_project.create_dc_vi_from_top_dp(hierarchy, test)
                 self.hide()
 
-        # print('send!')
-        # self.send_create_new_window_signal.emit()
-        # print('send end')
     def add_constraint_view(self):
         self.add_constraint_view_flag = True
         self.c_view_configuration = QWidget()
@@ -3550,7 +3554,6 @@ class _CustomScene(QGraphicsScene):
             highlighted_rectblock.highlight_flag = False
         for s_highlighted_rectblock in VisualizationItem._RectBlock.shallow_highlight_list:
             s_highlighted_rectblock.shallow_highlight = False
-
 
         snap = user_setup.MIN_SNAP_SPACING
         x_point = int(int(event.scenePos().toPoint().x() / snap) * snap)
