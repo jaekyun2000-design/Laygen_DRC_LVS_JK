@@ -932,7 +932,6 @@ class ExpressionCalculator(QWidget):
         #                  f"+ self._DesignParameter['{operands[0]}']['_DesignObj']._DesignParameter['{operands[1]}']['_YWidth']/2]"
 
     def add_clicked(self):
-        XYFlag = None
         while self.parenthesis_count != 0:
             self.display.setText(self.display.toPlainText() + ' ) ')
             self.parenthesis_count -= 1
@@ -965,7 +964,15 @@ class ExpressionCalculator(QWidget):
                 self.equationList.clear()
 
         else:
-            self.display.setText("Nothing In Here")
+            if self.display.toPlainText() == "" or self.display.toPlainText() == "Nothing In Here":
+                self.display.setText("Nothing In Here")
+            else:
+                if self.x_button.isChecked():
+                    self.showXWindow()
+                elif self.y_button.isChecked():
+                    self.showYWindow()
+                elif self.xy_button.isChecked():
+                    self.showXYWindow()
 
     def edit_clicked(self):
         if self.presetWindow.currentItem():
