@@ -12,6 +12,10 @@ from generatorLib import generator_model_api
 class ElementMangerSignal(QObject):
     dp_name_update_signal = pyqtSignal(str, str)
 
+    def __deepcopy__(self, memodict={}):
+        copy_obj = ElementMangerSignal()
+        return copy_obj
+
 class ElementManager:
     def __init__(self):
         self.elementParameterDict = dict()
