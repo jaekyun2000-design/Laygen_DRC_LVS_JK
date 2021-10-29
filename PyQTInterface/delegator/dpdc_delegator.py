@@ -149,6 +149,11 @@ class DesignDelegator(delegator.Delegator):
             design_dict['parameter'].update_unified_expression()
             self.update_vs_item(design_dict['parameter'])
 
+    def update_vs_item_dict(self, original_name, changed_name):
+        if original_name in self.main_window.visualItemDict:
+            self.main_window.visualItemDict[changed_name] = self.main_window.visualItemDict.pop(original_name)
+        else:
+            warnings.warn(f"visual item {original_name} is not exist.")
 
     def update_vs_item(self, qt_design_parameter):
         if qt_design_parameter is None:

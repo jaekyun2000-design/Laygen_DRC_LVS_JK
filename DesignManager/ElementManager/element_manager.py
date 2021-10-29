@@ -5,8 +5,12 @@ import warnings
 from PyCodes import element_ast, variable_ast
 from PyCodes import ASTmodule
 from PyCodes import userDefineExceptions
+from PyQt5.QtCore import QObject, pyqtSignal
 from PyQTInterface.layermap import LayerReader
 from generatorLib import generator_model_api
+
+class ElementMangerSignal(QObject):
+    dp_name_update_signal = pyqtSignal(str, str)
 
 class ElementManager:
     def __init__(self):
@@ -15,6 +19,7 @@ class ElementManager:
         self.variable_finding_walker = element_ast.VariableNameVisitor()
         self.dp_id_to_dc_id = dict()
         self.dc_id_to_dp_id = dict()
+        self.signal = ElementMangerSignal()
 
     def get_dpdict_return_ast(self, dp_dict):
         if dp_dict['_DesignParametertype'] == 1:    #Boundary
@@ -400,6 +405,7 @@ class ElementManager:
         if dc_id:
             self.dp_id_to_dc_id[changed_id] = self.dp_id_to_dc_id.pop(original_id)
             self.dc_id_to_dp_id[dc_id] = changed_id
+        self.signal.dp_name_update_signal.emit(original_id, changed_id)
 
 class KeyManager():
     _Boundarykey = dict(

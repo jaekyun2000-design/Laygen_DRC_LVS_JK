@@ -115,6 +115,7 @@ class _MainWindow(QMainWindow):
         self.design_delegator = dpdc_delegator.DesignDelegator(self)
         self.widget_delegator = interface_delegator.WidgetDelegator(self)
         self.transfer_delegator = transfer_delegator.TransferDelegator(self)
+        self.visualItemDict = dict()
         self._QTObj = QTInterfaceWithAST.QtInterFace()
         self._ProjectName = None
         self._CurrentModuleName = None
@@ -123,7 +124,6 @@ class _MainWindow(QMainWindow):
         self.initUI()
         self.easyDebugMode()
         self.progrseeBar_unstable = True
-        self.visualItemDict = dict()
         self.variableList = []
         self._ASTapi = ASTmodule._Custom_AST_API()
         self._layerItem = dict()
@@ -136,6 +136,9 @@ class _MainWindow(QMainWindow):
         self.variable_store_list = list()
         self.test = True
         self.send_init_signal.emit()
+        self._QTObj._qtProject._ElementManager.signal.dp_name_update_signal.connect(
+            self.design_delegator.update_vs_item_dict
+        )
 
     def reset(self):
         self.module_dict = dict()
@@ -531,13 +534,16 @@ class _MainWindow(QMainWindow):
         #                                                                   target_id, updated_dict=update_dict
         #                                                               ))
         # self.design_modifier.send_update_ast_signal.connect(self.srefUpdate)
+        self.design_modifier.send_update_ast_signal.connect(lambda _ast: self.design_delegator.update_qt_constraint(
+            target_id=_ast._id, updated_ast=_ast
+        ))
         self.design_modifier.send_update_ast_signal.connect(lambda _ast: self.runConstraint_for_update(
             code= self.encodeConstraint(_ast)
         ))
-        self.design_modifier.send_update_ast_signal.connect(lambda _ast:
-                                                            self.design_delegator.control_constraint_tree_view(
-                                                                _ast._id, channel=3, request='update'
-                                                            ))
+        # self.design_modifier.send_update_ast_signal.connect(lambda _ast:
+        #                                                     self.design_delegator.control_constraint_tree_view(
+        #                                                         _ast._id, channel=3, request='update'
+        #                                                     ))
 
         ################# Bottom Dock Widget setting ####################
         self.bottom_dock_tab_widget = QTabWidget()
@@ -3655,6 +3661,7 @@ class _CustomScene(QGraphicsScene):
             selected_items = list(
                 filter(lambda item: type(item) == VisualizationItem._VisualizationItem and not item.parentItem(),
                        self.selectedItems()))
+            selected_items = list(filter(lambda item: item._ItemTraits['_ElementName'], selected_items)) # for blocking tmp block
             if selected_items:
                 self.send_selected_list_signal.emit(selected_items)
 
