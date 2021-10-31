@@ -449,6 +449,25 @@ class _StickDiagram:
                     _DesignParameterInDictionary['_GDSFile']['_GDSFile'][0]._ELEMENTS.append(
                                                                                             self._CreateGDSSrefElement(_SREFName=_DesignParameterInDictionary[_DesignParameter]['_DesignObj']._DesignParameter['_Name']['_Name'], _XYCoordinates=[_XYCoordinate], _Reflect=_DesignParameterInDictionary[_DesignParameter]['_Reflect'], _Angle=_DesignParameterInDictionary[_DesignParameter]['_Angle'])
                                                                                         )
+            elif _DesignParameterInDictionary[_DesignParameter]['_DesignParametertype'] == 31 and _DesignParameterInDictionary[_DesignParameter]['_Ignore']==None:
+                macro_stream_obj = gds_stream.GDS_STREAM()
+                with open(f'{_DesignParameterInDictionary[_DesignParameter]["_ReferenceGDS"]}', 'rb') as f:
+                    macro_stream_obj.read_binary_gds_stream(gds_file=f)
+                macro_stream_obj._STRUCTURES.reverse()
+                _DesignParameterInDictionary['_GDSFile']['_GDSFile'].extend(macro_stream_obj._STRUCTURES)
+                structure_name = macro_stream_obj._STRUCTURES[0]._STRNAME.strname#.decode()
+                # if '\x00' in structure_name:
+                #     structure_name = structure_name.split('\x00', 1)[0]
+                for _XYCoordinate in _DesignParameterInDictionary[_DesignParameter]['_XYCoordinates']:
+                    _DesignParameterInDictionary['_GDSFile']['_GDSFile'][0]._ELEMENTS.append(
+                        self._CreateGDSSrefElement(
+                        _SREFName=structure_name, _XYCoordinates=[_XYCoordinate],
+                        _Reflect=_DesignParameterInDictionary[_DesignParameter]['_Reflect'],
+                        _Angle=_DesignParameterInDictionary[_DesignParameter]['_Angle'])
+                    )
+                print(1)
+
+
             elif _DesignParameterInDictionary[_DesignParameter]['_DesignParametertype'] == 8:
                 #print 'monitor for debug2: ', _DesignParameterInDictionary[_DesignParameter]['_XYCoordinates']
                 for _XYCoordinate in _DesignParameterInDictionary[_DesignParameter]['_XYCoordinates']:
@@ -507,6 +526,10 @@ class _StickDiagram:
 
         return dict(_DesignParametertype=3,_DesignObj=_DesignObj, _XYCoordinates=_XYCoordinates, _Reflect=_Reflect, _Angle=_Angle, _Ignore=None, _ElementName = _ElementName),
 
+    def _MacroElementDeclaration(self, _ReferenceGDS, _XYCoordinates=[], _Ignore=None, _Reflect=None, _Angle=None, _ElementName = None):
+
+        return dict(_DesignParametertype=31, _ReferenceGDS=_ReferenceGDS, _XYCoordinates=_XYCoordinates, _Ignore=_Ignore,  _Reflect=_Reflect, _Angle=_Angle, _ElementName=_ElementName)
+
     def _NameDeclaration(self,_Name= None ):
 
         return dict(_DesignParametertype=5,_Name=_Name)
@@ -528,3 +551,35 @@ class _StickDiagram:
 
     def _SupplyRailDeclaration(self, _HorizontalSupplyRailArea=[], _VerticalSupplyRailArea=[],  _ViaArrays = [], _Rails = [], _SupplyNodeName=None):
         return dict(_DesignParametertype=6, _HorizontalSupplyRailArea=_HorizontalSupplyRailArea, _VerticalSupplyRailArea=_VerticalSupplyRailArea,  _ViaArrays = _ViaArrays, _Rails =_Rails, _SupplyNodeName=_SupplyNodeName)
+
+
+if __name__ == '__main__':
+    from generatorLib.generator_models import ViaMet12Met2
+
+    tmp = _StickDiagram()
+    tmp._DesignParameter = dict(
+        _Name=tmp._NameDeclaration('top'), _GDSFile = tmp._GDSObjDeclaration(None)
+    )
+    tmp._DesignParameter['sref1'] = tmp._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_DesignParameter=None, _Name='test1'))[0]
+    tmp._DesignParameter['sref2'] = tmp._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_DesignParameter=None, _Name='test2'))[0]
+    tmp._DesignParameter['sref1']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(_ViaMet12Met2NumberOfCOX=3,
+                                                                            _ViaMet12Met2NumberOfCOY=4)
+    tmp._DesignParameter['sref2']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(_ViaMet12Met2NumberOfCOX=1,
+                                                                            _ViaMet12Met2NumberOfCOY=1)
+    tmp._DesignParameter['sref1']['_XYCoordinates'] = [[0,0]]
+    tmp._DesignParameter['sref2']['_XYCoordinates'] = [[1000,0]]
+    tmp._UpdateDesignParameter2GDSStructure(tmp._DesignParameter)
+
+
+
+    tmpB = ViaMet12Met2._ViaMet12Met2(_DesignParameter=None, _Name='ViaMet12Met2test3')
+    tmpB._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(_ViaMet12Met2NumberOfCOX=3,
+                                                                            _ViaMet12Met2NumberOfCOY=4)
+    tmpB._DesignParameter['macro_inv'] = tmpB._MacroElementDeclaration(_ReferenceGDS='./PyQTInterface/GDSFile/INV2.gds', _XYCoordinates=[[1200,100]])
+    tmpB._DesignParameter['macro_inv2'] = tmpB._MacroElementDeclaration(_ReferenceGDS='./PyQTInterface/GDSFile/INV2.gds', _XYCoordinates=[[-1200,100]])
+    tmpB._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=tmpB._DesignParameter)
+    testStreamFile=open('./macro.gds','wb')
+
+    tmp1=tmpB._CreateGDSStream(tmpB._DesignParameter['_GDSFile']['_GDSFile'])
+    tmp1.write_binary_gds_stream(testStreamFile)
+    testStreamFile.close()
