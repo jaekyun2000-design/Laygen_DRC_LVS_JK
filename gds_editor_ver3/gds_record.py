@@ -163,7 +163,7 @@ class GDS_FONTS():
             fmt='>HH'+str(len(self.fonts))+'s'
             fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.fonts)
             binary_gds_stream.write(fmt_binary_data)
-    
+
     def read_binary_gds_stream(self,tag,gds_data):
         fonts_data,=struct.unpack('>'+str(len(gds_data))+'s',gds_data)
         self.tag=tag
@@ -370,6 +370,12 @@ class GDS_STRNAME():
         self.strname=None
         
     def write_binary_gds_stream(self,binary_gds_stream):
+        if type(self.strname) == bytes:
+            decoded_str  = self.strname.decode()
+            if '\x00' in decoded_str:
+                self.strname = decoded_str.split('\x00', 1)[0]
+            else:
+                self.strname = decoded_str
         if len(self.strname)%2:
             fmt='>HH'+str(len(self.strname)+1)+'s'
             fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.strname)+b'\0')
@@ -604,6 +610,12 @@ class GDS_SNAME():
         self.tag=tag
         self.sname=None
     def write_binary_gds_stream(self,binary_gds_stream):
+        if type(self.sname) == bytes:
+            decoded_str = self.sname.decode()
+            if '\x00' in decoded_str:
+                self.sname = decoded_str.split('\x00', 1)[0]
+            else:
+                self.sname = decoded_str
         if len(self.sname)%2:
             fmt='>HH'+str(len(self.sname)+1)+'s'
             fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.sname)+b'\0')
