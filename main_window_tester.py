@@ -330,6 +330,44 @@ def test_modifier_boundary(qtbot):
     assert window.visualItemDict['modified_boundary'] in window.scene.items()
 
 
+def test_modifier_path(qtbot):
+
+    with HiddenConsole():
+        window = MainWindow._MainWindow()
+    window.widget_delegator.makePathWindow()
+    qtbot.waitForWindowShown(window.pw)
+
+    qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
+                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(-100,-100)))
+    qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
+                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(100,100)))
+    qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
+                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(100,200)))
+    qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
+                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(-100,200)))
+    qtbot.keyClicks(window.pw.width_input, '50')
+    qtbot.keyClicks(window.pw.name_input,'path_modifier_test')
+    window.pw.on_buttonBox_accepted()
+
+    qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
+                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(0,200)))
+    window.design_modifier.field_value_dict['Path']['name'].clear()
+    qtbot.keyClicks(window.design_modifier.field_value_dict['Path']['name'], 'modified_path')
+    window.design_modifier.field_value_dict['Path']['width'].clear()
+    qtbot.keyClicks(window.design_modifier.field_value_dict['Path']['width'], '100')
+    qtbot.keyClicks(window.design_modifier.field_value_dict['Path']['layer'], 'METAL1')
+    qtbot.mouseClick(window.design_modifier.apply_button, QtCore.Qt.LeftButton)
+
+
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['modified_path']
+    assert not 'path_modifier_test' in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('modified_path')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window.visualItemDict['modified_path']
+    assert window.visualItemDict['modified_path'] in window.scene.items()
+
+
 ##################################test for dc creation##################################
 def test_create_pycode(qtbot):
 
