@@ -340,7 +340,7 @@ def test_modifier_path(qtbot):
     qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
                      pos=window.centralWidget().mapFromScene(QtCore.QPoint(-100,-100)))
     qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
-                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(100,100)))
+                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(100,-100)))
     qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
                      pos=window.centralWidget().mapFromScene(QtCore.QPoint(100,200)))
     qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
