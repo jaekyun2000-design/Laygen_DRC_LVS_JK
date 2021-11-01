@@ -49,7 +49,8 @@ class WidgetDelegator(delegator.Delegator):
     def loadSRefWindow(self):
         self.main_window.ls = SetupWindow._LoadSRefWindow(purpose='main_load')
         self.main_window.ls.show()
-        self.main_window.ls.send_DesignConstraint_signal.connect(self.main_window.srefCreate)
+        # self.main_window.ls.send_DesignConstraint_signal.connect(self.main_window.srefCreate)
+        self.main_window.ls.send_DesignConstraint_signal.connect(self.main_window.design_delegator.create_qt_constraint)
         self.main_window.scene.send_xy_signal.connect(self.main_window.ls.DetermineCoordinateWithMouse)
         self.main_window.ls.send_destroy_signal.connect(self.main_window.delete_obj)
 
