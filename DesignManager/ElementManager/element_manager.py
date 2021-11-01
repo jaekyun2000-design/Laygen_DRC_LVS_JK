@@ -87,7 +87,15 @@ class ElementManager:
                         tmpAST.__dict__[key] = list(generator_model_api.class_function_dict[dp_dict['library']].keys())[0]
                     elif key == 'parameters':
                         tmpAST.__dict__[key] = dp_dict['parameters']
-
+        elif dp_dict['_DesignParametertype'] == 3:
+            tmpAST = element_ast.MacroCell()
+            for key in element_ast.MacroCell._fields:
+                if key == 'name':
+                    tmpAST.__dict__[key] = dp_dict['_ElementName']
+                elif key == 'library':
+                    tmpAST.__dict__[key] = dp_dict['_ReferenceGDS']
+                elif key == 'XY':
+                    tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]
 
         elif dp_dict['_DesignParametertype'] == 'element array':  #EA
             tmpAST = variable_ast.ElementArray()
@@ -278,6 +286,25 @@ class ElementManager:
                 elif key == 'parameters':
                     tmpDP[key] = ast.__dict__['parameters']
             tmpDP['_DesignParametertype'] = 3
+        elif ASTmodule._getASTtype(ast) == 'MacroCell':
+            tmpDP = dict()
+            for key in ast._fields:
+                if key in ['XY']:
+                    if self.discriminate_variable(key,ast):
+                        return None, None
+                if key == 'name':
+                    tmpDP['_ElementName'] = ast.__dict__['name']
+                elif key == 'library':
+                    tmpDP['_ReferenceGDS'] = ast.__dict__['library']
+                elif key == 'XY':
+                    contain_variable = False
+                    if type(ast.__dict__['XY']) == list:
+                        for idx in range(len(ast.__dict__['XY'])):
+                            if re.search('[^0-9-.]', str(ast.__dict__['XY'][idx][0])) is not None or re.search('[^0-9-.]', str(ast.__dict__['XY'][idx][1])) is not None:
+                                contain_variable = True
+                        if not contain_variable:
+                            tmpDP['_XYCoordinates'] = ast.__dict__['XY']
+            tmpDP['_DesignParametertype'] = 31
 
         elif ASTmodule._getASTtype(ast) == 'Text':
             # 'id',  # name str

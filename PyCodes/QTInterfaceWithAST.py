@@ -161,6 +161,14 @@ class QtDesignParameter:
             _tmpDesignParameter["_ElementName"] = None
             _tmpDesignParameter["_DesignParametertype"] = 3
             _tmpDesignParameter["_ElementName"] = self._ElementName
+        elif self._type == 31:  # macro
+            _tmpDesignParameter["_ReferenceGDS"] = None  ## PMOSInInv, NMOSInInv ...
+            _tmpDesignParameter["_XYCoordinates"] = []
+            _tmpDesignParameter["_Reflect"] = None
+            _tmpDesignParameter["_Angle"] = None
+            _tmpDesignParameter["_Ignore"] = None
+            _tmpDesignParameter["_DesignParametertype"] = 31
+            _tmpDesignParameter["_ElementName"] = self._ElementName
         elif self._type == 4:  # gds
             _tmpDesignParameter["_GDSFile"] = None
             _tmpDesignParameter["_DesignParametertype"] = 4
