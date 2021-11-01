@@ -817,7 +817,6 @@ class _MainWindow(QMainWindow):
                     else:
                         hierarchy = {tmp_module_name : self.entireHierarchy[self._CurrentModuleName][hierarchy_key]}
 
-
                 self.remove_module(self._CurrentModuleName)
                 new_project.create_dc_vi_from_top_dp(hierarchy, test)
                 self.hide()

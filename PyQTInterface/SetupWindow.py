@@ -135,6 +135,7 @@ class _BoundarySetupWindow(QWidget):
 
         self.setLayout(vbox)
 
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         self.setWindowTitle('Boundary Setup Window')
         self.setGeometry(300,300,500,500)
@@ -387,6 +388,8 @@ class _PolygonSetupWindow(QWidget):
         # vbox.addStretch(1)
 
         self.setLayout(vbox)
+
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         self.setWindowTitle('Polygon Setup Window')
         self.setGeometry(300,300,500,500)
@@ -644,6 +647,8 @@ class _PathSetupWindow(QWidget):
         # vbox.addStretch(1)
 
         self.setLayout(vbox)
+
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         self.setWindowTitle('Path Setup Window')
         self.setGeometry(300,300,500,500)
@@ -972,6 +977,8 @@ class _LoadSRefWindow(QWidget):
 
         self.setLayout(vbox)
 
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
+
         self.setWindowTitle('LoadSRef Window')
         self.setGeometry(300,300,500,500)
         self.show()
@@ -1211,6 +1218,8 @@ class _TextSetupWindow(QWidget):
 
         self.setLayout(vbox)
 
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
+
         self.setWindowTitle('Text Setup Window')
         self.setGeometry(300,300,500,200)
         self.show()
@@ -1380,6 +1389,8 @@ class _PinSetupWindow(QWidget):
         # vbox.addStretch(1)
 
         self.setLayout(vbox)
+
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
 
         self.setWindowTitle('Text Setup Window')
         self.setGeometry(300,300,500,200)
