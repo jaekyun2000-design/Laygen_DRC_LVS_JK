@@ -383,6 +383,9 @@ class _MainWindow(QMainWindow):
         srefButtonL = QPushButton("SRefLoad",dockContentWidget1)
         srefButtonL.clicked.connect(self.widget_delegator.loadSRefWindow)
 
+        macroCellButton = QPushButton("MacroCell",dockContentWidget1)
+        macroCellButton.clicked.connect(self.widget_delegator.loadMacroCellWindow)
+
         TextButton = QPushButton("Text",dockContentWidget1)
         TextButton.clicked.connect(self.widget_delegator.makeTextWindow)
 
@@ -457,6 +460,7 @@ class _MainWindow(QMainWindow):
         vboxOnDock1.addWidget(polygonButton)
         vboxOnDock1.addWidget(pathButton)
         vboxOnDock1.addWidget(srefButtonL)
+        vboxOnDock1.addWidget(macroCellButton)
         vboxOnDock1.addWidget(TextButton)
         vboxOnDock1.addWidget(PinButton)
         vboxOnDock1.addStretch(2)
@@ -1805,6 +1809,8 @@ class _MainWindow(QMainWindow):
             del self.pinw
         if obj == 'ls':
             del self.ls
+        if obj == 'mc':
+            del self.mc
         # self.scene.itemListClickIgnore(False)
 
     def updateGraphicItem(self,graphicItem):

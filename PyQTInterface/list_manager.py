@@ -91,7 +91,6 @@ class _ManageList(QTableView):
     def __init__(self, LMaddress):
         super().__init__()
         self.lm = LMaddress
-        self._layerList = list()
         # self._usedlayer = dict()
         self._usedlayer = VisualizationItem._VisualizationItem._subElementLayer
         self.visibleGenControl = True

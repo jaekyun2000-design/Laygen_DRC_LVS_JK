@@ -46,15 +46,19 @@ class WidgetDelegator(delegator.Delegator):
         self.main_window.scene.send_mouse_move_xy_signal.connect(self.main_window.pw.mouseTracking)
         self.main_window.scene.send_doubleclick_signal.connect(self.main_window.pw.quitCreate)
 
-
     def loadSRefWindow(self):
         self.main_window.ls = SetupWindow._LoadSRefWindow(purpose='main_load')
         self.main_window.ls.show()
         self.main_window.ls.send_DesignConstraint_signal.connect(self.main_window.srefCreate)
-        self.main_window.ls.send_exported_sref_signal.connect(self.main_window.createDummyConstraint)
         self.main_window.scene.send_xy_signal.connect(self.main_window.ls.DetermineCoordinateWithMouse)
         self.main_window.ls.send_destroy_signal.connect(self.main_window.delete_obj)
 
+    def loadMacroCellWindow(self):
+        self.main_window.mc = SetupWindow._MacroCellWindow()
+        self.main_window.mc.show()
+        self.main_window.mc.send_DesignConstraint_signal.connect(self.main_window.design_delegator.create_qt_constraint)
+        self.main_window.scene.send_xy_signal.connect(self.main_window.mc.DetermineCoordinateWithMouse)
+        self.main_window.mc.send_destroy_signal.connect(self.main_window.delete_obj)
 
     def makeTextWindow(self):
         self.main_window.txtw = SetupWindow._TextSetupWindow()
