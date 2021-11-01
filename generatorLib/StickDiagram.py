@@ -19,6 +19,7 @@ import gds_editor_ver3
 
 from generatorLib import DesignParameters
 import copy
+import math
 
 
 
@@ -38,6 +39,18 @@ class _StickDiagram:
         exec(code)
 
         # exec(code)
+    def CeilMinSnapSpacing(self, _DesignParameter=None, _MinSnapSpacing=None):
+         if _DesignParameter ==None or _MinSnapSpacing ==None:
+             raise user_define_exceptions.IncorrectInputError('_DesignParameter or _MinSnapSpacing has incorrect values')
+         return int(math.ceil(_DesignParameter /_MinSnapSpacing ))*_MinSnapSpacing
+    def FloorMinSnapSpacing(self, _DesignParameter=None, _MinSnapSpacing=None):
+        if _DesignParameter ==None or _MinSnapSpacing ==None:
+            raise user_define_exceptions.IncorrectInputError('_DesignParameter or _MinSnapSpacing has incorrect values')
+        return int(math.floor(_DesignParameter /_MinSnapSpacing ))*_MinSnapSpacing
+    def TruncMinSnapSpacing(self, _DesignParameter=None, _MinSnapSpacing=None):
+        if _DesignParameter ==None or _MinSnapSpacing ==None:
+            raise user_define_exceptions.IncorrectInputError('_DesignParameter or _MinSnapSpacing has incorrect values')
+        return math.trunc(_DesignParameter /_MinSnapSpacing )*_MinSnapSpacing
 
     def RoundupMinSnapSpacing(self, _DesignParameter=None, _MinSnapSpacing=None):
         if _DesignParameter ==None or _MinSnapSpacing ==None:
