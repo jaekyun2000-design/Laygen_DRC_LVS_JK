@@ -39,6 +39,15 @@ class DesignDelegator(delegator.Delegator):
                                                                           module_name=self.main_window._CurrentModuleName,
                                                                           _ast=constraint_ast)
             self.control_constraint_tree_view(design_dict['constraint_id'])
+
+            if type(constraint_ast).__name__ in ['Sref', 'MacroCell']:
+                gds2gen = topAPI.gds2generator.GDS2Generator(True)
+                dp_from_gen = gds2gen.code_generation_for_subcell(constraint_ast)
+                if design_dict['parameter']:
+                    design_dict['parameter']._DesignParameter['_DesignObj'] = dp_from_gen['_DesignObj']
+                    design_dict['parameter']._DesignParameter['_ModelStructure'] = dp_from_gen['_ModelStructure']
+                    design_dict['parameter'].update_unified_expression()
+
             if design_dict['parameter']:
                 self.create_vs_item(design_dict['parameter'])
         elif constraint_dict:
