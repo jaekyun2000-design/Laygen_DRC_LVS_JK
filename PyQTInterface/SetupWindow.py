@@ -1,5 +1,6 @@
 import sys
 import os
+import platform
 import warnings
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
@@ -1160,10 +1161,23 @@ class _MacroCellWindow(QWidget):
         self.XY = QLabel("XY")
 
         self.name_input = QLineEdit()
-        self.library_input = QComboBox()
+        self.library_input = QLineEdit()
+        self.library_input.setReadOnly(True)
         self.XY_input = QLineEdit()
 
-        self.library_input.addItems(generator_model_api.class_dict.keys())
+        scf = QFileDialog.getOpenFileName(self,'Load GDS','./PyQTInterface/GDSFile')
+        _fileName=scf[0]
+        if _fileName == '':
+            print("No File Selected")
+            return
+        else:
+            # if platform.system() in ['Linux', 'Darwin']:
+            #     generator_class_name = _fileName.split('\\')[-1][:-4]
+            # else:
+            #     generator_class_name = _fileName.split('/')[-1][:-4]
+            generator_class_name = _fileName.split('/')[-1][:-4]
+            self.library_input.setText(generator_class_name)
+
 
         okButton = QPushButton("OK",self)
         cancelButton = QPushButton("Cancel",self)
@@ -1228,7 +1242,7 @@ class _MacroCellWindow(QWidget):
             if key == 'name':
                 tmpAST.__dict__[key] = self.name_input.text()
             elif key == 'library':
-                tmpAST.__dict__[key] = self.library_input.currentText()
+                tmpAST.__dict__[key] = self.library_input.text()
             elif key == 'XY':
                 tmpAST.__dict__[key] = [[float(i) for i in self.XY_input.text().split(',')]]
 
