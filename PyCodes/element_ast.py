@@ -378,7 +378,40 @@ class ElementTransformer(ast.NodeTransformer):
             # print(sentence)
         tmp = ast.parse(sentence)
         return tmp.body
+    def visit_MacroCell(self,node):
+        """
+        field:
+            name
+            referencce
+            XY
+        """
+        syntax = self.xy_syntax_checker(node)
+        if syntax == 'ast':
+            syntax = ''
+        for field in node._fields:
+            if node.__dict__[field] == '' or node.__dict__[field] == None:
+                raise ValueError(f"Not valid \'{field}\' value : {node.__dict__[field]}")
+            if isinstance(node.__dict__[field], ast.AST):
+                tmp_ast = run_transformer(node.__dict__[field])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
+            elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
+                tmp_ast = run_transformer(node.__dict__[field][0])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
 
+        if syntax == 'list':  # or syntax == 'string':
+            tmp_xy = str(node.XY).replace("'", "")
+            sentence = f"self._DesignParameter['{node.name}'] = self._MacroElementDeclaration(_ReferenceGDS='{node.library}'," \
+                       f" _XYCoordinates={tmp_xy})\n"
+        elif syntax == 'string':
+            tmp_xy = str(node.XY[0]).replace("'", "")
+            sentence = f"self._DesignParameter['{node.name}'] = self._MacroElementDeclaration(_ReferenceGDS='{node.library}'," \
+                       f" _XYCoordinates={tmp_xy})\n"
+        else:
+            sentence = f"self._DesignParameter['{node.name}'] = self._MacroElementDeclaration(_ReferenceGDS='{node.library}'," \
+                       f" _XYCoordinates={node.XY})\n"
+            # print(sentence)
+        tmp = ast.parse(sentence)
+        return tmp.body
 def run_transformer(source_ast):
     module_ast = ast.Module()
     if type(source_ast) == list:
