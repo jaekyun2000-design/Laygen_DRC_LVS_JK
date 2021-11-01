@@ -524,7 +524,7 @@ class _VisualizationItem(QGraphicsItemGroup):
             elif self._ItemTraits['_DesignParametertype'] == 2:
                 for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
                     self.blockGeneration(xyPairs, idx)
-            elif self._ItemTraits['_DesignParametertype'] == 3:
+            elif self._ItemTraits['_DesignParametertype'] in [3, 31]:
                 for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
                     self.blockGeneration(xyPairs, idx)
             elif self._ItemTraits['_DesignParametertype'] == 8:
@@ -635,7 +635,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self._ItemTraits['_XYCoordinates'] = copy.deepcopy(QtDesignParameter._DesignParameter['_XYCoordinates'])
             elif self._type == 2:
                 self._ItemTraits['_XYCoordinates'] = copy.deepcopy(QtDesignParameter._DesignParameter['_XYCoordinates'])
-            elif self._type == 3:
+            elif self._type == 3 or self._type == 31:
                 self._ItemTraits['_XYCoordinates'] = copy.deepcopy(QtDesignParameter._DesignParameter['_XYCoordinates'])
             elif self._type == 8:
                 self._ItemTraits['_XYCoordinates'] = copy.deepcopy(QtDesignParameter._DesignParameter['_XYCoordinates'])
@@ -686,7 +686,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 self.warning.setText("Invalid Design Value")
                 self.warning.setIcon(QMessageBox.Warning)
                 return
-        elif self._ItemTraits['_DesignParametertype'] == 3:
+        elif self._ItemTraits['_DesignParametertype'] in [3, 31]:
             try:
                 self._ItemTraits['_DesignParameterRef'] = _DesignParameter['_ModelStructure']
                 self._ItemTraits['_Reflect'] = _DesignParameter['_Reflect']
@@ -722,7 +722,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
                     self.blockGeneration(xyPairs, idx)
                 self.setPos(0,0)
-            elif self._ItemTraits['_DesignParametertype'] == 3:
+            elif self._ItemTraits['_DesignParametertype'] in [3, 31]:
                 self.block = []
                 for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
                     self.blockGeneration(xyPairs, idx)
@@ -1025,7 +1025,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
             ############################ Variable Visualization End ############################
 
-        elif self._ItemTraits['_DesignParametertype'] == 3:                #SRef Case
+        elif self._ItemTraits['_DesignParametertype'] in [3, 31]:                #SRef Case
             self.index = idx
             tmp_vs_item_group = QGraphicsItemGroup()
             for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
@@ -1187,7 +1187,7 @@ class _VisualizationItem(QGraphicsItemGroup):
                 block.setZValue(block.element_info.block_traits['_Layer'])
         if self._type == 1 or self._type == 2:
             self.setZValue(self._ItemTraits['_Layer'])
-        elif self._type == 3:
+        elif self._type in [3, 31]:
             z_list = []
             for child in self.childItems():
                 z_list.append(child.zValue())
