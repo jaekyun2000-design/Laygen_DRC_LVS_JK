@@ -368,6 +368,60 @@ def test_modifier_path(qtbot):
     assert window.visualItemDict['modified_path'] in window.scene.items()
 
 
+def test_modifier_sref(qtbot):
+
+    with HiddenConsole():
+        window = MainWindow._MainWindow()
+    window.widget_delegator.loadSRefWindow()
+    qtbot.waitForWindowShown(window.ls)
+    window.widget_delegator.loadSRefWindow()
+    qtbot.waitForWindowShown(window.ls)
+    qtbot.keyClicks(window.ls.name_input, 'sref_modifier_test')
+    qtbot.keyClicks(window.ls.library_input, 'NMOSWithDummy')
+    qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
+                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(0,0)))
+    for idx, par_name in enumerate(window.ls.par_name):
+        if 'Number' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '5')
+        elif 'Width' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '500')
+        elif 'length' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
+        elif '_XVT' in par_name:
+            window.ls.par_valueForLineEdit[idx].clear()
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+    window.ls.on_buttonBox_accepted()
+
+
+    qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
+                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(0,0)))
+    # window.design_modifier.field_value_dict['Sref']['name'].clear()
+    # qtbot.keyClicks(window.design_modifier.field_value_dict['Sref']['name'], 'modified_sref')
+    for key, widget in window.design_modifier.field_value_dict['Sref'].items():
+        if 'Gate' in key:
+            widget.clear()
+            qtbot.keyClicks(widget,'3')
+        elif 'Width' in key:
+            widget.clear()
+            qtbot.keyClicks(widget,'300')
+        elif 'Dummy' in key:
+            widget.clear()
+            qtbot.keyClicks(widget,'True')
+    qtbot.mouseClick(window.design_modifier.apply_button, QtCore.Qt.LeftButton)
+
+
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']
+    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['sref_modifier_test']
+    # assert not 'sref_modifier_test' in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
+    dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('sref_modifier_test')
+    assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
+    assert window.visualItemDict['sref_modifier_test']
+    assert window.visualItemDict['sref_modifier_test'] in window.scene.items()
+
+
 ##################################test for dc creation##################################
 def test_create_pycode(qtbot):
 
