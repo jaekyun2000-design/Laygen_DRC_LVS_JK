@@ -1068,9 +1068,9 @@ class _DesignVariableManagerWindow(QWidget):
 
 
 class _createNewDesignVariable(QWidget):
-
+    from generatorLib import drc_api
     send_variable_signal = pyqtSignal(list, str)
-    variableDict = dict(dummy_vid=dict(DV='min_spacing', value=str(user_setup.MIN_SNAP_SPACING)))
+    variableDict = dict(dummy_vid=dict(DV='min_spacing', value=str(drc_api.drc_classified_dict['MIN_SNAP_SPACING']['_MinSnapSpacing'])))
     idDict = dict(min_spacing=dict(vid='dummy_vid', id=list()))
 
     def __init__(self):

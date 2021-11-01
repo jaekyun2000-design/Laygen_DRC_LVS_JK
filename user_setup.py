@@ -1,8 +1,9 @@
-_Technology='SS28nm'
+
+_Technology='TSMC65nm'
 _Night_mode = True
 _Snap_mode = 'orthogonal' # orthogonal or any_angle
 DEBUG = True
-MIN_SNAP_SPACING = 5
+# MIN_SNAP_SPACING = 5
 GDS2GEN = True
 MULTI_THREAD = True
 MULTI_THREAD_NUM = 5

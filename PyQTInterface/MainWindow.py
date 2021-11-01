@@ -75,6 +75,7 @@ from PyQTInterface import calculator
 from PyQTInterface import ConditionalStatement
 
 from generatorLib import generator_model_api
+from generatorLib import drc_api
 from generatorLib import DRC
 
 ##for easy debug##
@@ -1219,7 +1220,8 @@ class _MainWindow(QMainWindow):
                     del rm_item
 
                 def min_snap_change():
-                    user_setup.MIN_SNAP_SPACING = spin_box.value()
+                    drc_api.drc_classified_dict['MIN_SNAP_SPACING']['_MinSnapSpacing'] = spin_box.value()
+                    # user_setup.MIN_SNAP_SPACING = spin_box.value()
                     self.min_snap_spacing_change.close()
                     print('Process Changed!')
                     self.message = QMessageBox()
@@ -1229,7 +1231,7 @@ class _MainWindow(QMainWindow):
                     self.message.show()
                     self.process_list_widget.close()
 
-                min_snap_before = user_setup.MIN_SNAP_SPACING
+                min_snap_before = drc_api.drc_classified_dict['MIN_SNAP_SPACING']['_MinSnapSpacing']
 
                 self.min_snap_spacing_change = QWidget()
 
@@ -3555,7 +3557,7 @@ class _CustomScene(QGraphicsScene):
         for s_highlighted_rectblock in VisualizationItem._RectBlock.shallow_highlight_list:
             s_highlighted_rectblock.shallow_highlight = False
 
-        snap = user_setup.MIN_SNAP_SPACING
+        snap = drc_api.drc_classified_dict['MIN_SNAP_SPACING']['_MinSnapSpacing']
         x_point = int(int(event.scenePos().toPoint().x() / snap) * snap)
         y_point = int(int(event.scenePos().toPoint().y() / snap) * snap)
         self.send_xy_signal.emit([x_point, y_point])
@@ -3826,7 +3828,7 @@ class _CustomScene(QGraphicsScene):
         #     self.send_move_signal.emit(delta)
         self.oldPos = QGraphicsSceneMouseEvent.scenePos()
 
-        snap = user_setup.MIN_SNAP_SPACING
+        snap = drc_api.drc_classified_dict['MIN_SNAP_SPACING']['_MinSnapSpacing']
         xy = [int(int(QGraphicsSceneMouseEvent.scenePos().x()/snap) * snap), int(int(QGraphicsSceneMouseEvent.scenePos().y()/snap) * snap)]
         self.send_mouse_move_xy_signal.emit(xy)
         self.send_mouse_move_signal.emit(QGraphicsSceneMouseEvent)

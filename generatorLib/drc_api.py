@@ -57,6 +57,8 @@ def run_for_process_update():
     drc_classified_dict['POLY'] = drc_classified_dict.pop('DRCPOLYGATE')
     drc_classified_dict['METAL1'] = drc_classified_dict.pop('DRCMETAL1')
     drc_classified_dict['METALx'] = drc_classified_dict.pop('DRCMETALx')
+    drc_classified_dict['MIN_SNAP_SPACING'] = drc_classified_dict.pop('DRCMinSnapSpacing')
+
     del drc_classified_dict['DRC']
 
 

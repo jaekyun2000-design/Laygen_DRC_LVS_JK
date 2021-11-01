@@ -210,6 +210,8 @@ class _RectBlock(QGraphicsRectItem):
                 return
             else:
                 self.show()
+        if self.element_info.block_traits['_LayerName'] + self.element_info.block_traits['_DatatypeName'] not in DisplayReader._DisplayDict:
+            return
         color_name = DisplayReader._DisplayDict[self.element_info.block_traits['_LayerName']+self.element_info.block_traits['_DatatypeName']]['Fill'].name
         color_patt_name =color_name+self.element_info.block_traits["_Pattern"]
 
@@ -1032,7 +1034,14 @@ class _VisualizationItem(QGraphicsItemGroup):
                 sub_element_vi._subCellFlag = True
                 sub_element_vi.updateDesignParameter(sub_element_dp)
                 sub_element_vi.setFlag(QGraphicsItemGroup.ItemIsSelectable, False)
-                sub_element_vi.setPos(_XYCoordinatesPair[0], _XYCoordinatesPair[1])
+                if len(_XYCoordinatesPair) != 2:
+                    warnings.warn("List index out of range: Invalid XY input")
+                    self.warning = QMessageBox()
+                    self.warning.setText("Invalid XY Input")
+                    self.warning.setIcon(QMessageBox.Warning)
+                    return
+                else:
+                    sub_element_vi.setPos(_XYCoordinatesPair[0], _XYCoordinatesPair[1])
 
                 # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                 if sub_element_vi._ItemTraits['_Layer'] == None:
