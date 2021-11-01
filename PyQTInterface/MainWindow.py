@@ -1825,7 +1825,10 @@ class _MainWindow(QMainWindow):
         self.scene.send_moveDone_signal.connect(graphicItem.moveUpdate)
 
     def deleteGraphicItem(self,graphicItem):
-        VisualizationItem._VisualizationItem()._subElementLayer[graphicItem._ItemTraits['_LayerUnifiedName']].remove(graphicItem)
+        # 의문점 layerUnifiedName을 사용하지 않는 vs item.. 예를 들어 sref, macro, text 등은 에러나지 않는가??:
+        if '_LayerUnifiedName' in graphicItem._ItemTraits:
+            if graphicItem in VisualizationItem._VisualizationItem()._subElementLayer[graphicItem._ItemTraits['_LayerUnifiedName']]:
+                VisualizationItem._VisualizationItem()._subElementLayer[graphicItem._ItemTraits['_LayerUnifiedName']].remove(graphicItem)
         self.scene.removeItem(graphicItem)
 
     def newProject(self):
