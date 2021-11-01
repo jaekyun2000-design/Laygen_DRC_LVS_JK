@@ -653,7 +653,7 @@ def test_encode_constraint(qtbot):
             window.dockContentWidget3_2.setCurrentIndex(window.dockContentWidget3_2.model.item(i).index())
     qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
     code = window.encodeConstraint()
-    print(code)
+    # print(code)
     assert code
 
 
@@ -1313,13 +1313,13 @@ def test_generator_show_hide(qtbot):
     qtbot.mouseClick(window.sendLeftButton, QtCore.Qt.LeftButton)
 
     ### Set generator non-visible ###
-    qtbot.mouseClick(window.dockWidget1.widget().layout().itemAt(0).widget().layout().itemAt(9).itemAt(0).widget(), QtCore.Qt.LeftButton)
+    qtbot.mouseClick(window.dockWidget1.widget().layout().itemAt(0).widget().layout().itemAt(10).itemAt(0).widget(), QtCore.Qt.LeftButton)
 
     ### Assertion ###
     assert not window.visualItemDict['gen_show_test'].isVisible()
 
     ### Set generator visible ###
-    qtbot.mouseClick(window.dockWidget1.widget().layout().itemAt(0).widget().layout().itemAt(9).itemAt(0).widget(), QtCore.Qt.LeftButton)
+    qtbot.mouseClick(window.dockWidget1.widget().layout().itemAt(0).widget().layout().itemAt(10).itemAt(0).widget(), QtCore.Qt.LeftButton)
 
     ### Assertion ###
     assert window.visualItemDict['gen_show_test'].isVisible()
@@ -1342,13 +1342,13 @@ def test_candidate_show_hide(qtbot):
     window.bw.on_buttonBox_accepted()
 
     ### Set candidate non-visible ###
-    qtbot.mouseClick(window.dockWidget1.widget().layout().itemAt(0).widget().layout().itemAt(9).itemAt(2).widget(), QtCore.Qt.LeftButton)
+    qtbot.mouseClick(window.dockWidget1.widget().layout().itemAt(0).widget().layout().itemAt(10).itemAt(2).widget(), QtCore.Qt.LeftButton)
 
     ### Assertion ###
     assert not window.visualItemDict['can_show_test'].isVisible()
 
     ### Set candidate visible ###
-    qtbot.mouseClick(window.dockWidget1.widget().layout().itemAt(0).widget().layout().itemAt(9).itemAt(2).widget(), QtCore.Qt.LeftButton)
+    qtbot.mouseClick(window.dockWidget1.widget().layout().itemAt(0).widget().layout().itemAt(10).itemAt(2).widget(), QtCore.Qt.LeftButton)
 
     ### Assertion ###
     assert window.visualItemDict['can_show_test'].isVisible()

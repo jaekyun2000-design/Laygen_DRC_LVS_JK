@@ -1135,6 +1135,125 @@ class _LoadSRefWindow(QWidget):
     def get_param_value_ast(self, _id, _ast):
         self.par_valueForLineEdit[self.cal_idx].setText(_id)
 
+
+class _MacroCellWindow(QWidget):
+    send_DesignConstraint_signal = pyqtSignal("PyQt_PyObject")
+    send_destroy_signal = pyqtSignal(str)
+
+    def __init__(self, MacroCellElement = None):
+        super().__init__()
+        self.create = False
+        self.option = True
+        self.paramDict = dict()
+        self.initUI()
+
+        if MacroCellElement is None:
+            self.create = True
+            self.visualItem = VisualizationItem._VisualizationItem()
+        else:
+            self._DesignParameter = MacroCellElement._ItemTraits
+            self.updateUI()
+
+    def initUI(self):
+        self.name = QLabel("name")
+        self.library = QLabel("library")
+        self.XY = QLabel("XY")
+
+        self.name_input = QLineEdit()
+        self.library_input = QComboBox()
+        self.XY_input = QLineEdit()
+
+        self.library_input.addItems(generator_model_api.class_dict.keys())
+
+        okButton = QPushButton("OK",self)
+        cancelButton = QPushButton("Cancel",self)
+
+        okButton.clicked.connect(self.on_buttonBox_accepted)
+        cancelButton.clicked.connect(self.cancel_button_accepted)
+
+        self.setupVboxColumn1 = QVBoxLayout()
+        self.setupVboxColumn2 = QVBoxLayout()
+        setupHBox1 = QHBoxLayout()
+        setupHBox2 = QHBoxLayout()
+
+        self.setupVboxColumn1.addWidget(self.name)
+        self.setupVboxColumn1.addWidget(self.library)
+        self.setupVboxColumn1.addWidget(self.XY)
+
+        self.setupVboxColumn2.addWidget(self.name_input)
+        self.setupVboxColumn2.addWidget(self.library_input)
+        self.setupVboxColumn2.addWidget(self.XY_input)
+
+        setupHBox1.addLayout(self.setupVboxColumn1)
+        setupHBox1.addLayout(self.setupVboxColumn2)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(2)
+        hbox.addWidget(okButton)
+        hbox.addWidget(cancelButton)
+
+        vbox = QVBoxLayout()
+        vbox.addStretch(1)
+        vbox.addLayout(setupHBox1)
+        vbox.addStretch(3)
+        vbox.addLayout(hbox)
+
+        self.setLayout(vbox)
+
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
+
+        self.setWindowTitle('MacroCell Window')
+        self.setGeometry(300,300,500,500)
+        self.show()
+
+    def updateUI(self):
+        self.name_input.setText(self._DesignParameter['_ElementName'])
+        self.library_input.setCurrentText(self._DesignParameter['library'])
+        self.XY_input.setText(str(self._DesignParameter['_XYCoordinates'][0][0])+','+str(self._DesignParameter['_XYCoordinates'][0][1]))
+
+    def update_library(self, library_name):
+        self.library_input.setCurrentText(library_name)
+
+    def updateUI_for_array(self):
+        if self.array_dict:
+            self.library_input.setCurrentText(self.array_dict['library'])
+
+    def DetermineCoordinateWithMouse(self, xy):
+        # self.XY_input.setText(str(_MouseEvent.scenePos().toPoint().x()) + ',' + str(_MouseEvent.scenePos().toPoint().y()))
+        self.XY_input.setText(str(xy[0]) + ',' + str(xy[1]))
+
+    def on_buttonBox_accepted(self):
+        tmpAST = element_ast.MacroCell()
+        for key in element_ast.MacroCell._fields:
+            if key == 'name':
+                tmpAST.__dict__[key] = self.name_input.text()
+            elif key == 'library':
+                tmpAST.__dict__[key] = self.library_input.currentText()
+            elif key == 'XY':
+                tmpAST.__dict__[key] = [[float(i) for i in self.XY_input.text().split(',')]]
+
+        self.send_DesignConstraint_signal.emit(tmpAST)
+
+        if self.option:
+            self.destroy()
+        else:
+            self.option = True
+
+    def maintain_window(self, option):
+        self.option = option
+
+    def cancel_button_accepted(self):
+        self.destroy()
+
+    def keyPressEvent(self, QKeyEvent):
+        if QKeyEvent.key() == Qt.Key_Return or QKeyEvent.key() == Qt.Key_Enter:
+            self.on_buttonBox_accepted()
+            self.send_destroy_signal.emit('mc')
+        elif QKeyEvent.key() == Qt.Key_Escape:
+            self.destroy()
+            self.send_destroy_signal.emit('mc')
+
+
 class _TextSetupWindow(QWidget):
 
     send_TextSetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
@@ -1162,7 +1281,6 @@ class _TextSetupWindow(QWidget):
         else:
             self._DesignParameter = TextElement._ItemTraits
             self.updateUI()
-
 
     def initUI(self):
         okButton = QPushButton("OK",self)
@@ -1324,7 +1442,6 @@ class _PinSetupWindow(QWidget):
             self._DesignParameter = PinElement._ItemTraits
             self.updateUI()
 
-
     def initUI(self):
         okButton = QPushButton("OK",self)
         cancelButton = QPushButton("Cancel",self)
@@ -1395,7 +1512,6 @@ class _PinSetupWindow(QWidget):
         self.setWindowTitle('Text Setup Window')
         self.setGeometry(300,300,500,200)
         self.show()
-
 
     def updateUI(self):
         self.name_input.setText(self._DesignParameter['_ElementName'])
@@ -1528,6 +1644,7 @@ class _ConstraintSetupWindow(QWidget):
         self.setGeometry(300,300,500,500)
         self.updateUI()
         self.show()
+
     def updateUI(self):
         while self.setupVboxColumn1.count() != 1:
             tmp = self.setupVboxColumn1.takeAt(1).widget()

@@ -59,6 +59,8 @@ def run_for_process_update():
     drc_classified_dict['METALx'] = drc_classified_dict.pop('DRCMETALx')
     drc_classified_dict['MIN_SNAP_SPACING'] = drc_classified_dict.pop('DRCMinSnapSpacing')
 
+    user_setup.MIN_SNAP_SPACING = drc_classified_dict['MIN_SNAP_SPACING']['_MinSnapSpacing']
+
     del drc_classified_dict['DRC']
 
 
