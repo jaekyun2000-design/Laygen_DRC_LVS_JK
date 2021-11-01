@@ -1166,8 +1166,8 @@ class _MacroCellWindow(QWidget):
         self.XY_input = QLineEdit()
 
         scf = QFileDialog.getOpenFileName(self,'Load GDS','./PyQTInterface/GDSFile')
-        _fileName=scf[0]
-        if _fileName == '':
+        self._fileName = scf[0]
+        if self._fileName == '':
             print("No File Selected")
             return
         else:
@@ -1175,7 +1175,7 @@ class _MacroCellWindow(QWidget):
             #     generator_class_name = _fileName.split('\\')[-1][:-4]
             # else:
             #     generator_class_name = _fileName.split('/')[-1][:-4]
-            generator_class_name = _fileName.split('/')[-1][:-4]
+            generator_class_name = self._fileName.split('/')[-1][:-4]
             self.library_input.setText(generator_class_name)
 
 
@@ -1242,7 +1242,7 @@ class _MacroCellWindow(QWidget):
             if key == 'name':
                 tmpAST.__dict__[key] = self.name_input.text()
             elif key == 'library':
-                tmpAST.__dict__[key] = self.library_input.text()
+                tmpAST.__dict__[key] =  self._fileName
             elif key == 'XY':
                 tmpAST.__dict__[key] = [[float(i) for i in self.XY_input.text().split(',')]]
 
