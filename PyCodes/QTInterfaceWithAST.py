@@ -1099,6 +1099,15 @@ class QtProject:
         except:
             tmp_project._loadDesignsFromGDSlegacy(_file=macro_cell_ast.library, _topModuleName=macro_cell_ast.name, _reverse=False)
         cell_name, design_obj_parm_dict = list(tmp_project._DesignParameter.items())[0]
+
+        # update modelstructure #
+        stack = list(design_obj_parm_dict.values())
+        while stack:
+            qt_dp = stack.pop(0)
+            if qt_dp._type == 3:
+                qt_dp._DesignParameter['_ModelStructure'] = qt_dp._DesignParameter['_DesignObj']
+                stack.extend(list(qt_dp._DesignParameter['_DesignObj'].values()))
+
         return design_obj_parm_dict
 
     def _loadConstraintsFromPySource(self, _file=None, _topModuleName=None):
