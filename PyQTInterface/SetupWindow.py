@@ -4664,7 +4664,11 @@ class DesignModifier(QWidget):
                 width=QLineEdit(),
             ),
             'Sref': dict(
+            ),
+            'MacroCell': dict(
+                name=QLineEdit()
             )
+
         }
         self.main_layout = QVBoxLayout()
         self.create_form()
