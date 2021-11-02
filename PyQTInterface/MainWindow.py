@@ -3645,15 +3645,12 @@ class _CustomScene(QGraphicsScene):
     def addItem(self, QGraphicsItem):
         super(_CustomScene, self).addItem(QGraphicsItem)
 
-        for key in QGraphicsItem.bounding_rect_dict:
-            self.fit_in_view_dict[key].append(QGraphicsItem.bounding_rect_dict[key])
-        # for key in QGraphicsItem.bounding_rect_dict:
-        #     if key == 'left' or key == 'bottom':
-        #        if QGraphicsItem.bounding_rect_dict[key] < self.fit_in_view_dict[key]:
-        #            self.fit_in_view_dict[key] = QGraphicsItem.bounding_rect_dict[key]
-        #     elif key == 'right' or key == 'top':
-        #         if QGraphicsItem.bounding_rect_dict[key] > self.fit_in_view_dict[key]:
-        #             self.fit_in_view_dict[key] = QGraphicsItem.bounding_rect_dict[key]
+        self.modify_bounding_rect_dict(QGraphicsItem)
+
+    def modify_bounding_rect_dict(self, item):
+        if 'bounding_rect_dict' in item.__dict__:
+            for key in item.bounding_rect_dict:
+                self.fit_in_view_dict[key].append(item.bounding_rect_dict[key])
 
     def removeItem(self, QGraphicsItem):
         super(_CustomScene, self).removeItem(QGraphicsItem)
