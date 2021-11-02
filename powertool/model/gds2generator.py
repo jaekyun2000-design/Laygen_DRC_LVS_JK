@@ -34,6 +34,12 @@ class GDS2Generator():
         #     self.inv_gen.load_gds('G:\OneDrive - postech.ac.kr\GeneratorAutomation\VariableSuggestion-git\INV2.gds')
         #     self.inv_gen.get_cell_names()
         #     self.inv_gen.set_root_cell('INV')
+    def initialize_root_cell(self, name):
+        self.root_cell = StickDiagram._StickDiagram()
+        self.root_cell._DesignParameter = dict()
+        self.root_cell._DesignParameter['_Name'] = StickDiagram._StickDiagram()._NameDeclaration(name)
+        self.root_cell._DesignParameter['_GDSFile'] = StickDiagram._StickDiagram()._GDSObjDeclaration()
+
 
     def save_as_pickle(self,file_name):
         with open(file_name, 'wb') as f:
@@ -78,6 +84,7 @@ class GDS2Generator():
         self.root_cell._DesignParameter['_GDSFile'] = StickDiagram._StickDiagram()._GDSObjDeclaration()
         try:
             self.root_cell.exec_pass(self.code,generator_model_api)
+            # self.root_cell._UpdateDesignParameter2GDSStructure(self.root_cell._DesignParameter)
         except:
             traceback.print_exc()
             warnings.warn("Invalid parameters.")

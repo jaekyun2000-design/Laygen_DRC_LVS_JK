@@ -478,8 +478,6 @@ class _StickDiagram:
                         _Reflect=_DesignParameterInDictionary[_DesignParameter]['_Reflect'],
                         _Angle=_DesignParameterInDictionary[_DesignParameter]['_Angle'])
                     )
-                print(1)
-
 
             elif _DesignParameterInDictionary[_DesignParameter]['_DesignParametertype'] == 8:
                 #print 'monitor for debug2: ', _DesignParameterInDictionary[_DesignParameter]['_XYCoordinates']

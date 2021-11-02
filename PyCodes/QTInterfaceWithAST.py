@@ -1092,6 +1092,15 @@ class QtProject:
             #     print(userDefineExceptions._UnkownError)
             #     return userDefineExceptions._UnkownError
 
+    def load_designs_by_macro_ast(self, macro_cell_ast):
+        tmp_project = QtProject()
+        try:
+            tmp_project._loadDesignsFromGDSlegacy(_file=macro_cell_ast.library, _topModuleName=macro_cell_ast.name, _reverse=True)
+        except:
+            tmp_project._loadDesignsFromGDSlegacy(_file=macro_cell_ast.library, _topModuleName=macro_cell_ast.name, _reverse=False)
+        cell_name, design_obj_parm_dict = list(tmp_project._DesignParameter.items())[0]
+        return design_obj_parm_dict
+
     def _loadConstraintsFromPySource(self, _file=None, _topModuleName=None):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
             print("_loadDesignsFromGDS Run.")
