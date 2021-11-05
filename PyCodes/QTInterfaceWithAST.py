@@ -2163,7 +2163,13 @@ class QtProject:
         else:
             try:
                 # send design parameter info to element manager --> return: ast info or
+                if type(_ast).__name__ == 'Sref':
+                    loss_parm_list = list(filter(lambda parm: parm not in _ast.parameters, _ast.parameter_fields))
+                    for parm_name in loss_parm_list:
+                        _ast.parameters[parm_name] = None
+
                 self._DesignConstraint[module_name][id]._ast = _ast
+
                 _designConstraint = self._DesignConstraint[module_name][id]
                 _designParameter = None
                 _designParameter_id = None
