@@ -99,7 +99,7 @@ def test_sref_window(qtbot):
             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
         elif '_XVT' in par_name:
             window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"LVT"')
     window.ls.on_buttonBox_accepted()
 
     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['sref_test']
@@ -258,7 +258,7 @@ def test_sref_edit_window(qtbot):
             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
         elif '_XVT' in par_name:
             window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"LVT"')
     window.ls.on_buttonBox_accepted()
 
     # send vs items to selected design item list widget
@@ -392,7 +392,7 @@ def test_modifier_sref(qtbot):
             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
         elif '_XVT' in par_name:
             window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"LVT"')
     window.ls.on_buttonBox_accepted()
 
 
@@ -644,7 +644,7 @@ def test_encode_constraint(qtbot):
             qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '30')
         elif '_XVT' in par_name:
             window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '"NVT"')
+            qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '"LVT"')
     window.widget_delegator.ls.on_buttonBox_accepted()
 
     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('encode_test')
@@ -747,7 +747,7 @@ def test_run_constraint_sref(qtbot):
             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
         elif '_XVT' in par_name:
             window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"LVT"')
     window.ls.on_buttonBox_accepted()
     window.ls.destroy()
     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('test_sref')
@@ -851,7 +851,7 @@ def test_run_constraint_for_update(qtbot):
                 qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
             elif '_XVT' in par_name:
                 window.ls.par_valueForLineEdit[idx].clear()
-                qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+                qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"LVT"')
         window.ls.on_buttonBox_accepted()
         window.ls.destroy()
         dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('test_sref')
@@ -1113,7 +1113,7 @@ def test_paring_after_convert_sref_assign(qtbot):
             qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '30')
         elif '_XVT' in par_name:
             window.widget_delegator.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '"NVT"')
+            qtbot.keyClicks(window.widget_delegator.ls.par_valueForLineEdit[idx], '"LVT"')
     window.widget_delegator.ls.on_buttonBox_accepted()
 
     ## dp에서 찾아서 H키 누르기
@@ -1403,7 +1403,7 @@ def test_project_save(qtbot):
             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '30')
         elif '_XVT' in par_name:
             window.ls.par_valueForLineEdit[idx].clear()
-            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"NVT"')
+            qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"LVT"')
     window.ls.on_buttonBox_accepted()
 
 
