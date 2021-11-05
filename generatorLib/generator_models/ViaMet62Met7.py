@@ -1,13 +1,6 @@
 from generatorLib import StickDiagram
 from generatorLib import DesignParameters
-# import user_define_exceptions
-
-
 from generatorLib import DRC
-
-import ftplib
-from ftplib import FTP
-import base64
 
 
 class _ViaMet62Met7(StickDiagram._StickDiagram):
@@ -34,13 +27,13 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
 
     def _CalculateViaMet62Met7DesignParameter(self, _ViaMet62Met7NumberOfCOX=None, _ViaMet62Met7NumberOfCOY=None,
                                               _MetalType = dict(METAL1 = 'X', METAL2 = 'X', METAL3 = 'X', METAL4 = 'X', METAL5 = 'X', METAL6 = 'X', METAL7 = 'X', METAL8 = 'Z', METAL9 = 'Z'), ):
-        print('#########################################################################################################')
-        print('                                    {}  ViaMet62Met7 Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name']))
-        print('#########################################################################################################')
+        print ('#########################################################################################################')
+        print(('                                    {}  ViaMet62Met7 Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name'])))
+        print ('#########################################################################################################')
 
         ###############################################Check the number of CO On Via Contact###########################################################################################
         if _ViaMet62Met7NumberOfCOX ==0 or _ViaMet62Met7NumberOfCOY==0:
-            print('************************* Error occured in {} Design Parameter Calculation******************************'.format(self._DesignParameter['_Name']['_Name']))
+            print(('************************* Error occured in {} Design Parameter Calculation******************************'.format(self._DesignParameter['_Name']['_Name'])))
             if DesignParameters._DebugMode == 0:
                 return 0
         ###############################################################################################################################################################################
@@ -48,7 +41,7 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
         _XYCoordinateOfViaMet62Met7 = [[0,0]]
 
 
-        print('#############################     Met5 Layer Calculation   ##############################################')
+        print ('#############################     Met5 Layer Calculation   ##############################################')
         if _MetalType['METAL7'] == 'X':
             _LengthViaMet62Met7BtwCO = _DRCObj._VIAxMinWidth + _DRCObj.DRCVIAxMinSpace(NumOfVIAxX=_ViaMet62Met7NumberOfCOX,NumOfVIAxY=_ViaMet62Met7NumberOfCOY )
         elif _MetalType['METAL7'] == 'Y':
@@ -80,7 +73,7 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
             raise user_define_exceptions.IncorrectInputError('_MetalType should have a value among X Y Z R')
 
 
-        print('#############################     Met2 Layer Calculation   ##############################################')
+        print ('#############################     Met2 Layer Calculation   ##############################################')
         # _LengthViaMet62Met7BtwCO = _DRCObj._VIAxMinWidth + _DRCObj.DRCVIAxMinSpace(NumOfVIAxX=_ViaMet62Met7NumberOfCOX,NumOfVIAxY=_ViaMet62Met7NumberOfCOY )
 
         # self._DesignParameter['_Met7Layer']['_XYCoordinates']=_XYCoordinateOfViaMet62Met7
@@ -104,7 +97,7 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
             self._DesignParameter['_Met7Layer']['_YWidth']=_DRCObj._VIArMinWidth + (_ViaMet62Met7NumberOfCOY - 1)* _LengthViaMet62Met7BtwCO+ 2 * max([_DRCObj._Metal1MinEnclosureVia12,_DRCObj._MetalxMinEnclosureCO2, _DRCObj._MetalyMinEnclosureCO2, _DRCObj._MetalzMinEnclosureCO2, _DRCObj._MetalrMinEnclosureCO2])
         else:
             raise user_define_exceptions.IncorrectInputError('_MetalType should have a value among X Y Z R')
-        print('#############################     Cont Layer Calculation   ##############################################')
+        print ('#############################     Cont Layer Calculation   ##############################################')
 
         tmp=[]
         if _MetalType['METAL7'] == 'X':
@@ -120,7 +113,7 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
             self._DesignParameter['_COLayer']['_XWidth'] = _DRCObj._VIArMinWidth
             self._DesignParameter['_COLayer']['_YWidth'] = _DRCObj._VIArMinWidth
         else:
-            raise user_define_exceptions.IncorrectInputError('_MetalType should have a value among X Y Z R')
+            raise Exception('_MetalType should have a value among X Y Z R')
 
         # _LengthViaMet62Met7BtwCO = _DRCObj._VIAxMinWidth + _DRCObj.DRCVIAxMinSpace(NumOfVIAxX=_ViaMet62Met7NumberOfCOX,NumOfVIAxY=_ViaMet62Met7NumberOfCOY )
         for i in range(0, _ViaMet62Met7NumberOfCOX):
@@ -150,21 +143,21 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
 
 
         del _DRCObj
-        print('#########################################################################################################')
-        print('                                    {}  ViaMet62Met7 Calculation End                                    '.format(self._DesignParameter['_Name']['_Name']))
-        print('#########################################################################################################')
+        print ('#########################################################################################################')
+        print(('                                    {}  ViaMet62Met7 Calculation End                                    '.format(self._DesignParameter['_Name']['_Name'])))
+        print ('#########################################################################################################')
 
 
     def _CalculateViaMet62Met7DesignParameterMinimumEnclosureX(self, _ViaMet62Met7NumberOfCOX=None, _ViaMet62Met7NumberOfCOY=None,
                                                                _MetalType = dict(METAL1 = 'X', METAL2 = 'X', METAL3 = 'X', METAL4 = 'X', METAL5 = 'X', METAL6 = 'X', METAL7 = 'X', METAL8 = 'Z', METAL9 = 'Z'), ):
 
-        print('#########################################################################################################')
-        print('                                    {}  ViaMet62Met7 Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name']))
-        print('#########################################################################################################')
+        print ('#########################################################################################################')
+        print(('                                    {}  ViaMet62Met7 Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name'])))
+        print ('#########################################################################################################')
 
         ###############################################Check the number of CO On Via Contact###########################################################################################
         if _ViaMet62Met7NumberOfCOX ==0 or _ViaMet62Met7NumberOfCOY==0:
-            print('************************* Error occured in {} Design Parameter Calculation******************************'.format(self._DesignParameter['_Name']['_Name']))
+            print(('************************* Error occured in {} Design Parameter Calculation******************************'.format(self._DesignParameter['_Name']['_Name'])))
             if DesignParameters._DebugMode == 0:
                 return 0
         ###############################################################################################################################################################################
@@ -172,7 +165,7 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
         _XYCoordinateOfViaMet62Met7 = [[0,0]]
 
 
-        print('#############################     Met5 Layer Calculation   ##############################################')
+        print ('#############################     Met5 Layer Calculation   ##############################################')
         if _MetalType['METAL7'] == 'X':
             _LengthViaMet62Met7BtwCO = _DRCObj._VIAxMinWidth + _DRCObj.DRCVIAxMinSpace(NumOfVIAxX=_ViaMet62Met7NumberOfCOX,NumOfVIAxY=_ViaMet62Met7NumberOfCOY )
         elif _MetalType['METAL7'] == 'Y':
@@ -182,7 +175,7 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
         elif _MetalType['METAL7'] == 'R':
             _LengthViaMet62Met7BtwCO = _DRCObj._VIArMinWidth + _DRCObj.DRCVIArMinSpace(NumOfVIArX=_ViaMet62Met7NumberOfCOX,NumOfVIArY=_ViaMet62Met7NumberOfCOY )
         else:
-            raise user_define_exceptions.IncorrectInputError('_MetalType should have a value among X Y Z R')
+            raise Exception('_MetalType should have a value among X Y Z R')
         # _LengthViaMet62Met7BtwCO = _DRCObj._VIAxMinWidth + _DRCObj.DRCVIAxMinSpace(NumOfVIAxX=_ViaMet62Met7NumberOfCOX,NumOfVIAxY=_ViaMet62Met7NumberOfCOY )
         # self._DesignParameter['_Met6Layer']['_XYCoordinates']=_XYCoordinateOfViaMet62Met7
         # self._DesignParameter['_Met6Layer']['_XWidth']=_DRCObj._VIAxMinWidth+ (_ViaMet62Met7NumberOfCOX - 1)* _LengthViaMet62Met7BtwCO+ 2 * max([_DRCObj._Metal1MinEnclosureVia1,_DRCObj._MetalxMinEnclosureCO])
@@ -207,7 +200,7 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
         else:
             raise user_define_exceptions.IncorrectInputError('_MetalType should have a value among X Y Z R')
 
-        print('#############################     Met2 Layer Calculation   ##############################################')
+        print ('#############################     Met2 Layer Calculation   ##############################################')
         # _LengthViaMet62Met7BtwCO = _DRCObj._VIAxMinWidth + _DRCObj.DRCVIAxMinSpace(NumOfVIAxX=_ViaMet62Met7NumberOfCOX,NumOfVIAxY=_ViaMet62Met7NumberOfCOY )
 
         # self._DesignParameter['_Met7Layer']['_XYCoordinates']=_XYCoordinateOfViaMet62Met7
@@ -235,7 +228,7 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
             raise user_define_exceptions.IncorrectInputError('_MetalType should have a value among X Y Z R')
 
 
-        print('#############################     Cont Layer Calculation   ##############################################')
+        print ('#############################     Cont Layer Calculation   ##############################################')
 
         tmp=[]
         if _MetalType['METAL7'] == 'X':
@@ -280,20 +273,20 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
 
 
         del _DRCObj
-        print('#########################################################################################################')
-        print('                                    {}  ViaMet62Met7 Calculation End                                    '.format(self._DesignParameter['_Name']['_Name']))
-        print('#########################################################################################################')
+        print ('#########################################################################################################')
+        print(('                                    {}  ViaMet62Met7 Calculation End                                    '.format(self._DesignParameter['_Name']['_Name'])))
+        print ('#########################################################################################################')
 
     def _CalculateViaMet62Met7DesignParameterMinimumEnclosureY(self, _ViaMet62Met7NumberOfCOX=None, _ViaMet62Met7NumberOfCOY=None,
                                                                _MetalType = dict(METAL1 = 'X', METAL2 = 'X', METAL3 = 'X', METAL4 = 'X', METAL5 = 'X', METAL6 = 'X', METAL7 = 'X', METAL8 = 'Z', METAL9 = 'Z'), ):
 
-        print('#########################################################################################################')
-        print('                                    {}  ViaMet62Met7 Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name']))
-        print('#########################################################################################################')
+        print ('#########################################################################################################')
+        print(('                                    {}  ViaMet62Met7 Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name'])))
+        print ('#########################################################################################################')
 
         ###############################################Check the number of CO On Via Contact###########################################################################################
         if _ViaMet62Met7NumberOfCOX ==0 or _ViaMet62Met7NumberOfCOY==0:
-            print('************************* Error occured in {} Design Parameter Calculation******************************'.format(self._DesignParameter['_Name']['_Name']))
+            print(('************************* Error occured in {} Design Parameter Calculation******************************'.format(self._DesignParameter['_Name']['_Name'])))
             if DesignParameters._DebugMode == 0:
                 return 0
         ###############################################################################################################################################################################
@@ -301,7 +294,7 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
         _XYCoordinateOfViaMet62Met7 = [[0,0]]
 
 
-        print('#############################     Met5 Layer Calculation   ##############################################')
+        print ('#############################     Met5 Layer Calculation   ##############################################')
         # _LengthViaMet62Met7BtwCO = _DRCObj._VIAxMinWidth + _DRCObj.DRCVIAxMinSpace(NumOfVIAxX=_ViaMet62Met7NumberOfCOX,NumOfVIAxY=_ViaMet62Met7NumberOfCOY )
         if _MetalType['METAL7'] == 'X':
             _LengthViaMet62Met7BtwCO = _DRCObj._VIAxMinWidth + _DRCObj.DRCVIAxMinSpace(NumOfVIAxX=_ViaMet62Met7NumberOfCOX,NumOfVIAxY=_ViaMet62Met7NumberOfCOY )
@@ -334,7 +327,7 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
             self._DesignParameter['_Met6Layer']['_YWidth']=_DRCObj._VIArMinWidth + (_ViaMet62Met7NumberOfCOY - 1)* _LengthViaMet62Met7BtwCO+ 2 * max([_DRCObj._Metal1MinEnclosureVia1,_DRCObj._MetalxMinEnclosureCO, _DRCObj._MetalyMinEnclosureCO, _DRCObj._MetalzMinEnclosureCO, _DRCObj._MetalrMinEnclosureCO])
         else:
             raise user_define_exceptions.IncorrectInputError('_MetalType should have a value among X Y Z R')
-        print('#############################     Met2 Layer Calculation   ##############################################')
+        print ('#############################     Met2 Layer Calculation   ##############################################')
         # _LengthViaMet62Met7BtwCO = _DRCObj._VIAxMinWidth + _DRCObj.DRCVIAxMinSpace(NumOfVIAxX=_ViaMet62Met7NumberOfCOX,NumOfVIAxY=_ViaMet62Met7NumberOfCOY )
 
         # self._DesignParameter['_Met7Layer']['_XYCoordinates']=_XYCoordinateOfViaMet62Met7
@@ -361,7 +354,7 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
         else:
             raise user_define_exceptions.IncorrectInputError('_MetalType should have a value among X Y Z R')
 
-        print('#############################     Cont Layer Calculation   ##############################################')
+        print ('#############################     Cont Layer Calculation   ##############################################')
 
         tmp=[]
         # self._DesignParameter['_COLayer']['_XWidth'] = _DRCObj._VIAxMinWidth
@@ -404,9 +397,9 @@ class _ViaMet62Met7(StickDiagram._StickDiagram):
 
         self._DesignParameter['_COLayer']['_XYCoordinates']=tmp
         del _DRCObj
-        print('#########################################################################################################')
-        print('                                    {}  ViaMet62Met7 Calculation End                                    '.format(self._DesignParameter['_Name']['_Name']))
-        print('#########################################################################################################')
+        print ('#########################################################################################################')
+        print(('                                    {}  ViaMet62Met7 Calculation End                                    '.format(self._DesignParameter['_Name']['_Name'])))
+        print ('#########################################################################################################')
 
 if __name__=='__main__':
     pass

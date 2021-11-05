@@ -1,19 +1,13 @@
 from generatorLib import StickDiagram
 from generatorLib import DesignParameters
-# import user_define_exceptions
-
-
 from generatorLib import DRC
-import ftplib
-from ftplib import FTP
-import base64
+
 
 class _ViaPoly2Met1(StickDiagram._StickDiagram):
     _ParametersForDesignCalculation= dict(_ViaPoly2Met1NumberOfCOX=None, _ViaPoly2Met1NumberOfCOY=None )
 
 
     def __init__(self, _DesignParameter=None, _Name=None):
-
         if _DesignParameter!=None:
             self._DesignParameter=_DesignParameter
         else :
@@ -22,8 +16,6 @@ class _ViaPoly2Met1(StickDiagram._StickDiagram):
                                                     _Met1Layer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
                                                     _COLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['CONT'][0],_Datatype=DesignParameters._LayerMapping['CONT'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
                                                     _Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None)
-
-
                                                    )
 
 
@@ -34,13 +26,13 @@ class _ViaPoly2Met1(StickDiagram._StickDiagram):
 
 
     def _CalculateViaPoly2Met1DesignParameter(self, _ViaPoly2Met1NumberOfCOX=None, _ViaPoly2Met1NumberOfCOY=None ):
-        print('#########################################################################################################')
-        print('                                    {}  ViaPoly2Met1 Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name']))
-        print('#########################################################################################################')
+        print ('#########################################################################################################')
+        print(('                                    {}  ViaPoly2Met1 Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name'])))
+        print ('#########################################################################################################')
 
         ###############################################Check the number of CO On Via Contact###########################################################################################
         if _ViaPoly2Met1NumberOfCOX ==0 or _ViaPoly2Met1NumberOfCOY==0:
-            print('************************* Error occured in {} Design Parameter Calculation******************************'.format(self._DesignParameter['_Name']['_Name']))
+            print(('************************* Error occured in {} Design Parameter Calculation******************************'.format(self._DesignParameter['_Name']['_Name'])))
             if DesignParameters._DebugMode == 0:
                 return 0
         ###############################################################################################################################################################################
@@ -48,22 +40,20 @@ class _ViaPoly2Met1(StickDiagram._StickDiagram):
         _XYCoordinateOfViaPoly2Met1 = [[0,0]]
 
 
-        print('#############################     POLY Layer Calculation   ##############################################')
+        print ('#############################     POLY Layer Calculation   ##############################################')
 
         _LengthViaPoly2Met1BtwCO = _DRCObj._CoMinWidth + _DRCObj.DRCCOMinSpace(NumOfCOX=_ViaPoly2Met1NumberOfCOX,NumOfCOY=_ViaPoly2Met1NumberOfCOY )
         self._DesignParameter['_POLayer']['_XYCoordinates']=_XYCoordinateOfViaPoly2Met1
-        self._DesignParameter['_POLayer']['_XWidth']= _DRCObj._CoMinWidth + (_ViaPoly2Met1NumberOfCOX - 1)* _LengthViaPoly2Met1BtwCO+ 2 * _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
-        self._DesignParameter['_POLayer']['_YWidth']= _DRCObj._CoMinWidth + (_ViaPoly2Met1NumberOfCOY - 1)* _LengthViaPoly2Met1BtwCO+ 2 * _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
+        self._DesignParameter['_POLayer']['_XWidth']= _DRCObj._CoMinWidth + (_ViaPoly2Met1NumberOfCOX - 1)*_LengthViaPoly2Met1BtwCO + 2*_DRCObj._CoMinEnclosureByPOAtLeastTwoSide
+        self._DesignParameter['_POLayer']['_YWidth']= _DRCObj._CoMinWidth + (_ViaPoly2Met1NumberOfCOY - 1)*_LengthViaPoly2Met1BtwCO + 2*_DRCObj._CoMinEnclosureByPOAtLeastTwoSide
 
-
-        print('#############################     Met1 Layer Calculation   ##############################################')
+        print ('#############################     Met1 Layer Calculation   ##############################################')
         _LengthViaPoly2Met1BtwCO = _DRCObj._CoMinWidth + _DRCObj.DRCCOMinSpace(NumOfCOX=_ViaPoly2Met1NumberOfCOX,NumOfCOY=_ViaPoly2Met1NumberOfCOY )
         self._DesignParameter['_Met1Layer']['_XYCoordinates']=_XYCoordinateOfViaPoly2Met1
         self._DesignParameter['_Met1Layer']['_XWidth']=_DRCObj._CoMinWidth + (_ViaPoly2Met1NumberOfCOX - 1)* _LengthViaPoly2Met1BtwCO+ 2 * _DRCObj._Metal1MinEnclosureCO2
         self._DesignParameter['_Met1Layer']['_YWidth']=_DRCObj._CoMinWidth + (_ViaPoly2Met1NumberOfCOY - 1)* _LengthViaPoly2Met1BtwCO+ 2 * _DRCObj._Metal1MinEnclosureCO2
 
-        print('#############################     Cont Layer Calculation   ##############################################')
-
+        print ('#############################     Cont Layer Calculation   ##############################################')
         tmp=[]
         self._DesignParameter['_COLayer']['_XWidth'] = _DRCObj._CoMinWidth
         self._DesignParameter['_COLayer']['_YWidth'] = _DRCObj._CoMinWidth
@@ -95,15 +85,18 @@ class _ViaPoly2Met1(StickDiagram._StickDiagram):
 
 
         del _DRCObj
-        print('#########################################################################################################')
-        print('                                    {}  ViaPoly2Met1 Calculation End                                    '.format(self._DesignParameter['_Name']['_Name']))
-        print('#########################################################################################################')
+        print ('#########################################################################################################')
+        print(('                                    {}  ViaPoly2Met1 Calculation End                                    '.format(self._DesignParameter['_Name']['_Name'])))
+        print ('#########################################################################################################')
+
+
+
 
 if __name__=='__main__':
     ViaPoly2Met1Obj=_ViaPoly2Met1(_DesignParameter=None, _Name='ViaPoly2Met1')
-    ViaPoly2Met1Obj._CalculateViaPoly2Met1DesignParameter(_ViaPoly2Met1NumberOfCOX=3, _ViaPoly2Met1NumberOfCOY=4 )
+    ViaPoly2Met1Obj._CalculateViaPoly2Met1DesignParameter(_ViaPoly2Met1NumberOfCOX=2, _ViaPoly2Met1NumberOfCOY=2)
     ViaPoly2Met1Obj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=ViaPoly2Met1Obj._DesignParameter)
-    testStreamFile=open('./testStreamFile.gds','wb')
+    testStreamFile=open('./testStreamFile12.gds','wb')
 
     tmp=ViaPoly2Met1Obj._CreateGDSStream(ViaPoly2Met1Obj._DesignParameter['_GDSFile']['_GDSFile'])
 
@@ -112,4 +105,4 @@ if __name__=='__main__':
     testStreamFile.close()
     
 
-    print('##########################################################################################')
+    print ('##########################################################################################')
