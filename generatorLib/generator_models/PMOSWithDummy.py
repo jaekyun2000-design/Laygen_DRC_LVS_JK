@@ -40,7 +40,7 @@ class _PMOS(StickDiagram._StickDiagram):
                 _XYCoordinatePMOSSupplyRouting=dict(_DesignParametertype=7,_XYCoordinates=[]),
                 _XYCoordinatePMOSOutputRouting=dict(_DesignParametertype=7,_XYCoordinates=[]),
                 _XYCoordinatePMOSGateRouting=dict(_DesignParametertype=7,_XYCoordinates=[]),
-                DistanceXBtwPoly=self._SizeInfoDeclaration(_DesignSizesInList=None)
+                # DistanceXBtwPoly=self._SizeInfoDeclaration(_DesignSizesInList=None)
             )
 
         if _Name != None:
@@ -87,9 +87,10 @@ class _PMOS(StickDiagram._StickDiagram):
                 _XWidth=_PMOSChannellength,
                 _YWidth=_PMOSChannelWidth + 2 * _DRCObj._PolygateMinExtensionOnOD,
                 _XYCoordinates=[
-                    CoordCalc.Add(self._DesignParameter['_POLayer']['_XYCoordinates'][0], [-_LengthPMOSBtwPO, 0]),
-                    CoordCalc.Add(self._DesignParameter['_POLayer']['_XYCoordinates'][-1], [_LengthPMOSBtwPO, 0])
+                    [a+b for a,b in zip(self._DesignParameter['_POLayer']['_XYCoordinates'][0], [-_LengthPMOSBtwPO, 0])],
+                    [a+b for a,b in zip(self._DesignParameter['_POLayer']['_XYCoordinates'][-1], [_LengthPMOSBtwPO, 0])]
                 ])
+            self._DesignParameter['_PODummyLayer'] = _PODummyLayer
 
             if float(self._DesignParameter['_PODummyLayer']['_XWidth']) * float(self._DesignParameter['_PODummyLayer']['_YWidth']) < _DRCObj._PODummyMinArea:  # Should check at TSMC
                 self._DesignParameter['_PODummyLayer']['_YWidth'] = self.CeilMinSnapSpacing(float(_DRCObj._PODummyMinArea) / float(self._DesignParameter['_PODummyLayer']['_XWidth']), _DRCObj._MinSnapSpacing*2)
@@ -237,11 +238,11 @@ class _PMOS(StickDiagram._StickDiagram):
         print ('#########################     Supply Routing Coordinates Calculation   ##################################')
         tmpXYs = []
         if (_PMOSNumberofGate % 2) == 0:
-            for i in range(0, _PMOSNumberofGate / 2 + 1):
+            for i in range(0, _PMOSNumberofGate // 2 + 1):
                 tmpXYs.append([_XYCoordinateOfPMOS[0][0] - _PMOSNumberofGate / 2 * _LengthPMOSBtwMet1 + i * 2 * _LengthPMOSBtwMet1,
                                _XYCoordinateOfPMOS[0][1]])
         else:
-            for i in range(0,(_PMOSNumberofGate - 1) / 2 + 1):
+            for i in range(0,(_PMOSNumberofGate - 1) // 2 + 1):
                 tmpXYs.append([_XYCoordinateOfPMOS[0][0] - ((_PMOSNumberofGate + 1) / 2 - 0.5) * _LengthPMOSBtwMet1 + i * 2 * _LengthPMOSBtwMet1,
                                _XYCoordinateOfPMOS[0][1]])
         self._DesignParameter['_XYCoordinatePMOSSupplyRouting']['_XYCoordinates'] = tmpXYs
@@ -250,11 +251,11 @@ class _PMOS(StickDiagram._StickDiagram):
         print ('#########################     Output Routing Coordinates Calculation    ##################################')
         tmpXYs = []
         if (_PMOSNumberofGate % 2) == 0:
-            for i in range(0, _PMOSNumberofGate / 2):
+            for i in range(0, _PMOSNumberofGate // 2):
                 tmpXYs.append([_XYCoordinateOfPMOS[0][0] - _PMOSNumberofGate / 2 * _LengthPMOSBtwMet1 + (i * 2 + 1) * _LengthPMOSBtwMet1,
                                _XYCoordinateOfPMOS[0][1]])
         else:
-            for i in range(0, (_PMOSNumberofGate - 1) / 2 + 1):
+            for i in range(0, (_PMOSNumberofGate - 1) // 2 + 1):
                 tmpXYs.append([_XYCoordinateOfPMOS[0][0] - ((_PMOSNumberofGate + 1) / 2 - 0.5) * _LengthPMOSBtwMet1 + (i * 2 + 1) * _LengthPMOSBtwMet1,
                                _XYCoordinateOfPMOS[0][1]])
         self._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'] = tmpXYs
@@ -299,7 +300,7 @@ class _PMOS(StickDiagram._StickDiagram):
             else:
                 self._DesignParameter['_POLayerPINDrawing']['_XYCoordinates'] = tmp1
 
-        self._DesignParameter['DistanceXBtwPoly']['_DesignSizesInList'] = _LengthPMOSBtwMet1
+        # self._DesignParameter['DistanceXBtwPoly']['_DesignSizesInList'] = _LengthPMOSBtwMet1
 
         print ('#########################################################################################################')
         print ('                                    {}  PMOS Calculation End                                   '.format(self._DesignParameter['_Name']['_Name']))
