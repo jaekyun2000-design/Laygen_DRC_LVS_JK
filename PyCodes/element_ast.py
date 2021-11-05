@@ -108,7 +108,12 @@ class VariableNameVisitor(ast.NodeVisitor):
             try:
                 int(node.value)
             except:
-                self.variable_name_list.append(node.value)
+                tmp_ast = ast.parse(node.value)
+                tmp_ast = tmp_ast.body[0].value
+                if type(tmp_ast) == ast.Name:
+                    self.variable_name_list.append(node.value)
+                else:
+                    self.visit(tmp_ast)
 
 
 class GeneratorTransformer(ast.NodeTransformer):
