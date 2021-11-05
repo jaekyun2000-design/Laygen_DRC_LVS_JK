@@ -100,10 +100,10 @@ class ConditionExpressionWidget(QWidget):
 
         print(tmp_dict)
         self.send_output_dict_signal.emit(tmp_dict)
-        self.destroy()
+        self.deleteLater()
 
     def cancel_clicked(self):
-        self.destroy()
+        self.deleteLater()
 
 
 class ConditionExpressionWidgetCapsule(QWidget):
@@ -382,10 +382,10 @@ class ConditionStmtWidget(QWidget):
         output_list = self.input_widget.update_output_dict()
 
         self.send_output_list_signal.emit(output_list)
-        self.destroy()
+        self.deleteLater()
 
     def cancel_clicked(self):
-        self.destroy()
+        self.deleteLater()
 
     def show_list(self):
         self.show()

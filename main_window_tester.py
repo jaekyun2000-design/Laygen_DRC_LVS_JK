@@ -749,7 +749,7 @@ def test_run_constraint_sref(qtbot):
             window.ls.par_valueForLineEdit[idx].clear()
             qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"LVT"')
     window.ls.on_buttonBox_accepted()
-    window.ls.destroy()
+    # window.ls.destroy()
     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('test_sref')
     for i in range(window.dockContentWidget3_2.model.rowCount()):
         if window.dockContentWidget3_2.model.item(i,1).text() == dc_id:

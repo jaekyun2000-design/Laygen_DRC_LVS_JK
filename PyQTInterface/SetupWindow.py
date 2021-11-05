@@ -175,7 +175,7 @@ class _BoundarySetupWindow(QWidget):
         self.send_Destroy_signal.emit('bw')
         if 'visualItem' in self.__dict__:
             self.send_DestroyTmpVisual_signal.emit(self.visualItem)
-        self.destroy()
+        self.deleteLater()
 
     def set_name_check(self, flag):
         self.name_check = flag
@@ -219,7 +219,7 @@ class _BoundarySetupWindow(QWidget):
             message = delegator.DelegateMessage(arguments=[self._DesignParameter], target_fcn='create_qt_parameter')
             self.send_design_message.emit(message)
             self.click = 2
-            self.destroy()
+            self.deleteLater()
 
             if type(self._DesignParameter['_XWidth']) == str:
                 self.warning = QMessageBox()
@@ -282,7 +282,7 @@ class _BoundarySetupWindow(QWidget):
         elif QKeyEvent.key() == Qt.Key_Escape:
             if 'visualItem' in self.__dict__:
                 self.send_DestroyTmpVisual_signal.emit(self.visualItem)
-            self.destroy()
+            self.deleteLater()
             self.send_Destroy_signal.emit('bw')
 
     def mouseTracking(self, xy):
@@ -427,7 +427,7 @@ class _PolygonSetupWindow(QWidget):
     def cancel_button_accepted(self):
         self.send_DestroyTmpVisual_signal.emit(self.visualItem)
         self.send_Destroy_signal.emit('pow')
-        self.destroy()
+        self.deleteLater()
 
     def set_name_check(self, flag):
         self.name_check = flag
@@ -464,7 +464,7 @@ class _PolygonSetupWindow(QWidget):
                         self.warning.show()
 
             self.send_PolygonDesign_signal.emit(self._DesignParameter)
-            self.destroy()
+            self.deleteLater()
             self.send_Destroy_signal.emit('pow')
         except:
             traceback.print_exc()
@@ -479,7 +479,7 @@ class _PolygonSetupWindow(QWidget):
             self.on_buttonBox_accepted()
             self.send_Destroy_signal.emit('pow')
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
+            self.deleteLater()
             self.send_Destroy_signal.emit('pow')
 
     def AddPolygonPointWithMouse(self,xy):
@@ -715,7 +715,7 @@ class _PathSetupWindow(QWidget):
         self.visualItem.updateTraits(self._DesignParameter)
         self.send_DestroyTmpVisual_signal.emit(self.visualItem)
         self.send_Destroy_signal.emit('pw')
-        self.destroy()
+        self.deleteLater()
 
 
     def set_name_check(self, flag):
@@ -757,7 +757,8 @@ class _PathSetupWindow(QWidget):
             pass
             self.send_DestroyTmpVisual_signal.emit(self.visualItem)
             self.send_PathDesign_signal.emit(self._DesignParameter)
-            self.destroy()
+            # self.deleteLater()
+            self.deleteLater()
             self.send_Destroy_signal.emit('pw')
             pass
         except:
@@ -784,7 +785,7 @@ class _PathSetupWindow(QWidget):
                         _ItemRef = None, #Reference Of VisualizationItem
                     )
             self.visualItem.updateTraits(self._DesignParameter)
-            self.destroy()
+            self.deleteLater()
             self.send_Destroy_signal.emit('pw')
 
     def AddPathPointWithMouse(self,xy):
@@ -1146,14 +1147,10 @@ class _LoadSRefWindow(QWidget):
             self.send_DesignConstraint_signal.emit(tmpAST)
         elif self.purpose == 'array_load':
             self.send_array_signal.emit(tmpAST)
-        # if self.create:
-        #     self.send_DesignConstraint_signal.emit(tmpAST)
-        # else:
-        #     tmpAST._id = self._DesignParameter['_id']
-        #     self.send_DesignConstraint_signal.emit(self._DesignParameter)
 
         if self.option:
-            self.destroy()
+            self.deleteLater()
+            # self.deleteLater()
         else:
             self.option = True
 
@@ -1161,14 +1158,14 @@ class _LoadSRefWindow(QWidget):
         self.option = option
 
     def cancel_button_accepted(self):
-        self.destroy()
+        self.deleteLater()
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return or QKeyEvent.key() == Qt.Key_Enter:
             self.on_buttonBox_accepted()
             self.send_destroy_signal.emit('ls')
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
+            self.deleteLater()
             self.send_destroy_signal.emit('ls')
 
     def show_cal(self):
@@ -1313,7 +1310,7 @@ class _MacroCellWindow(QWidget):
         self.send_DesignConstraint_signal.emit(tmpAST)
 
         if self.option:
-            self.destroy()
+            self.deleteLater()
         else:
             self.option = True
 
@@ -1321,14 +1318,14 @@ class _MacroCellWindow(QWidget):
         self.option = option
 
     def cancel_button_accepted(self):
-        self.destroy()
+        self.deleteLater()
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return or QKeyEvent.key() == Qt.Key_Enter:
             self.on_buttonBox_accepted()
             self.send_destroy_signal.emit('mc')
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
+            self.deleteLater()
             self.send_destroy_signal.emit('mc')
 
 
@@ -1429,7 +1426,7 @@ class _TextSetupWindow(QWidget):
         self.XY_input[0].setText(str(self._DesignParameter['_XYCoordinates'][0][0])+','+str(self._DesignParameter['_XYCoordinates'][0][1]))
 
     def cancel_button_accepted(self):
-        self.destroy()
+        self.deleteLater()
 
     def set_name_check(self, flag):
         self.name_check = flag
@@ -1463,7 +1460,7 @@ class _TextSetupWindow(QWidget):
             self._DesignParameter['_TEXT'] = self.text_input.text()
             self._DesignParameter['_Mag'] = int(self.width_input.text())
             self.send_TextDesign_signal.emit(self._DesignParameter)
-            self.destroy()
+            self.deleteLater()
             self.send_Destroy_signal.emit('txtw')
             # if type(self._DesignParameter['_XWidth']) == str:
             #     self.warning = QMessageBox()
@@ -1501,7 +1498,7 @@ class _TextSetupWindow(QWidget):
             self.on_buttonBox_accepted()
             self.send_Destroy_signal.emit('txtw')
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
+            self.deleteLater()
             self.send_Destroy_signal.emit('txtw')
 
 class _PinSetupWindow(QWidget):
@@ -1612,7 +1609,7 @@ class _PinSetupWindow(QWidget):
         self.XY_input[0].setText(str(self._DesignParameter['_XYCoordinates'][0][0])+','+str(self._DesignParameter['_XYCoordinates'][0][1]))
 
     def cancel_button_accepted(self):
-        self.destroy()
+        self.deleteLater()
 
     def set_name_check(self, flag):
         self.name_check = flag
@@ -1646,7 +1643,7 @@ class _PinSetupWindow(QWidget):
             self._DesignParameter['_Mag'] = float(self.width_input.text())
             self._DesignParameter['_LayerUnifiedName'] = self.layer_input.currentText()
             self.send_PinDesign_signal.emit(self._DesignParameter)
-            self.destroy()
+            self.deleteLater()
             self.send_Destroy_signal.emit('pinw')
 
             # if type(self._DesignParameter['_XWidth']) == str:
@@ -1686,7 +1683,7 @@ class _PinSetupWindow(QWidget):
             self.on_buttonBox_accepted()
             self.send_Destroy_signal.emit('pinw')
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
+            self.deleteLater()
             self.send_Destroy_signal.emit('pinw')
 
 class _ConstraintSetupWindow(QWidget):
@@ -1880,7 +1877,7 @@ class _ConstraintSetupWindow(QWidget):
         for i in range(0,num):
             self.setupVboxColumn2.addWidget(QLineEdit())
     def cancel_button_accepted(self):
-        self.destroy()
+        self.deleteLater()
     def on_buttonBox_accepted(self):
         for i in range(0,self.setupVboxColumn1.count()):
             ttmp = self.setupVboxColumn2.itemAt(i).widget()
@@ -1896,12 +1893,12 @@ class _ConstraintSetupWindow(QWidget):
 
             self._ParseTree[key] = value
         self.send_DesignConstraint_signal.emit(self._ParseTree)
-        self.destroy()
+        self.deleteLater()
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
+            self.deleteLater()
     def updateUIvalue(self):
         try:
             type = self._ParseTree["Type"]
@@ -2118,7 +2115,7 @@ class _ConstraintSetupWindowSTMT(QWidget):
         for i in range(0,num):
             self.setupVboxColumn2.addWidget(QLineEdit())
     def cancel_button_accepted(self):
-        self.destroy()
+        self.deleteLater()
     def on_buttonBox_accepted(self):
         stmtType = self.type_input.currentText()
         stmt = dict()
@@ -2137,12 +2134,12 @@ class _ConstraintSetupWindowSTMT(QWidget):
         stmt[key] = value
         self._STMT = stmt
         self.send_STMT_signal.emit(self._STMT)
-        self.destroy()
+        self.deleteLater()
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
+            self.deleteLater()
     def updateUIvalue(self):
         try:
             type = self._ParseTree['_type']
@@ -2276,17 +2273,17 @@ class _ConstraintSetupWindowAST(QWidget):
                 print("Value Initialization Fail")
 
         self.send_AST_signal.emit(_ASTobj)
-        self.destroy()
+        self.deleteLater()
 
     def cancel_button_accepted(self):
-        self.destroy()
+        self.deleteLater()
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
             self.send_destroy_signal.emit('cw')
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
+            self.deleteLater()
             self.send_destroy_signal.emit('cw')
     def updateUIvalue(self):
         try:
@@ -2408,7 +2405,7 @@ class _ConstraintSetupWindowCUSTOM(QWidget):
         for i in range(0,num):
             self.setupVboxColumn2.addWidget(QLineEdit())
     def cancel_button_accepted(self):
-        self.destroy()
+        self.deleteLater()
     def on_buttonBox_accepted(self):
         _ASTtype = self.type_input.currentText()
         _ASTobj = self._ASTapi._create_custom_ast_with_name(_ASTtype)
@@ -2435,13 +2432,13 @@ class _ConstraintSetupWindowCUSTOM(QWidget):
                     print("Value Initialization Fail")
 
         self.send_CUSTOM_signal.emit(_ASTobj)
-        self.destroy()
+        self.deleteLater()
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
             self.send_Destroy_signal.emit('cw')
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
+            self.deleteLater()
             self.send_Destroy_signal.emit('cw')
     def updateUIvalue(self):
         try:
@@ -2563,7 +2560,7 @@ class _VariableSetupWindowCUSTOM(QWidget):
         for i in range(0,num):
             self.setupVboxColumn2.addWidget(QLineEdit())
     def cancel_button_accepted(self):
-        self.destroy()
+        self.deleteLater()
     def on_buttonBox_accepted(self):
         _ASTtype = self.type_input.currentText()
         _ASTobj = self._ASTapi._create_variable_ast_with_name(_ASTtype)
@@ -2584,13 +2581,13 @@ class _VariableSetupWindowCUSTOM(QWidget):
                     print("Value Initialization Fail")
 
         self.send_CUSTOM_signal.emit(_ASTobj)
-        self.destroy()
+        self.deleteLater()
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
             self.send_Destroy_signal.emit('cw')
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
+            self.deleteLater()
             self.send_Destroy_signal.emit('cw')
     def updateUIvalue(self):
         try:
@@ -2808,7 +2805,7 @@ class _ConstraintSetupWindowPyCode(QWidget):
         for i in range(0,num):
             self.setupVboxColumn2.addWidget(QLineEdit())
     def cancel_button_accepted(self):
-        self.destroy()
+        self.deleteLater()
     def on_buttonBox_accepted(self):
         if self.type_input.currentText() == "pyCode":
             try:
@@ -2818,13 +2815,13 @@ class _ConstraintSetupWindowPyCode(QWidget):
             self._ParseTree[0] = "pyCode"
             self._ParseTree.append(value)
         self.send_PyCode_signal.emit(value)
-        self.destroy()
+        self.deleteLater()
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
             self.send_Destroy_signal.emit('cw')
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
+            self.deleteLater()
             self.send_Destroy_signal.emit('cw')
     def updateUIvalue(self):
         try:
@@ -4458,11 +4455,11 @@ class _ModuleManageWidget(QWidget):
             self.send_ModuleName_signal.emit(self.manageListWidget.currentItem().text())        #Current Module Name emit!!
         except:
             print("no module is selected")
-        self.destroy()
+        self.deleteLater()
 
     def item_double_clicked(self, double_clicked_item):
         self.send_ModuleName_signal.emit(double_clicked_item.text())        #Current Module Name emit!!
-        self.destroy()
+        self.deleteLater()
 
     def on_createBox_accepted(self):
         pass
@@ -4471,7 +4468,7 @@ class _ModuleManageWidget(QWidget):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_selectBox_accepted()
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
+            self.deleteLater()
 #
 # class _CustomFileDialog(QFileDialog):
 #     def __init__(self):
