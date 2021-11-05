@@ -1086,6 +1086,7 @@ class _LoadSRefWindow(QWidget):
                 tmpAST.__dict__[key] = self.cal_fcn_input.currentText()
             elif key == 'parameters':
                 tmpAST.__dict__[key] = self.paramDict
+                tmpAST.parameter_fields = list(self.paramDict.keys())
 
         if not self.create:
             tmpAST._id = self._DesignParameter['_id']
@@ -3087,7 +3088,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 self.model.setData(index, QBrush(Qt.red), Qt.BackgroundRole)
                 item.setToolTip(error_log)
             elif error_flag == 'clean':
-                self.model.setData(index, QBrush(Qt.white), Qt.BackgroundRole)
+                og_color = self.palette().color(QPalette.Base)
+                self.model.setData(index, og_color, Qt.BackgroundRole)
                 item.setToolTip(None)
             elif error_flag == 'no_value':
                 self.model.setData(index, QBrush(Qt.yellow), Qt.BackgroundRole)

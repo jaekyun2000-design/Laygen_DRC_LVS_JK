@@ -62,6 +62,7 @@ class Path(ElementNode):
 class Sref(ElementNode):
     def __init__(self, *args, **kwargs):
         super().__init__()
+    parameter_fields = []
     _fields = (
         'name',     # name str
         'library',   # library module str
