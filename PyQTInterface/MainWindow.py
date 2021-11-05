@@ -531,6 +531,7 @@ class _MainWindow(QMainWindow):
 
         dockWidget2_2 = QDockWidget("Modifier")
         self.design_modifier = SetupWindow.DesignModifier()
+        self.design_modifier.setFixedWidth(250)
         dockWidget2_2.setWidget(self.design_modifier)
 
         self.addDockWidget(Qt.LeftDockWidgetArea,dockWidget2_2)

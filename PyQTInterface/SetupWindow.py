@@ -4710,6 +4710,7 @@ class DesignModifier(QWidget):
                     idx = self.field_value_dict[self.current_type][field].findText(design_const._ast.layer)
                     self.field_value_dict[self.current_type][field].setCurrentIndex(idx)
         self.current_ast = design_const._ast
+        self.updateGeometry()
 
     def update_sref_form(self, design_const):
         layout = self.form_layout_dict['Sref'].layout()
