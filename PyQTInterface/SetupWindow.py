@@ -4119,7 +4119,9 @@ class _ConstraintModel(QStandardItemModel):
                 if type(_AST.__dict__[key]) == dict:
                     tmpD = QStandardItem(str(_AST.__dict__[key][childAST]))
                 elif type(_AST.__dict__[key]) == list:
-                    pass
+                    tmpD = QStandardItem()
+                else:
+                    tmpD = QStandardItem()
                     # tmpD = QStandardItem(str(_AST.__dict__[key][]))
                 motherItem.appendRow([tmpA, QStandardItem(), QStandardItem(), tmpD])
             else:
