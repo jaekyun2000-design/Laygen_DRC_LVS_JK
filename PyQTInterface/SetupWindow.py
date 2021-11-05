@@ -41,12 +41,14 @@ class _BoundarySetupWindow(QWidget):
     send_Destroy_signal = pyqtSignal(str)
     send_Warning_signal = pyqtSignal(str)
     send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+    send_name_duplication_check_signal =pyqtSignal(str)
 
     def __init__(self,BoundaryElement= None):
         super().__init__()
         self.mouse = None
         self.click = 0
         self.initUI()
+        self.name_check = True
 
         if BoundaryElement == None:
             self.visualItem = VisualizationItem._VisualizationItem()
@@ -175,7 +177,18 @@ class _BoundarySetupWindow(QWidget):
             self.send_DestroyTmpVisual_signal.emit(self.visualItem)
         self.destroy()
 
+    def set_name_check(self, flag):
+        self.name_check = flag
+
     def on_buttonBox_accepted(self):
+        self.send_name_duplication_check_signal.emit(self.name_input.text())
+        if self.name_check == False:
+            self.warning = QMessageBox()
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.setText("Name duplication is detected!")
+            self.warning.show()
+            return None
+
         for XY in self.XYdictForLineEdit:
             if not XY.text():
                 break
@@ -303,12 +316,15 @@ class _PolygonSetupWindow(QWidget):
     send_Destroy_signal = pyqtSignal(str)
     send_Warning_signal = pyqtSignal(str)
     send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+    send_name_duplication_check_signal =pyqtSignal(str)
 
     def __init__(self, PolygonElement = None):
         super().__init__()
         self.mouse = None
         self.click = 0
         self.initUI()
+        self.name_check = True
+
 
         if PolygonElement is None:
             self._DesignParameter = dict(
@@ -413,7 +429,17 @@ class _PolygonSetupWindow(QWidget):
         self.send_Destroy_signal.emit('pow')
         self.destroy()
 
+    def set_name_check(self, flag):
+        self.name_check = flag
+
     def on_buttonBox_accepted(self):
+        self.send_name_duplication_check_signal.emit(self.name_input.text())
+        if self.name_check == False:
+            self.warning = QMessageBox()
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.setText("Name duplication is detected!")
+            self.warning.show()
+            return None
         try:
             self._DesignParameter['_ElementName'] = self.name_input.text()
             if self._DesignParameter['_ElementName'] == '':
@@ -546,12 +572,14 @@ class _PathSetupWindow(QWidget):
     # send_Destroy_signal = pyqtSignal("PyQt_PyObject")
     send_Destroy_signal = pyqtSignal(str)
     send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+    send_name_duplication_check_signal =pyqtSignal(str)
 
     def __init__(self, PathElement = None):
         super().__init__()
         self.mouse = None
         self.click = 0
         self.initUI()
+        self.name_check = True
 
         if PathElement is None:
             self._DesignParameter = dict(
@@ -689,7 +717,19 @@ class _PathSetupWindow(QWidget):
         self.send_Destroy_signal.emit('pw')
         self.destroy()
 
+
+    def set_name_check(self, flag):
+        self.name_check = flag
+
+
     def on_buttonBox_accepted(self):
+        self.send_name_duplication_check_signal.emit(self.name_input.text())
+        if self.name_check == False:
+            self.warning = QMessageBox()
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.setText("Name duplication is detected!")
+            self.warning.show()
+            return None
         try:
             self._DesignParameter['_ElementName'] = self.name_input.text()
             if self._DesignParameter['_ElementName'] == '':
@@ -851,6 +891,7 @@ class _LoadSRefWindow(QWidget):
     send_array_signal = pyqtSignal("PyQt_PyObject")
     send_destroy_signal = pyqtSignal(str)
     send_exported_sref_signal = pyqtSignal(str, dict)
+    send_name_duplication_check_signal =pyqtSignal(str)
 
     def __init__(self, purpose = None, SRefElement = None):
         super().__init__()
@@ -861,6 +902,7 @@ class _LoadSRefWindow(QWidget):
         self.par_button_for_cal = []
         self.paramDict = dict()
         self.initUI()
+        self.name_check = True
 
         if SRefElement is None:
             self.create = True
@@ -1064,8 +1106,17 @@ class _LoadSRefWindow(QWidget):
         # self.XY_input.setText(str(_MouseEvent.scenePos().toPoint().x()) + ',' + str(_MouseEvent.scenePos().toPoint().y()))
         self.XY_input.setText(str(xy[0]) + ',' + str(xy[1]))
 
+    def set_name_check(self, flag):
+        self.name_check = flag
 
     def on_buttonBox_accepted(self):
+        self.send_name_duplication_check_signal.emit(self.name_input.text())
+        if self.name_check == False:
+            self.warning = QMessageBox()
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.setText("Name duplication is detected!")
+            self.warning.show()
+            return None
         for idx in range(len(self.par_valueForLineEdit)):
             self.paramDict[self.par_name[idx]] = self.par_valueForLineEdit[idx].text()
 
@@ -1141,6 +1192,7 @@ class _LoadSRefWindow(QWidget):
 class _MacroCellWindow(QWidget):
     send_DesignConstraint_signal = pyqtSignal("PyQt_PyObject")
     send_destroy_signal = pyqtSignal(str)
+    send_name_duplication_check_signal =pyqtSignal(str)
 
     def __init__(self, MacroCellElement = None):
         super().__init__()
@@ -1148,6 +1200,7 @@ class _MacroCellWindow(QWidget):
         self.option = True
         self.paramDict = dict()
         self.initUI()
+        self.name_check = True
 
         if MacroCellElement is None:
             self.create = True
@@ -1237,7 +1290,17 @@ class _MacroCellWindow(QWidget):
         # self.XY_input.setText(str(_MouseEvent.scenePos().toPoint().x()) + ',' + str(_MouseEvent.scenePos().toPoint().y()))
         self.XY_input.setText(str(xy[0]) + ',' + str(xy[1]))
 
+    def set_name_check(self, flag):
+        self.name_check = flag
+
     def on_buttonBox_accepted(self):
+        self.send_name_duplication_check_signal.emit(self.name_input.text())
+        if self.name_check == False:
+            self.warning = QMessageBox()
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.setText("Name duplication is detected!")
+            self.warning.show()
+            return None
         tmpAST = element_ast.MacroCell()
         for key in element_ast.MacroCell._fields:
             if key == 'name':
@@ -1276,10 +1339,12 @@ class _TextSetupWindow(QWidget):
     send_Destroy_signal = pyqtSignal(str)
     send_Warning_signal = pyqtSignal(str)
     send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+    send_name_duplication_check_signal =pyqtSignal(str)
 
     def __init__(self,TextElement=None):
         super().__init__()
         self.initUI()
+        self.name_check = True
         if TextElement == None:
             self.visualItem = VisualizationItem._VisualizationItem()
             self._DesignParameter = dict(
@@ -1366,7 +1431,17 @@ class _TextSetupWindow(QWidget):
     def cancel_button_accepted(self):
         self.destroy()
 
+    def set_name_check(self, flag):
+        self.name_check = flag
+
     def on_buttonBox_accepted(self):
+        self.send_name_duplication_check_signal.emit(self.name_input.text())
+        if self.name_check == False:
+            self.warning = QMessageBox()
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.setText("Name duplication is detected!")
+            self.warning.show()
+            return None
         try:
             for XY in self.XY_input:
                 if not XY.text():
@@ -1436,10 +1511,12 @@ class _PinSetupWindow(QWidget):
     send_Destroy_signal = pyqtSignal(str)
     send_Warning_signal = pyqtSignal(str)
     send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
+    send_name_duplication_check_signal =pyqtSignal(str)
 
     def __init__(self,PinElement=None):
         super().__init__()
         self.initUI()
+        self.name_check = True
         if PinElement == None:
             self.visualItem = VisualizationItem._VisualizationItem()
             self._DesignParameter = dict(
@@ -1537,7 +1614,17 @@ class _PinSetupWindow(QWidget):
     def cancel_button_accepted(self):
         self.destroy()
 
+    def set_name_check(self, flag):
+        self.name_check = flag
+
     def on_buttonBox_accepted(self):
+        self.send_name_duplication_check_signal.emit(self.name_input.text())
+        if self.name_check == False:
+            self.warning = QMessageBox()
+            self.warning.setIcon(QMessageBox.Warning)
+            self.warning.setText("Name duplication is detected!")
+            self.warning.show()
+            return None
         for XY in self.XY_input:
             if not XY.text():
                 break

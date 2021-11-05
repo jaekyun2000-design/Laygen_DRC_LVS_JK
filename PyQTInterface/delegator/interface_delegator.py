@@ -20,6 +20,8 @@ class WidgetDelegator(delegator.Delegator):
         self.main_window.scene.send_xy_signal.connect(self.main_window.bw.clickCount)
         self.main_window.scene.send_mouse_move_xy_signal.connect(self.main_window.bw.mouseTracking)
         self.main_window.bw.send_Destroy_signal.connect(self.main_window.delete_obj)
+        self.main_window.bw.send_name_duplication_check_signal.connect(lambda name:
+                                                                       self.main_window.bw.set_name_check(self.check_name_duplication(name)))
 
     def make_polygon_window(self):
         self.main_window.pow = SetupWindow._PolygonSetupWindow()
@@ -32,6 +34,9 @@ class WidgetDelegator(delegator.Delegator):
         # self.main_window.scene.send_xy_signal.connect(self.main_window.pow.clickCount)
         # self.main_window.scene.send_mouse_move_xy_signal.connect(self.main_window.pow.mouseTracking)
         self.main_window.pow.send_Destroy_signal.connect(self.main_window.delete_obj)
+        self.main_window.pow.send_name_duplication_check_signal.connect(lambda name:
+                                                                       self.main_window.pow.set_name_check(
+                                                                           self.check_name_duplication(name)))
 
     def makePathWindow(self):
         self.main_window.scene.itemListClickIgnore(True)
@@ -45,6 +50,9 @@ class WidgetDelegator(delegator.Delegator):
         self.main_window.scene.send_xy_signal.connect(self.main_window.pw.clickCount)  # Mouse Interaction connect
         self.main_window.scene.send_mouse_move_xy_signal.connect(self.main_window.pw.mouseTracking)
         self.main_window.scene.send_doubleclick_signal.connect(self.main_window.pw.quitCreate)
+        self.main_window.pw.send_name_duplication_check_signal.connect(lambda name:
+                                                                       self.main_window.pw.set_name_check(
+                                                                           self.check_name_duplication(name)))
 
     def loadSRefWindow(self):
         self.main_window.ls = SetupWindow._LoadSRefWindow(purpose='main_load')
@@ -53,6 +61,9 @@ class WidgetDelegator(delegator.Delegator):
         self.main_window.ls.send_DesignConstraint_signal.connect(self.main_window.design_delegator.create_qt_constraint)
         self.main_window.scene.send_xy_signal.connect(self.main_window.ls.DetermineCoordinateWithMouse)
         self.main_window.ls.send_destroy_signal.connect(self.main_window.delete_obj)
+        self.main_window.ls.send_name_duplication_check_signal.connect(lambda name:
+                                                                       self.main_window.ls.set_name_check(
+                                                                           self.check_name_duplication(name)))
 
     def loadMacroCellWindow(self):
         self.main_window.mc = SetupWindow._MacroCellWindow()
@@ -60,6 +71,9 @@ class WidgetDelegator(delegator.Delegator):
         self.main_window.mc.send_DesignConstraint_signal.connect(self.main_window.design_delegator.create_qt_constraint)
         self.main_window.scene.send_xy_signal.connect(self.main_window.mc.DetermineCoordinateWithMouse)
         self.main_window.mc.send_destroy_signal.connect(self.main_window.delete_obj)
+        self.main_window.mc.send_name_duplication_check_signal.connect(lambda name:
+                                                                       self.main_window.mc.set_name_check(
+                                                                           self.check_name_duplication(name)))
 
     def makeTextWindow(self):
         self.main_window.txtw = SetupWindow._TextSetupWindow()
@@ -70,6 +84,9 @@ class WidgetDelegator(delegator.Delegator):
         self.main_window.txtw.send_Warning_signal.connect(self.main_window.dockContentWidget4ForLoggingMessage._WarningMessage)
         self.main_window.scene.send_xy_signal.connect(self.main_window.txtw.DetermineCoordinateWithMouse)
         self.main_window.txtw.send_Destroy_signal.connect(self.main_window.delete_obj)
+        self.main_window.txtw.send_name_duplication_check_signal.connect(lambda name:
+                                                                       self.main_window.txtw.set_name_check(
+                                                                           self.check_name_duplication(name)))
 
     def makePinWindow(self):
         self.main_window.pinw = SetupWindow._PinSetupWindow()
@@ -80,6 +97,9 @@ class WidgetDelegator(delegator.Delegator):
         self.main_window.pinw.send_Warning_signal.connect(self.main_window.dockContentWidget4ForLoggingMessage._WarningMessage)
         self.main_window.scene.send_xy_signal.connect(self.main_window.pinw.DetermineCoordinateWithMouse)
         self.main_window.pinw.send_Destroy_signal.connect(self.main_window.delete_obj)
+        self.main_window.pinw.send_name_duplication_check_signal.connect(lambda name:
+                                                                       self.main_window.pinw.set_name_check(
+                                                                           self.check_name_duplication(name)))
 
     def makePyCodeWindow(self):
         self.main_window.cw = SetupWindow._ConstraintSetupWindowPyCode()
@@ -172,3 +192,11 @@ class WidgetDelegator(delegator.Delegator):
 
         self.get_module_name_widget.setLayout(vbox)
         self.get_module_name_widget.show()
+
+    def check_name_duplication(self, test_name):
+        if self.main_window._CurrentModuleName not in self.main_window._QTObj._qtProject._DesignParameter:
+            return True
+        if test_name in self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName]:
+            return False
+        else:
+            return True
