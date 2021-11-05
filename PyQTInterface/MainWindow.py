@@ -2596,10 +2596,10 @@ class _MainWindow(QMainWindow):
                                                               _ast=self._QTObj._qtProject._DesignConstraint[module][id]._ast, id=id,
                                                                 dummy_constraints = self._DummyConstraints)
             if design_dict['parameter']:
-                if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
-                    hierarchy_key = design_dict['parameter']._DesignParameter['_DesignObj_Name'] + '/' + str(
-                        design_dict[
-                            'parameter']._id)
+                # if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
+                #     hierarchy_key = design_dict['parameter']._DesignParameter['_DesignObj_Name'] + '/' + str(
+                #         design_dict[
+                #             'parameter']._id)
                 if original_dp_id != design_dict['parameter_id']:
                     self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
@@ -2615,10 +2615,10 @@ class _MainWindow(QMainWindow):
                                                                     mother_id]._ast, id=mother_id,
                                                                  dummy_constraints = self._DummyConstraints)
             if design_dict['parameter']:
-                if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
-                    hierarchy_key = design_dict['parameter']._DesignParameter['_DesignObj_Name'] + '/' + str(
-                        design_dict[
-                            'parameter']._id)
+                # if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
+                #     hierarchy_key = design_dict['parameter']._DesignParameter['_DesignObj_Name'] + '/' + str(
+                #         design_dict[
+                #             'parameter']._id)
                 if original_dp_id != design_dict['parameter_id']:
                     self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
             try:
@@ -2629,13 +2629,13 @@ class _MainWindow(QMainWindow):
             except:
                 traceback.print_exc()
 
-                if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
-                    new_key = design_dict['parameter']._DesignParameter['_DesignObj_Name'] + '/' + str(
-                        design_dict['parameter']._ElementName)
-
-                    if hierarchy_key in self.entireHierarchy[self._CurrentModuleName]:
-                        self.entireHierarchy[self._CurrentModuleName][new_key] = self.entireHierarchy[
-                            self._CurrentModuleName].pop(hierarchy_key)
+                # if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
+                #     new_key = design_dict['parameter']._DesignParameter['_DesignObj_Name'] + '/' + str(
+                #         design_dict['parameter']._ElementName)
+                #
+                #     if hierarchy_key in self.entireHierarchy[self._CurrentModuleName]:
+                #         self.entireHierarchy[self._CurrentModuleName][new_key] = self.entireHierarchy[
+                #             self._CurrentModuleName].pop(hierarchy_key)
 
 
 
