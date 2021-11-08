@@ -853,7 +853,7 @@ def test_run_constraint_for_update(qtbot):
                 window.ls.par_valueForLineEdit[idx].clear()
                 qtbot.keyClicks(window.ls.par_valueForLineEdit[idx], '"LVT"')
         window.ls.on_buttonBox_accepted()
-        window.ls.destroy()
+        # window.ls.destroy()
         dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('test_sref')
         for i in range(window.dockContentWidget3_2.model.rowCount()):
             if window.dockContentWidget3_2.model.item(i, 1).text() == dc_id:
@@ -1871,7 +1871,7 @@ def test_technology_node_change(qtbot):
             assert test1 == 38
             assert test2 == 1174
         elif technology == 'TSMC65nm':
-            assert test1 == 47
+            assert test1 == 48
             assert test2 == 481
         elif technology == 'TSMC90nm':
             assert test1 == 38
