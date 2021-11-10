@@ -1794,23 +1794,23 @@ class _MainWindow(QMainWindow):
     def delete_obj(self, obj):
         # sender = self.sender()
         # del sender
-        if obj == 'cw':
+        if obj == 'cw' and 'cw' in self.__dict__:
             del self.cw
-        if obj == 'bw':
+        if obj == 'bw' and 'bw' in self.__dict__:
             del self.bw
-        if obj == 'pow':
+        if obj == 'pow' and 'pow' in self.__dict__:
             del self.pow
-        if obj == 'pw':
+        if obj == 'pw' and 'pw' in self.__dict__:
             del self.pw
-        if obj == 'dv':
+        if obj == 'dv' and 'dv' in self.__dict__:
             del self.dv
         # if obj == 'txtw':
         #     del self.txtw
-        if obj == 'pinw':
+        if obj == 'pinw' and 'pinw' in self.__dict__:
             del self.pinw
-        if obj == 'ls':
+        if obj == 'ls' and 'ls' in self.__dict__:
             del self.ls
-        if obj == 'mc':
+        if obj == 'mc' and 'mc' in self.__dict__:
             del self.mc
         # self.scene.itemListClickIgnore(False)
 
