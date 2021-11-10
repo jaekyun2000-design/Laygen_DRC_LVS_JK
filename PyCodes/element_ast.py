@@ -294,7 +294,21 @@ class ElementTransformer(ast.NodeTransformer):
         print(f'debug: {syntax}')
         if syntax == 'ast':
             syntax = ''
-        parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
+
+        #####node parameter unparsing#####
+        copy_parameter = copy.deepcopy(node.parameters)
+        test = list(filter(lambda x: isinstance(x, ast.AST), list(copy_parameter.values())))
+        if list(filter(lambda x: isinstance(x, ast.AST), list(copy_parameter.values()))):
+            parameter_sentence = ''
+            for key, value in copy_parameter.items():
+                if isinstance(value, ast.AST):
+                    tf_ast = run_transformer(value)
+                    new_string = astunparse.unparse(tf_ast)
+                    parameter_sentence += f'{key} = {new_string},'
+                else:
+                    parameter_sentence += f'{key} = {value},'
+        else:
+            parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
 
 
         for field in node._fields:

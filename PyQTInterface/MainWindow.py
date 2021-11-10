@@ -3124,8 +3124,9 @@ class _MainWindow(QMainWindow):
                         continue
                     elif _field == 'parameters':
                         for parm_string in _ast.parameters.values():
-                            tmp_ast = ast.parse(str(parm_string))
-                            variable_visitor.visit(tmp_ast)
+                            if type(parm_string) == str:
+                                tmp_ast = ast.parse(str(parm_string))
+                                variable_visitor.visit(tmp_ast)
                     # elif _field == 'XY':
                     #     # if type(_ast.XY) == list and not _ast.XY:
                     #     #     tmp

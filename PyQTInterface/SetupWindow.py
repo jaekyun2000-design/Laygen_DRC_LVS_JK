@@ -155,7 +155,7 @@ class _BoundarySetupWindow(QWidget):
             # _Layer2Name = LayerReader._LayerNameTmp
             # _layerNumber = str(self._DesignParameter['_Layer'])
             for layerExpressionName in _Layer:
-                print("layerExpressionName:",layerExpressionName,_Layer[layerExpressionName][0],self._DesignParameter['_LayerUnifiedName'])
+                # print("layerExpressionName:",layerExpressionName,_Layer[layerExpressionName][0],self._DesignParameter['_LayerUnifiedName'])
                 if _Layer[layerExpressionName][0] == self._DesignParameter['_LayerUnifiedName']:
                     self._DesignParameter['_LayerUnifiedName'] = str(layerExpressionName)
                     break
@@ -3283,7 +3283,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         if Field == 'id':
             return
 
-        tmpChildModule = re.sub(r'\d','',StringValue)
+        # tmpChildModule = re.sub(r'\d','',StringValue)
+        tmpChildModule = self._CurrentModuleName
         if tmpChildModule in self._DesignConstraintFromQTobj:                        #Check whether it is constraint or not
             if StringValue in self._DesignConstraintFromQTobj[tmpChildModule]:
                 _value = self._DesignConstraintFromQTobj[tmpChildModule][StringValue]._ast
@@ -3297,6 +3298,32 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
             self._DesignConstraintFromQTobj[Module][Id]._setDesignConstraintValue(_index=Field,_value=_value)
             return
+
+    def updateDesignConstraintWithSTR_grandchild(self, module, grand_id, field1, field2, value_id):
+        # convert: String type value --> Adequate type
+        if value_id == None or value_id == "" or value_id == "*":
+            return
+
+        if value_id == 'id':
+            return
+
+        # tmpChildModule = re.sub(r'\d','',StringValue)
+        tmpChildModule = self._CurrentModuleName
+        if tmpChildModule in self._DesignConstraintFromQTobj:                        #Check whether it is constraint or not
+            if value_id in self._DesignConstraintFromQTobj[tmpChildModule]:
+                _value = self._DesignConstraintFromQTobj[tmpChildModule][value_id]._ast
+                org_val =self._DesignConstraintFromQTobj[module][grand_id]._ast.__dict__[field1]
+                org_val[field2] = _value
+                self._DesignConstraintFromQTobj[module][grand_id]._setDesignConstraintValue(_index=field1,_value=org_val)
+                return
+        # else:
+        #     try:
+        #         _value = ast.literal_eval(value_id)
+        #     except:
+        #         _value = value_id
+        #     #TODO
+        #     self._DesignConstraintFromQTobj[module][grand_id]._setDesignConstraintValue(_index=field2,_value=_value)
+        #     # return
 
     def updateDesignConstraintWithDict(self,Module,Id,Field,Key,StringValue):
         self._DesignConstraintFromQTobj[Module][Id]._ast.__dict__[Field][Key] = StringValue
@@ -3491,17 +3518,40 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 else:
                     motherIdItem = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
                     motherId = motherIdItem.text()
+                    grand_id = None
                     # motherModule = re.sub(r'\d','',motherId)
                     motherModule = self._CurrentModuleName
                     if motherModule not in self._DesignConstraintFromQTobj:
                         self.send_RequestDesignConstraint_signal.emit()
+                    if motherId not in self._DesignConstraintFromQTobj[motherModule]:
+                        grand_id_item = self.model.itemFromIndex(self.currentIndex().parent().parent().siblingAtColumn(1))
+                        grand_id =grand_id_item.text()
+                        first_field_item = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(0))
+                        first_field = first_field_item.text()
                     placeHolder = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0)).text()
-                    self.updateDesginConstraintWithSTR(Module=motherModule, Id=motherId, Field=placeHolder, StringValue=_id)
-                    #_itemType = self._DesignConstraintFromQTobj[motherModule][motherId]._ast[placeHolder]._type
-                    currentItemId = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(3))
-                    #currentItemType = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(2))
-                    currentItemId.setText('*')
-                    #currentItemType.setText(_itemType)
+                    if not grand_id:
+                        self.updateDesginConstraintWithSTR(Module=motherModule, Id=motherId, Field=placeHolder, StringValue=_id)
+                        currentItemId = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(3))
+                        currentItemId.setText('*')
+                    else:
+                        value_field = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(3))
+                        value_field.setText('')
+                        self.updateDesignConstraintWithSTR_grandchild(module=self._CurrentModuleName, grand_id=grand_id,
+                                                                      field1=first_field, field2=placeHolder,
+                                                                      value_id=_id)
+                        currentItemType = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(2))
+                        id_field = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
+                        id_field.setText(_id)
+                        # value_field = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(3))
+                        # value_field.setText('')
+                        _itemType = self._DesignConstraintFromQTobj[motherModule][_id]._type
+                        currentItemType.setText(str(_itemType))
+
+                    # #_itemType = self._DesignConstraintFromQTobj[motherModule][motherId]._ast[placeHolder]._type
+                    # currentItemId = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(3))
+                    # #currentItemType = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(2))
+                    # currentItemId.setText('*')
+                    # #currentItemType.setText(_itemType)
                 index = self.currentIndex()
 
                 try:
@@ -3687,7 +3737,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 width = str(DesignParameter._ItemTraits['_Width'])
                 DeclarationString += "_Width="+width+"),"
 
-        print(DeclarationString)
+        # print(DeclarationString)
 
     def update_design_by_module_id(self,_designConstraint,moudle,id):
         pass
@@ -3970,7 +4020,7 @@ class _ConstraintModel(QStandardItemModel):
     def readHierarchy(self,DesignConstraint,_depth=None):
         hierarchyList = DesignConstraint._findSubHierarchy(_depth)
         print("Read Hierarchy")
-        print(hierarchyList)
+        # print(hierarchyList)
         self.readParseTree(self._ConstraintItem[DesignConstraint._id],DesignConstraint)
 
 
@@ -4176,7 +4226,7 @@ class _ConstraintModel(QStandardItemModel):
         #test,, delete code order change...
         #When dictionary field double clicked, it has some problems
         for row in range(0,motherItem.rowCount()):
-            print(motherItem.rowCount())
+            # print(motherItem.rowCount())
             motherItem.removeRow(0)
 
         for childAST in _AST.__dict__[key]:   #### childConstraint is item in list!
@@ -4226,7 +4276,7 @@ class _ConstraintModel(QStandardItemModel):
             return
 
         for row in range(0,mother_item.rowCount()):
-            print(mother_item.rowCount())
+            # print(mother_item.rowCount())
             mother_item.removeRow(0)
 
         for childAST in _AST.__dict__[key]:   #### childConstraint is item in list!
@@ -4502,7 +4552,7 @@ class _ThreadClassForPGbar(QThread):
     def updateValue(self, val):
         print('setValueFcnIn,',val)
         self.qpd.setValue(val)
-        print(val)
+        # print(val)
 
 class _ThreadWorker(QObject):
     signal_progress = pyqtSignal(int)
@@ -4606,7 +4656,7 @@ class _FlatteningCell(QWidget):
                 _flatten_dict[f'{item.text(0)}/{item.text(1)}'] = 'MacroCell'
             else:
                 _flatten_dict[f'{item.text(0)}/{item.text(1)}'] = self.model.itemWidget(item, 4).currentText()
-        print(_flatten_dict)
+        # print(_flatten_dict)
         return _flatten_dict
 
 
