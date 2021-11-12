@@ -1398,6 +1398,8 @@ class _MainWindow(QMainWindow):
         if len(hierarchy_list) == 0:
             return
         elif len(hierarchy_list) == 1:
+            if '_Layer' not in module[hierarchy_list[0]]._DesignParameter:
+                return
             _layerInfo = module[hierarchy_list[0]]._DesignParameter['_Layer']
             if type(_layerInfo) == int:
                 _layerCommonName = layernum2name[str(_layerInfo)]
