@@ -604,7 +604,7 @@ def test_assign_variable(qtbot):
     window.dockContentWidget3.setCurrentIndex(window.dockContentWidget3.model.item(0).index().child(2,3))
     index = window.dockContentWidget3.currentIndex()
     window.dockContentWidget3.model.setData(index.siblingAtColumn(3), 'XY_test')
-    assert len(window.dv.variableDict) == 4
+    assert len(window.dv.variableDict) == 3
 
 
 

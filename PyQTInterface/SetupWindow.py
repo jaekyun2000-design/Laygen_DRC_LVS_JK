@@ -1111,7 +1111,8 @@ class _LoadSRefWindow(QWidget):
         self.name_check = flag
 
     def on_buttonBox_accepted(self):
-        self.send_name_duplication_check_signal.emit(self.name_input.text())
+        if 'name_input' in self.__dict__:
+            self.send_name_duplication_check_signal.emit(self.name_input.text())
         if self.name_check == False:
             self.warning = QMessageBox()
             self.warning.setIcon(QMessageBox.Warning)
