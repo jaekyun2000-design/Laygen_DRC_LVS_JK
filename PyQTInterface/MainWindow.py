@@ -731,8 +731,10 @@ class _MainWindow(QMainWindow):
         constraint_ids = [item.text() for item in constraint_names]
         for ids in constraint_ids:
             single_module = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][ids]
-            module_lib = single_module._ast.__dict__['library']
-            library_list.append(module_lib)
+            if 'library' in single_module._ast.__dict__:
+                module_lib = single_module._ast.__dict__['library']
+                library_list.append(module_lib)
+        library_list = list(set(library_list))
         cal_code = self.encodeConstraint()
         cal_code = f"\n_DRCObj = DRC.DRC()\n" \
                    f"_Name = '{self._CurrentModuleName}'\n" \
