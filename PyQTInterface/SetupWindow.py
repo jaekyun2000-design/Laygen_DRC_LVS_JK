@@ -3699,9 +3699,12 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 return
             nameItem = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
             name = nameItem.text()
-            if name in self.itemToDesignConstraintDict:
+            module_name = self._CurrentModuleName
+            if name not in self._DesignConstraintFromQTobj[module_name]:
+                self.send_RequestDesignConstraint_signal.emit()
+            if name in self._DesignConstraintFromQTobj[module_name]:
                 self.removeFlag = False
-                self.send_SendCopyConstraint_signal.emit(self.itemToDesignConstraintDict[name])
+                self.send_SendCopyConstraint_signal.emit(self._DesignConstraintFromQTobj[module_name][name])
                 print("copy!!")
         elif QKeyEvent.key() == Qt.Key_F5:
             self.resizeColumnToContents(0)
