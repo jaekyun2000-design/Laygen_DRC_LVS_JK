@@ -1800,6 +1800,7 @@ class _MainWindow(QMainWindow):
 
 
     def delete_obj(self, obj):
+        return
         # sender = self.sender()
         # del sender
         if obj == 'cw' and 'cw' in self.__dict__:
