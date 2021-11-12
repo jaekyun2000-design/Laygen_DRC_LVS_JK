@@ -260,12 +260,15 @@ class _MainWindow(QMainWindow):
         self.statusBar().showMessage("No Module")
 
         newModuleAction         = QAction("New Module",self)
+        change_module_name_action = QAction("Change Module Name", self)
         moduleManagementAction  = QAction("Module List",self)
         loadGDSAction           = QAction("Load GDS File As a Module",self)
         loadPyCodeAction        = QAction("Load Python source code as Constraint",self)
 
         newModuleAction.setShortcut('Ctrl+M')
         newModuleAction.triggered.connect(self.show_module_window)
+
+        change_module_name_action.triggered.connect(self.show_module_name_change_window)
 
         loadGDSAction.setShortcut('Ctrl+G')
         loadGDSAction.triggered.connect(self.loadGDS)
@@ -286,6 +289,7 @@ class _MainWindow(QMainWindow):
 
 
         moduleMenu.addAction(newModuleAction)
+        moduleMenu.addAction(change_module_name_action)
         moduleMenu.addAction(moduleManagementAction)
         moduleMenu.addAction(loadGDSAction)
         moduleMenu.addAction(loadPyCodeAction)
@@ -1961,6 +1965,11 @@ class _MainWindow(QMainWindow):
             self.nmw.show()
             self.nmw.send_Name_signal.connect(self.create_new_module)
 
+    def show_module_name_change_window(self):
+        change_name = QInputDialog.getText(self, 'Module Name Change', 'New Module Name', QLineEdit.Normal)
+        if change_name[0]:
+            self.change_module_name(change_name[0])
+
     def create_new_module(self, updateModule):
         self.module_name_list.append(updateModule)
         self.module_dict[updateModule] = _MainWindow()
@@ -1989,6 +1998,21 @@ class _MainWindow(QMainWindow):
         self._CurrentModuleName = module_name
         self.dockContentWidget3._CurrentModuleName = module_name
         self.dockContentWidget3_2._CurrentModuleName = module_name
+
+    def change_module_name(self, module_name):
+        if module_name in self.module_name_list:
+            warnings.warn("Module Name Duplication!")
+            return None
+        old_name = self._CurrentModuleName
+        self.module_dict[module_name] = self.module_dict.pop(old_name)
+        self.module_name_list.append(module_name)
+        self._CurrentModuleName = module_name
+        self._QTObj._qtProject._DesignConstraint[module_name] = self._QTObj._qtProject._DesignConstraint.pop(old_name)
+        id_match_dict = self._QTObj._qtProject.reset_design_constraint_id(module_name)
+        self.dockContentWidget3._CurrentModuleName = module_name
+        self.dockContentWidget3.reload_new_id(id_match_dict)
+        self.dockContentWidget3_2._CurrentModuleName = module_name
+        self.dockContentWidget3_2.reload_new_id(id_match_dict)
 
     def updateModule(self,ModuleName):
         if ModuleName not in self.module_name_list:

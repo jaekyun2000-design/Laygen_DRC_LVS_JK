@@ -583,6 +583,19 @@ class QtProject:
             except:
                 return userDefineExceptions._UnkownError
 
+    def reset_design_constraint_id(self, module_name):
+        id_count = 0
+        tmp_dict = dict()
+        id_match_dict = dict()
+        for old_id, qt_dc in self._DesignConstraint[module_name].items():
+            new_id = f'{module_name}_{id_count}'
+            tmp_dict[new_id] = self._DesignConstraint[module_name][old_id]
+            qt_dc._id = new_id
+            id_match_dict[old_id] = new_id
+            id_count += 1
+        self._DesignConstraint[module_name] = tmp_dict
+        return id_match_dict
+
     def _CopyDesignConstraint(self, _srcid=None, _srcParentName=None, _dstParentName=None, ):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
             print("_CopyDesignConstraint Run.")

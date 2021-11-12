@@ -3132,6 +3132,22 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             # self.openPersistentEditor(self.model.index(rc,3))
             self.openPersistentEditor(idx)
 
+    def reload_new_id(self, match_dict):
+        item_count = self.model.rowCount()
+        item_stack = [self.model.itemFromIndex(self.model.index(row,0)) for row in range(0,item_count)]
+        while item_stack:
+            item = item_stack.pop(0)
+            child_count = item.rowCount()
+            child_stack = [item.child(row) for row in range(0,child_count)]
+            item_stack.extend(child_stack)
+            id_idx = self.model.indexFromItem(item).siblingAtColumn(1)
+            id_item = self.model.itemFromIndex(id_idx)
+            old_id = id_item.text()
+
+            if old_id in match_dict:
+                id_item.setText(match_dict[old_id])
+
+
 
     def UpdateSelectedItem(self, item):
         if item == None:
