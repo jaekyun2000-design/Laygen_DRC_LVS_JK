@@ -442,7 +442,7 @@ class QtDesinConstraint:
                         else:
                             self._ast.__dict__[_index].append(_value)
                 else:
-                    self._ast.__dict__[_index] = _value
+                    self._ast.__dict__[_index] = [_value]
             except:
                 return userDefineExceptions._UnkownError
 

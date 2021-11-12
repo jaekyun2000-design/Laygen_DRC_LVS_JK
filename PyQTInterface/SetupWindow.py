@@ -4221,10 +4221,8 @@ class _ConstraintModel(QStandardItemModel):
 
         if key not in _AST.__dict__:
             return
-        #print('d start')
-        #print('debug key and val:{} ,  {}'.format(key,_AST.__dict__[key]))
-        #print('debug type: {}'.format(type(_AST.__dict__[key])))
-        if len(_AST.__dict__[key]) != 0 and type(_AST.__dict__[key]) == list:
+
+        if type(_AST.__dict__[key]) == list and len(_AST.__dict__[key]) != 0 :
             valueItem = self.itemFromIndex(motherItem.index().siblingAtColumn(3))
             valueItem.setText("*")
 
