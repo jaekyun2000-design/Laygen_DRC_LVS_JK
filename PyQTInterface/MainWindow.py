@@ -3264,7 +3264,8 @@ class _MainWindow(QMainWindow):
             return
         designParameterList = list()
         for id in designParameterItemIDList:
-            module = self.get_id_return_module(id,'_DesignParameter')
+            # module = self.get_id_return_module(id,'_DesignParameter')
+            module = self._CurrentModuleName
             # # module = re.sub('[0-9]+', '',id)
             # module = id[:-1]
             # while not module in self._QTObj._qtProject._DesignParameter:
