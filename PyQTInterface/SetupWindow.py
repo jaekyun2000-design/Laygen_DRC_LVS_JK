@@ -3708,6 +3708,10 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 print("copy!!")
         elif QKeyEvent.key() == Qt.Key_F5:
             self.resizeColumnToContents(0)
+        elif QKeyEvent.key() == Qt.Key_BracketRight:
+            self.collapseAll()
+        elif QKeyEvent.key() == Qt.Key_BracketLeft:
+            self.expandAll()
         elif QKeyEvent.key() == Qt.Key_H:
             id_item = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
             id_string = id_item.text()
