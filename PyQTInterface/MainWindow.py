@@ -740,15 +740,15 @@ class _MainWindow(QMainWindow):
                 library_list.append(module_lib)
         library_list = list(set(library_list))
         cal_code = self.encodeConstraint()
-        cal_code = f"\n_DRCObj = DRC.DRC()\n" \
-                   f"_Name = '{self._CurrentModuleName}'\n" \
+        cal_code = f"\ndrc = DRC.DRC()\n" \
+                   f"_Name = 'self._Name'\n" \
                    f"{cal_code}"
         import_default_code = "from generatorLib import StickDiagram\n" \
                               "from generatorLib import DesignParameters\n" \
                               "import copy\n" \
                               "from generatorLib import DRC\n"
-        # for libraries in library_list:
-        #     additional_import_code += f"from generatorLib.generator_models import {libraries}\n"
+        for libraries in library_list:
+            additional_import_code += f"from generatorLib.generator_models import {libraries}\n"
         from functools import reduce
         if library_list != []:
             reduce(lambda additional_import_code, libraries: additional_import_code + f"from generatorLib.generator_models import {libraries}\n", library_list)
