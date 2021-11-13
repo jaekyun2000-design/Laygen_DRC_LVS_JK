@@ -741,7 +741,7 @@ class _MainWindow(QMainWindow):
         library_list = list(set(library_list))
         cal_code = self.encodeConstraint()
         cal_code = f"\ndrc = DRC.DRC()\n" \
-                   f"_Name = self._Name\n" \
+                   f"_Name = self._DesignParameter['_Name']['_Name']\n" \
                    f"{cal_code}"
         import_default_code = "from generatorLib import StickDiagram\n" \
                               "from generatorLib import DesignParameters\n" \
@@ -759,7 +759,8 @@ class _MainWindow(QMainWindow):
                                  f"\t\tif _DesignParameter != None:\n" \
                                  f"\t\t\tself._DesignParameter = _DesignParameter\n" \
                                  f"\t\telse:\n" \
-                                 f"\t\t\tself._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))\n"
+                                 f"\t\t\tself._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))\n"\
+                                 f"\tself._DesignParameter['_Name']['Name'] = _Name"
         self.user_variables = variableWindow._createNewDesignVariable.variableDict.values()
         user_variable_sentence = ",".join(
             [f'{variable_dict["DV"]}={variable_dict["value"] if variable_dict["value"] != "" else None}' for
