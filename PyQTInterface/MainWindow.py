@@ -760,8 +760,9 @@ class _MainWindow(QMainWindow):
                                  f"\t\t\tself._DesignParameter = _DesignParameter\n" \
                                  f"\t\telse:\n" \
                                  f"\t\t\tself._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))\n"\
-                                 f"\tself._DesignParameter['_Name']['Name'] = _Name"
+                                 f"\t\tself._DesignParameter['_Name']['Name'] = _Name\n\n"
         self.user_variables = variableWindow._createNewDesignVariable.variableDict.values()
+        self.user_variables = list(filter(lambda variable: variable["DV"] != 'min_spacing', self.user_variables))
         user_variable_sentence = ",".join(
             [f'{variable_dict["DV"]}={variable_dict["value"] if variable_dict["value"] != "" else None}' for
              variable_dict in self.user_variables])
