@@ -611,6 +611,7 @@ class _PathSetupWindow(QWidget):
 
         okButton = QPushButton("OK",self)
         cancelButton = QPushButton("Cancel",self)
+        self.okButton = okButton
 
         okButton.clicked.connect(self.on_buttonBox_accepted)
         cancelButton.clicked.connect(self.cancel_button_accepted)
@@ -3106,7 +3107,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.model.setHeaderData(1,Qt.Horizontal,"Constraint ID")
         self.model.setHeaderData(2,Qt.Horizontal,"Constraint Type")
         self.model.setHeaderData(3,Qt.Horizontal,"Value")
-        self.model.setHeaderData(4,Qt.Horizontal,"fcn_type")
+        # self.model.setHeaderData(4,Qt.Horizontal,"fcn_type")
 
         self.setModel(self.model)
 
@@ -3118,20 +3119,20 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self._DesignConstraintFromQTobj = _DesignConstraint
         rc = self.model.createNewColumnWithID(_id=_id, _parentName=_parentName, _DesignConstraint = _DesignConstraint)
 
-        if _DesignConstraint[_parentName][_id]._type == 'Sref':
-            sref_item = self.model.item(rc,0)
-            calculate_name_item = sref_item.child(4,4) #row=4 for calculate_fcn in Sref ast
-            idx = self.model.indexFromItem(calculate_name_item).siblingAtColumn(4)
-            if _DesignConstraint[_parentName][_id]._ast.library == 'MacroCell':
-                pass
-            else:
-                fcn_list = list(generator_model_api.class_function_dict[_DesignConstraint[_parentName][_id]._ast.library].keys())
-                combo_delegetor = ComboDelegate(self,fcn_list)
-                self.setItemDelegateForColumn(4,combo_delegetor)
-            # idx = self.model.index(rc,3,QModelIndex())
-            # self.model.appendRow([QStandardItem('aa')])
-            # self.openPersistentEditor(self.model.index(rc,3))
-            self.openPersistentEditor(idx)
+        # if _DesignConstraint[_parentName][_id]._type == 'Sref':
+        #     sref_item = self.model.item(rc,0)
+        #     calculate_name_item = sref_item.child(4,4) #row=4 for calculate_fcn in Sref ast
+        #     idx = self.model.indexFromItem(calculate_name_item).siblingAtColumn(4)
+        #     if _DesignConstraint[_parentName][_id]._ast.library == 'MacroCell':
+        #         pass
+        #     else:
+        #         fcn_list = list(generator_model_api.class_function_dict[_DesignConstraint[_parentName][_id]._ast.library].keys())
+        #         combo_delegetor = ComboDelegate(self,fcn_list)
+        #         self.setItemDelegateForColumn(4,combo_delegetor)
+        #     # idx = self.model.index(rc,3,QModelIndex())
+        #     # self.model.appendRow([QStandardItem('aa')])
+        #     # self.openPersistentEditor(self.model.index(rc,3))
+        #     self.openPersistentEditor(idx)
 
     def reload_new_id(self, match_dict):
         item_count = self.model.rowCount()
@@ -3868,7 +3869,7 @@ class _ConstraintModel(QStandardItemModel):
         self._ConstraintItem = dict()
 
         self._Root = None
-        self.setColumnCount(5)
+        self.setColumnCount(4)
 
         self._CurrentModuleName = None
         # self.testInitial()
@@ -3892,7 +3893,7 @@ class _ConstraintModel(QStandardItemModel):
         if rc == None:
             rc = self.rowCount()
 
-        self.insertRow(rc, [tmpConstraintType, QStandardItem(_id), QStandardItem(_type),QStandardItem(), QStandardItem() ])
+        self.insertRow(rc, [tmpConstraintType, QStandardItem(_id), QStandardItem(_type),QStandardItem()])
         # Item Field:  0-> PlaceHolder Type , 1-> _id , 2-> Content Type , 3 -> value
         #self._ConstraintNameList.append(constraintName)
         self.readParseTreeWtihAST(motherItem=tmpConstraintType, _AST= _DesignConstraint[_parentName][_id]._ast)
@@ -4231,7 +4232,7 @@ class _ConstraintModel(QStandardItemModel):
                 tmpD = QStandardItem(_constraintValue)
 
                 # tmpA.appendRow([QStandardItem("hi"),QStandardItem("test")])
-                motherItem.appendRow([tmpA, tmpB, tmpC, tmpD, QStandardItem()])
+                motherItem.appendRow([tmpA, tmpB, tmpC, tmpD])
 
     def readParseTreeForMultiChildren(self,motherItem=None,_AST = None,key=None,grandparentItem=None):
         checkChild = self.findChildrenWithText(motherItem,key,column=0)   #If Constraint has child constraint, then show Constraint Name for Child constraint.
