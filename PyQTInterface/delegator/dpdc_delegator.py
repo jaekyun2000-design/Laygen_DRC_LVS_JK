@@ -6,6 +6,7 @@ import re
 
 from PyQTInterface.delegator import delegator
 from PyQTInterface import VisualizationItem
+from PyCodes import variable_ast
 from powertool import topAPI
 import user_setup
 import numpy as np
@@ -38,6 +39,10 @@ class DesignDelegator(delegator.Delegator):
             design_dict = self.main_window._QTObj._qtProject._feed_design(design_type='constraint',
                                                                           module_name=self.main_window._CurrentModuleName,
                                                                           _ast=constraint_ast)
+            if variable_ast.GeneratorVariable in constraint_ast.__class__.__bases__:
+                constraint_ast.id = design_dict['constraint_id']
+                if constraint_ast.__class__ in [variable_ast.XYCoordinate, variable_ast.PathXY, variable_ast.LogicExpression]:
+                    self.main_window.calculator_window.storePreset(constraint_ast.info_dict, design_dict['constraint_id'])
             self.control_constraint_tree_view(design_dict['constraint_id'])
 
             if type(constraint_ast).__name__ in ['Sref', 'MacroCell']:

@@ -701,6 +701,7 @@ class _MainWindow(QMainWindow):
         self.scene.send_xyCoordinate_signal.connect(self.calculator_window.waitForClick)
         self.calculator_window.returnLayer_signal.connect(self.get_hierarchy_return_layer)
         self.calculator_window.send_XYCreated_signal.connect(self.createDummyConstraint)
+        self.calculator_window.send_variable_ast.connect(self.design_delegator.create_qt_constraint)
         self.send_tech_node_changed_signal.connect(self.calculator_window.get_drc_dict)
 
         self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array")

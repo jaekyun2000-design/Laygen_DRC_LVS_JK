@@ -4,6 +4,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import platform
 
+from PyCodes import variable_ast
 import user_setup
 import warnings
 import re
@@ -16,6 +17,7 @@ class ExpressionCalculator(QWidget):
     send_XYCreated_signal = pyqtSignal(str, dict)
     send_dummyconstraints_signal = pyqtSignal(dict, str)
     send_path_row_xy_signal = pyqtSignal("PyQt_PyObject", str)
+    send_variable_ast = pyqtSignal("PyQt_PyObject")
     send_expression_signal = pyqtSignal(str, str, dict)
     returnLayer_signal = pyqtSignal(list)
     presetDict = dict()
@@ -1036,13 +1038,19 @@ class ExpressionCalculator(QWidget):
                 if self.purpose != 'init':
                     self.send_XYCreated_signal.emit('LogicExpressionD', output)
                 else:
-                    self.send_XYCreated_signal.emit('LogicExpression', output)
+                    # self.send_XYCreated_signal.emit('LogicExpression', output)
+                    tmp_ast = variable_ast.LogicExpression()
+                    tmp_ast.info_dict = output
+                    self.send_variable_ast.emit(tmp_ast)
                 LEFlag = True
             elif YList:
                 if self.purpose != 'init':
                     self.send_XYCreated_signal.emit('LogicExpressionD', output)
                 else:
-                    self.send_XYCreated_signal.emit('LogicExpression', output)
+                    # self.send_XYCreated_signal.emit('LogicExpression', output)
+                    tmp_ast = variable_ast.LogicExpression()
+                    tmp_ast.info_dict = output
+                    self.send_variable_ast.emit(tmp_ast)
                 LEFlag = True
 
         self.XWindow.clear()
@@ -1067,12 +1075,17 @@ class ExpressionCalculator(QWidget):
 
             if export_type == False:
                 if LEFlag == False:
-                    self.send_XYCreated_signal.emit('XYCoordinate', output)
+                    # self.send_XYCreated_signal.emit('XYCoordinate', output)
+                    tmp_ast = variable_ast.XYCoordinate()
+                    tmp_ast.info_dict = output
+                    self.send_variable_ast.emit(tmp_ast)
             else:
                 self.send_XYCreated_signal.emit(export_type, output)
 
         elif self.purpose != 'init':
             self.send_expression_signal.emit(self.display.toPlainText(), self.purpose, output)
+
+        # self.send_variable_ast.emit()
 
     def export_path_clicked(self):
         if 'pw' not in self.__dict__:
