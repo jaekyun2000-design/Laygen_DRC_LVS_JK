@@ -60,6 +60,44 @@ class DesignDelegator(delegator.Delegator):
         elif constraint_dict:
             pass
 
+    def copy_qt_constraint(self, qt_dc) -> tuple:
+        """
+        receive: Design Constraint
+        process: source ast --> check copiable or not --> copy version of ast
+        return : copy status (status type -int, and log-str)
+        """
+        copied_ast = copy.deepcopy(qt_dc._ast)
+        ast_stack = [copied_ast]
+        copy_count = 1
+        while ast_stack:
+            target_ast = ast_stack.pop(0)
+            for field in target_ast._fields:
+                if field not in target_ast.__dict__:
+                    continue
+                child_node = target_ast.__dict__[field]
+                if type(child_node) == list:
+                    child_asts = list(filter(lambda node: isinstance(node, ast.AST), child_node))
+                    ast_stack.extend(child_asts)
+                elif isinstance(child_node, ast.AST):
+                    ast_stack.append(child_node)
+                elif type(child_node) == dict:
+                    child_asts = list(filter(lambda node: isinstance(node, ast.AST), child_node.values()))
+                    ast_stack.extend(child_asts)
+                else:
+                    #debug purpose
+                    print(f'check for debug: {type(child_node)}')
+            copy_count += 1
+            if 'name' in target_ast.__dict__:
+                new_name = f'{target_ast.name}_copy'
+                i=0
+                while new_name in self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName]:
+                    new_name = f'{new_name}+{i}'
+                    i += 1
+                target_ast.name = new_name
+            self.create_qt_constraint(target_ast)
+
+
+
     def create_vs_item(self, qt_design_parameter):
         """
         receive: qt_design_parameter
