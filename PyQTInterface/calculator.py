@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+import platform
 
 import user_setup
 import warnings
@@ -184,17 +185,21 @@ class ExpressionCalculator(QWidget):
         top_layout.addLayout(main_layout)
 
         self.XWindow = QListWidget()
-        self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/X.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
+        if platform.system() != 'Darwin':
+            self.XWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/X.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
         self.XWindow.itemClicked.connect(self.XitemClicked)
         self.YWindow = QListWidget()
-        self.YWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/Y.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
+        if platform.system() != 'Darwin':
+            self.YWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/Y.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
         self.YWindow.itemClicked.connect(self.YitemClicked)
         self.XYWindow = QListWidget()
-        self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
+        if platform.system() != 'Darwin':
+            self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
         self.XYWindow.itemClicked.connect(self.XYitemClicked)
         if self.purpose != 'init':
             self.XYWindow.setDisabled(True)
-            self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY_disabled.png); background-position: center; background-color: rgb(255,255,255); background-attachment: fixed;")
+            if platform.system() != 'Darwin':
+                self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY_disabled.png); background-position: center; background-color: rgb(255,255,255); background-attachment: fixed;")
 
         self.first_index_button = QPushButton()
         self.first_index_button.setText('first')
@@ -1111,9 +1116,18 @@ class ExpressionCalculator(QWidget):
             self.pw = PathWindow(address=self, idlist=ExpressionCalculator.presetDict[_id]['XYidlist'])
             self.send_path_row_xy_signal.connect(self.pw.create_row)
         else:
-            XList = ExpressionCalculator.presetDict[_id]['X']
-            YList = ExpressionCalculator.presetDict[_id]['Y']
-            XYList = ExpressionCalculator.presetDict[_id]['XY']
+            if 'X' in ExpressionCalculator.presetDict[_id]:
+                XList = ExpressionCalculator.presetDict[_id]['X']
+            else:
+                XList = []
+            if 'Y' in ExpressionCalculator.presetDict[_id]:
+                YList = ExpressionCalculator.presetDict[_id]['Y']
+            else:
+                YList = []
+            if 'XY' in ExpressionCalculator.presetDict[_id]:
+                XYList = ExpressionCalculator.presetDict[_id]['XY']
+            else:
+                XYList = []
 
             self.XWindow.clear()
             self.YWindow.clear()
