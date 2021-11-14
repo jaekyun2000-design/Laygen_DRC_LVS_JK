@@ -2132,6 +2132,11 @@ class _MainWindow(QMainWindow):
         _dp['_id'] = dp_id #set previous element_name
         dc_id = self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_id)
         _dp['_ElementName'] = ast_with_id.name
+        _dp['library'] =  tmp_dp_dict['library']
+        _dp['className'] =  tmp_dp_dict['className']
+        _dp['XY'] =  tmp_dp_dict['_XYCoordinates']
+        _dp['parameters'] =  tmp_dp_dict['parameters']
+        _dp['calculate_fcn'] =  tmp_dp_dict['calculate_fcn']
         self.design_delegator.update_qt_parameter(_dp)
         self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][dc_id]._ast = ast_with_id
         self.design_delegator.control_constraint_tree_view(dc_id,None,'update')
