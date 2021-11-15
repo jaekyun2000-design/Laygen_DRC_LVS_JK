@@ -4258,11 +4258,13 @@ class _ConstraintModel(QStandardItemModel):
                 #     motherItem.removeRows(0)
                 if type(childAST[0]) != list:   #Boundary case
                     print("List case display")
+                    tmpB = QStandardItem()
                     tmpC = QStandardItem(str(type(childAST)))
                     tmpD = str(childAST[0]) + ',' + str(childAST[1])
                     tmpD = QStandardItem(tmpD)
                     motherItem.appendRow([QStandardItem(), QStandardItem(), tmpC, tmpD])
                 else:
+                    tmpB = QStandardItem()
                     tmpC = QStandardItem(str(type(childAST)))
                     motherItem.appendRow([QStandardItem(''),QStandardItem(''),tmpC, QStandardItem('*')])
                     # for child_child_AST in childAST:
@@ -4273,14 +4275,17 @@ class _ConstraintModel(QStandardItemModel):
                     #     motherItem.appendRow([QStandardItem(), QStandardItem(), tmpC, tmpD])
             elif type(childAST) == str:
                 tmpA = QStandardItem(childAST)
+                tmpB = QStandardItem()
                 if type(_AST.__dict__[key]) == dict:
                     tmpD = QStandardItem(str(_AST.__dict__[key][childAST]))
+                    if isinstance(_AST.__dict__[key][childAST], ast.AST):
+                        tmpB = QStandardItem(_AST.__dict__[key][childAST]._id)
                 elif type(_AST.__dict__[key]) == list:
                     tmpD = QStandardItem()
                 else:
                     tmpD = QStandardItem()
                     # tmpD = QStandardItem(str(_AST.__dict__[key][]))
-                motherItem.appendRow([tmpA, QStandardItem(), QStandardItem(), tmpD])
+                motherItem.appendRow([tmpA, tmpB, QStandardItem(), tmpD])
             else:
                 childASTid = childAST._id
                 _type = childAST._type
