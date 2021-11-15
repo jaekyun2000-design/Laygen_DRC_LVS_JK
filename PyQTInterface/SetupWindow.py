@@ -3588,12 +3588,13 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         valueItem = self.model.itemFromIndex(itemIndex.siblingAtColumn(3))
         indexID = indexIDItem.text()
         value = valueItem.text()
-        tmpModuel = re.sub(r'\d','',indexID)
+        # tmpModuel = re.sub(r'\d','',indexID)
+        tmpModule = self._CurrentModuleName
         self.send_RequestDesignConstraint_signal.emit()
 
-        if tmpModuel in self._DesignConstraintFromQTobj:                #Constraint Case -> expand subhierarchy
-            if indexID in self._DesignConstraintFromQTobj[tmpModuel]:
-                dc = self._DesignConstraintFromQTobj[tmpModuel][indexID]
+        if tmpModule in self._DesignConstraintFromQTobj:                #Constraint Case -> expand subhierarchy
+            if indexID in self._DesignConstraintFromQTobj[tmpModule]:
+                dc = self._DesignConstraintFromQTobj[tmpModule][indexID]
                 self.model.updateRowChildWithAST(_DesignConstraint= dc, motherIndex=itemIndex)
 
         #elif indexID == "" or indexID == None:                    #If refresh Item is parsetree and it has at least one child constraint
@@ -3639,12 +3640,12 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             motherName = motherItem.text()
 
             #indexID.setEditable(True)
-            tmpModuel = re.sub(r'\d', '', motherName)
-            if tmpModuel not in self._DesignConstraintFromQTobj:
+            tmpModule = self._CurrentModuleName
+            if tmpModule not in self._DesignConstraintFromQTobj:
                 #do nothing! (field value is not constraint but list or dictionary case)
                 return
 
-            dc = self._DesignConstraintFromQTobj[tmpModuel][motherName]
+            dc = self._DesignConstraintFromQTobj[tmpModule][motherName]
             self.model.updateRowChildWithAST(_DesignConstraint= dc,motherIndex=itemIndex.parent())
 
         else:
