@@ -1125,8 +1125,20 @@ class ExpressionCalculator(QWidget):
         else:
             _id = self.presetWindow.currentItem().text()
 
-        if 'XYidlist' in ExpressionCalculator.presetDict[_id]:
-            self.pw = PathWindow(address=self, idlist=ExpressionCalculator.presetDict[_id]['XYidlist'])
+        # if 'XYidlist' in ExpressionCalculator.presetDict[_id]:
+        #     self.pw = PathWindow(address=self, idlist=ExpressionCalculator.presetDict[_id]['XYidlist'])
+        #     self.send_path_row_xy_signal.connect(self.pw.create_row)
+        if 'XY' not in ExpressionCalculator.presetDict[_id]:
+            # id_list = []
+            # for id_name, xy_ast in ExpressionCalculator.presetDict[_id].items():
+            #     id_list.append([id_name, 0, 0])
+            #     info_dict = xy_ast.info_dict
+            #     if info_dict['X'] or info_dict['XY']:
+            #         id_list[-1][1] = 2
+            #     if info_dict['Y'] or info_dict['XY']:
+            #         id_list[-1][2] = 2
+            ast_and_id_list = ExpressionCalculator.presetDict[_id]
+            self.pw = PathWindow(address=self, idlist=ast_and_id_list)
             self.send_path_row_xy_signal.connect(self.pw.create_row)
         else:
             if 'X' in ExpressionCalculator.presetDict[_id]:
@@ -1245,16 +1257,18 @@ class PathWindow(QWidget):
         self.show()
 
     def updateUI(self):
-        for i in range(len(self.idlist)):
-            if self.idlist[i][1] == 0 and self.idlist[i][2] == 0:
-                tmpDict = {'X':[], 'Y':[], 'XY':[]}
-            elif self.idlist[i][1] == 2 and self.idlist[i][2] == 0:
-                tmpDict = {'X':[1], 'Y':[], 'XY':[]}
-            elif self.idlist[i][1] == 0 and self.idlist[i][2] == 2:
-                tmpDict = {'X':[], 'Y':[1], 'XY':[]}
-            elif self.idlist[i][1] == 2 and self.idlist[i][2] == 2:
-                tmpDict = {'X':[], 'Y':[], 'XY':[1]}
-            self.create_row(tmpDict,self.idlist[i][0])
+        # for i in range(len(self.idlist)):
+        #     if self.idlist[i][1] == 0 and self.idlist[i][2] == 0:
+        #         tmpDict = {'X':[], 'Y':[], 'XY':[]}
+        #     elif self.idlist[i][1] == 2 and self.idlist[i][2] == 0:
+        #         tmpDict = {'X':[1], 'Y':[], 'XY':[]}
+        #     elif self.idlist[i][1] == 0 and self.idlist[i][2] == 2:
+        #         tmpDict = {'X':[], 'Y':[1], 'XY':[]}
+        #     elif self.idlist[i][1] == 2 and self.idlist[i][2] == 2:
+        #         tmpDict = {'X':[], 'Y':[], 'XY':[1]}
+        #     self.create_row(tmpDict,self.idlist[i][0])
+        for _id, _ast in self.idlist.items():
+            self.create_row(_ast,_id)
 
     def itemLoad(self, _clickedItem):
         self.send_clicked_item_name_signal.emit(_clickedItem.text())
