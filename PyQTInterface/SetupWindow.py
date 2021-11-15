@@ -3645,8 +3645,9 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 #do nothing! (field value is not constraint but list or dictionary case)
                 return
 
-            dc = self._DesignConstraintFromQTobj[tmpModule][motherName]
-            self.model.updateRowChildWithAST(_DesignConstraint= dc,motherIndex=itemIndex.parent())
+            if motherName in self._DesignConstraintFromQTobj[tmpModule]:
+                dc = self._DesignConstraintFromQTobj[tmpModule][motherName]
+                self.model.updateRowChildWithAST(_DesignConstraint= dc,motherIndex=itemIndex.parent())
 
         else:
             print("Refresh Else")

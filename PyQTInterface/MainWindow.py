@@ -3181,7 +3181,7 @@ class _MainWindow(QMainWindow):
             return list(variable_name_set)
 
         changed_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(constraint_id)
-        if changed_dp_id:
+        if changed_dp_id and changed_dp_id in self.visualItemDict:
             old_variable_dict = copy.deepcopy(self.visualItemDict[changed_dp_id]._ItemTraits['variable_info'])
             module_name = self.get_id_return_module(constraint_id,'_DesignConstraint')
             used_variable_list = parse_constraint_to_get_value(self._QTObj._qtProject._DesignConstraint[module_name][constraint_id]._ast)
