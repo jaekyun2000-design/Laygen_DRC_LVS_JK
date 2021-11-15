@@ -3592,10 +3592,10 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         tmpModule = self._CurrentModuleName
         self.send_RequestDesignConstraint_signal.emit()
 
-        if tmpModule in self._DesignConstraintFromQTobj:                #Constraint Case -> expand subhierarchy
-            if indexID in self._DesignConstraintFromQTobj[tmpModule]:
-                dc = self._DesignConstraintFromQTobj[tmpModule][indexID]
-                self.model.updateRowChildWithAST(_DesignConstraint= dc, motherIndex=itemIndex)
+        if tmpModule in self._DesignConstraintFromQTobj and indexID in self._DesignConstraintFromQTobj[tmpModule]:                #Constraint Case -> expand subhierarchy
+            # if indexID in self._DesignConstraintFromQTobj[tmpModule]:
+            dc = self._DesignConstraintFromQTobj[tmpModule][indexID]
+            self.model.updateRowChildWithAST(_DesignConstraint= dc, motherIndex=itemIndex)
 
         #elif indexID == "" or indexID == None:                    #If refresh Item is parsetree and it has at least one child constraint
         elif value == "*":
