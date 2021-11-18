@@ -3308,6 +3308,12 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 _value = self._DesignConstraintFromQTobj[tmpChildModule][StringValue]._ast
                 self._DesignConstraintFromQTobj[Module][Id]._appendDesignConstraintValue(_index=Field,_value=_value)
                 return
+            elif Id in self._DesignConstraintFromQTobj[tmpChildModule]:
+                try:
+                    _value = ast.literal_eval(StringValue)
+                except:
+                    _value = StringValue
+                self._DesignConstraintFromQTobj[Module][Id]._setDesignConstraintValue(_index=Field, _value=_value)
         else:
             try:
                 _value = ast.literal_eval(StringValue)
