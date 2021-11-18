@@ -347,10 +347,11 @@ def test_modifier_path(qtbot):
                      pos=window.centralWidget().mapFromScene(QtCore.QPoint(-100,200)))
     qtbot.keyClicks(window.pw.width_input, '50')
     qtbot.keyClicks(window.pw.name_input,'path_modifier_test')
-    window.pw.on_buttonBox_accepted()
+    qtbot.mouseClick(window.pw.okButton, QtCore.Qt.LeftButton)
+    # window.pw.on_buttonBox_accepted()
 
     qtbot.mouseClick(window.centralWidget().viewport(), QtCore.Qt.LeftButton,
-                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(0,200)))
+                     pos=window.centralWidget().mapFromScene(QtCore.QPoint(0,-100)))
     window.design_modifier.field_value_dict['Path']['name'].clear()
     qtbot.keyClicks(window.design_modifier.field_value_dict['Path']['name'], 'modified_path')
     window.design_modifier.field_value_dict['Path']['width'].clear()
@@ -360,7 +361,7 @@ def test_modifier_path(qtbot):
 
 
     assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']
-    assert window._QTObj._qtProject._DesignParameter['EasyDebugModule']['modified_path']
+    assert 'modified_path' in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
     assert not 'path_modifier_test' in window._QTObj._qtProject._DesignParameter['EasyDebugModule']
     dc_id = window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id('modified_path')
     assert window._QTObj._qtProject._DesignConstraint['EasyDebugModule'][dc_id]
@@ -604,7 +605,7 @@ def test_assign_variable(qtbot):
     window.dockContentWidget3.setCurrentIndex(window.dockContentWidget3.model.item(0).index().child(2,3))
     index = window.dockContentWidget3.currentIndex()
     window.dockContentWidget3.model.setData(index.siblingAtColumn(3), 'XY_test')
-    assert len(window.dv.variableDict) == 3
+    assert len(window.dv.variableDict) == 4
 
 
 
