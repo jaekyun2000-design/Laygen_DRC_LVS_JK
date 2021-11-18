@@ -720,29 +720,32 @@ class IrregularTransformer(ast.NodeTransformer):
         :param XYFlag: Which mode is checked?
         :return: re-expressed code
         """
-        tmp_str = re.sub("\(|\)", "", expression)
-        function = tmp_str[0:2]
-        if function == 'to':
-            function = 'top'
-        elif function == 'bo':
-            function = 'bottom'
-        elif function == 'le':
-            function = 'left'
-        elif function == 'ri':
-            function = 'right'
-        elif function == 'ce':
-            function = 'center'
-        elif function == 'wi':
-            function = 'width'
-        elif function == 'he':
-            function = 'height'
+        minus = True if expression[0] == '-' else False
+        function_list = FunctionNameFinder().visit(ast.parse(expression))
+        # tmp_str = re.sub("\(|\)", "", expression)
+        # function = tmp_str[0:2]
+        # if function == 'to':
+        #     function = 'top'
+        # elif function == 'bo':
+        #     function = 'bottom'
+        # elif function == 'le':
+        #     function = 'left'
+        # elif function == 'ri':
+        #     function = 'right'
+        # elif function == 'ce':
+        #     function = 'center'
+        # elif function == 'wi':
+        #     function = 'width'
+        # elif function == 'he':
+        #     function = 'height'
+        function = function_list[0]
         if XYFlag == 'FA':
             if function != ('width' or 'height'):
                 raise Exception("Invalid Input, Debug")
             else:
                 XYFlag = 'XY'
         tmp_string = re.sub('\(|\'|\)', "", expression)
-        tmp_string = tmp_string[len(function):]
+        tmp_string = tmp_string[len(function):] if not minus else tmp_string[len(function)+1:]
         tmp_string = re.sub(" ","",tmp_string)
         operands = re.split(',', tmp_string)
 
@@ -821,6 +824,8 @@ class IrregularTransformer(ast.NodeTransformer):
                 print(f" XYFlag Redundant: input function: {function}, XYFlag = {XYFlag}_Y for Debugging")
             if (function != 'width') & (function != 'height'):
                 result = re.split(',', result)
+        if minus:
+            result = f'-{result}'
         print(f"Re-Expressed Element: \n{result}")
         if type(result) == str:
             result = '(' + result + ')'
@@ -886,6 +891,15 @@ def run_transformer(source_ast):
     result_ast = VariableTransformer().visit(result_ast)
     return result_ast
 
+class FunctionNameFinder(ast.NodeVisitor):
+    def __init__(self):
+        super(FunctionNameFinder, self).__init__()
+        self.func_name_list = []
+    def generic_visit(self, node):
+        if 'func' in node.__dict__ and node.func:
+            self.func_name_list.append(node.func.id)
+        super(FunctionNameFinder, self).generic_visit(node)
+        return self.func_name_list
 
 
 
