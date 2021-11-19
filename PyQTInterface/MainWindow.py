@@ -3399,7 +3399,8 @@ class _CustomView(QGraphicsView):
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_F:
-            print(self.scene().fit_in_view_dict)
+            if not list(filter(lambda x: x, self.scene().fit_in_view_dict.values())): #When There is no items
+                return
             top_left = QPointF(min(self.scene().fit_in_view_dict['left']),max(self.scene().fit_in_view_dict['top']))
             bottom_right = QPointF(max(self.scene().fit_in_view_dict['right']),min(self.scene().fit_in_view_dict['bottom']))
             self.fitInView(QRectF(top_left, bottom_right),Qt.KeepAspectRatio)
