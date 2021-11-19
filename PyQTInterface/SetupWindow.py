@@ -4841,6 +4841,10 @@ class DesignModifier(QWidget):
             ),
             'MacroCell': dict(
                 name=QLineEdit()
+            ),
+            'Text':dict(
+                name=QLineEdit(),
+                text=QLineEdit(),
             )
 
         }
