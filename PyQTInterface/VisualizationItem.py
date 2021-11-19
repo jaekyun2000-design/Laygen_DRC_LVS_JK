@@ -1128,30 +1128,31 @@ class _VisualizationItem(QGraphicsItemGroup):
                 # layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
                 # layer = layernum2name[str(blockTraits['_Layer'])]
                 layer = blockTraits['_LayerUnifiedName']
+                # if 'PIN' in layer:
+                try:
+                    self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
+                except:
+                    self.text = QGraphicsTextItem(blockTraits['_TEXT'])
+
+                if not blockTraits['_Color']:
+                    blockTraits['_Color'] = Qt.GlobalColor.white if user_setup._Night_mode else Qt.GlobalColor.black
+                self.text.setDefaultTextColor(blockTraits['_Color'])
+                if blockTraits['_Width'] < 1:
+                    fontSize = 1000 * blockTraits['_Width']
+                else:
+                    fontSize = blockTraits['_Width']
+                font = QFont('tmp', fontSize)
+                self.text.setFont(font)
+                self.text.setPos(blockTraits['_XYCoordinates'][0][0], blockTraits['_XYCoordinates'][0][1])
+                self.text.setTransform(QTransform(1, 0, 0, -1, 0, 0))
+
+                _point = QGraphicsTextItem('X')
+                _point.setDefaultTextColor(blockTraits['_Color'])
+                _point_font = QFont('tmp2', 20)
+                _point.setFont(_point_font)
+                _point.setPos(blockTraits['_XYCoordinates'][0][0] - 12, blockTraits['_XYCoordinates'][0][1] - 17)
+
                 if 'PIN' in layer:
-                    try:
-                        self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
-                    except:
-                        self.text = QGraphicsTextItem(blockTraits['_TEXT'])
-
-                    if not blockTraits['_Color']:
-                        blockTraits['_Color'] = Qt.GlobalColor.white
-                    self.text.setDefaultTextColor(blockTraits['_Color'])
-                    if blockTraits['_Width'] < 1:
-                        fontSize = 1000 * blockTraits['_Width']
-                    else:
-                        fontSize = blockTraits['_Width']
-                    font = QFont('tmp', fontSize)
-                    self.text.setFont(font)
-                    self.text.setPos(blockTraits['_XYCoordinates'][0][0], blockTraits['_XYCoordinates'][0][1])
-                    self.text.setTransform(QTransform(1, 0, 0, -1, 0, 0))
-
-                    _point = QGraphicsTextItem('X')
-                    _point.setDefaultTextColor(blockTraits['_Color'])
-                    _point_font = QFont('tmp2', 20)
-                    _point.setFont(_point_font)
-                    _point.setPos(blockTraits['_XYCoordinates'][0][0] - 12, blockTraits['_XYCoordinates'][0][1] - 17)
-
                     if self in self._compareLayer:
                         if self._compareLayer[self] == layer:
                             tmpLayer = None
@@ -1169,10 +1170,16 @@ class _VisualizationItem(QGraphicsItemGroup):
                         self._subElementLayer[tmpLayer].remove(self)
                         self._subElementLayer[layer].append(self)
 
-                    self.block.append(self.text)
-                    self.block.append(_point)
-                    self.addToGroup(self.text)
-                    self.addToGroup(_point)
+                self.block.append(self.text)
+                self.block.append(_point)
+                self.addToGroup(self.text)
+                self.addToGroup(_point)
+                # elif layer == 'text': # In case of Just Text (Does not have layer)
+                #     try:
+                #         self.text = QGraphicsTextItem(blockTraits['_TEXT'].decode())
+                #     except:
+                #         self.text = QGraphicsTextItem(blockTraits['_TEXT'])
+
 
             self.bounding_rect_dict = dict(top=self.boundingRect().bottom(),
                                            bottom=self.boundingRect().top(),

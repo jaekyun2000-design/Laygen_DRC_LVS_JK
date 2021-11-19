@@ -1484,7 +1484,10 @@ class _TextSetupWindow(QWidget):
         self._DesignParameter['_XYCoordinates']=[[X,Y]]
         self._DesignParameter['_ElementName'] = self.text_input.text()
         self._DesignParameter['_TEXT'] = self.text_input.text()
-        self._DesignParameter['_Mag'] = int(self.width_input.text())
+        try:
+            self._DesignParameter['_Mag'] = int(self.width_input.text())
+        except:
+            self._DesignParameter['_Mag'] = 10
 
         qt_dp = QTInterfaceWithAST.QtDesignParameter()
         for key, value in self._DesignParameter.items():
