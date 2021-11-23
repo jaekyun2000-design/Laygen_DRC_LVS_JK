@@ -1117,7 +1117,10 @@ class _MainWindow(QMainWindow):
                                                          _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
     def condition_stmt(self):
+        self.conditional_stmt_window = ConditionalStatement.ConditionStmtWidget()
         self.conditional_stmt_window.show()
+        self.dockContentWidget3.send_dummy_ast_id_for_condition_signal.connect(self.conditional_stmt_window.show_list)
+        self.dockContentWidget3_2.send_dummy_ast_id_for_condition_signal.connect(self.conditional_stmt_window.init_ui)
         self.conditional_stmt_window.send_output_list_signal.connect(self.create_condition_stmt)
 
     def create_condition_stmt(self, output_list):
@@ -1141,7 +1144,7 @@ class _MainWindow(QMainWindow):
             output_ast.body = []
             # for stmt in info_dict['body']:
             #     output_ast.body.append(create_stmt_ast_by_dict(stmt))
-            output_ast.extend(create_stmt_ast_by_dict(stmt) for stmt in info_dict['body'])
+            output_ast.body.extend(create_stmt_ast_by_dict(stmt) for stmt in info_dict['body'])
             return output_ast
 
         # for stmt in output_list:
@@ -4084,11 +4087,17 @@ class _VersatileWindow(QWidget):
             self.destroy()
 
 
-def custom_excepthook(exctype, value, traceback):
-    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
-    print(exctype, value, traceback)
-    sys._excepthook(exctype, value, traceback)
-    print("@@@@@@@@@@@@@@@@@@@@@@@There is critical error@@@@@@@@@@@@@@@@@@@@@@@@")
+def custom_excepthook(exctype, value, _traceback):
+    print("################# Exceptional Case Detection #################")
+    print('Error was found.')
+    print('Exception hooker prevents program from shutdown!!\n')
+    print('Summarized error log start from here...')
+    print(f'\terror type:{exctype}\n'
+          f'\tinfo :{value}\n'
+          f'\ttraceback object: {_traceback}\n')
+    print("Detailed exceptional case description starts from here...")
+    sys._excepthook(exctype, value, _traceback)
+
 
 
 
