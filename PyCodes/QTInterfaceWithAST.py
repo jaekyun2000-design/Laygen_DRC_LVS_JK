@@ -2080,7 +2080,9 @@ class QtProject:
         if _ASTDtype == "pyCode":  # In case of pyCode input, there are at least one constraint.
             try:
                 topAST = ast.parse(_pyCode)
+                # _astList = ASTmodule._searchAST(topAST)
                 _astList = ASTmodule._searchAST(topAST)
+                _astList.pop(0)
                 _ids = []
                 for AST in _astList:
                     _idNum = self._getDesignConstraintId(_ParentName)
