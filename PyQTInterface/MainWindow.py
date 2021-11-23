@@ -2419,6 +2419,32 @@ class _MainWindow(QMainWindow):
             return
         elif _type == 'to_sref':
             pass
+        elif _type == 'flatten':
+            selected_vis_item = self.scene.selectedItems()[0]
+            if selected_vis_item._type != 3:
+                self.warning = QMessageBox()
+                self.warning.setText("You cannot flatten non-Sref obejct.")
+                self.warning.show()
+                return
+            dp_name = selected_vis_item._ElementName
+            target_dp = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name]
+            design_parameter = target_dp._DesignParameter['_DesignObj']._DesignParameter
+            xy_offset = target_dp._DesignParameter['_XYCoordinates'][0]
+            for key, dp_dict in design_parameter.items():
+                if key in ['_Name', '_GDSFile']:
+                    continue
+                while dp_dict['_ElementName'] in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]:
+                    dp_dict['_ElementName'] += '_'
+                if dp_dict['_DesignParametertype'] == 2:
+                    dp_dict['_XYCoordinates'] = [ [[xy[0] + xy_offset[0], xy[1] + xy_offset[1]] for xy in xy_list] for xy_list in dp_dict['_XYCoordinates']]
+                else:
+                    dp_dict['_XYCoordinates'] = [ [xy[0] + xy_offset[0], xy[1] + xy_offset[1]] for xy in dp_dict['_XYCoordinates']]
+
+                self.design_delegator.create_qt_parameter(dp_dict)
+            self.design_delegator.delete_qt_parameter(dp_name)
+            return
+
+
 
         selected_vis_items = self.scene.selectedItems()
         self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items)
@@ -3447,6 +3473,7 @@ class _CustomView(QGraphicsView):
     def contextMenuEvent(self, event) -> None:
         constraint_create_array = QAction("create array", self)
         convert_to_sref = QAction("convert to sref", self)
+        flatten_sref = QAction("flatten sref cell", self)
         inspect_path_connection = QAction("create auto path", self)
         variable_create_array = QAction("create array variable", self)
         variable_create_distance = QAction("create distance variable", self)
@@ -3458,6 +3485,7 @@ class _CustomView(QGraphicsView):
         menu = QMenu(self)
         menu.addAction(constraint_create_array)
         menu.addAction(convert_to_sref)
+        menu.addAction(flatten_sref)
         menu.addAction(inspect_path_connection)
         menu.addAction(variable_create_array)
         menu.addAction(variable_create_distance)
@@ -3475,6 +3503,7 @@ class _CustomView(QGraphicsView):
         else:
             constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('boundary_array'))
         convert_to_sref.triggered.connect(lambda tmp: self.variable_emit('to_sref'))
+        flatten_sref.triggered.connect(lambda tmp: self.variable_emit('flatten_sref'))
         inspect_path_connection.triggered.connect(lambda tmp: self.variable_emit('auto_path'))
         variable_create_array.triggered.connect(lambda tmp: self.variable_emit('array'))
         variable_create_distance.triggered.connect(lambda tmp: self.variable_emit('distance'))
@@ -3488,6 +3517,8 @@ class _CustomView(QGraphicsView):
     def variable_emit(self, type):
         if type == 'boundary_array':
             self.variable_signal.emit('boundary_array')
+        elif type == 'flatten_sref':
+            self.variable_signal.emit('flatten')
         elif type == 'to_sref':
             selected_vis_items = self.scene().selectedItems()
             message = delegator.DelegateMessage(arguments=[selected_vis_items], target_fcn='convert_elements_to_sref_widget')
