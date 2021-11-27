@@ -1776,7 +1776,7 @@ class _MainWindow(QMainWindow):
                     dc_id = self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_name)
                     self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=dp_name, dc_id=dc_id)
 
-                print(dp_dict)
+                # print(dp_dict)
             if not code:
                 constraint_names = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
                 constraint_ids = [item.text() for item in constraint_names]
@@ -2414,8 +2414,8 @@ class _MainWindow(QMainWindow):
                 self.visualItemDict[id].setSelected(True)
                 self.log2.append(id)
 
-            print('connection info')
-            print(overlay_object[1:])
+            # print('connection info')
+            # print(overlay_object[1:])
             return
         elif _type == 'to_sref':
             pass
@@ -2428,7 +2428,12 @@ class _MainWindow(QMainWindow):
                 return
             dp_name = selected_vis_item._ElementName
             target_dp = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name]
-            design_parameter = target_dp._DesignParameter['_DesignObj']._DesignParameter
+            if type(target_dp._DesignParameter['_DesignObj']) == dict: ## Case: DesignObj is dictionary of QtDP
+                design_parameter = dict()
+                for key, qt_dp in target_dp._DesignParameter['_DesignObj'].items():
+                    design_parameter[key] = qt_dp._DesignParameter
+            else:
+                design_parameter = target_dp._DesignParameter['_DesignObj']._DesignParameter
             xy_offset = target_dp._DesignParameter['_XYCoordinates'][0]
             for key, dp_dict in design_parameter.items():
                 if key in ['_Name', '_GDSFile']:
@@ -2494,9 +2499,9 @@ class _MainWindow(QMainWindow):
         #     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][design_dict['parameter_id']])
         if self.dvstate is False:
             self.dv = variableWindow._DesignVariableManagerWindow(self.visualItemDict)
-            print(self.dvstate, ':', self.dv)
-        else:
-            print(self.dvstate, ':', self.dv)
+            # print(self.dvstate, ':', self.dv)
+        # else:
+        #     print(self.dvstate, ':', self.dv)
         variable_manager.Manage_DV_by_id(_id=design_dict['constraint_id'], _info=variableVisualItem.variable_info, _type=variableVisualItem._DesignParametertype, _address=self.dv)
         self.scene.addItem(variableVisualItem)
         pass
@@ -2738,15 +2743,15 @@ class _MainWindow(QMainWindow):
             _designConstraintID = self._QTObj._qtProject._getDesignConstraintId(self._CurrentModuleName)
             _newConstraintID = (self._CurrentModuleName + str(_designConstraintID))
             self._QTObj._qtProject._createNewDesignConstraint(_id = _newConstraintID, _type= _ConstraintParameter['Type'], _ParentName= self._CurrentModuleName)
-            print(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID])
+            # print(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID])
             for key in _ConstraintParameter:
                 if key == "Type":
                     continue
                 # print(_ConstraintParameter[key])
                 # self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID]._setDesignConstraintValue(key,_ConstraintParameter[key])
             self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID]._setDesignConstraintValue('_id',_newConstraintID)
-            print(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID])
-            print("DesignParameter ids ", self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName].keys())
+            # print(self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID])
+            # print("DesignParameter ids ", self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName].keys())
             DC = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][_newConstraintID]
             # self.dockContentWidget3_2.createNewConstraint(_id=_newConstraintID, _parentName=self._CurrentModuleName, _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
 
@@ -3172,7 +3177,7 @@ class _MainWindow(QMainWindow):
                     if _field == 'name' or _field == 'layer':
                         continue
                     tmp_ast = ast.parse(str(_ast.__dict__[_field]))
-                    print()
+                    # print()
                     variable_visitor.visit(tmp_ast)
 
             elif _ast._type == 'Path':
@@ -3461,7 +3466,7 @@ class _CustomView(QGraphicsView):
         super().keyPressEvent(QKeyEvent)
 
     def mousePressEvent(self, event) -> None:
-        print()
+        # print()
         if event.button() == Qt.RightButton:
             # print('return')
             return
@@ -3544,7 +3549,7 @@ class _CustomView(QGraphicsView):
 
 
     def dragEnterEvent(self, event) -> None:
-        print('ed')
+        # print('ed')
         event.accept()
         event.proposedAction()
         super(self).dragEnterEvent(event)
@@ -3742,7 +3747,7 @@ class _CustomScene(QGraphicsScene):
         # itemList = self.selectedItems()
         # print(itemList)
         # self.send_itemList_signal.emit(itemList)
-        print(self.point_items_memory)
+        # print(self.point_items_memory)
         self.send_itemList_signal.emit(self.point_items_memory)
         selected_items = self.selectedItems()
         # selected_items = list(filter(lambda item: type(item) == VisualizationItem._VisualizationItem and not item.parentItem(), self.selectedItems()))
@@ -3758,11 +3763,11 @@ class _CustomScene(QGraphicsScene):
 
     def dragEnterEvent(self, event: 'QGraphicsSceneDragDropEvent') -> None:
         event.accept()
-        print(event.pos())
+        # print(event.pos())
 
     def dropEvent(self, event: 'QGraphicsSceneDragDropEvent') -> None:
         event.accept()
-        print(event.pos())
+        # print(event.pos())
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Delete:
@@ -3870,7 +3875,7 @@ class _CustomScene(QGraphicsScene):
                     self.tmp_item_dict = self.ungroup_indexed_item()
                 elif item._ItemTraits['_DesignParametertype'] == 2:
                     print('not yet')
-                    print(item)
+                    # print(item)
                     self.tmp_item_dict = self.ungroup_indexed_item()
                 elif item._ItemTraits['_DesignParametertype'] == 3:
                     print('not yet')
@@ -4018,11 +4023,11 @@ class _CustomScene(QGraphicsScene):
                     elif item._ItemTraits['_DesignParametertype'] == 2:
                         rect_counts_for_connected_path = [len(xy) - 1 for xy in item._ItemTraits['_XYCoordinates']]
                         for idx, rect_count in enumerate(rect_counts_for_connected_path):
-                            print(rect_counts_for_connected_path)
+                            # print(rect_counts_for_connected_path)
                             tmp_vs_item = None
                             rect_count = rect_counts_for_connected_path.pop(0)
                             count = 0
-                            print(item.childItems())
+                            # print(item.childItems())
                             tmp_idx_item_dict[item] = list()
                             for child in item.childItems():
                                 if type(child) == VisualizationItem._RectBlock:
