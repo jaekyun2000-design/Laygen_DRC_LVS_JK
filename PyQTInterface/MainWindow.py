@@ -2428,12 +2428,12 @@ class _MainWindow(QMainWindow):
                 return
             dp_name = selected_vis_item._ElementName
             target_dp = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name]
-            if type(target_dp._DesignParameter['_DesignObj']) == dict: ## Case: DesignObj is dictionary of QtDP
+            if type(target_dp._DesignParameter['_ModelStructure']) == dict: ## Case: DesignObj is dictionary of QtDP
                 design_parameter = dict()
-                for key, qt_dp in target_dp._DesignParameter['_DesignObj'].items():
+                for key, qt_dp in target_dp._DesignParameter['_ModelStructure'].items():
                     design_parameter[key] = qt_dp._DesignParameter
             else:
-                design_parameter = target_dp._DesignParameter['_DesignObj']._DesignParameter
+                design_parameter = target_dp._DesignParameter['_ModelStructure']._DesignParameter
             xy_offset = target_dp._DesignParameter['_XYCoordinates'][0]
             for key, dp_dict in design_parameter.items():
                 if key in ['_Name', '_GDSFile']:
