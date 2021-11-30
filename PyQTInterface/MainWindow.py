@@ -2445,6 +2445,9 @@ class _MainWindow(QMainWindow):
                 else:
                     dp_dict['_XYCoordinates'] = [ [xy[0] + xy_offset[0], xy[1] + xy_offset[1]] for xy in dp_dict['_XYCoordinates']]
 
+                if dp_dict['_DesignParametertype'] == 3:
+                    dp_dict['_DesignParametertype'] = 31
+
                 self.design_delegator.create_qt_parameter(dp_dict)
             self.design_delegator.delete_qt_parameter(dp_name)
             return
