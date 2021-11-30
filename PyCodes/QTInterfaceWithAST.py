@@ -1559,7 +1559,7 @@ class QtProject:
         else:
             try:
                 _tmpStackForHierarchy = self._HierarchyFromRootForDesignParameter(_id=_id, _ParentName=_ParentName)
-                print('monitor for debug in _UpdateXYCoordinateForDisplay0 ', _tmpStackForHierarchy)
+                # print('monitor for debug in _UpdateXYCoordinateForDisplay0 ', _tmpStackForHierarchy)
                 # (XYCoordinate, ) _Reflect  _Angle
                 ###############1. [ [[x0y0,T0]], [[x1y1,T1]], [[x2y2,T2]] ] [offset, transposeMatrix]
                 ###############2. [ [x0y0 + T0[x1y1], T0T1], [[x2y2,T2]]]
