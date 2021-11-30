@@ -62,40 +62,41 @@ class ElementManager:
                 elif key == 'width':
                     tmpAST.__dict__[key] = dp_dict['_Width']
 
-        elif dp_dict['_DesignParametertype'] == 3:  # Sref, MacroCell
-            if dp_dict['library'] == 'MacroCell':
-                tmpAST = element_ast.MacroCell()
-                for key in element_ast.MacroCell._fields:
-                    if key == 'name':
-                        tmpAST.__dict__[key] = dp_dict['_ElementName']
-                    elif key == 'library':
-                        tmpAST.__dict__[key] = dp_dict['library']
-                    elif key == 'XY':
-                        tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]
-            else:
-                tmpAST = element_ast.Sref()
-                for key in element_ast.Sref._fields:
-                    if key == 'name':
-                        tmpAST.__dict__[key] = dp_dict['_ElementName']
-                    elif key == 'library':
-                        tmpAST.__dict__[key] = dp_dict['library']
-                    elif key == 'className':
-                        tmpAST.__dict__[key] = dp_dict['className']
-                    elif key == 'XY':
-                        tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]
-                    elif key == 'calculate_fcn':
-                        tmpAST.__dict__[key] = list(generator_model_api.class_function_dict[dp_dict['library']].keys())[0]
-                    elif key == 'parameters':
-                        tmpAST.__dict__[key] = dp_dict['parameters']
-        elif dp_dict['_DesignParametertype'] == 3:
+        elif dp_dict['_DesignParametertype'] == 31:  # Sref, MacroCell
+            # if dp_dict['library'] == 'MacroCell':
             tmpAST = element_ast.MacroCell()
             for key in element_ast.MacroCell._fields:
                 if key == 'name':
                     tmpAST.__dict__[key] = dp_dict['_ElementName']
-                elif key == 'library':
-                    tmpAST.__dict__[key] = dp_dict['_ReferenceGDS']
+                elif key == '_ReferenceGDS':
+                    tmpAST.__dict__['libraray'] = dp_dict['_ReferenceGDS']
                 elif key == 'XY':
                     tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]
+            # else:
+        elif dp_dict['_DesignParametertype'] == 3:  # Sref, MacroCell
+            tmpAST = element_ast.Sref()
+            for key in element_ast.Sref._fields:
+                if key == 'name':
+                    tmpAST.__dict__[key] = dp_dict['_ElementName']
+                elif key == 'library':
+                    tmpAST.__dict__[key] = dp_dict['library']
+                elif key == 'className':
+                    tmpAST.__dict__[key] = dp_dict['className']
+                elif key == 'XY':
+                    tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]
+                elif key == 'calculate_fcn':
+                    tmpAST.__dict__[key] = list(generator_model_api.class_function_dict[dp_dict['library']].keys())[0]
+                elif key == 'parameters':
+                    tmpAST.__dict__[key] = dp_dict['parameters']
+        # elif dp_dict['_DesignParametertype'] == 3:
+        #     tmpAST = element_ast.MacroCell()
+        #     for key in element_ast.MacroCell._fields:
+        #         if key == 'name':
+        #             tmpAST.__dict__[key] = dp_dict['_ElementName']
+        #         elif key == 'library':
+        #             tmpAST.__dict__[key] = dp_dict['_ReferenceGDS']
+        #         elif key == 'XY':
+        #             tmpAST.__dict__[key] = dp_dict["_XYCoordinates"]
 
         elif dp_dict['_DesignParametertype'] == 'element array':  #EA
             tmpAST = variable_ast.ElementArray()
