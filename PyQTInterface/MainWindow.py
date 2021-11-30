@@ -2440,6 +2440,7 @@ class _MainWindow(QMainWindow):
                     continue
                 while dp_dict['_ElementName'] in self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]:
                     dp_dict['_ElementName'] += '_'
+                dp_dict['_id'] = dp_dict['_ElementName']
                 if dp_dict['_DesignParametertype'] == 2:
                     dp_dict['_XYCoordinates'] = [ [[xy[0] + xy_offset[0], xy[1] + xy_offset[1]] for xy in xy_list] for xy_list in dp_dict['_XYCoordinates']]
                 else:
