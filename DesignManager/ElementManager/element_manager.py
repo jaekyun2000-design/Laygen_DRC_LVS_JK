@@ -425,12 +425,14 @@ class ElementManager:
         if dp_id in self.dp_id_to_dc_id:
             return self.dp_id_to_dc_id[dp_id]
         else:
+            warnings.warn(f'Element manager does not have {dp_id} matched dc_id')
             return None
 
     def get_dp_id_by_dc_id(self,dc_id):
         if dc_id in self.dc_id_to_dp_id:
             return self.dc_id_to_dp_id[dc_id]
         else:
+            warnings.warn(f'Element manager does not have {dc_id} matched dp_id')
             return None
 
     def change_dp_id(self,original_id, changed_id):
