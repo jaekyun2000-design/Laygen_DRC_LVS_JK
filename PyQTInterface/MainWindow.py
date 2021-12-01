@@ -1777,7 +1777,7 @@ class _MainWindow(QMainWindow):
                     self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=dp_name, dc_id=dc_id)
 
                 # print(dp_dict)
-            if not code:
+            if code != False and not code:
                 constraint_names = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
                 constraint_ids = [item.text() for item in constraint_names]
                 for _id in constraint_ids:
