@@ -1,4 +1,6 @@
 import ast
+import warnings
+
 import astunparse
 import re
 import copy
@@ -152,7 +154,41 @@ class IrregularTransformer(ast.NodeTransformer):
         #     raise Exception("Not valid input")
         # self._id_to_data_dict = _id_to_data_dict
 
-    def visit_XYCoordinate(self,node):
+    def visit_XYCoordinate(self, node):
+        x_list = []
+        y_list = []
+        xy_list = []
+        for xy_flag, elements in node.info_dict.items():
+            tf =CustomFunctionTransformer(xy_flag)
+            if xy_flag == 'X':
+                x_list.extend([tf.visit(ast.parse(element).body[0]) for element in elements])
+            elif xy_flag == 'Y':
+                y_list.extend([tf.visit(ast.parse(element).body[0]) for element in elements])
+            elif xy_flag == 'XY':
+                xy_list.extend([tf.visit(ast.parse(element).body[0]) for element in elements])
+
+        x_string = "+".join([astunparse.unparse(x_ast) for x_ast in x_list])
+        y_string = "+".join([astunparse.unparse(x_ast) for x_ast in x_list])
+
+        xy_x_string_list = [astunparse.unparse(xy_ast.value.func.value.elts[0]) for xy_ast in xy_list]
+        xy_y_string_list = [astunparse.unparse(xy_ast.value.func.value.elts[1]) for xy_ast in xy_list]
+
+        xy_x_string = "+".join(xy_x_string_list)
+        xy_y_string = "+".join(xy_y_string_list)
+
+        final_x_string = x_string + xy_x_string
+        final_y_string = y_string + xy_y_string
+
+        if final_x_string and final_y_string:
+            final_string = f"[[{final_x_string}, {final_y_string}]]"
+            final_ast = ast.parse(final_string).body[0]
+            return final_ast
+        else:
+            raise Exception("Not Enough XY coordinates information!")
+
+
+
+    def visit_XYCoordinate_legacy(self,node):
         if type(node.id) == list:
             _id = node.id[0]
         else:
@@ -901,6 +937,116 @@ class FunctionNameFinder(ast.NodeVisitor):
         super(FunctionNameFinder, self).generic_visit(node)
         return self.func_name_list
 
+class CustomFunctionTransformer(ast.NodeTransformer):
+    def __init__(self, flag):
+        super(CustomFunctionTransformer, self).__init__()
+        self.flag = flag
+
+    def generic_visit(self, node):
+        if 'func' in node.__dict__ and node.func:
+            method = 'transform_' + node.func.id
+            if method in dir(self):
+                method = 'transform_' + node.func.id
+                transformer = getattr(self, method, self.generic_visit)
+                tf_string = transformer(node)
+                tf_ast = ast.parse(tf_string).body[0]
+                node.func = tf_ast
+        return super(CustomFunctionTransformer, self).generic_visit(node)
+
+    def generic_transform(self, node):
+        ### default action describe ###
+        pass
+
+    def translate_base_string(self, arg_names):
+        # args = [arg_node.value for arg_node in node.args]
+        arg_names_copy = copy.deepcopy(arg_names)
+        last_element = arg_names_copy.pop(-1)
+
+        base_string = 'self._DesignParameter'
+        while arg_names_copy:
+            element = arg_names_copy.pop(0)
+            base_string += f"['{element}']['_DesignObj']._DesignParameter"
+        base_string += f"['{last_element}']"
+        return base_string
+
+    def extract_element_string(self, arg_names):
+        base_string = 'self._DesignParameter'
+        last_element = arg_names.pop(-1)
+        while arg_names:
+            element = arg_names.pop(0)
+            base_string += f"['{element}']['_DesignObj']._DesignParameter"
+        base_string += f"['{last_element}']"
+        return base_string
+
+    def extract_xy_string(self, arg_names, last_index):
+        base_string = self.extract_element_string(arg_names) + f"['_XYCoordinates']{last_index}"
+        x = base_string + '[0]'
+        y = base_string + '[1]'
+        return x, y
+
+    def extract_xy_hierarchy_string(self, arg_names, arg_indexes):
+        x_list = [None] * len(arg_names)
+        y_list = [None] * len(arg_names)
+        for i in range(len(arg_names)):
+            xy_info = self.extract_xy_string(arg_names[:i+1], arg_indexes[i])
+            x_list[i] = xy_info[0]
+            y_list[i] = xy_info[1]
+        return "+".join(x_list), "+".join(y_list)
+
+    def parse_args_info(self, args):
+        args = [arg_node.value for arg_node in args]
+        arg_names = list(map(lambda arg: re.sub('\[.*\]', '', arg), args))
+        arg_indexes = list(map(lambda arg: re.findall('\[.*\]', arg)[0], args))
+        return arg_names, arg_indexes
+
+    def transform_top(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+
+        output_x = base_xy_string_tuple[0]
+        output_y = base_xy_string_tuple[1] + "+" + base_element_string + f"['_YWidth']/2"
+
+        if self.flag == 'X':
+            return output_x
+        elif self.flag == 'Y':
+            return output_y
+        else:
+            return "[" + ",".join([output_x, output_y]) + "]"
+
+    def transform_bot(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+
+        output_x = base_xy_string_tuple[0]
+        output_y = base_xy_string_tuple[1] + "-" + base_element_string + f"['_YWidth']/2"
+
+        if self.flag == 'X':
+            return output_x
+        elif self.flag == 'Y':
+            return output_y
+        else:
+            return "[" + ",".join([output_x, output_y]) + "]"
+
+    def transform_center(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+
+        output_x = base_xy_string_tuple[0]
+        output_y = base_xy_string_tuple[1]
+
+        if self.flag == 'X':
+            return output_x
+        elif self.flag == 'Y':
+            return output_y
+        else:
+            return "[" + ",".join([output_x, output_y]) + "]"
+
+
+
+
 
 
 
@@ -923,21 +1069,28 @@ class VariableTransformer(ast.NodeTransformer):
         return tmp.body
 
 if __name__ == '__main__':
-    ea = ElementArray()
-    tf = VariableTransformer()
-    k = ['a','b']
-    ea.elements = 'k'
-    # XWidth,YWidth = str(200),
-    ea.XY = [['XWidth','YWidth']]
-    ea.x_space_distance = '100'
-    ea.y_space_distance = '200'
+    # ea = ElementArray()
+    # tf = VariableTransformer()
+    # k = ['a','b']
+    # ea.elements = 'k'
+    # # XWidth,YWidth = str(200),
+    # ea.XY = [['XWidth','YWidth']]
+    # ea.x_space_distance = '100'
+    # ea.y_space_distance = '200'
+    #
+    # kk = tf.visit(ea)
+    # print(kk)
+    # print(astunparse.dump(kk))
+    # astunparse.unparse(kk)
+    # print(astunparse.unparse(kk))
 
-    kk = tf.visit(ea)
-    print(kk)
-    print(astunparse.dump(kk))
-    astunparse.unparse(kk)
-    print(astunparse.unparse(kk))
 
+
+    tf = CustomFunctionTransformer('XY')
+    node = ast.parse("top('abc[0]','_COLayer[0]')")
+    node_tmp = node.body[0].value
+    # tf.transform_top(node_tmp)
+    a = tf.visit(node_tmp)
 
 # a = ConditionSTMTlist()
 # bb = ConditionSTMT()
@@ -959,3 +1112,4 @@ if __name__ == '__main__':
 # tf = IrregularTransformer()
 # k = tf.visit(a)
 # print(astunparse.unparse(k))
+
