@@ -1044,6 +1044,100 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         else:
             return "[" + ",".join([output_x, output_y]) + "]"
 
+    def transform_right(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+
+        output_x = f"{base_xy_string_tuple[0]} + {base_element_string}['_XWidth']/2"
+        output_y = base_xy_string_tuple[1]
+
+        if self.flag == 'X':
+            return output_x
+        elif self.flag == 'Y':
+            return output_y
+        else:
+            return "[" + ",".join([output_x, output_y]) + "]"
+
+    def transform_rb(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+
+        output_x = f"{base_xy_string_tuple[0]} + {base_element_string}['_XWidth']/2"
+        output_y = f"{base_xy_string_tuple[0]} - {base_element_string}['_YWidth']/2"
+
+        if self.flag == 'X':
+            return output_x
+        elif self.flag == 'Y':
+            return output_y
+        else:
+            return "[" + ",".join([output_x, output_y]) + "]"
+
+    def transform_rt(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+
+        output_x = f"{base_xy_string_tuple[0]} + {base_element_string}['_XWidth']/2"
+        output_y = f"{base_xy_string_tuple[0]} + {base_element_string}['_YWidth']/2"
+
+        if self.flag == 'X':
+            return output_x
+        elif self.flag == 'Y':
+            return output_y
+        else:
+            return "[" + ",".join([output_x, output_y]) + "]"
+
+
+
+    def transform_left(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+
+        output_x = f"{base_xy_string_tuple[0]} - {base_element_string}['_XWidth']/2"
+        output_y = f"{base_xy_string_tuple[0]}"
+
+        if self.flag == 'X':
+            return output_x
+        elif self.flag == 'Y':
+            return output_y
+        else:
+            return "[" + ",".join([output_x, output_y]) + "]"
+
+
+    def transform_lt(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+
+        output_x = f"{base_xy_string_tuple[0]} - {base_element_string}['_XWidth']/2"
+        output_y = f"{base_xy_string_tuple[0]} + {base_element_string}['_YWidth']/2"
+
+        if self.flag == 'X':
+            return output_x
+        elif self.flag == 'Y':
+            return output_y
+        else:
+            return "[" + ",".join([output_x, output_y]) + "]"
+
+
+    def transform_lb(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+
+        output_x = f"{base_xy_string_tuple[0]} - {base_element_string}['_XWidth']/2"
+        output_y = f"{base_xy_string_tuple[0]} - {base_element_string}['_YWidth']/2"
+
+        if self.flag == 'X':
+            return output_x
+        elif self.flag == 'Y':
+            return output_y
+        else:
+            return "[" + ",".join([output_x, output_y]) + "]"
+
 
 
 
