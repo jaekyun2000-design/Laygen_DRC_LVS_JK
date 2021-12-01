@@ -65,6 +65,9 @@ class GeometricField:
     def qt_design_parameter_projection(self, qt_dp, structure_hierarchy=[], reflect=tf_matrix.reflect_off,
                                        angle=tf_matrix.rotate_0, base_xy=[0, 0]):
         dp = qt_dp._DesignParameter
+        if '_XYCoordinatesProjection' in dp:
+            del dp['_XYCoordinatesProjection']
+
         if dp['_DesignParametertype'] == 1:
             for idx, xy_pair in enumerate(dp['_XYCoordinates']):
                 five_point_xy = self.stick_diagram.CenterCoordinateAndWidth2XYCoordinate(xy_pair, dp['_XWidth'],
@@ -125,7 +128,7 @@ class GeometricField:
                     dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_list]
 
 
-        elif dp['_DesignParametertype'] == 3:
+        elif dp['_DesignParametertype'] in [3, 31]:
             # structure_hierarchy.append(dp['_ElementName'])
             ############ 이 부분에서 idx 처리 해야함! #####################
             for sref_idx in range(len(dp['_XYCoordinates'])):
@@ -138,7 +141,7 @@ class GeometricField:
                 if '_ModelStructure' in dp:
                     for name, sub_qt_dp in dp['_ModelStructure'].items():
                         sub_dp = sub_qt_dp._DesignParameter
-                        if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 2 or sub_dp['_DesignParametertype'] == 3:
+                        if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 2 or sub_dp['_DesignParametertype'] in [3, 31]:
                             structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
                             structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
                             structure_hierarchy_tmp.append(name)
@@ -147,7 +150,7 @@ class GeometricField:
                 else:
                     for name, sub_qt_dp in dp['_DesignObj'].items():
                         sub_dp = sub_qt_dp._DesignParameter
-                        if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 2 or sub_dp['_DesignParametertype'] == 3:
+                        if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 2 or sub_dp['_DesignParametertype'] in [3, 31]:
                             structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
                             structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
                             structure_hierarchy_tmp.append(name)
@@ -161,6 +164,8 @@ class GeometricField:
     def design_parameter_projection(self, dp, structure_hierarchy=[], reflect=tf_matrix.reflect_off,
                                     angle=tf_matrix.rotate_0, base_xy=[0, 0]):
         # for _, dp in _DesignParameter.items():
+        if '_XYCoordinatesProjection' in dp:
+            del dp['_XYCoordinatesProjection']
         if dp['_DesignParametertype'] == 1:
             for idx, xy_pair in enumerate(dp['_XYCoordinates']):
                 five_point_xy = self.stick_diagram.CenterCoordinateAndWidth2XYCoordinate(xy_pair, dp['_XWidth'],
@@ -219,7 +224,7 @@ class GeometricField:
                     dp['_XYCoordinatesProjection'].append(transformed_five_point_xy_list)
                 else:
                     dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_list]
-        elif dp['_DesignParametertype'] == 3:
+        elif dp['_DesignParametertype'] in [3, 31]:
             # structure_hierarchy.append(dp['_ElementName'])
             for sref_idx in range(len(dp['_XYCoordinates'])):
                 base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][sref_idx])
@@ -268,7 +273,7 @@ class GeometricField:
                                           dp['_XYCoordinatesProjection'][2][1] - dp['_XYCoordinatesProjection'][1][
                                               1], ))
                     # img = cv2.rectangle(img,dp['_XYCoordinatesProjection'][0], dp['_XYCoordinatesProjection'][2],thickness=3)
-                elif dp['_DesignParametertype'] == 3:
+                elif dp['_DesignParametertype'] in [3, 31]:
                     for _, sub_dp in dp['_DesignObj']._DesignParameter.items():
                         stack.append(sub_dp)
         # ax.add_patch(patches.Rectangle(
@@ -296,7 +301,7 @@ class GeometricField:
             #     else:
             #         self.interval_tree_by_layer[dp['_Layer']] = IST(direction='horizontal')
             #         self.interval_tree_by_layer[dp['_Layer']].add_element_node(dp)
-            elif dp['_DesignParametertype'] == 3:
+            elif dp['_DesignParametertype'] in [3, 31]:
                 stack.extend([qt_dp_items[1] for qt_dp_items in dp['_ModelStructure'].items()])
 
     def build_IST(self, _DesignParameter):
@@ -315,7 +320,7 @@ class GeometricField:
             #     else:
             #         self.interval_tree_by_layer[dp['_Layer']] = IST(direction='horizontal')
             #         self.interval_tree_by_layer[dp['_Layer']].add_element_node(dp)
-            elif dp['_DesignParametertype'] == 3:
+            elif dp['_DesignParametertype'] in [3, 31]:
                 stack.extend([dp_items[1] for dp_items in dp['_DesignObj']._DesignParameter.items()])
 
     def search_intersection_qt(self, qt_dp):
@@ -514,6 +519,10 @@ class IST(IntervalTree):
                         lo, hi = min([xy[0] for xy in xy_points]), max([xy[0] for xy in xy_points])
                     elif self.direction == 'vertical':
                         lo, hi = min([xy[1] for xy in xy_points]), max([xy[1] for xy in xy_points])
+                    if len(path_dp['_Hierarchy']) < idx +1:
+                        print('problem here')
+                    if len(path_dp['_Hierarchy'][idx]) < idx2 + 1:
+                        print('problem here')
                     self.addi(lo, hi, [path_dp, [idx, idx2]])
         elif self.direction == 'vertical':
             xy_points = path_dp['_XYCoordinatesProjection'][idx[0]][idx[1]]
