@@ -353,6 +353,8 @@ class GeometricField:
         return intersected_dp_hierarchy_names
 
     def search_path_intersection_points(self, dp):
+        if dp['_ElementName'] == 'POLY_path_20':
+            print('dbg')
         x_min_list, x_max_list, y_min_list, y_max_list = [], [], [], []
         intersection_point_list = []
         for i in range(len(dp['_XYCoordinates'][0])):
@@ -373,9 +375,9 @@ class GeometricField:
                 if 'horizontal' in direction:
                     if 'right' in direction:
                         x_min_list.append(dp['_XYCoordinates'][0][i][0])
-                        x_max_list.append(dp['_XYCoordinates'][0][i][0] + 1)
+                        x_max_list.append(dp['_XYCoordinates'][0][i+1][0] + 1)
                     else:
-                        x_min_list.append(dp['_XYCoordinates'][0][i][0] - 1)
+                        x_min_list.append(dp['_XYCoordinates'][0][i+1][0] - 1)
                         x_max_list.append(dp['_XYCoordinates'][0][i][0])
                     y_min_list.append(dp['_XYCoordinates'][0][i][1] - dp['_Width'] / 2)
                     y_max_list.append(dp['_XYCoordinates'][0][i][1] + dp['_Width'] / 2)
@@ -384,32 +386,35 @@ class GeometricField:
                     x_max_list.append(dp['_XYCoordinates'][0][i][0] + dp['_Width'] / 2)
                     if 'up' in direction:
                         y_min_list.append(dp['_XYCoordinates'][0][i][1])
-                        y_max_list.append(dp['_XYCoordinates'][0][i][1] + 1)
+                        y_max_list.append(dp['_XYCoordinates'][0][i+1][1] + 1)
                     else:
-                        y_min_list.append(dp['_XYCoordinates'][0][i][1] - 1)
+                        y_min_list.append(dp['_XYCoordinates'][0][i+1][1] - 1)
                         y_max_list.append(dp['_XYCoordinates'][0][i][1])
             else:
-                if 'horizontal' in direction:
-                    if 'right' in direction:
-                        x_min_list.append(dp['_XYCoordinates'][0][i][0] - 1)
-                        x_max_list.append(dp['_XYCoordinates'][0][i][0])
-                    else:
-                        x_min_list.append(dp['_XYCoordinates'][0][i][0])
-                        x_max_list.append(dp['_XYCoordinates'][0][i][0] + 1)
-                    y_min_list.append(dp['_XYCoordinates'][0][i][1] - dp['_Width'] / 2)
-                    y_max_list.append(dp['_XYCoordinates'][0][i][1] + dp['_Width'] / 2)
-                elif 'vertical' in direction:
-                    x_min_list.append(dp['_XYCoordinates'][0][i][0] - dp['_Width'] / 2)
-                    x_max_list.append(dp['_XYCoordinates'][0][i][0] + dp['_Width'] / 2)
-                    if 'up' in direction:
-                        y_min_list.append(dp['_XYCoordinates'][0][i][1] - 1)
-                        y_max_list.append(dp['_XYCoordinates'][0][i][1])
-                    else:
-                        y_min_list.append(dp['_XYCoordinates'][0][i][1])
-                        y_max_list.append(dp['_XYCoordinates'][0][i][1] + 1)
+                continue
+                # if 'horizontal' in direction:
+                #     if 'right' in direction:
+                #         x_min_list.append(dp['_XYCoordinates'][0][i][0] - 1)
+                #         x_max_list.append(dp['_XYCoordinates'][0][i+1][0])
+                #     else:
+                #         x_min_list.append(dp['_XYCoordinates'][0][i+1][0])
+                #         x_max_list.append(dp['_XYCoordinates'][0][i][0] + 1)
+                #     y_min_list.append(dp['_XYCoordinates'][0][i][1] - dp['_Width'] / 2)
+                #     y_max_list.append(dp['_XYCoordinates'][0][i][1] + dp['_Width'] / 2)
+                # elif 'vertical' in direction:
+                #     x_min_list.append(dp['_XYCoordinates'][0][i][0] - dp['_Width'] / 2)
+                #     x_max_list.append(dp['_XYCoordinates'][0][i][0] + dp['_Width'] / 2)
+                #     if 'up' in direction:
+                #         y_min_list.append(dp['_XYCoordinates'][0][i][1] - 1)
+                #         y_max_list.append(dp['_XYCoordinates'][0][i+1][1])
+                #     else:
+                #         y_min_list.append(dp['_XYCoordinates'][0][i+1][1])
+                #         y_max_list.append(dp['_XYCoordinates'][0][i][1] + 1)
 
         for i, x_min in enumerate(x_min_list):
             vertical_tree = IST(direction='vertical')
+            k = self.interval_tree_by_layer[dp['_Layer']][x_min:x_max_list[i]]
+            k2 = sorted(self.interval_tree_by_layer[dp['_Layer']][x_min:x_max_list[i]])
             for x_intersection_dp in sorted(self.interval_tree_by_layer[dp['_Layer']][x_min:x_max_list[i]]):
                 vertical_tree.add_element_node(dp=x_intersection_dp.data[0], idx=x_intersection_dp.data[1])
 
@@ -423,7 +428,7 @@ class GeometricField:
                 [[node.data[0]['_Hierarchy'][node.data[1][0]][node.data[1][1]], node.data[1]] if type(node.data[1]) == list \
                  else [node.data[0]['_Hierarchy'][node.data[1]], node.data[1]] \
                  for node in intersected_node])
-        return intersection_point_list
+        return intersection_point_list[0]
 
     def search_intersection(self, dp):
         # if dp['_DesignParametertype'] == 3:
@@ -440,6 +445,8 @@ class GeometricField:
                 [xy[1] for xy in xy_points]), max([xy[1] for xy in xy_points])
         elif dp['_DesignParametertype'] == 2:
             try:
+                if dp['_ElementName'] == 'POLY_path_20':
+                    print('dd')
                 intersection_point_list = self.search_path_intersection_points(dp)
                 intersected_dp_hierarchy_names = [double_list[0] for double_list in intersection_point_list if
                                                   double_list]
@@ -556,12 +563,12 @@ class IST(IntervalTree):
             xy_points = boundary_dp['_XYCoordinatesProjection'][idx]
             if self.direction == 'horizontal':
                 lo, hi = min([xy[0] for xy in xy_points]), max([xy[0] for xy in xy_points])
-                if lo != hi:
+                if lo == hi:
                     warnings.warn('Some element has zero width')
                     return None
             elif self.direction == 'vertical':
                 lo, hi = min([xy[1] for xy in xy_points]), max([xy[1] for xy in xy_points])
-                if lo != hi:
+                if lo == hi:
                     warnings.warn('Some element has zero height')
                     return None
             self.addi(lo, hi, [boundary_dp, idx])
