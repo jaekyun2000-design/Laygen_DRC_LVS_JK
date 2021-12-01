@@ -168,7 +168,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 xy_list.extend([tf.visit(ast.parse(element).body[0]) for element in elements])
 
         x_string = "+".join([astunparse.unparse(x_ast) for x_ast in x_list])
-        y_string = "+".join([astunparse.unparse(x_ast) for x_ast in x_list])
+        y_string = "+".join([astunparse.unparse(y_ast) for y_ast in y_list])
 
         xy_x_string_list = [astunparse.unparse(xy_ast.value.func.value.elts[0]) for xy_ast in xy_list]
         xy_y_string_list = [astunparse.unparse(xy_ast.value.func.value.elts[1]) for xy_ast in xy_list]
