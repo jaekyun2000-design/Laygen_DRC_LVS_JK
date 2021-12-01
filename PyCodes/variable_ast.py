@@ -176,8 +176,8 @@ class IrregularTransformer(ast.NodeTransformer):
         xy_x_string = "+".join(xy_x_string_list)
         xy_y_string = "+".join(xy_y_string_list)
 
-        final_x_string = f'{x_string} + {xy_x_string}'
-        final_y_string = f'{y_string} + {xy_y_string}'
+        final_x_string = f'{x_string} + {xy_x_string}' if xy_x_string else x_string
+        final_y_string = f'{y_string} + {xy_y_string}' if xy_y_string else y_string
 
         if final_x_string and final_y_string:
             final_string = f"[[{final_x_string}, {final_y_string}]]"
