@@ -451,7 +451,7 @@ class GeometricField:
             # x_min, x_max, y_min, y_max = dp['_XYCoordinates'][0][0][0]-dp['_Width'], dp['_XYCoordinates'][0][0][0]+dp['_Width'], \
             #                              min(dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1]),\
             #                              max(dp['_XYCoordinates'][0][0][1], dp['_XYCoordinates'][0][-1][1])
-        elif dp['_DesignParametertype'] == 3:
+        elif dp['_DesignParametertype'] == 3 or dp['_DesignParametertype'] == 31 :
             x_min = dp['_XYCoordinates'][0][0]
             x_max = x_min
             y_min = dp['_XYCoordinates'][0][1]
