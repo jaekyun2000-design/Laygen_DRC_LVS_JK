@@ -133,7 +133,7 @@ class clustering():
                 row = 1
             connection_layer_list = []
             for id in id_list:
-                connection_layer_list.extend([intersection_info[0] for intersection_info in self.intersection_matching_dict_by_name[id]])
+                connection_layer_list.extend([intersection_info for intersection_info in self.intersection_matching_dict_by_name[id]])
             if connection_layer_list:
                 connection_wo_last_idx = copy.deepcopy(connection_layer_list)
                 for idx, _ in enumerate(connection_wo_last_idx):
@@ -148,11 +148,14 @@ class clustering():
                 count_list = []
                 for set1_ele in set1:
                     count_list.append(connection_layer_list.count(list(set1_ele)))
+                max_idx_list = [idx for idx, ele in enumerate(count_list) if ele == max(count_list)]
+                for max_idx in max_idx_list:
+                    set2.remove(list(set1)[max_idx][0])
                 max_idx = count_list.index(max(count_list))
                 target_reference = list(list(set1)[max_idx])
 
                 count_list = []
-                set2.remove(target_reference[0])
+                # set2.remove(target_reference[0])
                 for set2_ele in set2:
                     count_list.append(connection_top_name.count(set2_ele))
                 max_idx = count_list.index(max(count_list))
