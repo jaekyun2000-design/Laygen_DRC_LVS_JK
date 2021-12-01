@@ -14,6 +14,7 @@ import ast, astunparse
 from generatorLib import DRC
 drc = DRC.DRC()
 import types
+import lab_feature
 
 def load_pickle(file_name):
     with open(file_name, 'rb') as f:
@@ -262,9 +263,9 @@ class GDS2Generator():
             structure._DesignParameter[element_name] = StickDiagram._StickDiagram()._SrefElementDeclaration(
                 # _XYCoordinates=copy.deepcopy(element._DesignParameter['_XYCoordinates']),
                 _XYCoordinates=[],
-                _Reflect= copy.deepcopy(element._DesignParameter['_Reflect']) if '_Reflect' in element._DesignParameter else None,
-                _Angle=copy.deepcopy(element._DesignParameter['_Angle'] if '_Angle' in element._DesignParameter else None),
-                _ElementName= copy.deepcopy(element._DesignParameter['_ElementName'])
+                _Reflect= lab_feature.deepish_copy(element._DesignParameter['_Reflect']) if '_Reflect' in element._DesignParameter else None,
+                _Angle=lab_feature.deepish_copy(element._DesignParameter['_Angle'] if '_Angle' in element._DesignParameter else None),
+                _ElementName= lab_feature.deepish_copy(element._DesignParameter['_ElementName'])
             )[0]
             structure._DesignParameter[element_name]['_id'] = element._id
             structure._DesignParameter[element_name]['_DesignObj'] = StickDiagram._StickDiagram()
@@ -275,7 +276,7 @@ class GDS2Generator():
             for _,sub_qt_element in element._DesignParameter['_ModelStructure'].items():
                 self.convert_qt_element(sub_qt_element, structure._DesignParameter[element_name]['_DesignObj'])
         else:
-            structure._DesignParameter[element_name] = copy.deepcopy(element._DesignParameter)
+            structure._DesignParameter[element_name] = lab_feature.deepish_copy(element._DesignParameter)
             structure._DesignParameter[element_name]['_XYCoordinates'] = []
 
     def load_qt_design_constraints_ast(self, top_ast):
@@ -499,7 +500,7 @@ class GDS2Generator():
                                _Angle=angle, _Reflect = reflect
                                )
             self.cell_dp_dict[structure_name]._DesignParameter[element_name].update(design_dict)
-            self.cell_dp_dict[structure_name]._DesignParameter[element_name]['_DesignObj'] = copy.deepcopy(self.cell_dp_dict[sref_structure_name])
+            self.cell_dp_dict[structure_name]._DesignParameter[element_name]['_DesignObj'] = lab_feature.deepish_copy(self.cell_dp_dict[sref_structure_name])
 
         elif "_TEXT" in vars(element._ELEMENTS):
             pass
@@ -597,7 +598,7 @@ class GDS2Generator():
 
         self.root_cell._DesignParameter[element_name]['_DesignObj']._DesignParameter['_GDSFile'] = StickDiagram._StickDiagram()._GDSObjDeclaration()
         import copy
-        self.element_parameter_dict[element_name] = copy.deepcopy(self.root_cell._DesignParameter[element_name]['_DesignObj']._ParametersForDesignCalculation)
+        self.element_parameter_dict[element_name] = lab_feature.deepish_copy(self.root_cell._DesignParameter[element_name]['_DesignObj']._ParametersForDesignCalculation)
 
 
         # 여기에다가 ParametersForDesignCalculation 이름으로 찾아서 (subcell에 있는거) 잠시,,, 여기가 element내의 sref인지, structure의 sref인지 확인 필요
@@ -629,12 +630,12 @@ class GDS2Generator():
             import copy
             self.root_cell._DesignParameter[array_element_name] = \
                 self.root_cell._ElementArrayDeclaration(_XYCoordinates=xy,
-                                                        _BaseElement=copy.deepcopy(self.root_cell._DesignParameter[element_name_list[0]]),
+                                                        _BaseElement=lab_feature.deepish_copy(self.root_cell._DesignParameter[element_name_list[0]]),
                                                         _NumofArray = num_of_array,
                                                         _XOffset = x_space_distance,
                                                         _YOffset = y_space_distance,
                                                         _ElementName=array_element_name)
-            self.element_parameter_dict[array_element_name] = dict(_BaseElementParameter=copy.deepcopy(self.element_parameter_dict[element_name_list[0]]),
+            self.element_parameter_dict[array_element_name] = dict(_BaseElementParameter=lab_feature.deepish_copy(self.element_parameter_dict[element_name_list[0]]),
                                                                    _XYCoordinates=xy,
                                                                    _NumofArray = num_of_array,
                                                                    _XOffset = x_space_distance,
@@ -659,12 +660,12 @@ class GDS2Generator():
             import copy
             self.root_cell._DesignParameter[array_element_name] = \
                 self.root_cell._ElementArrayDeclaration(_XYCoordinates=xy,
-                                                        _BaseElement=copy.deepcopy(self.root_cell._DesignParameter[element_name_list[0]]),
+                                                        _BaseElement=lab_feature.deepish_copy(self.root_cell._DesignParameter[element_name_list[0]]),
                                                         _NumofArray = num_of_array,
                                                         _XOffset = x_space_distance,
                                                         _YOffset = y_space_distance,
                                                         _ElementName=array_element_name)
-            self.element_parameter_dict[array_element_name] = dict(_BaseElementParameter=copy.deepcopy(self.element_parameter_dict[element_name_list[0]]),
+            self.element_parameter_dict[array_element_name] = dict(_BaseElementParameter=lab_feature.deepish_copy(self.element_parameter_dict[element_name_list[0]]),
                                                                    _XYCoordinates=xy,
                                                                    _NumofArray = num_of_array,
                                                                    _XOffset = x_space_distance,
@@ -689,12 +690,12 @@ class GDS2Generator():
             import copy
             self.root_cell._DesignParameter[array_element_name] = \
                 self.root_cell._ElementArrayDeclaration(_XYCoordinates=xy,
-                                                        _BaseElement=copy.deepcopy(self.root_cell._DesignParameter[element_name_list[0]]),
+                                                        _BaseElement=lab_feature.deepish_copy(self.root_cell._DesignParameter[element_name_list[0]]),
                                                         _NumofArray = num_of_array,
                                                         _XOffset = x_space_distance,
                                                         _YOffset = y_space_distance,
                                                         _ElementName=array_element_name)
-            self.element_parameter_dict[array_element_name] = dict(_BaseElementParameter=copy.deepcopy(self.element_parameter_dict[element_name_list[0]]),
+            self.element_parameter_dict[array_element_name] = dict(_BaseElementParameter=lab_feature.deepish_copy(self.element_parameter_dict[element_name_list[0]]),
                                                                    _XYCoordinates=xy,
                                                                    _NumofArray = num_of_array,
                                                                    _XOffset = x_space_distance,
