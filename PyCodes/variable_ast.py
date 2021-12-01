@@ -170,14 +170,14 @@ class IrregularTransformer(ast.NodeTransformer):
         x_string = "+".join([astunparse.unparse(x_ast) for x_ast in x_list])
         y_string = "+".join([astunparse.unparse(y_ast) for y_ast in y_list])
 
-        xy_x_string_list = [astunparse.unparse(xy_ast.value.func.value.elts[0]) for xy_ast in xy_list]
-        xy_y_string_list = [astunparse.unparse(xy_ast.value.func.value.elts[1]) for xy_ast in xy_list]
+        xy_x_string_list = [astunparse.unparse(xy_ast.value.value.elts[0]) for xy_ast in xy_list]
+        xy_y_string_list = [astunparse.unparse(xy_ast.value.value.elts[1]) for xy_ast in xy_list]
 
         xy_x_string = "+".join(xy_x_string_list)
         xy_y_string = "+".join(xy_y_string_list)
 
-        final_x_string = x_string + xy_x_string
-        final_y_string = y_string + xy_y_string
+        final_x_string = f'{x_string} + {xy_x_string}'
+        final_y_string = f'{y_string} + {xy_y_string}'
 
         if final_x_string and final_y_string:
             final_string = f"[[{final_x_string}, {final_y_string}]]"
@@ -950,7 +950,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
                 transformer = getattr(self, method, self.generic_visit)
                 tf_string = transformer(node)
                 tf_ast = ast.parse(tf_string).body[0]
-                node.func = tf_ast
+                node = tf_ast
         return super(CustomFunctionTransformer, self).generic_visit(node)
 
     def generic_transform(self, node):
@@ -1137,6 +1137,25 @@ class CustomFunctionTransformer(ast.NodeTransformer):
             return output_y
         else:
             return "[" + ",".join([output_x, output_y]) + "]"
+
+
+    def transform_height(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+
+        if self.flag == 'XY':
+            raise Exception('Height cannot be expressed as XY coordinates.')
+
+        return f"{base_element_string}['_YWidth']"
+
+    def transform_width(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+
+        if self.flag == 'XY':
+            raise Exception('Height cannot be expressed as XY coordinates.')
+
+        return f"{base_element_string}['_XWidth']"
 
 
 
