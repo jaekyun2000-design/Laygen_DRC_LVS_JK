@@ -329,7 +329,19 @@ class IrregularTransformer(ast.NodeTransformer):
         tmp = ast.parse(final_tripleList)
         return tmp.body
 
-    def visit_LogicExpression(self,node):
+    def visit_LogicExpression(self, node):
+        expression_list = []
+        for xy_flag, elements in node.info_dict.items():
+            if not elements:
+                continue
+            tf = CustomFunctionTransformer(xy_flag)
+            expression_list.extend([tf.visit(ast.parse(element).body[0]) for element in elements])
+        final_string = "+".join([astunparse.unparse(exp_ast).replace("\n","") for exp_ast in expression_list])
+        final_ast = ast.parse(final_string).body
+        return final_ast
+
+
+    def visit_LogicExpressionLegacy(self,node):
         _id = node.id
         tmpDict = dict()
         tmpDict['X'] = []
