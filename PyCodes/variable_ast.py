@@ -283,6 +283,39 @@ class IrregularTransformer(ast.NodeTransformer):
             _id = node.id[0]
         else:
             _id = node.id
+
+        memory_xy_ast = None
+        xy_list = []
+        for xy_ast in node.info_dict.values():
+            if (xy_ast.info_dict['X'] and xy_ast.info_dict['Y']) or xy_ast.info_dict['XY']:
+                memory_xy_ast = xy_ast
+                xy_list.append(xy_ast)
+            elif xy_ast.info_dict['X']:
+                memory_y = memory_xy_ast.info_dict['Y']
+                memory_y.extend(memory_xy_ast.info_dict['XY'])
+                tmp_ast = copy.deepcopy(xy_ast)
+                tmp_ast.info_dict['Y'].extend(memory_y)
+                memory_xy_ast = tmp_ast
+                xy_list.append(tmp_ast)
+            elif xy_ast.info_dict['Y']:
+                memory_x = memory_xy_ast.info_dict['X']
+                memory_x.extend(memory_xy_ast.info_dict['XY'])
+                tmp_ast = copy.deepcopy(xy_ast)
+                tmp_ast.info_dict['X'].extend(memory_x)
+                memory_xy_ast = tmp_ast
+                xy_list.append(tmp_ast)
+
+        converted_xy_ast_list = [self.visit_XYCoordinate(xy_ast) for xy_ast in xy_list]
+        sentenced_xy_list = ",".join([astunparse.unparse(xy_ast)[2:-2] for xy_ast in converted_xy_ast_list])
+        final_sentence = f"[[{sentenced_xy_list}]]"
+        final_ast = ast.parse(final_sentence).body
+        return final_ast
+
+    def visit_PathXYLegacy(self, node):
+        if type(node.id) == list:
+            _id = node.id[0]
+        else:
+            _id = node.id
         sentence = '['
         # for _, elementIdList in self._id_to_data_dict.XYPathDict[_id].items():
         for sub_ast_id, ast_obj in node.info_dict.items():
