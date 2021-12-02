@@ -44,7 +44,7 @@ class _NMOS(StickDiagram._StickDiagram):
             self._DesignParameter['_Name']['_Name'] = _Name
 
     def _CalculateNMOSDesignParameter(self, _NMOSNumberofGate=6, _NMOSChannelWidth=600, _NMOSChannellength=60,
-                                      _NMOSDummy=False, _XVT='LVT'):
+                                      _NMOSDummy=False, _GateSpacing=None, _XVT='LVT'):
         """
 
         :param _NMOSNumberofGate:
@@ -69,7 +69,8 @@ class _NMOS(StickDiagram._StickDiagram):
             _LengthNMOSBtwPO = _DRCObj.DRCPolyMinSpace(_Width=_NMOSChannelWidth, _ParallelLength=_NMOSChannellength) + _NMOSChannellength
         else:
             _LengthNMOSBtwPO = _DRCObj.DRCPolygateMinSpace(_DRCObj._CoMinWidth + 2 * _DRCObj._PolygateMinSpace2Co) + _NMOSChannellength
-
+        if _GateSpacing:
+            _LengthNMOSBtwPO = _GateSpacing + _NMOSChannellength
 
         print ('#############################     POLY Layer Calculation    ##############################################')
         # POLY Layer Coordinate Calc

@@ -47,7 +47,7 @@ class _PMOS(StickDiagram._StickDiagram):
             self._DesignParameter['_Name']['_Name'] = _Name
 
     def _CalculatePMOSDesignParameter(self, _PMOSNumberofGate=None, _PMOSChannelWidth=None, _PMOSChannellength=None,
-                                      _PMOSDummy=False, _XVT=None):
+                                      _PMOSDummy=False, _GateSpacing=None, _XVT=None):
         print ('#########################################################################################################')
         print ('                                    {}  PMOS Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name']))
         print ('#########################################################################################################')
@@ -61,7 +61,8 @@ class _PMOS(StickDiagram._StickDiagram):
             _LengthPMOSBtwPO = _DRCObj.DRCPolyMinSpace(_Width=_PMOSChannelWidth, _ParallelLength=_PMOSChannellength) + _PMOSChannellength
         else:
             _LengthPMOSBtwPO = _DRCObj.DRCPolygateMinSpace(_DRCObj._CoMinWidth + 2 * _DRCObj._PolygateMinSpace2Co) + _PMOSChannellength
-
+        if _GateSpacing:
+            _LengthPMOSBtwPO = _GateSpacing + _PMOSChannellength
         print ('#############################     POLY (PO/PC) Layer Calculation    ##############################################')
         # POLY Layer Coordinate Calc
         tmpXYs = []
