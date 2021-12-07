@@ -706,6 +706,8 @@ class _MainWindow(QMainWindow):
 
         self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array")
         self.vw.send_output_dict_signal.connect(self.create_variable)
+        # self.vw.send_DesignConstraint_signal.connect(self.design_delegator.create_qt_constraint)
+
         self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
         self.vw.request_dummy_constraint_signal.connect(self.delivery_dummy_constraint)
         self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
@@ -1334,6 +1336,8 @@ class _MainWindow(QMainWindow):
 
         self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array")
         self.vw.send_output_dict_signal.connect(self.create_variable)
+        # self.vw.send_DesignConstraint_signal.connect(self.design_delegator.create_qt_constraint)
+
         self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
         self.vw.request_dummy_constraint_signal.connect(self.delivery_dummy_constraint)
         self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
@@ -2469,7 +2473,9 @@ class _MainWindow(QMainWindow):
             selected_vis_items = self.scene.selectedItems()
             self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items)
             # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
+
             self.vw.send_output_dict_signal.connect(self.create_variable)
+            # self.vw.send_DesignConstraint_signal.connect(self.design_delegator.create_qt_constraint)
             self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
             self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)

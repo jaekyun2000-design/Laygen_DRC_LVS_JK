@@ -9,6 +9,7 @@ from PyQTInterface import SetupWindow
 from PyQTInterface  import VariableVisualItem
 from PyQTInterface import calculator
 import user_setup
+from PyCodes import variable_ast
 
 import warnings
 import traceback
@@ -36,6 +37,7 @@ class VariableSetupWindow(QWidget):
     # send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
     send_DestroyTmpVisual_signal = pyqtSignal(str)
     send_output_dict_signal = pyqtSignal(str, dict)
+    send_DesignConstraint_signal = pyqtSignal("PyQt_PyObject")
     send_clicked_item_signal = pyqtSignal(list)
     send_variable_signal = pyqtSignal(str)
     request_dummy_constraint_signal = pyqtSignal(str)
@@ -321,6 +323,10 @@ class VariableSetupWindow(QWidget):
         output_dict['flag'] = self.flag_type
 
         self.send_output_dict_signal.emit(self._edit_id, copy.deepcopy(output_dict))
+        output_ast = variable_ast.Array()
+        output_ast._id = output_dict['name']
+        output_ast.info_dict = output_dict
+        self.send_DesignConstraint_signal.emit(output_ast)
 
         if output_dict['width'] == 'Custom' and output_dict['width_input'] == '':
             if re.search('\D+', output_dict['width_text']) is not None:
