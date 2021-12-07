@@ -406,6 +406,7 @@ class VariableSetupWindow(QWidget):
 class variableContentWidget(QWidget):
     send_clicked_item_signal = pyqtSignal(list)
     send_exported_width_height_signal = pyqtSignal(str, dict)
+    send_exported_xy_offset_signal = pyqtSignal(str, dict)
     send_width_height_ast_signal = pyqtSignal(str, ast.AST)
 
     def __init__(self):
@@ -413,6 +414,7 @@ class variableContentWidget(QWidget):
         self.name_list = ['boundary', 'path', 'sref']
         self.option_list = ['offset', 'relative']
         self.widget_dictionary = dict()
+        self.widget_sublayout_dictinoary = dict()
         self.vbox = QVBoxLayout()
         self.field_value_memory_dict = dict()
 
@@ -426,11 +428,11 @@ class variableContentWidget(QWidget):
                     self.field_value_memory_dict[field_name] = ''
                     if field_name == 'layer':
                         self.field_value_memory_dict[field_name] = 'PIMP'
-                    if field_name == 'index':
+                    elif field_name == 'index':
                         self.field_value_memory_dict[field_name] = 'All'
-                    if field_name == 'width':
+                    elif field_name == 'width':
                         self.field_value_memory_dict[field_name] = 'Auto'
-                    if field_name == 'height':
+                    elif field_name == 'height':
                         self.field_value_memory_dict[field_name] = 'Auto'
                 self.create_skeleton(name, option, field_info)
 
@@ -479,6 +481,7 @@ class variableContentWidget(QWidget):
                 continue
 
     def create_skeleton(self, name, option, field_info):
+        self.widget_sublayout_dictinoary[name+option] = dict()
         tmp_vbox= QVBoxLayout()
         for i, field_name in enumerate(field_info['field_list']):
             if field_info['input_type_list'][i] == 'line':
@@ -490,6 +493,7 @@ class variableContentWidget(QWidget):
             elif field_info['input_type_list'][i] == 'list':
                 tmp_layout = self.create_list_field(field_name)
             tmp_vbox.addLayout(tmp_layout)
+            self.widget_sublayout_dictinoary[name + option][field_name] = tmp_layout
         tmp_widget = QWidget()
         tmp_widget.setLayout(tmp_vbox)
         self.widget_dictionary[name+option] = tmp_widget
@@ -510,16 +514,16 @@ class variableContentWidget(QWidget):
                 input_type_list = ['line', 'list', 'line', 'line', 'double_line', None]
         elif option == 'relative':
             if name == 'boundary':
-                field_list = ['name', 'layer', 'XY_source_ref', 'index', 'index_input', 'width', 'width_text',
+                field_list = ['name', 'layer', 'XY_source_ref', 'XY_offset', 'index', 'index_input', 'width', 'width_text',
                               'height', 'height_text', 'width_input', 'height_input']
-                input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'combo', 'line', None, None]
+                input_type_list = ['line', 'combo', 'list', 'line', 'combo', 'line', 'combo', 'line', 'combo', 'line', None, None]
             elif name == 'path':
-                field_list = ['name', 'layer', 'XY_source_ref', 'index', 'index_input', 'width', 'width_text',
+                field_list = ['name', 'layer', 'XY_source_ref', 'XY_offset', 'index', 'index_input', 'width', 'width_text',
                               'XY_target_ref', 'width_input']
-                input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'list', None]
+                input_type_list = ['line', 'combo', 'list', 'line',  'combo', 'line', 'combo', 'line', 'list', None]
             elif name == 'sref':
-                field_list = ['name', 'XY_source_ref', 'sref_item', 'index', 'index_input', 'sref_item_dict']
-                input_type_list = ['line', 'list', 'list', 'combo', 'line', None]
+                field_list = ['name', 'XY_source_ref', 'XY_offset', 'sref_item', 'index', 'index_input', 'sref_item_dict']
+                input_type_list = ['line', 'list', 'list', 'line', 'combo', 'line', None]
 
         field_info = dict(field_list=field_list, input_type_list=input_type_list)
         return field_info
@@ -544,6 +548,11 @@ class variableContentWidget(QWidget):
             additional_button = QPushButton()
             additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
             additional_button.clicked.connect(self.show_height_cal)
+        elif name == 'XY_offset':
+            tmp_input_widget.setReadOnly(True)
+            additional_button = QPushButton()
+            additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            additional_button.clicked.connect(self.show_xy_offset_cal)
 
         tmp_input_widget.field_name = name
         tmp_input_widget.textChanged.connect(self.update_output_dict)
@@ -551,7 +560,7 @@ class variableContentWidget(QWidget):
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)
         output_layout.addWidget(tmp_input_widget)
-        if name == 'width_text' or name == 'height_text':
+        if name in ['width_text', 'height_text', 'XY_offset']:
             output_layout.addWidget(additional_button)
 
         return output_layout
@@ -669,6 +678,14 @@ class variableContentWidget(QWidget):
         self.cal.set_preset_window()
         self.cal.show()
 
+    def show_xy_offset_cal(self):
+        self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='XY_offset')
+        self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_dummyconstraints_signal.connect(self.cal.storePreset)
+        self.cal.set_preset_window()
+        self.cal.show()
+
+
     def show_source_cal(self):
         self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='source',address=self)
         self.cal.send_expression_signal.connect(self.exported_text)
@@ -687,7 +704,8 @@ class variableContentWidget(QWidget):
     def exported_sref(self, sref_ast):
         sref_dict = sref_ast.__dict__
 
-        source_widget = self.widget_dictionary['srefrelative'].layout().itemAt(2).itemAt(1).widget()
+        # source_widget = self.widget_dictionary['srefrelative'].layout().itemAt(2).itemAt(1).widget()
+        source_widget = self.widget_sublayout_dictinoary['srefrelative']['XY_source_ref'].itemAt(1).widget()
         source_widget.takeItem(0)
         source_widget.addItem(sref_dict['library'])
         source_widget.setCurrentRow(0)
@@ -705,27 +723,38 @@ class variableContentWidget(QWidget):
             self.output_dict = output_dict
             self.send_exported_width_height_signal.emit('LogicExpressionD', output_dict)
 
+        elif purpose == 'init':
+            self.output_dict = output_dict
+            self.send_exported_xy_offset_signal.emit('LogicExpressionD', output_dict)
+
+
+
         elif purpose == 'source' or purpose == 'target' or purpose == 'ref':
             for info, widget in self.widget_dictionary.items():
                 if not widget.isHidden():
                     if purpose == 'source':
-                        if info == 'srefrelative':
-                            source_widget = self.widget_dictionary[info].layout().itemAt(1).itemAt(1).widget()
-                        else:
-                            source_widget = self.widget_dictionary[info].layout().itemAt(2).itemAt(1).widget()
+                        # if info == 'srefrelative':
+                        #     source_widget = self.widget_dictionary[info].layout().itemAt(1).itemAt(1).widget()
+                        # else:
+                        #     source_widget = self.widget_dictionary[info].layout().itemAt(2).itemAt(1).widget()
+                        source_widget = self.widget_sublayout_dictinoary[info]['XY_source_ref'].itemAt(1).widget()
+
                         source_widget.takeItem(0)
                         source_widget.addItem(text)
                         source_widget.setCurrentRow(0)
                     elif purpose == 'target':
-                        target_widget = self.widget_dictionary[info].layout().itemAt(7).itemAt(1).widget()
+                        # target_widget = self.widget_dictionary[info].layout().itemAt(7).itemAt(1).widget()
+                        target_widget = self.widget_sublayout_dictinoary[info]['XY_target_ref'].itemAt(1).widget()
+
                         target_widget.takeItem(0)
                         target_widget.addItem(text)
                         target_widget.setCurrentRow(0)
                     elif purpose == 'ref':
-                        if info == 'srefoffset':
-                            ref_widget = self.widget_dictionary[info].layout().itemAt(1).itemAt(1).widget()
-                        else:
-                            ref_widget = self.widget_dictionary[info].layout().itemAt(2).itemAt(1).widget()
+                        # if info == 'srefoffset':
+                        #     ref_widget = self.widget_dictionary[info].layout().itemAt(1).itemAt(1).widget()
+                        # else:
+                        #     ref_widget = self.widget_dictionary[info].layout().itemAt(2).itemAt(1).widget()
+                        ref_widget = self.widget_sublayout_dictinoary[info]['XY_ref'].itemAt(1).widget()
                         ref_widget.takeItem(0)
                         ref_widget.addItem(text)
                         ref_widget.setCurrentRow(0)
@@ -735,16 +764,19 @@ class variableContentWidget(QWidget):
     def get_width_height_ast(self, _id, _ast):
         for info, widget in self.widget_dictionary.items():
             if not widget.isHidden():
-                if info == 'boundaryrelative':
-                    width_text_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
-                    height_text_widget = self.widget_dictionary[info].layout().itemAt(8).itemAt(1).widget()
-                elif info == 'pathrelative':
-                    width_text_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
-                elif info == 'boundaryoffset':
-                    width_text_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
-                    height_text_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
-                elif info == 'pathoffset':
-                    width_text_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
+                width_text_widget = self.widget_sublayout_dictinoary[info]['width_text'].itemAt(1).widget()
+                height_text_widget = self.widget_sublayout_dictinoary[info]['height_text'].itemAt(1).widget()
+
+                # if info == 'boundaryrelative':
+                #     width_text_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
+                #     height_text_widget = self.widget_dictionary[info].layout().itemAt(8).itemAt(1).widget()
+                # elif info == 'pathrelative':
+                #     width_text_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
+                # elif info == 'boundaryoffset':
+                #     width_text_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
+                #     height_text_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
+                # elif info == 'pathoffset':
+                #     width_text_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
         try:
             if self.width_height == 'width':
                 width_text_widget.setText(_id)
@@ -759,7 +791,9 @@ class variableContentWidget(QWidget):
     def get_index(self, text):
         for info, widget in self.widget_dictionary.items():
             if not widget.isHidden():
-                index_input_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
+                # index_input_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
+                index_input_widget = self.widget_sublayout_dictinoary[info]['index_input'].itemAt(1).widget()
+
 
                 if text == 'Custom':
                     # index_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
@@ -771,10 +805,11 @@ class variableContentWidget(QWidget):
     def get_width(self, text):
         for info, widget in self.widget_dictionary.items():
             if not widget.isHidden():
-                if info[-6:] == 'offset':
-                    width_input_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
-                elif info[-8:] == 'relative':
-                    width_input_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
+                width_input_widget = self.widget_sublayout_dictinoary[info]['width_text'].itemAt(1).widget()
+                # if info[-6:] == 'offset':
+                #     width_input_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
+                # elif info[-8:] == 'relative':
+                #     width_input_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
 
                 if text == 'Custom':
                     # width_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
@@ -782,22 +817,26 @@ class variableContentWidget(QWidget):
                 elif text == 'Auto':
                     # width_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
                     width_input_widget.setReadOnly(True)
-                    if info == 'boundaryoffset':
-                        height_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
-                        height_widget.setCurrentText('Custom')
-                    elif info == 'boundaryrelative':
-                        height_widget = self.widget_dictionary[info].layout().itemAt(7).itemAt(1).widget()
+                    # if info == 'boundaryoffset':
+                    #     height_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
+                    #     height_widget.setCurrentText('Custom')
+                    # elif info == 'boundaryrelative':
+                    #     height_widget = self.widget_dictionary[info].layout().itemAt(7).itemAt(1).widget()
+                    if info in ['boundaryoffset', 'boundaryrelative']:
+                        height_widget = self.widget_sublayout_dictinoary[info]['height'].itemAt(1).widget()
                         height_widget.setCurrentText('Custom')
 
     def get_height(self, text):
         for info, widget in self.widget_dictionary.items():
             if not widget.isHidden():
-                if info[-6:] == 'offset':
-                    height_input_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
-                    width_widget = self.widget_dictionary[info].layout().itemAt(3).itemAt(1).widget()
-                elif info[-8:] == 'relative':
-                    height_input_widget = self.widget_dictionary[info].layout().itemAt(8).itemAt(1).widget()
-                    width_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
+                height_input_widget = self.widget_sublayout_dictinoary[info]['height_text'].itemAt(1).widget()
+                width_widget = self.widget_sublayout_dictinoary[info]['width'].itemAt(1).widget()
+                # if info[-6:] == 'offset':
+                #     height_input_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
+                #     width_widget = self.widget_dictionary[info].layout().itemAt(3).itemAt(1).widget()
+                # elif info[-8:] == 'relative':
+                #     height_input_widget = self.widget_dictionary[info].layout().itemAt(8).itemAt(1).widget()
+                #     width_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
 
                 if text == 'Custom':
                     # height_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
