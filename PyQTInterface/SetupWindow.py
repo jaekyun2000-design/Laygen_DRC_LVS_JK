@@ -4872,6 +4872,8 @@ class DesignModifier(QWidget):
             tmp_widget.hide()
 
     def update_form(self, design_const):
+        if design_const._type == 'Array':
+            return
         self.current_type = design_const._type
         if self.current_type == 'Sref':
             self.update_sref_form(design_const)
