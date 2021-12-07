@@ -46,8 +46,8 @@ class VariableSetupWindow(QWidget):
     def __init__(self,variable_type,vis_items=None,variable_obj=None,group_ref_list=None,inspect_array_window_address=None):
         super().__init__()
         self._edit_id = None
-        self.setMinimumHeight(500)
-        self.setMinimumWidth(300)
+        self.setMinimumHeight(700)
+        self.setMinimumWidth(400)
         self.variable_type = variable_type
         self.flag_type = 'relative'
         self.vis_items= vis_items
@@ -524,16 +524,16 @@ class variableContentWidget(QWidget):
         tmp_input_widget = QLineEdit()
 
         if name == 'index_input':
-            tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            # tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             tmp_input_widget.setReadOnly(True)
         elif name == 'width_text':
-            tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            # tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             tmp_input_widget.setReadOnly(True)
             additional_button = QPushButton()
             additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
             additional_button.clicked.connect(self.show_width_cal)
         elif name == 'height_text':
-            tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+            # tmp_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
             tmp_input_widget.setReadOnly(True)
             additional_button = QPushButton()
             additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
@@ -756,10 +756,10 @@ class variableContentWidget(QWidget):
                 index_input_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
 
                 if text == 'Custom':
-                    index_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
+                    # index_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
                     index_input_widget.setReadOnly(False)
                 else:
-                    index_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+                    # index_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
                     index_input_widget.setReadOnly(True)
 
     def get_width(self, text):
@@ -771,10 +771,10 @@ class variableContentWidget(QWidget):
                     width_input_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
 
                 if text == 'Custom':
-                    width_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
+                    # width_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
                     width_input_widget.setReadOnly(False)
                 elif text == 'Auto':
-                    width_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+                    # width_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
                     width_input_widget.setReadOnly(True)
                     if info == 'boundaryoffset':
                         height_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
@@ -794,10 +794,10 @@ class variableContentWidget(QWidget):
                     width_widget = self.widget_dictionary[info].layout().itemAt(5).itemAt(1).widget()
 
                 if text == 'Custom':
-                    height_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
+                    # height_input_widget.setStyleSheet("QLineEdit{background:rgb(255,255,255);}")
                     height_input_widget.setReadOnly(False)
                 elif text == 'Auto':
-                    height_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
+                    # height_input_widget.setStyleSheet("QLineEdit{background:rgb(222,222,222);}")
                     height_input_widget.setReadOnly(True)
                     width_widget.setCurrentText('Custom')
 

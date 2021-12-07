@@ -2465,19 +2465,17 @@ class _MainWindow(QMainWindow):
                 self.design_delegator.create_qt_parameter(dp_dict)
             self.design_delegator.delete_qt_parameter(dp_name)
             return
-
-
-
-        selected_vis_items = self.scene.selectedItems()
-        self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items)
-        # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
-        self.vw.send_output_dict_signal.connect(self.create_variable)
-        self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
-        self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
-        self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
-        self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
-        self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
-        self.vw.send_variable_signal.connect(self.send_array_variable)
+        elif 'array' in _type:
+            selected_vis_items = self.scene.selectedItems()
+            self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items)
+            # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
+            self.vw.send_output_dict_signal.connect(self.create_variable)
+            self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
+            self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
+            self.scene.send_item_clicked_signal.connect(self.vw.clickFromScene)
+            self.vw.send_variableVisual_signal.connect(self.createVariableVisual)
+            self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
+            self.vw.send_variable_signal.connect(self.send_array_variable)
 
     def edit_variable(self, _edit_id, variable_info_dict):
         target_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(_edit_id)
