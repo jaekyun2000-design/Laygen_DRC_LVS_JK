@@ -1776,7 +1776,18 @@ class _MainWindow(QMainWindow):
                     dc_id = self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_name)
                     self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=dp_name, dc_id=dc_id)
 
-                # print(dp_dict)
+
+            ##### Element Manager Update... if needed ... #####
+            # dc_dp_pair_lost_items = list(filter(lambda dp_name: self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_name) is None, list(dp_dict.keys())))
+            generator_dc_items = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
+            generator_dc_ids = [item.text() for item in generator_dc_items]
+            generator_dc_list = [self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][dc_id] for dc_id in generator_dc_ids]
+            array_dc_list = list(filter(lambda qt_dc: isinstance(qt_dc._ast, variable_ast.Array), generator_dc_list))
+            for array_dc in array_dc_list:
+                self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=array_dc._ast.info_dict['name'], dc_id=array_dc._id)
+
+
+            # print(dp_dict)
             if code != False and not code:
                 constraint_names = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
                 constraint_ids = [item.text() for item in constraint_names]
