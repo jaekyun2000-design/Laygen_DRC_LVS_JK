@@ -92,7 +92,7 @@ class ArgumentVariable(GeneratorVariable):
         'name',      # str
     )
 
-class PathArray(GeneratorVariable):
+class PathArray(Array):
     """
         PathArray class:
         Array declaration for path
@@ -112,7 +112,7 @@ class PathArray(GeneratorVariable):
     )
 
 
-class ElementArray(GeneratorVariable):
+class ElementArray(Array):
     """
     ElementArray class:
     Array declaration
@@ -127,7 +127,7 @@ class ElementArray(GeneratorVariable):
         'y_space_distance',     # int or string
     )
 
-class DynamicElementArray(GeneratorVariable):
+class DynamicElementArray(Array):
     def __init__(self, *args, **kwargs):
         super().__init__()
     _fields = (
