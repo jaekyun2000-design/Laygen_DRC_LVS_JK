@@ -2048,6 +2048,7 @@ class _MainWindow(QMainWindow):
         """
         _moduleName = self._CurrentModuleName
         gds2gen = topAPI.gds2generator.GDS2Generator(True)
+        gds2gen.load_qt_project(self)
         _dp = gds2gen.code_generation_for_subcell(_AST)
         tmp_dp_dict, _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(_AST)
         print("########################################################################################")
@@ -2133,6 +2134,7 @@ class _MainWindow(QMainWindow):
         # module = self.get_id_return_module(dc_id, "_DesignConstraint")
         module = self._CurrentModuleName
         gds2gen = topAPI.gds2generator.GDS2Generator(False)
+        gds2gen.load_qt_project(self)
         _dp = gds2gen.code_generation_for_subcell(ast_with_id)
         tmp_dp_dict , _ = self._QTObj._qtProject._ElementManager.get_ast_return_dpdict(ast_with_id)
         # dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)

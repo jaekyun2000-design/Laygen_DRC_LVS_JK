@@ -47,6 +47,7 @@ class DesignDelegator(delegator.Delegator):
 
             if type(constraint_ast).__name__ in ['Sref', 'MacroCell']:
                 gds2gen = topAPI.gds2generator.GDS2Generator(True)
+                gds2gen.load_qt_project(self.main_window)
 
                 if type(constraint_ast).__name__ == 'MacroCell':
                     dp_dict = self.main_window._QTObj._qtProject.load_designs_by_macro_ast(constraint_ast)
