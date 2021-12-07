@@ -523,7 +523,7 @@ class variableContentWidget(QWidget):
                 input_type_list = ['line', 'combo', 'list', 'line',  'combo', 'line', 'combo', 'line', 'list', None]
             elif name == 'sref':
                 field_list = ['name', 'XY_source_ref', 'XY_offset', 'sref_item', 'index', 'index_input', 'sref_item_dict']
-                input_type_list = ['line', 'list', 'list', 'line', 'combo', 'line', None]
+                input_type_list = ['line', 'list', 'line', 'list', 'combo', 'line', None]
 
         field_info = dict(field_list=field_list, input_type_list=input_type_list)
         return field_info
@@ -723,13 +723,13 @@ class variableContentWidget(QWidget):
             self.output_dict = output_dict
             self.send_exported_width_height_signal.emit('LogicExpressionD', output_dict)
 
-        elif purpose == 'init':
+        elif purpose == 'XY_offset':
             self.output_dict = output_dict
             self.send_exported_xy_offset_signal.emit('LogicExpressionD', output_dict)
 
 
 
-        elif purpose == 'source' or purpose == 'target' or purpose == 'ref':
+        elif purpose in ['source', 'target' , 'ref']:
             for info, widget in self.widget_dictionary.items():
                 if not widget.isHidden():
                     if purpose == 'source':
@@ -758,6 +758,7 @@ class variableContentWidget(QWidget):
                         ref_widget.takeItem(0)
                         ref_widget.addItem(text)
                         ref_widget.setCurrentRow(0)
+
 
                     del self.cal
 

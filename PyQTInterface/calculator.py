@@ -104,7 +104,7 @@ class ExpressionCalculator(QWidget):
         self.y_button = self.create_radio_button('Y',self.xy_reference_clicked)
         self.xy_button = self.create_radio_button('XY',self.xy_reference_clicked)
         self.x_button.setChecked(True)
-        if self.purpose != 'init':
+        if self.purpose not in ['init', 'XY_offset'] :
             self.xy_button.setDisabled(True)
 
         toggling_group_layout.addWidget(self.x_button)
@@ -198,7 +198,7 @@ class ExpressionCalculator(QWidget):
         if platform.system() != 'Darwin':
             self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
         self.XYWindow.itemClicked.connect(self.XYitemClicked)
-        if self.purpose != 'init':
+        if self.purpose not in ['init', 'XY_offset']:
             self.XYWindow.setDisabled(True)
             if platform.system() != 'Darwin':
                 self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY_disabled.png); background-position: center; background-color: rgb(255,255,255); background-attachment: fixed;")
@@ -1035,7 +1035,7 @@ class ExpressionCalculator(QWidget):
                 """
                 pass
             elif XList:
-                if self.purpose != 'init':
+                if self.purpose not in ['init', 'XY_offset']:
                     self.send_XYCreated_signal.emit('LogicExpressionD', output)
                 else:
                     # self.send_XYCreated_signal.emit('LogicExpression', output)
@@ -1044,7 +1044,7 @@ class ExpressionCalculator(QWidget):
                     self.send_variable_ast.emit(tmp_ast)
                 LEFlag = True
             elif YList:
-                if self.purpose != 'init':
+                if self.purpose not in ['init', 'XY_offset']:
                     self.send_XYCreated_signal.emit('LogicExpressionD', output)
                 else:
                     # self.send_XYCreated_signal.emit('LogicExpression', output)
@@ -1082,7 +1082,9 @@ class ExpressionCalculator(QWidget):
             else:
                 self.send_XYCreated_signal.emit(export_type, output)
 
-        elif self.purpose != 'init':
+        elif self.purpose == 'XY_offset':
+            pass #TODO
+        else:
             self.send_expression_signal.emit(self.display.toPlainText(), self.purpose, output)
 
         # self.send_variable_ast.emit()
