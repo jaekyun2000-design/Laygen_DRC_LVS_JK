@@ -401,6 +401,21 @@ class IrregularTransformer(ast.NodeTransformer):
         info_dict = node.info_dict
         _width = ''
         _height = ''
+        xy_offset = [0, 0]
+        if 'XY_offset' in node.info_dict and node.info_dict['XY_offset']:
+            if isinstance(node.info_dict['XY_offset'], LogicExpression):
+                x_or_y = 'x' if node.info_dict['XY_offset'].info_dict['X'] else 'y'
+            else:
+                x_or_y = 'xy'
+            offset_sentence = astunparse.unparse(self.visit(node.info_dict['XY_offset']))
+            if x_or_y == 'x':
+                xy_offset = f'({offset_sentence}, 0)'
+            elif x_or_y == 'y':
+                xy_offset = f'(0, {offset_sentence})'
+            else:
+                xy_offset = offset_sentence[3:-3]
+        xy_offset = f'xy_offset = {xy_offset}'
+
         for key in info_dict.keys():
             if isinstance(info_dict[key], ast.AST):
                 # tmpAST = IrregularTransformer(self._id_to_data_dict).visit(info_dict[key])
@@ -530,18 +545,21 @@ class IrregularTransformer(ast.NodeTransformer):
             if _type == 'boundary_array':
                 if _index == 'All':
                     loop_code = f"XYList = []\n" \
+                                f"{xy_offset}\n" \
                                 f"for i in range(len({layer_xy})):\n" \
-                                f"\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
+                                f"\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , {layer_xy}[i], xy_offset ) ] )\n"
                 elif _index == 'Odd':
                     loop_code = f"XYList = []\n" \
+                                f"{xy_offset}\n" \
                                 f"for i in range(len({layer_xy})):\n" \
                                 f"\tif (i%2 == 1):\n" \
-                                f"\t\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
+                                f"\t\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , {layer_xy}[i], xy_offset ) ] )\n"
                 elif _index == 'Even':
                     loop_code = f"XYList = []\n" \
+                                f"{xy_offset}\n" \
                                 f"for i in range(len({layer_xy})):\n" \
                                 f"\tif (i%2 == 0):\n" \
-                                f"\t\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
+                                f"\t\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , {layer_xy}[i], xy_offset ) ] )\n"
 
                 tmp_node = element_ast.Boundary()
                 tmp_node.name = _name
@@ -650,18 +668,21 @@ class IrregularTransformer(ast.NodeTransformer):
             elif _type == 'sref_array':
                 if _index == 'All':
                     loop_code = f"XYList = []\n" \
+                                f"{xy_offset}\n" \
                                 f"for i in range(len({layer_xy})):\n" \
-                                f"\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
+                                f"\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , {layer_xy}[i], xy_offset ) ] )\n"
                 elif _index == 'Odd':
                     loop_code = f"XYList = []\n" \
+                                f"{xy_offset}\n" \
                                 f"for i in range(len({layer_xy})):\n" \
                                 f"\tif (i%2 == 1):\n" \
-                                f"\t\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
+                                f"\t\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , {layer_xy}[i], xy_offset ) ] )\n"
                 elif _index == 'Even':
                     loop_code = f"XYList = []\n" \
+                                f"{xy_offset}\n" \
                                 f"for i in range(len({layer_xy})):\n" \
                                 f"\tif (i%2 == 0):\n" \
-                                f"\t\tXYList.append([x+y for x,y in zip({parent_xy} , {layer_xy}[i] ) ] )\n"
+                                f"\t\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , {layer_xy}[i], xy_offset ) ] )\n"
 
                 tmp_node = element_ast.Sref()
                 tmp_node.name = _name
@@ -736,9 +757,10 @@ class IrregularTransformer(ast.NodeTransformer):
         if _flag == 'offset':
             if _type == 'boundary_array':
                 loop_code = f"XYList = []\n" \
+                            f"{xy_offset}\n" \
                             f"for i in range({_row_num}):\n" \
                             f"\tfor j in range({_col_num}):\n" \
-                            f"\t\tXYList.append([x+y for x,y in zip({source_XY_code} , [{_x_distance}, {_y_distance}])\n"
+                            f"\t\tXYList.append([x+y+z for x,y,z in zip({source_XY_code} , [{_x_distance}, {_y_distance}], xy_offset)\n"
 
                 tmp_node = element_ast.Boundary()
                 tmp_node.name = _name
@@ -756,9 +778,10 @@ class IrregularTransformer(ast.NodeTransformer):
                 pass
             elif _type == 'sref_array':
                 loop_code = loop_code = f"XYList = []\n" \
+                            f"{xy_offset}\n" \
                             f"for i in range({_row_num}):\n" \
                             f"\tfor j in range({_col_num}):\n" \
-                            f"\t\tXYList.append([x+y for x,y in zip({source_XY_code} , [{_x_distance}, {_y_distance}])\n"
+                            f"\t\tXYList.append([x+y for x,y in zip({source_XY_code} , [{_x_distance}, {_y_distance}], xy_offset)\n"
             tmp_node = element_ast.Sref()
             tmp_node.name = _name
             tmp_node.XY = 'XYList'
@@ -1051,6 +1074,21 @@ class CustomFunctionTransformer(ast.NodeTransformer):
 
         output_x = base_xy_string_tuple[0]
         output_y = base_xy_string_tuple[1] + "+" + base_element_string + f"['_YWidth']/2"
+
+        if self.flag == 'X':
+            return output_x
+        elif self.flag == 'Y':
+            return output_y
+        else:
+            return "[" + ",".join([output_x, output_y]) + "]"
+
+    def transform_bottom(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+
+        output_x = base_xy_string_tuple[0]
+        output_y = base_xy_string_tuple[1] + "-" + base_element_string + f"['_YWidth']/2"
 
         if self.flag == 'X':
             return output_x
