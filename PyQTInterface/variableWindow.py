@@ -37,10 +37,11 @@ class VariableSetupWindow(QWidget):
     # send_DestroyTmpVisual_signal = pyqtSignal(VisualizationItem._VisualizationItem)
     send_DestroyTmpVisual_signal = pyqtSignal(str)
     send_output_dict_signal = pyqtSignal(str, dict)
-    send_DesignConstraint_signal = pyqtSignal("PyQt_PyObject")
     send_clicked_item_signal = pyqtSignal(list)
     send_variable_signal = pyqtSignal(str)
     request_dummy_constraint_signal = pyqtSignal(str)
+    send_variable_ast = pyqtSignal("PyQt_PyObject")
+    send_variable_wo_post_ast = pyqtSignal("PyQt_PyObject")
 
 
     send_variableVisual_signal = pyqtSignal(VariableVisualItem.VariableVisualItem)
@@ -60,17 +61,6 @@ class VariableSetupWindow(QWidget):
 
         if variable_obj == None:
             pass
-            # self.visualItem = VisualizationItem._VisualizationItem()
-            # self._DesignParameter = dict(
-            #     _Layer= None,
-            #     _DesignParametertype = 1,
-            #     _XYCoordinates = [],
-            #     _XWidth = None,
-            #     _YWidth = None,
-            #     _Ignore = None,
-            #     _DesignParameterName = None
-            #
-            #     )
         else:
             # self._DesignParameter = BoundaryElement._ItemTraits
             self.updateUI()
@@ -102,19 +92,6 @@ class VariableSetupWindow(QWidget):
         self.relative_or_offset_button.toggled.connect(self.change_ui)
         self.relative_or_offset_button.setText("  Relative Expression  ")
 
-        self.ui_list_a_offset = ['_type', 'XY_ref', 'x_offset', 'y_offset']  # ,'Element1','Element2'])
-        self.XY_source_ref = QLineEdit()
-        self.x_offset = QLineEdit()
-        self.y_offset = QLineEdit()
-        hbox_xy = QHBoxLayout()
-        cal_for_source = QPushButton()
-        cal_for_source.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
-        cal_for_source.clicked.connect(self.showSourceCal)
-        hbox_xy.addWidget(self.XY_source_ref)
-        hbox_xy.addWidget(cal_for_source)
-        self.ui_list_b_offset= [self.variable_type_widget, hbox_xy, self.x_offset, self.y_offset]
-
-        # self.create_ui_relative()
         self.deleteItemList = QListWidget()
 
         self.okButton = QPushButton("OK",self)
@@ -131,17 +108,6 @@ class VariableSetupWindow(QWidget):
         self.setupVboxColumn2.addWidget(self.variable_type_widget)
 
         self.setupVboxColumn1.addWidget(QLabel("_type"))
-        # tmp_list = []
-        # for label in self.ui_list_a:
-        #     label_widget = QLabel(label)
-        #     self.setupVboxColumn1.addWidget(label_widget)
-        #     tmp_list.append(label_widget)
-        # self.ui_list_a = tmp_list
-        # for widget in self.ui_list_b:
-        #     try:
-        #         self.setupVboxColumn2.addWidget(widget)
-        #     except:
-        #         self.setupVboxColumn2.addLayout(widget)
 
         self.setupBox.addLayout(self.setupVboxColumn1)
         self.setupBox.addLayout(self.setupVboxColumn2)
@@ -161,6 +127,7 @@ class VariableSetupWindow(QWidget):
         # vbox.addLayout(self.setupBox)
         self.variable_widget = variableContentWidget()
         self.variable_widget.request_show('boundary', 'relative')
+        self.variable_widget.send_variable_wo_post_ast.connect(self.send_variable_wo_post_ast)
         self.variable_widget.send_clicked_item_signal.connect(self.send_clicked_item)
         vbox.addLayout(hbox2)
         vbox.addWidget(self.variable_widget)
@@ -326,7 +293,6 @@ class VariableSetupWindow(QWidget):
         output_ast = variable_ast.Array()
         output_ast._id = output_dict['name']
         output_ast.info_dict = output_dict
-        self.send_DesignConstraint_signal.emit(output_ast)
 
         if output_dict['width'] == 'Custom' and output_dict['width_input'] == '':
             if re.search('\D+', output_dict['width_text']) is not None:
@@ -375,39 +341,26 @@ class VariableSetupWindow(QWidget):
         except:
             print("updateFail")
 
-    def showSourceCal(self):
-        self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='source',address=self)
-        self.cal.send_expression_signal.connect(self.exportedText)
-        self.cal.show()
-
-    def showTargetCal(self):
-        self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='target',address=self)
-        self.cal.send_expression_signal.connect(self.exportedText)
-        self.cal.show()
-
-    def exportedText(self, text, purpose):
-        if self.variable_type == 'path_array':
-            if purpose == 'source':
-                self.XY_source_ref.takeItem(0)
-                self.XY_source_ref.addItem(text)
-                self.XY_source_ref.setCurrentRow(0)
-            elif purpose == 'target':
-                self.XY_target_ref.takeItem(0)
-                self.XY_target_ref.addItem(text)
-        if self.variable_type == 'boundary_array':
-            self.XY_source_ref.takeItem(0)
-            self.XY_source_ref.addItem(text)
-
-        del self.cal
 
     def send_clicked_item(self, hierarchy_list):
         self.send_clicked_item_signal.emit(hierarchy_list)
+
+    def receive_constraint_result(self, qt_dc):
+        purpose = self.variable_widget.cal.purpose
+
+        self.variable_widget.exported_text(text=qt_dc._id, purpose=purpose, output_dict = qt_dc._ast.info_dict)
+        if purpose in ['height', 'width']:
+            self.variable_widget.get_width_height_ast(_id=qt_dc._id, _ast=qt_dc._ast)
+        elif purpose == 'XY_offset':
+            self.variable_widget.get_xy_offset_ast(_id=qt_dc._id, _ast=qt_dc._ast)
+        # self.cal.receive_constraint_result(qt_dc)
 
 class variableContentWidget(QWidget):
     send_clicked_item_signal = pyqtSignal(list)
     send_exported_width_height_signal = pyqtSignal(str, dict)
     send_exported_xy_offset_signal = pyqtSignal(str, dict)
     send_width_height_ast_signal = pyqtSignal(str, ast.AST)
+    send_variable_wo_post_ast = pyqtSignal("PyQt_PyObject")
 
     def __init__(self):
         super(variableContentWidget, self).__init__()
@@ -555,7 +508,7 @@ class variableContentWidget(QWidget):
             additional_button.clicked.connect(self.show_xy_offset_cal)
 
         tmp_input_widget.field_name = name
-        tmp_input_widget.textChanged.connect(self.update_output_dict)
+        tmp_input_widget.textChanged.connect(lambda text: self.update_output_dict(text, name))
 
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)
@@ -571,9 +524,13 @@ class variableContentWidget(QWidget):
         tmp_input_widget1 = QLineEdit()
         tmp_input_widget2 = QLineEdit()
         tmp_input_widget1.field_name = 'row'
-        tmp_input_widget1.textChanged.connect(self.update_output_dict)
+        # tmp_input_widget1.textChanged.connect(self.update_output_dict)
+        tmp_input_widget1.textChanged.connect(lambda text: self.update_output_dict(text, name))
+
         tmp_input_widget2.field_name = 'col'
-        tmp_input_widget2.textChanged.connect(self.update_output_dict)
+        # tmp_input_widget2.textChanged.connect(self.update_output_dict)
+        tmp_input_widget2.textChanged.connect(lambda text: self.update_output_dict(text, name))
+
 
         rowcol_layout = QHBoxLayout()
         rowcol_layout.addWidget(tmp_input_widget1)
@@ -612,7 +569,9 @@ class variableContentWidget(QWidget):
             tmp_input_widget.setCurrentIndex(0)
 
         tmp_input_widget.field_name = name
-        tmp_input_widget.currentTextChanged.connect(self.update_output_dict)
+        # tmp_input_widget.currentTextChanged.connect(self.update_output_dict)
+        tmp_input_widget.currentTextChanged.connect(lambda text: self.update_output_dict(text, name))
+
 
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)
@@ -645,7 +604,9 @@ class variableContentWidget(QWidget):
         tmp_input_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         tmp_input_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         tmp_input_widget.addItem('')
-        tmp_input_widget.currentItemChanged.connect(self.update_output_dict)
+        # tmp_input_widget.currentItemChanged.connect(self.update_output_dict)
+        tmp_input_widget.currentTextChanged.connect(lambda text: self.update_output_dict(text, name))
+
 
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)
@@ -661,51 +622,56 @@ class variableContentWidget(QWidget):
             self.ls = SetupWindow._LoadSRefWindow(purpose='array_load', SRefElement=self.field_value_memory_dict['sref_item_dict'])
         self.ls.show()
         self.ls.send_array_signal.connect(self.exported_sref)
-        # self.scene.send_xyCoordinate_signal.connect(self.ls.DetermineCoordinateWithMouse)
-        # self.ls.send_destroy_signal.connect(self.delete_obj)
+
 
     def show_width_cal(self):
         self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='width')
-        self.cal.send_expression_signal.connect(self.exported_text)
-        self.cal.send_dummyconstraints_signal.connect(self.cal.storePreset)
+        # self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_variable_wo_post_ast.connect(self.send_variable_wo_post_ast)
         self.cal.set_preset_window()
         self.cal.show()
 
     def show_height_cal(self):
         self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='height')
-        self.cal.send_expression_signal.connect(self.exported_text)
-        self.cal.send_dummyconstraints_signal.connect(self.cal.storePreset)
+        # self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_variable_wo_post_ast.connect(self.send_variable_wo_post_ast)
         self.cal.set_preset_window()
         self.cal.show()
 
     def show_xy_offset_cal(self):
         self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='XY_offset')
-        self.cal.send_expression_signal.connect(self.exported_text)
-        self.cal.send_dummyconstraints_signal.connect(self.cal.storePreset)
+        # self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_variable_wo_post_ast.connect(self.send_variable_wo_post_ast)
         self.cal.set_preset_window()
         self.cal.show()
 
 
     def show_source_cal(self):
         self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='source',address=self)
-        self.cal.send_expression_signal.connect(self.exported_text)
+        # self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_geometry_info_text.connect(lambda text: self.exported_text(text, 'source', None))
+
+        self.cal.send_variable_wo_post_ast.connect(self.send_variable_wo_post_ast)
         self.cal.show()
 
     def show_target_cal(self):
         self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='target',address=self)
-        self.cal.send_expression_signal.connect(self.exported_text)
+        # self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_geometry_info_text.connect(lambda text: self.exported_text(text, 'target', None))
+
         self.cal.show()
 
     def show_ref_cal(self):
         self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='ref',address=self)
-        self.cal.send_expression_signal.connect(self.exported_text)
+        # self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_geometry_info_text.connect(lambda text: self.exported_text(text, 'ref', None))
         self.cal.show()
 
     def exported_sref(self, sref_ast):
         sref_dict = sref_ast.__dict__
 
         # source_widget = self.widget_dictionary['srefrelative'].layout().itemAt(2).itemAt(1).widget()
-        source_widget = self.widget_sublayout_dictinoary['srefrelative']['XY_source_ref'].itemAt(1).widget()
+        source_widget = self.widget_sublayout_dictinoary['srefrelative']['sref_item'].itemAt(1).widget()
         source_widget.takeItem(0)
         source_widget.addItem(sref_dict['library'])
         source_widget.setCurrentRow(0)
@@ -716,16 +682,16 @@ class variableContentWidget(QWidget):
         if purpose == 'width':
             self.width_height = 'width'
             self.output_dict = output_dict
-            self.send_exported_width_height_signal.emit('LogicExpressionD', output_dict)
+            # self.send_exported_width_height_signal.emit('LogicExpressionD', output_dict)
 
         elif purpose == 'height':
             self.width_height = 'height'
             self.output_dict = output_dict
-            self.send_exported_width_height_signal.emit('LogicExpressionD', output_dict)
+            # self.send_exported_width_height_signal.emit('LogicExpressionD', output_dict)
 
         elif purpose == 'XY_offset':
             self.output_dict = output_dict
-            self.send_exported_xy_offset_signal.emit('LogicExpressionD', output_dict)
+            # self.send_exported_xy_offset_signal.emit('LogicExpressionD', output_dict)
 
 
 
@@ -733,33 +699,21 @@ class variableContentWidget(QWidget):
             for info, widget in self.widget_dictionary.items():
                 if not widget.isHidden():
                     if purpose == 'source':
-                        # if info == 'srefrelative':
-                        #     source_widget = self.widget_dictionary[info].layout().itemAt(1).itemAt(1).widget()
-                        # else:
-                        #     source_widget = self.widget_dictionary[info].layout().itemAt(2).itemAt(1).widget()
                         source_widget = self.widget_sublayout_dictinoary[info]['XY_source_ref'].itemAt(1).widget()
-
                         source_widget.takeItem(0)
                         source_widget.addItem(text)
                         source_widget.setCurrentRow(0)
                     elif purpose == 'target':
-                        # target_widget = self.widget_dictionary[info].layout().itemAt(7).itemAt(1).widget()
                         target_widget = self.widget_sublayout_dictinoary[info]['XY_target_ref'].itemAt(1).widget()
 
                         target_widget.takeItem(0)
                         target_widget.addItem(text)
                         target_widget.setCurrentRow(0)
                     elif purpose == 'ref':
-                        # if info == 'srefoffset':
-                        #     ref_widget = self.widget_dictionary[info].layout().itemAt(1).itemAt(1).widget()
-                        # else:
-                        #     ref_widget = self.widget_dictionary[info].layout().itemAt(2).itemAt(1).widget()
                         ref_widget = self.widget_sublayout_dictinoary[info]['XY_ref'].itemAt(1).widget()
                         ref_widget.takeItem(0)
                         ref_widget.addItem(text)
                         ref_widget.setCurrentRow(0)
-
-
                     del self.cal
 
     def get_width_height_ast(self, _id, _ast):
@@ -767,27 +721,22 @@ class variableContentWidget(QWidget):
             if not widget.isHidden():
                 width_text_widget = self.widget_sublayout_dictinoary[info]['width_text'].itemAt(1).widget()
                 height_text_widget = self.widget_sublayout_dictinoary[info]['height_text'].itemAt(1).widget()
-
-                # if info == 'boundaryrelative':
-                #     width_text_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
-                #     height_text_widget = self.widget_dictionary[info].layout().itemAt(8).itemAt(1).widget()
-                # elif info == 'pathrelative':
-                #     width_text_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
-                # elif info == 'boundaryoffset':
-                #     width_text_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
-                #     height_text_widget = self.widget_dictionary[info].layout().itemAt(6).itemAt(1).widget()
-                # elif info == 'pathoffset':
-                #     width_text_widget = self.widget_dictionary[info].layout().itemAt(4).itemAt(1).widget()
-        try:
-            if self.width_height == 'width':
-                width_text_widget.setText(_id)
-                self.field_value_memory_dict['width_input'] = _ast
-            elif self.width_height == 'height':
-                height_text_widget.setText(_id)
-                self.field_value_memory_dict['height_input'] = _ast
-            self.cal.send_dummyconstraints_signal.emit(self.output_dict, _id)
-        except:
-            traceback.print_exc()
+        # try:
+        if self.width_height == 'width':
+            width_text_widget.setText(_id)
+            self.field_value_memory_dict['width_input'] = _ast
+        elif self.width_height == 'height':
+            height_text_widget.setText(_id)
+            self.field_value_memory_dict['height_input'] = _ast
+            # self.cal.send_dummyconstraints_signal.emit(self.output_dict, _id)
+        # except:
+        #     traceback.print_exc()
+    def get_xy_offset_ast(self, _id, _ast):
+        for info, widget in self.widget_dictionary.items():
+            if not widget.isHidden():
+                xy_offset_widget = self.widget_sublayout_dictinoary[info]['XY_offset'].itemAt(1).widget()
+        xy_offset_widget.setText(_id)
+        self.field_value_memory_dict['XY_offset'] = _ast
 
     def get_index(self, text):
         for info, widget in self.widget_dictionary.items():
@@ -851,9 +800,9 @@ class variableContentWidget(QWidget):
         hierarchy_list = list(eval('['+re.search('\(.*\)',item.text()).group()[1:-1] + ']' ))
         self.send_clicked_item_signal.emit(hierarchy_list)
 
-    def update_output_dict(self, changed_text):
+    def update_output_dict(self, changed_text, field_name=None):
         sender = self.sender()
-        name = sender.field_name
+        name = sender.field_name if not field_name else field_name
 
         if type(changed_text) == QListWidgetItem:
             changed_text = changed_text.text()

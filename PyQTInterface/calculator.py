@@ -1035,23 +1035,13 @@ class ExpressionCalculator(QWidget):
                 이 경우에는 X값과 Y값이 각각 있으니 XYCoordinate 생성하러 떠난다.
                 """
                 pass
-            elif XList:
-                if self.purpose not in ['init', 'XY_offset']:
-                    self.send_XYCreated_signal.emit('LogicExpressionD', output)
-                else:
-                    # self.send_XYCreated_signal.emit('LogicExpression', output)
-                    tmp_ast = variable_ast.LogicExpression()
-                    tmp_ast.info_dict = output
+            else:
+                tmp_ast = variable_ast.LogicExpression()
+                tmp_ast.info_dict = output
+                if self.purpose == 'init':
                     self.send_variable_ast.emit(tmp_ast)
-                LEFlag = True
-            elif YList:
-                if self.purpose not in ['init', 'XY_offset']:
-                    self.send_XYCreated_signal.emit('LogicExpressionD', output)
                 else:
-                    # self.send_XYCreated_signal.emit('LogicExpression', output)
-                    tmp_ast = variable_ast.LogicExpression()
-                    tmp_ast.info_dict = output
-                    self.send_variable_ast.emit(tmp_ast)
+                    self.send_variable_wo_post_ast.emit(tmp_ast)
                 LEFlag = True
 
         self.XWindow.clear()
@@ -1084,10 +1074,14 @@ class ExpressionCalculator(QWidget):
                     tmp_ast.info_dict = output
                     self.send_variable_ast.emit(tmp_ast)
 
-        elif self.purpose == 'XY_offset':
-            pass #TODO
         else:
-            self.send_expression_signal.emit(self.display.toPlainText(), self.purpose, output)
+            if LEFlag == True:
+                pass
+            else:
+                tmp_ast = variable_ast.XYCoordinate()
+                tmp_ast.info_dict = output
+                self.send_variable_wo_post_ast.emit(tmp_ast)
+            # self.send_expression_signal.emit(self.display.toPlainText(), self.purpose, output)
 
         # self.send_variable_ast.emit()
 
@@ -1124,7 +1118,6 @@ class ExpressionCalculator(QWidget):
     def storePreset(self, dict, _id):
         ExpressionCalculator.presetDict[_id] = dict
         self.presetWindow.addItem(_id)
-        print(ExpressionCalculator.presetDict)
 
     def presetClicked(self, dummy=None):
         if type(dummy) == str:
@@ -1222,7 +1215,11 @@ class ExpressionCalculator(QWidget):
         When calculator requests to create design constraint, but not to post case...
         It means, to create path_row_xy coordinates.
         '''
-        self.pw.create_row(qt_dc._ast, qt_dc._id)
+        if self.purpose == 'init':
+            self.pw.create_row(qt_dc._ast, qt_dc._id)
+        elif self.purpose in ['height', 'width']:
+
+            pass
 
 class PathWindow(QWidget):
     send_output_signal = pyqtSignal(dict)
@@ -1358,6 +1355,9 @@ class PathWindow(QWidget):
 
 class nine_key_calculator(QWidget):
     send_expression_signal = pyqtSignal(str, str, dict)
+    send_geometry_info_text = pyqtSignal(str)
+
+    send_variable_wo_post_ast = pyqtSignal("PyQt_PyObject")
 
     def __init__(self,clipboard,purpose,address):
         # super(ExpressionCalculator, self).__init__()
@@ -1504,9 +1504,7 @@ class nine_key_calculator(QWidget):
         self.display.setText(display)
 
     def export_clicked(self):
-        print(self.display.toPlainText())
-        dummy_dict = dict()
-        self.send_expression_signal.emit(self.display.toPlainText(), self.purpose, dummy_dict)
+        self.send_geometry_info_text.emit(self.display.toPlainText())
         self.destroy()
 
     def parsing_clipboard(self):
