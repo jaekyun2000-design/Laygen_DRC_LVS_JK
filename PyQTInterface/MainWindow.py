@@ -1346,7 +1346,7 @@ class _MainWindow(QMainWindow):
         # self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
         # self.vw.variable_widget.send_exported_xy_offset_signal.connect(self.createDummyConstraint)
         self.vw.send_variable_signal.connect(self.send_array_variable)
-        self.vw.send_variable_wo_post_ast.connect(lambda target_ast: self.design_delegator.create_qt_constraint(target_ast, source=self.vw))
+        self.vw.send_variable_wo_post_ast.connect(lambda target_ast: self.design_delegator.create_qt_constraint(target_ast, sender=self.vw))
 
 
         self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
