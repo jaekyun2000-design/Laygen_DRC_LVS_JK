@@ -18,6 +18,7 @@ class ExpressionCalculator(QWidget):
     send_dummyconstraints_signal = pyqtSignal(dict, str)
     send_path_row_xy_signal = pyqtSignal("PyQt_PyObject", str)
     send_variable_ast = pyqtSignal("PyQt_PyObject")
+    send_variable_wo_post_ast = pyqtSignal("PyQt_PyObject")
     send_expression_signal = pyqtSignal(str, str, dict)
     returnLayer_signal = pyqtSignal(list)
     presetDict = dict()
@@ -1072,15 +1073,16 @@ class ExpressionCalculator(QWidget):
                             self.pw.destroy()
                             del self.pw
                             return
-
-            if export_type == False:
+                # self.send_XYCreated_signal.emit(export_type, output)
+                tmp_ast = variable_ast.XYCoordinate()
+                tmp_ast.info_dict = output
+                self.send_variable_wo_post_ast.emit(tmp_ast)
+            else:
                 if LEFlag == False:
                     # self.send_XYCreated_signal.emit('XYCoordinate', output)
                     tmp_ast = variable_ast.XYCoordinate()
                     tmp_ast.info_dict = output
                     self.send_variable_ast.emit(tmp_ast)
-            else:
-                self.send_XYCreated_signal.emit(export_type, output)
 
         elif self.purpose == 'XY_offset':
             pass #TODO
@@ -1099,6 +1101,9 @@ class ExpressionCalculator(QWidget):
 
     def getPathInfo(self, idDict):
         self.send_XYCreated_signal.emit('PathXY', idDict)
+        path_ast = variable_ast.PathXY()
+        path_ast.info_dict = idDict
+        self.send_variable_ast.emit(path_ast)
         del self.pw
 
     def parsing_clipboard(self):
@@ -1212,6 +1217,13 @@ class ExpressionCalculator(QWidget):
         if changed_text != 'first' and changed_text != 'last':
             self.custom_index = changed_text
 
+    def receive_constraint_result(self, qt_dc):
+        '''
+        When calculator requests to create design constraint, but not to post case...
+        It means, to create path_row_xy coordinates.
+        '''
+        self.pw.create_row(qt_dc._ast, qt_dc._id)
+
 class PathWindow(QWidget):
     send_output_signal = pyqtSignal(dict)
     send_clicked_item_name_signal = pyqtSignal(str)
@@ -1314,21 +1326,15 @@ class PathWindow(QWidget):
         # self.UpdateXYwidget()
 
     def exportButton_accepted(self):
-        # output = dict(XYidlist=list())
-        #
-        self.send_output_signal.connect(self.address.getPathInfo)
-        #
-        # for idx in range(self.XYCoordinateList.rowCount()):
-        #     output['XYidlist'].append([self.XYCoordinateList.item(idx,0).text(), self.XYCoordinateList.item(idx,1).checkState(), self.XYCoordinateList.item(idx,2).checkState()])
-
+        # self.send_output_signal.connect(self.address.getPathInfo)
         output_dict = dict()
         for idx in range(self.XYCoordinateList.rowCount()):
             for id, ast in self.id_ast_match_dict.items():
                 if self.XYCoordinateList.item(idx, 0).text() == id:
                     output_dict[self.XYCoordinateList.item(idx, 0).text()] = ast
 
-        self.send_output_signal.emit(output_dict)
-        # self.send_output_signal.emit(output)
+        # self.send_output_signal.emit(output_dict)
+        self.address.getPathInfo(output_dict)
         self.destroy()
 
     def cancelButton_accepted(self):

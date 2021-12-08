@@ -28,9 +28,11 @@ class DesignDelegator(delegator.Delegator):
         if design_dict['constraint']:
             self.control_constraint_tree_view(design_dict['constraint_id'])
 
-    def create_qt_constraint(self, constraint_ast=None, constraint_dict=None):
+    def create_qt_constraint(self, constraint_ast=None, constraint_dict=None, sender=None):
         """
         receive: design constraint_ast or dictionary.
+        (sender is required only when you don't need post process on q-tree view)
+        (If there is sender, the method send result qt_dc to sender)
         process: dc info -> qt_dc (by qt_project's feed_design)
         request: if dp was created, create vs item
         return : nothing
@@ -43,7 +45,11 @@ class DesignDelegator(delegator.Delegator):
                 constraint_ast.id = design_dict['constraint_id']
                 if constraint_ast.__class__ in [variable_ast.XYCoordinate, variable_ast.PathXY, variable_ast.LogicExpression]:
                     self.main_window.calculator_window.storePreset(constraint_ast.info_dict, design_dict['constraint_id'])
-            self.control_constraint_tree_view(design_dict['constraint_id'])
+            if not sender:
+                self.control_constraint_tree_view(design_dict['constraint_id'])
+            else:
+                sender.receive_constraint_result(design_dict['constraint'])
+
 
             if type(constraint_ast).__name__ in ['Sref', 'MacroCell']:
                 gds2gen = topAPI.gds2generator.GDS2Generator(True)
