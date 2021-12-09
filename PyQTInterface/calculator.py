@@ -12,6 +12,7 @@ import copy
 # import numpy as np
 import os
 from generatorLib import drc_api
+import user_setup
 
 class ExpressionCalculator(QWidget):
     send_XYCreated_signal = pyqtSignal(str, dict)
@@ -58,10 +59,11 @@ class ExpressionCalculator(QWidget):
         self.hierarchy_list = list()
         self.returnedLayer = None
 
-        self.setFixedSize(786,800)
+        # self.setFixedSize(786,800)
+        self.setMinimumSize(790,800)
 
         font = self.display.font()
-        font.setPointSize(font.pointSize()+8)
+        font.setPointSize(font.pointSize()+6)
         self.display.setFont(font)
         self.init_ui()
 
@@ -882,62 +884,10 @@ class ExpressionCalculator(QWidget):
             if layer != self.returnedLayer:
                 self.DRCWindow.addTopLevelItem(self.DRCTreeItemDict[layer])
 
-        # for idx in range(self.DRCWindow.topLevelItemCount()):
-        #     if idx != top_idx:
-        #         self.DRCWindow.model().removeRow(idx)
-        #         self.DRCWindow.addTopLevelItem(self.DRCTreeItemDict[self.returnedLayer])
-
-        # # self.DRCWindow.setCurrentItem(self.DRCTreeItemDict[self.returnedLayer])
-        # delete_idx = self.DRCWindow.indexFromItem(self.DRCTreeItemDict[self.returnedLayer])
-        # parent_idx = self.DRCWindow.indexFromItem(self.DRCTreeItemDict[self.returnedLayer].parent())
-        # print(delete_idx.row())
-        # print(_idx.row())
-        # self.DRCWindow.model().moveRow(parent_idx,delete_idx.row(),parent_idx,0)
-        # # self.DRCWindow.model().removeRow(delete_idx.row())
-        # # print(self.DRCTreeItemDict[self.returnedLayer])
-        # # self.DRCWindow.insertTopLevelItem(0,self.DRCTreeItemDict[self.returnedLayer])
-        # # # self.DRCWindow.currentItem().setHidden(True)
-        # # # self.DRCWindow.takeTopLevelItem(0)
-        # #
-        # #
-        # #
-        # # self.DRCWindow.model().insertRow(0)
-        # # self.DRCWIndow.model().setObjectName()
-        # # self.DRCWindow.insertTopLevelItem(0,self.DRCTreeItemDict[self.returnedLayer])
-
-        # clicked_button = self.sender()
-        # geo_text = clicked_button.objectName()
-        # hierarchy_list = self.parsing_clipboard()
-        # if type(hierarchy_list) == Exception:
-        #     return None
-        # calc_expression = geo_text + f'({hierarchy_list})'
-        # if self.value_flag:
-        #     print(f'len!!={len(self.value_str)}')
-        #     self.display.setText(self.display.text()[:-len(self.value_str)] + calc_expression)
-        #     self.equationList[-1] = calc_expression
-        # else:
-        #     self.display.setText(self.display.text() + calc_expression)
-        #     self.equationList.append(calc_expression)
-        # self.value_flag = True
-        # self.value_str = calc_expression
-        # self.arithmetic_flag = False
-        # self.digit_flag = False
 
     def xy_reference_clicked(self):
         pass
 
-        # if function == 'lt':
-        #     if XYFlag == 'X':
-        #         result = f"self._DesignParameter['{operands[0]}']['_DesignObj']._DesignParameter['{operands[1]}']['_XYCoordinates'][0][0] " \
-        #              f"-self._DesignParameter['{operands[0]}']['_DesignObj']._DesignParameter['{operands[1]}']['_XWidth']/2"
-        #     elif XYFlag == 'Y':
-        #         result = f"self._DesignParameter['{operands[0]}']['_DesignObj']._DesignParameter['{operands[1]}']['_XYCoordinates'][0][0]" \
-        #              f"+ self._DesignParameter['{operands[0]}']['_DesignObj']._DesignParameter['{operands[1]}']['_YWidth']/2"
-        #     elif XYFlag == 'XY':
-        #         result = f" [self._DesignParameter['{operands[0]}']['_DesignObj']._DesignParameter['{operands[1]}']['_XYCoordinates'][0][0] " \
-        #                  f"-self._DesignParameter['{operands[0]}']['_DesignObj']._DesignParameter['{operands[1]}']['_XWidth']/2," \
-        #                  f"self._DesignParameter['{operands[0]}']['_DesignObj']._DesignParameter['{operands[1]}']['_XYCoordinates'][0][0]" \
-        #                  f"+ self._DesignParameter['{operands[0]}']['_DesignObj']._DesignParameter['{operands[1]}']['_YWidth']/2]"
 
     def add_clicked(self):
         while self.parenthesis_count != 0:
