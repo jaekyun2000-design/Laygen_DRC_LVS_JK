@@ -53,6 +53,7 @@ class ExpressionCalculator(QWidget):
         # print(self.display.layoutDirection())
         self.parenthesis_count = 0
         self.purpose = purpose
+        self.variable_purpose = False
         self.custom_index = ''
         self.equationList = list()
         self.DRCTreeItemDict = dict()
@@ -102,6 +103,9 @@ class ExpressionCalculator(QWidget):
         self.xy_reference_toggling_group = QGroupBox()
         toggling_group_layout = QHBoxLayout()
         option_box_layout = QHBoxLayout()
+        option_box_button_content = QVBoxLayout()
+        option_box_button_content_a = QHBoxLayout()
+        option_box_button_content_b = QHBoxLayout()
 
         self.x_button = self.create_radio_button('X',self.xy_reference_clicked)
         self.y_button = self.create_radio_button('Y',self.xy_reference_clicked)
@@ -119,17 +123,29 @@ class ExpressionCalculator(QWidget):
         edit_button = self.create_button('EDIT',self.edit_clicked, size_constraint=dict(height=35))
         export_button = self.create_button('EXPORT',self.export_clicked, size_constraint=dict(height=35))
         export_path_button = self.create_button('EXPORT FOR PATH',self.export_path_clicked, size_constraint=dict(height=35))
+        save_as_variable_button = self.create_button('SAVE VARIABLE',self.variable_save_clicked, size_constraint=dict(height=35))
+        export_as_variable_button = self.create_button('EXPORT VARIABLE',self.export_clicked, size_constraint=dict(height=35))
+        view_variable_list = self.create_button('VIEW VARIABLE',self.variable_show_clicked, size_constraint=dict(height=35))
         if self.purpose != 'init':
             export_path_button.setDisabled(True)
 
+        # option_hbox_content_a.addWidget(self.xy_reference_toggling_group)
+        option_box_button_content_a.addWidget(add_button)
+        option_box_button_content_a.addWidget(edit_button)
+        option_box_button_content_a.addWidget(export_button)
+        option_box_button_content_a.addWidget(export_path_button)
+        option_box_button_content_a.setSizeConstraint(QLayout.SetMaximumSize & QLayout.SizeConstraint.SetFixedSize)
+
+        option_box_button_content_b.addWidget(save_as_variable_button)
+        option_box_button_content_b.addWidget(export_as_variable_button)
+        option_box_button_content_b.addWidget(view_variable_list)
+        option_box_button_content_b.setSizeConstraint(QLayout.SetMaximumSize & QLayout.SizeConstraint.SetFixedSize)
+
+        option_box_button_content.addLayout(option_box_button_content_a)
+        option_box_button_content.addLayout(option_box_button_content_b)
+
         option_box_layout.addWidget(self.xy_reference_toggling_group)
-        option_box_layout.addWidget(add_button)
-        option_box_layout.addWidget(edit_button)
-        option_box_layout.addWidget(export_button)
-        option_box_layout.addWidget(export_path_button)
-        # option_box_layout.SetMaximumSize(50)
-        option_box_layout.setSizeConstraint(QLayout.SetMaximumSize & QLayout.SizeConstraint.SetFixedSize)
-        # option_box_layout.setSizeConstraint(QLayout.SizeConstraint.SetFixedSize)
+        option_box_layout.addLayout(option_box_button_content)
 
         """
         main layout
@@ -329,7 +345,7 @@ class ExpressionCalculator(QWidget):
             top = QTreeWidgetItem([layer])
             self.DRCTreeItemDict[layer] = top
             for key in self.drc_dict[layer]:
-                 tmpItem = QTreeWidgetItem(top,[key])
+                tmpItem = QTreeWidgetItem(top,[key])
             self.DRCWindow.addTopLevelItem(top)
 
         self.DRCWindow.itemClicked.connect(self.DRC_click)
@@ -659,11 +675,11 @@ class ExpressionCalculator(QWidget):
                     self.right_parenthesis_flag = False
 
             if len(self.equationList) == 0:
-                    self.value_flag = False
-                    self.digit_flag = False
-                    self.arithmetic_flag = False
-                    self.left_parenthesis_flag = False
-                    self.right_parenthesis_flag = False
+                self.value_flag = False
+                self.digit_flag = False
+                self.arithmetic_flag = False
+                self.left_parenthesis_flag = False
+                self.right_parenthesis_flag = False
 
             for text in self.equationList:
                 display += text
@@ -789,55 +805,6 @@ class ExpressionCalculator(QWidget):
             display += text
         self.display.setText(display)
 
-        # clicked_button = self.sender()
-        # if clicked_button.text() == '+/-':
-        #     if len(self.value_str) < len(self.display.text()):
-        #         if self.value_flag:
-        #             if self.display.text()[-len(self.value_str)-1] == '+':
-        #                 self.display.setText(self.display.text()[:-len(self.value_str)-1] + '-' + self.display.text()[-len(self.value_str):])
-        #             elif self.display.text()[-len(self.value_str)-1] == '-':
-        #                 self.display.setText(self.display.text()[:-len(self.value_str)-1] + '+' + self.display.text()[-len(self.value_str):])
-        #             elif self.display.text()[-len(self.value_str):-len(self.value_str)+2] == '(-':
-        #                 self.display.setText(self.display.text()[:-len(self.value_str)] + self.display.text()[-len(self.value_str)+2:-1])
-        #                 self.value_str = self.value_str[2:-1]
-        #             elif self.display.text()[-len(self.value_str)-1] == '*':
-        #                 self.display.setText(self.display.text()[:-len(self.value_str)] + '(-' + self.display.text()[-len(self.value_str):] + ')')
-        #                 self.value_str = '(-' + self.value_str + ')'
-        #             elif self.display.text()[-len(self.value_str)-1] == '/':
-        #                 self.display.setText(self.display.text()[:-len(self.value_str)] + '(-' + self.display.text()[-len(self.value_str):] + ')')
-        #                 self.value_str = '(-' + self.value_str + ')'
-        #         else:
-        #             pass
-        #         self.value_flag = True
-        #         self.digit_flag = True
-        #
-        #     elif len(self.value_str) == len(self.display.text()):
-        #         if len(self.display.text()) != 0:
-        #             if self.display.text()[0] != '-':
-        #                 self.display.setText('-' + self.display.text())
-        #                 self.value_str = '-' + self.value_str
-        #             else:
-        #                 self.display.setText(self.display.text()[1:])
-        #                 self.value_str = self.value_str[:1]
-        #
-        #
-        # else:
-        #     digit_value = str(clicked_button.text())
-        #
-        #     if self.digit_flag:
-        #         self.display.setText(self.display.text() + digit_value)
-        #         self.value_str += digit_value
-        #         self.equationList[-1] = self.value_str
-        #     else:
-        #         if self.value_flag:
-        #             self.display.setText(self.display.text()[:-len(self.value_str)] + digit_value)
-        #             self.equationList[-1] = digit_value
-        #         else:
-        #             self.display.setText(self.display.text() + digit_value)
-        #             self.equationList.append(digit_value)
-        #         self.value_flag = True
-        #         self.value_str = digit_value
-        #         self.digit_flag = True
 
     def geo_clicked(self, clicked= None):
         if clicked:
@@ -1017,6 +984,11 @@ class ExpressionCalculator(QWidget):
                 tmp_ast = variable_ast.XYCoordinate()
                 tmp_ast.info_dict = output
                 self.send_variable_wo_post_ast.emit(tmp_ast)
+            elif export_type == 'variable':
+                self.variable_purpose = True
+                tmp_ast = variable_ast.CustomVariable()
+                tmp_ast.info_dict = output
+                self.send_variable_wo_post_ast.emit(tmp_ast)
             else:
                 if LEFlag == False:
                     # self.send_XYCreated_signal.emit('XYCoordinate', output)
@@ -1042,6 +1014,35 @@ class ExpressionCalculator(QWidget):
             self.send_path_row_xy_signal.connect(self.pw.create_row)
 
         self.export_clicked('PathXY_row')
+
+    def variable_save_clicked(self):
+        if 'vw' not in self.__dict__:
+            self.vw = CVariableWindow()
+            self.vw.request_ast_signal.connect(lambda: self.export_clicked('variable'))
+            self.vw.show()
+        else:
+            self.vw.show()
+        self.name_input_widget = QWidget()
+        input_widget = QLineEdit()
+        form_layout = QFormLayout()
+        form_layout.addRow('variable name', input_widget)
+        ok_button = QPushButton()
+        ok_button.setText('OK')
+        ok_button.clicked.connect(lambda tmp: self.vw.create_variable(input_widget.text()))
+        ok_button.clicked.connect(self.name_input_widget.close)
+        form_layout.addRow(' ', ok_button)
+        self.name_input_widget.setLayout(form_layout)
+        self.name_input_widget.show()
+
+    def variable_show_clicked(self):
+        if 'vw' not in self.__dict__:
+            self.vw = CVariableWindow()
+            self.vw.load_variables(dict())
+            self.vw.show()
+        else:
+            self.vw.show()
+
+
 
     def getPathInfo(self, idDict):
         self.send_XYCreated_signal.emit('PathXY', idDict)
@@ -1165,7 +1166,10 @@ class ExpressionCalculator(QWidget):
         When calculator requests to create design constraint, but not to post case...
         It means, to create path_row_xy coordinates.
         '''
-        if self.purpose == 'init':
+        if self.variable_purpose:
+            self.variable_purpose = False
+            self.vw.load_ast_id(qt_dc._id)
+        elif self.purpose == 'init':
             self.pw.create_row(qt_dc._ast, qt_dc._id)
         elif self.purpose in ['height', 'width']:
 
@@ -1291,17 +1295,6 @@ class PathWindow(QWidget):
     def closeEvent(self, QCloseEvent):
         del self.address.pw
 
-    # def UpdateXYwidget(self):
-    #     CurrentPointNum = len(self.XYdictForLineEdit)
-    #     NewPointNum = CurrentPointNum + 1
-    #     LabelText = "XY" + str(NewPointNum)
-    #
-    #     self.XYdictForLabel.append(QLabel(LabelText))
-    #     self.XYdictForLineEdit.append(QLineEdit())
-    #
-    #     self.setupVboxColumn1.addWidget(self.XYdictForLabel[-1])
-    #     self.setupVboxColumn2.addWidget(self.XYdictForLineEdit[-1])
-    #     self.XYdictForLineEdit[-1].setReadOnly(True)
 
 class nine_key_calculator(QWidget):
     send_expression_signal = pyqtSignal(str, str, dict)
@@ -1474,3 +1467,33 @@ class nine_key_calculator(QWidget):
 
     def closeEvent(self, QCloseEvent):
         del self.address.cal
+
+class CVariableWindow(QListWidget):
+    request_ast_signal = pyqtSignal()
+    send_selected_variable_ast_signal = pyqtSignal(str)
+
+    def __init__(self):
+        super(CVariableWindow, self).__init__()
+        self.initUI()
+        self.variable_name_list = []
+        self.tmp_ast_id = None
+        self.variable_ast_id_dict = dict()
+        # self.currentRowChanged.connect()
+
+    def initUI(self):
+        pass
+
+    def create_variable(self, name):
+        self.request_ast_signal.emit()
+        if self.tmp_ast_id:
+            self.variable_ast_id_dict[name] = self.tmp_ast_id
+            self.variable_name_list.append(name)
+            self.addItem(name)
+
+    def load_ast_id(self, ast_id):
+        self.tmp_ast_id = ast_id
+
+    def load_variables(self, info_dict:dict):
+        if 'variables' in info_dict:
+            map(lambda name: self.addItem(name), info_dict['variables'])
+
