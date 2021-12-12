@@ -1019,6 +1019,7 @@ class ExpressionCalculator(QWidget):
         if 'vw' not in self.__dict__:
             self.vw = CVariableWindow()
             self.vw.request_ast_signal.connect(lambda: self.export_clicked('variable'))
+            self.vw.send_selected_variable_ast_signal.connect(self.presetClicked)
             self.vw.show()
         else:
             self.vw.show()
@@ -1037,6 +1038,7 @@ class ExpressionCalculator(QWidget):
     def variable_show_clicked(self):
         if 'vw' not in self.__dict__:
             self.vw = CVariableWindow()
+            self.vw.send_selected_variable_ast_signal.connect(self.presetClicked)
             self.vw.load_variables(dict())
             self.vw.show()
         else:
@@ -1172,7 +1174,6 @@ class ExpressionCalculator(QWidget):
         elif self.purpose == 'init':
             self.pw.create_row(qt_dc._ast, qt_dc._id)
         elif self.purpose in ['height', 'width']:
-
             pass
 
 class PathWindow(QWidget):
@@ -1474,11 +1475,13 @@ class CVariableWindow(QListWidget):
 
     def __init__(self):
         super(CVariableWindow, self).__init__()
+        self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.initUI()
         self.variable_name_list = []
         self.tmp_ast_id = None
         self.variable_ast_id_dict = dict()
-        # self.currentRowChanged.connect()
+        self.itemClicked.connect(lambda item: self.send_selected_variable_ast_signal.emit(self.variable_ast_id_dict[item.text()]) )
+
 
     def initUI(self):
         pass
