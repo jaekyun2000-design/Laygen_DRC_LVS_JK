@@ -5,6 +5,7 @@ from PyQt5.QtCore import *
 import platform
 
 from PyCodes import variable_ast
+import collections
 import user_setup
 import warnings
 import re
@@ -918,7 +919,7 @@ class ExpressionCalculator(QWidget):
             ExpressionCalculator.presetDict[_id]['Y'] = YList
             ExpressionCalculator.presetDict[_id]['XY'] = XYList
 
-    def export_clicked(self, export_type = False):
+    def export_clicked(self, export_type = False, var_name=None):
         XList = list()
         YList = list()
         XYList = list()
@@ -937,6 +938,9 @@ class ExpressionCalculator(QWidget):
             self.XYWindow.setCurrentRow(i_xy)
             XYList.append(self.XYWindow.currentItem().text())
         output = {'X':XList, 'Y':YList, 'XY':XYList}
+
+        if export_type == False and 'vw' in self.__dict__:
+            output['variables'] = self.vw.export_variables()
 
         """
         Export를 클릭해서 넘어온 경우에는 단일 좌표 생성 혹은 Logic Expression 생성이다.
@@ -987,6 +991,7 @@ class ExpressionCalculator(QWidget):
             elif export_type == 'variable':
                 self.variable_purpose = True
                 tmp_ast = variable_ast.CustomVariable()
+                tmp_ast.name = var_name
                 tmp_ast.info_dict = output
                 self.send_variable_wo_post_ast.emit(tmp_ast)
             else:
@@ -1018,7 +1023,7 @@ class ExpressionCalculator(QWidget):
     def variable_save_clicked(self):
         if 'vw' not in self.__dict__:
             self.vw = CVariableWindow()
-            self.vw.request_ast_signal.connect(lambda: self.export_clicked('variable'))
+            self.vw.request_ast_signal.connect(lambda name: self.export_clicked('variable', name))
             self.vw.send_selected_variable_ast_signal.connect(self.presetClicked)
             self.vw.show()
         else:
@@ -1170,7 +1175,7 @@ class ExpressionCalculator(QWidget):
         '''
         if self.variable_purpose:
             self.variable_purpose = False
-            self.vw.load_ast_id(qt_dc._id)
+            self.vw.load_ast(qt_dc._ast)
         elif self.purpose == 'init':
             self.pw.create_row(qt_dc._ast, qt_dc._id)
         elif self.purpose in ['height', 'width']:
@@ -1470,7 +1475,7 @@ class nine_key_calculator(QWidget):
         del self.address.cal
 
 class CVariableWindow(QListWidget):
-    request_ast_signal = pyqtSignal()
+    request_ast_signal = pyqtSignal(str)
     send_selected_variable_ast_signal = pyqtSignal(str)
 
     def __init__(self):
@@ -1479,24 +1484,38 @@ class CVariableWindow(QListWidget):
         self.initUI()
         self.variable_name_list = []
         self.tmp_ast_id = None
+        self.tmp_ast = None
         self.variable_ast_id_dict = dict()
-        self.itemClicked.connect(lambda item: self.send_selected_variable_ast_signal.emit(self.variable_ast_id_dict[item.text()]) )
+        self.variable_ast_dict = collections.OrderedDict()
+        self.itemDoubleClicked.connect(lambda item: self.send_selected_variable_ast_signal.emit(self.variable_ast_id_dict[item.text()]) )
 
 
     def initUI(self):
         pass
 
     def create_variable(self, name):
-        self.request_ast_signal.emit()
+        self.request_ast_signal.emit(name)
         if self.tmp_ast_id:
             self.variable_ast_id_dict[name] = self.tmp_ast_id
+            self.variable_ast_dict[name] = self.tmp_ast
             self.variable_name_list.append(name)
             self.addItem(name)
 
-    def load_ast_id(self, ast_id):
-        self.tmp_ast_id = ast_id
+    def load_ast(self, _ast):
+        self.tmp_ast_id = _ast._id
+        self.tmp_ast = _ast
 
     def load_variables(self, info_dict:dict):
         if 'variables' in info_dict:
             map(lambda name: self.addItem(name), info_dict['variables'])
 
+    def export_variables(self):
+        output_list = [_ast for _ast in self.variable_ast_dict.values()]
+        self.clear()
+        return output_list
+
+    def clear(self):
+        super(CVariableWindow, self).clear()
+        self.variable_name_list = []
+        self.tmp_ast_id = None
+        self.variable_ast_id_dict = dict()
