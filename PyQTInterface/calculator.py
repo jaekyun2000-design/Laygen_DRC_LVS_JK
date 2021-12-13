@@ -1542,11 +1542,11 @@ class CVariableWindow(QListWidget):
         self.tmp_ast = _ast
 
     def load_variables(self, info_dict:dict):
-        print('load!')
         if 'variables' in info_dict:
             self.addItems([var_ast.name for var_ast in info_dict['variables']])
-            # map(lambda var_ast: self.addItem(var_ast.name), info_dict['variables'])
-            print(info_dict['variables'])
+            for var_ast in info_dict['variables']:
+                self.variable_ast_id_dict[var_ast.name] = var_ast._id
+                self.variable_ast_dict[var_ast.name] = var_ast
 
     def export_variables(self):
         output_list = [_ast for _ast in self.variable_ast_dict.values()]
