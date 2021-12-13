@@ -163,6 +163,11 @@ class IrregularTransformer(ast.NodeTransformer):
         # self._id_to_data_dict = _id_to_data_dict
 
     def visit_XYCoordinate(self, node):
+        variable_strings = None
+        if 'variables' in node.info_dict:
+            variable_tf_asts = [self.visit_CustomVariable(var_ast) for var_ast in node.info_dict['variables']]
+            variable_strings = '\n'.join([astunparse.unparse(tf_ast).replace('\n','') for tf_ast in variable_tf_asts])
+
         x_list = []
         y_list = []
         xy_list = []
@@ -188,8 +193,9 @@ class IrregularTransformer(ast.NodeTransformer):
         final_y_string = f'{y_string} + {xy_y_string}' if xy_y_string else y_string
 
         if final_x_string and final_y_string:
-            final_string = f"[[{final_x_string}, {final_y_string}]]"
-            final_ast = ast.parse(final_string).body[0]
+            final_string = f"{variable_strings}\n[[{final_x_string}, {final_y_string}]]" if variable_strings\
+                      else f"[[{final_x_string}, {final_y_string}]]"
+            final_ast = ast.parse(final_string).body
             return final_ast
         else:
             raise Exception("Not Enough XY coordinates information!")
@@ -319,6 +325,19 @@ class IrregularTransformer(ast.NodeTransformer):
         final_ast = ast.parse(final_sentence).body
         return final_ast
 
+    def visit_CustomVariable(self, node):
+        if node.info_dict['XY'] or (node.info_dict['X'] and node.info_dict['Y']):
+            tmp_xy_ast = XYCoordinate()
+            tmp_xy_ast.info_dict = node.info_dict
+            expression = ast.unparse(self.visit_XYCoordinate(tmp_xy_ast)).replace('\n','')
+        else:
+            tmp_exp_ast = LogicExpression()
+            tmp_exp_ast.info_dict = node.info_dict
+            expression = ast.unparse(self.visit_LogicExpression(tmp_exp_ast)).replace('\n', '')
+        final_sentence = f"{node.name} = {expression}"
+        final_ast = ast.parse(final_sentence).body[0]
+        return final_ast
+
     def visit_PathXYLegacy(self, node):
         if type(node.id) == list:
             _id = node.id[0]
@@ -338,13 +357,23 @@ class IrregularTransformer(ast.NodeTransformer):
         return tmp.body
 
     def visit_LogicExpression(self, node):
+        variable_strings = None
+        if 'variables' in node.info_dict:
+            variable_tf_asts = [self.visit_CustomVariable(var_ast) for var_ast in node.info_dict['variables']]
+            variable_strings = '\n'.join([astunparse.unparse(tf_ast).replace('\n','') for tf_ast in variable_tf_asts])
+
         expression_list = []
         for xy_flag, elements in node.info_dict.items():
+            if xy_flag not in ['X', 'Y']:
+                continue
             if not elements:
                 continue
             tf = CustomFunctionTransformer(xy_flag)
             expression_list.extend([tf.visit(ast.parse(element).body[0]) for element in elements])
+
         final_string = "+".join([astunparse.unparse(exp_ast).replace("\n","") for exp_ast in expression_list])
+        if variable_strings:
+            final_string = f'{variable_strings}\n{final_string}'
         final_ast = ast.parse(final_string).body
         return final_ast
 
