@@ -392,6 +392,21 @@ class ExpressionCalculator(QWidget):
                 display += text
             self.display.setText(display)
 
+    def variable_clicked(self, variable_name):
+
+        if self.value_flag:
+            self.equationList[-1] = variable_name
+        else:
+            self.equationList.append(variable_name)
+        self.value_flag = True
+        self.arithmetic_flag = False
+        self.digit_flag = False
+        self.left_parenthesis_flag = False
+        self.right_parenthesis_flag = False
+
+        display = ''.join(self.equationList)
+        self.display.setText(display)
+
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Delete:
             for itemX in self.XWindow.selectedItems():
@@ -1022,10 +1037,11 @@ class ExpressionCalculator(QWidget):
 
     def variable_save_clicked(self):
         if 'vw' not in self.__dict__:
-            self.vw = CVariableWindow()
-            self.vw.request_ast_signal.connect(lambda name: self.export_clicked('variable', name))
-            self.vw.send_selected_variable_ast_signal.connect(self.presetClicked)
-            self.vw.show()
+            # self.vw = CVariableWindow()
+            # self.vw.request_ast_signal.connect(lambda name: self.export_clicked('variable', name))
+            # self.vw.send_selected_variable_ast_signal.connect(self.presetClicked)
+            # self.vw.show()
+            self.initialize_variable_window()
         else:
             self.vw.show()
         self.name_input_widget = QWidget()
@@ -1042,13 +1058,21 @@ class ExpressionCalculator(QWidget):
 
     def variable_show_clicked(self):
         if 'vw' not in self.__dict__:
-            self.vw = CVariableWindow()
-            self.vw.send_selected_variable_ast_signal.connect(self.presetClicked)
-            self.vw.load_variables(dict())
-            self.vw.show()
+            # self.vw = CVariableWindow()
+            # self.vw.send_selected_variable_ast_signal.connect(self.presetClicked)
+            # self.vw.load_variables(dict())
+            # self.vw.show()
+            self.initialize_variable_window()
         else:
             self.vw.show()
 
+    def initialize_variable_window(self):
+        self.vw = CVariableWindow()
+        self.vw.send_selected_variable_ast_signal.connect(self.presetClicked)
+        self.vw.send_selected_variable_name_signal.connect(self.variable_clicked)
+        self.vw.request_ast_signal.connect(lambda name: self.export_clicked('variable', name))
+        self.vw.load_variables(dict())
+        self.vw.show()
 
 
     def getPathInfo(self, idDict):
@@ -1477,6 +1501,7 @@ class nine_key_calculator(QWidget):
 class CVariableWindow(QListWidget):
     request_ast_signal = pyqtSignal(str)
     send_selected_variable_ast_signal = pyqtSignal(str)
+    send_selected_variable_name_signal = pyqtSignal(str)
 
     def __init__(self):
         super(CVariableWindow, self).__init__()
@@ -1488,6 +1513,7 @@ class CVariableWindow(QListWidget):
         self.variable_ast_id_dict = dict()
         self.variable_ast_dict = collections.OrderedDict()
         self.itemDoubleClicked.connect(lambda item: self.send_selected_variable_ast_signal.emit(self.variable_ast_id_dict[item.text()]) )
+        self.itemClicked.connect(lambda item: self.send_selected_variable_name_signal.emit(item.text()) )
 
 
     def initUI(self):
