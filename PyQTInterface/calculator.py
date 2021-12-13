@@ -1071,7 +1071,7 @@ class ExpressionCalculator(QWidget):
         self.vw.send_selected_variable_ast_signal.connect(self.presetClicked)
         self.vw.send_selected_variable_name_signal.connect(self.variable_clicked)
         self.vw.request_ast_signal.connect(lambda name: self.export_clicked('variable', name))
-        self.vw.load_variables(dict())
+        # self.vw.load_variables(dict())
         self.vw.show()
 
 
@@ -1135,6 +1135,16 @@ class ExpressionCalculator(QWidget):
                 XYList = ExpressionCalculator.presetDict[_id]['XY']
             else:
                 XYList = []
+
+            if 'variables' in ExpressionCalculator.presetDict[_id]:
+                if 'vw' in self.__dict__:
+                    self.vw.clear()
+                    self.vw.load_variables(ExpressionCalculator.presetDict[_id])
+                else:
+                    self.initialize_variable_window()
+                    self.vw.hide()
+                    self.vw.load_variables(ExpressionCalculator.presetDict[_id])
+
 
             self.XWindow.clear()
             self.YWindow.clear()
@@ -1532,8 +1542,11 @@ class CVariableWindow(QListWidget):
         self.tmp_ast = _ast
 
     def load_variables(self, info_dict:dict):
+        print('load!')
         if 'variables' in info_dict:
-            map(lambda name: self.addItem(name), info_dict['variables'])
+            self.addItems([var_ast.name for var_ast in info_dict['variables']])
+            # map(lambda var_ast: self.addItem(var_ast.name), info_dict['variables'])
+            print(info_dict['variables'])
 
     def export_variables(self):
         output_list = [_ast for _ast in self.variable_ast_dict.values()]
