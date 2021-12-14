@@ -591,6 +591,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_RequestElementManger_signal.connect(self.convey_element_manager)
         self.dockContentWidget3_2.send_DataChanged_signal.connect(self.constraint_data_changed)
         self.dockContentWidget3_2.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
+        self.dockContentWidget3_2.request_sref_redefine_signal.connect(self.design_delegator.create_qt_constraint)
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3_2.get_dp_highlight_dc)
 
         self.sendRightButton.clicked.connect(self.dockContentWidget3.checkSend)
@@ -606,6 +607,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3.send_RequestElementManger_signal.connect(self.convey_element_manager)
         self.dockContentWidget3.send_DataChanged_signal.connect(self.constraint_data_changed)
         self.dockContentWidget3.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
+        self.dockContentWidget3.request_sref_redefine_signal.connect(self.design_delegator.create_qt_constraint)
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3.get_dp_highlight_dc)
 
         self.sendLeftButton.clicked.connect(self.dockContentWidget3.clearSelection)
@@ -895,6 +897,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_RequestElementManger_signal.connect(self.convey_element_manager)
         self.dockContentWidget3_2.send_DataChanged_signal.connect(self.constraint_data_changed)
         self.dockContentWidget3_2.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
+        self.dockContentWidget3_2.request_sref_redefine_signal.connect(self.design_delegator.create_qt_constraint)
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3_2.get_dp_highlight_dc)
 
         self.sendRightButton.clicked.connect(self.dockContentWidget3.checkSend)
@@ -910,6 +913,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3.send_RequestElementManger_signal.connect(self.convey_element_manager)
         self.dockContentWidget3.send_DataChanged_signal.connect(self.constraint_data_changed)
         self.dockContentWidget3.send_SendID_signal_highlight.connect(self.get_dc_highlight_dp)
+        self.dockContentWidget3.request_sref_redefine_signal.connect(self.design_delegator.create_qt_constraint)
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3.get_dp_highlight_dc)
 
         self.sendLeftButton.clicked.connect(self.dockContentWidget3.clearSelection)

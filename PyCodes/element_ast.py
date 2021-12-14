@@ -29,6 +29,14 @@ class ElementNode(ast.AST):
     _fields = (
     )
 
+class RedefineElement(ast.AST):
+    def __init__(self, *args, **kwargs):
+        pass
+
+    _fields = (
+    )
+
+
 class Boundary(ElementNode):
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -62,11 +70,24 @@ class Path(ElementNode):
 class Sref(ElementNode):
     def __init__(self, *args, **kwargs):
         super().__init__()
-    parameter_fields = []
+        self.parameter_fields = []
     _fields = (
         'name',     # name str
         'library',   # library module str
         'className',    # class name str
+        'XY',       # double list or str
+        'calculate_fcn',
+        'parameters'
+    )
+
+
+class SrefR(RedefineElement):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+        self.parameters = dict()
+        self.parameter_fields = []
+    _fields = (
+        'name',     # name str
         'XY',       # double list or str
         'calculate_fcn',
         'parameters'
@@ -343,6 +364,51 @@ class ElementTransformer(ast.NodeTransformer):
 
         tmp = ast.parse(sentence)
         return tmp.body
+
+
+    def visit_SrefR(self,node):
+        sentences = []
+        parm_values = list(filter(lambda val: val is not None, node.parameters.values()))
+        if parm_values:
+            copy_parameter = copy.deepcopy(node.parameters)
+            if list(filter(lambda x: isinstance(x, ast.AST), list(copy_parameter.values()))):
+                parameter_sentence = ''
+                for key, value in copy_parameter.items():
+                    if isinstance(value, ast.AST):
+                        tf_ast = run_transformer(value)
+                        new_string = astunparse.unparse(tf_ast)
+                        parameter_sentence += f'{key} = {new_string},'
+                    else:
+                        parameter_sentence += f'{key} = {value},'
+            else:
+                parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
+            sentence = f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
+            sentences.append(sentence)
+        if node.XY:
+            syntax = self.xy_syntax_checker(node)
+            if syntax == 'ast':
+                syntax = ''
+            field = 'XY'
+            if node.__dict__[field] == '' or node.__dict__[field] == None:
+                raise Exception(f"Not valid {field} value : {node.__dict__[field]}")
+            if isinstance(node.__dict__[field], ast.AST):
+                tmp_ast = run_transformer(node.__dict__[field])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
+            elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
+                tmp_ast = run_transformer(node.__dict__[field][0])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
+
+            if syntax == 'list':
+                tmp_xy = str(node.XY).replace("'", "")
+                sentences.append(f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {tmp_xy}")
+            elif syntax == 'string':  # need to check
+                tmp_xy = str(node.XY).replace("'", "")
+                sentences.append(f"self._DesignParameter['{node.name}']['_XYCoordinates'] = [[{tmp_xy}]]")
+            else:
+                sentences.append(f"self._DesignParameter['{node.name}']['_XYCoordinates'] = {node.XY}")
+        final_sentence = '\n'.join(sentences)
+        return ast.parse(final_sentence).body
+
 
     def visit_Text(self, node):
 

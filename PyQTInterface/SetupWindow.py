@@ -3037,6 +3037,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_dummy_ast_id_for_xy_signal = pyqtSignal(str)
     send_dummy_ast_id_for_array_signal = pyqtSignal(str)
     send_dummy_ast_id_for_condition_signal = pyqtSignal(str)
+    request_sref_redefine_signal = pyqtSignal("PyQt_PyObject")
 
 
     originalKeyPress = QTreeView.keyPressEvent
@@ -3086,7 +3087,11 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
         self.context_menu_for_condition = QMenu(self)
         self.context_menu_for_condition.addActions([browse_expression_action])
+        browse_expression_action.triggered.connect(self.browse_expression)
 
+        self.context_menu_for_sref = QMenu(self)
+        browse_expression_action = QAction("Create redefine expression", self.context_menu_for_sref)
+        self.context_menu_for_sref.addActions([browse_expression_action])
 
         add_blank_row_action.triggered.connect(self.append_row)
         add_blank_row_dict_action.triggered.connect(self.append_row)
@@ -3807,6 +3812,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                     self.context_menu_for_array.exec_(self.viewport().mapToGlobal(point))
                 elif type_item.text() == "ConditionSTMTlist":
                     self.context_menu_for_condition.exec_(self.viewport().mapToGlobal(point))
+                elif type_item.text() == "Sref":
+                    self.context_menu_for_sref.exec_(self.viewport().mapToGlobal(point))
                 # elif "str" in type_item.text():
                 #     if idx.parent():
                 #         parent_type_item = self.model.itemFromIndex(idx.parent().siblingAtColumn(2))
@@ -3834,6 +3841,18 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             self.send_dummy_ast_id_for_array_signal.emit(current_item.text())
         elif type_name == "ConditionSTMTlist":
             self.send_dummy_ast_id_for_condition_signal.emit(current_item.text())
+        elif type_name == 'Sref':
+            # self.request_sref_redefine_signal.emit(current_item.text())
+            org_ast = self._DesignConstraintFromQTobj[self._CurrentModuleName][current_item.text()]._ast
+            redef_ast = element_ast.SrefR()
+            redef_ast.name = org_ast.name
+            redef_ast.calculate_fcn = org_ast.calculate_fcn
+            redef_ast.parameter_fields.extend(org_ast.parameter_fields)
+            for parm_name in org_ast.parameters:
+                redef_ast.parameters[parm_name] = None
+            self.request_sref_redefine_signal.emit(redef_ast)
+
+
         # if current_item.text() != None:
         #     self.send_dummy_ast_id_for_xy_signal.emit(current_item.text())
         # else:
