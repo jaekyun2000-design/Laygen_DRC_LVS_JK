@@ -337,6 +337,7 @@ class IrregularTransformer(ast.NodeTransformer):
             tmp_exp_ast = LogicExpression()
             tmp_exp_ast.info_dict = node.info_dict
             expression = ast.unparse(self.visit_LogicExpression(tmp_exp_ast)).replace('\n', '')
+        expression = f"({expression})"
         final_sentence = f"{node.name} = {expression}" if standalone_usage else expression
         final_ast = ast.parse(final_sentence).body[0]
         return final_ast
@@ -1299,7 +1300,7 @@ class CustomVariableSubstitution(ast.NodeTransformer):
     def visit_Name(self, node):
         if node.id in self.custom_variable_ast_dict:
             subs_name = copy.deepcopy(node)
-            subs_name.id = ast.unparse(self.custom_variable_ast_dict[node.id])
+            subs_name.id = f'({ast.unparse(self.custom_variable_ast_dict[node.id])})'
             # return self.custom_variable_ast_dict[node.id]
             return subs_name
         else:
