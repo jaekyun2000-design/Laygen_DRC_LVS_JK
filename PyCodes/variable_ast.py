@@ -1189,7 +1189,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
 
         output_x = f"{base_xy_string_tuple[0]} + {base_element_string}['_XWidth']/2"
-        output_y = f"{base_xy_string_tuple[0]} - {base_element_string}['_YWidth']/2"
+        output_y = f"{base_xy_string_tuple[1]} - {base_element_string}['_YWidth']/2"
 
         if self.flag == 'X':
             return output_x
@@ -1204,7 +1204,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
 
         output_x = f"{base_xy_string_tuple[0]} + {base_element_string}['_XWidth']/2"
-        output_y = f"{base_xy_string_tuple[0]} + {base_element_string}['_YWidth']/2"
+        output_y = f"{base_xy_string_tuple[1]} + {base_element_string}['_YWidth']/2"
 
         if self.flag == 'X':
             return output_x
@@ -1221,7 +1221,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
 
         output_x = f"{base_xy_string_tuple[0]} - {base_element_string}['_XWidth']/2"
-        output_y = f"{base_xy_string_tuple[0]}"
+        output_y = f"{base_xy_string_tuple[1]}"
 
         if self.flag == 'X':
             return output_x
@@ -1237,7 +1237,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
 
         output_x = f"{base_xy_string_tuple[0]} - {base_element_string}['_XWidth']/2"
-        output_y = f"{base_xy_string_tuple[0]} + {base_element_string}['_YWidth']/2"
+        output_y = f"{base_xy_string_tuple[1]} + {base_element_string}['_YWidth']/2"
 
         if self.flag == 'X':
             return output_x
@@ -1253,7 +1253,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
 
         output_x = f"{base_xy_string_tuple[0]} - {base_element_string}['_XWidth']/2"
-        output_y = f"{base_xy_string_tuple[0]} - {base_element_string}['_YWidth']/2"
+        output_y = f"{base_xy_string_tuple[1]} - {base_element_string}['_YWidth']/2"
 
         if self.flag == 'X':
             return output_x
