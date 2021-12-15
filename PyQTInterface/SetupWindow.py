@@ -4310,12 +4310,20 @@ class _ConstraintModel(QStandardItemModel):
                     tmpD = QStandardItem(str(_AST.__dict__[key][childAST]))
                     if isinstance(_AST.__dict__[key][childAST], ast.AST):
                         tmpB = QStandardItem(_AST.__dict__[key][childAST]._id)
+                        try:
+                            tmpC = QStandardItem(_AST.__dict__[key][childAST]._type)
+                        except:
+                            tmpC = QStandardItem(str(type(_AST.__dict__[key][childAST])))
+                        tmpD = QStandardItem('*')
+
                 elif type(_AST.__dict__[key]) == list:
                     tmpD = QStandardItem()
+                    tmpC = QStandardItem()
                 else:
+                    tmpC = QStandardItem()
                     tmpD = QStandardItem()
                     # tmpD = QStandardItem(str(_AST.__dict__[key][]))
-                motherItem.appendRow([tmpA, tmpB, QStandardItem(), tmpD])
+                motherItem.appendRow([tmpA, tmpB, tmpC, tmpD])
             else:
                 childASTid = childAST._id
                 _type = childAST._type
