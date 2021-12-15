@@ -163,16 +163,20 @@ class IrregularTransformer(ast.NodeTransformer):
         # self._id_to_data_dict = _id_to_data_dict
 
     def visit_XYCoordinate(self, node):
-        variable_strings = None
         if 'variables' in node.info_dict:
-            variable_tf_asts = [self.visit_CustomVariable(var_ast) for var_ast in node.info_dict['variables']]
-            variable_strings = '\n'.join([astunparse.unparse(tf_ast).replace('\n','') for tf_ast in variable_tf_asts])
+            var_subs = CustomVariableSubstitution()
+            var_subs.load_custom_variables(node.info_dict['variables'])
 
         x_list = []
         y_list = []
         xy_list = []
         for xy_flag, elements in node.info_dict.items():
+            if xy_flag == 'variables':
+                continue
             tf =CustomFunctionTransformer(xy_flag)
+            if 'variables' in node.info_dict:
+                elements = [astunparse.unparse(var_subs.visit(ast.parse(element).body[0])) for element in elements]
+
             if xy_flag == 'X':
                 x_list.extend([tf.visit(ast.parse(element).body[0]) for element in elements])
             elif xy_flag == 'Y':
@@ -193,8 +197,7 @@ class IrregularTransformer(ast.NodeTransformer):
         final_y_string = f'{y_string} + {xy_y_string}' if xy_y_string else y_string
 
         if final_x_string and final_y_string:
-            final_string = f"{variable_strings}\n[[{final_x_string}, {final_y_string}]]" if variable_strings\
-                      else f"[[{final_x_string}, {final_y_string}]]"
+            final_string = f"[[{final_x_string}, {final_y_string}]]"
             final_ast = ast.parse(final_string).body
             return final_ast
         else:
@@ -325,7 +328,7 @@ class IrregularTransformer(ast.NodeTransformer):
         final_ast = ast.parse(final_sentence).body
         return final_ast
 
-    def visit_CustomVariable(self, node):
+    def visit_CustomVariable(self, node, standalone_usage=True):
         if node.info_dict['XY'] or (node.info_dict['X'] and node.info_dict['Y']):
             tmp_xy_ast = XYCoordinate()
             tmp_xy_ast.info_dict = node.info_dict
@@ -334,7 +337,7 @@ class IrregularTransformer(ast.NodeTransformer):
             tmp_exp_ast = LogicExpression()
             tmp_exp_ast.info_dict = node.info_dict
             expression = ast.unparse(self.visit_LogicExpression(tmp_exp_ast)).replace('\n', '')
-        final_sentence = f"{node.name} = {expression}"
+        final_sentence = f"{node.name} = {expression}" if standalone_usage else expression
         final_ast = ast.parse(final_sentence).body[0]
         return final_ast
 
@@ -357,10 +360,9 @@ class IrregularTransformer(ast.NodeTransformer):
         return tmp.body
 
     def visit_LogicExpression(self, node):
-        variable_strings = None
         if 'variables' in node.info_dict:
-            variable_tf_asts = [self.visit_CustomVariable(var_ast) for var_ast in node.info_dict['variables']]
-            variable_strings = '\n'.join([astunparse.unparse(tf_ast).replace('\n','') for tf_ast in variable_tf_asts])
+            var_subs = CustomVariableSubstitution()
+            var_subs.load_custom_variables(node.info_dict['variables'])
 
         expression_list = []
         for xy_flag, elements in node.info_dict.items():
@@ -369,11 +371,12 @@ class IrregularTransformer(ast.NodeTransformer):
             if not elements:
                 continue
             tf = CustomFunctionTransformer(xy_flag)
-            expression_list.extend([tf.visit(ast.parse(element).body[0]) for element in elements])
+            if 'variables' not in node.info_dict:
+                expression_list.extend([tf.visit(ast.parse(element).body[0]) for element in elements])
+            else:
+                expression_list.extend([tf.visit(var_subs.visit(ast.parse(element).body[0])) for element in elements])
 
         final_string = "+".join([astunparse.unparse(exp_ast).replace("\n","") for exp_ast in expression_list])
-        if variable_strings:
-            final_string = f'{variable_strings}\n{final_string}'
         final_ast = ast.parse(final_string).body
         return final_ast
 
@@ -1279,8 +1282,35 @@ class CustomFunctionTransformer(ast.NodeTransformer):
 
 
 
+class CustomVariableSubstitution(ast.NodeTransformer):
+    def __init__(self):
+        super(CustomVariableSubstitution, self).__init__()
+        self.custom_variable_ast_dict = dict()
 
 
+    def load_custom_variables(self, custom_variables:list):
+        for variable_ast in custom_variables:
+            print(astunparse.unparse(IrregularTransformer().visit_CustomVariable(variable_ast, False)))
+            tf_ast = self.visit(variable_ast)
+            self.custom_variable_ast_dict[variable_ast.name] = tf_ast
+            print(astunparse.unparse(tf_ast))
+
+
+    def visit_Name(self, node):
+        if node.id in self.custom_variable_ast_dict:
+            subs_name = copy.deepcopy(node)
+            subs_name.id = ast.unparse(self.custom_variable_ast_dict[node.id])
+            # return self.custom_variable_ast_dict[node.id]
+            return subs_name
+        else:
+            return node
+
+
+    def visit_CustomVariable(self, node):
+        tf = IrregularTransformer()
+        cv_tf_ast = tf.visit_CustomVariable(node, False)
+        name_tf_ast = self.visit(cv_tf_ast)
+        return self.visit(name_tf_ast)
 
 
 class VariableTransformer(ast.NodeTransformer):
