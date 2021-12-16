@@ -748,6 +748,9 @@ class _MainWindow(QMainWindow):
             if 'library' in single_module._ast.__dict__:
                 module_lib = single_module._ast.__dict__['library']
                 library_list.append(module_lib)
+            elif 'info_dict' in single_module._ast.__dict__ and 'sref_item_dict' in single_module._ast.info_dict and single_module._ast.info_dict['sref_item_dict']:
+                library_list.append(single_module._ast.info_dict['sref_item_dict']['library'])
+
         library_list = list(set(library_list))
         cal_code = self.encodeConstraint()
         cal_code = f"\ndrc = DRC.DRC()\n" \
