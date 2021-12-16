@@ -1355,7 +1355,7 @@ class nine_key_calculator(QWidget):
         self.purpose = purpose
         self.address = address
         self.display= QTextEdit('')
-        self.display.setReadOnly(True)
+        # self.display.setReadOnly(True)
         self.display.setAlignment(Qt.AlignRight|Qt.AlignTop)
         self.display.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
         self.display.setFixedHeight(50)

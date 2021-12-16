@@ -305,17 +305,18 @@ class VariableSetupWindow(QWidget):
 
         if self.inspect_array_window_address is not None:
             self.inspect_array_window_address.close()
-        self.destroy()
+        self.close()
 
     def cancel_button_accepted(self):
-        self.destroy()
+        # self.deleteLater()
+        self.close()
 
     def keyPressEvent(self, QKeyEvent):
         if QKeyEvent.key() == Qt.Key_Return:
             self.on_buttonBox_accepted()
             self.send_Destroy_signal.emit('cw')
         elif QKeyEvent.key() == Qt.Key_Escape:
-            self.destroy()
+            self.close()
             self.send_Destroy_signal.emit('cw')
         elif QKeyEvent.key() == Qt.Key_Delete:
             for item in self.deleteItemList.selectedItems():
@@ -1121,10 +1122,10 @@ class _createNewDesignVariable(QWidget):
         else:
             self.addDVtodict(self.name.text(), type='value', value=self.value.text())
             self.send_variable_signal.emit([self.name.text(), self.value.text()], self.add)
-            self.destroy()
+            self.close()
 
     def cancel_clicked(self):
-        self.destroy()
+        self.close()
 
     def addDVtodict(self, DV, type, value):
         vid_list = list(self.variableDict.keys())
@@ -1241,7 +1242,7 @@ class _editDesignVariable(QWidget):
 
             self.send_id_in_edited_variable_signal.emit(self.DV, self.name.text(), self.idDict[self.name.text()]['id'])
 
-            self.destroy()
+            self.close()
 
     def cancel_clicked(self):
-        self.destroy()
+        self.close()
