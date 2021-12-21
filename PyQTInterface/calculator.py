@@ -954,7 +954,7 @@ class ExpressionCalculator(QWidget):
             XYList.append(self.XYWindow.currentItem().text())
         output = {'X':XList, 'Y':YList, 'XY':XYList}
 
-        if export_type == False and 'vw' in self.__dict__:
+        if export_type in [False, "PathXY_row"] and 'vw' in self.__dict__:
             output['variables'] = self.vw.export_variables()
 
         """
