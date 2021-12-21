@@ -3692,6 +3692,32 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 id = selectedItem.text()  # Constraint ID of corresponding item
                 if id != "":
                     self.send_deleteConstraint_signal.emit(id)
+                    parent_item = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
+                    parent_id = parent_item.text()
+                    ##### sref parameter case... maybe... i dont want to think ...
+                    if parent_id == "":
+                        grandparent_item = self.model.itemFromIndex(
+                            self.currentIndex().parent().parent().siblingAtColumn(1))
+                        grandparent_id = grandparent_item.text()
+                        module = self._CurrentModuleName
+                        field_item = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(0))
+                        field = field_item.text()
+                        current_item = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0))
+                        key_value = current_item.text()
+                        if key_value != '':  # dictionary case
+                            del self._DesignConstraintFromQTobj[module][grandparent_id]._ast.__dict__[field][key_value]
+                        else:
+                            row = current_item.row()
+                            type = self._DesignConstraintFromQTobj[module][grandparent_id]._ast._type
+                            if field == 'XY' and type == 'Path':
+                                if row == len(
+                                        self._DesignConstraintFromQTobj[module][grandparent_id]._ast.__dict__[field][
+                                            0]) - 1:
+                                    del self._DesignConstraintFromQTobj[module][grandparent_id]._ast.__dict__[field][0][
+                                        row]
+                            else:
+                                del self._DesignConstraintFromQTobj[module][grandparent_id]._ast.__dict__[field][row]
+                        self.refreshItem(self.model.indexFromItem(parent_item))
                 else:
                     parent_item = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
                     parent_id = parent_item.text()
