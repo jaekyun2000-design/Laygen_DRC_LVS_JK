@@ -759,6 +759,7 @@ class _MainWindow(QMainWindow):
         import_default_code = "from generatorLib import StickDiagram\n" \
                               "from generatorLib import DesignParameters\n" \
                               "import copy\n" \
+                              "import math\n" \
                               "from generatorLib import DRC\n"
         for libraries in library_list:
             additional_import_code += f"from generatorLib.generator_models import {libraries}\n"
