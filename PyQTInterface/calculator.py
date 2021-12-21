@@ -1537,6 +1537,13 @@ class CVariableWindow(QListWidget):
             self.variable_name_list.append(name)
             self.addItem(name)
 
+    def delete_variable(self, item):
+        del self.variable_ast_id_dict[item.text()]
+        del self.variable_ast_dict[item.text()]
+        # name_idx = self.variable_name_list.index(item.text())
+        # self.variable_name_list.pop(name_idx)
+        self.removeItemWidget(item)
+
     def load_ast(self, _ast):
         self.tmp_ast_id = _ast._id
         self.tmp_ast = _ast
@@ -1558,3 +1565,9 @@ class CVariableWindow(QListWidget):
         self.variable_name_list = []
         self.tmp_ast_id = None
         self.variable_ast_id_dict = dict()
+
+    def keyPressEvent(self, QKeyEvent):
+        if QKeyEvent.key() == Qt.Key_Delete:
+            target_item = self.selectedItems()[0]
+            if target_item:
+                self.delete_variable(target_item)
