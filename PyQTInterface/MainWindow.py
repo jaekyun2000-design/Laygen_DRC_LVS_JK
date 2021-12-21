@@ -3500,6 +3500,9 @@ class _CustomView(QGraphicsView):
         elif QKeyEvent.key() == Qt.Key_Z:
             self.fitInView(QRectF(-650,-345,1300,690))
             # self.centerOn(QPointF(0,0))
+        elif QKeyEvent.key() == Qt.Key_Escape:
+            if not self.parent():
+                self.close()
 
         super().keyPressEvent(QKeyEvent)
 
