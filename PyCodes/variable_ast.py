@@ -1296,6 +1296,18 @@ class CustomFunctionTransformer(ast.NodeTransformer):
 
         return f"{base_element_string}['_Ignore'] = True"
 
+    def transform_do(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+
+        return f"{base_element_string}"
+
+    def transform_XYnum(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+
+        return f"len({base_element_string}['_XYCoordinates'])"
+
 
 class CustomVariableSubstitution(ast.NodeTransformer):
     def __init__(self):
