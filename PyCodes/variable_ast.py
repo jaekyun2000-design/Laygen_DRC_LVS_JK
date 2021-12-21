@@ -1290,6 +1290,12 @@ class CustomFunctionTransformer(ast.NodeTransformer):
 
         return f"{base_element_string}['_Width']"
 
+    def transform_ignore(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+
+        return f"{base_element_string}['_Ignore'] = True"
+
 
 class CustomVariableSubstitution(ast.NodeTransformer):
     def __init__(self):
