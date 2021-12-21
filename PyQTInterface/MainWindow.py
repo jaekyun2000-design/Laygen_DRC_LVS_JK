@@ -1442,7 +1442,7 @@ class _MainWindow(QMainWindow):
             for i in range(len(hierarchy_list)-1):
                 module = module[hierarchy_list[i]]._DesignParameter['_ModelStructure']
             try:
-                if module[hierarchy_list[-1]]._DesignParameter['_Layer']:
+                if '_Layer' in module[hierarchy_list[-1]]._DesignParameter and module[hierarchy_list[-1]]._DesignParameter['_Layer']:
                     _layerCommonName = layernum2name[str(module[hierarchy_list[-1]]._DesignParameter['_Layer'])]
                     self.calculator_window.returnedLayer = _layerCommonName
                 else:
@@ -1451,10 +1451,11 @@ class _MainWindow(QMainWindow):
                 self.warningbox = QMessageBox()
                 self.warningbox.setText(f"Check the layer name. Update your design if not done yet.\n"
                                         f"KeyError: {hierarchy_list[-1]}")
+                traceback.print_exc()
                 self.warningbox.setIcon(QMessageBox.Warning)
                 self.warningbox.show()
-                self.calculator_window.destroy()
-                del self.calculator_window
+                # self.calculator_window.destroy()
+                # del self.calculator_window
                 return
 
 
