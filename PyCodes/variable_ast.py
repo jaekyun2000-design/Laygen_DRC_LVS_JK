@@ -1093,13 +1093,16 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         y = base_string + '[1]'
         return x, y
 
-    def extract_xy_hierarchy_string(self, arg_names, arg_indexes):
+    def extract_xy_hierarchy_string(self, arg_names, arg_indexes, internal=False):
         x_list = [None] * len(arg_names)
         y_list = [None] * len(arg_names)
         for i in range(len(arg_names)):
             xy_info = self.extract_xy_string(arg_names[:i+1], arg_indexes[i])
             x_list[i] = xy_info[0]
             y_list[i] = xy_info[1]
+        if internal:
+            x_list.pop(0)
+            y_list.pop(0)
         return "+".join(x_list), "+".join(y_list)
 
     def parse_args_info(self, args):
@@ -1108,10 +1111,10 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         arg_indexes = list(map(lambda arg: re.findall('\[.*\]', arg)[0], args))
         return arg_names, arg_indexes
 
-    def transform_top(self, node):
+    def transform_top(self, node, internal=False):
         arg_names, arg_indexes = self.parse_args_info(node.args)
         base_element_string = self.translate_base_string(arg_names)
-        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes, internal)
 
         output_x = base_xy_string_tuple[0]
         output_y = base_xy_string_tuple[1] + "+" + base_element_string + f"['_YWidth']/2"
@@ -1123,10 +1126,10 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         else:
             return "[" + ",".join([output_x, output_y]) + "]"
 
-    def transform_bottom(self, node):
+    def transform_bottom(self, node, internal=False):
         arg_names, arg_indexes = self.parse_args_info(node.args)
         base_element_string = self.translate_base_string(arg_names)
-        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes, internal)
 
         output_x = base_xy_string_tuple[0]
         output_y = base_xy_string_tuple[1] + "-" + base_element_string + f"['_YWidth']/2"
@@ -1138,10 +1141,10 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         else:
             return "[" + ",".join([output_x, output_y]) + "]"
 
-    def transform_bot(self, node):
+    def transform_bot(self, node, internal=False):
         arg_names, arg_indexes = self.parse_args_info(node.args)
         base_element_string = self.translate_base_string(arg_names)
-        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes, internal)
 
         output_x = base_xy_string_tuple[0]
         output_y = base_xy_string_tuple[1] + "-" + base_element_string + f"['_YWidth']/2"
@@ -1153,10 +1156,10 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         else:
             return "[" + ",".join([output_x, output_y]) + "]"
 
-    def transform_center(self, node):
+    def transform_center(self, node, internal=False):
         arg_names, arg_indexes = self.parse_args_info(node.args)
         base_element_string = self.translate_base_string(arg_names)
-        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes, internal)
 
         output_x = base_xy_string_tuple[0]
         output_y = base_xy_string_tuple[1]
@@ -1168,10 +1171,10 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         else:
             return "[" + ",".join([output_x, output_y]) + "]"
 
-    def transform_right(self, node):
+    def transform_right(self, node, internal=False):
         arg_names, arg_indexes = self.parse_args_info(node.args)
         base_element_string = self.translate_base_string(arg_names)
-        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes, internal)
 
         output_x = f"{base_xy_string_tuple[0]} + {base_element_string}['_XWidth']/2"
         output_y = base_xy_string_tuple[1]
@@ -1183,10 +1186,10 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         else:
             return "[" + ",".join([output_x, output_y]) + "]"
 
-    def transform_rb(self, node):
+    def transform_rb(self, node, internal=False):
         arg_names, arg_indexes = self.parse_args_info(node.args)
         base_element_string = self.translate_base_string(arg_names)
-        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes, internal)
 
         output_x = f"{base_xy_string_tuple[0]} + {base_element_string}['_XWidth']/2"
         output_y = f"{base_xy_string_tuple[1]} - {base_element_string}['_YWidth']/2"
@@ -1198,10 +1201,10 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         else:
             return "[" + ",".join([output_x, output_y]) + "]"
 
-    def transform_rt(self, node):
+    def transform_rt(self, node, internal=False):
         arg_names, arg_indexes = self.parse_args_info(node.args)
         base_element_string = self.translate_base_string(arg_names)
-        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes, internal)
 
         output_x = f"{base_xy_string_tuple[0]} + {base_element_string}['_XWidth']/2"
         output_y = f"{base_xy_string_tuple[1]} + {base_element_string}['_YWidth']/2"
@@ -1215,10 +1218,10 @@ class CustomFunctionTransformer(ast.NodeTransformer):
 
 
 
-    def transform_left(self, node):
+    def transform_left(self, node, internal=False):
         arg_names, arg_indexes = self.parse_args_info(node.args)
         base_element_string = self.translate_base_string(arg_names)
-        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes, internal)
 
         output_x = f"{base_xy_string_tuple[0]} - {base_element_string}['_XWidth']/2"
         output_y = f"{base_xy_string_tuple[1]}"
@@ -1231,10 +1234,10 @@ class CustomFunctionTransformer(ast.NodeTransformer):
             return "[" + ",".join([output_x, output_y]) + "]"
 
 
-    def transform_lt(self, node):
+    def transform_lt(self, node, internal=False):
         arg_names, arg_indexes = self.parse_args_info(node.args)
         base_element_string = self.translate_base_string(arg_names)
-        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes, internal)
 
         output_x = f"{base_xy_string_tuple[0]} - {base_element_string}['_XWidth']/2"
         output_y = f"{base_xy_string_tuple[1]} + {base_element_string}['_YWidth']/2"
@@ -1247,10 +1250,10 @@ class CustomFunctionTransformer(ast.NodeTransformer):
             return "[" + ",".join([output_x, output_y]) + "]"
 
 
-    def transform_lb(self, node):
+    def transform_lb(self, node, internal=False):
         arg_names, arg_indexes = self.parse_args_info(node.args)
         base_element_string = self.translate_base_string(arg_names)
-        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes, internal)
 
         output_x = f"{base_xy_string_tuple[0]} - {base_element_string}['_XWidth']/2"
         output_y = f"{base_xy_string_tuple[1]} - {base_element_string}['_YWidth']/2"
@@ -1307,6 +1310,15 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         base_element_string = self.translate_base_string(arg_names)
 
         return f"len({base_element_string}['_XYCoordinates'])"
+
+    def transform_internal(self, node):     ##todo...
+        if 'func' in node.args[0].__dict__ and node.args[0].func and 'id' in node.args[0].func.__dict__:
+            method = 'transform_' + node.args[0].func.id
+            if method in dir(self):
+                method = 'transform_' + node.args[0].func.id
+                transformer = getattr(self, method)
+                tf_string = transformer(node.args[0], True)
+                return tf_string
 
 
 class CustomVariableSubstitution(ast.NodeTransformer):
