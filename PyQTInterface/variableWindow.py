@@ -427,7 +427,10 @@ class variableContentWidget(QWidget):
                 elif field_info['input_type_list'][i] == 'combo':
                     row_layout.itemAt(i).itemAt(1).widget().setCurrentText(str(self.field_value_memory_dict[field_name]))
                 elif field_info['input_type_list'][i] == 'list':
-                    row_layout.itemAt(i).itemAt(1).widget().addItem(self.field_value_memory_dict[field_name])
+                    if isinstance(self.field_value_memory_dict[field_name], ast.AST):
+                        row_layout.itemAt(i).itemAt(1).widget().addItem(self.field_value_memory_dict[field_name]._id)
+                    else:
+                        row_layout.itemAt(i).itemAt(1).widget().addItem(self.field_value_memory_dict[field_name])
                     while row_layout.itemAt(i).itemAt(1).widget().count() != 1:
                         row_layout.itemAt(i).itemAt(1).widget().takeItem(0)
                     row_layout.itemAt(i).itemAt(1).widget().setCurrentRow(0)

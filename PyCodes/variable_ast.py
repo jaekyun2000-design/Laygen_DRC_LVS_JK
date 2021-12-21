@@ -1052,7 +1052,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         self.flag = flag
 
     def generic_visit(self, node):
-        if 'func' in node.__dict__ and node.func:
+        if 'func' in node.__dict__ and node.func and 'id' in node.func.__dict__:
             method = 'transform_' + node.func.id
             if method in dir(self):
                 method = 'transform_' + node.func.id
@@ -1281,6 +1281,14 @@ class CustomFunctionTransformer(ast.NodeTransformer):
 
         return f"{base_element_string}['_XWidth']"
 
+    def transform_pwidth(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+
+        if self.flag == 'XY':
+            raise Exception('Height cannot be expressed as XY coordinates.')
+
+        return f"{base_element_string}['_Width']"
 
 
 class CustomVariableSubstitution(ast.NodeTransformer):
