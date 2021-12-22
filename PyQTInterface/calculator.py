@@ -125,7 +125,7 @@ class ExpressionCalculator(QWidget):
         export_button = self.create_button('EXPORT',self.export_clicked, size_constraint=dict(height=35))
         export_path_button = self.create_button('EXPORT FOR PATH',self.export_path_clicked, size_constraint=dict(height=35))
         save_as_variable_button = self.create_button('SAVE VARIABLE',self.variable_save_clicked, size_constraint=dict(height=35))
-        export_as_variable_button = self.create_button('EXPORT VARIABLE',self.export_clicked, size_constraint=dict(height=35))
+        export_as_variable_button = self.create_button('EXPORT VARIABLE',self.export_variable_clicked, size_constraint=dict(height=35))
         view_variable_list = self.create_button('VIEW VARIABLE',self.variable_show_clicked, size_constraint=dict(height=35))
         if self.purpose != 'init':
             export_path_button.setDisabled(True)
@@ -955,7 +955,7 @@ class ExpressionCalculator(QWidget):
         output = {'X':XList, 'Y':YList, 'XY':XYList}
 
         if export_type in [False, "PathXY_row"] and 'vw' in self.__dict__:
-            output['variables'] = self.vw.export_variables()
+            output['variables'], output['variables_id'] = self.vw.export_variables()
 
         """
         Export를 클릭해서 넘어온 경우에는 단일 좌표 생성 혹은 Logic Expression 생성이다.
@@ -1053,6 +1053,18 @@ class ExpressionCalculator(QWidget):
         ok_button.clicked.connect(lambda tmp: self.vw.create_variable(input_widget.text()))
         ok_button.clicked.connect(self.name_input_widget.close)
         form_layout.addRow(' ', ok_button)
+        self.name_input_widget.setLayout(form_layout)
+        self.name_input_widget.show()
+
+    def export_variable_clicked(self):
+        self.name_input_widget = QWidget()
+        input_widget = QLineEdit()
+        form_layout = QFormLayout()
+        form_layout.addRow('variable name', input_widget)
+        ok_button = QPushButton()
+        ok_button.setText('OK')
+        ok_button.clicked.connect(lambda tmp: self.export_clicked('variable', input_widget.text()))
+        ok_button.clicked.connect(self.name_input_widget.close)
         self.name_input_widget.setLayout(form_layout)
         self.name_input_widget.show()
 
@@ -1557,8 +1569,9 @@ class CVariableWindow(QListWidget):
 
     def export_variables(self):
         output_list = [_ast for _ast in self.variable_ast_dict.values()]
+        output_id_list = [_id for _id in self.variable_ast_id_dict.values()]
         self.clear()
-        return output_list
+        return output_list, output_id_list
 
     def clear(self):
         super(CVariableWindow, self).clear()
