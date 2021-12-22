@@ -1004,7 +1004,7 @@ class ExpressionCalculator(QWidget):
                 tmp_ast.info_dict = output
                 self.send_variable_wo_post_ast.emit(tmp_ast)
             elif export_type == 'variable':
-                # self.variable_purpose = True
+                self.variable_purpose = True
                 tmp_ast = variable_ast.CustomVariable()
                 tmp_ast.name = var_name
                 tmp_ast.info_dict = output

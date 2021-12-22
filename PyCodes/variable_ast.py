@@ -151,7 +151,7 @@ class CustomVariable(GeneratorVariable):
     def __init__(self, *args, **kwargs):
         super().__init__()
     _fields = (
-        'name'
+        'name',
     )
 
 
