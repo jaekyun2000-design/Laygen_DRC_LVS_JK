@@ -1746,8 +1746,7 @@ class _MainWindow(QMainWindow):
         try:
             gds2gen = topAPI.gds2generator.GDS2Generator(False)
             gds2gen.load_qt_project(self)
-            gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter, self._CurrentModuleName)
-            # gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
+            # gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter, self._CurrentModuleName)
             if code:
                 gds2gen.load_qt_design_constraints_code(code)
             else:

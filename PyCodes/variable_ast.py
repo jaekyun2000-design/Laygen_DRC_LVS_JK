@@ -1311,7 +1311,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
 
         return f"len({base_element_string}['_XYCoordinates'])"
 
-    def transform_internal(self, node):     ##todo...
+    def transform_internal(self, node):
         if 'func' in node.args[0].__dict__ and node.args[0].func and 'id' in node.args[0].func.__dict__:
             method = 'transform_' + node.args[0].func.id
             if method in dir(self):
