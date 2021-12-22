@@ -1004,11 +1004,16 @@ class ExpressionCalculator(QWidget):
                 tmp_ast.info_dict = output
                 self.send_variable_wo_post_ast.emit(tmp_ast)
             elif export_type == 'variable':
-                self.variable_purpose = True
+                # self.variable_purpose = True
                 tmp_ast = variable_ast.CustomVariable()
                 tmp_ast.name = var_name
                 tmp_ast.info_dict = output
                 self.send_variable_wo_post_ast.emit(tmp_ast)
+            elif export_type == 'variable_post':
+                tmp_ast = variable_ast.CustomVariable()
+                tmp_ast.name = var_name
+                tmp_ast.info_dict = output
+                self.send_variable_ast.emit(tmp_ast)
             else:
                 if LEFlag == False:
                     # self.send_XYCreated_signal.emit('XYCoordinate', output)
@@ -1063,8 +1068,9 @@ class ExpressionCalculator(QWidget):
         form_layout.addRow('variable name', input_widget)
         ok_button = QPushButton()
         ok_button.setText('OK')
-        ok_button.clicked.connect(lambda tmp: self.export_clicked('variable', input_widget.text()))
+        ok_button.clicked.connect(lambda tmp: self.export_clicked('variable_post', input_widget.text()))
         ok_button.clicked.connect(self.name_input_widget.close)
+        form_layout.addRow(' ', ok_button)
         self.name_input_widget.setLayout(form_layout)
         self.name_input_widget.show()
 
