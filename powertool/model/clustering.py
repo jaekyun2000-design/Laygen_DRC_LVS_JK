@@ -521,7 +521,8 @@ class determinstic_clustering(clustering):
             # if dp['_DesignParametertype'] == 2 or dp['_DesignParametertype'] == 1:
             intersection_info = self.geo_searching.search_intersection(dp)
             if intersection_info is None:
-                return None
+                # return None
+                continue
             self.routing_groups.append(intersection_info)
             intersection_matching_dict_by_name[intersection_info[0]['_ElementName']] = intersection_info[1:]
             # if intersection_matching_dict_by_name[intersection_info[0]['_id']]:
