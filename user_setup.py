@@ -1,5 +1,5 @@
 
-_Technology='TSMC65nm'
+가_Technology='SS28nm'
 _Night_mode = True
 _Snap_mode = 'orthogonal' # orthogonal or any_angle
 DEBUG = True
@@ -8,6 +8,8 @@ GDS2GEN = True
 MULTI_THREAD = True
 MULTI_THREAD_NUM = 5
 
+# CALCULATOR_MODE = 'Calculator'  # or 'Arithmetic'
+CALCULATOR_MODE = 'Arithmetic'  # or 'Calculator'
 
 
 #########################################################
