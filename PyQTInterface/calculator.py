@@ -1083,6 +1083,7 @@ class ExpressionCalculator(QWidget):
             self.initialize_variable_window()
         else:
             self.vw.show()
+        self.vw.raise_()
 
     def initialize_variable_window(self):
         self.vw = CVariableWindow()

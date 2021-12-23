@@ -1097,6 +1097,7 @@ class _MainWindow(QMainWindow):
     def calculator(self):
         self.calculator_window.set_preset_window()
         self.calculator_window.show()
+        self.calculator_window.raise_()
 
     def condition_expression(self):
         self.condition_expression_window.show()
@@ -1612,7 +1613,7 @@ class _MainWindow(QMainWindow):
             error_id = None
             debugger_gds2gen = topAPI.gds2generator.GDS2Generator(True)
             debugger_gds2gen.load_qt_project(self)
-            debugger_gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter, self._CurrentModuleName)
+            # debugger_gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter, self._CurrentModuleName)
 
             module = self._CurrentModuleName
             constraint_names = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
@@ -3931,7 +3932,7 @@ class _CustomScene(QGraphicsScene):
                     elif item._ItemTraits['_DesignParametertype'] == 2:
                         self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [f'{[item.block[0].index[0]]}'+f'{[item.block[0].index[1]]}'])
                     elif item._ItemTraits['_DesignParametertype'] == 3:
-                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.index])
+                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [0])
                 except:
                     pass
         elif QKeyEvent.key() == Qt.Key_R:
