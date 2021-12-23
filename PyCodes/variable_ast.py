@@ -1320,6 +1320,22 @@ class CustomFunctionTransformer(ast.NodeTransformer):
                 tf_string = transformer(node.args[0], True)
                 return tf_string
 
+    def transform_via_cal(self, node):
+        target_width = node.args[0]
+        if isinstance(target_width, ast.AST):
+            tf_ast = run_transformer(target_width)
+            target_width = astunparse.unparse(tf_ast).replace("\n", "")
+
+        return f"int( ({target_width} -drc._VIAxMinSpace - 2 * drc._VIAxMinEnclosureByMetx )/  ( drc._VIAxMinWidth + drc._VIAxMinSpace ) ) "
+
+    def transform_cont_cal(self, node):
+        target_width = node.args[0]
+        if isinstance(target_width, ast.AST):
+            tf_ast = run_transformer(target_width)
+            target_width = astunparse.unparse(tf_ast).replace("\n", "")
+
+        return f"int( ({target_width} -drc._CoMinSpace - 2 * drc._CoMinEnclosureByPO )/  ( drc._CoMinWidth + drc._CoMinSpace ) ) "
+
 
 class CustomVariableSubstitution(ast.NodeTransformer):
     def __init__(self):
