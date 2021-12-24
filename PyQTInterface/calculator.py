@@ -93,6 +93,7 @@ class ExpressionCalculator(QWidget):
         self.minus = self.create_button(' - ',self.arithmetic_clicked)
         self.mul = self.create_button(' * ',self.arithmetic_clicked)
         self.div = self.create_button(' / ',self.arithmetic_clicked)
+        self.comma = self.create_button(' , ',self.arithmetic_clicked)
         self.left_parenthesis = self.create_button(' ( ',self.parenthesis_clicked)
         self.right_parenthesis = self.create_button(' ) ',self.parenthesis_clicked)
 
@@ -185,6 +186,7 @@ class ExpressionCalculator(QWidget):
         main_layout.addWidget(self.left_parenthesis,dl_size,6)
         main_layout.addWidget(self.mul,dl_size+1,6)
         main_layout.addWidget(self.plus,dl_size+2,6)
+        main_layout.addWidget(self.comma,dl_size+3,6)
 
         main_layout.addWidget(self.right_parenthesis,dl_size,7)
         main_layout.addWidget(self.div,dl_size+1,7)
