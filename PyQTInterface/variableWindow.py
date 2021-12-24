@@ -723,8 +723,10 @@ class variableContentWidget(QWidget):
     def get_width_height_ast(self, _id, _ast):
         for info, widget in self.widget_dictionary.items():
             if not widget.isHidden():
-                width_text_widget = self.widget_sublayout_dictinoary[info]['width_text'].itemAt(1).widget()
-                height_text_widget = self.widget_sublayout_dictinoary[info]['height_text'].itemAt(1).widget()
+                if 'width_text' in self.widget_sublayout_dictinoary[info]:
+                    width_text_widget = self.widget_sublayout_dictinoary[info]['width_text'].itemAt(1).widget()
+                if 'height_text' in self.widget_sublayout_dictinoary[info]:
+                    height_text_widget = self.widget_sublayout_dictinoary[info]['height_text'].itemAt(1).widget()
         # try:
         if self.width_height == 'width':
             width_text_widget.setText(_id)
