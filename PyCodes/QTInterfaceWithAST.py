@@ -954,13 +954,20 @@ class QtProject:
                     else:
                         _tmpId = self._getDesignParameterId(_ParentName=_tmpStructureName)
                         _tmpId = f'{_tmpStructureName}_{_tmpId}'
+                    element_name = _tmpElement._GDS_ELEMENT_NAME
+                    _tmpId = element_name
+                    i = 0
+                    if _tmpStructureName in self._DesignParameter:
+                        while _tmpId in self._DesignParameter[_tmpStructureName]:
+                            _tmpId = f'{element_name}_{i}'
+                            i += 1
                     if "_BOUNDARY" in vars(_tmpElement._ELEMENTS):
                         if _tmpElement._GDS_ELEMENT_NAME:
                             if len(_tmpElement._ELEMENTS._XY.xy) == 5:
-                                self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
+                                self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName, _ElementName=_tmpId)
                             else:
-                                self._createNewDesignParameter(_id=_tmpId, _type=11, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
-                            _tmpId = _tmpElement._GDS_ELEMENT_NAME
+                                self._createNewDesignParameter(_id=_tmpId, _type=11, _ParentName=_tmpStructureName, _ElementName=_tmpId)
+                            # _tmpId = _tmpElement._GDS_ELEMENT_NAME
                         else:
                             try:
                                 element_name = f'{LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][str(_tmpElement._ELEMENTS._DATATYPE.datatype)]}_boundary'
@@ -973,10 +980,10 @@ class QtProject:
 
                                 if len(_tmpElement._ELEMENTS._XY.xy) == 5:
                                     self._createNewDesignParameter(_id=_tmpId, _type=1, _ParentName=_tmpStructureName,
-                                                                   _ElementName=_tmpElement._GDS_ELEMENT_NAME)
+                                                                   _ElementName=_tmpId)
                                 else:
                                     self._createNewDesignParameter(_id=_tmpId, _type=11, _ParentName=_tmpStructureName,
-                                                                   _ElementName=_tmpElement._GDS_ELEMENT_NAME)
+                                                                   _ElementName=_tmpId)
                             except:
                                 traceback.print_exc()
                                 warnings.warn(f'LayerReader does not have info about Layer: {_tmpElement._ELEMENTS._LAYER.layer} and Dtype: {_tmpElement._ELEMENTS._DATATYPE.datatype}. ')
@@ -997,9 +1004,9 @@ class QtProject:
                         # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Ignore"]
                         # self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_ElementName"]
                     elif "_PATH" in vars(_tmpElement._ELEMENTS):
-                        if _tmpElement._GDS_ELEMENT_NAME:
-                            self._createNewDesignParameter(_id=_tmpId, _type=2, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
-                            _tmpId = _tmpElement._GDS_ELEMENT_NAME
+                        if _tmpId:
+                            self._createNewDesignParameter(_id=_tmpId, _type=2, _ParentName=_tmpStructureName, _ElementName=_tmpId)
+                            # _tmpId = _tmpElement._GDS_ELEMENT_NAME
                         else:
                             try:
                                 # if str(_tmpElement._ELEMENTS._DATATYPE.datatype) not in LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)]:
@@ -1028,9 +1035,9 @@ class QtProject:
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                             "_Width"] = _tmpElement._ELEMENTS._WIDTH.width
                     elif "_SREF" in vars(_tmpElement._ELEMENTS):
-                        if _tmpElement._GDS_ELEMENT_NAME:
-                            self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
-                            _tmpId = _tmpElement._GDS_ELEMENT_NAME
+                        if _tmpId:
+                            self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName, _ElementName=_tmpId)
+                            # _tmpId = _tmpElement._GDS_ELEMENT_NAME
                         else:
                             sref_name =_tmpElement._ELEMENTS._SNAME.sname.decode().split('\x00')[0]
                             if sref_name not in sref_name_count:
@@ -1061,8 +1068,9 @@ class QtProject:
                                     "_Angle"] = _tmpElement._ELEMENTS._STRANS._ANGLE.angle
                     elif "_TEXT" in vars(_tmpElement._ELEMENTS):
                         try:
-                            if _tmpElement._GDS_ELEMENT_NAME:
-                                _tmpId = _tmpElement._GDS_ELEMENT_NAME
+                            if _tmpId:
+                                # _tmpId = _tmpElement._GDS_ELEMENT_NAME
+                                pass
                             else:
                                 element_name = f'{LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][str(_tmpElement._ELEMENTS._TEXTBODY._TEXTTYPE.texttype)]}_text'
                                 if element_name not in element_name_count:
@@ -1073,7 +1081,7 @@ class QtProject:
                                 _tmpId = tmp_element_name
                         except:
                             traceback.print_exc()
-                        self._createNewDesignParameter(_id=_tmpId, _type=8, _ParentName=_tmpStructureName, _ElementName=_tmpElement._GDS_ELEMENT_NAME)
+                        self._createNewDesignParameter(_id=_tmpId, _type=8, _ParentName=_tmpStructureName, _ElementName=_tmpId)
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                             "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
