@@ -24,10 +24,14 @@ class RefactorTransformer(ast.NodeTransformer):
             if type(value) == list:
                 return [search_info_dict(list_element) for list_element in value]
             elif type(value) == str:
-                tmp_ast = ast.parse(value)
-                tmp_ast = self.visit(tmp_ast)
-                return_code = astunparse.unparse(tmp_ast)[1:-1]     #delete first and last \n
-                return return_code
+                try:
+                    tmp_ast = ast.parse(value)
+                    tmp_ast = self.visit(tmp_ast)
+                    return_code = astunparse.unparse(tmp_ast)[1:-1]     #delete first and last \n
+                    return return_code
+                except:
+                    warnings.warn('debug later')
+                    return value
             elif isinstance(value, ast.AST):
                 tmp_ast = self.visit(value)
                 return tmp_ast
