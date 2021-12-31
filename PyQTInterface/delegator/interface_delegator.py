@@ -1,6 +1,7 @@
 import user_setup
 from PyQTInterface import SetupWindow
 from PyQTInterface.delegator import delegator
+from PyQTInterface import variableWindow
 
 from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QLineEdit
     
@@ -200,3 +201,13 @@ class WidgetDelegator(delegator.Delegator):
             return False
         else:
             return True
+
+    def array_update_widget(self, target_id):
+        self.main_window.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array")
+        self.main_window.vw.send_variable_ast.connect(lambda target_ast: self.main_window.design_delegator.update_qt_constraint(target_ast._id, target_ast))
+        self.main_window.vw.send_DestroyTmpVisual_signal.connect(self.main_window.deleteDesignParameter)
+        self.main_window.vw.request_ast_signal.connect(self.main_window.delivery_ast)
+        self.main_window.vw.send_clicked_item_signal.connect(self.main_window.highlightVI_by_hierarchy_list)
+        self.main_window.vw.send_variable_wo_post_ast.connect(lambda target_ast: self.main_window.design_delegator.create_qt_constraint(target_ast, sender=self.main_window.vw))
+        self.main_window.vw.update_ui_by_constraint_id(target_id)
+

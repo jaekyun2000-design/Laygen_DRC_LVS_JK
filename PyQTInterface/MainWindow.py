@@ -709,25 +709,27 @@ class _MainWindow(QMainWindow):
                                                                  self.design_delegator.create_qt_constraint(target_ast, sender=self.calculator_window))
         self.send_tech_node_changed_signal.connect(self.calculator_window.get_drc_dict)
 
-        self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array")
-        self.vw.send_output_dict_signal.connect(self.create_variable)
-        self.vw.send_variable_ast.connect(self.design_delegator.create_qt_constraint)
-
-        self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
-        self.vw.request_dummy_constraint_signal.connect(self.delivery_dummy_constraint)
-        self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
-        # self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
-        # self.vw.variable_widget.send_exported_xy_offset_signal.connect(self.createDummyConstraint)
-        self.vw.send_variable_wo_post_ast.connect(lambda target_ast: self.design_delegator.create_qt_constraint(target_ast, sender=self.vw))
-        self.vw.send_variable_signal.connect(self.send_array_variable)
+        # self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array")
+        # self.vw.send_output_dict_signal.connect(self.create_variable)
+        # self.vw.send_variable_ast.connect(self.design_delegator.create_qt_constraint)
+        #
+        # self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
+        # self.vw.request_ast_signal.connect(self.delivery_ast)
+        # self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
+        # # self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
+        # # self.vw.variable_widget.send_exported_xy_offset_signal.connect(self.createDummyConstraint)
+        # self.vw.send_variable_wo_post_ast.connect(lambda target_ast: self.design_delegator.create_qt_constraint(target_ast, sender=self.vw))
+        # self.vw.send_variable_signal.connect(self.send_array_variable)
 
         self.conditional_stmt_window = ConditionalStatement.ConditionStmtWidget()
         self.condition_expression_window = ConditionalStatement.ConditionExpressionWidget()
 
         self.dockContentWidget3.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
         self.dockContentWidget3_2.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
-        self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
-        self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
+        # self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
+        # self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
+        self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.widget_delegator.array_update_widget)
+        self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.widget_delegator.array_update_widget)
         self.dockContentWidget3.send_dummy_ast_id_for_condition_signal.connect(self.conditional_stmt_window.show_list)
         self.dockContentWidget3_2.send_dummy_ast_id_for_condition_signal.connect(self.conditional_stmt_window.init_ui)
 
@@ -1353,7 +1355,7 @@ class _MainWindow(QMainWindow):
         self.vw.send_variable_ast.connect(self.design_delegator.create_qt_constraint)
 
         self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
-        self.vw.request_dummy_constraint_signal.connect(self.delivery_dummy_constraint)
+        self.vw.request_ast_signal.connect(self.delivery_ast)
         self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
         # self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
         # self.vw.variable_widget.send_exported_xy_offset_signal.connect(self.createDummyConstraint)
@@ -1388,9 +1390,13 @@ class _MainWindow(QMainWindow):
         self.vw.getArray(array_list_item)
         self.vw.show()
 
-    def delivery_dummy_constraint(self, dummy_id):
-        dummy_constraint = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][dummy_id]._ast.info_dict
-        self.sender().delivery_dummy_constraint(dummy_constraint)
+    # def delivery_dummy_constraint(self, dummy_id):
+    #     dummy_constraint = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][dummy_id]._ast.info_dict
+    #     self.sender().delivery_dummy_constraint(dummy_constraint)
+
+    def delivery_ast(self, dc_id):
+        target_ast = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][dc_id]._ast
+        self.sender().delivery_ast(target_ast)
 
     def visualize_inspect_array(self, row):
         # for id in self.log:

@@ -40,6 +40,7 @@ class VariableSetupWindow(QWidget):
     send_clicked_item_signal = pyqtSignal(list)
     send_variable_signal = pyqtSignal(str)
     request_dummy_constraint_signal = pyqtSignal(str)
+    request_ast_signal = pyqtSignal(str)
     send_variable_ast = pyqtSignal("PyQt_PyObject")
     send_variable_wo_post_ast = pyqtSignal("PyQt_PyObject")
 
@@ -156,16 +157,21 @@ class VariableSetupWindow(QWidget):
         else:
             self.variable_widget.request_show(variable_type[:-6], 'offset')
 
-    def update_ui_by_constraint_id(self, dummy_id):
+    def update_ui_by_constraint_id(self, dc_id):
         self.deleteItemList.clear()
-        self._edit_id = dummy_id
-        self.request_dummy_constraint_signal.emit(dummy_id)
-        self.variable_type_widget.setCurrentText(self.current_dummy_constraint['type'])
-        self.variable_widget.request_load(self.current_dummy_constraint)
+        self._edit_id = dc_id
+        # self.request_dummy_constraint_signal.emit(dummy_id)
+        self.request_ast_signal.emit(dc_id)
+        self.variable_type_widget.setCurrentText(self.current_info_dict['type'])
+        self.variable_widget.request_load(self.current_info_dict)
         self.show()
 
-    def delivery_dummy_constraint(self, dummy_constraint):
-        self.current_dummy_constraint = copy.deepcopy(dummy_constraint)
+    # def delivery_dummy_constraint(self, dummy_constraint):
+    #     self.current_info_dict = copy.deepcopy(dummy_constraint)
+
+    def delivery_ast(self, target_ast):
+        self.current_ast = target_ast
+        self.current_info_dict = copy.deepcopy(target_ast.info_dict)
 
     def change_ui(self, _):
         if self.relative_or_offset_button.isChecked():
@@ -289,10 +295,18 @@ class VariableSetupWindow(QWidget):
         output_dict['type'] = self.variable_type
         output_dict['flag'] = self.flag_type
 
-        self.send_output_dict_signal.emit(self._edit_id, copy.deepcopy(output_dict))
-        output_ast = variable_ast.Array()
-        output_ast._id = output_dict['name']
-        output_ast.info_dict = output_dict
+        # self.send_output_dict_signal.emit(self._edit_id, copy.deepcopy(output_dict))
+        output_dict = copy.deepcopy(output_dict)
+        if self._edit_id:
+            self.current_ast._id = self._edit_id
+            self.current_ast.info_dict = output_dict
+            # self.send
+        else:
+            output_ast = variable_ast.Array()
+            # output_ast._id = output_dict['name']
+            output_ast._id = output_dict['name']
+            output_ast.info_dict = output_dict
+            self.send_variable_ast.emit(output_ast)
 
         if output_dict['width'] == 'Custom' and output_dict['width_input'] == '':
             if re.search('\D+', output_dict['width_text']) is not None:
