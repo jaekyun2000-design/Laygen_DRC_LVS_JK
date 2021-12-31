@@ -539,9 +539,10 @@ class _MainWindow(QMainWindow):
         dockWidget2_2.setWidget(self.design_modifier)
 
         self.addDockWidget(Qt.LeftDockWidgetArea,dockWidget2_2)
-        self.scene.send_selected_list_signal.connect(lambda items: self.design_modifier.update_form(
-            self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName]\
-                [self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(items[0]._id)]))
+        # self.scene.send_selected_list_signal.connect(lambda items: self.design_modifier.update_form(
+        #     self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName]\
+        #         [self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(items[0]._id)])
+        #                                              )
         # self.design_modifier.send_update_qt_constraint_signal.connect(lambda target_id, update_dict:
         #                                                               self.design_delegator.update_qt_constraint(
         #                                                                   target_id, updated_dict=update_dict
@@ -710,6 +711,7 @@ class _MainWindow(QMainWindow):
 
         self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array")
         self.vw.send_output_dict_signal.connect(self.create_variable)
+        self.vw.send_variable_ast.connect(self.design_delegator.create_qt_constraint)
 
         self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
         self.vw.request_dummy_constraint_signal.connect(self.delivery_dummy_constraint)
@@ -1348,6 +1350,7 @@ class _MainWindow(QMainWindow):
 
         self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array")
         self.vw.send_output_dict_signal.connect(self.create_variable)
+        self.vw.send_variable_ast.connect(self.design_delegator.create_qt_constraint)
 
         self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
         self.vw.request_dummy_constraint_signal.connect(self.delivery_dummy_constraint)
@@ -2486,6 +2489,7 @@ class _MainWindow(QMainWindow):
         elif 'array' in _type:
             selected_vis_items = self.scene.selectedItems()
             self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items)
+            self.vw.send_variable_ast.connect(self.design_delegator.create_qt_constraint)
             # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
 
             self.vw.send_output_dict_signal.connect(self.create_variable)
@@ -3894,7 +3898,11 @@ class _CustomScene(QGraphicsScene):
             for item in itemList:
                 if type(item) == VisualizationItem._RectBlock:
                     continue
+                if item.parentItem():
+                    continue
                 parameterIDList.append(item._ItemTraits['_id'])
+
+
             self.send_parameterIDList_signal.emit(parameterIDList,5)
         elif QKeyEvent.key() == Qt.Key_Q: #variable Call with XYCoordinates DesignParameter
             itemList = self.selectedItems()
