@@ -1,4 +1,5 @@
 import ast
+import traceback
 import warnings
 
 import astunparse
@@ -1341,10 +1342,10 @@ class CustomFunctionTransformer(ast.NodeTransformer):
 
         return f"int( ({target_width} -drc._CoMinSpace - 2 * drc._CoMinEnclosureByPO )/  ( drc._CoMinWidth + drc._CoMinSpace ) ) "
 
-    def transform_via_down(self):
+    def transform_via_down(self, node):
         return f"-int((drc._VIAxMinWidth + drc._VIAxMinSpace) / 4)"
 
-    def transform_via_up(self):
+    def transform_via_up(self, node):
         return f" int((drc._VIAxMinWidth + drc._VIAxMinSpace) / 4)"
 
 class CustomVariableSubstitution(ast.NodeTransformer):
