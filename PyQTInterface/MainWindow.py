@@ -214,6 +214,8 @@ class _MainWindow(QMainWindow):
         RunGDSAction = QAction("Run constraint",self)
         UpdateGDSAction = QAction("Update constraint",self)
         setup_action = QAction("Setup",self)
+        fixAction = QAction("Fix!", self)
+
 
         # newAction.setShortcut('Ctrl+N')
         # newAction.triggered.connect(self.newProject)
@@ -239,6 +241,9 @@ class _MainWindow(QMainWindow):
         newAction.setShortcut('Ctrl+C')
         newAction.triggered.connect(self.create_generator_file)
 
+        fixAction.setShortcut('Ctrl+F')
+        fixAction.triggered.connect(self.fix_contaminated_dc)
+
         setup_action.triggered.connect(self.run_setup_update)
 
 
@@ -255,6 +260,7 @@ class _MainWindow(QMainWindow):
         fileMenu.addAction(RunGDSAction)
         fileMenu.addAction(UpdateGDSAction)
         fileMenu.addAction(setup_action)
+        fileMenu.addAction(fixAction)
 
         #Second Menu#
         self.statusBar().showMessage("No Module")
@@ -799,6 +805,12 @@ class _MainWindow(QMainWindow):
             f = open(f"./generatorLib/generator_models/{self._CurrentModuleName}.py", "w")
             f.write(final_code)
             f.close()
+
+    def fix_contaminated_dc(self):
+        print('1')
+        for dc in self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName].values():
+            if 'info_dict' in dc._ast.__dict__:
+                dc._ast.info_dict = copy.deepcopy(dc._ast.info_dict)
 
     def create_new_window(self, dict, key):
         dict[key] = _MainWindow()
