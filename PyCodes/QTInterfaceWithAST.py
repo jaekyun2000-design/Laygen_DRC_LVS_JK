@@ -2006,11 +2006,12 @@ class QtProject:
             return userDefineExceptions._InvalidInputError
         else:
             try:
+                #Naming Refactor Fucntion 비활성화
                 if id != _dp_dict['_ElementName']:
                     # todo 바꿔야할 elementname 여기서 찾아주기.
-                    naming_refactor = topAPI.naming_refactor.NamingRefactor()
-                    naming_refactor.search_ast(original_name=id, changed_name=_dp_dict['_ElementName'],
-                                               constraints=self._DesignConstraint, dummy_constraints = dummy_constraints)
+                    # naming_refactor = topAPI.naming_refactor.NamingRefactor()
+                    # naming_refactor.search_ast(original_name=id, changed_name=_dp_dict['_ElementName'],
+                    #                            constraints=self._DesignConstraint, dummy_constraints = dummy_constraints)
                     self._ElementManager.change_dp_id(id,_dp_dict['_ElementName'])
                     self._DesignParameter[module_name][_dp_dict['_ElementName']] = self._DesignParameter[module_name].pop(id)
                     id = _dp_dict['_ElementName']
