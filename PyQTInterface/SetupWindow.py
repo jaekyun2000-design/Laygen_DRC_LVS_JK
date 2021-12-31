@@ -2950,11 +2950,14 @@ class _SelectedDesignListWidget(QListWidget):
             self.pw.send_PathDesign_signal.connect(self.send_UpdateDesignParameter_signal)
             self.pw.send_Destroy_signal.connect(self.pw.close)
         elif modifyingObject._ItemTraits['_DesignParametertype'] == 3:
-            self.sw = _LoadSRefWindow(purpose='main_load', SRefElement=modifyingObject)
-            self.sw.show()
-            self.sw.send_DesignConstraint_signal.connect(self.send_UpdateDesignAST_signal)
-            self.sw.send_exported_sref_signal.connect(self.createDummyConstraint)
-            self.sw.send_destroy_signal.connect(self.sw.close)
+            try:
+                self.sw = _LoadSRefWindow(purpose='main_load', SRefElement=modifyingObject)
+                self.sw.show()
+                self.sw.send_DesignConstraint_signal.connect(self.send_UpdateDesignAST_signal)
+                self.sw.send_exported_sref_signal.connect(self.createDummyConstraint)
+                self.sw.send_destroy_signal.connect(self.sw.close)
+            except:
+                warnings.warn('Not Implemented.')
         elif modifyingObject._ItemTraits['_DesignParametertype'] == 8:
             if modifyingObject._ItemTraits['_LayerUnifiedName'] == 'text':
                 self.txtw = _TextSetupWindow(modifyingObject)
