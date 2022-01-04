@@ -232,6 +232,7 @@ class VariableSetupWindow(QWidget):
         self.show()
 
     def clickFromScene(self, item):
+        return  # Deactivate this function
         if 'cal' not in self.__dict__:
             itemID = item._id
             if itemID not in self.itemList:
