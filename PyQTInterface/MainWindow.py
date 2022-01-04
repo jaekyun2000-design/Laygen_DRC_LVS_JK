@@ -2507,6 +2507,7 @@ class _MainWindow(QMainWindow):
         elif 'array' in _type:
             selected_vis_items = self.scene.selectedItems()
             self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items)
+            self.vw.typeChanged(_type)
             self.vw.send_variable_ast.connect(self.design_delegator.create_qt_constraint)
             # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
 

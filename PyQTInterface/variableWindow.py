@@ -150,6 +150,8 @@ class VariableSetupWindow(QWidget):
                 self.deleteItemList.addItem(id)
             self.show()
 
+        self.typeChanged(self.variable_type)
+
     def typeChanged(self, variable_type):
         self.variable_type = variable_type
         if self.relative_or_offset_button.isChecked():
