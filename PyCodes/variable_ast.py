@@ -616,7 +616,10 @@ class IrregularTransformer(ast.NodeTransformer):
                 del tmp_node
             elif _type == 'path_array':
                 comparison_code = f"\npath_list = []\n" \
-                                  f"if ({layer_xy}[0][0] == {layer_xy}[-1][0]) :\n" \
+                                  f"if (len({layer_xy}) == 1) :\n" \
+                                  f"\tmode = 'vertical'\n" \
+                                  f"\t_width = {_width}\n" \
+                                  f"elif ({layer_xy}[0][0] == {layer_xy}[-1][0]) :\n" \
                                   f"\tmode = 'horizontal'\n" \
                                   f"\t_width = {_width}\n" \
                                   f"elif ({layer_xy}[0][1] == {layer_xy}[-1][1]) :\n" \
