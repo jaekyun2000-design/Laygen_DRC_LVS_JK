@@ -3,6 +3,7 @@ import struct
 import math
 from datetime import datetime, MINYEAR
 from gds_editor_ver3 import user_define_exceptions
+import warnings
 class GDS_HEADER():
     def __init__(self, tag=gds_tags.DICT['HEADER'], gds_data=None):
         self.tag=tag
@@ -562,6 +563,9 @@ class GDS_WIDTH():
         self.width=gds_data
     def write_binary_gds_stream(self,binary_gds_stream):
         fmt='>HHi'
+        if type(self.width):
+            self.width = int(self.width)
+            warnings.warn('Float type width input detected!')
         fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.width)
         binary_gds_stream.write(fmt_binary_data)
         
