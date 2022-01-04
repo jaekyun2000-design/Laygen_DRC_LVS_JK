@@ -388,7 +388,10 @@ class determinstic_clustering(clustering):
                 else:
                     self.layer_based_group[layer_num] = [key]
             elif item['_DesignParametertype'] == 3:
-                class_name = item['_DesignObj'].__class__.__name__
+                try:
+                    class_name = item['_DesignObj'].__class__.__name__
+                except:
+                    pass
                 if class_name == 'dict':
                     if item['_DesignObj_Name'] in self.design_obj_based_group:
                         self.design_obj_based_group[item['_DesignObj_Name']].append(key)

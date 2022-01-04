@@ -133,8 +133,8 @@ class GeometricField:
             ############ 이 부분에서 idx 처리 해야함! #####################
             for sref_idx in range(len(dp['_XYCoordinates'])):
                 base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][sref_idx])
-                sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect)
-                sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle)
+                sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect) if '_Reflect' in dp else reflect
+                sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle) if '_Angle' in dp else angle
                 # base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][0])
                 # sub_reflect = reflect.dot(convert_reflect_to_matrix(dp['_Reflect']))
                 # sub_angle = angle.dot(convert_angle_to_matrix(dp['_Angle']))
@@ -148,14 +148,17 @@ class GeometricField:
                             self.qt_design_parameter_projection(sub_qt_dp, structure_hierarchy=structure_hierarchy_tmp,
                                                                 reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
                 else:
-                    for name, sub_qt_dp in dp['_DesignObj'].items():
-                        sub_dp = sub_qt_dp._DesignParameter
-                        if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 2 or sub_dp['_DesignParametertype'] in [3, 31]:
-                            structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
-                            structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
-                            structure_hierarchy_tmp.append(name)
-                            self.qt_design_parameter_projection(sub_qt_dp, structure_hierarchy=structure_hierarchy_tmp,
-                                                                reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
+                    try:
+                        for name, sub_qt_dp in dp['_DesignObj'].items():
+                            sub_dp = sub_qt_dp._DesignParameter
+                            if sub_dp['_DesignParametertype'] == 1 or sub_dp['_DesignParametertype'] == 2 or sub_dp['_DesignParametertype'] in [3, 31]:
+                                structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
+                                structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
+                                structure_hierarchy_tmp.append(name)
+                                self.qt_design_parameter_projection(sub_qt_dp, structure_hierarchy=structure_hierarchy_tmp,
+                                                                    reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
+                    except:
+                        warnings.warn('No design Obj')
 
     def xy_projection_to_main_coordinates_system(self, designParameter):
         for name, dp in designParameter.items():
@@ -302,7 +305,10 @@ class GeometricField:
             #         self.interval_tree_by_layer[dp['_Layer']] = IST(direction='horizontal')
             #         self.interval_tree_by_layer[dp['_Layer']].add_element_node(dp)
             elif dp['_DesignParametertype'] in [3, 31]:
-                stack.extend([qt_dp_items[1] for qt_dp_items in dp['_ModelStructure'].items()])
+                try:
+                    stack.extend([qt_dp_items[1] for qt_dp_items in dp['_ModelStructure'].items()])
+                except:
+                    warnings.warn('No model structure')
 
     def build_IST(self, _DesignParameter):
         stack = [dp_items[1] for dp_items in _DesignParameter.items()]
