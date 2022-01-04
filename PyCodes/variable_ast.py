@@ -1334,6 +1334,14 @@ class CustomFunctionTransformer(ast.NodeTransformer):
 
         return f"max(1, int( ({target_width} -drc._VIAxMinSpace - 2 * drc._VIAxMinEnclosureByMetx )/  ( drc._VIAxMinWidth + drc._VIAxMinSpace ) ) )"
 
+    def transform_via_cal2(self, node):
+        target_width = node.args[0]
+        if isinstance(target_width, ast.AST):
+            tf_ast = run_transformer(target_width)
+            target_width = astunparse.unparse(tf_ast).replace("\n", "")
+
+        return f"max(1, int( ({target_width} -drc._VIAxMinSpace2 - 2 * drc._VIAxMinEnclosureByMetx )/  ( drc._VIAxMinWidth + drc._VIAxMinSpace2 ) ) )"
+
     def transform_cont_cal(self, node):
         target_width = node.args[0]
         if isinstance(target_width, ast.AST):
