@@ -789,29 +789,27 @@ class CellInspector:
         return inspector(structure)
 
     def convert_pcell_name_to_generator_name(self, pcell_name):
-        if any(list(filter(lambda pch: pch in pcell_name, ['pch','pmos','PMOS']))):
+        if any(list(filter(lambda pch: pch in pcell_name, ['pch','pmos','PMOS','pfet']))):
             return 'PMOSWithDummy'
-        elif any(list(filter(lambda nch: nch in pcell_name, ['nch','nmos','NMOS']))):
+        elif any(list(filter(lambda nch: nch in pcell_name, ['nch','nmos','NMOS','nfet']))):
             return 'NMOSWithDummy'
-        elif any(list(filter(lambda via: via in pcell_name, ['M2_M1_']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M2_M1_','M1V1M2']))):
             return 'ViaMet12Met2'
-        elif any(list(filter(lambda via: via in pcell_name, ['M3_M2_']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M3_M2_','M2V2M3']))):
             return 'ViaMet22Met3'
-        elif any(list(filter(lambda via: via in pcell_name, ['M4_M3_']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M4_M3_','M3V3M4']))):
             return 'ViaMet32Met4'
-        elif any(list(filter(lambda via: via in pcell_name, ['M5_M4_']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M5_M4_','M4V4M5']))):
             return 'ViaMet42Met5'
-        elif any(list(filter(lambda via: via in pcell_name, ['M6_M5_']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M6_M5_','M5V5M6']))):
             return 'ViaMet52Met6'
-        elif any(list(filter(lambda via: via in pcell_name, ['M7_M6_']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M7_M6_','M6V6M7']))):
             return 'ViaMet62Met7'
-        elif any(list(filter(lambda via: via in pcell_name, ['M7_M6_']))):
-            return 'ViaMet62Met7'
-        elif any(list(filter(lambda via: via in pcell_name, ['M1_PO_']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M1_PO_','PCCAM1']))):
             return 'ViaPoly2Met1'
-        elif any(list(filter(lambda via: via in pcell_name, ['M1_POD']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M1_POD','extStacked', 'Pbody']))):
             return 'PbodyContact'
-        elif any(list(filter(lambda via: via in pcell_name, ['M1_NOD']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M1_NOD', 'Nbody']))):
             return 'NbodyContact'
         else:
             return None
