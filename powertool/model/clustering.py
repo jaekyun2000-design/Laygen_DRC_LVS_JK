@@ -120,7 +120,8 @@ class clustering():
             qt_dp_list = [self._qtDesignParameters[id] for id in id_list]
             x_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0][0] for qt_dp in qt_dp_list]
             y_list = [qt_dp._DesignParameter['_XYCoordinates'][0][0][1] for qt_dp in qt_dp_list]
-            layer = LayerReader._LayerName_unified[str(qt_dp_list[0]._DesignParameter['_Layer'])]
+            # layer = LayerReader._LayerName_unified[str(qt_dp_list[0]._DesignParameter['_Layer'])]
+            layer = qt_dp_list[0]._DesignParameter['_LayerUnifiedName']
             x_list.sort()
             y_list.sort()
             x_offset = int(x_list[1] - x_list[0])
@@ -150,8 +151,13 @@ class clustering():
                     count_list.append(connection_layer_list.count(list(set1_ele)))
                 max_idx_list = [idx for idx, ele in enumerate(count_list) if ele == max(count_list)]
                 for max_idx in max_idx_list:
-                    set2.remove(list(set1)[max_idx][0])
-                max_idx = count_list.index(max(count_list))
+                    if len(list(set1)[max_idx]) == 1:
+                        set2.remove(list(set1)[max_idx][0])
+
+                max_idx_candi_len_list = [len(list(set1)[idx_cand]) for idx_cand in max_idx_list]
+                final_idx2 = max_idx_candi_len_list.index(min(max_idx_candi_len_list))
+                max_idx = max_idx_list[final_idx2]
+                # max_idx = count_list.index(max(count_list))
                 target_reference = list(list(set1)[max_idx])
 
                 count_list = []

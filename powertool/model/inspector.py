@@ -34,6 +34,14 @@ class array_inspector(inspector):
         else:
             return dict(group_list = group_list, reference_list=reference_list)
 
+    def inspect_group(self, group:list):
+        reference_list = self.cluster_model.find_ref([group])
+        if reference_list:
+            return reference_list[0]
+        else:
+            return None
+
+
     def get_all_connection_info(self):
         return self.cluster_model.get_routing_groups()
 
