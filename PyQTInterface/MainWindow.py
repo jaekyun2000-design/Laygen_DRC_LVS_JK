@@ -1398,7 +1398,7 @@ class _MainWindow(QMainWindow):
             self.vw.variable_widget.field_value_memory_dict['sref_item_dict'] = {'library':library, 'className':className, 'calculate_fcn':calculate_fcn, 'parameters':parameters}
 
         self.vw.group_list = group_ref
-        self.vw.inspect_array_window_address = self.array_list_widget
+        # self.vw.inspect_array_window_address = self.array_list_widget
         self.vw.getArray(array_list_item)
         self.vw.show()
 
@@ -2505,7 +2505,16 @@ class _MainWindow(QMainWindow):
             self.design_delegator.delete_qt_parameter(dp_name)
             return
         elif 'array' in _type:
+            #TODO array inspector
             selected_vis_items = self.scene.selectedItems()
+            dp_names = [vis_item._ItemTraits['_ElementName'] for vis_item in selected_vis_items]
+            # search_dp = dict()
+            # for dp_name in dp_names:
+            #     search_dp[dp_name] = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name]
+
+            inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+            reference = inspector.inspect_group(dp_names)
+
             self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items)
             self.vw.typeChanged(_type)
             self.vw.send_variable_ast.connect(self.design_delegator.create_qt_constraint)
@@ -2522,6 +2531,10 @@ class _MainWindow(QMainWindow):
             # self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
             # self.vw.variable_widget.send_exported_xy_offset_signal.connect(self.createDummyConstraint)
             self.vw.send_variable_signal.connect(self.send_array_variable)
+            # self.vw.group_list = reference
+            # self.vw.getArray()
+            self.vw.load_reference(reference)
+            self.show()
 
     def edit_variable(self, _edit_id, variable_info_dict):
         target_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(_edit_id)
