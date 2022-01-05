@@ -43,6 +43,7 @@ class VariableSetupWindow(QWidget):
     request_ast_signal = pyqtSignal(str)
     send_variable_ast = pyqtSignal("PyQt_PyObject")
     send_variable_wo_post_ast = pyqtSignal("PyQt_PyObject")
+    send_inspection_request_signal = pyqtSignal(list)
 
 
     send_variableVisual_signal = pyqtSignal(VariableVisualItem.VariableVisualItem)
@@ -97,9 +98,11 @@ class VariableSetupWindow(QWidget):
 
         self.okButton = QPushButton("OK",self)
         self.cancelButton = QPushButton("Cancel",self)
+        self.inspectButton = QPushButton("Inspect",self)
 
         self.okButton.clicked.connect(self.on_buttonBox_accepted)
         self.cancelButton.clicked.connect(self.cancel_button_accepted)
+        self.inspectButton.clicked.connect(self.request_inspection)
 
         self.setupVboxColumn1 = QVBoxLayout()
         self.setupVboxColumn2 = QVBoxLayout()
@@ -114,6 +117,7 @@ class VariableSetupWindow(QWidget):
         self.setupBox.addLayout(self.setupVboxColumn2)
 
         hbox = QHBoxLayout()
+        hbox.addWidget(self.inspectButton)
         hbox.addStretch(2)
         hbox.addWidget(self.okButton)
         hbox.addWidget(self.cancelButton)
@@ -151,6 +155,13 @@ class VariableSetupWindow(QWidget):
             self.show()
 
         self.typeChanged(self.variable_type)
+
+    def request_inspection(self):
+        group_list = []
+        for i in range(self.deleteItemList.count()-1):
+            group_list.append(self.deleteItemList.item(i).text())
+        # group_list = [item.text() for item in self.deleteItemList.items()]
+        self.send_inspection_request_signal.emit(group_list)
 
     def typeChanged(self, variable_type):
         self.variable_type = variable_type

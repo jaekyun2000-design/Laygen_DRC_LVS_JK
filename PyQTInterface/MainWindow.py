@@ -1377,10 +1377,7 @@ class _MainWindow(QMainWindow):
 
         self.dockContentWidget3.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
         self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
-
-
-
-
+        self.vw.send_inspection_request_signal.connect(self.inspect_vw_array)
 
         if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
             self.vw.variable_type = 'boundary_array'
@@ -2512,8 +2509,9 @@ class _MainWindow(QMainWindow):
             # for dp_name in dp_names:
             #     search_dp[dp_name] = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name]
 
-            inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
-            reference = inspector.inspect_group(dp_names)
+            # inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+            # reference = inspector.inspect_group(dp_names)
+
 
             self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items)
             self.vw.typeChanged(_type)
@@ -2531,10 +2529,18 @@ class _MainWindow(QMainWindow):
             # self.vw.variable_widget.send_exported_width_height_signal.connect(self.createDummyConstraint)
             # self.vw.variable_widget.send_exported_xy_offset_signal.connect(self.createDummyConstraint)
             self.vw.send_variable_signal.connect(self.send_array_variable)
+            self.vw.send_inspection_request_signal.connect(self.inspect_vw_array)
             # self.vw.group_list = reference
             # self.vw.getArray()
-            self.vw.load_reference(reference)
+            # self.vw.load_reference(reference)
+            self.inspect_vw_array(dp_names)
+
             self.show()
+
+    def inspect_vw_array(self, group_list):
+        inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        reference = inspector.inspect_group(group_list)
+        self.vw.load_reference(reference)
 
     def edit_variable(self, _edit_id, variable_info_dict):
         target_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(_edit_id)
