@@ -231,6 +231,16 @@ class VariableSetupWindow(QWidget):
         self.variable_widget.request_show(self.variable_type[:-6], self.flag_type)
         self.show()
 
+    def load_reference(self, reference):
+        for field_name in reference:
+            if field_name == 'XY_source_ref' or field_name == 'XY_target_ref':
+                if reference[field_name] is not None:
+                    self.variable_widget.field_value_memory_dict[field_name] =\
+                        'center(' + str(reference[field_name])[1:-1] + ')'
+            else:
+                self.variable_widget.field_value_memory_dict[field_name] = reference[field_name]
+        self.variable_widget.request_show(self.variable_type[:-6], self.flag_type)
+
     def clickFromScene(self, item):
         return  # Deactivate this function
         if 'cal' not in self.__dict__:
