@@ -1357,7 +1357,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         return f"-int((drc._VIAxMinWidth + drc._VIAxMinSpace) / 4)"
 
     def transform_via_up(self, node):
-        return f" int((drc._VIAxMinWidth + drc._VIAxMinSpace) / 4)"
+        return f"int((drc._VIAxMinWidth + drc._VIAxMinSpace) / 4)"
 
 class CustomVariableSubstitution(ast.NodeTransformer):
     def __init__(self):
