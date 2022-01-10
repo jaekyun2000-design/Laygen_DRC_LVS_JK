@@ -545,10 +545,10 @@ class _MainWindow(QMainWindow):
         dockWidget2_2.setWidget(self.design_modifier)
 
         self.addDockWidget(Qt.LeftDockWidgetArea,dockWidget2_2)
-        # self.scene.send_selected_list_signal.connect(lambda items: self.design_modifier.update_form(
-        #     self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName]\
-        #         [self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(items[0]._id)])
-        #                                              )
+        self.scene.send_selected_list_signal.connect(lambda items: self.design_modifier.update_form(
+            self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName]\
+                [self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(items[0]._id)])
+                                                     )
         # self.design_modifier.send_update_qt_constraint_signal.connect(lambda target_id, update_dict:
         #                                                               self.design_delegator.update_qt_constraint(
         #                                                                   target_id, updated_dict=update_dict
@@ -557,9 +557,9 @@ class _MainWindow(QMainWindow):
         self.design_modifier.send_update_ast_signal.connect(lambda _ast: self.design_delegator.update_qt_constraint(
             target_id=_ast._id, updated_ast=_ast
         ))
-        self.design_modifier.send_update_ast_signal.connect(lambda _ast: self.runConstraint_for_update(
-            code= self.encodeConstraint(_ast)
-        ))
+        # self.design_modifier.send_update_ast_signal.connect(lambda _ast: self.runConstraint_for_update(
+        #     code= self.encodeConstraint(_ast)
+        # ))
         # self.design_modifier.send_update_ast_signal.connect(lambda _ast:
         #                                                     self.design_delegator.control_constraint_tree_view(
         #                                                         _ast._id, channel=3, request='update'
