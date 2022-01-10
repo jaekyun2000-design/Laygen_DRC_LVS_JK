@@ -184,7 +184,11 @@ class DesignDelegator(delegator.Delegator):
         #     design_dict = self.main_window._QTObj._qtProject._update_design(design_type='constraint', module_name=self.main_window._CurrentModuleName,
         #                                                                     _ast=updated_ast,)
         design_dict=None
-        target_dc = self.main_window._QTObj._qtProject._DesignConstraint[self.main_window._CurrentModuleName][target_id]
+        if target_id in self.main_window._QTObj._qtProject._DesignConstraint[self.main_window._CurrentModuleName]:
+            target_dc = self.main_window._QTObj._qtProject._DesignConstraint[self.main_window._CurrentModuleName][target_id]
+        else:
+            target_id = self.main_window._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(target_id)
+            target_dc = self.main_window._QTObj._qtProject._DesignConstraint[self.main_window._CurrentModuleName][target_id]
         if updated_dict and not updated_ast:
             updated_ast = target_dc._ast
             for key, value in updated_dict.items():
