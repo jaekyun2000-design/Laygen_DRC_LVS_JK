@@ -1056,7 +1056,7 @@ class FunctionNameFinder(ast.NodeVisitor):
         return self.func_name_list
 
 class CustomFunctionTransformer(ast.NodeTransformer):
-    def __init__(self, flag):
+    def __init__(self, flag = 'XY'):
         super(CustomFunctionTransformer, self).__init__()
         self.flag = flag
 
@@ -1358,6 +1358,74 @@ class CustomFunctionTransformer(ast.NodeTransformer):
 
     def transform_via_up(self, node):
         return f"int((drc._VIAxMinWidth + drc._VIAxMinSpace) / 4)"
+
+    def transform_distance(self, node, direction=None):
+        if not direction:
+            direction = self.flag
+        if 'func' in node.args[0].__dict__ and node.args[0].func and 'id' in node.args[0].func.__dict__:
+            method = 'transform_' + node.args[0].func.id
+            if method in dir(self):
+                method = 'transform_' + node.args[0].func.id
+                tf_object = CustomFunctionTransformer('XY')
+                transformer = getattr(tf_object, method)
+                tf_string_a = transformer(node.args[0])
+        else:
+            tf_string_a = astunparse.unparse(run_transformer(node.args[0])).replace('\n','')
+        if 'func' in node.args[1].__dict__ and node.args[1].func and 'id' in node.args[1].func.__dict__:
+            method = 'transform_' + node.args[1].func.id
+            if method in dir(self):
+                method = 'transform_' + node.args[1].func.id
+                tf_object = CustomFunctionTransformer('XY')
+                transformer = getattr(tf_object, method)
+                tf_string_b = transformer(node.args[1])
+        else:
+            tf_string_b = astunparse.unparse(run_transformer(node.args[0])).replace('\n', '')
+
+        if direction == 'X':
+            return f"abs({tf_string_a}[0] - {tf_string_b}[0])"
+        if direction == 'Y':
+            return f"abs({tf_string_a}[1] - {tf_string_b}[1])"
+        else:
+            return f'math.sqrt(math.pow({tf_string_a}[0]-{tf_string_b}[0], 2) + math.pow({tf_string_a}[1]-{tf_string_b}[1], 2))'
+
+
+    # def transform_cal_p2p(self, node):
+    #     if 'func' in node.args[0].__dict__ and node.args[0].func and 'id' in node.args[0].func.__dict__:
+    #         method = 'transform_' + node.args[0].func.id
+    #         if method in dir(self):
+    #             method = 'transform_' + node.args[0].func.id
+    #             tf_object = CustomFunctionTransformer('XY')
+    #             transformer = getattr(tf_object, method)
+    #             tf_string_a = transformer(node.args[0])
+    #     else:
+    #         tf_string_a = astunparse.unparse(run_transformer(node.args[0])).replace('\n','')
+    #     if 'func' in node.args[1].__dict__ and node.args[1].func and 'id' in node.args[1].func.__dict__:
+    #         method = 'transform_' + node.args[1].func.id
+    #         if method in dir(self):
+    #             method = 'transform_' + node.args[1].func.id
+    #             tf_object = CustomFunctionTransformer('XY')
+    #             transformer = getattr(tf_object, method)
+    #             tf_string_b = transformer(node.args[1])
+    #     else:
+    #         tf_string_b = astunparse.unparse(run_transformer(node.args[0])).replace('\n', '')
+    #
+    #     return f'math.sqrt(math.pow({tf_string_a}[0]-{tf_string_b}[0], 2) + math.pow({tf_string_a}[1]-{tf_string_b}[1], 2))'
+
+    def transform_drc_distance(self, node):
+        if self.flag == 'X':
+            fixed_value = self.transform_distance(node, 'Y')
+        elif self.flag == 'Y':
+            fixed_value = self.transform_distance(node, 'X')
+        else:
+            raise Exception('drc_distance function does not support XY coordinate.')
+
+        drc_sentence= astunparse.unparse(node.args[2]).replace('\n','')
+
+        return f"math.ceil(math.sqrt(math.pow({drc_sentence},2) - math.pow({fixed_value},2)))"
+
+
+
+
 
 class CustomVariableSubstitution(ast.NodeTransformer):
     def __init__(self):
