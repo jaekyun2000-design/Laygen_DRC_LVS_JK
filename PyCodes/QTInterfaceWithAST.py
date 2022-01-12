@@ -970,6 +970,13 @@ class QtProject:
                             # _tmpId = _tmpElement._GDS_ELEMENT_NAME
                         else:
                             try:
+                                if str(_tmpElement._ELEMENTS._LAYER.layer) not in LayerReader._LayDatNumToName:
+                                    warnings.warn(f'not valid layer id {str(_tmpElement._ELEMENTS._LAYER.layer)}')
+                                    continue
+                                if str(_tmpElement._ELEMENTS._DATATYPE.datatype) not in LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)]:
+                                    warnings.warn(f'not valid layer id {str(_tmpElement._ELEMENTS._LAYER.layer)}')
+                                    warnings.warn(f'not valid data id {str(_tmpElement._ELEMENTS._DATATYPE.datatype)}')
+                                    continue
                                 element_name = f'{LayerReader._LayDatNumToName[str(_tmpElement._ELEMENTS._LAYER.layer)][str(_tmpElement._ELEMENTS._DATATYPE.datatype)]}_boundary'
                                 if element_name not in element_name_count:
                                     element_name_count[element_name] = 0
@@ -1104,6 +1111,9 @@ class QtProject:
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                 "_TEXT"] = _tmpElement._ELEMENTS._TEXTBODY._STRING.string_data
 
+                    if not _tmpId:
+                        warnings.warn('Not valid id')
+                        continue
                     self._DesignParameter[_tmpStructureName][_tmpId].update_unified_expression()
 
                         # print(vars(_tmpElement._ELEMENTS))
