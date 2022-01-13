@@ -944,6 +944,9 @@ def run_for_process_update():
         _LayerMapping.update({'RVT': _LayerMappingTmp[('RVT', 'drawing')]})
 
     
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'OUTLINE': _LayerMappingTmp[('OUTLINE', 'drawing')]})
+
 
     if _Technology == 'SS28nm':
         _LayerMapping.update({'RXPIN': _LayerMappingTmp[('RX', 'pin')]})
