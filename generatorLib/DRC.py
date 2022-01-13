@@ -158,11 +158,13 @@ class DRCNP:
             self._NpMinWidth = 180
             self._NpMinSpace = 180
             self._NpMinExtensiononNactive = 80
+            self._NpMinExtensiononNactive2 = 20  # Nactive2 -> for supply rail
             self._NpMinEnclosureOfPo = 110
         if user_setup._Technology == 'SS28nm':  # There is no NP layer in 28nm, junung
             self._NpMinWidth = 180
             self._NpMinSpace = 180
             self._NpMinExtensiononNactive = 130
+            self._NpMinExtensiononNactive2 = 0  # Nactive2 -> for supply rail
             self._NpMinEnclosureOfPo = 150
         if user_setup._Technology == 'TSMC65nm':
             self._NpMinWidth = 180
@@ -174,6 +176,7 @@ class DRCNP:
             self._NpMinWidth = 240
             self._NpMinSpace = 240
             self._NpMinExtensiononNactive = 130
+            self._NpMinExtensiononNactive2 = 20
             self._NpMinEnclosureOfPo = 200
         if user_setup._Technology == 'TSMC130nm':
             self._NpMinWidth = 310
