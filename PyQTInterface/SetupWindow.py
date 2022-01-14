@@ -216,6 +216,7 @@ class _BoundarySetupWindow(QWidget):
                 self.send_DestroyTmpVisual_signal.emit(self.visualItem)
 
             self.send_BoundaryDesign_signal.emit(self._DesignParameter)
+            print(self._DesignParameter)
             message = delegator.DelegateMessage(arguments=[self._DesignParameter], target_fcn='create_qt_parameter')
             self.send_design_message.emit(message)
             self.click = 2
@@ -369,9 +370,9 @@ class _PolygonSetupWindow(QWidget):
 
         _Layer = LayerReader._LayerMapping
         for LayerName in _Layer:
-            if _Layer[LayerName][1] == 0:       ## Layer is drawing
-                self.layer_input.addItem(LayerName)
-        del _Layer
+            if _Layer[LayerName][1] != None:       ## Layer is drawing
+                if not 'PIN' in LayerName:
+                    self.layer_input.addItem(LayerName)
 
         self.setupVboxColumn1 = QVBoxLayout()
         self.setupVboxColumn2 = QVBoxLayout()
@@ -634,14 +635,9 @@ class _PathSetupWindow(QWidget):
 
         _Layer = LayerReader._LayerMapping
         for LayerName in _Layer:
-            if _Layer[LayerName][1] == 0:       ## Layer is drawing
-                self.layer_input.addItem(LayerName)
-        del _Layer
-        #
-        # _Layer = LayerInfo._Layer()
-        # for LayerName in _Layer._LayerName:
-        #     self.layer_input.addItem(LayerName)
-        # del _Layer
+            if _Layer[LayerName][1] != None:       ## Layer is drawing
+                if not 'PIN' in LayerName:
+                    self.layer_input.addItem(LayerName)
 
         self.setupVboxColumn1 = QVBoxLayout()
         self.setupVboxColumn2 = QVBoxLayout()
