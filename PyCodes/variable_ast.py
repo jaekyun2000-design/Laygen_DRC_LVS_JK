@@ -1115,7 +1115,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         return "+".join(x_list), "+".join(y_list)
 
     def parse_args_info(self, args):
-        args = [arg_node.value for arg_node in args]
+        args = [arg_node.value if isinstance(arg_node, ast.Constant) else arg_node.s for arg_node in args ]
         arg_names = list(map(lambda arg: re.sub('\[.*\]', '', arg), args))
         arg_indexes = list(map(lambda arg: re.findall('\[.*\]', arg)[0], args))
         return arg_names, arg_indexes
