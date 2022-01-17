@@ -4,7 +4,7 @@ from generatorLib import DRC
 
 class _PMOS(StickDiagram._StickDiagram):
     _ParametersForDesignCalculation = dict(_PMOSNumberofGate=None, _PMOSChannelWidth=None, _PMOSChannellength=None,
-                                           _PMOSDummy=False, _XVT=None)
+                                           _PMOSDummy=False,_SDWidth=None, _XVT=None)
 
     def __init__(self, _DesignParameter=None, _Name=None):
 
@@ -47,7 +47,7 @@ class _PMOS(StickDiagram._StickDiagram):
             self._DesignParameter['_Name']['_Name'] = _Name
 
     def _CalculatePMOSDesignParameter(self, _PMOSNumberofGate=None, _PMOSChannelWidth=None, _PMOSChannellength=None,
-                                      _PMOSDummy=False, _GateSpacing=None, _XVT=None):
+                                      _PMOSDummy=False, _GateSpacing=None, _SDWidth=None,_XVT=None):
         print ('#########################################################################################################')
         print ('                                    {}  PMOS Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name']))
         print ('#########################################################################################################')
@@ -127,7 +127,12 @@ class _PMOS(StickDiagram._StickDiagram):
                                     _XYCoordinateOfPMOS[0][1]]
             tmpXYs.append(_xycoordinatetmp)
 
-        self._DesignParameter['_Met1Layer']['_XWidth'] = _DRCObj._CoMinWidth + 2 * _DRCObj._Metal1MinEnclosureCO
+
+        if _SDWidth == None :
+            self._DesignParameter['_Met1Layer']['_XWidth'] = _DRCObj._CoMinWidth + 2 * _DRCObj._Metal1MinEnclosureCO
+        else :
+            self._DesignParameter['_Met1Layer']['_XWidth'] = _SDWidth
+
         self._DesignParameter['_Met1Layer']['_YWidth'] = self._DesignParameter['_ODLayer']['_YWidth']
         self._DesignParameter['_Met1Layer']['_XYCoordinates'] = tmpXYs
 

@@ -4,7 +4,7 @@ from generatorLib import DRC
 
 class _NMOS(StickDiagram._StickDiagram):
     _ParametersForDesignCalculation = dict(_NMOSNumberofGate=None, _NMOSChannelWidth=None, _NMOSChannellength=None,
-                                           _NMOSDummy=False, _XVT=None)
+                                           _NMOSDummy=False, _SDWidth=None, _XVT=None)
 
     def __init__(self, _DesignParameter=None, _Name=None):
 
@@ -44,7 +44,7 @@ class _NMOS(StickDiagram._StickDiagram):
             self._DesignParameter['_Name']['_Name'] = _Name
 
     def _CalculateNMOSDesignParameter(self, _NMOSNumberofGate=6, _NMOSChannelWidth=600, _NMOSChannellength=60,
-                                      _NMOSDummy=False, _GateSpacing=None, _XVT='LVT'):
+                                      _NMOSDummy=False, _GateSpacing=None, _SDWidth=None, _XVT='LVT'):
         """
 
         :param _NMOSNumberofGate:
@@ -135,7 +135,11 @@ class _NMOS(StickDiagram._StickDiagram):
                                     _XYCoordinateOfNMOS[0][1]]
             tmpXYs.append(_xycoordinatetmp)
 
-        self._DesignParameter['_Met1Layer']['_XWidth'] = _DRCObj._CoMinWidth + 2 * _DRCObj._Metal1MinEnclosureCO
+        if _SDWidth == None :
+            self._DesignParameter['_Met1Layer']['_XWidth'] = _DRCObj._CoMinWidth + 2 * _DRCObj._Metal1MinEnclosureCO
+        else :
+            self._DesignParameter['_Met1Layer']['_XWidth'] = _SDWidth
+
         self._DesignParameter['_Met1Layer']['_YWidth'] = self._DesignParameter['_ODLayer']['_YWidth']
         self._DesignParameter['_Met1Layer']['_XYCoordinates'] = tmpXYs
 
