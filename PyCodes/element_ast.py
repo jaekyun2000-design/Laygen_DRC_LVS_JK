@@ -270,10 +270,13 @@ class ElementTransformer(ast.NodeTransformer):
                         tmp_ast = run_transformer(child)
                         string_list.append(astunparse.unparse(tmp_ast).replace('\n', ''))
                     else:
-                        string_list.append(f'[{child}]')
+                        if field == 'XY':
+                            string_list.append(f'[{child}]')
                 if field == 'XY':
                     string_list = [string[1:-1] for string in string_list]
                     node.__dict__[field] = "[" + ','.join(string_list) + "]"
+                else:
+                    node.__dict__[field] =  astunparse.unparse(tmp_ast).replace('\n', '')
 
             # elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
             #     tmp_ast = run_transformer(node.__dict__[field][0])
@@ -313,10 +316,13 @@ class ElementTransformer(ast.NodeTransformer):
                         tmp_ast = run_transformer(child)
                         string_list.append(astunparse.unparse(tmp_ast).replace('\n', ''))
                     else:
-                        string_list.append(f'[{child}]')
+                        if field == 'XY':
+                            string_list.append(f'[{child}]')
                 if field == 'XY':
                     string_list = [string[1:-1] for string in string_list]
                     node.__dict__[field] = "[" + ','.join(string_list) + "]"
+                else:
+                    node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
 
         if syntax == 'list' or syntax == 'string':
             tmp_xy = str(node.XY).replace("'", "")
@@ -365,10 +371,13 @@ class ElementTransformer(ast.NodeTransformer):
                         tmp_ast = run_transformer(child)
                         string_list.append(astunparse.unparse(tmp_ast).replace('\n', ''))
                     else:
-                        string_list.append(f'[{child}]')
+                        if field == 'XY':
+                            string_list.append(f'[{child}]')
                 if field == 'XY':
                     string_list = [string[1:-1] for string in string_list]
                     node.__dict__[field] = "[" + ','.join(string_list) + "]"
+                else:
+                    node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
 
         if syntax == 'list':
             tmp_xy = str(node.XY).replace("'", "")
@@ -429,10 +438,13 @@ class ElementTransformer(ast.NodeTransformer):
                         tmp_ast = run_transformer(child)
                         string_list.append(astunparse.unparse(tmp_ast).replace('\n', ''))
                     else:
-                        string_list.append(f'[{child}]')
+                        if field == 'XY':
+                            string_list.append(f'[{child}]')
                 if field == 'XY':
                     string_list = [string[1:-1] for string in string_list]
                     node.__dict__[field] = "[" + ','.join(string_list) + "]"
+                else:
+                    node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
 
             if syntax == 'list':
                 tmp_xy = str(node.XY).replace("'", "")
