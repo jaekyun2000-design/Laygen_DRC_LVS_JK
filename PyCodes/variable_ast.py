@@ -1424,7 +1424,8 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         return f"math.ceil(math.sqrt(math.pow({drc_sentence},2) - math.pow({fixed_value},2)))"
 
 
-
+    # def transform_sungu(self, node):
+    #     if
 
 
 class CustomVariableSubstitution(ast.NodeTransformer):
