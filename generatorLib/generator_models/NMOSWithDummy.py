@@ -344,7 +344,7 @@ class _NMOS(StickDiagram._StickDiagram):
             if _NMOSNumberofGate == 1:
                 self._DesignParameter['_POLayerPINDrawing']['_XYCoordinates'] = tmp1 + tmp2
             else:
-                self._DesignParameter['_POLayerPINDrawing']['_XYCoordinates'] = tmp1
+                self._DesignParameter['_POLayerPINDrawing']['_XYCoordinates'] = tmp2
 
             # self._DesignParameter['DistanceXBtwPoly']['_DesignSizesInList'] = _LengthNMOSBtwMet1
 
