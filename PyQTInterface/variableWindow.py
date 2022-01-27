@@ -50,6 +50,7 @@ class VariableSetupWindow(QWidget):
 
     def __init__(self,variable_type,vis_items=None,variable_obj=None,group_ref_list=None,inspect_array_window_address=None):
         super().__init__()
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
         self._edit_id = None
         self.setMinimumHeight(700)
         self.setMinimumWidth(400)
@@ -66,6 +67,8 @@ class VariableSetupWindow(QWidget):
         else:
             # self._DesignParameter = BoundaryElement._ItemTraits
             self.updateUI()
+        # self.setWindowFlag(Qt.WindowStaysOnTopHint)
+
 
     def button_image_change(self,checked):
         sender = self.sender()

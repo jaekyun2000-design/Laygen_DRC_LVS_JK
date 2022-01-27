@@ -66,6 +66,7 @@ class ExpressionCalculator(QWidget):
 
         font = self.display.font()
         font.setPointSize(font.pointSize()+6)
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.display.setFont(font)
         self.init_ui()
 
