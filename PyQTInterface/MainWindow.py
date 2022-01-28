@@ -756,6 +756,7 @@ class _MainWindow(QMainWindow):
         print("******************************Initializing Graphic Interface Complete")
 
     def create_generator_file(self):
+        start_time = time.time()
         library_list = []
         additional_import_code = ''
         constraint_names = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
@@ -812,6 +813,13 @@ class _MainWindow(QMainWindow):
             f = open(f"./generatorLib/generator_models/{self._CurrentModuleName}.py", "w")
             f.write(final_code)
             f.close()
+
+        exec_time = time.time() - start_time
+        self.info_widget = QMessageBox()
+        self.info_widget.setWindowTitle('Time Measurement')
+        self.info_widget.setText(f'{exec_time} sec')
+        self.info_widget.setDefaultButton(QMessageBox.Close)
+        self.info_widget.show()
 
     def fix_contaminated_dc(self):
         print('1')
