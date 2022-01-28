@@ -1379,7 +1379,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
                 transformer = getattr(tf_object, method)
                 tf_string_b = transformer(node.args[1])
         else:
-            tf_string_b = astunparse.unparse(run_transformer(node.args[0])).replace('\n', '')
+            tf_string_b = astunparse.unparse(run_transformer(node.args[1])).replace('\n', '')
 
         if direction == 'X':
             return f"abs({tf_string_a}[0] - {tf_string_b}[0])"
