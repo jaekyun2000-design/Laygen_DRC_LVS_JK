@@ -73,6 +73,7 @@ from PyQTInterface import variableWindow
 from PyQTInterface import list_manager
 from PyQTInterface import calculator
 from PyQTInterface import ConditionalStatement
+# from PyQTInterface import undo_frame
 
 from generatorLib import generator_model_api
 from generatorLib import DRC
@@ -109,6 +110,7 @@ class _MainWindow(QMainWindow):
     def __init__(self):
         self.test = False
         super(_MainWindow, self).__init__()
+        # self.undo_stack = undo_frame.UndoStack()
         self.setStyleSheet("border-color: rgb(178, 41, 100)")
         self.module_dict= dict()
         self.module_name_list = []
@@ -215,6 +217,7 @@ class _MainWindow(QMainWindow):
         UpdateGDSAction = QAction("Update constraint",self)
         setup_action = QAction("Setup",self)
         fixAction = QAction("Fix!", self)
+        # undo_action = QAction("Undo", self)
 
 
         # newAction.setShortcut('Ctrl+N')
@@ -244,6 +247,9 @@ class _MainWindow(QMainWindow):
         fixAction.setShortcut('Ctrl+F')
         fixAction.triggered.connect(self.fix_contaminated_dc)
 
+        # undo_action.setShortcut('Ctrl+Z')
+        # undo_action.triggered.connect(self.undo_stack.undo)
+        #
         setup_action.triggered.connect(self.run_setup_update)
 
 
@@ -261,6 +267,7 @@ class _MainWindow(QMainWindow):
         fileMenu.addAction(UpdateGDSAction)
         fileMenu.addAction(setup_action)
         fileMenu.addAction(fixAction)
+        # fileMenu.addAction(undo_action)
 
         #Second Menu#
         self.statusBar().showMessage("No Module")
@@ -749,6 +756,7 @@ class _MainWindow(QMainWindow):
         print("******************************Initializing Graphic Interface Complete")
 
     def create_generator_file(self):
+        start_time = time.time()
         library_list = []
         additional_import_code = ''
         constraint_names = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
@@ -805,6 +813,13 @@ class _MainWindow(QMainWindow):
             f = open(f"./generatorLib/generator_models/{self._CurrentModuleName}.py", "w")
             f.write(final_code)
             f.close()
+
+        exec_time = time.time() - start_time
+        self.info_widget = QMessageBox()
+        self.info_widget.setWindowTitle('Time Measurement')
+        self.info_widget.setText(f'{exec_time} sec')
+        self.info_widget.setDefaultButton(QMessageBox.Close)
+        self.info_widget.show()
 
     def fix_contaminated_dc(self):
         print('1')
@@ -2538,9 +2553,11 @@ class _MainWindow(QMainWindow):
             self.show()
 
     def inspect_vw_array(self, group_list):
-        inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
-        reference = inspector.inspect_group(group_list)
-        self.vw.load_reference(reference)
+        if self._CurrentModuleName in self._QTObj._qtProject._DesignParameter:
+            inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+            reference = inspector.inspect_group(group_list)
+            if reference:
+                self.vw.load_reference(reference)
 
     def edit_variable(self, _edit_id, variable_info_dict):
         target_dp_id = self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(_edit_id)
