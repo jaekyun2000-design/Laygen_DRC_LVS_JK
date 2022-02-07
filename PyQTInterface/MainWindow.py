@@ -2328,8 +2328,12 @@ class _MainWindow(QMainWindow):
                         if value != 'MacroCell':    # case Sref
                             _className = generator_model_api.class_name_dict[_element._DesignParameter['library']]
                             topcell[parameter_id]._DesignParameter['className'] =_className
-                            topcell[parameter_id]._DesignParameter['parameters'] = \
-                                generator_model_api.class_dict[value]._ParametersForDesignCalculation
+                            calculate_fcn = list(generator_model_api.class_function_dict[value].keys())[0]
+                            parameter_dict = dict()
+                            for parm in generator_model_api.class_function_dict[value][calculate_fcn]:
+                                parameter_dict[parm.name] = parm.default
+                            # topcell[parameter_id]._DesignParameter['parameters'] = \
+                            #     generator_model_api.class_dict[value]._ParametersForDesignCalculation
                         topcell[parameter_id]._ElementName = parameter_id
                         topcell[parameter_id]._DesignParameter['_id'] = parameter_id
                         topcell[parameter_id]._DesignParameter['_ElementName'] = parameter_id
