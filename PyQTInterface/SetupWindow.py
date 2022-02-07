@@ -4960,7 +4960,7 @@ class DesignModifier(QWidget):
             del child
 
         self.field_value_dict['Sref'].clear()
-        if parameters is None:
+        if design_const._ast.parameters is None:
             warnings.warn('Missing Parameter info.')
             return
         for parameter, value in design_const._ast.parameters.items():

@@ -2334,6 +2334,7 @@ class _MainWindow(QMainWindow):
                                 parameter_dict[parm.name] = parm.default
                             # topcell[parameter_id]._DesignParameter['parameters'] = \
                             #     generator_model_api.class_dict[value]._ParametersForDesignCalculation
+                            topcell[parameter_id]._DesignParameter['parameters'] = parameter_dict
                         topcell[parameter_id]._ElementName = parameter_id
                         topcell[parameter_id]._DesignParameter['_id'] = parameter_id
                         topcell[parameter_id]._DesignParameter['_ElementName'] = parameter_id
