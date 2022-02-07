@@ -1766,6 +1766,34 @@ class _MainWindow(QMainWindow):
             file = open('./tmp.gds','wb')
             stream_data.write_binary_gds_stream(file)
             file.close()
+            if user_setup.FTP_UPLOAD:
+                import ftp
+                file = open('./tmp.gds','rb')
+                result_flag, result = ftp.upload_ftp(file,f'{self._CurrentModuleName}.gds')
+                file.close()
+                self.info_widget = QMessageBox()
+                self.info_widget.setWindowTitle('FTP upload')
+                self.info_widget.setText(f'{result}')
+                self.info_widget.setDefaultButton(QMessageBox.Close)
+                if result_flag:
+                    self.info_widget.setIcon(QMessageBox.Information)
+                else:
+                    self.info_widget.setIcon(QMessageBox.Warning)
+                self.info_widget.show()
+
+                if result_flag and user_setup.AUTO_IMPORT:
+                    self.info_widget.hide()
+                    result_flag, result = ftp.stream(self._CurrentModuleName, f'{self._CurrentModuleName}.gds')
+                    self.info_widget2 = QMessageBox()
+                    self.info_widget2.setWindowTitle('Stream In')
+                    self.info_widget2.setText(f'{result}')
+                    self.info_widget2.setDefaultButton(QMessageBox.Close)
+                    if result_flag:
+                        self.info_widget2.setIcon(QMessageBox.Information)
+                    else:
+                        self.info_widget2.setIcon(QMessageBox.Warning)
+                    self.info_widget2.show()
+
 
         except:
             traceback.print_exc()

@@ -7,6 +7,8 @@ MIN_SNAP_SPACING = 1
 GDS2GEN = True
 MULTI_THREAD = True
 MULTI_THREAD_NUM = 5
+FTP_UPLOAD = True
+AUTO_IMPORT = True
 
 # CALCULATOR_MODE = 'Calculator'  # or 'Arithmetic'
 CALCULATOR_MODE = 'Arithmetic'  # or 'Calculator'
