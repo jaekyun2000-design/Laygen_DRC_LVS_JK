@@ -111,7 +111,7 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['nmos_poly_gate_routing_y'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _Width=_width)
 		self._DesignParameter['nmos_poly_gate_routing_y']['_XYCoordinates'] = path_list
-		if nmos_gate != 1:
+		if nmos_gate > 1:
 			self._DesignParameter['nmos_source_m1_routing_x'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'])
 			self._DesignParameter['nmos_source_m1_routing_x']['_XYCoordinates'] = [[[((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][0][0]) - (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) - (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) - (self._DesignParameter['nmos_source_m1_routing_x']['_Width'] / 2)) - 60)], [((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) - (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) - (self._DesignParameter['nmos_source_m1_routing_x']['_Width'] / 2)) - 60)]]]
 		path_list = []
@@ -337,8 +337,9 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['nmos_poly_gate_routing_y'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _Width=_width)
 		self._DesignParameter['nmos_poly_gate_routing_y']['_XYCoordinates'] = path_list
-		self._DesignParameter['nmos_source_m1_routing_x'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'])
-		self._DesignParameter['nmos_source_m1_routing_x']['_XYCoordinates'] = [[[((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][0][0]) - (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) - (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) - (self._DesignParameter['nmos_source_m1_routing_x']['_Width'] / 2)) - 60)], [((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) - (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) - (self._DesignParameter['nmos_source_m1_routing_x']['_Width'] / 2)) - 60)]]]
+		if nmos_gate>1:
+			self._DesignParameter['nmos_source_m1_routing_x'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'])
+			self._DesignParameter['nmos_source_m1_routing_x']['_XYCoordinates'] = [[[((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][0][0]) - (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) - (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) - (self._DesignParameter['nmos_source_m1_routing_x']['_Width'] / 2)) - 60)], [((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) - (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) - (self._DesignParameter['nmos_source_m1_routing_x']['_Width'] / 2)) - 60)]]]
 		path_list = []
 		if (len(self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
 		    mode = 'vertical'
@@ -369,8 +370,9 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['m1_source_routing_y'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_source_routing_y']['_XYCoordinates'] = path_list
-		self._DesignParameter['pmos_drain_m1_routing_x'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'])
-		self._DesignParameter['pmos_drain_m1_routing_x']['_XYCoordinates'] = [[[((self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][0][0]) - (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1] + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) + (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) + (self._DesignParameter['pmos_drain_m1_routing_x']['_Width'] / 2)) + 60)], [((self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1] + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) + (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) + (self._DesignParameter['pmos_drain_m1_routing_x']['_Width'] / 2)) + 60)]]]
+		if pmos_gate > 2 :
+			self._DesignParameter['pmos_drain_m1_routing_x'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'])
+			self._DesignParameter['pmos_drain_m1_routing_x']['_XYCoordinates'] = [[[((self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][0][0]) - (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1] + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) + (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) + (self._DesignParameter['pmos_drain_m1_routing_x']['_Width'] / 2)) + 60)], [((self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1] + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) + (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) + (self._DesignParameter['pmos_drain_m1_routing_x']['_Width'] / 2)) + 60)]]]
 		path_list = []
 		if (len(self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
 		    mode = 'vertical'
@@ -409,64 +411,66 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 		self._DesignParameter['PIMP_boundary_1']['_XYCoordinates'] = [[self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0], self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1]]]
 		self._DesignParameter['vss_pplayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PIMP'][0], _Datatype=DesignParameters._LayerMapping['PIMP'][1], _XWidth=(self._DesignParameter['vss_odlayer']['_XWidth'] + (2 * drc._PpMinExtensiononPactive)), _YWidth=(self._DesignParameter['vss_odlayer']['_YWidth'] + (2 * drc._PpMinExtensiononPactive)))
 		self._DesignParameter['vss_pplayer']['_XYCoordinates'] = [[(+ self._DesignParameter['vss_odlayer']['_XYCoordinates'][0][0]), (+ self._DesignParameter['vss_odlayer']['_XYCoordinates'][0][1])]]
-		path_list = []
-		if (len(self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
-		elif (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
-		elif (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
-		else:
-		    print('Invalid Target Input')
-		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['pmos_drain_m1_routing_x']['_XYCoordinates'][0][0][1])
-		    for i in range(len(self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1])], self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
-		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['pmos_drain_m1_routing_x']['_XYCoordinates'][0][0][0])
-		    for i in range(len(self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1])], self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
-		self._DesignParameter['additional_m1_drain'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
-		self._DesignParameter['additional_m1_drain']['_XYCoordinates'] = path_list
-		path_list = []
-		if (len(self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
-		elif (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
-		elif (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
-		else:
-		    print('Invalid Target Input')
-		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['nmos_source_m1_routing_x']['_XYCoordinates'][0][0][1])
-		    for i in range(len(self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1])], self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
-		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['nmos_source_m1_routing_x']['_XYCoordinates'][0][0][0])
-		    for i in range(len(self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1])], self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
-		self._DesignParameter['additional_m1_source'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
-		self._DesignParameter['additional_m1_source']['_XYCoordinates'] = path_list
+		if pmos_gate > 2:
+			path_list = []
+			if (len(self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
+				mode = 'vertical'
+				_width = self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			elif (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
+				mode = 'horizontal'
+				_width = self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			elif (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
+				mode = 'vertical'
+				_width = self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			else:
+				print('Invalid Target Input')
+			if (mode == 'vertical'):
+				xy_with_offset = []
+				target_y_value = (0 + self._DesignParameter['pmos_drain_m1_routing_x']['_XYCoordinates'][0][0][1])
+				for i in range(len(self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+					if ((i % 2) == 1):
+						xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1])], self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+				for i in range(len(xy_with_offset)):
+					path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			elif (mode == 'horizontal'):
+				xy_with_offset = []
+				target_x_value = (0 + self._DesignParameter['pmos_drain_m1_routing_x']['_XYCoordinates'][0][0][0])
+				for i in range(len(self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+					if ((i % 2) == 1):
+						xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1])], self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+				for i in range(len(xy_with_offset)):
+					path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			self._DesignParameter['additional_m1_drain'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
+			self._DesignParameter['additional_m1_drain']['_XYCoordinates'] = path_list
+		if nmos_gate > 1:
+			path_list = []
+			if (len(self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
+				mode = 'vertical'
+				_width = self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			elif (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
+				mode = 'horizontal'
+				_width = self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			elif (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
+				mode = 'vertical'
+				_width = self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			else:
+				print('Invalid Target Input')
+			if (mode == 'vertical'):
+				xy_with_offset = []
+				target_y_value = (0 + self._DesignParameter['nmos_source_m1_routing_x']['_XYCoordinates'][0][0][1])
+				for i in range(len(self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+					if ((i % 2) == 0):
+						xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1])], self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+				for i in range(len(xy_with_offset)):
+					path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			elif (mode == 'horizontal'):
+				xy_with_offset = []
+				target_x_value = (0 + self._DesignParameter['nmos_source_m1_routing_x']['_XYCoordinates'][0][0][0])
+				for i in range(len(self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+					if ((i % 2) == 0):
+						xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1])], self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+				for i in range(len(xy_with_offset)):
+					path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			self._DesignParameter['additional_m1_source'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
+			self._DesignParameter['additional_m1_source']['_XYCoordinates'] = path_list
 		
