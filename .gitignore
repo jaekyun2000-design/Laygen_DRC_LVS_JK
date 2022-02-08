@@ -1,7 +1,2 @@
-.idea
-__pycache__
-*.pyc
-*.gds
-*.txt
-*.json
-Private/
+
+/Private/
