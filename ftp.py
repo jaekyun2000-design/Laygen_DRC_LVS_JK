@@ -1,22 +1,23 @@
 import user_setup
 import ftplib
 import paramiko
-
+from Private import Myinfo
 
 ################ Privacy Information ################
+My = Myinfo.USER()
 server_ip = '141.223.29.62'
 ftp_port = 21
 ssh_port = 22
-user = ''
-pwd = ''
+user = My.ID
+pwd = My.PW
 
 if user_setup._Technology == 'SS28nm':
-    ftp_dir = '~/OPUS/ss28/gds'
-    ssh_dir = '~/OPUS/ss28'
+    ftp_dir = My.Dir_Work
+    ssh_dir = My.Dir_Work
     tech_file = 'cmos28lp'
 elif user_setup._Technology == 'TSMC65nm':
-    ftp_dir = '~/OPUS/tsmc65/gds'
-    ssh_dir = '~/OPUS/tsmc65'
+    ftp_dir = My.Dir_Work
+    ssh_dir = My.Dir_Work
     tech_file = 'tsmcN65'
 else:
     raise NotImplemented
