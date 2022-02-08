@@ -4,7 +4,7 @@ import paramiko
 from Private import Myinfo
 
 ################ Privacy Information ################
-My = Myinfo.USER(user_setup._Technology)
+My = Myinfo.USER()
 server_ip = '141.223.29.62'
 ftp_port = 21
 ssh_port = 22

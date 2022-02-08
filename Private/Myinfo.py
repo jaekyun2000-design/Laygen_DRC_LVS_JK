@@ -1,6 +1,7 @@
+import user_setup
 class USER:
 
-    def __init__(self, tech=None):
+    def __init__(self):
         """
         :Function: Set user information and directory paths
         :param _tech: (optional) Write your technology to specify directory paths.
@@ -9,6 +10,7 @@ class USER:
         self.ID = 'jicho0927'
         self.PW = 'cho89140616!!'
         self.server = '141.223.29.62'
+        tech = user_setup._Technology
 
         if tech in ('SS28nm', None):
             self.Dir_Work = '/mnt/sdc/jicho0927/OPUS/SAMSUNG28n'
