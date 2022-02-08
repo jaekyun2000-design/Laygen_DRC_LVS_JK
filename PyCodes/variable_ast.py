@@ -713,23 +713,27 @@ class IrregularTransformer(ast.NodeTransformer):
                     loop_code = f"XYList = []\n" \
                                 f"{xy_offset}\n" \
                                 f"for i in range(len({layer_xy})):\n" \
-                                f"\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , {layer_xy}[i], xy_offset ) ] )\n"
+                                f"\txy = {layer_xy}[i][0] if type({layer_xy}[i][0]) == list else {layer_xy}[i]\n" \
+                                f"\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , xy, xy_offset ) ] )\n"
                 elif _index == 'Odd':
                     loop_code = f"XYList = []\n" \
                                 f"{xy_offset}\n" \
                                 f"for i in range(len({layer_xy})):\n" \
                                 f"\tif (i%2 == 1):\n" \
-                                f"\t\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , {layer_xy}[i], xy_offset ) ] )\n"
+                                f"\t\txy = {layer_xy}[i][0] if type({layer_xy}[i][0]) == list else {layer_xy}[i]\n" \
+                                f"\t\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , xy, xy_offset ) ] )\n"
                 elif _index == 'Even':
                     loop_code = f"XYList = []\n" \
                                 f"{xy_offset}\n" \
                                 f"for i in range(len({layer_xy})):\n" \
                                 f"\tif (i%2 == 0):\n" \
-                                f"\t\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , {layer_xy}[i], xy_offset ) ] )\n"
+                                f"\t\txy = {layer_xy}[i][0] if type({layer_xy}[i][0]) == list else {layer_xy}[i]\n" \
+                                f"\t\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , xy, xy_offset ) ] )\n"
                 else:
                     loop_code = f"XYList = []\n" \
                                 f"{xy_offset}\n" \
                                 f"for element in {layer_xy}{_index[0]}:\n" \
+                                f"\telement = {element}[0] if type({element}[0]) == list else {element}\n" \
                                 f"\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , element, xy_offset ) ] )\n"\
 
                 tmp_node = element_ast.Sref()
