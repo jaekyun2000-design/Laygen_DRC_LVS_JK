@@ -124,6 +124,10 @@ class _NMOS(StickDiagram._StickDiagram):
         print ('#############################     METAL1 Layer Calculation    ##############################################')
         # METAL1 Layer Coordinate Setting
         _LengthNMOSBtwMet1 = _LengthNMOSBtwPO
+        _tmpCOYNum = int(float(self._DesignParameter['_ODLayer']['_YWidth']
+                                       - 2 * max([_DRCObj._CoMinEnclosureByODAtLeastTwoSide, _DRCObj._Metal1MinEnclosureCO2])
+                                       + _DRCObj._CoMinSpace)
+                                 / (_DRCObj._CoMinSpace + _DRCObj._CoMinWidth))
 
         tmpXYs = []
         for i in range(0, _NMOSNumberofGate + 1):
@@ -140,8 +144,15 @@ class _NMOS(StickDiagram._StickDiagram):
         else :
             self._DesignParameter['_Met1Layer']['_XWidth'] = _SDWidth
 
-        self._DesignParameter['_Met1Layer']['_YWidth'] = self._DesignParameter['_ODLayer']['_YWidth']
+        self._DesignParameter['_Met1Layer']['_YWidth'] = (_tmpCOYNum - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + _DRCObj._CoMinWidth + 2 * _DRCObj._Metal1MinEnclosureCO2
+
+        # if _SDMinHeight == True :
+        #     self._DesignParameter['_Met1Layer']['_YWidth'] = (_tmpCOYNum - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + _DRCObj._CoMinWidth + 2 * _DRCObj._Metal1MinEnclosureCO2
+        # else :
+        #     self._DesignParameter['_Met1Layer']['_YWidth'] = self._DesignParameter['_ODLayer']['_YWidth']
+
         self._DesignParameter['_Met1Layer']['_XYCoordinates'] = tmpXYs
+        #del _tmpCOYNum
 
         if DesignParameters._Technology == 'SS28nm':
             self._DesignParameter['_METAL1PINDrawing']['_XWidth'] = self._DesignParameter['_Met1Layer']['_XWidth']
