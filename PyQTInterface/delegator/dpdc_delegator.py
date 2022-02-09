@@ -6,8 +6,10 @@ import re
 
 from PyQTInterface.delegator import delegator
 from PyQTInterface import VisualizationItem
+from PyQTInterface import undo_frame
 from PyCodes import variable_ast
 from powertool import topAPI
+import traceback
 import user_setup
 import numpy as np
 
@@ -27,6 +29,7 @@ class DesignDelegator(delegator.Delegator):
         self.create_vs_item(design_dict['parameter'])
         if design_dict['constraint']:
             self.control_constraint_tree_view(design_dict['constraint_id'])
+        self.stack_undo('create design object')
 
     def create_qt_constraint(self, constraint_ast=None, constraint_dict=None, sender=None):
         """
@@ -41,6 +44,12 @@ class DesignDelegator(delegator.Delegator):
             design_dict = self.main_window._QTObj._qtProject._feed_design(design_type='constraint',
                                                                           module_name=self.main_window._CurrentModuleName,
                                                                           _ast=constraint_ast)
+            # command = undo_frame.MoveDesignConstraint(self.main_window.dockContentWidget3,
+            #                                           self.main_window.dockContentWidget3_2,
+            #                                           design_dict['constraint_id'], self.main_window._CurrentModuleName,
+            #                                           design_dict['constraint'])
+            # print('add cmd')
+            # self.main_window.undo_stack.push(command)
             if variable_ast.GeneratorVariable in constraint_ast.__class__.__bases__:
                 constraint_ast.id = design_dict['constraint_id']
                 if constraint_ast.__class__ in [variable_ast.XYCoordinate, variable_ast.PathXY, variable_ast.LogicExpression, variable_ast.CustomVariable]:
@@ -60,7 +69,13 @@ class DesignDelegator(delegator.Delegator):
                     design_dict['parameter']._DesignParameter['_ModelStructure'] = dp_dict
                     design_dict['parameter'].update_unified_expression()
                 else:
+
                     dp_from_gen = gds2gen.code_generation_for_subcell(constraint_ast)
+                    if not dp_from_gen:
+                        traceback.print_exc()
+                        warnings.warn('Invalid Parameters.')
+                        self.sender().get_runtime_info('error')
+                        return
 
                     if design_dict['parameter']:
                         design_dict['parameter']._DesignParameter['_DesignObj'] = dp_from_gen['_DesignObj']
@@ -71,6 +86,9 @@ class DesignDelegator(delegator.Delegator):
                 self.create_vs_item(design_dict['parameter'])
         elif constraint_dict:
             pass
+        self.stack_undo('create design constraint')
+
+
 
     def copy_qt_constraint(self, qt_dc) -> tuple:
         """
@@ -107,6 +125,7 @@ class DesignDelegator(delegator.Delegator):
                     i += 1
                 target_ast.name = new_name
             self.create_qt_constraint(target_ast)
+        self.stack_undo('copy design constraint')
 
 
 
@@ -153,6 +172,7 @@ class DesignDelegator(delegator.Delegator):
                                               _DesignConstraint=self.main_window._QTObj._qtProject._DesignConstraint)
             elif request == 'update':
                 target.update_constraint_by_id(constraint_id)
+        self.stack_undo('update tree view')
 
     def update_qt_parameter(self, dp_dict, element_manager_update=True):
         """
@@ -178,6 +198,7 @@ class DesignDelegator(delegator.Delegator):
 
         if design_dict['constraint_id']:
             self.control_constraint_tree_view(design_dict['constraint_id'],channel=3,request='update')
+        self.stack_undo('update design object')
 
     def update_qt_constraint(self, target_id, updated_ast=None, updated_dict=None, updated_variable_dict=None):
         # if updated_ast:
@@ -218,6 +239,8 @@ class DesignDelegator(delegator.Delegator):
         if design_dict and design_dict['parameter_id']:
             design_dict['parameter'].update_unified_expression()
             self.update_vs_item(design_dict['parameter'])
+
+        self.stack_undo('update design constraint')
 
     def update_vs_item_dict(self, original_name, changed_name):
         if original_name in self.main_window.visualItemDict:
@@ -397,6 +420,7 @@ class DesignDelegator(delegator.Delegator):
 
         if delete_dc:
             self.main_window.deleteDesignConstraint(dc_id, delete_dp=False)
+        self.stack_undo('delete design parameter')
 
     def convert_elements_to_sref(self, vis_item_list):
         # for vis in vis_item_list:
@@ -497,6 +521,11 @@ class DesignDelegator(delegator.Delegator):
         transformed_output = topAPI.parameter_predictor.transform_outputs(results, cell_size)
         print(transformed_output)
 
+    def stack_undo(self, log=None):
+        command = undo_frame.ActionCommand(log)
+        file_name = command.get_file_name()
+        self.main_window.undo_stack.push(command)
+        self.main_window.saveProject(file_name)
 
 
 
