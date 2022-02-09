@@ -1,4 +1,5 @@
 import os
+from PyQTInterface import undo_frame
 dir_check=os.getcwd()
 if 'PyQTInterface' in dir_check:
     os.chdir('..')
@@ -110,7 +111,7 @@ class _MainWindow(QMainWindow):
     def __init__(self):
         self.test = False
         super(_MainWindow, self).__init__()
-        # self.undo_stack = undo_frame.UndoStack()
+        self.undo_stack = undo_frame.UndoStack()
         self.setStyleSheet("border-color: rgb(178, 41, 100)")
         self.module_dict= dict()
         self.module_name_list = []
@@ -594,6 +595,7 @@ class _MainWindow(QMainWindow):
         # self.sendDownButton.clicked.connect(self.deliveryDesignParameter)
 
         self.sendLeftButton.clicked.connect(self.dockContentWidget3_2.checkSend)
+        self.sendLeftButton.clicked.connect(lambda tmp: self.design_delegator.stack_undo('send_left'))
         self.dockContentWidget3_2.send_SendID_signal.connect(self.dockContentWidget3.receiveConstraintID)
         self.dockContentWidget3_2.send_ReceiveDone_signal.connect(self.dockContentWidget3.removeCurrentIndexItem)
         self.dockContentWidget3_2.send_SendCopyConstraint_signal.connect(self.constraintToTemplateHandler)
@@ -609,6 +611,7 @@ class _MainWindow(QMainWindow):
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3_2.get_dp_highlight_dc)
 
         self.sendRightButton.clicked.connect(self.dockContentWidget3.checkSend)
+        self.sendRightButton.clicked.connect(lambda tmp: self.design_delegator.stack_undo('send_right'))
         self.dockContentWidget3.send_SendID_signal.connect(self.dockContentWidget3_2.receiveConstraintID)
         self.dockContentWidget3.send_ReceiveDone_signal.connect(self.dockContentWidget3_2.removeCurrentIndexItem)
         self.dockContentWidget3.send_RootDesignConstraint_signal.connect(self.setRootConstraint)
@@ -921,6 +924,7 @@ class _MainWindow(QMainWindow):
         self.sendDownButton.clicked.connect(self.deliveryDesignParameter)
 
         self.sendLeftButton.clicked.connect(self.dockContentWidget3_2.checkSend)
+        self.sendLeftButton.clicked.connect(lambda tmp: self.design_delegator.stack_undo('send_left'))
         self.dockContentWidget3_2.send_SendID_signal.connect(self.dockContentWidget3.receiveConstraintID)
         self.dockContentWidget3_2.send_ReceiveDone_signal.connect(self.dockContentWidget3.removeCurrentIndexItem)
         self.dockContentWidget3_2.send_SendCopyConstraint_signal.connect(self.constraintToTemplateHandler)
@@ -936,6 +940,7 @@ class _MainWindow(QMainWindow):
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget3_2.get_dp_highlight_dc)
 
         self.sendRightButton.clicked.connect(self.dockContentWidget3.checkSend)
+        self.sendRightButton.clicked.connect(lambda tmp: self.design_delegator.stack_undo('send_right'))
         self.dockContentWidget3.send_SendID_signal.connect(self.dockContentWidget3_2.receiveConstraintID)
         self.dockContentWidget3.send_ReceiveDone_signal.connect(self.dockContentWidget3_2.removeCurrentIndexItem)
         self.dockContentWidget3.send_RootDesignConstraint_signal.connect(self.setRootConstraint)
@@ -1781,7 +1786,7 @@ class _MainWindow(QMainWindow):
                     self.info_widget.setIcon(QMessageBox.Warning)
                 self.info_widget.show()
 
-                if result_flag and user_setup.AUTO_IMPORT:
+                if result_flag and user_setup.AUTO_IMPORT == True:
                     self.info_widget.hide()
                     result_flag, result = ftp.stream(self._CurrentModuleName, f'{self._CurrentModuleName}.gds')
                     self.info_widget2 = QMessageBox()
@@ -2099,6 +2104,8 @@ class _MainWindow(QMainWindow):
         self._CurrentModuleName = module_name
         self.dockContentWidget3._CurrentModuleName = module_name
         self.dockContentWidget3_2._CurrentModuleName = module_name
+        undo_frame.ActionCommand.project_name = module_name
+
 
     def change_module_name(self, module_name):
         if module_name in self.module_name_list:
