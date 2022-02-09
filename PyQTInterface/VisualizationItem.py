@@ -1076,6 +1076,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                             sub_element_vi.setRotation(rot)
 
                 tmp_vs_item_group.addToGroup(sub_element_vi)
+                if self.isSelected():
+                    self.setSelected(False)
                 self.addToGroup(sub_element_vi)
                 self.sub_element_dict[sub_element_dp_name+f'[{idx}]'] = sub_element_vi
 

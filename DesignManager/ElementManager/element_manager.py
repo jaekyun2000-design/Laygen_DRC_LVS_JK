@@ -275,6 +275,10 @@ class ElementManager:
                     tmpDP[key] = ast.__dict__['className']
                 elif key == 'XY':
                     contain_variable = False
+                    if type(ast.__dict__['XY']) == str:
+                        tmp_xy = eval(ast.XY)
+                        if type(tmp_xy) == list:
+                            ast.XY = tmp_xy
                     if type(ast.__dict__['XY']) == list:
                         for idx in range(len(ast.__dict__['XY'])):
                             if re.search('[^0-9-.]', str(ast.__dict__['XY'][idx][0])) is not None or re.search('[^0-9-.]', str(ast.__dict__['XY'][idx][1])) is not None:
