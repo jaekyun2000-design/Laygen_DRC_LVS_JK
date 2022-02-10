@@ -2,7 +2,7 @@ import user_setup
 from PyQTInterface import SetupWindow
 from PyQTInterface.delegator import delegator
 from PyQTInterface import variableWindow
-
+from PyQTInterface import undo_frame
 from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QLineEdit
     
     
@@ -210,4 +210,10 @@ class WidgetDelegator(delegator.Delegator):
         self.main_window.vw.send_clicked_item_signal.connect(self.main_window.highlightVI_by_hierarchy_list)
         self.main_window.vw.send_variable_wo_post_ast.connect(lambda target_ast: self.main_window.design_delegator.create_qt_constraint(target_ast, sender=self.main_window.vw))
         self.main_window.vw.update_ui_by_constraint_id(target_id)
+
+    def show_undo_widget(self):
+        self.undo_widget = undo_frame.UndoWidget()
+        self.undo_widget.setStack(self.main_window.undo_stack)
+        self.undo_widget.show()
+        self.undo_widget.request_load_save_file_signal.connect(self.main_window.reload_project)
 

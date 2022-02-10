@@ -147,6 +147,10 @@ class _MainWindow(QMainWindow):
             self.design_delegator.update_vs_item_dict
         )
 
+    def reload_project(self, proejct_name):
+        self.__init__()
+        self.loadProject(proejct_name)
+
     def reset(self):
         self.module_dict = dict()
         self.module_name_list = []
@@ -179,7 +183,7 @@ class _MainWindow(QMainWindow):
         for layer in LayerReader._LayerMapping:
             VisualizationItem._VisualizationItem._subElementLayer[layer] = list()
         VisualizationItem._VisualizationItem._subElementLayer['SRef'] = list()
-        self.close()
+        # self.close()
 
     def vsitem_dict_initialization(self):
         VisualizationItem._VisualizationItem._compareLayer = dict()
@@ -218,6 +222,7 @@ class _MainWindow(QMainWindow):
         UpdateGDSAction = QAction("Update constraint",self)
         setup_action = QAction("Setup",self)
         fixAction = QAction("Fix!", self)
+        undoListAction = QAction("Action List", self)
         # undo_action = QAction("Undo", self)
 
 
@@ -248,6 +253,9 @@ class _MainWindow(QMainWindow):
         fixAction.setShortcut('Ctrl+F')
         fixAction.triggered.connect(self.fix_contaminated_dc)
 
+        undoListAction.setShortcut('Ctrl+Z')
+        undoListAction.triggered.connect(self.widget_delegator.show_undo_widget)
+
         # undo_action.setShortcut('Ctrl+Z')
         # undo_action.triggered.connect(self.undo_stack.undo)
         #
@@ -268,6 +276,7 @@ class _MainWindow(QMainWindow):
         fileMenu.addAction(UpdateGDSAction)
         fileMenu.addAction(setup_action)
         fileMenu.addAction(fixAction)
+        fileMenu.addAction(undoListAction)
         # fileMenu.addAction(undo_action)
 
         #Second Menu#
@@ -759,6 +768,13 @@ class _MainWindow(QMainWindow):
         print("******************************Initializing Graphic Interface Complete")
 
     def create_generator_file(self):
+        self.writing_flag = QMessageBox()
+        reply = self.writing_flag.question(self,"QMessageBox", "Save code as a Generator File?", QMessageBox.Yes | QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            file_write_flag = True
+        elif reply == QMessageBox.No:
+            file_write_flag = False
+
         start_time = time.time()
         library_list = []
         additional_import_code = ''
@@ -805,12 +821,7 @@ class _MainWindow(QMainWindow):
         cal_code = re.sub("\n","\n\t\t",cal_code)
         final_code = import_code + class_declaration_code + fcn_define_code + f"\t{cal_code}"
 
-        self.writing_flag = QMessageBox()
-        reply = self.writing_flag.question(self,"QMessageBox", "Save code as a Generator File?", QMessageBox.Yes | QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            file_write_flag = True
-        elif reply == QMessageBox.No:
-            file_write_flag = False
+
 
         if file_write_flag:
             f = open(f"./generatorLib/generator_models/{self._CurrentModuleName}.py", "w")
