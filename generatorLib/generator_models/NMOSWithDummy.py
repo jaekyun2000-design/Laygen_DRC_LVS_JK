@@ -91,11 +91,16 @@ class _NMOS(StickDiagram._StickDiagram):
 
         if _NMOSDummy:
             print ('#############################     POLY Dummy Layer Calculation    ##############################################')
+            if DesignParameters._Technology != 'SS28nm':
+                a=0
+            else :
+                a=16
+
             self._DesignParameter['_PODummyLayer'] = self._BoundaryElementDeclaration(
                 _Layer=DesignParameters._LayerMapping['POLY'][0],
                 _Datatype=DesignParameters._LayerMapping['POLY'][1],
                 _XWidth=_NMOSChannellength,
-                _YWidth=_NMOSChannelWidth + 2 * _DRCObj._PolygateMinExtensionOnOD,
+                _YWidth=_NMOSChannelWidth + 2 * a,
                 _XYCoordinates=[
                     [a+b for a,b in zip(self._DesignParameter['_POLayer']['_XYCoordinates'][0], [-_LengthNMOSBtwPO, 0])],
                     [a+b for a,b in zip(self._DesignParameter['_POLayer']['_XYCoordinates'][-1], [_LengthNMOSBtwPO, 0])]
