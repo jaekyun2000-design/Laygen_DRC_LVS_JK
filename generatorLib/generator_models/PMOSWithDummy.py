@@ -196,20 +196,6 @@ class _PMOS(StickDiagram._StickDiagram):
         self._DesignParameter['_COLayer']['_XYCoordinates'] = tmpXYs
 
 
-        print ('#############################     PIMP (PP/BP) Layer Calculation    ####################')  # Need to check
-        if (DesignParameters._Technology == 'TSMC65nm') and (_PMOSDummy == True):
-            XWidth_PP_byPO = self._DesignParameter['_PODummyLayer']['_XWidth'] \
-                             + (self._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0] -
-                                self._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]) \
-                             + 2 * _DRCObj._PpMinEnclosureOfPo
-        else:
-            XWidth_PP_byPO = 0
-
-        XWidth_PP_byOD = self._DesignParameter['_ODLayer']['_XWidth'] + 2 * _DRCObj._PpMinExtensiononPactive
-
-        self._DesignParameter['_PPLayer']['_XWidth'] = max(XWidth_PP_byPO, XWidth_PP_byOD)
-        self._DesignParameter['_PPLayer']['_YWidth'] = self._DesignParameter['_POLayer']['_YWidth'] + 2 * _DRCObj._PpMinEnclosureOfPo
-        self._DesignParameter['_PPLayer']['_XYCoordinates'] = _XYCoordinateOfPMOS
 
         # XVT Layer Calculation
         try:
@@ -242,6 +228,22 @@ class _PMOS(StickDiagram._StickDiagram):
         except Exception as e:
             print('Error Occurred', e)
             raise NotImplementedError
+
+        print ('#############################     PIMP (PP/BP) Layer Calculation    ####################')  # Need to check
+        if (DesignParameters._Technology == 'TSMC65nm') and (_PMOSDummy == True):
+            XWidth_PP_byPO = self._DesignParameter['_PODummyLayer']['_XWidth'] \
+                             + (self._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0] -
+                                self._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]) \
+                             + 2 * _DRCObj._PpMinEnclosureOfPo
+        else:
+            XWidth_PP_byPO = 0
+
+        XWidth_PP_byOD = self._DesignParameter['_ODLayer']['_XWidth'] + 2 * _DRCObj._PpMinExtensiononPactive
+
+        self._DesignParameter['_PPLayer']['_XWidth'] = max(XWidth_PP_byPO, XWidth_PP_byOD)
+        self._DesignParameter['_PPLayer']['_YWidth'] = self._DesignParameter[_XVTLayer]['_YWidth']#self._DesignParameter['_POLayer']['_YWidth'] + 2 * _DRCObj._PpMinEnclosureOfPo
+        self._DesignParameter['_PPLayer']['_XYCoordinates'] = _XYCoordinateOfPMOS
+
 
 
         if DesignParameters._Technology == 'SS28nm':
