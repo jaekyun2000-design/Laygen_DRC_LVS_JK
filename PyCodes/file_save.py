@@ -25,7 +25,7 @@ class FileSaveFormat:
         self.save_calculator_extra_info()
         if sub_module:
             self.save_module_info(main_window)
-
+        self.save_snapshot_stack(main_window)
 
 
     def save_constraint_tree_info(self,main_window):
@@ -65,6 +65,9 @@ class FileSaveFormat:
         for variable_name in variable_names:
             self.user_setups[variable_name] = user_setup.__dict__[variable_name]
 
+    def save_snapshot_stack(self, main_window):
+        self.snapshot_stack = main_window.undo_stack.export_data()
+
     def load_qt_interface(self,main_window, _DesignConstraint, sub_module=True):
         self.load_user_setup()
         # main_window._CurrentModuleName = self.top_module
@@ -75,6 +78,7 @@ class FileSaveFormat:
         self.load_calculator_extra_info()
         if sub_module:
             self.load_module_info(main_window)
+        self.load_snapshot_stack(main_window)
 
     def load_from_constraint_tree_info(self,main_window, _DesignConstraint):
         if 'id_items_for_run' not in self.__dict__:
@@ -157,3 +161,7 @@ class FileSaveFormat:
         from PyQTInterface.layermap import LayerReader
         LayerReader.run_for_process_update()
         DisplayReader.run_for_process_update()
+
+    def load_snapshot_stack(self, main_window):
+        if 'snapshot_stack' in self.__dict__:
+            main_window.undo_stack.import_data(self.snapshot_stack)

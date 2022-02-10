@@ -112,6 +112,7 @@ class _MainWindow(QMainWindow):
         self.test = False
         super(_MainWindow, self).__init__()
         self.undo_stack = undo_frame.UndoStack()
+        self.undo_stack.request_load_save_file_signal.connect(self.reload_project)
         self.setStyleSheet("border-color: rgb(178, 41, 100)")
         self.module_dict= dict()
         self.module_name_list = []
@@ -147,9 +148,10 @@ class _MainWindow(QMainWindow):
             self.design_delegator.update_vs_item_dict
         )
 
-    def reload_project(self, proejct_name):
+    def reload_project(self, project_name=None):
         self.__init__()
-        self.loadProject(proejct_name)
+        if project_name:
+            self.loadProject(project_name)
 
     def reset(self):
         self.module_dict = dict()
@@ -223,7 +225,7 @@ class _MainWindow(QMainWindow):
         setup_action = QAction("Setup",self)
         fixAction = QAction("Fix!", self)
         undoListAction = QAction("Action List", self)
-        # undo_action = QAction("Undo", self)
+        undoAction = QAction("Undo", self)
 
 
         # newAction.setShortcut('Ctrl+N')
@@ -253,8 +255,11 @@ class _MainWindow(QMainWindow):
         fixAction.setShortcut('Ctrl+F')
         fixAction.triggered.connect(self.fix_contaminated_dc)
 
-        undoListAction.setShortcut('Ctrl+Z')
+        undoListAction.setShortcut('Shift+Z')
         undoListAction.triggered.connect(self.widget_delegator.show_undo_widget)
+
+        undoAction.setShortcut('Ctrl+Z')
+        undoAction.triggered.connect(self.undo_stack.undo)
 
         # undo_action.setShortcut('Ctrl+Z')
         # undo_action.triggered.connect(self.undo_stack.undo)
@@ -277,6 +282,7 @@ class _MainWindow(QMainWindow):
         fileMenu.addAction(setup_action)
         fileMenu.addAction(fixAction)
         fileMenu.addAction(undoListAction)
+        fileMenu.addAction(undoAction)
         # fileMenu.addAction(undo_action)
 
         #Second Menu#

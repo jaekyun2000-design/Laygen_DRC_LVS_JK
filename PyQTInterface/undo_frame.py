@@ -24,18 +24,22 @@ import datetime
 class ActionCommand(QUndoCommand):
     project_name = "None"
 
-    def __init__(self, command_log=None):
+    def __init__(self, command_log=None, save_tiem=None):
         super(ActionCommand, self).__init__()
         self.setText(command_log)
-        self.save_time= datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.save_time= datetime.datetime.now().strftime("%Y%m%d_%H%M%S") if not save_tiem else save_tiem
         self.command_log = command_log
 
     def get_file_name(self):
         return f'./PyQTInterface/Project/autosave/{self.project_name}{self.save_time}'
 
+    # def undo(self):
+    #     super(ActionCommand, self).undo()
+    #     return f'{self.get_file_name()}.bin'
+        # self.request_load_save_file_signal.emit(f'{self.get_file_name()}.bin')
 
-
-
+    def export_data(self):
+        return (self.command_log, self.save_time)
 
 
 # class DesignConstraintUndo(QUndoCommand):
@@ -71,10 +75,31 @@ class ActionCommand(QUndoCommand):
 
 
 class UndoStack(QUndoStack):
+    request_load_save_file_signal = pyqtSignal(str)
 
     def undo(self):
-        # super(UndoStack, self).undo()
+        index = self.index() - 2
+        if index == -1:
+            self.request_load_save_file_signal.emit(None)
+            return
+        command = self.command(index)
+        print(command.get_file_name())
+        if isinstance(command, ActionCommand):
+            file_name = f'{command.get_file_name()}.bin'
+            self.request_load_save_file_signal.emit(file_name)
+        super(UndoStack, self).undo()
         warnings.warn('Currently, only snapshot (autosave) mode is developed.')
+
+
+    def export_data(self):
+        stack_list = [self.command(i).export_data() for i in range(self.count())]
+        return stack_list
+
+    def import_data(self, stack_list):
+        for command_info in stack_list:
+            command = ActionCommand(command_info[0], command_info[1])
+            self.push(command)
+
 
 class UndoWidget(QUndoView):
     request_load_save_file_signal = pyqtSignal(str)
