@@ -147,6 +147,10 @@ class _MainWindow(QMainWindow):
             self.design_delegator.update_vs_item_dict
         )
 
+    def reload_project(self, proejct_name):
+        self.__init__()
+        self.loadProject(proejct_name)
+
     def reset(self):
         self.module_dict = dict()
         self.module_name_list = []
@@ -179,7 +183,7 @@ class _MainWindow(QMainWindow):
         for layer in LayerReader._LayerMapping:
             VisualizationItem._VisualizationItem._subElementLayer[layer] = list()
         VisualizationItem._VisualizationItem._subElementLayer['SRef'] = list()
-        self.close()
+        # self.close()
 
     def vsitem_dict_initialization(self):
         VisualizationItem._VisualizationItem._compareLayer = dict()
@@ -218,6 +222,7 @@ class _MainWindow(QMainWindow):
         UpdateGDSAction = QAction("Update constraint",self)
         setup_action = QAction("Setup",self)
         fixAction = QAction("Fix!", self)
+        undoListAction = QAction("Action List", self)
         # undo_action = QAction("Undo", self)
 
 
@@ -248,6 +253,9 @@ class _MainWindow(QMainWindow):
         fixAction.setShortcut('Ctrl+F')
         fixAction.triggered.connect(self.fix_contaminated_dc)
 
+        undoListAction.setShortcut('Ctrl+Z')
+        undoListAction.triggered.connect(self.widget_delegator.show_undo_widget)
+
         # undo_action.setShortcut('Ctrl+Z')
         # undo_action.triggered.connect(self.undo_stack.undo)
         #
@@ -268,6 +276,7 @@ class _MainWindow(QMainWindow):
         fileMenu.addAction(UpdateGDSAction)
         fileMenu.addAction(setup_action)
         fileMenu.addAction(fixAction)
+        fileMenu.addAction(undoListAction)
         # fileMenu.addAction(undo_action)
 
         #Second Menu#
