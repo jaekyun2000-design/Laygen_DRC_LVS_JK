@@ -824,16 +824,20 @@ class _MainWindow(QMainWindow):
 
 
         if file_write_flag:
-            f = open(f"./generatorLib/generator_models/{self._CurrentModuleName}.py", "w")
-            f.write(final_code)
-            f.close()
-
-        exec_time = time.time() - start_time
-        self.info_widget = QMessageBox()
-        self.info_widget.setWindowTitle('Time Measurement')
-        self.info_widget.setText(f'{exec_time} sec')
-        self.info_widget.setDefaultButton(QMessageBox.Close)
-        self.info_widget.show()
+            file_name = QFileDialog.getSaveFileName(self, 'save file', f"./generatorLib/generator_models/{self._CurrentModuleName}.py",'datatype (*.py)')
+            with open(file_name[0], 'w') as f:
+                f.write(final_code)
+                f.close()
+        #     f = open(f"./generatorLib/generator_models/{self._CurrentModuleName}.py", "w")
+        #     f.write(final_code)
+        #     f.close()
+        #
+        # exec_time = time.time() - start_time
+        # self.info_widget = QMessageBox()
+        # self.info_widget.setWindowTitle('Time Measurement')
+        # self.info_widget.setText(f'{exec_time} sec')
+        # self.info_widget.setDefaultButton(QMessageBox.Close)
+        # self.info_widget.show()
 
     def fix_contaminated_dc(self):
         print('1')
