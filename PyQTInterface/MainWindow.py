@@ -768,6 +768,13 @@ class _MainWindow(QMainWindow):
         print("******************************Initializing Graphic Interface Complete")
 
     def create_generator_file(self):
+        self.writing_flag = QMessageBox()
+        reply = self.writing_flag.question(self,"QMessageBox", "Save code as a Generator File?", QMessageBox.Yes | QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            file_write_flag = True
+        elif reply == QMessageBox.No:
+            file_write_flag = False
+
         start_time = time.time()
         library_list = []
         additional_import_code = ''
@@ -814,12 +821,7 @@ class _MainWindow(QMainWindow):
         cal_code = re.sub("\n","\n\t\t",cal_code)
         final_code = import_code + class_declaration_code + fcn_define_code + f"\t{cal_code}"
 
-        self.writing_flag = QMessageBox()
-        reply = self.writing_flag.question(self,"QMessageBox", "Save code as a Generator File?", QMessageBox.Yes | QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            file_write_flag = True
-        elif reply == QMessageBox.No:
-            file_write_flag = False
+
 
         if file_write_flag:
             f = open(f"./generatorLib/generator_models/{self._CurrentModuleName}.py", "w")
