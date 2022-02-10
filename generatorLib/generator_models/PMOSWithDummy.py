@@ -79,23 +79,33 @@ class _PMOS(StickDiagram._StickDiagram):
         self._DesignParameter['_POLayer']['_YWidth'] = _PMOSChannelWidth + 2 * _DRCObj.DRCPolygateMinExtensionOnOD(_PMOSChannellength)
         self._DesignParameter['_POLayer']['_XYCoordinates'] = tmpXYs
 
+        print('#############################     POLY Dummy Layer Calculation    ##############################################')
+        _PODummyLayer = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['POLY'][0],
+            _Datatype=DesignParameters._LayerMapping['POLY'][1],
+            _XWidth=None,
+            _YWidth=None,
+            _XYCoordinates=[
+                [a + b for a, b in zip(self._DesignParameter['_POLayer']['_XYCoordinates'][0], [-_LengthPMOSBtwPO, 0])],
+                [a + b for a, b in zip(self._DesignParameter['_POLayer']['_XYCoordinates'][-1], [_LengthPMOSBtwPO, 0])]
+            ])
 
-        if _PMOSDummy:
-            print ('#############################     POLY Dummy Layer Calculation    ##############################################')
+        if _PMOSDummy == False :
+            _PODummyLayer['_XWidth'] = 0
+            _PODummyLayer['_YWidth'] = 0
+
+            self._DesignParameter['_PODummyLayer'] = _PODummyLayer
+
+        elif _PMOSDummy:
+
             if DesignParameters._Technology != 'SS28nm':
                 a = 0
             else:
                 a = 16
 
-            _PODummyLayer = self._BoundaryElementDeclaration(
-                _Layer=DesignParameters._LayerMapping['POLY'][0],
-                _Datatype=DesignParameters._LayerMapping['POLY'][1],
-                _XWidth=_PMOSChannellength,
-                _YWidth=_PMOSChannelWidth + 2 * a,
-                _XYCoordinates=[
-                    [a+b for a,b in zip(self._DesignParameter['_POLayer']['_XYCoordinates'][0], [-_LengthPMOSBtwPO, 0])],
-                    [a+b for a,b in zip(self._DesignParameter['_POLayer']['_XYCoordinates'][-1], [_LengthPMOSBtwPO, 0])]
-                ])
+            _PODummyLayer['_XWidth'] = _PMOSChannellength
+            _PODummyLayer['_YWidth'] = _PMOSChannelWidth + 2 * a
+
             self._DesignParameter['_PODummyLayer'] = _PODummyLayer
 
             if float(self._DesignParameter['_PODummyLayer']['_XWidth']) * float(self._DesignParameter['_PODummyLayer']['_YWidth']) < _DRCObj._PODummyMinArea:  # Should check at TSMC
