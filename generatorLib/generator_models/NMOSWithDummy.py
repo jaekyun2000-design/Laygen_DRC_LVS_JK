@@ -4,7 +4,7 @@ from generatorLib import DRC
 
 class _NMOS(StickDiagram._StickDiagram):
     _ParametersForDesignCalculation = dict(_NMOSNumberofGate=None, _NMOSChannelWidth=None, _NMOSChannellength=None,
-                                           _NMOSDummy=False, _SDWidth=None, _XVT=None)
+                                           _NMOSDummy=False,_GateSpacing=None, _SDWidth=None, _XVT=None)
 
     def __init__(self, _DesignParameter=None, _Name=None):
 
