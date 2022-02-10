@@ -172,7 +172,7 @@ class DesignDelegator(delegator.Delegator):
                                               _DesignConstraint=self.main_window._QTObj._qtProject._DesignConstraint)
             elif request == 'update':
                 target.update_constraint_by_id(constraint_id)
-        self.stack_undo('update tree view')
+        # self.stack_undo('update tree view')
 
     def update_qt_parameter(self, dp_dict, element_manager_update=True):
         """

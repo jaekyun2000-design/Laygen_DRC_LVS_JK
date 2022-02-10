@@ -1,4 +1,4 @@
 
 
-/Private/
-/PyQTInterface/Project/autosave/
+/Private/*
+/PyQTInterface/Project/autosave/*.bin
