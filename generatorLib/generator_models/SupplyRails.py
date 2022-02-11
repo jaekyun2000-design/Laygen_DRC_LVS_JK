@@ -14,6 +14,7 @@ class SupplyRail(StickDiagram._StickDiagram):
                                            Met2YWidth=300,  #
                                            PpNpYWidth=180,  #
                                            isPbody=False,
+                                           deleteViaAndMet1=False
                                            )
 
     def __init__(self, _DesignParameter=None, _Name=None):
@@ -36,8 +37,22 @@ class SupplyRail(StickDiagram._StickDiagram):
     def _CalculateDesignParameter(self,
                                   NumPitch=None, UnitPitch=130,
                                   Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180,
-                                  isPbody=False,
+                                  isPbody=False, deleteViaAndMet1=False
                                   ):
+        """ Supply Rails for Onesemicon Style
+
+        Generate Supply Rails(VSS/VDD) containing up to Metal2 Layer.
+        Default Setting : {NumPitch=None, UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180}
+
+        Args:
+            NumPitch (int): the number of pitch(contact).
+            UnitPitch (int | float): (center-to-center) distance between contacts.
+            Met1YWidth (int | float):
+            Met2YWidth (int | float):
+            PpNpYWidth (int | float): PP(BP)/NP Layer YWidth
+            isPbody (bool): If true, it contains PP(BP) Layer(VSS Rail). Or, VDD Rail.
+            deleteViaAndMet1 (bool): If true, delete CO,Met1,Via1 Layers(For use with Z_PWR_CNT).
+        """
 
         _DRCObj = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
@@ -105,6 +120,12 @@ class SupplyRail(StickDiagram._StickDiagram):
         self._DesignParameter['_Via1Layer']['_XWidth'] = _DRCObj._VIAxMinWidth
         self._DesignParameter['_Via1Layer']['_YWidth'] = _DRCObj._VIAxMinWidth
         self._DesignParameter['_Via1Layer']['_XYCoordinates'] = tmpXYs
+
+        if deleteViaAndMet1 == True:
+            del self._DesignParameter['_COLayer'], self._DesignParameter['_Via1Layer'], self._DesignParameter['_Met1Layer']
+        else:   # False | None
+            pass
+
 
 
         print('\n' + ''.center(105, '#'))
