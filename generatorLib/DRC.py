@@ -51,6 +51,7 @@ class DRCOD:
             self._OdMinWidth = 78
             self._OdMinSpace = 80
             self._OdMinSpace3 = 100
+            self._OdMinSpace2Pp = 56  # GR370 : VSS - NMOS distance for 1semicon
         if user_setup._Technology == 'TSMC65nm':
             self._OdMinWidth = 150
             self._OdMinSpace = 110
@@ -777,6 +778,7 @@ class DRCMETAL1:
             self._Metal1MinEnclosureCO3 = 12  ##FOR PRES, By junung
             self._Metal1MinEnclosureVia1 = 0
             self._Metal1MinEnclosureVia12 = 32
+            self._Metal1MinEnclosureVia3 = 8  # iksu
             self._Metal1MinArea = 10000
             self._Metal1MinEnclosureArea = 48000  # ADDED!(by JiCho)
 
@@ -1771,6 +1773,7 @@ class DRCMETALx:
 
             self._MetalxMinEnclosureCO = 0  # I
             self._MetalxMinEnclosureCO2 = 32  # J
+            self._MetalxMinEnclosureVia3 = 8
             self._MetalxMinArea = 11000  # K
 
             self._MetalxMaxWidth = 4500  # M7 not over MOB maximum width <= 4.5 , junung
