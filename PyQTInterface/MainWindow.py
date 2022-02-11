@@ -753,7 +753,7 @@ class _MainWindow(QMainWindow):
         # self.vw.send_variable_signal.connect(self.send_array_variable)
 
         self.conditional_stmt_window = ConditionalStatement.ConditionStmtWidget()
-        self.condition_expression_window = ConditionalStatement.ConditionExpressionWidget()
+        # self.condition_expression_window = ConditionalStatement.ConditionExpressionWidget()
 
         self.dockContentWidget3.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
         self.dockContentWidget3_2.send_dummy_ast_id_for_xy_signal.connect(self.calculator_window.getXY)
@@ -1154,6 +1154,7 @@ class _MainWindow(QMainWindow):
         self.calculator_window.raise_()
 
     def condition_expression(self):
+        self.condition_expression_window = ConditionalStatement.ConditionExpressionWidget()
         self.condition_expression_window.show()
         self.condition_expression_window.send_output_dict_signal.connect(self.create_condition_exp)
 

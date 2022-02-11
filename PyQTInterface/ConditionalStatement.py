@@ -100,10 +100,12 @@ class ConditionExpressionWidget(QWidget):
 
         print(tmp_dict)
         self.send_output_dict_signal.emit(tmp_dict)
-        self.deleteLater()
+        # self.deleteLater()
+        self.close()
 
     def cancel_clicked(self):
-        self.deleteLater()
+        # self.deleteLater()
+        self.close()
 
 
 class ConditionExpressionWidgetCapsule(QWidget):
@@ -224,13 +226,13 @@ class ConditionExpressionWidgetCapsule(QWidget):
                 break
 
         if sender.currentText() == 'None':
-            self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(0).widget().setStyleSheet(
-                "QLineEdit{background:rgb(222,222,222);}")
+            # self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(0).widget().setStyleSheet(
+            #     "QLineEdit{background:rgb(222,222,222);}")
             self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(0).widget().setReadOnly(True)
             self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(1).widget().setDisabled(True)
         else:
-            self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(0).widget().setStyleSheet(
-                "QLineEdit{background:rgb(255,255,255);}")
+            # self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(0).widget().setStyleSheet(
+            #     "QLineEdit{background:rgb(255,255,255);}")
             self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(0).widget().setReadOnly(False)
             self.main_layout.itemAt(i).itemAt(2).itemAt(1).itemAt(1).widget().setDisabled(False)
 
@@ -736,7 +738,7 @@ class ConditionStmtWidgetCapsule(QWidget):
                 self.main_layout.itemAt(i).parent_layout.tmp_dict['body'].append(self.main_layout.itemAt(i).tmp_dict)
             else:
                 self.main_layout.itemAt(i).tmp_dict = dict(c_type=self.main_layout.itemAt(i).itemAt(0).itemAt(1).widget().text(),
-                                                           expression=self.main_layout.itemAt(i).itemAt(0).itemAt(2).widget().text(),
+                                                           expression=self.main_layout.itemAt(i).itemAt(0).itemAt(2).widget().text() if self.main_layout.itemAt(i).itemAt(0).itemAt(2).widget() else None,
                                                            body=list())
                 output_list.append(self.main_layout.itemAt(i).tmp_dict)
 
