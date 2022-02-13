@@ -4,16 +4,17 @@ from generatorLib import CoordinateCalc as CoordCalc
 
 class _CascodeNMOS(NMOSWithDummy._NMOS):
     _ParametersForDesignCalculation = dict(_NMOSChannelWidth=None, _NMOSChannellength=None,
-                                           _NMOSDummy=False, _XVT=None, _GateSpacing=None)
+                                           _NMOSDummy=False, _XVT=None, _GateSpacing=None, _SDWidth=None
+                                           )
 
 
     def _CalculateDesignParameter(self, _NMOSChannelWidth=200, _NMOSChannellength=30,
-                                           _NMOSDummy=True, _XVT='SLVT', _GateSpacing=100):
+                                  _NMOSDummy=True, _GateSpacing=100, _SDWidth=66, _XVT='SLVT'):
 
         self._CalculateNMOSDesignParameter(
             _NMOSNumberofGate=2,
             _NMOSChannelWidth=_NMOSChannelWidth, _NMOSChannellength=_NMOSChannellength,
-            _NMOSDummy=_NMOSDummy, _XVT=_XVT, _GateSpacing=_GateSpacing
+            _NMOSDummy=_NMOSDummy, _XVT=_XVT, _GateSpacing=_GateSpacing, _SDWidth=_SDWidth
         )
 
         # Delete middle metal1 layer and contact

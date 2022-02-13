@@ -4,16 +4,16 @@ from generatorLib import CoordinateCalc as CoordCalc
 
 class _CascodePMOS(PMOSWithDummy._PMOS):
     _ParametersForDesignCalculation = dict(_PMOSChannelWidth=None, _PMOSChannellength=None,
-                                           _PMOSDummy=False, _XVT=None, _GateSpacing=None)
+                                           _PMOSDummy=False, _XVT=None, _GateSpacing=None, _SDWidth=None)
 
 
     def _CalculateDesignParameter(self, _PMOSChannelWidth=200, _PMOSChannellength=30,
-                                           _PMOSDummy=True, _XVT='SLVT', _GateSpacing=100):
+                                           _PMOSDummy=True,  _GateSpacing=100, _SDWidth=66, _XVT='SLVT'):
 
         self._CalculatePMOSDesignParameter(
             _PMOSNumberofGate=2,
             _PMOSChannelWidth=_PMOSChannelWidth, _PMOSChannellength=_PMOSChannellength,
-            _PMOSDummy=_PMOSDummy, _XVT=_XVT, _GateSpacing=_GateSpacing
+            _PMOSDummy=_PMOSDummy, _XVT=_XVT, _GateSpacing=_GateSpacing, _SDWidth=_SDWidth
         )
 
         # Delete middle metal1 layer and contact
