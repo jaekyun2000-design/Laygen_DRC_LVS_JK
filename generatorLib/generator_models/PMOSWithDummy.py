@@ -256,7 +256,7 @@ class _PMOS(StickDiagram._StickDiagram):
 
 
 
-        if DesignParameters._Technology == 'SS28nm':
+        if DesignParameters._Technology == 'SS28nm' and _PMOSDummy==True:
             print ('#############################     PCCRIT Layer Calculation    ##############################################')
             if self._DesignParameter['_POLayer']['_XWidth'] in (30, 34):
                 self._DesignParameter['_PCCRITLayer'] = self._BoundaryElementDeclaration(

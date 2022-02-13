@@ -271,7 +271,7 @@ class _NMOS(StickDiagram._StickDiagram):
             print('Error Occurred', e)
             raise NotImplementedError
 
-        if DesignParameters._Technology == 'SS28nm':
+        if DesignParameters._Technology == 'SS28nm' and _NMOSDummy == True:
             if self._DesignParameter['_POLayer']['_XWidth'] in (30, 34):
                 self._DesignParameter['_PCCRITLayer'] = self._BoundaryElementDeclaration(
                     _Layer=DesignParameters._LayerMapping['PCCRIT'][0],

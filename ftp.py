@@ -1,10 +1,12 @@
 import user_setup
 import ftplib
 import paramiko
+import traceback
+
 from Private import Myinfo
 
 ################ Privacy Information ################
-My = Myinfo.USER()
+My = Myinfo.USER(user_setup._Technology)
 server_ip = '141.223.29.62'
 ftp_port = 21
 ssh_port = 22
@@ -12,11 +14,11 @@ user = My.ID
 pwd = My.PW
 
 if user_setup._Technology == 'SS28nm':
-    ftp_dir = My.Dir_Work
+    ftp_dir = My.Dir_GDS
     ssh_dir = My.Dir_Work
     tech_file = 'cmos28lp'
 elif user_setup._Technology == 'TSMC65nm':
-    ftp_dir = My.Dir_Work
+    ftp_dir = My.Dir_GDS
     ssh_dir = My.Dir_Work
     tech_file = 'tsmcN65'
 else:
@@ -34,6 +36,7 @@ def upload_ftp(file, name, ip=server_ip, port=ftp_port, user=user, pwd=pwd, dir=
         ftp_.close()
         return True, 'FTP upload success.'
     except:
+        traceback.print_exc()
         return False, 'FTP upload fail'
 
 def stream(lib_name, file_name, file_path=ftp_dir, tech_file = tech_file, ip = server_ip, path=ssh_dir, user=user, pwd=pwd, port=ssh_port):

@@ -225,6 +225,7 @@ class DRCPOLYGATE:
             self._OPlayeroverPoly = 200  ### Created by junung for OP layer rules
             self._PolyoverOPlayer = 400  ### Created by junung for OP layer rules
             self._PRESlayeroverPoly = 240  ### Created by junung for OP layer rules
+            self._OPMinspace = 200 ### Created by wonjoon for OP layer rules
 
             self._PCCRITExtension = 5  ### ADDED(by JiCho)!
             self._PCCRITMinLengthofPOLayer = 35  #### ADDED(by JiCho) !

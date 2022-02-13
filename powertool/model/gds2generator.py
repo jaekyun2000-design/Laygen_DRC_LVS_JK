@@ -277,8 +277,11 @@ class GDS2Generator():
                 _Name = StickDiagram._StickDiagram()._NameDeclaration(element_name),
                 _GDSFile = StickDiagram._StickDiagram()._GDSObjDeclaration()
             )
-            for _,sub_qt_element in element._DesignParameter['_ModelStructure'].items():
-                self.convert_qt_element(sub_qt_element, structure._DesignParameter[element_name]['_DesignObj'])
+            try:
+                for _,sub_qt_element in element._DesignParameter['_ModelStructure'].items():
+                    self.convert_qt_element(sub_qt_element, structure._DesignParameter[element_name]['_DesignObj'])
+            except:
+                print('contaminated')
         else:
             structure._DesignParameter[element_name] = lab_feature.deepish_copy(element._DesignParameter)
             structure._DesignParameter[element_name]['_XYCoordinates'] = []
