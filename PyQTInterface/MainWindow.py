@@ -669,7 +669,7 @@ class _MainWindow(QMainWindow):
         self.variableCallButton = QPushButton("variableCall")
         self.calculatorButton = QPushButton("XYCalculator")
         self.condition_expression_button = QPushButton("condition exp debug")
-        self.conditional_stmt_button = QPushButton("condition stmt debug")
+        self.conditional_stmt_button = QPushButton("Condition Statement")
         self.add_constraint_view_button = QPushButton("add constraint view")
 
         VBoxForPeriButton.addStretch(3)
@@ -686,7 +686,7 @@ class _MainWindow(QMainWindow):
         # VBoxForPeriButton.addWidget(self.parsetreeEasyRun)
         VBoxForPeriButton.addWidget(self.variableCallButton)
         VBoxForPeriButton.addWidget(self.calculatorButton)
-        VBoxForPeriButton.addWidget(self.condition_expression_button)
+        # VBoxForPeriButton.addWidget(self.condition_expression_button)
         VBoxForPeriButton.addWidget(self.conditional_stmt_button)
         VBoxForPeriButton.addWidget(self.add_constraint_view_button)
         VBoxForPeriButton.addStretch(3)
