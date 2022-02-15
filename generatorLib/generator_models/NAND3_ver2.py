@@ -262,7 +262,11 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['m1_nmos1_out']['_XYCoordinates'] = path_list
 		self._DesignParameter['gate_a_input'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_a_inputIn{}'.format(_Name)))[0]
 		self._DesignParameter['gate_a_input']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(**dict(_ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2))
-		self._DesignParameter['gate_a_input']['_XYCoordinates'] = [[(self._DesignParameter['nmos1']['_XYCoordinates'][0][0] + self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0]), gate_y]]
+		if gate_a%2==0:
+			gate_a_x=(self._DesignParameter['nmos1']['_XYCoordinates'][0][0] + self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0])
+		elif gate_a%2!=0:
+			gate_a_x=(self._DesignParameter['nmos1']['_XYCoordinates'][0][0] + self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][-1][0])
+		self._DesignParameter['gate_a_input']['_XYCoordinates'] = [[gate_a_x, gate_y]]
 		self._DesignParameter['gate_b_input'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_b_inputIn{}'.format(_Name)))[0]
 		self._DesignParameter['gate_b_input']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(**dict(_ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2))
 		self._DesignParameter['gate_b_input']['_XYCoordinates'] = [[(self._DesignParameter['pmos3']['_XYCoordinates'][0][0] + self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0]), gate_y]]
