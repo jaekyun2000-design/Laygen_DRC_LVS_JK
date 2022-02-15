@@ -18,7 +18,8 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
-		
+
+		##vss power rail
 		self._DesignParameter['vssrail'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='vssrailIn{}'.format(_Name)))[0]
 		self._DesignParameter['vssrail']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=Power_CO_Num, UnitPitch=Power_CO_Pitch, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True, deleteViaAndMet1=False))
 		self._DesignParameter['vssrail']['_XYCoordinates'] = [[0.0, 0.0]]

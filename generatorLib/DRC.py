@@ -217,7 +217,7 @@ class DRCPOLYGATE:
             self._PolygateMinSpace = 96
             self._PolygateMinSpace2 = 114
             self._PolygateMinSpace2Co = 28
-            self._PolygateMinSpace2Co2 = 37 ## When Poly_gate_width > 48 (GR207a) (added by 1joon) (for mos cap)
+            self._PolygateMinSpace2Co2 = 37 ##When Poly_gate_width > 48 (GR207a) (added by 1joon) (for mos cap)
             self._PolygateMinSpace2OD = 20
             self._PolygateMinSpace2PolygateInSameRPO = 96
             self._PolygateMinExtensionOnOD = 57  # ##?? -> Check GRSLVT9b

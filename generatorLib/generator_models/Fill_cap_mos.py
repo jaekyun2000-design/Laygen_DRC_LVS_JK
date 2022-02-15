@@ -86,7 +86,7 @@ class FILLCAP_5X_STD_RVT_v2(StickDiagram._StickDiagram):
 			self._DesignParameter['PIMP']['_XWidth'] = self._DesignParameter['DIFF_boundary_2']['_XWidth'] + 2 * drc._PpMinExtensiononPactive
 			self._DesignParameter['PIMP']['_YWidth'] = self._DesignParameter['DIFF_boundary_2']['_YWidth'] + 2 * drc._PpMinExtensiononPactive
 			self._DesignParameter['PIMP']['_XYCoordinates'] = self._DesignParameter['N_poly']['_XYCoordinates']
-			##NWELL layer
+			## NWELL layer
 			self._DesignParameter['NWELL'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1])
 			self._DesignParameter['NWELL']['_XWidth'] = self._DesignParameter['DIFF_boundary_2']['_XWidth'] + 2 * drc._NwMinEnclosurePactive2
 			self._DesignParameter['NWELL']['_YWidth'] = self._DesignParameter['DIFF_boundary_2']['_YWidth'] + 2 * drc._NwMinEnclosurePactive2
