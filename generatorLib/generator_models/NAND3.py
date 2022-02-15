@@ -16,24 +16,24 @@ class NAND3(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,gate_spacing=120,nmos_width1=270,nmos_width2=270,pmos_width1=360,pmos_width2=180,nmos1_y=375,nmos2_y=375,pmos1_y=410,pmos2_y=500,nmos_gate_a=2,pmos_gate_a=2,nmos_gate_b=2,pmos_gate_b=2,nmos_gate_c=3,pmos_gate_c=1,vss2vdd_height=1800,sdwidth=66,supply_xdistance=300,length=30,RVT=None,gate_y=860):
+	def _CalculateDesignParameter(self,gate_spacing=120,nmos_width1=270,nmos_width2=270,pmos_width1=360,pmos_width2=180,nmos1_y=375,nmos2_y=375,pmos1_y=410,pmos2_y=500,nmos_gate_a=2,pmos_gate_a=2,nmos_gate_b=2,pmos_gate_b=2,nmos_gate_c=3,pmos_gate_c=1,vss2vdd_height=1800,sdwidth=66,supply_xdistance=300,length=30,XVT='RVT',gate_y=860):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
 		
 		self._DesignParameter['nmos1'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='nmos1In{}'.format(_Name)))[0]
-		self._DesignParameter['nmos1']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=(nmos_gate_b + nmos_gate_c), _NMOSChannelWidth=nmos_width1, _NMOSChannellength=length, _NMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT='RVT'))
+		self._DesignParameter['nmos1']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=(nmos_gate_b + nmos_gate_c), _NMOSChannelWidth=nmos_width1, _NMOSChannellength=length, _NMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT))
 		self._DesignParameter['nmos1']['_XYCoordinates'] = [[0, nmos1_y]]
 		self._DesignParameter['nmos2'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='nmos2In{}'.format(_Name)))[0]
-		self._DesignParameter['nmos2']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=nmos_gate_a, _NMOSChannelWidth=nmos_width2, _NMOSChannellength=length, _NMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT='RVT'))
+		self._DesignParameter['nmos2']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=nmos_gate_a, _NMOSChannelWidth=nmos_width2, _NMOSChannellength=length, _NMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT))
 		self._DesignParameter['nmos2']['_XYCoordinates'] = [[((self._DesignParameter['nmos1']['_XYCoordinates'][0][0] + self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]), nmos2_y]]
 		self._DesignParameter['nmos1']['_XYCoordinates'] = [[((- ((self._DesignParameter['nmos1']['_XYCoordinates'][0][0] + self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]) + (self._DesignParameter['nmos2']['_XYCoordinates'][0][0] + self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]))) / 2), nmos1_y]]
 		self._DesignParameter['nmos2']['_XYCoordinates'] = [[((self._DesignParameter['nmos1']['_XYCoordinates'][0][0] + self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]), nmos2_y]]
 		self._DesignParameter['pmos2'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='pmos2In{}'.format(_Name)))[0]
-		self._DesignParameter['pmos2']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=pmos_gate_a, _PMOSChannelWidth=pmos_width2, _PMOSChannellength=length, _PMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT='RVT'))
+		self._DesignParameter['pmos2']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=pmos_gate_a, _PMOSChannelWidth=pmos_width2, _PMOSChannellength=length, _PMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT))
 		self._DesignParameter['pmos2']['_XYCoordinates'] = [[self._DesignParameter['nmos2']['_XYCoordinates'][0][0], (vss2vdd_height - pmos2_y)]]
 		self._DesignParameter['pmos1'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='pmos1In{}'.format(_Name)))[0]
-		self._DesignParameter['pmos1']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=(pmos_gate_b + pmos_gate_c), _PMOSChannelWidth=pmos_width1, _PMOSChannellength=length, _PMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT='RVT'))
+		self._DesignParameter['pmos1']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=(pmos_gate_b + pmos_gate_c), _PMOSChannelWidth=pmos_width1, _PMOSChannellength=length, _PMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT))
 		self._DesignParameter['pmos1']['_XYCoordinates'] = [[self._DesignParameter['pmos2']['_XYCoordinates'][0][0]+self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]-self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth']-self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0]-gate_spacing, (vss2vdd_height - pmos1_y)]]
 
 		XYList = []
@@ -426,7 +426,7 @@ class NAND3(StickDiagram._StickDiagram):
 		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['m1_nmos1_out'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_nmos1_out']['_XYCoordinates'] = path_list
-		self._DesignParameter['xvtlayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RVT'][0], _Datatype=DesignParameters._LayerMapping['RVT'][1], _XWidth=((self._DesignParameter['nmos2']['_XYCoordinates'][0][0] + self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) - (self._DesignParameter['nmos1']['_XYCoordinates'][0][0] + self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0])), _YWidth=(self._DesignParameter['supply_od']['_XYCoordinates'][(- 1)][1] - self._DesignParameter['supply_od']['_XYCoordinates'][0][1]))
+		self._DesignParameter['xvtlayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping[XVT][0], _Datatype=DesignParameters._LayerMapping[XVT][1], _XWidth=((self._DesignParameter['nmos2']['_XYCoordinates'][0][0] + self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) - (self._DesignParameter['nmos1']['_XYCoordinates'][0][0] + self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0])), _YWidth=(self._DesignParameter['supply_od']['_XYCoordinates'][(- 1)][1] - self._DesignParameter['supply_od']['_XYCoordinates'][0][1]))
 		self._DesignParameter['xvtlayer']['_XYCoordinates'] = [[(((self._DesignParameter['nmos2']['_XYCoordinates'][0][0] + self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['nmos1']['_XYCoordinates'][0][0] + self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0])) / 2), ((self._DesignParameter['supply_od']['_XYCoordinates'][(- 1)][1] + self._DesignParameter['supply_od']['_XYCoordinates'][0][1]) / 2)]]
 
 		self._DesignParameter['m1_nmos1_x']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=74)

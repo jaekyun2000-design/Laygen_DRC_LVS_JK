@@ -136,10 +136,10 @@ class _NMOS(StickDiagram._StickDiagram):
         print ('#############################     METAL1 Layer Calculation    ##############################################')
         # METAL1 Layer Coordinate Setting
         _LengthNMOSBtwMet1 = _LengthNMOSBtwPO
-        _tmpCOYNum = int(float(self._DesignParameter['_ODLayer']['_YWidth']
+        _tmpCOYNum = max(2,int(float(self._DesignParameter['_ODLayer']['_YWidth']
                                        - 2 * max([_DRCObj._CoMinEnclosureByODAtLeastTwoSide, _DRCObj._Metal1MinEnclosureCO2])
                                        + _DRCObj._CoMinSpace)
-                                 / (_DRCObj._CoMinSpace + _DRCObj._CoMinWidth))
+                                 / (_DRCObj._CoMinSpace + _DRCObj._CoMinWidth)))
 
         tmpXYs = []
         for i in range(0, _NMOSNumberofGate + 1):
