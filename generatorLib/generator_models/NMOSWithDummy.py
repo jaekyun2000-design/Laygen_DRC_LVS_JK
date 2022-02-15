@@ -4,7 +4,7 @@ from generatorLib import DRC
 
 class _NMOS(StickDiagram._StickDiagram):
     _ParametersForDesignCalculation = dict(_NMOSNumberofGate=None, _NMOSChannelWidth=None, _NMOSChannellength=None,
-                                           _NMOSDummy=False,_GateSpacing=None, _SDWidth=None, _XVT=None)
+                                           _NMOSDummy=False,_GateSpacing=None, _SDWidth=None, _XVT=None, _PCCrit=None)
 
     def __init__(self, _DesignParameter=None, _Name=None):
 
@@ -44,7 +44,7 @@ class _NMOS(StickDiagram._StickDiagram):
             self._DesignParameter['_Name']['_Name'] = _Name
 
     def _CalculateNMOSDesignParameter(self, _NMOSNumberofGate=6, _NMOSChannelWidth=600, _NMOSChannellength=60,
-                                      _NMOSDummy=False, _GateSpacing=None, _SDWidth=None, _XVT='LVT'):
+                                      _NMOSDummy=False, _GateSpacing=None, _SDWidth=None, _XVT='LVT', _PCCrit=None):
         """
 
         :param _NMOSNumberofGate:
@@ -271,7 +271,7 @@ class _NMOS(StickDiagram._StickDiagram):
             print('Error Occurred', e)
             raise NotImplementedError
 
-        if DesignParameters._Technology == 'SS28nm' and _NMOSDummy == True:
+        if DesignParameters._Technology == 'SS28nm' and _PCCrit != False:
             if self._DesignParameter['_POLayer']['_XWidth'] in (30, 34):
                 self._DesignParameter['_PCCRITLayer'] = self._BoundaryElementDeclaration(
                     _Layer=DesignParameters._LayerMapping['PCCRIT'][0],
