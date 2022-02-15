@@ -8,8 +8,8 @@ from generatorLib.generator_models import NMOSWithDummy
 from generatorLib.generator_models import ViaPoly2Met1
 from generatorLib.generator_models import Z_PWR_CNT
 
-class EasyDebugModule(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
+class NAND3(StickDiagram._StickDiagram):
+	def __init__(self, _DesignParameter=None, _Name='NAND3'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
