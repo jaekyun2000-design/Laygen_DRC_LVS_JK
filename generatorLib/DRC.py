@@ -52,6 +52,11 @@ class DRCOD:
             self._OdMinSpace = 80
             self._OdMinSpace3 = 100
             self._OdMinSpace2Pp = 56  # GR370 : VSS - NMOS distance for 1semicon
+            self._OdlayeroverPoly = 76 ## Added by 1joon for DIFF layer rules
+            self._PolylayeroverOd = 70 ## Added by 1joon for DIFF layer rules
+            self._PolylayeroverOd2 = 105 ## Added by 1joon for DIFF layer rules
+
+
         if user_setup._Technology == 'TSMC65nm':
             self._OdMinWidth = 150
             self._OdMinSpace = 110
@@ -212,6 +217,7 @@ class DRCPOLYGATE:
             self._PolygateMinSpace = 96
             self._PolygateMinSpace2 = 114
             self._PolygateMinSpace2Co = 28
+            self._PolygateMinSpace2Co2 = 37 ## When Poly_gate_width > 48 (GR207a) (added by 1joon) (for mos cap)
             self._PolygateMinSpace2OD = 20
             self._PolygateMinSpace2PolygateInSameRPO = 96
             self._PolygateMinExtensionOnOD = 57  # ##?? -> Check GRSLVT9b
@@ -225,7 +231,7 @@ class DRCPOLYGATE:
             self._OPlayeroverPoly = 200  ### Created by junung for OP layer rules
             self._PolyoverOPlayer = 400  ### Created by junung for OP layer rules
             self._PRESlayeroverPoly = 240  ### Created by junung for OP layer rules
-            self._OPMinspace = 200 ### Created by wonjoon for OP layer rules
+            self._OPMinspace = 200 ### Created by 1joon for OP layer rules
 
             self._PCCRITExtension = 5  ### ADDED(by JiCho)!
             self._PCCRITMinLengthofPOLayer = 35  #### ADDED(by JiCho) !
