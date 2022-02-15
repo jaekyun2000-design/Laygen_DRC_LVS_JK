@@ -175,10 +175,10 @@ class _NMOS(StickDiagram._StickDiagram):
         print ('#############################     CONT Layer Calculation    ##############################################')
         # CONT XNum/YNum Calculation
         _XNumberOfCOInNMOS = _NMOSNumberofGate + 1
-        _YNumberOfCOInNMOS = int(float(self._DesignParameter['_ODLayer']['_YWidth']
+        _YNumberOfCOInNMOS = max(2,int(float(self._DesignParameter['_ODLayer']['_YWidth']
                                        - 2 * max([_DRCObj._CoMinEnclosureByODAtLeastTwoSide, _DRCObj._Metal1MinEnclosureCO2])
                                        + _DRCObj._CoMinSpace)
-                                 / (_DRCObj._CoMinSpace + _DRCObj._CoMinWidth))
+                                 / (_DRCObj._CoMinSpace + _DRCObj._CoMinWidth)))
 
         # Check the number of CO On NMOS TR
         if _XNumberOfCOInNMOS == 0 or _YNumberOfCOInNMOS == 0:

@@ -172,10 +172,10 @@ class _PMOS(StickDiagram._StickDiagram):
         print ('############################# CONT (Source/Drain) Layer Calculation    ##############################################')
         # CONT XNum/YNum Calculation
         _XNumberOfCOInPMOS = _PMOSNumberofGate + 1
-        _YNumberOfCOInPMOS = int(float(self._DesignParameter['_ODLayer']['_YWidth']
+        _YNumberOfCOInPMOS = max(2,int(float(self._DesignParameter['_ODLayer']['_YWidth']
                                        - 2 * max([_DRCObj._CoMinEnclosureByODAtLeastTwoSide, _DRCObj._Metal1MinEnclosureCO2])
                                        + _DRCObj._CoMinSpace)
-                                 / (_DRCObj._CoMinSpace + _DRCObj._CoMinWidth))
+                                 / (_DRCObj._CoMinSpace + _DRCObj._CoMinWidth)))
 
         # Check the number of CO On PMOS TR
         if (_XNumberOfCOInPMOS == 0) or (_YNumberOfCOInPMOS == 0):
