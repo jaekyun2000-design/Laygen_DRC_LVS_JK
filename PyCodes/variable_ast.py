@@ -733,7 +733,7 @@ class IrregularTransformer(ast.NodeTransformer):
                     loop_code = f"XYList = []\n" \
                                 f"{xy_offset}\n" \
                                 f"for element in {layer_xy}{_index[0]}:\n" \
-                                f"\telement = {element}[0] if type({element}[0]) == list else {element}\n" \
+                                f"\telement = element[0] if type(element[0]) == list else element\n" \
                                 f"\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , element, xy_offset ) ] )\n"\
 
                 tmp_node = element_ast.Sref()
