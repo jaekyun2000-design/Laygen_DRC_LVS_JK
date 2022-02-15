@@ -16,7 +16,7 @@ class NAND3(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,gate_spacing=120,nmos_width1=270,nmos_width2=270,pmos_width1=360,pmos_width2=180,nmos1_y=375,nmos2_y=375,pmos1_y=410,pmos2_y=500,nmos_gate_a=2,pmos_gate_a=2,nmos_gate_b=2,pmos_gate_b=2,nmos_gate_c=3,pmos_gate_c=1,vss2vdd_height=1800,sdwidth=66,supply_xdistance=300,length=30,XVT='RVT',gate_y=860,_PCCrit=False):
+	def _CalculateDesignParameter(self,gate_spacing=120,nmos_width1=270,nmos_width2=270,pmos_width1=360,pmos_width2=180,nmos1_y=375,nmos2_y=375,pmos1_y=410,pmos2_y=500,nmos_gate_a=2,pmos_gate_a=2,nmos_gate_b=2,pmos_gate_b=2,nmos_gate_c=2,pmos_gate_c=2,vss2vdd_height=1800,sdwidth=66,supply_xdistance=300,length=30,XVT='RVT',gate_y=860,_PCCrit=False):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -34,7 +34,7 @@ class NAND3(StickDiagram._StickDiagram):
 		self._DesignParameter['pmos2']['_XYCoordinates'] = [[self._DesignParameter['nmos2']['_XYCoordinates'][0][0], (vss2vdd_height - pmos2_y)]]
 		self._DesignParameter['pmos1'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='pmos1In{}'.format(_Name)))[0]
 		self._DesignParameter['pmos1']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=(pmos_gate_b + pmos_gate_c), _PMOSChannelWidth=pmos_width1, _PMOSChannellength=length, _PMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT,_PCCrit=False))
-		self._DesignParameter['pmos1']['_XYCoordinates'] = [[self._DesignParameter['pmos2']['_XYCoordinates'][0][0]+self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]-self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth']-self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0]-gate_spacing, (vss2vdd_height - pmos1_y)]]
+		self._DesignParameter['pmos1']['_XYCoordinates'] = [[self._DesignParameter['nmos1']['_XYCoordinates'][0][0], (vss2vdd_height - pmos1_y)]]
 
 		self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1]=self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1]-self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']/2+self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth']/2
 		self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][1]=self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1]
