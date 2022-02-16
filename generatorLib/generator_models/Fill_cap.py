@@ -15,11 +15,13 @@ class FillCapCell(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,Cap_poly_x_length=500,Cap_poly_nmos_y_width=200,Cap_poly_pmos_y_width=500,Cell_height=1800,Power_CO_Pitch=150,Poly_NW_edge_spacing=48,Power_CO_Num=4,vss_nmosgate_space=58,vdd_pmosgate_space=58,gate2pwr_co_num=2):
+	def _CalculateDesignParameter(self,Cap_poly_x_length=500,Cap_poly_nmos_y_width=200,Cap_poly_pmos_y_width=500,Cell_height=1800,Power_CO_Pitch=150,Power_CO_Num=4,vss_nmosgate_space=58,vdd_pmosgate_space=58,gate2pwr_co_num=2):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
-		
+
+		Poly_NW_edge_spacing = drc._PolygateMinSpace2 / 2
+
 		self._DesignParameter['vssrail'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='vssrailIn{}'.format(_Name)))[0]
 		self._DesignParameter['vssrail']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=Power_CO_Num, UnitPitch=Power_CO_Pitch, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True, deleteViaAndMet1=False))
 		self._DesignParameter['vssrail']['_XYCoordinates'] = [[0.0, 0.0]]
