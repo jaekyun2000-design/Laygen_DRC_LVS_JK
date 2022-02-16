@@ -368,7 +368,11 @@ class ExpressionCalculator(QWidget):
         display = str()
         _tmp_rule = str()
         _tmp_item_text = self.DRCWindow.currentItem().text(0)
-        _tmp_parent_text = self.DRCWindow.currentItem().parent().text(0)
+        if self.DRCWindow.currentItem().parent():
+            _tmp_parent_text = self.DRCWindow.currentItem().parent().text(0)
+        else:
+            return
+
 
         if self.DRCWindow.currentItem().childCount() == 0:
             if type(self.drc_dict[_tmp_parent_text][_tmp_item_text]) == list:
