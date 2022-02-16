@@ -827,6 +827,7 @@ class _MainWindow(QMainWindow):
         cal_code = re.sub("\n","\n\t\t",cal_code)
         final_code = import_code + class_declaration_code + fcn_define_code + f"\t{cal_code}"
 
+        exec_time = time.time() - start_time
 
 
         if file_write_flag:
@@ -835,7 +836,6 @@ class _MainWindow(QMainWindow):
                 f.write(final_code)
                 f.close()
 
-        exec_time = time.time() - start_time
         self.info_widget = QMessageBox()
         self.info_widget.setWindowTitle('Time Measurement')
         self.info_widget.setText(f'{exec_time} sec')
