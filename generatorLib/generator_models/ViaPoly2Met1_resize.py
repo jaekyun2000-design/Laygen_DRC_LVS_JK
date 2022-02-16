@@ -8,9 +8,9 @@ class _ViaPoly2Met1_resize(ViaPoly2Met1._ViaPoly2Met1):
                                            Met1XWidth=66, Met1YWidth=200,
                                            POXWidth=40, POYWidth=200)
 
-    def _CalculateDesignParameter(self, _ViaPoly2Met1NumberOfCOX=None, _ViaPoly2Met1NumberOfCOY=None,
-                                  Met1XWidth=None, Met1YWidth=None,
-                                  POXWidth=None, POYWidth=None,
+    def _CalculateDesignParameter(self, _ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2,
+                                  Met1XWidth=66, Met1YWidth=200,
+                                  POXWidth=50, POYWidth=200,
                                   ):
         """ Poly-Metal1 Contact with resize
 
