@@ -1435,32 +1435,34 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         if node.args and len(node.args) == 4:
             design_rule, source_element, location, target_element = node.args[0], node.args[1], node.args[2], node.args[3]
             if self.flag == 'Y':
+                tf_object = CustomFunctionTransformer('X')
                 drc_sentence = astunparse.unparse(design_rule).replace('\n','')
-                source_location_sentence = self.transform_center(source_element)
-                source_width_sentence = self.transform_width(source_element)
-                source_height_sentence = self.transform_height(source_element)
-                element_width_sentence = self.transform_width(target_element)
+                source_location_sentence = tf_object.transform_center(source_element)
+                source_width_sentence = tf_object.transform_width(source_element)
+                element_height_sentence = self.transform_height(target_element)
+                element_width_sentence = tf_object.transform_width(target_element)
                 method = 'transform_' + location.func.id
                 if method in dir(self):
-                    transformer = getattr(self, method)
+                    transformer = getattr(tf_object, method)
                     element_location_sentence = transformer(location)
 
                 diff = f'abs({element_location_sentence} - {source_location_sentence}) - ({source_width_sentence} + {element_width_sentence})/2'
-                sentence = f'round( math.sqrt( math.pow({drc_sentence},2) - math.pow({diff},2) ) ) + ({source_height_sentence})/2'
+                sentence = f'round( math.sqrt( {drc_sentence}**2 - ({diff})**2 ) + ({element_height_sentence})/2 )'
                 return sentence
             elif self.flag == 'X':
+                tf_object = CustomFunctionTransformer('Y')
                 drc_sentence = astunparse.unparse(design_rule).replace('\n', '')
-                source_location_sentence = self.transform_center(source_element)
-                source_width_sentence = self.transform_height(source_element)
-                source_height_sentence = self.transform_width(source_element)
-                element_width_sentence = self.transform_height(target_element)
+                source_location_sentence = tf_object.transform_center(source_element)
+                source_width_sentence = tf_object.transform_height(source_element)
+                element_height_sentence = self.transform_width(target_element)
+                element_width_sentence = tf_object.transform_height(target_element)
                 method = 'transform_' + location.func.id
                 if method in dir(self):
-                    transformer = getattr(self, method)
+                    transformer = getattr(tf_object, method)
                     element_location_sentence = transformer(location)
 
                 diff = f'abs({element_location_sentence} - {source_location_sentence}) - ({source_width_sentence} + {element_width_sentence})/2'
-                sentence = f'round( math.sqrt( math.pow({drc_sentence},2) - math.pow({diff},2) ) ) + ({source_height_sentence})/2'
+                sentence = f'round( math.sqrt( math.pow({drc_sentence},2) - math.pow({diff},2) ) ) + ({element_height_sentence})/2'
                 return sentence
 
         else:
