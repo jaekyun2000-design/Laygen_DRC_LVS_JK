@@ -4,7 +4,7 @@ from generatorLib import DRC
 
 class _PMOS(StickDiagram._StickDiagram):
     _ParametersForDesignCalculation = dict(_PMOSNumberofGate=None, _PMOSChannelWidth=None, _PMOSChannellength=None,
-                                           _PMOSDummy=False, _GateSpacing=None, _SDWidth=None, _XVT=None)
+                                           _PMOSDummy=False, _GateSpacing=None, _SDWidth=None, _XVT=None, _PCCrit=None)
 
     def __init__(self, _DesignParameter=None, _Name=None):
 
@@ -47,7 +47,7 @@ class _PMOS(StickDiagram._StickDiagram):
             self._DesignParameter['_Name']['_Name'] = _Name
 
     def _CalculatePMOSDesignParameter(self, _PMOSNumberofGate=None, _PMOSChannelWidth=None, _PMOSChannellength=None,
-                                      _PMOSDummy=False, _GateSpacing=None, _SDWidth=None, _XVT=None):
+                                      _PMOSDummy=False, _GateSpacing=None, _SDWidth=None, _XVT=None, _PCCrit=None):
         print ('#########################################################################################################')
         print ('                                    {}  PMOS Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name']))
         print ('#########################################################################################################')
@@ -256,7 +256,7 @@ class _PMOS(StickDiagram._StickDiagram):
 
 
 
-        if DesignParameters._Technology == 'SS28nm' and _PMOSDummy==True:
+        if DesignParameters._Technology == 'SS28nm' and _PCCrit!=False:
             print ('#############################     PCCRIT Layer Calculation    ##############################################')
             if self._DesignParameter['_POLayer']['_XWidth'] in (30, 34):
                 self._DesignParameter['_PCCRITLayer'] = self._BoundaryElementDeclaration(
