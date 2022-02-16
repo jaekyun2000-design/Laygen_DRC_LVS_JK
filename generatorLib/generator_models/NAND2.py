@@ -345,3 +345,37 @@ class NAND2(StickDiagram._StickDiagram):
             pass
 
 
+
+        # ''' Pin(Label) '''
+        # self._DesignParameter['PIN_VSS'] = self._TextElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+        #     _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+        #     _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.04, _Angle=0, _TEXT='VSS',
+        #     _XYCoordinates=[[0, 0]]
+        # )
+        # self._DesignParameter['PIN_VDD'] = self._TextElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+        #     _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+        #     _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.04, _Angle=0, _TEXT='VDD',
+        #     _XYCoordinates=[[0, CellHeight]]
+        # )
+        # self._DesignParameter['PIN_A'] = self._TextElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+        #     _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+        #     _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='A',
+        #     _XYCoordinates=[self.getXY('ViaPoly_InputA')[0]],
+        # )
+        # self._DesignParameter['PIN_B'] = self._TextElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+        #     _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+        #     _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='B',
+        #     _XYCoordinates=[self.getXY('ViaPoly_InputB')[0]],
+        # )
+        # self._DesignParameter['PIN_Y'] = self._TextElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+        #     _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+        #     _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='Y',
+        #     _XYCoordinates=[[self.getXY('Met1RouteY_NM2PM')[0][0], YCoordOfInputOutput]]
+        # )
+
+
