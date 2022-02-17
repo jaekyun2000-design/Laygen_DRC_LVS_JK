@@ -1139,14 +1139,29 @@ class _MainWindow(QMainWindow):
         self._QTObj._qtProject._ElementManager_topology_dict[fcn_name].elementParameterDict = copy.deepcopy(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
         self.original_fcn_name = fcn_name
     def run_setup_update(self):
-        self.setup_widget = QWidget()
+        setup_widget = QDialog()
+        vertical_layout = QVBoxLayout()
         form_layout = QFormLayout()
-        setup_list = [item for item in dir(user_setup) if not item.startswith("__")]
-        # for setup_item in setup_list:
-        #     form_layout.addRow(setup_item, QLineEdit(str(user_setup.__dict__[setup_item])))
+        a = dir(user_setup)
+        import types
+        setup_list = [item for item in dir(user_setup) if not item.startswith("__") and not isinstance(user_setup.__dict__[item], types.FunctionType)]
         list(map(lambda setup_item: form_layout.addRow(setup_item, QLineEdit(str(user_setup.__dict__[setup_item]))), setup_list))
-        self.setup_widget.setLayout(form_layout)
-        self.setup_widget.show()
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        vertical_layout.addLayout(form_layout)
+        vertical_layout.addWidget(button_box)
+        setup_widget.setLayout(vertical_layout)
+        button_box.accepted.connect(setup_widget.accept)
+        button_box.rejected.connect(setup_widget.reject)
+        def update_user_setup():
+            for idx in range(form_layout.rowCount()):
+                key = form_layout.itemAt(idx, QFormLayout.LabelRole).widget().text()
+                value = form_layout.itemAt(idx, QFormLayout.FieldRole).widget().text()
+                user_setup.update_user_setup(key,value)
+        setup_widget.accepted.connect(update_user_setup)
+        return_value = setup_widget.exec()
+
+        # setup_widget.accepted.connect(lambda tmp: user_setup.update_user_setup(key, value) for key, value  in form_layout.itemAt(idx))
+
 
     def calculator(self):
         self.calculator_window.set_preset_window()
@@ -3898,9 +3913,10 @@ class _CustomScene(QGraphicsScene):
     def removeItem(self, QGraphicsItem):
         super(_CustomScene, self).removeItem(QGraphicsItem)
 
-        for key in QGraphicsItem.bounding_rect_dict:
-            if QGraphicsItem.bounding_rect_dict[key] in self.fit_in_view_dict[key]:
-                self.fit_in_view_dict[key].remove(QGraphicsItem.bounding_rect_dict[key])
+        if 'bounding_rect_dict' in QGraphicsItem.__dict__:
+            for key in QGraphicsItem.bounding_rect_dict:
+                if QGraphicsItem.bounding_rect_dict[key] in self.fit_in_view_dict[key]:
+                    self.fit_in_view_dict[key].remove(QGraphicsItem.bounding_rect_dict[key])
 
     def send_item_list(self):
         # itemList = self.selectedItems()
