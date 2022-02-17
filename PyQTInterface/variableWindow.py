@@ -393,8 +393,10 @@ class VariableSetupWindow(QWidget):
         self.variable_widget.exported_text(text=qt_dc._id, purpose=purpose, output_dict = qt_dc._ast.info_dict)
         if purpose in ['height', 'width']:
             self.variable_widget.get_width_height_ast(_id=qt_dc._id, _ast=qt_dc._ast)
-        elif purpose == 'XY_offset':
-            self.variable_widget.get_xy_offset_ast(_id=qt_dc._id, _ast=qt_dc._ast)
+        elif purpose in ['XY_offset', 'x_offset', 'y_offset']:
+            self.variable_widget.get_xy_offset_ast(_id=qt_dc._id, _ast=qt_dc._ast, xy= purpose)
+        # elif purpose == 'x_offset':
+        #     self.variable_widget.get_xy_offset_ast(_id=qt_dc._id, _ast=qt_dc._ast)
         # self.cal.receive_constraint_result(qt_dc)
 
 class variableContentWidget(QWidget):
@@ -508,8 +510,8 @@ class variableContentWidget(QWidget):
                 field_list = ['name', 'layer', 'XY_ref', 'width', 'width_text', 'x_offset', 'y_offset', 'row', 'col', 'width_input']
                 input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'line', 'line', 'double_line', None, None]
             elif name == 'sref':
-                field_list = ['name', 'XY_ref', 'x_offset', 'y_offset', 'row', 'col']
-                input_type_list = ['line', 'list', 'line', 'line', 'double_line', None]
+                field_list = ['name', 'XY_ref', 'sref_item', 'x_offset', 'y_offset', 'row', 'col']
+                input_type_list = ['line', 'list', 'list', 'line', 'line', 'double_line', None]
         elif option == 'relative':
             if name == 'boundary':
                 field_list = ['name', 'layer', 'XY_source_ref', 'XY_offset', 'index', 'index_input', 'width', 'width_text',
@@ -551,6 +553,17 @@ class variableContentWidget(QWidget):
             additional_button = QPushButton()
             additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
             additional_button.clicked.connect(self.show_xy_offset_cal)
+        elif name == 'x_offset':
+            tmp_input_widget.setReadOnly(True)
+            additional_button = QPushButton()
+            additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            additional_button.clicked.connect(self.show_x_offset_cal)
+        elif name == 'y_offset':
+            tmp_input_widget.setReadOnly(True)
+            additional_button = QPushButton()
+            additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            additional_button.clicked.connect(self.show_y_offset_cal)
+
 
         tmp_input_widget.field_name = name
         tmp_input_widget.textChanged.connect(lambda text: self.update_output_dict(text, name))
@@ -558,7 +571,7 @@ class variableContentWidget(QWidget):
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)
         output_layout.addWidget(tmp_input_widget)
-        if name in ['width_text', 'height_text', 'XY_offset']:
+        if name in ['width_text', 'height_text', 'XY_offset', 'x_offset', 'y_offset']:
             output_layout.addWidget(additional_button)
 
         return output_layout
@@ -690,6 +703,20 @@ class variableContentWidget(QWidget):
         self.cal.set_preset_window()
         self.cal.show()
 
+    def show_x_offset_cal(self):
+        self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='x_offset')
+        # self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_variable_wo_post_ast.connect(self.send_variable_wo_post_ast)
+        self.cal.set_preset_window()
+        self.cal.show()
+
+    def show_y_offset_cal(self):
+        self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='y_offset')
+        # self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_variable_wo_post_ast.connect(self.send_variable_wo_post_ast)
+        self.cal.set_preset_window()
+        self.cal.show()
+
 
     def show_source_cal(self):
         self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='source',address=self)
@@ -707,9 +734,11 @@ class variableContentWidget(QWidget):
         self.cal.show()
 
     def show_ref_cal(self):
-        self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='ref',address=self)
+        self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='ref')
         # self.cal.send_expression_signal.connect(self.exported_text)
-        self.cal.send_geometry_info_text.connect(lambda text: self.exported_text(text, 'ref', None))
+        # self.cal.send_geometry_info_text.connect(lambda text: self.exported_text(text, 'ref', None))
+        self.cal.send_variable_wo_post_ast.connect(self.send_variable_wo_post_ast)
+        self.cal.set_preset_window()
         self.cal.show()
 
     def exported_sref(self, sref_ast):
@@ -717,6 +746,7 @@ class variableContentWidget(QWidget):
 
         # source_widget = self.widget_dictionary['srefrelative'].layout().itemAt(2).itemAt(1).widget()
         source_widget = self.widget_sublayout_dictinoary['srefrelative']['sref_item'].itemAt(1).widget()
+        source_widget = self.widget_sublayout_dictinoary['srefoffset']['sref_item'].itemAt(1).widget()
         source_widget.takeItem(0)
         source_widget.addItem(sref_dict['library'])
         source_widget.setCurrentRow(0)
@@ -778,12 +808,14 @@ class variableContentWidget(QWidget):
             # self.cal.send_dummyconstraints_signal.emit(self.output_dict, _id)
         # except:
         #     traceback.print_exc()
-    def get_xy_offset_ast(self, _id, _ast):
+    def get_xy_offset_ast(self, _id, _ast, xy= 'XY'):
+        offset = xy
         for info, widget in self.widget_dictionary.items():
             if not widget.isHidden():
-                xy_offset_widget = self.widget_sublayout_dictinoary[info]['XY_offset'].itemAt(1).widget()
+                xy_offset_widget = self.widget_sublayout_dictinoary[info][offset].itemAt(1).widget()
         xy_offset_widget.setText(_id)
-        self.field_value_memory_dict['XY_offset'] = _ast
+        self.field_value_memory_dict[offset] = _ast
+
 
     def get_index(self, text):
         for info, widget in self.widget_dictionary.items():
