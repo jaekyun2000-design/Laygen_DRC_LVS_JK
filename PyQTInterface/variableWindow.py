@@ -179,6 +179,8 @@ class VariableSetupWindow(QWidget):
         # self.request_dummy_constraint_signal.emit(dummy_id)
         self.request_ast_signal.emit(dc_id)
         self.variable_type_widget.setCurrentText(self.current_info_dict['type'])
+        if self.current_info_dict['flag'] == 'offset':
+            self.relative_or_offset_button.setChecked(False)
         self.variable_widget.request_load(self.current_info_dict)
         self.show()
 
