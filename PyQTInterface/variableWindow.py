@@ -393,7 +393,7 @@ class VariableSetupWindow(QWidget):
         self.variable_widget.exported_text(text=qt_dc._id, purpose=purpose, output_dict = qt_dc._ast.info_dict)
         if purpose in ['height', 'width']:
             self.variable_widget.get_width_height_ast(_id=qt_dc._id, _ast=qt_dc._ast)
-        elif purpose in ['XY_offset', 'x_offset', 'y_offset']:
+        elif purpose in ['XY_offset', 'x_offset', 'y_offset', 'XY_ref']:
             self.variable_widget.get_xy_offset_ast(_id=qt_dc._id, _ast=qt_dc._ast, xy= purpose)
         # elif purpose == 'x_offset':
         #     self.variable_widget.get_xy_offset_ast(_id=qt_dc._id, _ast=qt_dc._ast)
@@ -510,8 +510,8 @@ class variableContentWidget(QWidget):
                 field_list = ['name', 'layer', 'XY_ref', 'width', 'width_text', 'x_offset', 'y_offset', 'row', 'col', 'width_input']
                 input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'line', 'line', 'double_line', None, None]
             elif name == 'sref':
-                field_list = ['name', 'XY_ref', 'sref_item', 'x_offset', 'y_offset', 'row', 'col']
-                input_type_list = ['line', 'list', 'list', 'line', 'line', 'double_line', None]
+                field_list = ['name', 'XY_ref', 'sref_item', 'x_offset', 'y_offset', 'row', 'col', 'XY_ref_input']
+                input_type_list = ['line', 'line', 'list', 'line', 'line', 'double_line', None, None]
         elif option == 'relative':
             if name == 'boundary':
                 field_list = ['name', 'layer', 'XY_source_ref', 'XY_offset', 'index', 'index_input', 'width', 'width_text',
@@ -553,6 +553,11 @@ class variableContentWidget(QWidget):
             additional_button = QPushButton()
             additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
             additional_button.clicked.connect(self.show_xy_offset_cal)
+        elif name == 'XY_ref':
+            tmp_input_widget.setReadOnly(True)
+            additional_button = QPushButton()
+            additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            additional_button.clicked.connect(self.show_ref_cal)
         elif name == 'x_offset':
             tmp_input_widget.setReadOnly(True)
             additional_button = QPushButton()
@@ -571,7 +576,7 @@ class variableContentWidget(QWidget):
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)
         output_layout.addWidget(tmp_input_widget)
-        if name in ['width_text', 'height_text', 'XY_offset', 'x_offset', 'y_offset']:
+        if name in ['width_text', 'height_text', 'XY_offset', 'x_offset', 'y_offset', 'XY_ref']:
             output_layout.addWidget(additional_button)
 
         return output_layout
@@ -583,11 +588,11 @@ class variableContentWidget(QWidget):
         tmp_input_widget2 = QLineEdit()
         tmp_input_widget1.field_name = 'row'
         # tmp_input_widget1.textChanged.connect(self.update_output_dict)
-        tmp_input_widget1.textChanged.connect(lambda text: self.update_output_dict(text, name))
+        tmp_input_widget1.textChanged.connect(lambda text: self.update_output_dict(text, 'row'))
 
         tmp_input_widget2.field_name = 'col'
         # tmp_input_widget2.textChanged.connect(self.update_output_dict)
-        tmp_input_widget2.textChanged.connect(lambda text: self.update_output_dict(text, name))
+        tmp_input_widget2.textChanged.connect(lambda text: self.update_output_dict(text, 'col'))
 
 
         rowcol_layout = QHBoxLayout()
@@ -734,7 +739,7 @@ class variableContentWidget(QWidget):
         self.cal.show()
 
     def show_ref_cal(self):
-        self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='ref')
+        self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='XY_ref')
         # self.cal.send_expression_signal.connect(self.exported_text)
         # self.cal.send_geometry_info_text.connect(lambda text: self.exported_text(text, 'ref', None))
         self.cal.send_variable_wo_post_ast.connect(self.send_variable_wo_post_ast)
