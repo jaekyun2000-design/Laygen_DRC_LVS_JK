@@ -463,7 +463,10 @@ class variableContentWidget(QWidget):
             row_layout = self.widget_dictionary[name+option].layout()
             if field_name in self.field_value_memory_dict:
                 if field_info['input_type_list'][i] == 'line':
-                    row_layout.itemAt(i).itemAt(1).widget().setText(str(self.field_value_memory_dict[field_name]))
+                    if isinstance(self.field_value_memory_dict[field_name], ast.AST):
+                        row_layout.itemAt(i).itemAt(1).widget().setText(self.field_value_memory_dict[field_name]._id)
+                    else:
+                        row_layout.itemAt(i).itemAt(1).widget().setText(str(self.field_value_memory_dict[field_name]))
                 elif field_info['input_type_list'][i] == 'double_line':
                     row_layout.itemAt(i).itemAt(1).layout().itemAt(0).widget().setText(str(self.field_value_memory_dict['row']))
                     row_layout.itemAt(i).itemAt(1).layout().itemAt(1).widget().setText(str(self.field_value_memory_dict['col']))
@@ -571,7 +574,8 @@ class variableContentWidget(QWidget):
 
 
         tmp_input_widget.field_name = name
-        tmp_input_widget.textChanged.connect(lambda text: self.update_output_dict(text, name))
+        if name not in ['width_text', 'height_text', 'XY_offset', 'x_offset', 'y_offset', 'XY_ref']:
+            tmp_input_widget.textChanged.connect(lambda text: self.update_output_dict(text, name))
 
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)
