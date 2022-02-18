@@ -753,99 +753,134 @@ class IrregularTransformer(ast.NodeTransformer):
         ###############################################################################################################
         ###############################################################################################################
         elif _flag == 'offset':
-            if "," in XY_source_ref:
-                source_wo_layer = ",".join(XY_source_ref.split(",")[:-1]) + ')'
-                parent_xy = self.expressionTransformer(source_wo_layer, 'XY')
-                parent_xy = "[" + parent_xy[0] + ',' + parent_xy[1] + "]"
-
-            else:
-                parent_xy = '[0,0]'
-
-            tmp_string = re.findall('\(.*\)', XY_source_ref)[0]
-            tmp_string = re.sub('\(|\'|\)', "", tmp_string)
-            tmp_string = re.sub(" ", "", tmp_string)
-            operands = re.split(',', tmp_string)
-            # above operands include indices
-
-            code = 'self.'
-            offset_indices = []
-            objects = operands[:-1]
-            for i in range(len(objects)):  # append code from the start
-                offset_indices.append(re.findall('\[.*\]', objects[i])[0])
-                object = objects[i][:-len(offset_indices[i])]
-                code = code + f"_DesignParameter['{object}']['_DesignObj']."
-            layer = operands[-1]
-
-            layer_xy = code + f"_DesignParameter['{layer}']" + '[\'_XYCoordinates\']'
-            _width_code = code + f"_DesignParameter['{layer}']" + '[\'_XWidth\']'
-            _height_code = code + f"_DesignParameter['{layer}']" + '[\'_YWidth\']'
-
-            if info_dict['width'] == 'Auto':  # If Width is 'Auto', height should be fixed.
-                if _type == 'path_array':
-                    pass
-                elif _type == 'boundary_array':
-                    # Width : Auto, height: Value
-                    _width = _width_code
-                    _height = info_dict['height_input']
-                elif _type == 'sref_array':
-                    _width = 'Blank'
-                    _height = 'Blank'
-            else:  # If _width is not 'Auto', height can either be 'Auto' or Fixed
-                _width = info_dict['width_input']
-                if _type == 'path_array':  # path does not have 'height' input
-                    pass
-                elif _type == 'boundary_array':
-                    if info_dict['height'] == 'Auto':
-                        _height = _height_code
-                    else:
-                        _height = info_dict["height_input"]
-                elif _type == 'sref_array':
-                    _width = 'Blank'
-                    _height = 'Blank'
-
-            source_XY_code = parent_xy + '+' + layer_xy
-
-        ################### Width, height, Coordinates Calculation Done ########################
-        if _flag == 'offset':
-            if _type == 'boundary_array':
+            info_dict['x_offset'] = info_dict['x_offset'].replace('\n','')
+            info_dict['y_offset'] = info_dict['y_offset'].replace('\n','')
+            info_dict['XY_ref'] = info_dict['XY_ref'].replace('\n','')
+            info_dict['row'] = info_dict['row'].replace('\n','')
+            info_dict['col'] = info_dict['col'].replace('\n','')
+            if 'sref' in _type:
                 loop_code = f"XYList = []\n" \
-                            f"{xy_offset}\n" \
-                            f"for i in range({_row_num}):\n" \
-                            f"\tfor j in range({_col_num}):\n" \
-                            f"\t\tXYList.append([x+y+z for x,y,z in zip({source_XY_code} , [{_x_distance}, {_y_distance}], xy_offset)\n"
+                            f"xy_base = {info_dict['XY_ref'][1:-1]}\n" \
+                            f"for row in range({info_dict['row']}):\n" \
+                            f"\tfor col in range({info_dict['col']}):\n" \
+                            f"\t\tx = row*{info_dict['x_offset']}\n" \
+                            f"\t\ty = col*{info_dict['y_offset']}\n" \
+                            f"\t\tXYList.append([a+b for a,b in zip(xy_base, [x,y])])\n" \
 
-                tmp_node = element_ast.Boundary()
+                tmp_node = element_ast.Sref()
                 tmp_node.name = _name
-                tmp_node.layer = _layer
                 tmp_node.XY = 'XYList'
-                tmp_node.width = _width
-                tmp_node.height = _height
-                tmp_code_ast = element_ast.ElementTransformer().visit_Boundary(tmp_node)
+                tmp_node.library = info_dict['sref_item_dict']['library']
+                tmp_node.className = info_dict['sref_item_dict']['className']
+                tmp_node.calculate_fcn = info_dict['sref_item_dict']['calculate_fcn']
+                tmp_node.parameters = info_dict['sref_item_dict']['parameters']
+                tmp_code_ast = element_ast.ElementTransformer().visit_Sref(tmp_node)
                 tmp_code = astunparse.unparse(tmp_code_ast)
+            else:
+                raise Exception("Not Implemeneted Yet")
+            final_sentence = f"{loop_code}" \
+                             f"{tmp_code}"
+            final_ast = ast.parse(final_sentence).body
+            return final_ast
 
-                sentence = loop_code + '\n' + tmp_code
-                del tmp_node
-            elif _type == 'path_array':
-                # loop_code
-                pass
-            elif _type == 'sref_array':
-                loop_code = loop_code = f"XYList = []\n" \
-                            f"{xy_offset}\n" \
-                            f"for i in range({_row_num}):\n" \
-                            f"\tfor j in range({_col_num}):\n" \
-                            f"\t\tXYList.append([x+y for x,y in zip({source_XY_code} , [{_x_distance}, {_y_distance}], xy_offset)\n"
-            tmp_node = element_ast.Sref()
-            tmp_node.name = _name
-            tmp_node.XY = 'XYList'
-            tmp_node.library = info_dict['sref_item_dict']['library']
-            tmp_node.className = info_dict['sref_item_dict']['className']
-            tmp_node.calculate_fcn = info_dict['sref_item_dict']['calculate_fcn']
-            tmp_node.parameters = info_dict['sref_item_dict']['parameters']
-            tmp_code_ast = element_ast.ElementTransformer().visit_Sref(tmp_node)
-            tmp_code = astunparse.unparse(tmp_code_ast)
+            #
+            #
+            #
+            #
+            # if "," in XY_source_ref:
+            #     source_wo_layer = ",".join(XY_source_ref.split(",")[:-1]) + ')'
+            #     parent_xy = self.expressionTransformer(source_wo_layer, 'XY')
+            #     parent_xy = "[" + parent_xy[0] + ',' + parent_xy[1] + "]"
+            #
+            # else:
+            #     parent_xy = '[0,0]'
+            #
+            # tmp_string = re.findall('\(.*\)', XY_source_ref)[0]
+            # tmp_string = re.sub('\(|\'|\)', "", tmp_string)
+            # tmp_string = re.sub(" ", "", tmp_string)
+            # operands = re.split(',', tmp_string)
+            # # above operands include indices
+            #
+            # code = 'self.'
+            # offset_indices = []
+            # objects = operands[:-1]
+            # for i in range(len(objects)):  # append code from the start
+            #     offset_indices.append(re.findall('\[.*\]', objects[i])[0])
+            #     object = objects[i][:-len(offset_indices[i])]
+            #     code = code + f"_DesignParameter['{object}']['_DesignObj']."
+            # layer = operands[-1]
+            #
+            # layer_xy = code + f"_DesignParameter['{layer}']" + '[\'_XYCoordinates\']'
+            # _width_code = code + f"_DesignParameter['{layer}']" + '[\'_XWidth\']'
+            # _height_code = code + f"_DesignParameter['{layer}']" + '[\'_YWidth\']'
+            #
+            # if info_dict['width'] == 'Auto':  # If Width is 'Auto', height should be fixed.
+            #     if _type == 'path_array':
+            #         pass
+            #     elif _type == 'boundary_array':
+            #         # Width : Auto, height: Value
+            #         _width = _width_code
+            #         _height = info_dict['height_input']
+            #     elif _type == 'sref_array':
+            #         _width = 'Blank'
+            #         _height = 'Blank'
+            # else:  # If _width is not 'Auto', height can either be 'Auto' or Fixed
+            #     _width = info_dict['width_input']
+            #     if _type == 'path_array':  # path does not have 'height' input
+            #         pass
+            #     elif _type == 'boundary_array':
+            #         if info_dict['height'] == 'Auto':
+            #             _height = _height_code
+            #         else:
+            #             _height = info_dict["height_input"]
+            #     elif _type == 'sref_array':
+            #         _width = 'Blank'
+            #         _height = 'Blank'
+            #
+            # source_XY_code = parent_xy + '+' + layer_xy
 
-            sentence = loop_code + '\n' + tmp_code
-            del tmp_node
+        #
+        # ################### Width, height, Coordinates Calculation Done ########################
+        # if _flag == 'offset':
+        #     if _type == 'boundary_array':
+        #         loop_code = f"XYList = []\n" \
+        #                     f"{xy_offset}\n" \
+        #                     f"for i in range({_row_num}):\n" \
+        #                     f"\tfor j in range({_col_num}):\n" \
+        #                     f"\t\tXYList.append([x+y+z for x,y,z in zip({source_XY_code} , [{_x_distance}, {_y_distance}], xy_offset)\n"
+        #
+        #         tmp_node = element_ast.Boundary()
+        #         tmp_node.name = _name
+        #         tmp_node.layer = _layer
+        #         tmp_node.XY = 'XYList'
+        #         tmp_node.width = _width
+        #         tmp_node.height = _height
+        #         tmp_code_ast = element_ast.ElementTransformer().visit_Boundary(tmp_node)
+        #         tmp_code = astunparse.unparse(tmp_code_ast)
+        #
+        #         sentence = loop_code + '\n' + tmp_code
+        #         del tmp_node
+        #     elif _type == 'path_array':
+        #         # loop_code
+        #         pass
+        #     elif _type == 'sref_array':
+        #         loop_code = loop_code = f"XYList = []\n" \
+        #                     f"{xy_offset}\n" \
+        #                     f"for i in range({_row_num}):\n" \
+        #                     f"\tfor j in range({_col_num}):\n" \
+        #                     f"\t\tXYList.append([x+y for x,y in zip({source_XY_code} , [{_x_distance}, {_y_distance}], xy_offset)\n"
+        #     tmp_node = element_ast.Sref()
+        #     tmp_node.name = _name
+        #     tmp_node.XY = 'XYList'
+        #     tmp_node.library = info_dict['sref_item_dict']['library']
+        #     tmp_node.className = info_dict['sref_item_dict']['className']
+        #     tmp_node.calculate_fcn = info_dict['sref_item_dict']['calculate_fcn']
+        #     tmp_node.parameters = info_dict['sref_item_dict']['parameters']
+        #     tmp_code_ast = element_ast.ElementTransformer().visit_Sref(tmp_node)
+        #     tmp_code = astunparse.unparse(tmp_code_ast)
+        #
+        #     sentence = loop_code + '\n' + tmp_code
+        #     del tmp_node
 
 
 
