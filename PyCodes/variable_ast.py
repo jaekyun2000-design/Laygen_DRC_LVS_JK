@@ -766,10 +766,11 @@ class IrregularTransformer(ast.NodeTransformer):
                             f"\t\tx = row*{info_dict['x_offset']}\n" \
                             f"\t\ty = col*{info_dict['y_offset']}\n" \
                             f"\t\tXYList.append([a+b for a,b in zip(xy_base, [x,y])])\n" \
+                            f"self._DesignParameter['{_name}']['_XYCoordinates'] = XYList" \
 
                 tmp_node = element_ast.Sref()
                 tmp_node.name = _name
-                tmp_node.XY = 'XYList'
+                tmp_node.XY = 'None'
                 tmp_node.library = info_dict['sref_item_dict']['library']
                 tmp_node.className = info_dict['sref_item_dict']['className']
                 tmp_node.calculate_fcn = info_dict['sref_item_dict']['calculate_fcn']
@@ -778,8 +779,8 @@ class IrregularTransformer(ast.NodeTransformer):
                 tmp_code = astunparse.unparse(tmp_code_ast)
             else:
                 raise Exception("Not Implemeneted Yet")
-            final_sentence = f"{loop_code}" \
-                             f"{tmp_code}"
+            final_sentence = f"{tmp_code}" \
+                             f"{loop_code}"
             final_ast = ast.parse(final_sentence).body
             return final_ast
 
