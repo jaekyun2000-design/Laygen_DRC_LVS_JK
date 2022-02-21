@@ -307,7 +307,7 @@ class RArray(StickDiagram._StickDiagram):
 			tmp5_path =[[]]
 			tmp5_path2 = [[]]
 			tmp5_path3 = [[]]
-			M2_vertical_length = 500
+			M2_vertical_length = 300
 			M2_horizontal_offset = 300
 			prior_col = 0
 
@@ -322,7 +322,7 @@ class RArray(StickDiagram._StickDiagram):
 
 			for i in range (0, Vref_num) :
 				j = First_vref_point + i * Vref_step
-				if (int)(j / NUMofY) % 2 == 0 :
+				if (int)(j // NUMofY) % 2 == 0 :
 					tmp5.append([self._DesignParameter['Rref']['_XYCoordinates'][j][0]+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XWidth']/2 - self._DesignParameter['_RoutingContact']['_XWidth']/2 - drc._Metal1MinEnclosureVia12,
 							self._DesignParameter['Rref']['_XYCoordinates'][j][1]+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1]])
 					tmp5_path.append([[self._DesignParameter['Rref']['_XYCoordinates'][j][0]+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XWidth']/2 - self._DesignParameter['_RoutingContact']['_XWidth']/2 - drc._Metal1MinEnclosureVia12,
@@ -348,28 +348,28 @@ class RArray(StickDiagram._StickDiagram):
 )
 
 				else :
-					tmp5.append([self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][0]+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth']/2 - self._DesignParameter['_RoutingContact']['_XWidth']/2 - drc._Metal1MinEnclosureVia12,
-							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][1]+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]])
-					tmp5_path.append([[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][0]+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth']/2 - self._DesignParameter['_RoutingContact']['_XWidth']/2 - drc._Metal1MinEnclosureVia12,
-							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][1]+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]],
-							[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 - self._DesignParameter['_RoutingContact']['_XWidth'] / 2 - drc._Metal1MinEnclosureVia12,
-							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length]])
+					tmp5.append([self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][0]+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth']/2 - self._DesignParameter['_RoutingContact']['_XWidth']/2 - drc._Metal1MinEnclosureVia12,
+							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][1]+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]])
+					tmp5_path.append([[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][0]+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth']/2 - self._DesignParameter['_RoutingContact']['_XWidth']/2 - drc._Metal1MinEnclosureVia12,
+							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][1]+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]],
+							[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 - self._DesignParameter['_RoutingContact']['_XWidth'] / 2 - drc._Metal1MinEnclosureVia12,
+							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length]])
 
 					if (int)(j / NUMofY) == prior_col :
 						M2_horizontal_length += M2_horizontal_spacing
 					else :
 						M2_horizontal_length = M2_horizontal_offset
 
-					tmp5_path2.append([[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 - self._DesignParameter['_RoutingContact']['_XWidth'] - drc._Metal1MinEnclosureVia3 - drc._Metal1MinEnclosureVia12,
-							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length],
-							[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 + M2_horizontal_length + self._DesignParameter['_M3_vertical']['_Width']/2,
-							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length]])
-					tmp5_path3.append([[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 + M2_horizontal_length,
-							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length + self._DesignParameter['_M2_horizontal']['_Width']/2],
-							[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 + M2_horizontal_length,
+					tmp5_path2.append([[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 - self._DesignParameter['_RoutingContact']['_XWidth'] - drc._Metal1MinEnclosureVia3 - drc._Metal1MinEnclosureVia12,
+							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length],
+							[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 + M2_horizontal_length + self._DesignParameter['_M3_vertical']['_Width']/2,
+							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length]])
+					tmp5_path3.append([[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 + M2_horizontal_length,
+							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length + self._DesignParameter['_M2_horizontal']['_Width']/2],
+							[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 + M2_horizontal_length,
 							 vertical_first_Y - vertical_Y_space * i]])
-					tmp6.append([self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 + M2_horizontal_length,
-							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j / NUMofY + 1) * NUMofY - (j+1) % NUMofY][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length],
+					tmp6.append([self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 + M2_horizontal_length,
+							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length],
 )
 
 				prior_col = (int)(j / NUMofY)
