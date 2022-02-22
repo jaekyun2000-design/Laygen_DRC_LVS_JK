@@ -714,31 +714,35 @@ class IrregularTransformer(ast.NodeTransformer):
                                 f"{xy_offset}\n" \
                                 f"for i in range(len({layer_xy})):\n" \
                                 f"\txy = {layer_xy}[i][0] if type({layer_xy}[i][0]) == list else {layer_xy}[i]\n" \
-                                f"\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , xy, xy_offset ) ] )\n"
+                                f"\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , xy, xy_offset ) ] )\n" \
+                                f"self._DesignParameter['{_name}']['_XYCoordinates'] = XYList"
                 elif _index == 'Odd':
                     loop_code = f"XYList = []\n" \
                                 f"{xy_offset}\n" \
                                 f"for i in range(len({layer_xy})):\n" \
                                 f"\tif (i%2 == 1):\n" \
                                 f"\t\txy = {layer_xy}[i][0] if type({layer_xy}[i][0]) == list else {layer_xy}[i]\n" \
-                                f"\t\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , xy, xy_offset ) ] )\n"
+                                f"\t\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , xy, xy_offset ) ] )\n" \
+                                f"self._DesignParameter['{_name}']['_XYCoordinates'] = XYList"
                 elif _index == 'Even':
                     loop_code = f"XYList = []\n" \
                                 f"{xy_offset}\n" \
                                 f"for i in range(len({layer_xy})):\n" \
                                 f"\tif (i%2 == 0):\n" \
                                 f"\t\txy = {layer_xy}[i][0] if type({layer_xy}[i][0]) == list else {layer_xy}[i]\n" \
-                                f"\t\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , xy, xy_offset ) ] )\n"
+                                f"\t\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , xy, xy_offset ) ] )\n" \
+                                f"self._DesignParameter['{_name}']['_XYCoordinates'] = XYList"
                 else:
                     loop_code = f"XYList = []\n" \
                                 f"{xy_offset}\n" \
                                 f"for element in {layer_xy}{_index[0]}:\n" \
                                 f"\telement = element[0] if type(element[0]) == list else element\n" \
-                                f"\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , element, xy_offset ) ] )\n"\
+                                f"\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , element, xy_offset ) ] )\n" \
+                                f"self._DesignParameter['{_name}']['_XYCoordinates'] = XYList"\
 
                 tmp_node = element_ast.Sref()
                 tmp_node.name = _name
-                tmp_node.XY = 'XYList'
+                tmp_node.XY = 'None'
                 tmp_node.library = info_dict['sref_item_dict']['library']
                 tmp_node.className = info_dict['sref_item_dict']['className']
                 tmp_node.calculate_fcn = info_dict['sref_item_dict']['calculate_fcn']
@@ -746,6 +750,10 @@ class IrregularTransformer(ast.NodeTransformer):
                 tmp_code_ast = element_ast.ElementTransformer().visit_Sref(tmp_node)
                 tmp_code = astunparse.unparse(tmp_code_ast)
 
+                final_sentence = f"{tmp_code}" \
+                                 f"{loop_code}"
+                final_ast = ast.parse(final_sentence).body
+                return final_ast
                 sentence = loop_code + '\n' + tmp_code
                 del tmp_node
         ###############################################################################################################
@@ -763,8 +771,8 @@ class IrregularTransformer(ast.NodeTransformer):
                             f"xy_base = {info_dict['XY_ref'][1:-1]}\n" \
                             f"for row in range({info_dict['row']}):\n" \
                             f"\tfor col in range({info_dict['col']}):\n" \
-                            f"\t\tx = row*{info_dict['x_offset']}\n" \
-                            f"\t\ty = col*{info_dict['y_offset']}\n" \
+                            f"\t\tx = col*{info_dict['x_offset']}\n" \
+                            f"\t\ty = row*{info_dict['y_offset']}\n" \
                             f"\t\tXYList.append([a+b for a,b in zip(xy_base, [x,y])])\n" \
                             f"self._DesignParameter['{_name}']['_XYCoordinates'] = XYList" \
 
@@ -1426,6 +1434,12 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         else:
             return f'math.sqrt(math.pow({tf_string_a}[0]-{tf_string_b}[0], 2) + math.pow({tf_string_a}[1]-{tf_string_b}[1], 2))'
 
+    # def transform_len(self, node):
+    #     arg_names, arg_indexes = self.parse_args_info(node.args)
+    #     # base_element_string = self.translate_base_string(arg_names)
+    #     # base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes, internal)
+    #     base_element_string = self.extract_element_string(arg_names)
+    #     return f"len({base_element_string}['_XYCoordinates'])"
 
     # def transform_cal_p2p(self, node):
     #     if 'func' in node.args[0].__dict__ and node.args[0].func and 'id' in node.args[0].func.__dict__:
