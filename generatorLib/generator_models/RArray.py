@@ -321,7 +321,7 @@ class RArray(StickDiagram._StickDiagram):
 			vertical_Y_space = self._DesignParameter['_M2_horizontal']['_Width'] + drc._MetalxMinSpace21
 
 			for i in range (0, Vref_num) :
-				j = First_vref_point + i * Vref_step
+				j = First_vref_point + (Vref_num - 1 - i) * Vref_step
 				if (int)(j // NUMofY) % 2 == 0 :
 					tmp5.append([self._DesignParameter['Rref']['_XYCoordinates'][j][0]+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XWidth']/2 - self._DesignParameter['_RoutingContact']['_XWidth']/2 - drc._Metal1MinEnclosureVia12,
 							self._DesignParameter['Rref']['_XYCoordinates'][j][1]+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1]])
@@ -330,7 +330,7 @@ class RArray(StickDiagram._StickDiagram):
 							[self._DesignParameter['Rref']['_XYCoordinates'][j][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XWidth'] / 2 - self._DesignParameter['_RoutingContact']['_XWidth'] / 2 - drc._Metal1MinEnclosureVia12,
 							self._DesignParameter['Rref']['_XYCoordinates'][j][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1] - M2_vertical_length]])
 
-					if (int)(j / NUMofY) == prior_col :
+					if (int)(j // NUMofY) == prior_col :
 						M2_horizontal_length += M2_horizontal_spacing
 					else :
 						M2_horizontal_length = M2_horizontal_offset
@@ -355,7 +355,7 @@ class RArray(StickDiagram._StickDiagram):
 							[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 - self._DesignParameter['_RoutingContact']['_XWidth'] / 2 - drc._Metal1MinEnclosureVia12,
 							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length]])
 
-					if (int)(j / NUMofY) == prior_col :
+					if (int)(j // NUMofY) == prior_col :
 						M2_horizontal_length += M2_horizontal_spacing
 					else :
 						M2_horizontal_length = M2_horizontal_offset
@@ -372,7 +372,7 @@ class RArray(StickDiagram._StickDiagram):
 							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length],
 )
 
-				prior_col = (int)(j / NUMofY)
+				prior_col = (int)(j // NUMofY)
 
 			self._DesignParameter['_RoutingContact']['_XYCoordinates'] = tmp5
 			self._DesignParameter['_via1_to_M2']['_XYCoordinates'] = tmp5
