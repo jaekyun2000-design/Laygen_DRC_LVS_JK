@@ -769,10 +769,10 @@ class IrregularTransformer(ast.NodeTransformer):
             if 'sref' in _type:
                 loop_code = f"XYList = []\n" \
                             f"xy_base = {info_dict['XY_ref'][1:-1]}\n" \
-                            f"for row in range({info_dict['row']}):\n" \
-                            f"\tfor col in range({info_dict['col']}):\n" \
-                            f"\t\tx = col*{info_dict['x_offset']}\n" \
-                            f"\t\ty = row*{info_dict['y_offset']}\n" \
+                            f"for i in range({info_dict['row']}):\n" \
+                            f"\tfor j in range({info_dict['col']}):\n" \
+                            f"\t\tx = j*{info_dict['x_offset']}\n" \
+                            f"\t\ty = i*{info_dict['y_offset']}\n" \
                             f"\t\tXYList.append([a+b for a,b in zip(xy_base, [x,y])])\n" \
                             f"self._DesignParameter['{_name}']['_XYCoordinates'] = XYList" \
 
