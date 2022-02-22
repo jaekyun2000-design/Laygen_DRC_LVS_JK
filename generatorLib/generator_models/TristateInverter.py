@@ -233,10 +233,10 @@ class TristateInverter(StickDiagram._StickDiagram):
 
 
 
-    def _CalculateDesignParameterFinger3orMore(self, Width_NM1=300, Width_NM2=350, Width_PM1=600, Width_PM2=700, Length=30,
-                                  GateSpacing=100, XVT='SLVT', NumFinger_NM1=5, NumFinger_NM2=7,
-                                  Dummy=True, NumViaY_InputA=1, NumViaY_InputEN=1, CellHeight=1800,
-                                  YCoord_InputA=700, YCoord_InputEN=550, YCoord_InputENb=900):
+    def _CalculateDesignParameterFinger3orMore(self, Width_NM1=250, Width_NM2=300, Width_PM1=500, Width_PM2=600, Length=30,
+                                               GateSpacing=100, XVT='SLVT', NumFinger_NM1=3, NumFinger_NM2=5,
+                                               Dummy=True, NumViaY_InputA=1, NumViaY_InputEN=1, CellHeight=1800,
+                                               YCoord_InputA=750, YCoord_InputEN=500, YCoord_InputENb=1000):
 
         drc = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
