@@ -388,6 +388,7 @@ class NAND2(StickDiagram._StickDiagram):
 
         # YWidth_Met1HorizontalRouting = drc._Metal1MinWidth  # 50
         YWidth_Met1HorizontalRouting = 66
+        Num_HorizontalInputViaMode = 5
 
         ''' --------------------------------------- Supply Rails and MOSFET ---------------------------------------- '''
         self._DesignParameter['VSSRail'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VSSRailIn{}'.format(_Name)))[0]
@@ -575,7 +576,7 @@ class NAND2(StickDiagram._StickDiagram):
 
         ''' Input Via Out Output Met1 '''
 
-        if max(NumFinger_NM, NumFinger_PM) < 5:
+        if max(NumFinger_NM, NumFinger_PM) < Num_HorizontalInputViaMode:
             if max(NumFinger_NM, NumFinger_PM) == 1:                    # (N,P) = (1,1)
                 XCoord_OutputMet1Y = 0
                 XCoord_InputA = self.getXY('PMOS', '_Met1Layer')[0][0]
@@ -818,7 +819,7 @@ class NAND2(StickDiagram._StickDiagram):
 
             else:
                 pass
-        else:       #  if not max(NumFinger_NM, NumFinger_PM) < 5:
+        else:       #  if not max(NumFinger_NM, NumFinger_PM) < Num_HorizontalInputViaMode:
             topBoundary_Met1YOutputPM2NM = self.getXY('Met1RouteX_PMOutput')[0][1] + self.getYWidth('Met1RouteX_PMOutput') / 2
             botBoundary_Met1YOutputPM2NM = self.getXY('Met1RouteX_NMOutput')[0][1] + self.getYWidth('Met1RouteX_NMOutput') / 2 + drc._Metal1MinSpaceAtCorner
 
@@ -1032,7 +1033,7 @@ class NAND2(StickDiagram._StickDiagram):
                             'PolyRouteX_NM_InputA') / 2)) / 2
                 ]]
             )
-        # End of 'if max(NumFinger_NM, NumFinger_PM) < 5:   else:   '
+        # End of 'if max(NumFinger_NM, NumFinger_PM) < Num_HorizontalInputViaMode:   else:   '
 
 
 
