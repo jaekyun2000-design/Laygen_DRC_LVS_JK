@@ -763,7 +763,7 @@ class GDS_STRING():
             binary_gds_stream.write(fmt_binary_data)
         else:
             fmt='>HH'+str(len(self.string_data))+'s'
-            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,self.string_data)
+            fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,str.encode(self.string_data)+b'\0')
             binary_gds_stream.write(fmt_binary_data)
             
     def read_binary_gds_stream(self,tag,gds_data):
