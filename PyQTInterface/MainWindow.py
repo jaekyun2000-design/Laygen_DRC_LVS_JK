@@ -149,7 +149,7 @@ class _MainWindow(QMainWindow):
         )
 
     def reload_project(self, project_name=None):
-        self.__init__()
+        # self.__init__()
         if project_name:
             self.loadProject(project_name)
 
@@ -2035,6 +2035,8 @@ class _MainWindow(QMainWindow):
             _fileName=scf[0]
             if _fileName == '':
                 return
+            self.hide()
+            self.__init__()
             self._QTObj._loadProject(_name=_fileName)
             self._QTObj._qtProject.tmp_save_file.load_qt_interface(self,self._QTObj._qtProject._DesignConstraint)
             # self._QTObj._qtProject.tmp_save_file.load_from_constraint_tree_info(self, self._QTObj._qtProject._DesignConstraint)
