@@ -461,14 +461,30 @@ class ElementTransformer(ast.NodeTransformer):
     def visit_Text(self, node):
 
         for field in node._fields:
-            if node.__dict__[field] == '' or node.__dict__[field] == None:
-                raise Exception(f"Not valid {field} value : {node.__dict__[field]}")
+            # if node.__dict__[field] == '' or node.__dict__[field] == None:
+            #     raise Exception(f"Not valid {field} value : {node.__dict__[field]}")
             if isinstance(node.__dict__[field], ast.AST):
-                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
-            elif type(node.__dict__[field]) == list and isinstance(node.__dict__[field][0], ast.AST):
-                node.__dict__[field] = astunparse.unparse(node.__dict__[field]).replace('\n', '')
+                tmp_ast = run_transformer(node.__dict__[field])
+                node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
+            elif type(node.__dict__[field]) == list:
+                string_list = []
+                for child in node.__dict__[field]:
+                    if isinstance(child, ast.AST):
+                        tmp_ast = run_transformer(child)
+                        string_list.append(astunparse.unparse(tmp_ast).replace('\n', ''))
+                    else:
+                        if field == 'XY':
+                            string_list.append(f'[{child}]')
+                if field == 'XY':
+                    string_list = [string[1:-1] for string in string_list]
+                    node.__dict__[field] = "[" + ','.join(string_list) + "]"
+                else:
+                    node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
 
-        sentence = f"self.{node.name} = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0]," \
+        node.pres = node.pres if node.pres else '[0,1,2]'
+        node.reflect = node.reflect if node.reflect else '[0,0,0]'
+        node.angle = node.angle if node.angle else '0'
+        sentence = f"self._DesignParameter['{node.name}'] = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0]," \
                    f"_Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Presentation = {node.pres}, _Reflect = {node.reflect}, _XYCoordinates = {node.XY}," \
                    f"_Mag = {node.magnitude}, _Angle = {node.angle}, _TEXT = '{node.text}')"
         print(sentence)

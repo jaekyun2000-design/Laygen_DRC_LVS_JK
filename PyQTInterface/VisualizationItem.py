@@ -596,6 +596,11 @@ class _VisualizationItem(QGraphicsItemGroup):
             return super().shape()
 
     def updateDesignParameter(self,QtDesignParameter):
+        if '_Reflect' in QtDesignParameter._DesignParameter:
+            self._ItemTraits['_Reflect'] = QtDesignParameter._DesignParameter['_Reflect']
+        if '_Angle' in QtDesignParameter._DesignParameter:
+            self._ItemTraits['_Angle'] = QtDesignParameter._DesignParameter['_Angle']
+
         remove_item_list= []
         for child in self.childItems():
             if type(child) == _VisualizationItem:
@@ -1028,6 +1033,9 @@ class _VisualizationItem(QGraphicsItemGroup):
         elif self._ItemTraits['_DesignParametertype'] in [3, 31]:                #SRef Case
             self.index = idx
             tmp_vs_item_group = QGraphicsItemGroup()
+            if not self._ItemTraits['_DesignParameterRef']:
+                warnings.warn("Debug required.")
+                return
             for sub_element_dp_name, sub_element_dp in self._ItemTraits['_DesignParameterRef'].items():
                 sub_element_vi = _VisualizationItem()
                 sub_element_vi._NoVariableFlag = True
@@ -1112,10 +1120,11 @@ class _VisualizationItem(QGraphicsItemGroup):
                 except:
                     self.text = QGraphicsTextItem(blockTraits['_TEXT'])
 
-                if blockTraits['_Width'] < 1:
-                    fontSize = 1000 * blockTraits['_Width']
-                else:
-                    fontSize = blockTraits['_Width']
+                # if blockTraits['_Width'] < 1:
+                fontSize = 100 * blockTraits['_Width']
+                fontSize = fontSize if fontSize < 5 else 5
+                # else:
+                #     fontSize = blockTraits['_Width']
                 font = QFont('tmp', fontSize)
                 self.text.setFont(font)
                 self.text.setPos(blockTraits['_XYCoordinates'][0][0],blockTraits['_XYCoordinates'][0][1])
@@ -1139,10 +1148,10 @@ class _VisualizationItem(QGraphicsItemGroup):
                 if not blockTraits['_Color']:
                     blockTraits['_Color'] = Qt.GlobalColor.white if user_setup._Night_mode else Qt.GlobalColor.black
                 self.text.setDefaultTextColor(blockTraits['_Color'])
-                if blockTraits['_Width'] < 1:
-                    fontSize = 1000 * blockTraits['_Width']
-                else:
-                    fontSize = blockTraits['_Width']
+                # if blockTraits['_Width'] < 1:
+                fontSize = 1000 * blockTraits['_Width']
+                # else:
+                #     fontSize = blockTraits['_Width']
                 font = QFont('tmp', fontSize)
                 self.text.setFont(font)
                 self.text.setPos(blockTraits['_XYCoordinates'][0][0], blockTraits['_XYCoordinates'][0][1])
