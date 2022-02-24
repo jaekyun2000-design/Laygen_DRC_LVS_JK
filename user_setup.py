@@ -23,3 +23,11 @@ matrix_y_step = 128
 layer_list = ['DIFF','NIMP','PIMP','POLY','CONT','METAL1', 'METAL2', 'METAL3', 'METAL4', 'METAL5']
 data_type_list = ['C2FF','XOR','NMOSWithDummy','PMOSWithDummy','NbodyContact','PbodyContact','ViaPoly2Met1','ViaMet12Met2', 'ViaMet22Met3','ViaMet32Met4','ViaMet42Met5']
 #########################################################
+
+
+def update_user_setup(key, value):
+    glo = globals()
+    if key in glo:
+        if value in ["True", "False"] or value.isdigit() or (value[0] == '[' and value[-1] == ']'):
+            value = eval(value)
+        glo[key] = value

@@ -114,7 +114,7 @@ class ExpressionCalculator(QWidget):
         self.y_button = self.create_radio_button('Y',self.xy_reference_clicked)
         self.xy_button = self.create_radio_button('XY',self.xy_reference_clicked)
         self.x_button.setChecked(True)
-        if self.purpose not in ['init', 'XY_offset'] :
+        if self.purpose not in ['init', 'XY_offset', 'XY_ref'] :
             self.xy_button.setDisabled(True)
 
         toggling_group_layout.addWidget(self.x_button)
@@ -221,7 +221,7 @@ class ExpressionCalculator(QWidget):
         if platform.system() != 'Darwin':
             self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
         self.XYWindow.itemClicked.connect(self.XYitemClicked)
-        if self.purpose not in ['init', 'XY_offset']:
+        if self.purpose not in ['init', 'XY_offset', 'XY_ref']:
             self.XYWindow.setDisabled(True)
             if platform.system() != 'Darwin':
                 self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY_disabled.png); background-position: center; background-color: rgb(255,255,255); background-attachment: fixed;")
@@ -368,7 +368,11 @@ class ExpressionCalculator(QWidget):
         display = str()
         _tmp_rule = str()
         _tmp_item_text = self.DRCWindow.currentItem().text(0)
-        _tmp_parent_text = self.DRCWindow.currentItem().parent().text(0)
+        if self.DRCWindow.currentItem().parent():
+            _tmp_parent_text = self.DRCWindow.currentItem().parent().text(0)
+        else:
+            return
+
 
         if self.DRCWindow.currentItem().childCount() == 0:
             if type(self.drc_dict[_tmp_parent_text][_tmp_item_text]) == list:

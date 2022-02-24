@@ -4,7 +4,7 @@ from generatorLib import DRC
 
 class _NMOS(StickDiagram._StickDiagram):
     _ParametersForDesignCalculation = dict(_NMOSNumberofGate=None, _NMOSChannelWidth=None, _NMOSChannellength=None,
-                                           _NMOSDummy=False,_GateSpacing=None, _SDWidth=None, _XVT=None)
+                                           _NMOSDummy=False,_GateSpacing=None, _SDWidth=None, _XVT=None, _PCCrit=None)
 
     def __init__(self, _DesignParameter=None, _Name=None):
 
@@ -44,7 +44,7 @@ class _NMOS(StickDiagram._StickDiagram):
             self._DesignParameter['_Name']['_Name'] = _Name
 
     def _CalculateNMOSDesignParameter(self, _NMOSNumberofGate=6, _NMOSChannelWidth=600, _NMOSChannellength=60,
-                                      _NMOSDummy=False, _GateSpacing=None, _SDWidth=None, _XVT='LVT'):
+                                      _NMOSDummy=False, _GateSpacing=None, _SDWidth=None, _XVT='LVT', _PCCrit=None):
         """
 
         :param _NMOSNumberofGate:
@@ -113,14 +113,14 @@ class _NMOS(StickDiagram._StickDiagram):
             self._DesignParameter['_PODummyLayer']['_XWidth'] = _NMOSChannellength
             self._DesignParameter['_PODummyLayer']['_YWidth'] = _NMOSChannelWidth + 2 * a
 
-            if float(self._DesignParameter['_PODummyLayer']['_XWidth']) * float(self._DesignParameter['_PODummyLayer']['_YWidth']) < _DRCObj._PODummyMinArea:
-                self._DesignParameter['_PODummyLayer']['_YWidth'] = self.CeilMinSnapSpacing(float(_DRCObj._PODummyMinArea) / float(self._DesignParameter['_PODummyLayer']['_XWidth']), _DRCObj._MinSnapSpacing*2)
-                if DesignParameters._Technology != 'SS28nm':  ## Need?
-                    self._DesignParameter['_POLayer']['_YWidth'] = self._DesignParameter['_PODummyLayer']['_YWidth']
-            else:
-                pass
-        else:
-            pass
+        #     if float(self._DesignParameter['_PODummyLayer']['_XWidth']) * float(self._DesignParameter['_PODummyLayer']['_YWidth']) < _DRCObj._PODummyMinArea:
+        #         self._DesignParameter['_PODummyLayer']['_YWidth'] = self.CeilMinSnapSpacing(float(_DRCObj._PODummyMinArea) / float(self._DesignParameter['_PODummyLayer']['_XWidth']), _DRCObj._MinSnapSpacing*2)
+        #         if DesignParameters._Technology != 'SS28nm':  ## Need?
+        #             self._DesignParameter['_POLayer']['_YWidth'] = self._DesignParameter['_PODummyLayer']['_YWidth']
+        #     else:
+        #         pass
+        # else:
+        #     pass
 
 
         print ('#############################     DIFF (OD/RX) Layer Calculation    ##############################################')
@@ -136,10 +136,10 @@ class _NMOS(StickDiagram._StickDiagram):
         print ('#############################     METAL1 Layer Calculation    ##############################################')
         # METAL1 Layer Coordinate Setting
         _LengthNMOSBtwMet1 = _LengthNMOSBtwPO
-        _tmpCOYNum = int(float(self._DesignParameter['_ODLayer']['_YWidth']
+        _tmpCOYNum = max(2,int(float(self._DesignParameter['_ODLayer']['_YWidth']
                                        - 2 * max([_DRCObj._CoMinEnclosureByODAtLeastTwoSide, _DRCObj._Metal1MinEnclosureCO2])
                                        + _DRCObj._CoMinSpace)
-                                 / (_DRCObj._CoMinSpace + _DRCObj._CoMinWidth))
+                                 / (_DRCObj._CoMinSpace + _DRCObj._CoMinWidth)))
 
         tmpXYs = []
         for i in range(0, _NMOSNumberofGate + 1):
@@ -175,10 +175,10 @@ class _NMOS(StickDiagram._StickDiagram):
         print ('#############################     CONT Layer Calculation    ##############################################')
         # CONT XNum/YNum Calculation
         _XNumberOfCOInNMOS = _NMOSNumberofGate + 1
-        _YNumberOfCOInNMOS = int(float(self._DesignParameter['_ODLayer']['_YWidth']
+        _YNumberOfCOInNMOS = max(2,int(float(self._DesignParameter['_ODLayer']['_YWidth']
                                        - 2 * max([_DRCObj._CoMinEnclosureByODAtLeastTwoSide, _DRCObj._Metal1MinEnclosureCO2])
                                        + _DRCObj._CoMinSpace)
-                                 / (_DRCObj._CoMinSpace + _DRCObj._CoMinWidth))
+                                 / (_DRCObj._CoMinSpace + _DRCObj._CoMinWidth)))
 
         # Check the number of CO On NMOS TR
         if _XNumberOfCOInNMOS == 0 or _YNumberOfCOInNMOS == 0:
@@ -271,7 +271,7 @@ class _NMOS(StickDiagram._StickDiagram):
             print('Error Occurred', e)
             raise NotImplementedError
 
-        if DesignParameters._Technology == 'SS28nm' and _NMOSDummy == True:
+        if DesignParameters._Technology == 'SS28nm' and _PCCrit != False:
             if self._DesignParameter['_POLayer']['_XWidth'] in (30, 34):
                 self._DesignParameter['_PCCRITLayer'] = self._BoundaryElementDeclaration(
                     _Layer=DesignParameters._LayerMapping['PCCRIT'][0],
