@@ -1451,6 +1451,22 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         else:
             return f'math.sqrt(math.pow({tf_string_a}[0]-{tf_string_b}[0], 2) + math.pow({tf_string_a}[1]-{tf_string_b}[1], 2))'
 
+    def transform_rotate(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args[0:-1])
+        angle  = node.args[-1].value
+        base_element_string = self.translate_base_string(arg_names)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+
+        return f"{base_element_string}['_Angle'] = {angle}"
+
+    def transform_reflect(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args[0:-1])
+        reflection  = astunparse.unparse(node.args[-1]).replace('\n','')
+        base_element_string = self.translate_base_string(arg_names)
+        base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
+
+        return f"{base_element_string}['_Reflect'] = {reflection}"
+
     # def transform_len(self, node):
     #     arg_names, arg_indexes = self.parse_args_info(node.args)
     #     # base_element_string = self.translate_base_string(arg_names)
