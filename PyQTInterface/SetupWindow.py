@@ -3483,8 +3483,10 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 self.model.insertRow(row_original + 1, target_row)
                 final_index = self.model.indexFromItem(target_row[0])
                 self.mouseDoubleClickEvent(final_index)
+                self.setCurrentIndex(final_index)
 
         except :
+            traceback.print_exc()
             self.warning = QMessageBox()
             self.warning.setText("Constraint Transfer Failed")
             self.warning.show()
@@ -3508,6 +3510,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 self.model.insertRow(row_original - 1, target_row)
                 final_index = self.model.indexFromItem(target_row[0])
                 self.mouseDoubleClickEvent(final_index)
+                self.setCurrentIndex(final_index)
 
         except :
             self.warning = QMessageBox()
