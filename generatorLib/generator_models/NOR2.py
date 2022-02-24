@@ -683,7 +683,7 @@ class NOR2(StickDiagram._StickDiagram):
             self._DesignParameter['PMOS']['_DesignObj']._CalculateDesignParameter(
                 **dict(_PMOSChannelWidth=PMOSWidth, _PMOSChannellength=ChannelLength,
                        _PMOSDummy=True, _GateSpacing=GateSpacing, _SDWidth=66, _XVT=XVT))
-            self._DesignParameter['PMOS']['_XYCoordinates'] = [[0, YCoordOfPMOS]]
+            self._DesignParameter['PMOS']['_XYCoordinates'] = [[0, YCoordOfPM]]
 
             self._DesignParameter['Met1RouteX_OutputPM2NM_PMside']['_XYCoordinates'] = [[
                 self.getXY('Met1RouteX_OutputPM2NM_PMside')[0][0],
