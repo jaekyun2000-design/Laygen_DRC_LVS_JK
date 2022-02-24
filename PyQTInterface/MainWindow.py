@@ -110,7 +110,7 @@ class _MainWindow(QMainWindow):
 
     def __init__(self):
         self.test = False
-        super(_MainWindow, self).__init__()
+        super(_MainWindow, self).__init__()  # call QMainWindow
         self.undo_stack = undo_frame.UndoStack()
         self.undo_stack.request_load_save_file_signal.connect(self.reload_project)
         self.setStyleSheet("border-color: rgb(178, 41, 100)")
@@ -606,9 +606,21 @@ class _MainWindow(QMainWindow):
         self.sendLeftButton.setIcon(QCommonStyle().standardIcon(QStyle.SP_ArrowLeft))
         self.sendRightButton = QPushButton()
         self.sendRightButton.setIcon(QCommonStyle().standardIcon(QStyle.SP_ArrowRight))
+        ############ junung
+        self.sendDownButton = QPushButton()
+        self.sendDownButton.setIcon(QCommonStyle().standardIcon(QStyle.SP_ArrowDown))
+        self.sendUpButton = QPushButton()
+        self.sendUpButton.setIcon(QCommonStyle().standardIcon(QStyle.SP_ArrowUp))
+        ############
 
-        # self.sendDownButton.clicked.connect(self.deliveryDesignParameter)
-
+        #self.sendDownButton.clicked.connect(self.deliveryDesignParameter)
+        ###### junung
+        # self.sendDownButton.clicked.connect(self.dockContentWidget3.checkSend)
+        self.sendDownButton.clicked.connect(self.dockContentWidget3.movedown)
+        #self.sendDownButton.clicked.connect(self.dockContentWidget3_2.movedown)
+        self.sendUpButton.clicked.connect(self.dockContentWidget3.moveup)
+        #self.sendUpButton.clicked.connect(self.dockContentWidget3_2.moveup)
+        # ######
         self.sendLeftButton.clicked.connect(self.dockContentWidget3_2.checkSend)
         self.sendLeftButton.clicked.connect(lambda tmp: self.design_delegator.stack_undo('send_left'))
         self.dockContentWidget3_2.send_SendID_signal.connect(self.dockContentWidget3.receiveConstraintID)
@@ -652,6 +664,10 @@ class _MainWindow(QMainWindow):
         vboxLayout.addStretch(4)
         vboxLayout.addWidget(self.sendLeftButton)
         vboxLayout.addWidget(self.sendRightButton)
+        ######## junung
+        vboxLayout.addWidget(self.sendUpButton)
+        vboxLayout.addWidget(self.sendDownButton)
+        ########
         vboxLayout.addStretch(4)
 
         VBoxForPeriButton = QVBoxLayout()

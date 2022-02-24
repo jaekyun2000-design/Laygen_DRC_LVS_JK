@@ -3030,6 +3030,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_SendASTDict_signal = pyqtSignal(list)
     send_SendSTMT_signal = pyqtSignal(dict)
     send_SendID_signal = pyqtSignal(str)
+    send_MoveID_signal = pyqtSignal(str) #junung
     send_SendID_signal_highlight = pyqtSignal(str)
     send_SendCopyConstraint_signal = pyqtSignal(QTInterfaceWithAST.QtDesinConstraint)
     send_RootDesignConstraint_signal = pyqtSignal(str)
@@ -3219,7 +3220,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         # 2-2> If class is not constraint but list type or dictionary type: it refresh sub-hierarchy value.(Maybe?)
         ################# 3rd step is Unnecessary ########## 3> If class has parent : it update same-hierarchy value for parent
         ###################################################################
-        #0 : placeholder, #1 : ID, #2: ConstraintRealType, #3: value
+        #0 : placehold₩r, #1 : ID, #2: ConstraintRealType, #3: value
         # a = self.model.findItems('',Qt.MatchContains,1)
         # ids = [item.text() for item in a]
         try:
@@ -3435,6 +3436,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 self.model.removeRow(item.row())
         self.removeFlag = False
 
+
+
     def checkSend(self):
         print("check Evaluation")
         try:
@@ -3457,6 +3460,58 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         except:
             self.warning = QMessageBox()
             self.warning.setText("Constraint Transfer failed")
+            self.warning.show()
+
+### junung
+    def movedown(self):
+        print ("Checking Move Evaluation")
+        # count = self.countRow(self.currentIndex())
+        try :
+            if self.currentIndex().row() == -1 :
+                self.warning = QMessageBox()
+                self.warning.setText("There are no selected Constraint")
+                self.warning.show()
+                return
+            elif self.model.itemFromIndex(self.indexBelow(self.currentIndex().siblingAtColumn(0))) == None :
+                self.warning = QMessageBox()
+                self.warning.setText("This is the last constraint")
+                self.warning.show()
+                return
+            else:
+                row_original = self.currentIndex().row()
+                target_row = self.model.takeRow(row_original)
+                self.model.insertRow(row_original + 1, target_row)
+                final_index = self.model.indexFromItem(target_row[0])
+                self.mouseDoubleClickEvent(final_index)
+
+        except :
+            self.warning = QMessageBox()
+            self.warning.setText("Constraint Transfer Failed")
+            self.warning.show()
+
+    def moveup(self):
+        print ("Checking Move Evaluation")
+        try :
+            if self.currentIndex().row() == -1 :
+                self.warning = QMessageBox()
+                self.warning.setText("There are no selected Constraint")
+                self.warning.show()
+                return
+            elif self.currentIndex().row() == 0 :
+                self.warning = QMessageBox()
+                self.warning.setText("This is the first constraint")
+                self.warning.show()
+                return
+            else:
+                row_original = self.currentIndex().row()
+                target_row = self.model.takeRow(row_original)
+                self.model.insertRow(row_original - 1, target_row)
+                final_index = self.model.indexFromItem(target_row[0])
+                self.mouseDoubleClickEvent(final_index)
+
+        except :
+            self.warning = QMessageBox()
+            self.warning.setText("Constraint Transfer Failed")
             self.warning.show()
 
     def removeCurrentIndexItem(self):
@@ -3518,6 +3573,11 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         for key in hierarchyNameList:
             if key[0] in self.itemToDesignConstraintDict:
                 del self.itemToDesignConstraintDict[key[0]]
+
+
+    # def moveConstraintID(self, _id):
+
+
 
     def receiveConstraintID(self,_id):
             # _module = re.sub(r'\d','',_id)

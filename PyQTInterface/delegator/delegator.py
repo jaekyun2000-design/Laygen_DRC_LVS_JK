@@ -36,8 +36,8 @@ class Delegator:
     Main Window is too busy,,
     So, Delegator delegates main_window's roles.
     Delegator has main_window itself, for convenient implementation with legacy code.
-    However, when you describes new function, I recommend you to not using main window.
-    The main purpose of Delegator is supporting encapsulating.
+    However, when you describe a new function, I recommend you to not use the main window.
+    The main purpose of Delegator is to support encapsulating.
     """
 
     def __init__(self, main_window):
