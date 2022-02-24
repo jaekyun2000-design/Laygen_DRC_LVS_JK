@@ -49,7 +49,7 @@ class _Inverter(StickDiagram._StickDiagram):
 
                                      _NumViaPMOSMet12Met2CoY=None,
                                      _NumViaNMOSMet12Met2CoY=None,
-                                     _SupplyRailType=2,
+                                     _SupplyRailType=1,
                                      ):
         """
         :param _Finger:

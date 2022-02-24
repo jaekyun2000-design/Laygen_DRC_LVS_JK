@@ -379,9 +379,18 @@ class NAND2(StickDiagram._StickDiagram):
     #     # )
     #
 
-    def _CalculateDesignParameter_v2(self,CellHeight=1800, YCoordOfNM=350, YCoordOfPM=1400, YCoordOfInputOutput=900,
-                                     ChannelLength=30, GateSpacing=100, XVT='SLVT',
-                                     NMOSWidth=400, PMOSWidth=400, NumFinger_NM=1, NumFinger_PM=2):
+    def _CalculateDesignParameter_v2(self,
+                                     NumFinger_NM=1,
+                                     NumFinger_PM=2,
+                                     NMOSWidth=400,
+                                     PMOSWidth=400,
+                                     CellHeight=1800,
+                                     YCoordOfNM=350,
+                                     YCoordOfPM=1400,
+                                     YCoordOfInputOutput=900,
+                                     ChannelLength=30,
+                                     GateSpacing=100, XVT='SLVT',
+                                     SupplyRailType=1,):
 
         drc = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
@@ -392,14 +401,24 @@ class NAND2(StickDiagram._StickDiagram):
 
         ''' --------------------------------------- Supply Rails and MOSFET ---------------------------------------- '''
         self._DesignParameter['VSSRail'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VSSRailIn{}'.format(_Name)))[0]
-        self._DesignParameter['VSSRail']['_DesignObj']._CalculateDesignParameter(
-            **dict(NumPitch=((max(NumFinger_NM, NumFinger_PM) * 2) + 1), UnitPitch=(GateSpacing + ChannelLength),
-                   Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True, deleteViaAndMet1=False))
-        self._DesignParameter['VSSRail']['_XYCoordinates'] = [[0.0, 0.0]]
         self._DesignParameter['VDDRail'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VDDRailIn{}'.format(_Name)))[0]
-        self._DesignParameter['VDDRail']['_DesignObj']._CalculateDesignParameter(
-            **dict(NumPitch=((max(NumFinger_NM, NumFinger_PM) * 2) + 1), UnitPitch=(ChannelLength + GateSpacing),
-                   Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=False, deleteViaAndMet1=False))
+        if SupplyRailType == 1:
+            self._DesignParameter['VSSRail']['_DesignObj']._CalculateDesignParameter(
+                **dict(NumPitch=((max(NumFinger_NM, NumFinger_PM) * 2) + 1), UnitPitch=(GateSpacing + ChannelLength),
+                       Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True, deleteViaAndMet1=False))
+            self._DesignParameter['VDDRail']['_DesignObj']._CalculateDesignParameter(
+                **dict(NumPitch=((max(NumFinger_NM, NumFinger_PM) * 2) + 1), UnitPitch=(ChannelLength + GateSpacing),
+                       Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=False, deleteViaAndMet1=False))
+        elif SupplyRailType == 2:
+            self._DesignParameter['VSSRail']['_DesignObj']._CalculateDesignParameter(
+                **dict(NumPitch=((max(NumFinger_NM, NumFinger_PM) * 2) + 1), UnitPitch=(GateSpacing + ChannelLength),
+                       Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True, deleteViaAndMet1=True))
+            self._DesignParameter['VDDRail']['_DesignObj']._CalculateDesignParameter(
+                **dict(NumPitch=((max(NumFinger_NM, NumFinger_PM) * 2) + 1), UnitPitch=(ChannelLength + GateSpacing),
+                       Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=False, deleteViaAndMet1=True))
+        else:
+            raise NotImplementedError
+        self._DesignParameter['VSSRail']['_XYCoordinates'] = [[0.0, 0.0]]
         self._DesignParameter['VDDRail']['_XYCoordinates'] = [[0, CellHeight]]
 
         self._DesignParameter['NMOS'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='NMOSIn{}'.format(_Name)))[0]
@@ -445,15 +464,18 @@ class NAND2(StickDiagram._StickDiagram):
 
 
         ''' Optional '''
-        # XYList = []
-        # xy_offset = (0, ((- (self._DesignParameter['PMOS']['_XYCoordinates'][0][1] + self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])) + CellHeight))
-        # for i in range(len(self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])):
-        #     if ((i % 2) == 0):
-        #         xy = (self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i][0] if (type(self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i])
-        #         XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['PMOS']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['PMOS']['_XYCoordinates'][0][1])], xy, xy_offset)])
-        # self._DesignParameter['ViaForVDD'] = self._SrefElementDeclaration(_DesignObj=Z_PWR_CNT.Z_PWR_CNT(_Name='ViaForVDDIn{}'.format(_Name)))[0]
-        # self._DesignParameter['ViaForVDD']['_DesignObj']._CalculateDesignParameter(**dict(_Xnum=1, _Xdistance=0))
-        # self._DesignParameter['ViaForVDD']['_XYCoordinates'] = XYList
+        if SupplyRailType == 2:
+            XYList = []
+            xy_offset = (0, ((- (self._DesignParameter['PMOS']['_XYCoordinates'][0][1] + self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])) + CellHeight))
+            for i in range(len(self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])):
+                if (i % 2) == 0:
+                    xy = (self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i][0] if (type(self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i])
+                    XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['PMOS']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['PMOS']['_XYCoordinates'][0][1])], xy, xy_offset)])
+            self._DesignParameter['ViaForVDD'] = self._SrefElementDeclaration(_DesignObj=Z_PWR_CNT.Z_PWR_CNT(_Name='ViaForVDDIn{}'.format(_Name)))[0]
+            self._DesignParameter['ViaForVDD']['_DesignObj']._CalculateDesignParameter(**dict(_Xnum=1, _Xdistance=0))
+            self._DesignParameter['ViaForVDD']['_XYCoordinates'] = XYList
+        else:
+            pass
 
 
         XYList = []
@@ -565,14 +587,17 @@ class NAND2(StickDiagram._StickDiagram):
         ]]
 
         ''' Optional '''
-        # # VSS Via
-        # tmpXYs = []
-        # for XYs in self.getXY('Met1RouteY_NM2VSS'):
-        #     tmpXYs.append(CoordCalc.Sum(XYs, [0, -self.getYWidth('Met1RouteY_NM2VSS') / 2]))
-        #
-        # self._DesignParameter['ViaForVSS'] = self._SrefElementDeclaration(_DesignObj=Z_PWR_CNT.Z_PWR_CNT(_Name='ViaForVSSIn{}'.format(_Name)))[0]
-        # self._DesignParameter['ViaForVSS']['_DesignObj']._CalculateDesignParameter(**dict(_Xnum=1, _Xdistance=0))
-        # self._DesignParameter['ViaForVSS']['_XYCoordinates'] = tmpXYs
+        if SupplyRailType == 2:
+            # VSS Via
+            tmpXYs = []
+            for XYs in self.getXY('Met1RouteY_NM2VSS'):
+                tmpXYs.append(CoordCalc.Sum(XYs, [0, -self.getYWidth('Met1RouteY_NM2VSS') / 2]))
+
+            self._DesignParameter['ViaForVSS'] = self._SrefElementDeclaration(_DesignObj=Z_PWR_CNT.Z_PWR_CNT(_Name='ViaForVSSIn{}'.format(_Name)))[0]
+            self._DesignParameter['ViaForVSS']['_DesignObj']._CalculateDesignParameter(**dict(_Xnum=1, _Xdistance=0))
+            self._DesignParameter['ViaForVSS']['_XYCoordinates'] = tmpXYs
+        else:
+            pass
 
         ''' Input Via Out Output Met1 '''
 
@@ -586,7 +611,7 @@ class NAND2(StickDiagram._StickDiagram):
                 XCoord_InputA = - max(NumFinger_NM, NumFinger_PM) / 2 * (GateSpacing + ChannelLength)
                 XCoord_InputB = + max(NumFinger_NM, NumFinger_PM) / 2 * (GateSpacing + ChannelLength)
             elif max(NumFinger_NM, NumFinger_PM) == 2:                  # (N,P) = (2,1), (2,2)
-                XCoord_OutputMet1Y = self.getXY('PMOS', '_Met1Layer')[-1][0]
+                XCoord_OutputMet1Y = self.getXY('NMOS', '_Met1Layer')[-1][0]
                 XCoord_InputA = - max(NumFinger_NM, NumFinger_PM) / 2 * (GateSpacing + ChannelLength)
                 XCoord_InputB = + max(NumFinger_NM, NumFinger_PM) / 2 * (GateSpacing + ChannelLength)
             else:
@@ -788,38 +813,8 @@ class NAND2(StickDiagram._StickDiagram):
                 ]]
             )
 
-
-            if NumFinger_NM == 1:
-                del self._DesignParameter['NMOS']
-                del self._DesignParameter['Met1RouteX_NMUp']
-                del self._DesignParameter['Met1RouteY_NMUp']
-                del self._DesignParameter['Met1RouteX_NMDown']
-                del self._DesignParameter['Met1RouteY_NMDown']
-                del self._DesignParameter['Met1RouteX_NMOutput']
-                del self._DesignParameter['Met1RouteY_NMOutput']
-
-                self._DesignParameter['NMOS'] = self._SrefElementDeclaration(_DesignObj=CascodeNMOS._CascodeNMOS(_Name='NMOSIn{}'.format(_Name)))[0]
-                self._DesignParameter['NMOS']['_DesignObj']._CalculateDesignParameter(
-                    **dict(_NMOSChannelWidth=NMOSWidth, _NMOSChannellength=ChannelLength,
-                           _NMOSDummy=True, _GateSpacing=GateSpacing, _SDWidth=66, _XVT=XVT))
-                self._DesignParameter['NMOS']['_XYCoordinates'] = [[0, YCoordOfNM]]
-
-                self._DesignParameter['Met1RouteX_OutputPM2NM_NMside']['_XYCoordinates'] = [[
-                    self.getXY('Met1RouteX_OutputPM2NM_NMside')[0][0],
-                    self.getXY('NMOS', '_Met1Layer')[0][1] + self.getYWidth('NMOS', '_Met1Layer') / 2 - self.getYWidth('Met1RouteX_OutputPM2NM_NMside') / 2
-                ]]
-
-                TopBoundary_Met1RouteY_OutputPM2NM = self.getXY('Met1RouteX_OutputPM2NM_PMside')[0][1] + self.getYWidth('Met1RouteX_OutputPM2NM_PMside') / 2
-                BotBoundary_Met1RouteY_OutputPM2NM = self.getXY('Met1RouteX_OutputPM2NM_NMside')[0][1] - self.getYWidth('Met1RouteX_OutputPM2NM_NMside') / 2
-
-                self._DesignParameter['Met1RouteY_OutputPM2NM']['_YWidth'] = TopBoundary_Met1RouteY_OutputPM2NM - BotBoundary_Met1RouteY_OutputPM2NM
-                self._DesignParameter['Met1RouteY_OutputPM2NM']['_XYCoordinates'] = [[
-                    0, (TopBoundary_Met1RouteY_OutputPM2NM + BotBoundary_Met1RouteY_OutputPM2NM) / 2
-                ]]
-
-            else:
-                pass
-        else:       #  if not max(NumFinger_NM, NumFinger_PM) < Num_HorizontalInputViaMode:
+        #  if not max(NumFinger_NM, NumFinger_PM) < Num_HorizontalInputViaMode:
+        else:
             topBoundary_Met1YOutputPM2NM = self.getXY('Met1RouteX_PMOutput')[0][1] + self.getYWidth('Met1RouteX_PMOutput') / 2
             botBoundary_Met1YOutputPM2NM = self.getXY('Met1RouteX_NMOutput')[0][1] + self.getYWidth('Met1RouteX_NMOutput') / 2 + drc._Metal1MinSpaceAtCorner
 
@@ -861,7 +856,9 @@ class NAND2(StickDiagram._StickDiagram):
             ]]
 
 
-            rightBoundary_InputPolyGate = self.getXY('PMOS', '_POLayer')[-1][0] + self.getXWidth('PMOS', '_POLayer') / 2 - drc._CoMinEnclosureByPOAtLeastTwoSide
+            rightBoundary_InputPolyGate1_byPM = self.getXY('PMOS', '_POLayer')[-1][0] + self.getXWidth('PMOS', '_POLayer') / 2 - drc._CoMinEnclosureByPOAtLeastTwoSide
+            rightBoundary_InputPolyGate2_byNM = self.getXY('NMOS', '_POLayer')[-1][0] + self.getXWidth('NMOS', '_POLayer') / 2 - drc._CoMinEnclosureByPOAtLeastTwoSide
+            rightBoundary_InputPolyGate = max(rightBoundary_InputPolyGate1_byPM, rightBoundary_InputPolyGate2_byNM)
             leftBoundary_InputPolyGate = self.getXY('Met1RouteY_OutputPM2NM')[0][0] + self.getXWidth('Met1RouteY_OutputPM2NM') / 2 + drc._Metal1MinSpaceAtCorner
             xNumViaInputGate = int((rightBoundary_InputPolyGate - leftBoundary_InputPolyGate - drc._CoMinWidth) // (drc._CoMinWidth + drc._CoMinSpace)) + 1
             print('xNumViaInputGate:', xNumViaInputGate)
@@ -878,18 +875,14 @@ class NAND2(StickDiagram._StickDiagram):
                 _Layer=DesignParameters._LayerMapping['POLY'][0],
                 _Datatype=DesignParameters._LayerMapping['POLY'][1],
                 _XWidth=ChannelLength,
-                _YWidth=(self.getXY('PMOS', '_POLayer')[0][1] - self.getYWidth('PMOS', '_POLayer') / 2) - (
-                            self.getXY('ViaPoly_InputAB', '_POLayer')[0][1] + self.getYWidth('ViaPoly_InputAB',
-                                                                                             '_POLayer') / 2)
+                _YWidth=(self.getXY('PMOS', '_POLayer')[0][1] - self.getYWidth('PMOS', '_POLayer') / 2) - (self.getXY('ViaPoly_InputAB', '_POLayer')[0][1] + self.getYWidth('ViaPoly_InputAB', '_POLayer') / 2)
             )
             tmpXYs = []
             for i, XYs in enumerate(self.getXY('PMOS', '_POLayer')):
                 if i >= NumFinger_PM:
                     tmpXYs.append([
                         XYs[0],
-                        ((self.getXY('PMOS', '_POLayer')[0][1] - self.getYWidth('PMOS', '_POLayer') / 2) + (
-                                    self.getXY('ViaPoly_InputAB', '_POLayer')[0][1] + self.getYWidth('ViaPoly_InputAB',
-                                                                                                     '_POLayer') / 2)) / 2
+                        ((self.getXY('PMOS', '_POLayer')[0][1] - self.getYWidth('PMOS', '_POLayer') / 2) + (self.getXY('ViaPoly_InputAB', '_POLayer')[0][1] + self.getYWidth('ViaPoly_InputAB', '_POLayer') / 2)) / 2
                     ])
             self._DesignParameter['PolyRouteY_PMB']['_XYCoordinates'] = tmpXYs
 
@@ -897,18 +890,14 @@ class NAND2(StickDiagram._StickDiagram):
                 _Layer=DesignParameters._LayerMapping['POLY'][0],
                 _Datatype=DesignParameters._LayerMapping['POLY'][1],
                 _XWidth=ChannelLength,
-                _YWidth=(self.getXY('ViaPoly_InputAB', '_POLayer')[0][1] - self.getYWidth('ViaPoly_InputAB',
-                                                                                          '_POLayer') / 2) - (
-                                    self.getXY('NMOS', '_POLayer')[0][1] + self.getYWidth('NMOS', '_POLayer') / 2)
+                _YWidth=(self.getXY('ViaPoly_InputAB', '_POLayer')[0][1] - self.getYWidth('ViaPoly_InputAB', '_POLayer') / 2) - (self.getXY('NMOS', '_POLayer')[0][1] + self.getYWidth('NMOS', '_POLayer') / 2)
             )
             tmpXYs = []
             for i, XYs in enumerate(self.getXY('NMOS', '_POLayer')):
                 if i >= NumFinger_NM:
                     tmpXYs.append([
                         XYs[0],
-                        ((self.getXY('ViaPoly_InputAB', '_POLayer')[0][1] - self.getYWidth('ViaPoly_InputAB',
-                                                                                           '_POLayer') / 2) + (
-                                     self.getXY('NMOS', '_POLayer')[0][1] + self.getYWidth('NMOS', '_POLayer') / 2)) / 2
+                        ((self.getXY('ViaPoly_InputAB', '_POLayer')[0][1] - self.getYWidth('ViaPoly_InputAB', '_POLayer') / 2) + (self.getXY('NMOS', '_POLayer')[0][1] + self.getYWidth('NMOS', '_POLayer') / 2)) / 2
                     ])
             self._DesignParameter['PolyRouteY_NMB']['_XYCoordinates'] = tmpXYs
 
@@ -926,8 +915,7 @@ class NAND2(StickDiagram._StickDiagram):
             )
             self._DesignParameter['PolyRouteX_PM_InputB']['_XYCoordinates'] = [[
                 (RightBoundary_PMPolyB + LeftBoundary_PMPolyB) / 2,
-                self.getXY('PolyRouteY_PMB')[0][1] - self.getYWidth('PolyRouteY_PMB') / 2 - self.getYWidth(
-                    'PolyRouteX_PM_InputB') / 2
+                self.getXY('PolyRouteY_PMB')[0][1] - self.getYWidth('PolyRouteY_PMB') / 2 - self.getYWidth('PolyRouteX_PM_InputB') / 2
             ]]
             RightBoundary_NMPolyB = max(
                 self.getXY('ViaPoly_InputAB', '_POLayer')[1][0] + self.getXWidth('ViaPoly_InputAB', '_POLayer') / 2,
@@ -943,8 +931,7 @@ class NAND2(StickDiagram._StickDiagram):
             )
             self._DesignParameter['PolyRouteX_NM_InputB']['_XYCoordinates'] = [[
                 (RightBoundary_NMPolyB + LeftBoundary_NMPolyB) / 2,
-                self.getXY('PolyRouteY_NMB')[0][1] + self.getYWidth('PolyRouteY_NMB') / 2 + self.getYWidth(
-                    'PolyRouteX_NM_InputB') / 2
+                self.getXY('PolyRouteY_NMB')[0][1] + self.getYWidth('PolyRouteY_NMB') / 2 + self.getYWidth('PolyRouteX_NM_InputB') / 2
             ]]
 
             RightBoundary_PMPolyA = max(
@@ -961,9 +948,7 @@ class NAND2(StickDiagram._StickDiagram):
             )
             self._DesignParameter['PolyRouteX_PM_InputA']['_XYCoordinates'] = [[
                 (RightBoundary_PMPolyA + LeftBoundary_PMPolyA) / 2,
-                self.getXY('ViaPoly_InputAB', '_POLayer')[0][1] + self.getYWidth('ViaPoly_InputAB',
-                                                                                 '_POLayer') / 2 - self.getYWidth(
-                    'PolyRouteX_PM_InputA') / 2
+                self.getXY('ViaPoly_InputAB', '_POLayer')[0][1] + self.getYWidth('ViaPoly_InputAB', '_POLayer') / 2 - self.getYWidth('PolyRouteX_PM_InputA') / 2
             ]]
 
             RightBoundary_NMPolyA = max(
@@ -980,26 +965,21 @@ class NAND2(StickDiagram._StickDiagram):
             )
             self._DesignParameter['PolyRouteX_NM_InputA']['_XYCoordinates'] = [[
                 (RightBoundary_NMPolyA + LeftBoundary_NMPolyA) / 2,
-                self.getXY('ViaPoly_InputAB', '_POLayer')[0][1] - self.getYWidth('ViaPoly_InputAB',
-                                                                                 '_POLayer') / 2 + self.getYWidth(
-                    'PolyRouteX_NM_InputA') / 2
+                self.getXY('ViaPoly_InputAB', '_POLayer')[0][1] - self.getYWidth('ViaPoly_InputAB', '_POLayer') / 2 + self.getYWidth('PolyRouteX_NM_InputA') / 2
             ]]
 
             self._DesignParameter['PolyRouteY_PMA'] = self._BoundaryElementDeclaration(
                 _Layer=DesignParameters._LayerMapping['POLY'][0],
                 _Datatype=DesignParameters._LayerMapping['POLY'][1],
                 _XWidth=ChannelLength,
-                _YWidth=((self.getXY('PMOS', '_POLayer')[0][1] - self.getYWidth('PMOS', '_POLayer') / 2) - (
-                        self.getXY('PolyRouteX_PM_InputA')[0][1] + self.getYWidth('PolyRouteX_PM_InputA') / 2))
+                _YWidth=((self.getXY('PMOS', '_POLayer')[0][1] - self.getYWidth('PMOS', '_POLayer') / 2) - (self.getXY('PolyRouteX_PM_InputA')[0][1] + self.getYWidth('PolyRouteX_PM_InputA') / 2))
             )
             tmpXYs = []
             for i, XYs in enumerate(self.getXY('PMOS', '_POLayer')):
                 if i < NumFinger_PM:
                     tmpXYs.append([
                         XYs[0],
-                        ((self.getXY('PMOS', '_POLayer')[0][1] - self.getYWidth('PMOS', '_POLayer') / 2) + (
-                                    self.getXY('PolyRouteX_PM_InputA')[0][1] + self.getYWidth(
-                                'PolyRouteX_PM_InputA') / 2)) / 2
+                        ((self.getXY('PMOS', '_POLayer')[0][1] - self.getYWidth('PMOS', '_POLayer') / 2) + (self.getXY('PolyRouteX_PM_InputA')[0][1] + self.getYWidth('PolyRouteX_PM_InputA') / 2)) / 2
                     ])
             self._DesignParameter['PolyRouteY_PMA']['_XYCoordinates'] = tmpXYs
 
@@ -1007,16 +987,14 @@ class NAND2(StickDiagram._StickDiagram):
                 _Layer=DesignParameters._LayerMapping['POLY'][0],
                 _Datatype=DesignParameters._LayerMapping['POLY'][1],
                 _XWidth=ChannelLength,
-                _YWidth=((self.getXY('PolyRouteX_NM_InputA')[0][1] - self.getYWidth('PolyRouteX_NM_InputA') / 2) - (
-                            self.getXY('NMOS', '_POLayer')[0][1] + self.getYWidth('NMOS', '_POLayer') / 2))
+                _YWidth=((self.getXY('PolyRouteX_NM_InputA')[0][1] - self.getYWidth('PolyRouteX_NM_InputA') / 2) - (self.getXY('NMOS', '_POLayer')[0][1] + self.getYWidth('NMOS', '_POLayer') / 2))
             )
             tmpXYs = []
             for i, XYs in enumerate(self.getXY('NMOS', '_POLayer')):
                 if i < NumFinger_NM:
                     tmpXYs.append([
                         XYs[0],
-                        ((self.getXY('PolyRouteX_NM_InputA')[0][1] - self.getYWidth('PolyRouteX_NM_InputA') / 2) + (
-                                    self.getXY('NMOS', '_POLayer')[0][1] + self.getYWidth('NMOS', '_POLayer') / 2)) / 2
+                        ((self.getXY('PolyRouteX_NM_InputA')[0][1] - self.getYWidth('PolyRouteX_NM_InputA') / 2) + (self.getXY('NMOS', '_POLayer')[0][1] + self.getYWidth('NMOS', '_POLayer') / 2)) / 2
                     ])
             self._DesignParameter['PolyRouteY_NMA']['_XYCoordinates'] = tmpXYs
 
@@ -1024,17 +1002,46 @@ class NAND2(StickDiagram._StickDiagram):
                 _Layer=DesignParameters._LayerMapping['POLY'][0],
                 _Datatype=DesignParameters._LayerMapping['POLY'][1],
                 _XWidth=self.getXWidth('ViaPoly_InputAB', '_POLayer'),
-                _YWidth=((self.getXY('PolyRouteX_PM_InputA')[0][1] - self.getYWidth('PolyRouteX_PM_InputA') / 2) - (
-                            self.getXY('PolyRouteX_NM_InputA')[0][1] + self.getYWidth('PolyRouteX_NM_InputA') / 2)),
+                _YWidth=((self.getXY('PolyRouteX_PM_InputA')[0][1] - self.getYWidth('PolyRouteX_PM_InputA') / 2) - (self.getXY('PolyRouteX_NM_InputA')[0][1] + self.getYWidth('PolyRouteX_NM_InputA') / 2)),
                 _XYCoordinates=[[
                     self.getXY('ViaPoly_InputAB')[0][0],
-                    ((self.getXY('PolyRouteX_PM_InputA')[0][1] - self.getYWidth('PolyRouteX_PM_InputA') / 2) + (
-                                self.getXY('PolyRouteX_NM_InputA')[0][1] + self.getYWidth(
-                            'PolyRouteX_NM_InputA') / 2)) / 2
+                    ((self.getXY('PolyRouteX_PM_InputA')[0][1] - self.getYWidth('PolyRouteX_PM_InputA') / 2) + (self.getXY('PolyRouteX_NM_InputA')[0][1] + self.getYWidth('PolyRouteX_NM_InputA') / 2)) / 2
                 ]]
             )
         # End of 'if max(NumFinger_NM, NumFinger_PM) < Num_HorizontalInputViaMode:   else:   '
 
+        if NumFinger_NM == 1:
+            del self._DesignParameter['NMOS']
+            del self._DesignParameter['Met1RouteX_NMUp']
+            del self._DesignParameter['Met1RouteY_NMUp']
+            del self._DesignParameter['Met1RouteX_NMDown']
+            del self._DesignParameter['Met1RouteY_NMDown']
+            del self._DesignParameter['Met1RouteX_NMOutput']
+            del self._DesignParameter['Met1RouteY_NMOutput']
+            if 'Met1RouteY_OutputPM2NM_NMside' in self._DesignParameter:
+                del self._DesignParameter['Met1RouteY_OutputPM2NM_NMside']
+
+            self._DesignParameter['NMOS'] = self._SrefElementDeclaration(_DesignObj=CascodeNMOS._CascodeNMOS(_Name='NMOSIn{}'.format(_Name)))[0]
+            self._DesignParameter['NMOS']['_DesignObj']._CalculateDesignParameter(
+                **dict(_NMOSChannelWidth=NMOSWidth, _NMOSChannellength=ChannelLength,
+                       _NMOSDummy=True, _GateSpacing=GateSpacing, _SDWidth=66, _XVT=XVT))
+            self._DesignParameter['NMOS']['_XYCoordinates'] = [[0, YCoordOfNM]]
+
+            self._DesignParameter['Met1RouteX_OutputPM2NM_NMside']['_XYCoordinates'] = [[
+                self.getXY('Met1RouteX_OutputPM2NM_NMside')[0][0],
+                self.getXY('NMOS', '_Met1Layer')[0][1] + self.getYWidth('NMOS', '_Met1Layer') / 2 - self.getYWidth('Met1RouteX_OutputPM2NM_NMside') / 2
+            ]]
+
+            TopBoundary_Met1RouteY_OutputPM2NM = self.getXY('Met1RouteX_PMOutput')[0][1] + self.getYWidth('Met1RouteX_PMOutput') / 2
+            BotBoundary_Met1RouteY_OutputPM2NM = self.getXY('Met1RouteX_OutputPM2NM_NMside')[0][1] - self.getYWidth('Met1RouteX_OutputPM2NM_NMside') / 2
+
+            self._DesignParameter['Met1RouteY_OutputPM2NM']['_YWidth'] = TopBoundary_Met1RouteY_OutputPM2NM - BotBoundary_Met1RouteY_OutputPM2NM
+            self._DesignParameter['Met1RouteY_OutputPM2NM']['_XYCoordinates'] = [[
+                0, (TopBoundary_Met1RouteY_OutputPM2NM + BotBoundary_Met1RouteY_OutputPM2NM) / 2
+            ]]
+
+        else:
+            pass
 
 
         ''' Pin(Label) '''
