@@ -114,7 +114,7 @@ class ExpressionCalculator(QWidget):
         self.y_button = self.create_radio_button('Y',self.xy_reference_clicked)
         self.xy_button = self.create_radio_button('XY',self.xy_reference_clicked)
         self.x_button.setChecked(True)
-        if self.purpose not in ['init', 'XY_offset', 'XY_ref'] :
+        if self.purpose not in ['init', 'XY_offset', 'XY_ref', 'XY_path_ref'] :
             self.xy_button.setDisabled(True)
 
         toggling_group_layout.addWidget(self.x_button)
@@ -129,8 +129,10 @@ class ExpressionCalculator(QWidget):
         save_as_variable_button = self.create_button('SAVE VARIABLE',self.variable_save_clicked, size_constraint=dict(height=35))
         export_as_variable_button = self.create_button('EXPORT VARIABLE',self.export_variable_clicked, size_constraint=dict(height=35))
         view_variable_list = self.create_button('VIEW VARIABLE',self.variable_show_clicked, size_constraint=dict(height=35))
-        if self.purpose != 'init':
+        if self.purpose not in ['init', 'XY_path_ref']:
             export_path_button.setDisabled(True)
+        if self.purpose in ['XY_path_ref']:
+            export_button.setDisabled(True)
 
         # option_hbox_content_a.addWidget(self.xy_reference_toggling_group)
         option_box_button_content_a.addWidget(add_button)
@@ -221,7 +223,7 @@ class ExpressionCalculator(QWidget):
         if platform.system() != 'Darwin':
             self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY.png); background-position: center; background-color: rgb(255,255,255); background-repeat: no-repeat; background-attachment: fixed;")
         self.XYWindow.itemClicked.connect(self.XYitemClicked)
-        if self.purpose not in ['init', 'XY_offset', 'XY_ref']:
+        if self.purpose not in ['init', 'XY_offset', 'XY_ref', 'XY_path_ref']:
             self.XYWindow.setDisabled(True)
             if platform.system() != 'Darwin':
                 self.XYWindow.setStyleSheet("background-image: url(" + os.getcwd().replace("\\",'/') + "/Image/XY_disabled.png); background-position: center; background-color: rgb(255,255,255); background-attachment: fixed;")
@@ -1043,6 +1045,7 @@ class ExpressionCalculator(QWidget):
         if 'pw' not in self.__dict__:
             self.pw = PathWindow(address=self)
             self.pw.show()
+            self.pw.activateWindow()
             self.send_path_row_xy_signal.connect(self.pw.create_row)
 
         self.export_clicked('PathXY_row')
@@ -1105,7 +1108,10 @@ class ExpressionCalculator(QWidget):
         self.send_XYCreated_signal.emit('PathXY', idDict)
         path_ast = variable_ast.PathXY()
         path_ast.info_dict = idDict
-        self.send_variable_ast.emit(path_ast)
+        if self.purpose != 'XY_path_ref':
+            self.send_variable_ast.emit(path_ast)
+        else:
+            self.send_variable_wo_post_ast.emit(path_ast)
         del self.pw
 
     def parsing_clipboard(self):

@@ -397,6 +397,11 @@ class VariableSetupWindow(QWidget):
             self.variable_widget.get_width_height_ast(_id=qt_dc._id, _ast=qt_dc._ast)
         elif purpose in ['XY_offset', 'x_offset', 'y_offset', 'XY_ref']:
             self.variable_widget.get_xy_offset_ast(_id=qt_dc._id, _ast=qt_dc._ast, xy= purpose)
+        elif purpose in ['XY_path_ref']:
+            if isinstance(qt_dc._ast, variable_ast.PathXY):
+                self.variable_widget.get_path_ast(_id=qt_dc._id, _ast=qt_dc._ast)
+            else:
+                self.variable_widget.cal.pw.create_row(_id=qt_dc._id, _ast=qt_dc._ast)
         # elif purpose == 'x_offset':
         #     self.variable_widget.get_xy_offset_ast(_id=qt_dc._id, _ast=qt_dc._ast)
         # self.cal.receive_constraint_result(qt_dc)
@@ -512,8 +517,8 @@ class variableContentWidget(QWidget):
                 input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'line', 'line',
                                    'double_line', None, None, None]
             elif name == 'path':
-                field_list = ['name', 'layer', 'XY_ref', 'width', 'width_text', 'x_offset', 'y_offset', 'row', 'col', 'width_input']
-                input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'line', 'line', 'double_line', None, None]
+                field_list = ['name', 'layer', 'XY_path_ref', 'width', 'width_text', 'x_offset', 'y_offset', 'row', 'col', 'width_input']
+                input_type_list = ['line', 'combo', 'line', 'combo', 'line', 'line', 'line', 'double_line', None, None]
             elif name == 'sref':
                 field_list = ['name', 'XY_ref', 'sref_item', 'x_offset', 'y_offset', 'row', 'col', 'XY_ref_input']
                 input_type_list = ['line', 'line', 'list', 'line', 'line', 'double_line', None, None]
@@ -573,16 +578,21 @@ class variableContentWidget(QWidget):
             additional_button = QPushButton()
             additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
             additional_button.clicked.connect(self.show_y_offset_cal)
+        elif name == 'XY_path_ref':
+            tmp_input_widget.setReadOnly(True)
+            additional_button = QPushButton()
+            additional_button.setIcon(QIcon(os.getcwd().replace("\\", '/') + "/Image/cal.png"))
+            additional_button.clicked.connect(self.show_path_ref_cal)
 
 
         tmp_input_widget.field_name = name
-        if name not in ['width_text', 'height_text', 'XY_offset', 'x_offset', 'y_offset', 'XY_ref']:
+        if name not in ['width_text', 'height_text', 'XY_offset', 'x_offset', 'y_offset', 'XY_ref', 'XY_path_ref']:
             tmp_input_widget.textChanged.connect(lambda text: self.update_output_dict(text, name))
 
         output_layout = QHBoxLayout()
         output_layout.addWidget(tmp_label_widget)
         output_layout.addWidget(tmp_input_widget)
-        if name in ['width_text', 'height_text', 'XY_offset', 'x_offset', 'y_offset', 'XY_ref']:
+        if name in ['width_text', 'height_text', 'XY_offset', 'x_offset', 'y_offset', 'XY_ref', 'XY_path_ref']:
             output_layout.addWidget(additional_button)
 
         return output_layout
@@ -728,6 +738,11 @@ class variableContentWidget(QWidget):
         self.cal.set_preset_window()
         self.cal.show()
 
+    def show_path_ref_cal(self):
+        self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='XY_path_ref')
+        self.cal.send_variable_wo_post_ast.connect(self.send_variable_wo_post_ast)
+        self.cal.set_preset_window()
+        self.cal.show()
 
     def show_source_cal(self):
         self.cal = calculator.nine_key_calculator(clipboard=QGuiApplication.clipboard(),purpose='source',address=self)
@@ -826,6 +841,11 @@ class variableContentWidget(QWidget):
                 xy_offset_widget = self.widget_sublayout_dictinoary[info][offset].itemAt(1).widget()
         xy_offset_widget.setText(_id)
         self.field_value_memory_dict[offset] = _ast
+
+    def get_path_ast(self, _id, _ast):
+        display_widget = self.widget_sublayout_dictinoary['pathoffset']['XY_path_ref'].itemAt(1).widget()
+        display_widget.setText(_id)
+        self.field_value_memory_dict['XY_path_ref'] = _ast
 
 
     def get_index(self, text):
