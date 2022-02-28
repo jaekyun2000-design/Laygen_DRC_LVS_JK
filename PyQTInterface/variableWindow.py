@@ -310,7 +310,13 @@ class VariableSetupWindow(QWidget):
                     self.warning.show()
                     return
         elif self.flag_type == 'offset':
-            if output_dict['XY_ref'] == '':
+            if output_dict['XY_ref'] == '' and 'path' not in self.variable_type:
+                self.warning = QMessageBox()
+                self.warning.setText("Incomplete Reference")
+                self.warning.setIcon(QMessageBox.Warning)
+                self.warning.show()
+                return
+            elif output_dict['XY_path_ref'] == '' and 'path' in self.variable_type:
                 self.warning = QMessageBox()
                 self.warning.setText("Incomplete Reference")
                 self.warning.setIcon(QMessageBox.Warning)

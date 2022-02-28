@@ -780,10 +780,30 @@ class IrregularTransformer(ast.NodeTransformer):
         elif _flag == 'offset':
             info_dict['x_offset'] = info_dict['x_offset'].replace('\n','')
             info_dict['y_offset'] = info_dict['y_offset'].replace('\n','')
-            info_dict['XY_ref'] = info_dict['XY_ref'].replace('\n','')
             info_dict['row'] = info_dict['row'].replace('\n','')
             info_dict['col'] = info_dict['col'].replace('\n','')
-            if 'sref' in _type:
+            if 'path' in _type:
+                xy = info_dict['XY_path_ref'].replace('\n','')
+                loop_code = f"XYList = []\n" \
+                            f"xy_base = {xy}\n" \
+                            f"for i in range({info_dict['row']}):\n" \
+                            f"\tfor j in range({info_dict['col']}):\n" \
+                            f"\t\tx = j*{info_dict['x_offset']}\n" \
+                            f"\t\ty = i*{info_dict['y_offset']}\n" \
+                            f"\t\tfor XYs in xy_base:\n" \
+                            f"\t\t\tXYList.append([[XY[0]+x, XY[1]+y] for XY in XYs])\n" \
+                            f"self._DesignParameter['{_name}']['_XYCoordinates'] = XYList"
+                tmp_node = element_ast.Path()
+                tmp_node.name = _name
+                tmp_node.XY = 'None'
+                tmp_node.layer = _layer
+                tmp_node.width = info_dict['width_input']
+                tmp_code = element_ast.ElementTransformer().visit_Path(tmp_node)
+                tmp_code = astunparse.unparse(tmp_code)
+
+            elif 'sref' in _type:
+                info_dict['XY_ref'] = info_dict['XY_ref'].replace('\n', '')
+
                 loop_code = f"XYList = []\n" \
                             f"xy_base = {info_dict['XY_ref'][1:-1]}\n" \
                             f"for i in range({info_dict['row']}):\n" \
