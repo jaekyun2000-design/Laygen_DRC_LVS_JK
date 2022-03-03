@@ -590,7 +590,8 @@ class _Inverter(StickDiagram._StickDiagram):
 
                 self._DesignParameter['_PolyRouteYOnPMOS']['_XYCoordinates'] = tmpPolyRouteYOnPMOS
                 self._DesignParameter['_PolyRouteYOnNMOS']['_XYCoordinates'] = tmpPolyRouteYOnNMOS
-
+        else:
+            flag_horizontal_inputvia_PCCOM1 = False
 
 
 
@@ -940,6 +941,31 @@ class _Inverter(StickDiagram._StickDiagram):
                     self._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][1][0]) / 2),
              self._DesignParameter['PIN_A']['_XYCoordinates'][0][1]]
         ]
+
+        # CellXWidth
+        self.CellXWidth = (_Finger + 1) * (_GateSpacing + _ChannelLength)
+
+        # Input Met1 Information
+        self._DesignParameter['InputMet1'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1])
+        if flag_horizontal_inputvia_PCCOM1:
+            self._DesignParameter['InputMet1']['_XWidth'] = self.getXWidth('_VIANMOSPoly2Met1', '_Met1Layer')
+            self._DesignParameter['InputMet1']['_YWidth'] = self.getYWidth('_VIANMOSPoly2Met1', '_Met1Layer')
+            self._DesignParameter['InputMet1']['_XYCoordinates'] = self.getXY('_VIANMOSPoly2Met1', '_Met1Layer')
+
+        elif '_VIAPoly2Met1_F1' in self._DesignParameter:
+            self._DesignParameter['InputMet1']['_XWidth'] = self.getXWidth('_VIAPoly2Met1_F1', '_Met1Layer')
+            self._DesignParameter['InputMet1']['_YWidth'] = self.getYWidth('_VIAPoly2Met1_F1', '_Met1Layer')
+            self._DesignParameter['InputMet1']['_XYCoordinates'] = self.getXY('_VIAPoly2Met1_F1', '_Met1Layer')
+
+        else:           # Not Yet Implemented
+            self._DesignParameter['InputMet1']['_XWidth'] = self.getWidth('_InputRouting')
+            self._DesignParameter['InputMet1']['_YWidth'] = \
+                abs(self._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1] - self._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]) + self.getYWidth('_VIANMOSPoly2Met1', '_Met1Layer')
+            self._DesignParameter['InputMet1']['_XYCoordinates'] = [
+                [self._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0],
+                 (self._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1] + self._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]) / 2]
+            ]
 
 
         print(''.center(105, '#'))
