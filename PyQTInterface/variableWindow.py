@@ -316,7 +316,7 @@ class VariableSetupWindow(QWidget):
                 self.warning.setIcon(QMessageBox.Warning)
                 self.warning.show()
                 return
-            elif output_dict['XY_path_ref'] == '' and 'path' in self.variable_type:
+            elif 'path' in self.variable_type and output_dict['XY_path_ref'] == '' :
                 self.warning = QMessageBox()
                 self.warning.setText("Incomplete Reference")
                 self.warning.setIcon(QMessageBox.Warning)
