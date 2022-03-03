@@ -1088,6 +1088,8 @@ class IrregularTransformer(ast.NodeTransformer):
             if 'expression' in tmp_node.__dict__ and tmp_node.expression:
                 if isinstance(tmp_node.expression, ast.AST):
                     tmp_node.expression = astunparse.unparse(self.visit(tmp_node.expression))[1:-1]
+                elif type(tmp_node.expression) == list and isinstance(tmp_node.expression[0], ast.AST):
+                    tmp_node.expression = astunparse.unparse(self.visit(tmp_node.expression[0])).replace('\n','')
             else:
                 tmp_node.expression = ''
         return_str = str(tmp_node.c_type) + ' ' + str(tmp_node.expression) + ':' + '\n'
@@ -1427,6 +1429,27 @@ class CustomFunctionTransformer(ast.NodeTransformer):
             target_width = astunparse.unparse(tf_ast).replace("\n", "")
 
         return f"max(1, 1+int( ({target_width} -drc._VIAxMinSpace2 - 2 * drc._VIAxMinEnclosureByMetx )/  ( drc._VIAxMinWidth + drc._VIAxMinSpace2 ) ) )"
+
+    def transform_via_enc(self, node):
+        target_number = astunparse.unparse(node.args[0]).replace('\n','')
+
+        return f"drc._VIAxMinSpace * ({target_number}-1) + 2 * drc._VIAxMinEnclosureByMetx + {target_number} * drc._VIAxMinWidth"
+
+    def transform_via_enc2(self, node):
+        target_number = astunparse.unparse(node.args[0]).replace('\n','')
+
+        return f"drc._VIAxMinSpace2 * ({target_number}-1) + 2 * drc._VIAxMinEnclosureByMetx + {target_number} * drc._VIAxMinWidth"
+
+    def transform_via_min_enc(self, node):
+        target_number = astunparse.unparse(node.args[0]).replace('\n','')
+
+        return f"drc._VIAxMinSpace * ({target_number}-1) + {target_number} * drc._VIAxMinWidth"
+
+    def transform_via_min_enc2(self, node):
+        target_number = astunparse.unparse(node.args[0]).replace('\n','')
+
+        return f"drc._VIAxMinSpace2 * ({target_number}-1) + {target_number} * drc._VIAxMinWidth"
+
 
     def transform_cont_cal(self, node):
         target_width = node.args[0]
