@@ -82,7 +82,7 @@ class VariableSetupWindow(QWidget):
     def initUI(self):
         self.layout_list = []
         self.variable_type_widget = QComboBox()
-        self.variable_type_widget.addItems(['boundary_array', 'path_array', 'sref_array'])
+        self.variable_type_widget.addItems(['boundary_array', 'path_array', 'sref_array', 'pin_array'])
         self.variable_type_widget.setCurrentText(self.variable_type)
         self.variable_type_widget.currentTextChanged.connect(self.typeChanged)
 
@@ -421,7 +421,7 @@ class variableContentWidget(QWidget):
 
     def __init__(self):
         super(variableContentWidget, self).__init__()
-        self.name_list = ['boundary', 'path', 'sref']
+        self.name_list = ['boundary', 'path', 'sref', 'pin']
         self.option_list = ['offset', 'relative']
         self.widget_dictionary = dict()
         self.widget_sublayout_dictinoary = dict()
@@ -505,7 +505,7 @@ class variableContentWidget(QWidget):
             elif field_info['input_type_list'][i] == 'double_line':
                 tmp_layout = self.create_double_line_field(field_name)
             elif field_info['input_type_list'][i] == 'combo':
-                tmp_layout = self.create_combo_field(field_name)
+                tmp_layout = self.create_combo_field(field_name, name)
             elif field_info['input_type_list'][i] == 'list':
                 tmp_layout = self.create_list_field(field_name)
             tmp_vbox.addLayout(tmp_layout)
@@ -528,6 +528,11 @@ class variableContentWidget(QWidget):
             elif name == 'sref':
                 field_list = ['name', 'XY_ref', 'sref_item', 'x_offset', 'y_offset', 'row', 'col', 'XY_ref_input']
                 input_type_list = ['line', 'line', 'list', 'line', 'line', 'double_line', None, None]
+            elif name == 'pin':
+                field_list = ['name', 'layer', 'XY_ref', 'x_offset',
+                              'y_offset','text', 'magnitude' , 'row', 'col']
+                input_type_list = ['line', 'combo', 'list', 'line', 'line',
+                                   'line', 'line','double_line', None ]
         elif option == 'relative':
             if name == 'boundary':
                 field_list = ['name', 'layer', 'XY_source_ref', 'XY_offset', 'index', 'index_input', 'width', 'width_text',
@@ -540,6 +545,9 @@ class variableContentWidget(QWidget):
             elif name == 'sref':
                 field_list = ['name', 'XY_source_ref', 'XY_offset', 'sref_item', 'index', 'index_input', 'sref_item_dict']
                 input_type_list = ['line', 'list', 'line', 'list', 'combo', 'line', None]
+            elif name == 'pin':
+                field_list = ['name', 'layer', 'XY_source_ref', 'XY_offset', 'index', 'index_input', 'text', 'magnitude']
+                input_type_list = ['line', 'combo', 'list', 'line', 'combo', 'line', 'line', 'line']
 
         field_info = dict(field_list=field_list, input_type_list=input_type_list)
         return field_info
@@ -627,7 +635,7 @@ class variableContentWidget(QWidget):
 
         return output_layout
 
-    def create_combo_field(self, name):
+    def create_combo_field(self, name, type_name=None):
         tmp_label_widget = QLabel(name)
         tmp_label_widget.setFixedWidth(90)
         tmp_input_widget = QComboBox()
@@ -639,7 +647,9 @@ class variableContentWidget(QWidget):
                     warnings.warn(
                         f'Current Layer {LayerName} does not match any layer in current technology node.')
                     continue
-                if _Layer[LayerName][1] == 0:
+                if _Layer[LayerName][1] == 0 and type_name != 'pin':
+                    tmp_input_widget.addItem(LayerName)
+                elif _Layer[LayerName][1] == 20 and type_name == 'pin':
                     tmp_input_widget.addItem(LayerName)
         elif name == 'index':
             tmp_input_widget.addItems(['All', 'Even', 'Odd', 'Custom'])
