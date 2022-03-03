@@ -1428,9 +1428,12 @@ class _MainWindow(QMainWindow):
 
 
     def show_inspect_array_widget(self, array_list_item):
-        row = self.array_list_widget.row(array_list_item)
-        group_ref = self.reference_list[row]
-        array_list = eval(array_list_item.text())
+        try:
+            row = self.array_list_widget.row(array_list_item)
+            group_ref = self.reference_list[row]
+            array_list = eval(array_list_item.text())
+        except:
+            warnings.warn('Debug required')
 
         self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array")
         self.vw.send_output_dict_signal.connect(self.create_variable)
@@ -1449,24 +1452,28 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
         self.vw.send_inspection_request_signal.connect(self.inspect_vw_array)
 
-        if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
-            self.vw.variable_type = 'boundary_array'
-        elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
-            self.vw.variable_type = 'path_array'
-        elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 3:
-            library = self.visualItemDict[array_list[0]]._ItemTraits['library']
-            className = self.visualItemDict[array_list[0]]._ItemTraits['className']
-            if 'calculate_fcn' in self.visualItemDict[array_list[0]]._ItemTraits:
-                calculate_fcn = self.visualItemDict[array_list[0]]._ItemTraits['calculate_fcn']
-            else:
-                calculate_fcn = None
-            parameters = self.visualItemDict[array_list[0]]._ItemTraits['parameters']
-            self.vw.variable_type = 'sref_array'
-            self.vw.variable_widget.field_value_memory_dict['sref_item_dict'] = {'library':library, 'className':className, 'calculate_fcn':calculate_fcn, 'parameters':parameters}
+        try:
+            if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
+                self.vw.variable_type = 'boundary_array'
+            elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
+                self.vw.variable_type = 'path_array'
+            elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 3:
+                library = self.visualItemDict[array_list[0]]._ItemTraits['library']
+                className = self.visualItemDict[array_list[0]]._ItemTraits['className']
+                if 'calculate_fcn' in self.visualItemDict[array_list[0]]._ItemTraits:
+                    calculate_fcn = self.visualItemDict[array_list[0]]._ItemTraits['calculate_fcn']
+                else:
+                    calculate_fcn = None
+                parameters = self.visualItemDict[array_list[0]]._ItemTraits['parameters']
+                self.vw.variable_type = 'sref_array'
+                self.vw.variable_widget.field_value_memory_dict['sref_item_dict'] = {'library':library, 'className':className, 'calculate_fcn':calculate_fcn, 'parameters':parameters}
 
-        self.vw.group_list = group_ref
-        # self.vw.inspect_array_window_address = self.array_list_widget
-        self.vw.getArray(array_list_item)
+
+            self.vw.group_list = group_ref
+            # self.vw.inspect_array_window_address = self.array_list_widget
+            self.vw.getArray(array_list_item)
+        except:
+            warnings.warn("Debug Required.")
         self.vw.show()
 
     # def delivery_dummy_constraint(self, dummy_id):
