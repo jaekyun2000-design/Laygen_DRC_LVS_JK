@@ -773,6 +773,44 @@ class IrregularTransformer(ast.NodeTransformer):
                 return final_ast
                 sentence = loop_code + '\n' + tmp_code
                 del tmp_node
+            elif _type == 'pin_array':
+                if _index == 'All':
+                    loop_code = f"XYList = []\n" \
+                                f"{xy_offset}\n" \
+                                f"for i in range(len({layer_xy})):\n" \
+                                f"\txy = {layer_xy}[i][0] if type({layer_xy}[i][0]) == list else {layer_xy}[i]\n" \
+                                f"\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , xy, xy_offset ) ] )\n" \
+
+                    if 'bus' not in info_dict or info_dict['bus'] == 'Off':
+                        tmp_node = element_ast.Text()
+                        tmp_node.name = _name
+                        tmp_node.layer = _layer
+                        tmp_node.text = info_dict['text']
+                        tmp_node.magnitude = info_dict['magnitude']
+                        tmp_node.XY = 'None'
+                        tmp_code_ast = element_ast.ElementTransformer().visit_Text(tmp_node)
+                        tmp_code = astunparse.unparse(tmp_code_ast)
+                        final_sentence = f"{tmp_code}" \
+                                         f"{loop_code}" \
+                                         f"self._DesignParameter['{_name}']['_XYCoordinates'] = XYList"
+                        final_ast = ast.parse(final_sentence).body
+                        return final_ast
+                    elif info_dict['bus'] == 'Auto':
+                        tmp_node = element_ast.Text()
+                        tmp_node.name = f"f'{_name}<{{i}}>'"
+                        tmp_node.layer = _layer
+                        tmp_node.text = f"f'{info_dict['text']}<{{i}}>'"
+                        tmp_node.magnitude = info_dict['magnitude']
+                        tmp_node.XY = 'None'
+                        tmp_code_ast = element_ast.ElementTransformer().visit_Text(tmp_node)
+                        tmp_code = astunparse.unparse(tmp_code_ast).replace('\n','')
+                        final_sentence = f"{loop_code}" \
+                                         f"\t{tmp_code}\n" \
+                                         f"\tself._DesignParameter[{tmp_node.name}]['_XYCoordinates'] = [XYList[-1]]"
+                        final_ast = ast.parse(final_sentence).body
+                        return final_ast
+
+
         ###############################################################################################################
         ###############################################################################################################
         ###############################################################################################################

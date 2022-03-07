@@ -546,8 +546,8 @@ class variableContentWidget(QWidget):
                 field_list = ['name', 'XY_source_ref', 'XY_offset', 'sref_item', 'index', 'index_input', 'sref_item_dict']
                 input_type_list = ['line', 'list', 'line', 'list', 'combo', 'line', None]
             elif name == 'pin':
-                field_list = ['name', 'layer', 'XY_source_ref', 'XY_offset', 'index', 'index_input', 'text', 'magnitude']
-                input_type_list = ['line', 'combo', 'list', 'line', 'combo', 'line', 'line', 'line']
+                field_list = ['name', 'layer', 'XY_source_ref', 'XY_offset', 'index', 'index_input', 'bus', 'text', 'magnitude']
+                input_type_list = ['line', 'combo', 'list', 'line', 'combo', 'line', 'combo', 'line', 'line']
 
         field_info = dict(field_list=field_list, input_type_list=input_type_list)
         return field_info
@@ -662,6 +662,11 @@ class variableContentWidget(QWidget):
             tmp_input_widget.addItems(['Auto', 'Custom'])
             tmp_input_widget.currentTextChanged.connect(self.get_height)
             tmp_input_widget.setCurrentIndex(0)
+        elif name == 'bus':
+            tmp_input_widget.addItems(['Auto', 'Off'])
+            # tmp_input_widget.currentTextChanged.connect(self.get_height)
+            # tmp_input_widget.setCurrentIndex(0)
+
 
         tmp_input_widget.field_name = name
         # tmp_input_widget.currentTextChanged.connect(self.update_output_dict)
@@ -922,6 +927,16 @@ class variableContentWidget(QWidget):
                     height_input_widget.setReadOnly(True)
                     width_widget.setCurrentText('Custom')
 
+    # def get_bus(self, text):
+    #     for info, widget in self.widget_dictionary.items():
+    #         if not widget.isHidden():
+    #             height_input_widget = self.widget_sublayout_dictinoary[info]['height_text'].itemAt(1).widget()
+    #             width_widget = self.widget_sublayout_dictinoary[info]['width'].itemAt(1).widget()
+    #             if text == 'Off':
+    #                 height_input_widget.setReadOnly(False)
+    #             elif text == 'Auto':
+    #                 height_input_widget.setReadOnly(True)
+    #                 width_widget.setCurrentText('Custom')
     def item_clicked(self, item):
         hierarchy_list = list(eval('['+re.search('\(.*\)',item.text()).group()[1:-1] + ']' ))
         self.send_clicked_item_signal.emit(hierarchy_list)
