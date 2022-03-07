@@ -1996,7 +1996,11 @@ class _MainWindow(QMainWindow):
             for item in graphicItem.block:
                 if type(item) is VisualizationItem.QGraphicsTextItemWObounding:
                     item.setVisible(True)
-        self.visualItemDict[graphicItem._ElementName] = graphicItem
+        if '_ElementName' not in graphicItem.__dict__:
+            warnings.warn(f"DEBUG REQUIRED: {graphicItem._id} does not have _ElementName\n"
+                          f"Visual Item is not updated.")
+        else:
+            self.visualItemDict[graphicItem._ElementName] = graphicItem
         self.scene.addItem(graphicItem)
         self.scene.send_move_signal.connect(graphicItem.move)
         self.scene.send_moveDone_signal.connect(graphicItem.moveUpdate)
