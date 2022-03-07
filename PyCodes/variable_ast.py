@@ -1130,6 +1130,8 @@ class IrregularTransformer(ast.NodeTransformer):
                     tmp_node.expression = astunparse.unparse(self.visit(tmp_node.expression[0])).replace('\n','')
             else:
                 tmp_node.expression = ''
+            if tmp_node.expression[0] == '(' and tmp_node.expression[-1] == ')':
+                tmp_node.expression = tmp_node.expression[1:-1]
         return_str = str(tmp_node.c_type) + ' ' + str(tmp_node.expression) + ':' + '\n'
         if not tmp_node.body:
             return_str += '\tpass'
