@@ -1004,8 +1004,10 @@ class _DesignVariableManagerWindow(QWidget):
 
         addButton = QPushButton("Add", self)
         addButton.clicked.connect(self.add_clicked)
-        checkButton = QPushButton("check", self)
-        checkButton.clicked.connect(self.check_clicked)
+        addDictButton = QPushButton("Dict", self)
+        addDictButton.clicked.connect(self.add_dict_clicked)
+        # checkButton = QPushButton("check", self)
+        # checkButton.clicked.connect(self.check_clicked)
         editButton = QPushButton("Edit", self)
         editButton.clicked.connect(self.edit_clicked)
         deleteButton = QPushButton("Delete", self)
@@ -1023,7 +1025,7 @@ class _DesignVariableManagerWindow(QWidget):
         button1 = QHBoxLayout()
         button1.addWidget(addButton)
         button1.addStretch(2)
-        button1.addWidget(checkButton)
+        button1.addWidget(addDictButton)
         button1.addStretch(2)
         button1.addWidget(editButton)
 
@@ -1081,6 +1083,12 @@ class _DesignVariableManagerWindow(QWidget):
         self.addWidget.show()
         self.addWidget.send_variable_signal.connect(self.updateList)
 
+    def add_dict_clicked(self):
+        self.dict_widget = SetupWindow.DictionaryWidget()
+        self.dict_widget.show()
+        self.dict_widget.send_variable_ast.connect(lambda _ast: _createNewDesignVariable().addDVtodict(_ast.name, type='value', value= _ast.dict_values))
+        self.dict_widget.send_variable_ast.connect(lambda _ast: self.updateList(variable_info_list=[_ast.name, 'dictionary'], _type='dict'))
+
     def check_clicked(self):
         print('variableDict:', self.variableDict)
         print('idDict:', self.idDict)
@@ -1095,10 +1103,16 @@ class _DesignVariableManagerWindow(QWidget):
             DV = self.variableDict[vid]['DV']
             value = self.variableDict[vid]['value']
 
-            self.editWidget = _editDesignVariable(self, vid, DV, value)
-            self.editWidget.send_id_in_edited_variable_signal.connect(self.send_id_in_edited_variable)
-            self.editWidget.show()
-            self.selectedItem = None
+            if type(value) == dict:
+                self.dict_widget = SetupWindow.DictionaryWidget(DV)
+                self.dict_widget.load_data(value)
+                self.dict_widget.show()
+                self.dict_widget.send_variable_ast.connect(lambda _ast: self.variableDict[vid]['value'].update(_ast.dict_values))
+            else:
+                self.editWidget = _editDesignVariable(self, vid, DV, value)
+                self.editWidget.send_id_in_edited_variable_signal.connect(self.send_id_in_edited_variable)
+                self.editWidget.show()
+            # self.selectedItem = None
 
     def send_id_in_edited_variable(self, _original_id, _new_id, _id_list):
         self.send_id_in_edited_variable_signal.emit(_original_id, _new_id, _id_list)
@@ -1150,8 +1164,11 @@ class _DesignVariableManagerWindow(QWidget):
                 self.model.setItem(self.selectedRow, 1, value)
             elif _type == 'delete':
                 self.model.takeRow(self.selectedRow)
-
                 del self.idDict[_name]
+            elif _type == 'dict':
+                value.setEditable(False)
+                self.model.appendRow(name)
+                self.model.setItem(self.model.rowCount() - 1, 1, value)
             else:
                 pass
         else:
@@ -1170,6 +1187,8 @@ class _DesignVariableManagerWindow(QWidget):
         row = item.index().row()
         _item = self.model.item(row).text()
         if _item in self.idDict:
+            if item.text() == 'dictionary':
+                return
             vid = self.idDict[_item]['vid']
             self.variableDict[vid]['value'] = item.text()
 
