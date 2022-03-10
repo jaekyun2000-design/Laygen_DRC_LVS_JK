@@ -782,6 +782,9 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.widget_delegator.array_update_widget)
         self.dockContentWidget3.send_dummy_ast_id_for_condition_signal.connect(self.conditional_stmt_window.show_list)
         self.dockContentWidget3_2.send_dummy_ast_id_for_condition_signal.connect(self.conditional_stmt_window.init_ui)
+        self.dockContentWidget3.send_dictionary_ast_signal.connect(self.widget_delegator.show_dictionary_widget)
+        self.dockContentWidget3_2.send_dictionary_ast_signal.connect(self.widget_delegator.show_dictionary_widget)
+
 
         ################ Logging Message Dock Widget setting ####################
         dockWidget4ForLoggingMessage = QDockWidget("Logging Message")

@@ -217,45 +217,17 @@ class WidgetDelegator(delegator.Delegator):
         self.undo_widget.show()
         self.undo_widget.request_load_save_file_signal.connect(self.main_window.reload_project)
 
-    def show_dictionary_widget(self):
-        self.dict_widget = SetupWindow.DictionaryWidget()
+    def show_dictionary_widget(self, _ast_id=None):
+        """
+        If you want to see Dictionary Ast data, then you should put _ast_id as input.
+        Or, you can call the method w/o input, then widget for creating dict ast will appear.
+        """
+        if _ast_id:     # View and Edit existing constraint.
+            qt_dc = self.main_window._QTObj._qtProject._DesignConstraint[self.main_window._CurrentModuleName][_ast_id]
+            target_ast = qt_dc._ast
+            self.dict_widget = SetupWindow.DictionaryWidget(qt_dc._ast.name)
+            self.dict_widget.load_data(qt_dc._ast.dict_values)
+        else:           # Create new dictionary ast with widget.
+            self.dict_widget = SetupWindow.DictionaryWidget()
+            self.dict_widget.send_variable_ast.connect(lambda _ast: self.main_window.design_delegator.create_qt_constraint(constraint_ast=_ast))
         self.dict_widget.show()
-        self.dict_widget.send_variable_ast.connect(lambda _ast: self.main_window.design_delegator.create_qt_constraint(constraint_ast=_ast))
-        # dict_widget = QDialog()
-        # vertical_layout = QVBoxLayout()
-        # form_layout = QFormLayout()
-        # button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        # button_box.addButton('Add',QDialogButtonBox.YesRole)
-        # # button_box.addButton('Delete',QDialogButtonBox.NoRole)
-        # vertical_layout.addLayout(form_layout)
-        # vertical_layout.addWidget(button_box)
-        # dict_widget.setLayout(vertical_layout)
-        #
-        # def button_control(button):
-        #     def add_form_row():
-        #         form_layout.addRow(input_line.text(), QLineEdit())
-        #     if button.text() == 'Add':
-        #         input_widget = QDialog()
-        #         vertical_layout_of_input = QVBoxLayout()
-        #         input_line = QLineEdit()
-        #         button_box_input = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        #         button_box_input.accepted.connect(input_widget.accept)
-        #         button_box_input.rejected.connect(input_widget.reject)
-        #         vertical_layout_of_input.addWidget(input_line)
-        #         vertical_layout_of_input.addWidget(button_box_input)
-        #         button_box_input.accepted.connect(add_form_row)
-        #         input_widget.setLayout(vertical_layout_of_input)
-        #         tmp=input_widget.exec()
-        #
-        # button_box.clicked.connect(button_control)
-        # # button_box.accepted.connect(setup_widget.accept)
-        # # button_box.rejected.connect(setup_widget.reject)
-        # #
-        # # def update_user_setup():
-        # #     for idx in range(form_layout.rowCount()):
-        # #         key = form_layout.itemAt(idx, QFormLayout.LabelRole).widget().text()
-        # #         value = form_layout.itemAt(idx, QFormLayout.FieldRole).widget().text()
-        # #         user_setup.update_user_setup(key, value)
-        # #
-        # # setup_widget.accepted.connect(update_user_setup)
-        # return_value = dict_widget.exec()

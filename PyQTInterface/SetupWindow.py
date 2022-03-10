@@ -3043,6 +3043,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_dummy_ast_id_for_xy_signal = pyqtSignal(str)
     send_dummy_ast_id_for_array_signal = pyqtSignal(str)
     send_dummy_ast_id_for_condition_signal = pyqtSignal(str)
+    send_dictionary_ast_signal = pyqtSignal(str)
     request_sref_redefine_signal = pyqtSignal("PyQt_PyObject")
 
 
@@ -3900,7 +3901,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             if idx.isValid():
                 type_item = self.model.itemFromIndex(idx.siblingAtColumn(2))
 
-                if type_item.text() in ['XYCoordinate', 'PathXY', 'LogicExpression', 'CustomVariable']:
+                if type_item.text() in ['XYCoordinate', 'PathXY', 'LogicExpression', 'CustomVariable', 'Dictionary']:
                     self.context_menu_for_xy.exec_(self.viewport().mapToGlobal(point))
                 elif type_item.text() == 'Array':
                     self.context_menu_for_array.exec_(self.viewport().mapToGlobal(point))
@@ -3945,6 +3946,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             for parm_name in org_ast.parameters:
                 redef_ast.parameters[parm_name] = None
             self.request_sref_redefine_signal.emit(redef_ast)
+        elif type_name == 'Dictionary':
+            self.send_dictionary_ast_signal.emit(current_item.text())
 
 
         # if current_item.text() != None:
@@ -5091,13 +5094,29 @@ class DictionaryWidget(QDialog):
         button_box.accepted.connect(self.accept)
         button_box.rejected.connect(self.reject)
 
-    def add_form_row(self):
-        current_key_text = self.key_input.text()
-        if self.type_combo.currentIndex() == 0:
+    def load_data(self, dictionary_data):
+        for key, value in dictionary_data.items():
+            if type(value) == dict:
+                sub_widget = self.add_form_row(1, key)
+                sub_widget.load_data(value)
+            else:
+                line_widget = self.add_form_row(0, key)
+                line_widget.setText(value)
+
+    def add_form_row(self, purpose=None, key=None):
+        """
+        purpose: 0 is plain data, 1 is dictionary data
+        key : dictionary key.
+        """
+        current_key_text = self.key_input.text() if key is None else key
+        purpose = self.type_combo.currentIndex() if purpose is None else purpose
+        # if self.type_combo.currentIndex() == 0:
+        if purpose == 0:
             line_edit_widget = QLineEdit()
             self.form_layout.addRow(current_key_text, line_edit_widget)
             line_edit_widget.textChanged.connect(lambda text:
                                                  self.dictionary_data.update({current_key_text:text}))
+            return line_edit_widget
         else:
             push_button_widget = QPushButton('dictionary')
             sub_widget = DictionaryWidget(current_key_text)
@@ -5106,6 +5125,7 @@ class DictionaryWidget(QDialog):
             self.form_layout.addRow(current_key_text, push_button_widget)
             self.sub_widget_dict[current_key_text] = sub_widget
             push_button_widget.clicked.connect(sub_widget.show)
+            return sub_widget
 
     def button_control(self, button):
         if button.text() == 'Add':
