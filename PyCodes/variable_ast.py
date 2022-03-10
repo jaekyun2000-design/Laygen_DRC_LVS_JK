@@ -155,6 +155,14 @@ class CustomVariable(GeneratorVariable):
         'name',
     )
 
+class Dictionary(GeneratorVariable):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'name',
+        'dict_values'
+    )
+
 
 class IrregularTransformer(ast.NodeTransformer):
     def __init__(self):
