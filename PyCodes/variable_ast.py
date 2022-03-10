@@ -1165,6 +1165,13 @@ class IrregularTransformer(ast.NodeTransformer):
         return_str = str(tmp_node.variable) + ' '+ str(tmp_node.operator) + ' '+ str(tmp_node.condition)
         return ast.parse(return_str)
 
+    def visit_Dictionary(self, node, output_name=True):
+        parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.dict_values.items()])
+        if output_name:
+            return_str = f'{node.name} = {parameter_sentence}'
+        else:
+            return_str = f'dict({parameter_sentence})'
+        return ast.parse(return_str)
 
 
 def run_transformer(source_ast):
