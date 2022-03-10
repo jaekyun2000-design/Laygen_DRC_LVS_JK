@@ -227,6 +227,7 @@ class WidgetDelegator(delegator.Delegator):
             target_ast = qt_dc._ast
             self.dict_widget = SetupWindow.DictionaryWidget(qt_dc._ast.name)
             self.dict_widget.load_data(qt_dc._ast.dict_values)
+            self.dict_widget.send_variable_ast.connect(lambda _ast: self.main_window.design_delegator.update_qt_constraint(target_id=_ast_id, updated_ast=_ast))
         else:           # Create new dictionary ast with widget.
             self.dict_widget = SetupWindow.DictionaryWidget()
             self.dict_widget.send_variable_ast.connect(lambda _ast: self.main_window.design_delegator.create_qt_constraint(constraint_ast=_ast))
