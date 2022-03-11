@@ -5102,7 +5102,7 @@ class DictionaryWidget(QDialog):
                 sub_widget.load_data(value)
             else:
                 line_widget = self.add_form_row(0, key)
-                line_widget.setText(value)
+                line_widget.setText(str(value))
 
     def add_form_row(self, purpose=None, key=None):
         """

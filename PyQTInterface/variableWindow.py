@@ -1086,8 +1086,13 @@ class _DesignVariableManagerWindow(QWidget):
     def add_dict_clicked(self):
         self.dict_widget = SetupWindow.DictionaryWidget()
         self.dict_widget.show()
-        self.dict_widget.send_variable_ast.connect(lambda _ast: _createNewDesignVariable().addDVtodict(_ast.name, type='value', value= _ast.dict_values))
-        self.dict_widget.send_variable_ast.connect(lambda _ast: self.updateList(variable_info_list=[_ast.name, 'dictionary'], _type='dict'))
+        # self.dict_widget.send_variable_ast.connect(lambda _ast: _createNewDesignVariable().addDVtodict(_ast.name, type='value', value= _ast.dict_values))
+        # self.dict_widget.send_variable_ast.connect(lambda _ast: self.updateList(variable_info_list=[_ast.name, 'dictionary'], _type='dict'))
+        self.dict_widget.send_variable_ast.connect(lambda _ast: self.create_dict(_ast.name, _ast.dict_values))
+
+    def create_dict(self, name, value_dict):
+        _createNewDesignVariable().addDVtodict(name, type='value', value=value_dict)
+        self.updateList(variable_info_list=[name, 'dictionary'], _type='dict')
 
     def check_clicked(self):
         print('variableDict:', self.variableDict)
