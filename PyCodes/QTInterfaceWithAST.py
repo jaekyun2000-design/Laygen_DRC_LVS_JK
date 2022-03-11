@@ -2197,7 +2197,7 @@ class QtProject:
         else:
             try:
                 # send design parameter info to element manager --> return: ast info or
-                if type(_ast).__name__ == 'Sref':
+                if type(_ast).__name__ == 'Sref' and type(_ast.parameters) != str:
                     loss_parm_list = list(filter(lambda parm: parm not in _ast.parameters, _ast.parameter_fields))
                     for parm_name in loss_parm_list:
                         _ast.parameters[parm_name] = None
