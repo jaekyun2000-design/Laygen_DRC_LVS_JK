@@ -5029,10 +5029,11 @@ class DesignModifier(QWidget):
         if design_const._ast.parameters is None:
             warnings.warn('Missing Parameter info.')
             return
-        for parameter, value in design_const._ast.parameters.items():
-            input_widget = QLineEdit(str(value))
-            self.field_value_dict['Sref'][parameter] = input_widget
-            layout.addRow(QLabel(parameter), input_widget)
+        if type(design_const._ast.parameters) == dict:
+            for parameter, value in design_const._ast.parameters.items():
+                input_widget = QLineEdit(str(value))
+                self.field_value_dict['Sref'][parameter] = input_widget
+                layout.addRow(QLabel(parameter), input_widget)
 
     def update_constraint(self):
         if not self.current_type:
@@ -5154,6 +5155,9 @@ class DictionaryWidget(QDialog):
         output_ast = variable_ast.Dictionary()
         output_ast.name = self.name_input if isinstance(self.name_input, str) else self.name_input.text()
         output_ast.dict_values = self.dictionary_data
+        for key, value in output_ast.dict_values.items():
+            if value in ["True", "False"] or value.isdigit() or (value[0] == '[' and value[-1] == ']'):
+                output_ast.dict_values[key] = eval(value)
         self.send_variable_ast.emit(output_ast)
         super(DictionaryWidget, self).accept()
 

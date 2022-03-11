@@ -3404,10 +3404,11 @@ class _MainWindow(QMainWindow):
                     if _field == 'name' or _field == 'library' or _field == 'className' or _field == 'calculate_fcn':
                         continue
                     elif _field == 'parameters':
-                        for parm_string in _ast.parameters.values():
-                            if type(parm_string) == str:
-                                tmp_ast = ast.parse(str(parm_string))
-                                variable_visitor.visit(tmp_ast)
+                        if type(_ast.parameters) == dict:
+                            for parm_string in _ast.parameters.values():
+                                if type(parm_string) == str:
+                                    tmp_ast = ast.parse(str(parm_string))
+                                    variable_visitor.visit(tmp_ast)
                     # elif _field == 'XY':
                     #     # if type(_ast.XY) == list and not _ast.XY:
                     #     #     tmp
