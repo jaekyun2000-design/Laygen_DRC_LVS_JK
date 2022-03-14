@@ -327,7 +327,7 @@ class ElementManager:
                         return None, None
 
                 if key == '_id':
-                    tmpDP[key] = ast.__dict__['id']
+                    tmpDP[key] = ast.__dict__['_id']
                 elif key == '_DesignParameterType':
                     tmpDP[key] = 8
                 elif key == '_ElementName':

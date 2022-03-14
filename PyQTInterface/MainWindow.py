@@ -2667,15 +2667,19 @@ class _MainWindow(QMainWindow):
             self.inspect_vw_array(dp_names)
 
             self.show()
-        elif _type == 'copy_parms':
+        elif 'copy_parms' in _type:
             selected_vis_item = self.scene.selectedItems()[0]
             dp_name = selected_vis_item._ElementName
             dc_id = self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_name)
             target_dc = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][dc_id]
             self.dict_widget = SetupWindow.DictionaryWidget()
             self.dict_widget.load_data(target_dc._ast.parameters)
-            self.dict_widget.send_variable_ast.connect(lambda _ast: self.dv.create_dict(_ast.name, _ast.dict_values))
+            if 'to constraints' in _type:
+                self.dict_widget.send_variable_ast.connect(lambda _ast: self.design_delegator.create_qt_constraint(constraint_ast=_ast))
+            else:
+                self.dict_widget.send_variable_ast.connect(lambda _ast: self.dv.create_dict(_ast.name, _ast.dict_values))
             self.dict_widget.show()
+
 
     def inspect_vw_array(self, group_list):
         if self._CurrentModuleName in self._QTObj._qtProject._DesignParameter:
@@ -3711,6 +3715,7 @@ class _CustomView(QGraphicsView):
         variable_create_enclosure = QAction("create enclousre variable", self)
         variable_create_connect = QAction("create connect variable", self)
         copy_from_cell_parameter = QAction("Copy parameter from cell", self)
+        copy_from_cell_parameter_to_constraints = QAction("Copy parameter from cell to Constraints", self)
         visual_ungroup = QAction("ungroup multiple xy index cells", self)
         visual_ungroup.setShortcut('Ctrl+G')
 
@@ -3719,6 +3724,8 @@ class _CustomView(QGraphicsView):
             if self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 3:
                 menu.addAction(flatten_sref)
                 menu.addAction(copy_from_cell_parameter)
+                menu.addAction(copy_from_cell_parameter_to_constraints)
+
 
             menu.addAction(constraint_create_array)
             menu.addAction(convert_to_sref)
@@ -3742,6 +3749,7 @@ class _CustomView(QGraphicsView):
         convert_to_sref.triggered.connect(lambda tmp: self.variable_emit('to_sref'))
         flatten_sref.triggered.connect(lambda tmp: self.variable_emit('flatten_sref'))
         copy_from_cell_parameter.triggered.connect(lambda tmp: self.variable_emit('copy_parms'))
+        copy_from_cell_parameter_to_constraints.triggered.connect(lambda tmp: self.variable_emit('copy_parms to constraints'))
         inspect_path_connection.triggered.connect(lambda tmp: self.variable_emit('auto_path'))
         variable_create_array.triggered.connect(lambda tmp: self.variable_emit('array'))
         variable_create_distance.triggered.connect(lambda tmp: self.variable_emit('distance'))
@@ -3779,6 +3787,8 @@ class _CustomView(QGraphicsView):
             self.variable_signal.emit('connect')
         elif type == 'copy_parms':
             self.variable_signal.emit('copy_parms')
+        elif type == 'copy_parms to constraints':
+            self.variable_signal.emit('copy_parms to constraints')
         # elif type == 'ungroup':
         #     self.variable_signal.emit('ungroup')
 
