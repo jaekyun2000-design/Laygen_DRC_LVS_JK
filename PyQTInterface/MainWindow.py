@@ -2915,13 +2915,13 @@ class _MainWindow(QMainWindow):
                                                                 _ast=self._QTObj._qtProject._DesignConstraint[module][
                                                                     mother_id]._ast, id=mother_id,
                                                                  dummy_constraints = self._DummyConstraints)
-            if design_dict['parameter']:
-                # if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
-                #     hierarchy_key = design_dict['parameter']._DesignParameter['_DesignObj_Name'] + '/' + str(
-                #         design_dict[
-                #             'parameter']._id)
-                if original_dp_id != design_dict['parameter_id']:
-                    self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
+            # if design_dict['parameter']:
+            #     # if design_dict['parameter']._DesignParameter['_DesignParametertype'] == 3:
+            #     #     hierarchy_key = design_dict['parameter']._DesignParameter['_DesignObj_Name'] + '/' + str(
+            #     #         design_dict[
+            #     #             'parameter']._id)
+            #     if original_dp_id != design_dict['parameter_id']:
+            #         self.visualItemDict[design_dict['parameter_id']] = self.visualItemDict.pop(original_dp_id)
             try:
                 visualItem = self.updateVisualItemFromDesignParameter(design_dict['parameter'])
                 if visualItem:
