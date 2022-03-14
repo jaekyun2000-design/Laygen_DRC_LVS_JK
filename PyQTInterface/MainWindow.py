@@ -2061,8 +2061,11 @@ class _MainWindow(QMainWindow):
             self.test = False
             scf = [test]
         else:
-            scf = QFileDialog.getOpenFileName(self,'Load Project','./PyQTInterface/Project/')
-
+            if 'project_file_path' in user_setup.__dict__ and user_setup.project_file_path:
+                prject_file_path = user_setup.project_file_path
+            else:
+                prject_file_path = './PyQTInterface/Project/'
+            scf = QFileDialog.getOpenFileName(self,'Load Project',prject_file_path)
         try:
             cm = self._CurrentModuleName
             _fileName=scf[0]
@@ -2095,7 +2098,11 @@ class _MainWindow(QMainWindow):
             self.test = False
             scf = [test]
         else:
-            scf = QFileDialog.getSaveFileName(self,'Save Project','./PyQTInterface/Project/')
+            if 'project_file_path' in user_setup.__dict__ and user_setup.project_file_path:
+                prject_file_path = user_setup.project_file_path
+            else:
+                prject_file_path = './PyQTInterface/Project/'
+            scf = QFileDialog.getSaveFileName(self,'Save Project',prject_file_path)
         # else:
         #     scf = [_fileName]
         try:
