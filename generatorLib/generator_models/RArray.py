@@ -315,6 +315,8 @@ class RArray(StickDiagram._StickDiagram):
 			M2_horizontal_spacing = self._DesignParameter['_M3_vertical']['_Width'] + drc._MetalxMinSpace21
 
 
+			Error_Flag = 0
+
 
 			vertical_first_Y=self._DesignParameter['R_guard']['_XYCoordinates'][-1][1]+self._DesignParameter['R_guard']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1]
 
@@ -332,6 +334,9 @@ class RArray(StickDiagram._StickDiagram):
 
 					if (int)(j // NUMofY) == prior_col :
 						M2_horizontal_length += M2_horizontal_spacing
+						if (M2_horizontal_length + M2_horizontal_spacing) >= RXdistance :
+							Error_Flag = 1
+							break
 					else :
 						M2_horizontal_length = M2_horizontal_offset
 
@@ -357,6 +362,9 @@ class RArray(StickDiagram._StickDiagram):
 
 					if (int)(j // NUMofY) == prior_col :
 						M2_horizontal_length += M2_horizontal_spacing
+						if (M2_horizontal_length + M2_horizontal_spacing) >= RXdistance :
+							Error_Flag = 1
+							break
 					else :
 						M2_horizontal_length = M2_horizontal_offset
 
@@ -369,17 +377,19 @@ class RArray(StickDiagram._StickDiagram):
 							[self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 + M2_horizontal_length,
 							 vertical_first_Y - vertical_Y_space * i]])
 					tmp6.append([self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XWidth'] / 2 + M2_horizontal_length,
-							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length],
-)
+							self._DesignParameter['Rref']['_XYCoordinates'][(int)(j // NUMofY + 1) * NUMofY - j % NUMofY - 1][1] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1] - M2_vertical_length])
 
 				prior_col = (int)(j // NUMofY)
 
-			self._DesignParameter['_RoutingContact']['_XYCoordinates'] = tmp5
-			self._DesignParameter['_via1_to_M2']['_XYCoordinates'] = tmp5
-			self._DesignParameter['_M2_vertical']['_XYCoordinates'] = tmp5_path
-			self._DesignParameter['_M2_horizontal']['_XYCoordinates'] = tmp5_path2
-			self._DesignParameter['_M3_vertical']['_XYCoordinates'] = tmp5_path3
-			self._DesignParameter['_RoutingContact2']['_XYCoordinates'] = tmp6
+			if Error_Flag == 0 :
+				self._DesignParameter['_RoutingContact']['_XYCoordinates'] = tmp5
+				self._DesignParameter['_via1_to_M2']['_XYCoordinates'] = tmp5
+				self._DesignParameter['_M2_vertical']['_XYCoordinates'] = tmp5_path
+				self._DesignParameter['_M2_horizontal']['_XYCoordinates'] = tmp5_path2
+				self._DesignParameter['_M3_vertical']['_XYCoordinates'] = tmp5_path3
+				self._DesignParameter['_RoutingContact2']['_XYCoordinates'] = tmp6
+			else :
+				raise NotImplementedError
 
 			del tmp5
 			del tmp6
