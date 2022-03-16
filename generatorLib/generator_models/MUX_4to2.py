@@ -74,6 +74,23 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
             VSS2NMOS=TristateInv2_VSS2NMOS,
             SupplyRailType=SupplyRailType
         )
+        Parameters3_TristateInvF3 = dict(
+            NumFinger_NM1=3,
+            NumFinger_NM2=3,
+            Width_NM1=250,
+            Width_NM2=250,
+            Width_PM1=500,
+            Width_PM2=500,
+
+            ChannelLength=30,
+            GateSpacing=100,
+            XVT='SLVT',
+
+            CellHeight=1800,  # Required
+            YCoord_InputA=750,  # Option
+            YCoord_InputEN=None,  # Option
+            YCoord_InputENb=None  # Option
+        )
 
         Parameters2_Inv = dict(
             _Finger=Inv_Finger,
@@ -309,30 +326,179 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
                  [self.getXY('Via2_temp00')[1][0], CellHeight]]
             ]
         else:
-            pass
+            self._DesignParameter['TristateInv0'] = self._SrefElementDeclaration(
+                _Reflect=[1, 0, 0], _Angle=180,
+                _DesignObj=TristateInverter.TristateInverter(_Name='TristateInv0In{}'.format(_Name)))[0]
+            self._DesignParameter['TristateInv0']['_DesignObj']._CalculateDesignParameterFinger3orMore_v2(
+                **Parameters3_TristateInvF3)
+            self._DesignParameter['TristateInv0']['_XYCoordinates'] = [
+                [self._DesignParameter['TristateInv0']['_DesignObj'].CellXWidth / 2, 0]
+            ]
+            self._DesignParameter['TristateInv1'] = self._SrefElementDeclaration(
+                _Reflect=[0, 0, 0], _Angle=0,
+                _DesignObj=TristateInverter.TristateInverter(_Name='TristateInv1In{}'.format(_Name)))[0]
+            self._DesignParameter['TristateInv1']['_DesignObj']._CalculateDesignParameterFinger3orMore_v2(
+                **Parameters3_TristateInvF3)
+            self._DesignParameter['TristateInv1']['_XYCoordinates'] = [
+                [self.getXY('TristateInv0')[0][0] + self._DesignParameter['TristateInv0']['_DesignObj'].CellXWidth / 2 + 2 * UnitPitch + self._DesignParameter['TristateInv1']['_DesignObj'].CellXWidth / 2, 0]
+            ]
+
+            # output node connection
+            RightBoundary_Met1Route_net011 = self.getXY('TristateInv1', 'Met1RouteX_PMOut')[0][0] + self.getXWidth(
+                'TristateInv1', 'Met1RouteX_PMOut') / 2
+            LeftBoundary_Met1Route_net011 = self.getXY('TristateInv0', 'Met1RouteX_PMOut')[0][0] - self.getXWidth(
+                'TristateInv0', 'Met1RouteX_PMOut') / 2
+            self._DesignParameter['Met1Route_net011'] = self._BoundaryElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _XWidth=RightBoundary_Met1Route_net011 - LeftBoundary_Met1Route_net011,
+                _YWidth=self.getYWidth('TristateInv0', 'Met1RouteX_PMOut')
+            )
+
+            self._DesignParameter['Met1Route_net011']['_XYCoordinates'] = [
+                [(RightBoundary_Met1Route_net011 + LeftBoundary_Met1Route_net011) / 2,
+                 self.getXY('TristateInv0', 'Met1RouteX_PMOut')[0][1]]
+            ]
+
+            # leftdown to rightup
+            self._DesignParameter['Met1Route_temp021'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=66
+            )
+            self._DesignParameter['Met1Route_temp021']['_XYCoordinates'] = [[
+                [self.getXY('TristateInv0')[0][0] -
+                 self._DesignParameter['TristateInv0']['_DesignObj']._DesignParameter['polyInputEN']['_XYCoordinates'][
+                     0][0],
+                 self.getXY('TristateInv0', 'polyInputEN', '_Met1Layer')[0][1]],
+                [(self.getXY('TristateInv1', 'NM1', '_Met1Layer')[0][0] - UnitPitch),
+                 self.getXY('TristateInv0', 'polyInputEN', '_Met1Layer')[0][1]],
+                [(self.getXY('TristateInv1', 'NM1', '_Met1Layer')[0][0] - UnitPitch),
+                 self.getXY('TristateInv1', 'polyInputENb', '_Met1Layer')[0][1]],
+                [self.getXY('TristateInv1', 'polyInputENb', '_Met1Layer')[0][0],
+                 self.getXY('TristateInv1', 'polyInputENb', '_Met1Layer')[0][1]]
+            ]]
+            self._DesignParameter['Met1Route_temp022'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=66
+            )
+            self._DesignParameter['Met1Route_temp022']['_XYCoordinates'] = [[
+                [self.getXY('TristateInv0')[0][0] -
+                 self._DesignParameter['TristateInv0']['_DesignObj']._DesignParameter['polyInputENb']['_XYCoordinates'][
+                     0][0],
+                 self.getXY('TristateInv0', 'polyInputENb', '_Met1Layer')[0][1]],
+                [self.getXY('TristateInv0', 'NM2', '_Met1Layer')[-1][0] + UnitPitch,
+                 self.getXY('TristateInv0', 'polyInputENb', '_Met1Layer')[0][1]],
+                [self.getXY('TristateInv0', 'NM2', '_Met1Layer')[-1][0] + UnitPitch,
+                 self.getXY('TristateInv0', 'polyInputA', '_Met1Layer')[0][1]]
+            ]]
+
+            self._DesignParameter['Via1_temp023'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1temp023In{}'.format(_Name)))[0]
+            self._DesignParameter['Via1_temp023']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                _ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2
+            )
+            self._DesignParameter['Via1_temp023']['_XYCoordinates'] = [
+                [self.getXY('TristateInv0', 'NM2', '_Met1Layer')[-1][0] + UnitPitch,
+                 self.getXY('TristateInv0', 'polyInputA', '_Met1Layer')[0][1]]
+            ]
+
+            self._DesignParameter['Met2Route_temp024'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL2'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+                _Width=66
+            )
+            self._DesignParameter['Met2Route_temp024']['_XYCoordinates'] = [[
+                [self.getXY('Via1_temp023')[0][0], self.getXY('Via1_temp023')[0][1]],
+                [self.getXY('Via1_temp023')[0][0], self.getXY('TristateInv1', 'polyInputEN')[0][1]],
+                [self.getXY('TristateInv1', 'polyInputEN')[0][0], self.getXY('TristateInv1', 'polyInputEN')[0][1]]
+            ]]
+
+            self._DesignParameter['Via1_temp026'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1temp026In{}'.format(_Name)))[0]
+            self._DesignParameter['Via1_temp026']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                _ViaMet12Met2NumberOfCOX=2, _ViaMet12Met2NumberOfCOY=1
+            )
+            self._DesignParameter['Via1_temp026']['_XYCoordinates'] = [[
+                self.getXY('TristateInv0')[0][0] -
+                self._DesignParameter['TristateInv0']['_DesignObj']._DesignParameter['polyInputEN']['_XYCoordinates'][
+                    0][0],
+                self.getXY('TristateInv0')[0][1] +
+                self._DesignParameter['TristateInv0']['_DesignObj']._DesignParameter['polyInputEN']['_XYCoordinates'][
+                    0][1]
+            ]]
+
+            self._DesignParameter['Via2_temp024'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='Via2temp024In{}'.format(_Name)))[0]
+            self._DesignParameter['Via2_temp024']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                _ViaMet22Met3NumberOfCOX=2, _ViaMet22Met3NumberOfCOY=1
+            )
+            self._DesignParameter['Via2_temp024']['_XYCoordinates'] = [[
+                self.getXY('TristateInv0')[0][0] -
+                self._DesignParameter['TristateInv0']['_DesignObj']._DesignParameter['polyInputEN']['_XYCoordinates'][
+                    0][0],
+                self.getXY('TristateInv0')[0][1] +
+                self._DesignParameter['TristateInv0']['_DesignObj']._DesignParameter['polyInputEN']['_XYCoordinates'][
+                    0][1]
+            ]]
+            self._DesignParameter['Via2_temp025'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='Via2temp025In{}'.format(_Name)))[0]
+            self._DesignParameter['Via2_temp025']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                _ViaMet22Met3NumberOfCOX=2, _ViaMet22Met3NumberOfCOY=1
+            )
+            self._DesignParameter['Via2_temp025']['_XYCoordinates'] = self.getXY('TristateInv1', 'polyInputEN')
+
+            # #
+            self._DesignParameter['Via2_temp00'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='Via2temp00In{}'.format(_Name)))[0]
+            self._DesignParameter['Via2_temp00']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                _ViaMet22Met3NumberOfCOX=2, _ViaMet22Met3NumberOfCOY=1
+            )
+            self._DesignParameter['Via2_temp00']['_XYCoordinates'] = [
+                [self.getXY('TristateInv0')[0][0] - self._DesignParameter['TristateInv0']['_DesignObj']._DesignParameter['polyInputEN']['_XYCoordinates'][0][0], self.getXY('TristateInv0', 'polyInputEN')[0][1]],
+                [self.getXY('TristateInv1', 'polyInputEN')[0][0], self.getXY('TristateInv1', 'polyInputEN')[0][1]],
+            ]
+            self._DesignParameter['Met3Route_temp01'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL3'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL3'][1],
+                _Width=66
+            )
+            self._DesignParameter['Met3Route_temp01']['_XYCoordinates'] = [
+                [[self.getXY('Via2_temp00')[0][0], self.getXY('Via2_temp00')[0][1]],
+                 [self.getXY('Via2_temp00')[0][0], CellHeight]],
+                [[self.getXY('Via2_temp00')[1][0], self.getXY('Via2_temp00')[1][1]],
+                 [self.getXY('Via2_temp00')[1][0], CellHeight]]
+            ]
 
         # end of ...
 
-
-
+        if TristateInv1_Finger in (1,2):
+            tempword = 'InputVia_A'
+            tempCOX = 1
+            tempCOY = 2
+        else:
+            tempword = 'polyInputA'
+            tempCOX = 2
+            tempCOY = 1
 
         ''' Input '''
         self._DesignParameter['Via1_temp6'] = self._SrefElementDeclaration(
             _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1temp6In{}'.format(_Name)))[0]
         self._DesignParameter['Via1_temp6']['_DesignObj']._CalculateDesignParameterSameEnclosure(
-            _ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2
+            _ViaMet12Met2NumberOfCOX=tempCOX, _ViaMet12Met2NumberOfCOY=tempCOY
         )
         self._DesignParameter['Via1_temp6']['_XYCoordinates'] = [
-            [self.getXY('TristateInv0')[0][0] - self._DesignParameter['TristateInv0']['_DesignObj']._DesignParameter['InputVia_A']['_XYCoordinates'][0][0],
-             self.getXY('TristateInv0', 'InputVia_A')[0][1]]
+            [self.getXY('TristateInv0')[0][0] - self._DesignParameter['TristateInv0']['_DesignObj']._DesignParameter[tempword]['_XYCoordinates'][0][0],
+             self.getXY('TristateInv0', tempword)[0][1]]
         ]
 
         self._DesignParameter['Via1_temp7'] = self._SrefElementDeclaration(
             _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1temp7In{}'.format(_Name)))[0]
         self._DesignParameter['Via1_temp7']['_DesignObj']._CalculateDesignParameterSameEnclosure(
-            _ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2
+            _ViaMet12Met2NumberOfCOX=tempCOX, _ViaMet12Met2NumberOfCOY=tempCOY
         )
-        self._DesignParameter['Via1_temp7']['_XYCoordinates'] = self.getXY('TristateInv1', 'InputVia_A')
+        self._DesignParameter['Via1_temp7']['_XYCoordinates'] = self.getXY('TristateInv1', tempword)
 
         self._DesignParameter['Met2Route_temp8'] = self._PathElementDeclaration(
             _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
@@ -433,9 +599,11 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
                  [self.getXY('TristateInv1', 'met1_output_5')[0][0], self.getXY('Via1ForInv')[0][1]]]
             ]
 
-
         else:
-            pass
+            self._DesignParameter['Met1From3SInvtoInv']['_XYCoordinates'] = [
+                [self.getXY('Via1ForInv')[0],
+                 [self.getXY('TristateInv1', 'Met1RouteY_Out')[0][0], self.getXY('Via1ForInv')[0][1]]]
+            ]
 
 
 
@@ -691,78 +859,257 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
             self._DesignParameter['Via1_TSINV3_A']['_XYCoordinates'] = self.getXY('TristateInv3', 'InputVia_A')
 
         else:
-            pass
+            self._DesignParameter['TristateInv2'] = self._SrefElementDeclaration(
+                _Reflect=[1, 0, 0], _Angle=180,
+                _DesignObj=TristateInverter.TristateInverter(_Name='TristateInv2In{}'.format(_Name)))[0]
+            self._DesignParameter['TristateInv2']['_DesignObj']._CalculateDesignParameterFinger3orMore_v2(**Parameters3_TristateInvF3)
+            self._DesignParameter['TristateInv2']['_XYCoordinates'] = [
+                [self.getXY('Inv1')[0][0] + self._DesignParameter['Inv0']['_DesignObj'].CellXWidth / 2 + UnitPitch * 2 + self._DesignParameter['TristateInv2']['_DesignObj'].CellXWidth / 2, 0]
+            ]
+            self._DesignParameter['TristateInv3'] = self._SrefElementDeclaration(
+                _Reflect=[0, 0, 0], _Angle=0,
+                _DesignObj=TristateInverter.TristateInverter(_Name='TristateInv3In{}'.format(_Name)))[0]
+            self._DesignParameter['TristateInv3']['_DesignObj']._CalculateDesignParameterFinger3orMore_v2(**Parameters3_TristateInvF3)
+            self._DesignParameter['TristateInv3']['_XYCoordinates'] = [
+                [self.getXY('TristateInv2')[0][0] + self._DesignParameter['TristateInv2']['_DesignObj'].CellXWidth / 2 + 2 * UnitPitch + self._DesignParameter['TristateInv3']['_DesignObj'].CellXWidth / 2, 0]
+            ]
+
+            # output node connection
+            RightBoundary_Met1Route_net211 = self.getXY('TristateInv3', 'Met1RouteX_PMOut')[0][0] + self.getXWidth('TristateInv3', 'Met1RouteX_PMOut') / 2
+            LeftBoundary_Met1Route_net211 = self.getXY('TristateInv2', 'Met1RouteX_PMOut')[0][0] - self.getXWidth('TristateInv2', 'Met1RouteX_PMOut') / 2
+            self._DesignParameter['Met1Route_net211'] = self._BoundaryElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _XWidth=RightBoundary_Met1Route_net211 - LeftBoundary_Met1Route_net211,
+                _YWidth=self.getYWidth('TristateInv2', 'Met1RouteX_PMOut')
+            )
+
+            self._DesignParameter['Met1Route_net211']['_XYCoordinates'] = [
+                [(RightBoundary_Met1Route_net211 + LeftBoundary_Met1Route_net211) / 2,
+                 self.getXY('TristateInv2', 'Met1RouteX_PMOut')[0][1]]
+            ]
+
+            # leftdown to rightup
+            self._DesignParameter['Met1Route_temp21'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=66
+            )
+            self._DesignParameter['Met1Route_temp21']['_XYCoordinates'] = [[
+                [self.getXY('TristateInv2')[0][0] - self._DesignParameter['TristateInv2']['_DesignObj']._DesignParameter['polyInputEN']['_XYCoordinates'][0][0],
+                 self.getXY('TristateInv2', 'polyInputEN', '_Met1Layer')[0][1]],
+                [(self.getXY('TristateInv3', 'NM1', '_Met1Layer')[0][0] - UnitPitch),
+                 self.getXY('TristateInv2', 'polyInputEN', '_Met1Layer')[0][1]],
+                [(self.getXY('TristateInv3', 'NM1', '_Met1Layer')[0][0] - UnitPitch),
+                 self.getXY('TristateInv3', 'polyInputENb', '_Met1Layer')[0][1]],
+                [self.getXY('TristateInv3', 'polyInputENb', '_Met1Layer')[0][0],
+                 self.getXY('TristateInv3', 'polyInputENb', '_Met1Layer')[0][1]]
+            ]]
+            self._DesignParameter['Met1Route_temp22'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=66
+            )
+            self._DesignParameter['Met1Route_temp22']['_XYCoordinates'] = [[
+                [self.getXY('TristateInv2')[0][0] - self._DesignParameter['TristateInv2']['_DesignObj']._DesignParameter['polyInputENb']['_XYCoordinates'][0][0],
+                 self.getXY('TristateInv2', 'polyInputENb', '_Met1Layer')[0][1]],
+                [self.getXY('TristateInv2', 'NM2', '_Met1Layer')[-1][0] + UnitPitch,
+                 self.getXY('TristateInv2', 'polyInputENb', '_Met1Layer')[0][1]],
+                [self.getXY('TristateInv2', 'NM2', '_Met1Layer')[-1][0] + UnitPitch,
+                 self.getXY('TristateInv2', 'polyInputA', '_Met1Layer')[0][1]]
+            ]]
+
+            self._DesignParameter['Via1_temp23'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1temp23In{}'.format(_Name)))[0]
+            self._DesignParameter['Via1_temp23']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                _ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2
+            )
+            self._DesignParameter['Via1_temp23']['_XYCoordinates'] = [
+                [self.getXY('TristateInv2', 'NM2', '_Met1Layer')[-1][0] + UnitPitch,
+                 self.getXY('TristateInv2', 'polyInputA', '_Met1Layer')[0][1]]
+            ]
+
+            self._DesignParameter['Met2Route_temp24'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL2'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+                _Width=66
+            )
+            self._DesignParameter['Met2Route_temp24']['_XYCoordinates'] = [[
+                [self.getXY('Via1_temp23')[0][0], self.getXY('Via1_temp23')[0][1]],
+                [self.getXY('Via1_temp23')[0][0], self.getXY('TristateInv3', 'polyInputEN')[0][1]],
+                [self.getXY('TristateInv3', 'polyInputEN')[0][0], self.getXY('TristateInv3', 'polyInputEN')[0][1]]
+            ]]
+
+            self._DesignParameter['Via1_temp26'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1temp26In{}'.format(_Name)))[0]
+            self._DesignParameter['Via1_temp26']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                _ViaMet12Met2NumberOfCOX=2, _ViaMet12Met2NumberOfCOY=1
+            )
+            self._DesignParameter['Via1_temp26']['_XYCoordinates'] = [[
+                self.getXY('TristateInv2')[0][0] - self._DesignParameter['TristateInv2']['_DesignObj']._DesignParameter['polyInputEN']['_XYCoordinates'][0][0],
+                self.getXY('TristateInv2')[0][1] + self._DesignParameter['TristateInv2']['_DesignObj']._DesignParameter['polyInputEN']['_XYCoordinates'][0][1]
+            ]]
+
+            self._DesignParameter['Via2_temp24'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='Via2temp24In{}'.format(_Name)))[0]
+            self._DesignParameter['Via2_temp24']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                _ViaMet22Met3NumberOfCOX=2, _ViaMet22Met3NumberOfCOY=1
+            )
+            self._DesignParameter['Via2_temp24']['_XYCoordinates'] = [[
+                self.getXY('TristateInv2')[0][0] - self._DesignParameter['TristateInv2']['_DesignObj']._DesignParameter['polyInputEN']['_XYCoordinates'][0][0],
+                self.getXY('TristateInv2')[0][1] + self._DesignParameter['TristateInv2']['_DesignObj']._DesignParameter['polyInputEN']['_XYCoordinates'][0][1]
+            ]]
+            self._DesignParameter['Via2_temp25'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='Via2temp25In{}'.format(_Name)))[0]
+            self._DesignParameter['Via2_temp25']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                _ViaMet22Met3NumberOfCOX=2, _ViaMet22Met3NumberOfCOY=1
+            )
+            self._DesignParameter['Via2_temp25']['_XYCoordinates'] = self.getXY('TristateInv3', 'polyInputEN')
 
 
-        # RightBoundary = self.getXY('TristateInv3')[0][0] + self._DesignParameter['TristateInv3']['_DesignObj'].CellXWidth / 2
-        #
-        # self._DesignParameter['XVT'] = self._BoundaryElementDeclaration(
-        #     _Layer=DesignParameters._LayerMapping[XVT][0],
-        #     _Datatype=DesignParameters._LayerMapping[XVT][1],
-        #     _XWidth=RightBoundary,
-        #     _YWidth=CellHeight,
-        #     _XYCoordinates=[[RightBoundary/2, CellHeight/2]]
-        # )
-        #
-        # self._DesignParameter['VDDRail'] = self._BoundaryElementDeclaration(
-        #     _Layer=DesignParameters._LayerMapping['METAL2'][0],
-        #     _Datatype=DesignParameters._LayerMapping['METAL2'][1],
-        #     _XWidth=RightBoundary,
-        #     _YWidth=300,
-        #     _XYCoordinates=[[RightBoundary / 2, CellHeight], [RightBoundary / 2, 0]]
-        # )
-        #
-        #
-        # if TristateInv2_Finger == 2:
-        #     self._DesignParameter['path_1'] = self._PathElementDeclaration(
-        #         _Layer=DesignParameters._LayerMapping['METAL2'][0],
-        #         _Datatype=DesignParameters._LayerMapping['METAL2'][1],
-        #         _Width=66
-        #     )
-        #     YCoordOftempRoute = 1033
-        #     self._DesignParameter['path_1']['_XYCoordinates'] = [
-        #         [[self.getXY('Via1_TSINV2_A')[0][0], self.getXY('Via1_TSINV2_A')[0][1]],
-        #          [self.getXY('TristateInv2', 'NMOS', '_Met1Layer')[0][0] - 2 * UnitPitch, self.getXY('Via1_TSINV2_A')[0][1]]],
-        #         [[self.getXY('Via1_TSINV3_A')[0][0], self.getXY('Via1_TSINV3_A')[0][1]],
-        #          [self.getXY('Via1_TSINV3_A')[0][0], YCoordOftempRoute],
-        #          [self.getXY('TristateInv2', 'NMOS', '_Met1Layer')[0][0] - 2 * UnitPitch, YCoordOftempRoute]]
-        #     ]
-        #
-        #     self._DesignParameter['path_2'] = self._PathElementDeclaration(
-        #         _Layer=DesignParameters._LayerMapping['METAL3'][0],
-        #         _Datatype=DesignParameters._LayerMapping['METAL3'][1],
-        #         _Width=66
-        #     )
-        #     self._DesignParameter['path_2']['_XYCoordinates'] = [
-        #         [[self.getXY('TristateInv2', 'NMOS', '_Met1Layer')[0][0] - 2 * UnitPitch, self.getXY('Via1_TSINV2_A')[0][1]],
-        #          [self.getXY('TristateInv2', 'NMOS', '_Met1Layer')[0][0] - 2 * UnitPitch, CellHeight]],
-        #         [[self.getXY('TristateInv2', 'NMOS', '_Met1Layer')[0][0] - UnitPitch, self.getXY('Via1_TSINV2_A')[0][1]],
-        #          [self.getXY('TristateInv2', 'NMOS', '_Met1Layer')[0][0] - UnitPitch, CellHeight]]
-        #     ]
-        #
-        # elif TristateInv2_Finger == 1:
-        #     self._DesignParameter['path_1'] = self._PathElementDeclaration(
-        #         _Layer=DesignParameters._LayerMapping['METAL2'][0],
-        #         _Datatype=DesignParameters._LayerMapping['METAL2'][1],
-        #         _Width=66
-        #     )
-        #     YCoordOftempRoute = 1033
-        #     self._DesignParameter['path_1']['_XYCoordinates'] = [
-        #         [[self.getXY('Via1_TSINV2_A')[0][0], self.getXY('Via1_TSINV2_A')[0][1]],
-        #          [self.getXY('Via1_TSINV2_A')[0][0] - 2*UnitPitch, self.getXY('Via1_TSINV2_A')[0][1]]],
-        #         [[self.getXY('Via1_TSINV3_A')[0][0], self.getXY('Via1_TSINV3_A')[0][1]],
-        #          [self.getXY('Via1_TSINV3_A')[0][0], YCoordOftempRoute],
-        #          [self.getXY('Via1_TSINV2_A')[0][0] - 2*UnitPitch, YCoordOftempRoute]]
-        #     ]
-        #
-        #     self._DesignParameter['path_2'] = self._PathElementDeclaration(
-        #         _Layer=DesignParameters._LayerMapping['METAL3'][0],
-        #         _Datatype=DesignParameters._LayerMapping['METAL3'][1],
-        #         _Width=66
-        #     )
-        #     self._DesignParameter['path_2']['_XYCoordinates'] = [
-        #         [[self.getXY('Via1_TSINV2_A')[0][0] - 2 * UnitPitch, self.getXY('Via1_TSINV2_A')[0][1]],
-        #          [self.getXY('Via1_TSINV2_A')[0][0] - 2 * UnitPitch, CellHeight]],
-        #         [[self.getXY('Via1_TSINV2_A')[0][0] - UnitPitch, self.getXY('Via1_TSINV2_A')[0][1]],
-        #          [self.getXY('Via1_TSINV2_A')[0][0] - UnitPitch, CellHeight]]
-        #     ]
+            # #
+            self._DesignParameter['Via2_temp05'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='Via2temp05In{}'.format(_Name)))[0]
+            self._DesignParameter['Via2_temp05']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                _ViaMet22Met3NumberOfCOX=2, _ViaMet22Met3NumberOfCOY=1
+            )
+            self._DesignParameter['Via2_temp05']['_XYCoordinates'] = [
+                [self.getXY('TristateInv2')[0][0] - self._DesignParameter['TristateInv2']['_DesignObj']._DesignParameter['polyInputEN']['_XYCoordinates'][0][0],
+                 self.getXY('TristateInv2', 'polyInputEN')[0][1]],
+
+
+                [self.getXY('TristateInv3', 'polyInputEN')[0][0], self.getXY('TristateInv3', 'polyInputEN')[0][1]],
+            ]
+            self._DesignParameter['Met3Route_temp06'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL3'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL3'][1],
+                _Width=66
+            )
+            self._DesignParameter['Met3Route_temp06']['_XYCoordinates'] = [
+                [[self.getXY('Via2_temp05')[0][0], self.getXY('Via2_temp05')[0][1]],
+                 [self.getXY('Via2_temp05')[0][0], CellHeight]],
+                [[self.getXY('Via2_temp05')[1][0], self.getXY('Via2_temp05')[1][1]],
+                 [self.getXY('Via2_temp05')[1][0], CellHeight]]
+            ]
+
+            self._DesignParameter['Via1_TSINV2_A'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1_TSINV2_AIn{}'.format(_Name)))[0]
+            self._DesignParameter['Via1_TSINV2_A']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                _ViaMet12Met2NumberOfCOX=2, _ViaMet12Met2NumberOfCOY=1
+            )
+            self._DesignParameter['Via1_TSINV2_A']['_XYCoordinates'] = [
+                [self.getXY('TristateInv2')[0][0] - self._DesignParameter['TristateInv2']['_DesignObj']._DesignParameter['polyInputA']['_XYCoordinates'][0][0], self.getXY('TristateInv2', 'polyInputA')[0][1]]
+            ]
+
+            self._DesignParameter['Via1_TSINV3_A'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1_TSINV3_AIn{}'.format(_Name)))[0]
+            self._DesignParameter['Via1_TSINV3_A']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                _ViaMet12Met2NumberOfCOX=2, _ViaMet12Met2NumberOfCOY=1
+            )
+            self._DesignParameter['Via1_TSINV3_A']['_XYCoordinates'] = self.getXY('TristateInv3', 'polyInputA')
+
+
+
+        RightBoundary = self.getXY('TristateInv3')[0][0] + self._DesignParameter['TristateInv3']['_DesignObj'].CellXWidth / 2
+
+        self._DesignParameter['XVT'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping[XVT][0],
+            _Datatype=DesignParameters._LayerMapping[XVT][1],
+            _XWidth=RightBoundary,
+            _YWidth=CellHeight,
+            _XYCoordinates=[[RightBoundary/2, CellHeight/2]]
+        )
+
+        self._DesignParameter['VDDRail'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=RightBoundary,
+            _YWidth=300,
+            _XYCoordinates=[[RightBoundary / 2, CellHeight], [RightBoundary / 2, 0]]
+        )
+
+
+
+        if TristateInv2_Finger == 1:
+            self._DesignParameter['path_1'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL2'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+                _Width=66
+            )
+            YCoordOftempRoute = 1033
+            self._DesignParameter['path_1']['_XYCoordinates'] = [
+                [[self.getXY('Via1_TSINV2_A')[0][0], self.getXY('Via1_TSINV2_A')[0][1]],
+                 [self.getXY('Via1_TSINV2_A')[0][0] - 2*UnitPitch, self.getXY('Via1_TSINV2_A')[0][1]]],
+                [[self.getXY('Via1_TSINV3_A')[0][0], self.getXY('Via1_TSINV3_A')[0][1]],
+                 [self.getXY('Via1_TSINV3_A')[0][0], YCoordOftempRoute],
+                 [self.getXY('Via1_TSINV2_A')[0][0] - 2*UnitPitch, YCoordOftempRoute]]
+            ]
+
+            self._DesignParameter['path_2'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL3'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL3'][1],
+                _Width=66
+            )
+            self._DesignParameter['path_2']['_XYCoordinates'] = [
+                [[self.getXY('Via1_TSINV2_A')[0][0] - 2 * UnitPitch, self.getXY('Via1_TSINV2_A')[0][1]],
+                 [self.getXY('Via1_TSINV2_A')[0][0] - 2 * UnitPitch, CellHeight]],
+                [[self.getXY('Via1_TSINV2_A')[0][0] - UnitPitch, self.getXY('Via1_TSINV2_A')[0][1]],
+                 [self.getXY('Via1_TSINV2_A')[0][0] - UnitPitch, CellHeight]]
+            ]
+
+        elif TristateInv2_Finger == 2:
+            self._DesignParameter['path_1'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL2'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+                _Width=66
+            )
+            YCoordOftempRoute = 1033
+            self._DesignParameter['path_1']['_XYCoordinates'] = [
+                [[self.getXY('Via1_TSINV2_A')[0][0], self.getXY('Via1_TSINV2_A')[0][1]],
+                 [self.getXY('TristateInv2', 'NMOS', '_Met1Layer')[0][0] - 2 * UnitPitch, self.getXY('Via1_TSINV2_A')[0][1]]],
+                [[self.getXY('Via1_TSINV3_A')[0][0], self.getXY('Via1_TSINV3_A')[0][1]],
+                 [self.getXY('Via1_TSINV3_A')[0][0], YCoordOftempRoute],
+                 [self.getXY('TristateInv2', 'NMOS', '_Met1Layer')[0][0] - 2 * UnitPitch, YCoordOftempRoute]]
+            ]
+
+            self._DesignParameter['path_2'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL3'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL3'][1],
+                _Width=66
+            )
+            self._DesignParameter['path_2']['_XYCoordinates'] = [
+                [[self.getXY('TristateInv2', 'NMOS', '_Met1Layer')[0][0] - 2 * UnitPitch, self.getXY('Via1_TSINV2_A')[0][1]],
+                 [self.getXY('TristateInv2', 'NMOS', '_Met1Layer')[0][0] - 2 * UnitPitch, CellHeight]],
+                [[self.getXY('TristateInv2', 'NMOS', '_Met1Layer')[0][0] - UnitPitch, self.getXY('Via1_TSINV2_A')[0][1]],
+                 [self.getXY('TristateInv2', 'NMOS', '_Met1Layer')[0][0] - UnitPitch, CellHeight]]
+            ]
+        else:
+            self._DesignParameter['path_1'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL2'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+                _Width=66
+            )
+            YCoordOftempRoute = 1033
+            self._DesignParameter['path_1']['_XYCoordinates'] = [
+                [[self.getXY('Via1_TSINV2_A')[0][0], self.getXY('Via1_TSINV2_A')[0][1]],
+                 [self.getXY('TristateInv2', 'NM1', '_Met1Layer')[0][0] - 2 * UnitPitch, self.getXY('Via1_TSINV2_A')[0][1]]],
+                [[self.getXY('Via1_TSINV3_A')[0][0], self.getXY('Via1_TSINV3_A')[0][1]],
+                 [self.getXY('Via1_TSINV3_A')[0][0], YCoordOftempRoute],
+                 [self.getXY('TristateInv2', 'NM1', '_Met1Layer')[0][0] - 2 * UnitPitch, YCoordOftempRoute]]
+            ]
+
+            self._DesignParameter['path_2'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL3'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL3'][1],
+                _Width=66
+            )
+            self._DesignParameter['path_2']['_XYCoordinates'] = [
+                [[self.getXY('TristateInv2', 'NM1', '_Met1Layer')[0][0] - 2 * UnitPitch,
+                  self.getXY('Via1_TSINV2_A')[0][1]],
+                 [self.getXY('TristateInv2', 'NM1', '_Met1Layer')[0][0] - 2 * UnitPitch, CellHeight]],
+                [[self.getXY('TristateInv2', 'NM1', '_Met1Layer')[0][0] - UnitPitch,
+                  self.getXY('Via1_TSINV2_A')[0][1]],
+                 [self.getXY('TristateInv2', 'NM1', '_Met1Layer')[0][0] - UnitPitch, CellHeight]]
+            ]
+
+

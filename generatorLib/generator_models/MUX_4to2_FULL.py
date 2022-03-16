@@ -25,6 +25,19 @@ class MUX_PI_4to2_FULL(StickDiagram._StickDiagram):
                                  TristateInv2_Finger=2,
                                  Inv_Finger=1,
 
+                                 TristateInv1_PMOSWidth=500,
+                                 TristateInv1_NMOSWidth=250,
+                                 TristateInv1_VDD2PMOS=400,
+                                 TristateInv1_VSS2NMOS=275,
+
+                                 TristateInv2_PMOSWidth=400,
+                                 TristateInv2_NMOSWidth=200,
+                                 TristateInv2_VDD2PMOS=410,
+                                 TristateInv2_VSS2NMOS=310,
+
+                                 Inv_NMOSWidth=200,
+                                 Inv_PMOSWidth=400,
+
                                  ChannelLength=30,
                                  GateSpacing=100,
                                  # XVT='SLVT',
@@ -41,13 +54,25 @@ class MUX_PI_4to2_FULL(StickDiagram._StickDiagram):
 
         Parameters = dict(TristateInv1_Finger=TristateInv1_Finger,
                           Inv_Finger=Inv_Finger,
-                         TristateInv2_Finger=TristateInv2_Finger,
+                          TristateInv2_Finger=TristateInv2_Finger,
 
+                          TristateInv1_PMOSWidth=TristateInv1_PMOSWidth,
+                          TristateInv1_NMOSWidth=TristateInv1_NMOSWidth,
+                          TristateInv1_VDD2PMOS=TristateInv1_VDD2PMOS,
+                          TristateInv1_VSS2NMOS=TristateInv1_VSS2NMOS,
 
-                         ChannelLength=ChannelLength,
-                         GateSpacing=GateSpacing,
-                         CellHeight=CellHeight,
-                         SupplyRailType=SupplyRailType,)
+                          TristateInv2_PMOSWidth=TristateInv2_PMOSWidth,
+                          TristateInv2_NMOSWidth=TristateInv2_NMOSWidth,
+                          TristateInv2_VDD2PMOS=TristateInv2_VDD2PMOS,
+                          TristateInv2_VSS2NMOS=TristateInv2_VSS2NMOS,
+
+                          Inv_NMOSWidth=Inv_NMOSWidth,
+                          Inv_PMOSWidth=Inv_PMOSWidth,
+
+                          ChannelLength=ChannelLength,
+                          GateSpacing=GateSpacing,
+                          CellHeight=CellHeight,
+                          SupplyRailType=SupplyRailType,)
 
         self._DesignParameter['MUX_FULL1'] = self._SrefElementDeclaration(
             _DesignObj=MUX_4to2.MUX_PI_4to2(_Name='MUX_FULL1In{}'.format(_Name)))[0]
