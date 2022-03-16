@@ -106,7 +106,7 @@ class Text(ElementNode):
     def __init__(self, *args, **kwargs):
         super().__init__()
     _fields = (
-        'id',  # id str
+        # 'id',  # id str
         'name',  # name str
         'layer',  # layer name str
         'pres',  # list [a,a,a]
@@ -343,19 +343,26 @@ class ElementTransformer(ast.NodeTransformer):
             syntax = ''
 
         #####node parameter unparsing#####
-        copy_parameter = copy.deepcopy(node.parameters)
-        test = list(filter(lambda x: isinstance(x, ast.AST), list(copy_parameter.values())))
-        if list(filter(lambda x: isinstance(x, ast.AST), list(copy_parameter.values()))):
-            parameter_sentence = ''
-            for key, value in copy_parameter.items():
-                if isinstance(value, ast.AST):
-                    tf_ast = run_transformer(value)
-                    new_string = astunparse.unparse(tf_ast)
-                    parameter_sentence += f'{key} = {new_string},'
-                else:
-                    parameter_sentence += f'{key} = {value},'
+        if type(node.parameters) == dict:
+            copy_parameter = copy.deepcopy(node.parameters)
+            test = list(filter(lambda x: isinstance(x, ast.AST), list(copy_parameter.values())))
+            if list(filter(lambda x: isinstance(x, ast.AST), list(copy_parameter.values()))):
+                parameter_sentence = ''
+                for key, value in copy_parameter.items():
+                    if isinstance(value, ast.AST):
+                        tf_ast = run_transformer(value)
+                        new_string = astunparse.unparse(tf_ast)
+                        parameter_sentence += f'{key} = {new_string},'
+                    else:
+                        parameter_sentence += f'{key} = {value},'
+            else:
+                parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
+        elif type(node.parameters) == list and isinstance(node.parameters[0], variable_ast.Dictionary):
+            parameter_sentence = astunparse.unparse(variable_ast.IrregularTransformer().visit_Dictionary(node.parameters[0], False))
+        elif type(node.parameters) == str:
+            parameter_sentence = f"**{node.parameters}"
         else:
-            parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
+            raise Exception("Not valid sref parameter.")
 
 
         for field in node._fields:
@@ -459,14 +466,19 @@ class ElementTransformer(ast.NodeTransformer):
 
 
     def visit_Text(self, node):
-
+        node.pres = node.pres if 'pres' in node.__dict__ and node.pres else '[0,1,2]'
+        node.reflect = node.reflect if 'reflect'in node.__dict__ and node.reflect else '[0,0,0]'
+        node.angle = node.angle if 'angle' in node.__dict__ and node.angle else '0'
         for field in node._fields:
             # if node.__dict__[field] == '' or node.__dict__[field] == None:
             #     raise Exception(f"Not valid {field} value : {node.__dict__[field]}")
+            if field not in node.__dict__:
+                warnings.warn(f"field '{field}' is None.")
+                continue
             if isinstance(node.__dict__[field], ast.AST):
                 tmp_ast = run_transformer(node.__dict__[field])
                 node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
-            elif type(node.__dict__[field]) == list:
+            elif type(node.__dict__[field]) == list and field not in ['reflect', 'pres']:
                 string_list = []
                 for child in node.__dict__[field]:
                     if isinstance(child, ast.AST):
@@ -481,13 +493,18 @@ class ElementTransformer(ast.NodeTransformer):
                 else:
                     node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
 
-        node.pres = node.pres if node.pres else '[0,1,2]'
-        node.reflect = node.reflect if node.reflect else '[0,0,0]'
-        node.angle = node.angle if node.angle else '0'
-        sentence = f"self._DesignParameter['{node.name}'] = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0]," \
-                   f"_Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Presentation = {node.pres}, _Reflect = {node.reflect}, _XYCoordinates = {node.XY}," \
-                   f"_Mag = {node.magnitude}, _Angle = {node.angle}, _TEXT = '{node.text}')"
-        print(sentence)
+
+        if (node.name[0:2] == "f\'" and node.name[-1] == "\'") or (node.name[0:2] == 'f\"' and node.name[-1] == '\"'):
+            first_sentnce = f"self._DesignParameter[{node.name}] = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],"
+        else:
+            first_sentnce = f"self._DesignParameter['{node.name}'] = self._TextElementDeclaration(_Layer = DesignParameters._LayerMapping['{node.layer}'][0],"
+        if (node.text[0:2] == "f\'" and node.text[-1] == "\'") or (node.text[0:2] == 'f\"' and node.text[-1] == '\"'):
+            last_sentence = f"_Mag = {node.magnitude}, _Angle = {node.angle}, _TEXT = {node.text})"
+        else:
+            last_sentence = f"_Mag = {node.magnitude}, _Angle = {node.angle}, _TEXT = '{node.text}')"
+        middle_sentence = f"_Datatype = DesignParameters._LayerMapping['{node.layer}'][1], _Presentation = {node.pres}, _Reflect = {node.reflect}, _XYCoordinates = {node.XY},"
+
+        sentence = f"{first_sentnce} {middle_sentence} {last_sentence}"
         tmp = ast.parse(sentence)
         return tmp.body[0]
 

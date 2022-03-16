@@ -103,20 +103,15 @@ class FileSaveFormat:
             main_window.variable_store_list = self.variable_store_list
         variable_info_lists = [ [variable['DV'], variable['value']] for variable in self.user_variables.values()]
         for variable_info_list in variable_info_lists:
-            main_window.dv.updateList(variable_info_list,'add')
+            if type(variable_info_list[1]) == dict:
+                main_window.dv.updateList(variable_info_list=[variable_info_list[0], 'dictionary'], _type='dict')
+            else:
+                main_window.dv.updateList(variable_info_list, 'add')
 
-        # main_window.dv.initUI()
-        # main_window.dv.variableDict = self.user_variables_ids
-        # main_window.dv.idDict = self.user_variables_ids
         if 'user_variables' not in self.__dict__:
             warnings.warn("There is no user_variables window information.")
             return
-        # for variable_dict in self.user_variables:
-        #     main_window.dv.updateList(list(variable_dict.values()), _type='add')
-        #     main_window.dv.variableDict.append(variable_dict)
 
-        # for variable_dict in self.user_variables.values():
-        #     main_window.dv.updateList(list(variable_dict.values()), _type='add')
 
     def load_extra_ast_info(self,main_window):
         if '_DummyConstraints' in self.__dict__:

@@ -120,9 +120,12 @@ class DesignDelegator(delegator.Delegator):
             if 'name' in target_ast.__dict__:
                 new_name = f'{target_ast.name}_copy'
                 i=0
-                while new_name in self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName]:
-                    new_name = f'{new_name}+{i}'
-                    i += 1
+                if self.main_window._CurrentModuleName in self.main_window._QTObj._qtProject._DesignParameter:
+                    while new_name in self.main_window._QTObj._qtProject._DesignParameter[self.main_window._CurrentModuleName]:
+                        new_name = f'{new_name}_{i}'
+                        i += 1
+                else:
+                    new_name = f'{new_name}_{i}'
                 target_ast.name = new_name
             self.create_qt_constraint(target_ast)
         self.stack_undo('copy design constraint')

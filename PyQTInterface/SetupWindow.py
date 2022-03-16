@@ -3043,6 +3043,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_dummy_ast_id_for_xy_signal = pyqtSignal(str)
     send_dummy_ast_id_for_array_signal = pyqtSignal(str)
     send_dummy_ast_id_for_condition_signal = pyqtSignal(str)
+    send_dictionary_ast_signal = pyqtSignal(str)
     request_sref_redefine_signal = pyqtSignal("PyQt_PyObject")
 
 
@@ -3900,7 +3901,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             if idx.isValid():
                 type_item = self.model.itemFromIndex(idx.siblingAtColumn(2))
 
-                if type_item.text() in ['XYCoordinate', 'PathXY', 'LogicExpression', 'CustomVariable']:
+                if type_item.text() in ['XYCoordinate', 'PathXY', 'LogicExpression', 'CustomVariable', 'Dictionary']:
                     self.context_menu_for_xy.exec_(self.viewport().mapToGlobal(point))
                 elif type_item.text() == 'Array':
                     self.context_menu_for_array.exec_(self.viewport().mapToGlobal(point))
@@ -3945,6 +3946,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             for parm_name in org_ast.parameters:
                 redef_ast.parameters[parm_name] = None
             self.request_sref_redefine_signal.emit(redef_ast)
+        elif type_name == 'Dictionary':
+            self.send_dictionary_ast_signal.emit(current_item.text())
 
 
         # if current_item.text() != None:
@@ -5026,10 +5029,11 @@ class DesignModifier(QWidget):
         if design_const._ast.parameters is None:
             warnings.warn('Missing Parameter info.')
             return
-        for parameter, value in design_const._ast.parameters.items():
-            input_widget = QLineEdit(str(value))
-            self.field_value_dict['Sref'][parameter] = input_widget
-            layout.addRow(QLabel(parameter), input_widget)
+        if type(design_const._ast.parameters) == dict:
+            for parameter, value in design_const._ast.parameters.items():
+                input_widget = QLineEdit(str(value))
+                self.field_value_dict['Sref'][parameter] = input_widget
+                layout.addRow(QLabel(parameter), input_widget)
 
     def update_constraint(self):
         if not self.current_type:
@@ -5057,6 +5061,106 @@ class DesignModifier(QWidget):
 
 
         # self.send_update_qt_constraint_signal.emit(self.current_design_id, update_dict)
+
+
+class DictionaryWidget(QDialog):
+    send_variable_ast = pyqtSignal("PyQt_PyObject")
+
+    def __init__(self, name=None):
+        super(DictionaryWidget, self).__init__()
+        self.dictionary_data = dict()
+        self.sub_widget_dict = dict()
+        self.init_ui(name)
+
+    def init_ui(self, name=None):
+        vertical_layout = QVBoxLayout()
+        name_form = QFormLayout()
+        if name:
+            self.name_input = name
+            name_form.addRow('Name:', QLabel(name))
+        else:
+            self.name_input = QLineEdit()
+            name_form.addRow('Name', self.name_input)
+        self.form_layout = QFormLayout()
+        separator_line = QFrame()
+        separator_line.setFrameShape(QFrame.HLine)
+        button_box = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        button_box.addButton('Add',QDialogButtonBox.ApplyRole)
+        vertical_layout.addLayout(name_form)
+        vertical_layout.addWidget(separator_line)
+        vertical_layout.addLayout(self.form_layout)
+        vertical_layout.addWidget(button_box)
+        self.setLayout(vertical_layout)
+        button_box.clicked.connect(self.button_control)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+
+    def load_data(self, dictionary_data):
+        for key, value in dictionary_data.items():
+            if type(value) == dict:
+                sub_widget = self.add_form_row(1, key)
+                sub_widget.load_data(value)
+            else:
+                line_widget = self.add_form_row(0, key)
+                line_widget.setText(str(value))
+
+    def add_form_row(self, purpose=None, key=None):
+        """
+        purpose: 0 is plain data, 1 is dictionary data
+        key : dictionary key.
+        """
+        current_key_text = self.key_input.text() if key is None else key
+        purpose = self.type_combo.currentIndex() if purpose is None else purpose
+        # if self.type_combo.currentIndex() == 0:
+        if purpose == 0:
+            line_edit_widget = QLineEdit()
+            self.form_layout.addRow(current_key_text, line_edit_widget)
+            line_edit_widget.textChanged.connect(lambda text:
+                                                 self.dictionary_data.update({current_key_text:text}))
+            return line_edit_widget
+        else:
+            push_button_widget = QPushButton('dictionary')
+            sub_widget = DictionaryWidget(current_key_text)
+            sub_widget.setWindowTitle(f'Dict: <{current_key_text}>')
+            sub_widget.send_variable_ast.connect(lambda _ast: self.dictionary_data.update({current_key_text: _ast.dict_values}))
+            self.form_layout.addRow(current_key_text, push_button_widget)
+            self.sub_widget_dict[current_key_text] = sub_widget
+            push_button_widget.clicked.connect(sub_widget.show)
+            return sub_widget
+
+    def button_control(self, button):
+        if button.text() == 'Add':
+            self.input_widget = QDialog()
+            vertical_layout_of_input = QVBoxLayout()
+            self.type_combo = QComboBox()
+            self.type_combo.addItems(['value','dict'])
+            self.key_input = QLineEdit()
+            button_box_input = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+            button_box_input.accepted.connect(self.input_widget.accept)
+            button_box_input.rejected.connect(self.input_widget.reject)
+            vertical_layout_of_input.addWidget(self.type_combo)
+            vertical_layout_of_input.addWidget(self.key_input)
+            vertical_layout_of_input.addWidget(button_box_input)
+            button_box_input.accepted.connect(self.add_form_row)
+            self.input_widget.setLayout(vertical_layout_of_input)
+            self.input_widget.show()
+
+    def create_sub_widget(self, key):
+        sub_widget = DictionaryWidget()
+        sub_widget.send_variable_ast.connect(lambda _ast: self.dictionary_data.update({key: _ast.dictionary_data}))
+        return sub_widget
+
+    def accept(self):
+        from PyCodes import variable_ast
+        output_ast = variable_ast.Dictionary()
+        output_ast.name = self.name_input if isinstance(self.name_input, str) else self.name_input.text()
+        output_ast.dict_values = self.dictionary_data
+        for key, value in output_ast.dict_values.items():
+            if value in ["True", "False"] or value.isdigit() or (value[0] == '[' and value[-1] == ']'):
+                output_ast.dict_values[key] = eval(value)
+        self.send_variable_ast.emit(output_ast)
+        super(DictionaryWidget, self).accept()
+
 
 
 

@@ -155,6 +155,14 @@ class CustomVariable(GeneratorVariable):
         'name',
     )
 
+class Dictionary(GeneratorVariable):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'name',
+        'dict_values'
+    )
+
 
 class IrregularTransformer(ast.NodeTransformer):
     def __init__(self):
@@ -773,6 +781,44 @@ class IrregularTransformer(ast.NodeTransformer):
                 return final_ast
                 sentence = loop_code + '\n' + tmp_code
                 del tmp_node
+            elif _type == 'pin_array':
+                if _index == 'All':
+                    loop_code = f"XYList = []\n" \
+                                f"{xy_offset}\n" \
+                                f"for i in range(len({layer_xy})):\n" \
+                                f"\txy = {layer_xy}[i][0] if type({layer_xy}[i][0]) == list else {layer_xy}[i]\n" \
+                                f"\tXYList.append([x+y+z for x,y,z in zip({parent_xy} , xy, xy_offset ) ] )\n" \
+
+                    if 'bus' not in info_dict or info_dict['bus'] == 'Off':
+                        tmp_node = element_ast.Text()
+                        tmp_node.name = _name
+                        tmp_node.layer = _layer
+                        tmp_node.text = info_dict['text']
+                        tmp_node.magnitude = info_dict['magnitude']
+                        tmp_node.XY = 'None'
+                        tmp_code_ast = element_ast.ElementTransformer().visit_Text(tmp_node)
+                        tmp_code = astunparse.unparse(tmp_code_ast)
+                        final_sentence = f"{tmp_code}" \
+                                         f"{loop_code}" \
+                                         f"self._DesignParameter['{_name}']['_XYCoordinates'] = XYList"
+                        final_ast = ast.parse(final_sentence).body
+                        return final_ast
+                    elif info_dict['bus'] == 'Auto':
+                        tmp_node = element_ast.Text()
+                        tmp_node.name = f"f'{_name}<{{i}}>'"
+                        tmp_node.layer = _layer
+                        tmp_node.text = f"f'{info_dict['text']}<{{i}}>'"
+                        tmp_node.magnitude = info_dict['magnitude']
+                        tmp_node.XY = 'None'
+                        tmp_code_ast = element_ast.ElementTransformer().visit_Text(tmp_node)
+                        tmp_code = astunparse.unparse(tmp_code_ast).replace('\n','')
+                        final_sentence = f"{loop_code}" \
+                                         f"\t{tmp_code}\n" \
+                                         f"\tself._DesignParameter[{tmp_node.name}]['_XYCoordinates'] = [XYList[-1]]"
+                        final_ast = ast.parse(final_sentence).body
+                        return final_ast
+
+
         ###############################################################################################################
         ###############################################################################################################
         ###############################################################################################################
@@ -1088,8 +1134,12 @@ class IrregularTransformer(ast.NodeTransformer):
             if 'expression' in tmp_node.__dict__ and tmp_node.expression:
                 if isinstance(tmp_node.expression, ast.AST):
                     tmp_node.expression = astunparse.unparse(self.visit(tmp_node.expression))[1:-1]
+                elif type(tmp_node.expression) == list and isinstance(tmp_node.expression[0], ast.AST):
+                    tmp_node.expression = astunparse.unparse(self.visit(tmp_node.expression[0])).replace('\n','')
             else:
                 tmp_node.expression = ''
+            if tmp_node.expression[0] == '(' and tmp_node.expression[-1] == ')':
+                tmp_node.expression = tmp_node.expression[1:-1]
         return_str = str(tmp_node.c_type) + ' ' + str(tmp_node.expression) + ':' + '\n'
         if not tmp_node.body:
             return_str += '\tpass'
@@ -1115,6 +1165,13 @@ class IrregularTransformer(ast.NodeTransformer):
         return_str = str(tmp_node.variable) + ' '+ str(tmp_node.operator) + ' '+ str(tmp_node.condition)
         return ast.parse(return_str)
 
+    def visit_Dictionary(self, node, output_name=True):
+        parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.dict_values.items()])
+        if output_name:
+            return_str = f'{node.name} = {parameter_sentence}'
+        else:
+            return_str = f'dict({parameter_sentence})'
+        return ast.parse(return_str)
 
 
 def run_transformer(source_ast):
@@ -1427,6 +1484,27 @@ class CustomFunctionTransformer(ast.NodeTransformer):
             target_width = astunparse.unparse(tf_ast).replace("\n", "")
 
         return f"max(1, 1+int( ({target_width} -drc._VIAxMinSpace2 - 2 * drc._VIAxMinEnclosureByMetx )/  ( drc._VIAxMinWidth + drc._VIAxMinSpace2 ) ) )"
+
+    def transform_via_enc(self, node):
+        target_number = astunparse.unparse(node.args[0]).replace('\n','')
+
+        return f"drc._VIAxMinSpace * ({target_number}-1) + 2 * drc._VIAxMinEnclosureByMetx + {target_number} * drc._VIAxMinWidth"
+
+    def transform_via_enc2(self, node):
+        target_number = astunparse.unparse(node.args[0]).replace('\n','')
+
+        return f"drc._VIAxMinSpace2 * ({target_number}-1) + 2 * drc._VIAxMinEnclosureByMetx + {target_number} * drc._VIAxMinWidth"
+
+    def transform_via_min_enc(self, node):
+        target_number = astunparse.unparse(node.args[0]).replace('\n','')
+
+        return f"drc._VIAxMinSpace * ({target_number}-1) + {target_number} * drc._VIAxMinWidth"
+
+    def transform_via_min_enc2(self, node):
+        target_number = astunparse.unparse(node.args[0]).replace('\n','')
+
+        return f"drc._VIAxMinSpace2 * ({target_number}-1) + {target_number} * drc._VIAxMinWidth"
+
 
     def transform_cont_cal(self, node):
         target_width = node.args[0]

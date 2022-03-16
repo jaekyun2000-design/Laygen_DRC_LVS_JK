@@ -82,7 +82,7 @@ class VariableSetupWindow(QWidget):
     def initUI(self):
         self.layout_list = []
         self.variable_type_widget = QComboBox()
-        self.variable_type_widget.addItems(['boundary_array', 'path_array', 'sref_array'])
+        self.variable_type_widget.addItems(['boundary_array', 'path_array', 'sref_array', 'pin_array'])
         self.variable_type_widget.setCurrentText(self.variable_type)
         self.variable_type_widget.currentTextChanged.connect(self.typeChanged)
 
@@ -316,7 +316,7 @@ class VariableSetupWindow(QWidget):
                 self.warning.setIcon(QMessageBox.Warning)
                 self.warning.show()
                 return
-            elif output_dict['XY_path_ref'] == '' and 'path' in self.variable_type:
+            elif 'path' in self.variable_type and output_dict['XY_path_ref'] == '' :
                 self.warning = QMessageBox()
                 self.warning.setText("Incomplete Reference")
                 self.warning.setIcon(QMessageBox.Warning)
@@ -421,7 +421,7 @@ class variableContentWidget(QWidget):
 
     def __init__(self):
         super(variableContentWidget, self).__init__()
-        self.name_list = ['boundary', 'path', 'sref']
+        self.name_list = ['boundary', 'path', 'sref', 'pin']
         self.option_list = ['offset', 'relative']
         self.widget_dictionary = dict()
         self.widget_sublayout_dictinoary = dict()
@@ -505,7 +505,7 @@ class variableContentWidget(QWidget):
             elif field_info['input_type_list'][i] == 'double_line':
                 tmp_layout = self.create_double_line_field(field_name)
             elif field_info['input_type_list'][i] == 'combo':
-                tmp_layout = self.create_combo_field(field_name)
+                tmp_layout = self.create_combo_field(field_name, name)
             elif field_info['input_type_list'][i] == 'list':
                 tmp_layout = self.create_list_field(field_name)
             tmp_vbox.addLayout(tmp_layout)
@@ -528,6 +528,11 @@ class variableContentWidget(QWidget):
             elif name == 'sref':
                 field_list = ['name', 'XY_ref', 'sref_item', 'x_offset', 'y_offset', 'row', 'col', 'XY_ref_input']
                 input_type_list = ['line', 'line', 'list', 'line', 'line', 'double_line', None, None]
+            elif name == 'pin':
+                field_list = ['name', 'layer', 'XY_ref', 'x_offset',
+                              'y_offset','text', 'magnitude' , 'row', 'col']
+                input_type_list = ['line', 'combo', 'list', 'line', 'line',
+                                   'line', 'line','double_line', None ]
         elif option == 'relative':
             if name == 'boundary':
                 field_list = ['name', 'layer', 'XY_source_ref', 'XY_offset', 'index', 'index_input', 'width', 'width_text',
@@ -540,6 +545,9 @@ class variableContentWidget(QWidget):
             elif name == 'sref':
                 field_list = ['name', 'XY_source_ref', 'XY_offset', 'sref_item', 'index', 'index_input', 'sref_item_dict']
                 input_type_list = ['line', 'list', 'line', 'list', 'combo', 'line', None]
+            elif name == 'pin':
+                field_list = ['name', 'layer', 'XY_source_ref', 'XY_offset', 'index', 'index_input', 'bus', 'text', 'magnitude']
+                input_type_list = ['line', 'combo', 'list', 'line', 'combo', 'line', 'combo', 'line', 'line']
 
         field_info = dict(field_list=field_list, input_type_list=input_type_list)
         return field_info
@@ -627,7 +635,7 @@ class variableContentWidget(QWidget):
 
         return output_layout
 
-    def create_combo_field(self, name):
+    def create_combo_field(self, name, type_name=None):
         tmp_label_widget = QLabel(name)
         tmp_label_widget.setFixedWidth(90)
         tmp_input_widget = QComboBox()
@@ -639,7 +647,9 @@ class variableContentWidget(QWidget):
                     warnings.warn(
                         f'Current Layer {LayerName} does not match any layer in current technology node.')
                     continue
-                if _Layer[LayerName][1] == 0:
+                if _Layer[LayerName][1] == 0 and type_name != 'pin':
+                    tmp_input_widget.addItem(LayerName)
+                elif _Layer[LayerName][1] == 20 and type_name == 'pin':
                     tmp_input_widget.addItem(LayerName)
         elif name == 'index':
             tmp_input_widget.addItems(['All', 'Even', 'Odd', 'Custom'])
@@ -652,6 +662,11 @@ class variableContentWidget(QWidget):
             tmp_input_widget.addItems(['Auto', 'Custom'])
             tmp_input_widget.currentTextChanged.connect(self.get_height)
             tmp_input_widget.setCurrentIndex(0)
+        elif name == 'bus':
+            tmp_input_widget.addItems(['Auto', 'Off'])
+            # tmp_input_widget.currentTextChanged.connect(self.get_height)
+            # tmp_input_widget.setCurrentIndex(0)
+
 
         tmp_input_widget.field_name = name
         # tmp_input_widget.currentTextChanged.connect(self.update_output_dict)
@@ -912,6 +927,16 @@ class variableContentWidget(QWidget):
                     height_input_widget.setReadOnly(True)
                     width_widget.setCurrentText('Custom')
 
+    # def get_bus(self, text):
+    #     for info, widget in self.widget_dictionary.items():
+    #         if not widget.isHidden():
+    #             height_input_widget = self.widget_sublayout_dictinoary[info]['height_text'].itemAt(1).widget()
+    #             width_widget = self.widget_sublayout_dictinoary[info]['width'].itemAt(1).widget()
+    #             if text == 'Off':
+    #                 height_input_widget.setReadOnly(False)
+    #             elif text == 'Auto':
+    #                 height_input_widget.setReadOnly(True)
+    #                 width_widget.setCurrentText('Custom')
     def item_clicked(self, item):
         hierarchy_list = list(eval('['+re.search('\(.*\)',item.text()).group()[1:-1] + ']' ))
         self.send_clicked_item_signal.emit(hierarchy_list)
@@ -979,8 +1004,10 @@ class _DesignVariableManagerWindow(QWidget):
 
         addButton = QPushButton("Add", self)
         addButton.clicked.connect(self.add_clicked)
-        checkButton = QPushButton("check", self)
-        checkButton.clicked.connect(self.check_clicked)
+        addDictButton = QPushButton("Dict", self)
+        addDictButton.clicked.connect(self.add_dict_clicked)
+        # checkButton = QPushButton("check", self)
+        # checkButton.clicked.connect(self.check_clicked)
         editButton = QPushButton("Edit", self)
         editButton.clicked.connect(self.edit_clicked)
         deleteButton = QPushButton("Delete", self)
@@ -998,7 +1025,7 @@ class _DesignVariableManagerWindow(QWidget):
         button1 = QHBoxLayout()
         button1.addWidget(addButton)
         button1.addStretch(2)
-        button1.addWidget(checkButton)
+        button1.addWidget(addDictButton)
         button1.addStretch(2)
         button1.addWidget(editButton)
 
@@ -1056,6 +1083,17 @@ class _DesignVariableManagerWindow(QWidget):
         self.addWidget.show()
         self.addWidget.send_variable_signal.connect(self.updateList)
 
+    def add_dict_clicked(self):
+        self.dict_widget = SetupWindow.DictionaryWidget()
+        self.dict_widget.show()
+        # self.dict_widget.send_variable_ast.connect(lambda _ast: _createNewDesignVariable().addDVtodict(_ast.name, type='value', value= _ast.dict_values))
+        # self.dict_widget.send_variable_ast.connect(lambda _ast: self.updateList(variable_info_list=[_ast.name, 'dictionary'], _type='dict'))
+        self.dict_widget.send_variable_ast.connect(lambda _ast: self.create_dict(_ast.name, _ast.dict_values))
+
+    def create_dict(self, name, value_dict):
+        _createNewDesignVariable().addDVtodict(name, type='value', value=value_dict)
+        self.updateList(variable_info_list=[name, 'dictionary'], _type='dict')
+
     def check_clicked(self):
         print('variableDict:', self.variableDict)
         print('idDict:', self.idDict)
@@ -1070,10 +1108,16 @@ class _DesignVariableManagerWindow(QWidget):
             DV = self.variableDict[vid]['DV']
             value = self.variableDict[vid]['value']
 
-            self.editWidget = _editDesignVariable(self, vid, DV, value)
-            self.editWidget.send_id_in_edited_variable_signal.connect(self.send_id_in_edited_variable)
-            self.editWidget.show()
-            self.selectedItem = None
+            if type(value) == dict:
+                self.dict_widget = SetupWindow.DictionaryWidget(DV)
+                self.dict_widget.load_data(value)
+                self.dict_widget.show()
+                self.dict_widget.send_variable_ast.connect(lambda _ast: self.variableDict[vid]['value'].update(_ast.dict_values))
+            else:
+                self.editWidget = _editDesignVariable(self, vid, DV, value)
+                self.editWidget.send_id_in_edited_variable_signal.connect(self.send_id_in_edited_variable)
+                self.editWidget.show()
+            # self.selectedItem = None
 
     def send_id_in_edited_variable(self, _original_id, _new_id, _id_list):
         self.send_id_in_edited_variable_signal.emit(_original_id, _new_id, _id_list)
@@ -1125,8 +1169,11 @@ class _DesignVariableManagerWindow(QWidget):
                 self.model.setItem(self.selectedRow, 1, value)
             elif _type == 'delete':
                 self.model.takeRow(self.selectedRow)
-
                 del self.idDict[_name]
+            elif _type == 'dict':
+                value.setEditable(False)
+                self.model.appendRow(name)
+                self.model.setItem(self.model.rowCount() - 1, 1, value)
             else:
                 pass
         else:
@@ -1145,6 +1192,8 @@ class _DesignVariableManagerWindow(QWidget):
         row = item.index().row()
         _item = self.model.item(row).text()
         if _item in self.idDict:
+            if item.text() == 'dictionary':
+                return
             vid = self.idDict[_item]['vid']
             self.variableDict[vid]['value'] = item.text()
 

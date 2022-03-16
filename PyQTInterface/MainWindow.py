@@ -682,6 +682,7 @@ class _MainWindow(QMainWindow):
         # self.loadConstraintFromPickleButton = QPushButton("Load...")
         # self.ConstraintTemplateButton = QPushButton("Template")
         # self.parsetreeEasyRun = QPushButton("easyRun")
+        self.dictionary_button = QPushButton("Dictionary")
         self.variableCallButton = QPushButton("variableCall")
         self.calculatorButton = QPushButton("XYCalculator")
         self.condition_expression_button = QPushButton("condition exp debug")
@@ -700,7 +701,8 @@ class _MainWindow(QMainWindow):
         # VBoxForPeriButton.addWidget(self.loadConstraintFromPickleButton)
         # VBoxForPeriButton.addWidget(self.ConstraintTemplateButton)
         # VBoxForPeriButton.addWidget(self.parsetreeEasyRun)
-        VBoxForPeriButton.addWidget(self.variableCallButton)
+        VBoxForPeriButton.addWidget(self.dictionary_button)
+        # VBoxForPeriButton.addWidget(self.variableCallButton)
         VBoxForPeriButton.addWidget(self.calculatorButton)
         # VBoxForPeriButton.addWidget(self.condition_expression_button)
         VBoxForPeriButton.addWidget(self.conditional_stmt_button)
@@ -739,6 +741,7 @@ class _MainWindow(QMainWindow):
         # self.loadConstraintFromPickleButton.clicked.connect(self.loadConstraintP)
         # self.ConstraintTemplateButton.clicked.connect(self.makeTemplateWindow)
         # self.parsetreeEasyRun.clicked.connect(self.easyRun)
+        self.dictionary_button.clicked.connect(self.widget_delegator.show_dictionary_widget)
         self.variableCallButton.clicked.connect(self.variableListUpdate)
         self.calculatorButton.clicked.connect(self.calculator)
         self.condition_expression_button.clicked.connect(self.condition_expression)
@@ -779,6 +782,9 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.widget_delegator.array_update_widget)
         self.dockContentWidget3.send_dummy_ast_id_for_condition_signal.connect(self.conditional_stmt_window.show_list)
         self.dockContentWidget3_2.send_dummy_ast_id_for_condition_signal.connect(self.conditional_stmt_window.init_ui)
+        self.dockContentWidget3.send_dictionary_ast_signal.connect(self.widget_delegator.show_dictionary_widget)
+        self.dockContentWidget3_2.send_dictionary_ast_signal.connect(self.widget_delegator.show_dictionary_widget)
+
 
         ################ Logging Message Dock Widget setting ####################
         dockWidget4ForLoggingMessage = QDockWidget("Logging Message")
@@ -1428,9 +1434,12 @@ class _MainWindow(QMainWindow):
 
 
     def show_inspect_array_widget(self, array_list_item):
-        row = self.array_list_widget.row(array_list_item)
-        group_ref = self.reference_list[row]
-        array_list = eval(array_list_item.text())
+        try:
+            row = self.array_list_widget.row(array_list_item)
+            group_ref = self.reference_list[row]
+            array_list = eval(array_list_item.text())
+        except:
+            warnings.warn('Debug required')
 
         self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array")
         self.vw.send_output_dict_signal.connect(self.create_variable)
@@ -1449,24 +1458,28 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget3_2.send_dummy_ast_id_for_array_signal.connect(self.vw.update_ui_by_constraint_id)
         self.vw.send_inspection_request_signal.connect(self.inspect_vw_array)
 
-        if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
-            self.vw.variable_type = 'boundary_array'
-        elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
-            self.vw.variable_type = 'path_array'
-        elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 3:
-            library = self.visualItemDict[array_list[0]]._ItemTraits['library']
-            className = self.visualItemDict[array_list[0]]._ItemTraits['className']
-            if 'calculate_fcn' in self.visualItemDict[array_list[0]]._ItemTraits:
-                calculate_fcn = self.visualItemDict[array_list[0]]._ItemTraits['calculate_fcn']
-            else:
-                calculate_fcn = None
-            parameters = self.visualItemDict[array_list[0]]._ItemTraits['parameters']
-            self.vw.variable_type = 'sref_array'
-            self.vw.variable_widget.field_value_memory_dict['sref_item_dict'] = {'library':library, 'className':className, 'calculate_fcn':calculate_fcn, 'parameters':parameters}
+        try:
+            if self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 1:
+                self.vw.variable_type = 'boundary_array'
+            elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 2:
+                self.vw.variable_type = 'path_array'
+            elif self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][array_list[0]]._type == 3:
+                library = self.visualItemDict[array_list[0]]._ItemTraits['library']
+                className = self.visualItemDict[array_list[0]]._ItemTraits['className']
+                if 'calculate_fcn' in self.visualItemDict[array_list[0]]._ItemTraits:
+                    calculate_fcn = self.visualItemDict[array_list[0]]._ItemTraits['calculate_fcn']
+                else:
+                    calculate_fcn = None
+                parameters = self.visualItemDict[array_list[0]]._ItemTraits['parameters']
+                self.vw.variable_type = 'sref_array'
+                self.vw.variable_widget.field_value_memory_dict['sref_item_dict'] = {'library':library, 'className':className, 'calculate_fcn':calculate_fcn, 'parameters':parameters}
 
-        self.vw.group_list = group_ref
-        # self.vw.inspect_array_window_address = self.array_list_widget
-        self.vw.getArray(array_list_item)
+
+            self.vw.group_list = group_ref
+            # self.vw.inspect_array_window_address = self.array_list_widget
+            self.vw.getArray(array_list_item)
+        except:
+            warnings.warn("Debug Required.")
         self.vw.show()
 
     # def delivery_dummy_constraint(self, dummy_id):
@@ -1989,7 +2002,11 @@ class _MainWindow(QMainWindow):
             for item in graphicItem.block:
                 if type(item) is VisualizationItem.QGraphicsTextItemWObounding:
                     item.setVisible(True)
-        self.visualItemDict[graphicItem._ElementName] = graphicItem
+        if '_ElementName' not in graphicItem.__dict__:
+            warnings.warn(f"DEBUG REQUIRED: {graphicItem._id} does not have _ElementName\n"
+                          f"Visual Item is not updated.")
+        else:
+            self.visualItemDict[graphicItem._ElementName] = graphicItem
         self.scene.addItem(graphicItem)
         self.scene.send_move_signal.connect(graphicItem.move)
         self.scene.send_moveDone_signal.connect(graphicItem.moveUpdate)
@@ -2044,8 +2061,11 @@ class _MainWindow(QMainWindow):
             self.test = False
             scf = [test]
         else:
-            scf = QFileDialog.getOpenFileName(self,'Load Project','./PyQTInterface/Project/')
-
+            if 'project_file_path' in user_setup.__dict__ and user_setup.project_file_path:
+                prject_file_path = user_setup.project_file_path
+            else:
+                prject_file_path = './PyQTInterface/Project/'
+            scf = QFileDialog.getOpenFileName(self,'Load Project',prject_file_path)
         try:
             cm = self._CurrentModuleName
             _fileName=scf[0]
@@ -2078,7 +2098,11 @@ class _MainWindow(QMainWindow):
             self.test = False
             scf = [test]
         else:
-            scf = QFileDialog.getSaveFileName(self,'Save Project','./PyQTInterface/Project/')
+            if 'project_file_path' in user_setup.__dict__ and user_setup.project_file_path:
+                prject_file_path = user_setup.project_file_path
+            else:
+                prject_file_path = './PyQTInterface/Project/'
+            scf = QFileDialog.getSaveFileName(self,'Save Project',prject_file_path)
         # else:
         #     scf = [_fileName]
         try:
@@ -2643,6 +2667,15 @@ class _MainWindow(QMainWindow):
             self.inspect_vw_array(dp_names)
 
             self.show()
+        elif _type == 'copy_parms':
+            selected_vis_item = self.scene.selectedItems()[0]
+            dp_name = selected_vis_item._ElementName
+            dc_id = self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_name)
+            target_dc = self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName][dc_id]
+            self.dict_widget = SetupWindow.DictionaryWidget()
+            self.dict_widget.load_data(target_dc._ast.parameters)
+            self.dict_widget.send_variable_ast.connect(lambda _ast: self.dv.create_dict(_ast.name, _ast.dict_values))
+            self.dict_widget.show()
 
     def inspect_vw_array(self, group_list):
         if self._CurrentModuleName in self._QTObj._qtProject._DesignParameter:
@@ -3387,10 +3420,11 @@ class _MainWindow(QMainWindow):
                     if _field == 'name' or _field == 'library' or _field == 'className' or _field == 'calculate_fcn':
                         continue
                     elif _field == 'parameters':
-                        for parm_string in _ast.parameters.values():
-                            if type(parm_string) == str:
-                                tmp_ast = ast.parse(str(parm_string))
-                                variable_visitor.visit(tmp_ast)
+                        if type(_ast.parameters) == dict:
+                            for parm_string in _ast.parameters.values():
+                                if type(parm_string) == str:
+                                    tmp_ast = ast.parse(str(parm_string))
+                                    variable_visitor.visit(tmp_ast)
                     # elif _field == 'XY':
                     #     # if type(_ast.XY) == list and not _ast.XY:
                     #     #     tmp
@@ -3676,19 +3710,25 @@ class _CustomView(QGraphicsView):
         variable_create_distance = QAction("create distance variable", self)
         variable_create_enclosure = QAction("create enclousre variable", self)
         variable_create_connect = QAction("create connect variable", self)
+        copy_from_cell_parameter = QAction("Copy parameter from cell", self)
         visual_ungroup = QAction("ungroup multiple xy index cells", self)
         visual_ungroup.setShortcut('Ctrl+G')
 
         menu = QMenu(self)
-        menu.addAction(constraint_create_array)
-        menu.addAction(convert_to_sref)
-        menu.addAction(flatten_sref)
-        menu.addAction(inspect_path_connection)
-        menu.addAction(variable_create_array)
-        menu.addAction(variable_create_distance)
-        menu.addAction(variable_create_enclosure)
-        menu.addAction(variable_create_connect)
-        menu.addAction(visual_ungroup)
+        if self.scene().selectedItems():
+            if self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 3:
+                menu.addAction(flatten_sref)
+                menu.addAction(copy_from_cell_parameter)
+
+            menu.addAction(constraint_create_array)
+            menu.addAction(convert_to_sref)
+            # menu.addAction(flatten_sref)
+            menu.addAction(inspect_path_connection)
+            # menu.addAction(variable_create_array)
+            # menu.addAction(variable_create_distance)
+            # menu.addAction(variable_create_enclosure)
+            # menu.addAction(variable_create_connect)
+            menu.addAction(visual_ungroup)
 
         if self.scene().selectedItems():
             if self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 1:
@@ -3701,6 +3741,7 @@ class _CustomView(QGraphicsView):
             constraint_create_array.triggered.connect(lambda tmp: self.variable_emit('boundary_array'))
         convert_to_sref.triggered.connect(lambda tmp: self.variable_emit('to_sref'))
         flatten_sref.triggered.connect(lambda tmp: self.variable_emit('flatten_sref'))
+        copy_from_cell_parameter.triggered.connect(lambda tmp: self.variable_emit('copy_parms'))
         inspect_path_connection.triggered.connect(lambda tmp: self.variable_emit('auto_path'))
         variable_create_array.triggered.connect(lambda tmp: self.variable_emit('array'))
         variable_create_distance.triggered.connect(lambda tmp: self.variable_emit('distance'))
@@ -3736,6 +3777,8 @@ class _CustomView(QGraphicsView):
             self.variable_signal.emit('enclosure')
         elif type == 'connect':
             self.variable_signal.emit('connect')
+        elif type == 'copy_parms':
+            self.variable_signal.emit('copy_parms')
         # elif type == 'ungroup':
         #     self.variable_signal.emit('ungroup')
 

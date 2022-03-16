@@ -1,10 +1,16 @@
-import glob, os, sys, platform
+import glob, os, sys, platform, user_setup
 import sys, inspect
 
 dir_check=os.getcwd()
+if 'generator_model_path' in user_setup.__dict__ and user_setup.generator_model_path:
+    generator_model_path = user_setup.generator_model_path
+else:
+    generator_model_path = './generatorLib/generator_models'
+
 if 'generatorLib' in dir_check or 'PyQTInterface' in dir_check:
     os.chdir('..')
-sys.path.append('./generatorLib/generator_models')
+# sys.path.append('./generatorLib/generator_models')
+sys.path.append(generator_model_path)
 print("*********Generator Library Loading Start")
 
 generator_list = []
@@ -12,7 +18,7 @@ class_dict = dict()
 class_name_dict = dict()
 class_function_dict = dict()
 libraries = dict()
-for generator in glob.iglob('./generatorLib/generator_models/*.py'):
+for generator in glob.iglob(f'{generator_model_path}/*.py'):
     if platform.system() in ['Linux', 'Darwin']:
         generator_class_name = generator.split('/')[-1][:-3]
     else:

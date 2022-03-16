@@ -3,7 +3,7 @@ from PyQTInterface import SetupWindow
 from PyQTInterface.delegator import delegator
 from PyQTInterface import variableWindow
 from PyQTInterface import undo_frame
-from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QLineEdit
+from PyQt5.QtWidgets import QWidget, QPushButton, QHBoxLayout, QVBoxLayout, QLineEdit, QDialog, QFormLayout, QDialogButtonBox
     
     
 class WidgetDelegator(delegator.Delegator):
@@ -217,3 +217,18 @@ class WidgetDelegator(delegator.Delegator):
         self.undo_widget.show()
         self.undo_widget.request_load_save_file_signal.connect(self.main_window.reload_project)
 
+    def show_dictionary_widget(self, _ast_id=None):
+        """
+        If you want to see Dictionary Ast data, then you should put _ast_id as input.
+        Or, you can call the method w/o input, then widget for creating dict ast will appear.
+        """
+        if _ast_id:     # View and Edit existing constraint.
+            qt_dc = self.main_window._QTObj._qtProject._DesignConstraint[self.main_window._CurrentModuleName][_ast_id]
+            target_ast = qt_dc._ast
+            self.dict_widget = SetupWindow.DictionaryWidget(qt_dc._ast.name)
+            self.dict_widget.load_data(qt_dc._ast.dict_values)
+            self.dict_widget.send_variable_ast.connect(lambda _ast: self.main_window.design_delegator.update_qt_constraint(target_id=_ast_id, updated_ast=_ast))
+        else:           # Create new dictionary ast with widget.
+            self.dict_widget = SetupWindow.DictionaryWidget()
+            self.dict_widget.send_variable_ast.connect(lambda _ast: self.main_window.design_delegator.create_qt_constraint(constraint_ast=_ast))
+        self.dict_widget.show()

@@ -12,7 +12,7 @@ class FILLCAP_5X_STD_RVT_v2(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,gate_x_length=600,gate_y_width=200,Dummy_width=40,pmos_flag=1):
+	def _CalculateDesignParameter(self,gate_x_length=600,gate_y_width=200,Dummy_width=40,_XVT='RVT',pmos_flag=1):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -73,7 +73,17 @@ class FILLCAP_5X_STD_RVT_v2(StickDiagram._StickDiagram):
 		 														  (self._DesignParameter['_Contact2']['_XYCoordinates'][0][1] + self._DesignParameter['_Contact2']['_XYCoordinates'][-1][1])/2]]
 
 		##RVT layer
-		self._DesignParameter['XVT'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RVT'][0], _Datatype=DesignParameters._LayerMapping['RVT'][1])
+		if DesignParameters._Technology == 'SS28nm':
+			assert _XVT in ('SLVT', 'LVT', 'RVT', 'HVT')
+			self._DesignParameter['XVT'] = self._BoundaryElementDeclaration(
+				_Layer=DesignParameters._LayerMapping[_XVT][0], _Datatype=DesignParameters._LayerMapping[_XVT][1])
+
+		elif DesignParameters._Technology == 'TSMC65nm':
+			pass  # No Need to Modify XVT Layer
+		else:
+			raise NotImplementedError
+
+		#self._DesignParameter['XVT'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RVT'][0], _Datatype=DesignParameters._LayerMapping['RVT'][1])
 		self._DesignParameter['XVT']['_XWidth'] = self._DesignParameter['DIFF_boundary_2']['_XWidth'] + 2 * drc._XvtMinExtensionOnOD
 		self._DesignParameter['XVT']['_YWidth'] = self._DesignParameter['DIFF_boundary_2']['_YWidth'] + 2 * drc._XvtMinExtensionOnOD
 		self._DesignParameter['XVT']['_XYCoordinates'] = self._DesignParameter['N_poly']['_XYCoordinates']
