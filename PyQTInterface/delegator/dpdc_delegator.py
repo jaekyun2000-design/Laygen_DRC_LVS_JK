@@ -50,6 +50,8 @@ class DesignDelegator(delegator.Delegator):
             #                                           design_dict['constraint'])
             # print('add cmd')
             # self.main_window.undo_stack.push(command)
+            constraint_ast.id = design_dict['constraint_id']
+            constraint_ast._id = design_dict['constraint_id']
             if variable_ast.GeneratorVariable in constraint_ast.__class__.__bases__:
                 constraint_ast.id = design_dict['constraint_id']
                 if constraint_ast.__class__ in [variable_ast.XYCoordinate, variable_ast.PathXY, variable_ast.LogicExpression, variable_ast.CustomVariable]:

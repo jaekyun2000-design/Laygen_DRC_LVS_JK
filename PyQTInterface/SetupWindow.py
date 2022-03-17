@@ -3552,7 +3552,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 grandParentIDItem = self.model.itemFromIndex(self.currentIndex().parent().parent().siblingAtColumn(1))
                 grandParentID = grandParentIDItem.text()
                 grandParentTypeItem = self.model.itemFromIndex(self.currentIndex().parent().parent().siblingAtColumn(0))
-                grandParentModule = re.sub(r'\d','',grandParentID)
+                grandParentModule = self._CurrentModuleName
+                # grandParentModule = re.sub(r'\d','',grandParentID)
 
                 deleteLine = removeTypeItem.row()
                 self._DesignConstraintFromQTobj[grandParentModule][grandParentID]._ast.__dict__[motherType].pop(deleteLine)
