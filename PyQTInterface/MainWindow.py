@@ -865,10 +865,17 @@ class _MainWindow(QMainWindow):
         self.info_widget.show()
 
     def fix_contaminated_dc(self):
-        print('1')
         for dc in self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName].values():
             if 'info_dict' in dc._ast.__dict__:
                 dc._ast.info_dict = copy.deepcopy(dc._ast.info_dict)
+            if '_id' not in dc._ast.__dict__:
+                dc._ast._id = dc._id
+            if '_type' not in dc._ast.__dict__:
+                dc._ast._type = dc._type
+
+        print('Fix Contaminated Design Constraints')
+
+
 
     def create_new_window(self, dict, key):
         dict[key] = _MainWindow()
