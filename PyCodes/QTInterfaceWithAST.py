@@ -2202,7 +2202,8 @@ class QtProject:
                     for parm_name in loss_parm_list:
                         _ast.parameters[parm_name] = None
 
-                self._DesignConstraint[module_name][id]._ast = _ast
+                for _field in _ast._fields:
+                    self._DesignConstraint[module_name][id]._ast.__dict__[_field] = _ast.__dict__[_field]
 
                 _designConstraint = self._DesignConstraint[module_name][id]
                 _designParameter = None
