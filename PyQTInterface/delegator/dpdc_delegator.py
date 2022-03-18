@@ -31,7 +31,7 @@ class DesignDelegator(delegator.Delegator):
             self.control_constraint_tree_view(design_dict['constraint_id'])
         self.stack_undo('create design object')
 
-    def create_qt_constraint(self, constraint_ast=None, constraint_dict=None, sender=None):
+    def create_qt_constraint(self, constraint_ast=None, constraint_dict=None, sender=None, update=True, dp_dict=None):
         """
         receive: design constraint_ast or dictionary.
         (sender is required only when you don't need post process on q-tree view)
@@ -62,7 +62,7 @@ class DesignDelegator(delegator.Delegator):
                 sender.receive_constraint_result(design_dict['constraint'])
 
 
-            if type(constraint_ast).__name__ in ['Sref', 'MacroCell']:
+            if type(constraint_ast).__name__ in ['Sref', 'MacroCell'] and update:
                 gds2gen = topAPI.gds2generator.GDS2Generator(True)
                 gds2gen.load_qt_project(self.main_window)
 
@@ -83,6 +83,10 @@ class DesignDelegator(delegator.Delegator):
                         design_dict['parameter']._DesignParameter['_DesignObj'] = dp_from_gen['_DesignObj']
                         design_dict['parameter']._DesignParameter['_ModelStructure'] = dp_from_gen['_ModelStructure']
                         design_dict['parameter'].update_unified_expression()
+            elif not update and dp_dict:
+                design_dict['parameter']._DesignParameter['_DesignObj'] = dp_dict
+                design_dict['parameter']._DesignParameter['_ModelStructure'] = dp_dict
+                design_dict['parameter'].update_unified_expression()
 
             if design_dict['parameter']:
                 self.create_vs_item(design_dict['parameter'])
