@@ -2634,7 +2634,31 @@ class _MainWindow(QMainWindow):
                     dp_dict['_XYCoordinates'] = [ [xy[0] + xy_offset[0], xy[1] + xy_offset[1]] for xy in dp_dict['_XYCoordinates']]
 
                 if dp_dict['_DesignParametertype'] == 3:
-                    dp_dict['_DesignParametertype'] = 31
+                    gen_lib = topAPI.gds2generator.CellInspector().convert_pcell_name_to_generator_name(dp_dict['_ElementName'])
+                    if gen_lib:
+                        dp_dict['library'] = gen_lib
+                        _className = generator_model_api.class_name_dict[dp_dict['library']]
+                        dp_dict['className'] = _className
+                        calculate_fcn = list(generator_model_api.class_function_dict[gen_lib].keys())[0]
+                        parameter_dict = dict()
+                        for parm in generator_model_api.class_function_dict[gen_lib][calculate_fcn]:
+                            parameter_dict[parm.name] = parm.default
+                        dp_dict['parameters'] = parameter_dict
+                        tmpAST = self._QTObj._qtProject._ElementManager.get_dpdict_return_ast(dp_dict)
+                        if tmpAST == None:
+                            continue
+                        self.design_delegator.create_qt_constraint(tmpAST[0], update=False, dp_dict=dp_dict['_ModelStructure'])
+                        continue
+                        # design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
+                        #                                                   module_name=topCellName,
+                        #                                                   _ast=tmpAST, element_manager_update=False)
+                        # self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
+                        #                                                  _parentName=topCellName,
+                        #                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
+                        # self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=parameter_id,
+                        #                                                      dc_id=design_dict['constraint_id'])
+                    else:
+                        dp_dict['_DesignParametertype'] = 31
 
                 self.design_delegator.create_qt_parameter(dp_dict)
             self.design_delegator.delete_qt_parameter(dp_name)
