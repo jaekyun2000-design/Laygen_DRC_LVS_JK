@@ -2649,14 +2649,6 @@ class _MainWindow(QMainWindow):
                             continue
                         self.design_delegator.create_qt_constraint(tmpAST[0], update=False, dp_dict=dp_dict['_ModelStructure'])
                         continue
-                        # design_dict = self._QTObj._qtProject._feed_design(design_type='constraint',
-                        #                                                   module_name=topCellName,
-                        #                                                   _ast=tmpAST, element_manager_update=False)
-                        # self.dockContentWidget3_2.createNewConstraintAST(_id=design_dict['constraint_id'],
-                        #                                                  _parentName=topCellName,
-                        #                                                  _DesignConstraint=self._QTObj._qtProject._DesignConstraint)
-                        # self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=parameter_id,
-                        #                                                      dc_id=design_dict['constraint_id'])
                     else:
                         dp_dict['_DesignParametertype'] = 31
 

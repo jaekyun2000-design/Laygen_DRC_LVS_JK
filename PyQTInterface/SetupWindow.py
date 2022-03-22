@@ -3930,7 +3930,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
     def browse_expression(self):
         current_item =self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
-        type_name = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(0)).text()
+        type_name = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(2)).text()
         if type_name in ['XYCoordinate', 'PathXY', 'LogicExpression', 'CustomVariable']:
             self.send_dummy_ast_id_for_xy_signal.emit(current_item.text())
         elif type_name == 'Array':
