@@ -5101,6 +5101,7 @@ class DictionaryWidget(QDialog):
             if type(value) == dict:
                 sub_widget = self.add_form_row(1, key)
                 sub_widget.load_data(value)
+                self.dictionary_data[key] = value
             else:
                 line_widget = self.add_form_row(0, key)
                 line_widget.setText(str(value))
@@ -5157,8 +5158,10 @@ class DictionaryWidget(QDialog):
         output_ast.name = self.name_input if isinstance(self.name_input, str) else self.name_input.text()
         output_ast.dict_values = self.dictionary_data
         for key, value in output_ast.dict_values.items():
-            if value in ["True", "False"] or value.isdigit() or (value[0] == '[' and value[-1] == ']'):
+            if type(value) == str and (value in ["True", "False"] or value.isdigit() or (value[0] == '[' and value[-1] == ']')):
                 output_ast.dict_values[key] = eval(value)
+            else:
+                output_ast.dict_values[key] = value
         self.send_variable_ast.emit(output_ast)
         super(DictionaryWidget, self).accept()
 
