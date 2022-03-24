@@ -412,22 +412,35 @@ class ElementTransformer(ast.NodeTransformer):
 
     def visit_SrefR(self,node):
         sentences = []
-        parm_values = list(filter(lambda val: val is not None, node.parameters.values()))
-        if parm_values:
-            copy_parameter = copy.deepcopy(node.parameters)
-            if list(filter(lambda x: isinstance(x, ast.AST), list(copy_parameter.values()))):
-                parameter_sentence = ''
-                for key, value in copy_parameter.items():
-                    if isinstance(value, ast.AST):
-                        tf_ast = run_transformer(value)
-                        new_string = astunparse.unparse(tf_ast)
-                        parameter_sentence += f'{key} = {new_string},'
-                    else:
-                        parameter_sentence += f'{key} = {value},'
-            else:
-                parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
+        if type(node.parameters) == dict:
+            parm_values = list(filter(lambda val: val is not None, node.parameters.values()))
+            if parm_values:
+                copy_parameter = copy.deepcopy(node.parameters)
+                test = list(filter(lambda x: isinstance(x, ast.AST), list(copy_parameter.values())))
+                if list(filter(lambda x: isinstance(x, ast.AST), list(copy_parameter.values()))):
+                    parameter_sentence = ''
+                    for key, value in copy_parameter.items():
+                        if isinstance(value, ast.AST):
+                            tf_ast = run_transformer(value)
+                            new_string = astunparse.unparse(tf_ast)
+                            parameter_sentence += f'{key} = {new_string},'
+                        else:
+                            parameter_sentence += f'{key} = {value},'
+                else:
+                    parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
+                sentence = f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
+                sentences.append(sentence)
+        elif type(node.parameters) == list and isinstance(node.parameters[0], variable_ast.Dictionary):
+            parameter_sentence = astunparse.unparse(variable_ast.IrregularTransformer().visit_Dictionary(node.parameters[0], False))
             sentence = f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
             sentences.append(sentence)
+        elif type(node.parameters) == str:
+            parameter_sentence = f"**{node.parameters}"
+            sentence = f"self._DesignParameter['{node.name}']['_DesignObj'].{node.calculate_fcn}(**dict(" + parameter_sentence + "))\n"
+            sentences.append(sentence)
+        else:
+            pass
+
         if node.XY:
             syntax = self.xy_syntax_checker(node)
             if syntax == 'ast':
