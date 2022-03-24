@@ -827,7 +827,7 @@ class _MainWindow(QMainWindow):
                               "import math\n" \
                               "from generatorLib import DRC\n"
         for libraries in library_list:
-            additional_import_code += f"from generatorLib.generator_models import {libraries}\n"
+            additional_import_code += f"from generatorLib.generator_models import {libraries}\n" if not user_setup.generator_model_path else f"from {'.'.join(user_setup.generator_model_path.split('/')[1:])} import {libraries}\n"
         from functools import reduce
         if library_list != []:
             reduce(lambda additional_import_code, libraries: additional_import_code + f"from generatorLib.generator_models import {libraries}\n", library_list)
