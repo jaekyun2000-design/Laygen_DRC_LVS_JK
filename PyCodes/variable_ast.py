@@ -163,6 +163,14 @@ class Dictionary(GeneratorVariable):
         'dict_values'
     )
 
+class XYappend(GeneratorVariable):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
+    _fields = (
+        'name',
+        'XY',
+        'reverse'
+    )
 
 class IrregularTransformer(ast.NodeTransformer):
     def __init__(self):
@@ -1176,6 +1184,12 @@ class IrregularTransformer(ast.NodeTransformer):
             return_str = f'dict({parameter_sentence})'
         return ast.parse(return_str)
 
+    def visit_XYappend(self, node):
+        xy_list = [astunparse.unparse(run_transformer(xy))[2:-2] for xy in node.XY]
+        xy_list_str = ",".join(xy_list)
+        xy_sentence = f"for xy in [{xy_list_str}]:\n" \
+                      f"\tself._DesignParameter['{node.name}']['_XYCoordinates'].append(xy)"
+        return ast.parse(xy_sentence)
 
 def run_transformer(source_ast):
     module_ast = ast.Module()

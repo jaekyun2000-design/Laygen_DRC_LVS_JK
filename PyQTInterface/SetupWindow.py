@@ -3044,7 +3044,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     send_dummy_ast_id_for_array_signal = pyqtSignal(str)
     send_dummy_ast_id_for_condition_signal = pyqtSignal(str)
     send_dictionary_ast_signal = pyqtSignal(str)
-    request_sref_redefine_signal = pyqtSignal("PyQt_PyObject")
+    request_create_constraint_signal = pyqtSignal("PyQt_PyObject")
 
 
     originalKeyPress = QTreeView.keyPressEvent
@@ -3090,7 +3090,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.context_menu_for_xy.addActions([browse_expression_action])
 
         self.context_menu_for_array = QMenu(self)
-        self.context_menu_for_array.addActions([browse_expression_action])
+        append_xy_expression = QAction("Create append expression", self.context_menu_for_array)
+        self.context_menu_for_array.addActions([browse_expression_action, append_xy_expression])
 
         self.context_menu_for_condition = QMenu(self)
         self.context_menu_for_condition.addActions([browse_expression_action])
@@ -3100,9 +3101,11 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         browse_expression_action = QAction("Create redefine expression", self.context_menu_for_sref)
         self.context_menu_for_sref.addActions([browse_expression_action])
 
+
         add_blank_row_action.triggered.connect(self.append_row)
         add_blank_row_dict_action.triggered.connect(self.append_row)
         browse_expression_action.triggered.connect(self.browse_expression)
+        append_xy_expression.triggered.connect(self.append_xy)
 
         #########WIP tb for combobox#########
         # index = self.model.index(0,0,QModelIndex())
@@ -3946,10 +3949,18 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
             redef_ast.parameter_fields.extend(org_ast.parameter_fields)
             for parm_name in org_ast.parameters:
                 redef_ast.parameters[parm_name] = None
-            self.request_sref_redefine_signal.emit(redef_ast)
+            self.request_create_constraint_signal.emit(redef_ast)
         elif type_name == 'Dictionary':
             self.send_dictionary_ast_signal.emit(current_item.text())
 
+    def append_xy(self):
+        current_item = self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
+        from PyCodes import variable_ast
+        org_ast = self._DesignConstraintFromQTobj[self._CurrentModuleName][current_item.text()]._ast
+        append_xy_ast = variable_ast.XYappend()
+        append_xy_ast.name = org_ast.info_dict['name']
+        append_xy_ast.XY = []
+        self.request_create_constraint_signal.emit(append_xy_ast)
 
         # if current_item.text() != None:
         #     self.send_dummy_ast_id_for_xy_signal.emit(current_item.text())
