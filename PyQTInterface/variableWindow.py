@@ -369,7 +369,7 @@ class VariableSetupWindow(QWidget):
             self.send_Destroy_signal.emit('cw')
         elif QKeyEvent.key() == Qt.Key_Delete:
             for item in self.deleteItemList.selectedItems():
-                self.itemList.remove(item.text())
+                # self.itemList.remove(item.text())   # 1:1 매핑이 안되고 있어서 문제 발생, 필요 없는 변수로 보임
                 row = self.deleteItemList.row(item)
                 self.deleteItemList.takeItem(row)
 
