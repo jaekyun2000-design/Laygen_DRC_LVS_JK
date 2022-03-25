@@ -629,6 +629,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 del tmp_node
             elif _type == 'path_array':
                 comparison_code = f"\npath_list = []\n" \
+                                  f"{xy_offset}\n" \
                                   f"if (len({layer_xy}) == 1) :\n" \
                                   f"\tmode = 'vertical'\n" \
                                   f"\t_width = {_width}\n" \
@@ -724,6 +725,8 @@ class IrregularTransformer(ast.NodeTransformer):
                                 f"\n" \
                                 f"\tfor i in range(len(xy_with_offset)):\n" \
                                 f"\t\tpath_list.append([xy_with_offset[i],[target_x_value, xy_with_offset[i][1]]])\n"
+                offset_code = f"for i in range(len(path_list)):\n" \
+                              f"\tpath_list[i][0] = [xy+ offset for xy, offset in zip(path_list[i][0], xy_offset)]\n"
                 tmp_node = element_ast.Path()
                 tmp_node.name = _name
                 tmp_node.layer = _layer
@@ -731,7 +734,7 @@ class IrregularTransformer(ast.NodeTransformer):
                 tmp_node.width = '_width'
                 tmp_code_ast = element_ast.ElementTransformer().visit_Path(tmp_node)
                 tmp_code = astunparse.unparse(tmp_code_ast)
-                sentence = comparison_code + case_code + tmp_code
+                sentence = f'{comparison_code}{case_code}{offset_code}{tmp_code}'
                 del tmp_node
             elif _type == 'sref_array':
                 if _index == 'All':
@@ -1459,6 +1462,13 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         base_element_string = self.translate_base_string(arg_names)
 
         return f"len({base_element_string}['_XYCoordinates'])"
+
+    def transform_XY(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        base_element_string = self.translate_base_string(arg_names)
+
+        return f"{base_element_string}['_XYCoordinates']"
+
 
     def transform_internal(self, node):
         if 'func' in node.args[0].__dict__ and node.args[0].func and 'id' in node.args[0].func.__dict__:
