@@ -454,6 +454,10 @@ class determinstic_clustering(clustering):
                 else:
                     for i, tmp_group in enumerate(tmp_groups):
                         matching_num = self.compare_two_srefs(tmp_group[0],generator_instance_name)
+                        if matching_num == -1:
+                            continue
+                        elif matching_num == -2:
+                            break
                         # matching_num, design_type = self.compare_two_srefs(tmp_group[0],generator_instance_name)
 
                         if matching_num >= matching_num_of_sref:
@@ -470,6 +474,8 @@ class determinstic_clustering(clustering):
     def compare_two_elements(self, element1_name:str, element2_name:str) -> int :
         type1 = self._DesignParameter[element1_name]['_DesignParametertype']
         type2 = self._DesignParameter[element2_name]['_DesignParametertype']
+        if len(self._DesignParameter[element1_name]['_XYCoordinates']) == 0 or len(self._DesignParameter[element2_name]['_XYCoordinates']) == 0:
+            return -1, 'None'
 
         if type1 == type2 == 1:
             return self.compare_two_boundaries(element1_name, element2_name), 'boundary'
@@ -518,6 +524,10 @@ class determinstic_clustering(clustering):
 
     def compare_two_srefs(self, sref1_name, sref2_name):
         #assumption... two sref has same design obj
+        if len(self._DesignParameter[sref1_name]['_XYCoordinates']) == 0:
+            return -1
+        elif len(self._DesignParameter[sref2_name]['_XYCoordinates']) == 0:
+            return -2
         x = self._DesignParameter[sref1_name]['_XYCoordinates'][0][0] == self._DesignParameter[sref2_name]['_XYCoordinates'][0][0]
         y = self._DesignParameter[sref1_name]['_XYCoordinates'][0][1] == self._DesignParameter[sref2_name]['_XYCoordinates'][0][1]
         return  x+y

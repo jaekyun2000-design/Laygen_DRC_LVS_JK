@@ -437,6 +437,9 @@ class GeometricField:
         return intersection_point_list[0]
 
     def search_intersection(self, dp):
+        if len(dp['_XYCoordinates']) == 0:
+            return None
+
         # if dp['_DesignParametertype'] == 3:
         #     x_min = dp['_XYCoordinates'][0][0]
         #     x_max = x_min +1
@@ -543,6 +546,8 @@ class IST(IntervalTree):
                 lo, hi = min([xy[0] for xy in xy_points]), max([xy[0] for xy in xy_points])
             elif self.direction == 'vertical':
                 lo, hi = min([xy[1] for xy in xy_points]), max([xy[1] for xy in xy_points])
+            if lo == hi:
+                return None
             self.addi(lo, hi, [path_dp, idx])
 
     def add_boundary_node(self, boundary_dp, idx=None):
