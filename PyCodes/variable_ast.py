@@ -706,6 +706,7 @@ class IrregularTransformer(ast.NodeTransformer):
                                 f"\t\tpath_list.append([xy_with_offset[i],[target_x_value, xy_with_offset[i][1]]])\n"
                 else:       # Custom Index
                     comparison_code = f"\npath_list = []\n" \
+                                      f"{xy_offset}\n" \
                                       f"if (len({layer_xy}{_index[0]}) == 1) :\n" \
                                       f"\tmode = 'vertical'\n" \
                                       f"\t_width = {_width}\n" \
