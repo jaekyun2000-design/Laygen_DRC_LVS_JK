@@ -113,13 +113,6 @@ class _NMOS(StickDiagram._StickDiagram):
             self._DesignParameter['_PODummyLayer']['_XWidth'] = _NMOSChannellength
             self._DesignParameter['_PODummyLayer']['_YWidth'] = _NMOSChannelWidth + 2 * a
 
-        ##modified for dummy drc
-        if float(self._DesignParameter['_PODummyLayer']['_XWidth']) * float(self._DesignParameter['_PODummyLayer']['_YWidth']) < _DRCObj._PODummyMinArea:
-            self._DesignParameter['_PODummyLayer']['_YWidth'] = self.CeilMinSnapSpacing(float(_DRCObj._PODummyMinArea) / float(self._DesignParameter['_PODummyLayer']['_XWidth']), _DRCObj._MinSnapSpacing * 2)
-
-        else:
-            pass
-        ##End of modification (by 1joon)
 
         #     if float(self._DesignParameter['_PODummyLayer']['_XWidth']) * float(self._DesignParameter['_PODummyLayer']['_YWidth']) < _DRCObj._PODummyMinArea:
         #         self._DesignParameter['_PODummyLayer']['_YWidth'] = self.CeilMinSnapSpacing(float(_DRCObj._PODummyMinArea) / float(self._DesignParameter['_PODummyLayer']['_XWidth']), _DRCObj._MinSnapSpacing*2)
