@@ -1037,6 +1037,8 @@ class ExpressionCalculator(QWidget):
                 tmp_ast = variable_ast.XYCoordinate()
                 tmp_ast.info_dict = output
                 self.send_variable_wo_post_ast.emit(tmp_ast)
+            if export_type != 'PathXY_row':
+                self.hide()
             # self.send_expression_signal.emit(self.display.toPlainText(), self.purpose, output)
 
         # self.send_variable_ast.emit()
@@ -1047,6 +1049,7 @@ class ExpressionCalculator(QWidget):
             self.pw.show()
             self.pw.activateWindow()
             self.send_path_row_xy_signal.connect(self.pw.create_row)
+            self.pw.send_export_clicked_signal.connect(self.hide)
 
         self.export_clicked('PathXY_row')
 
@@ -1250,6 +1253,7 @@ class ExpressionCalculator(QWidget):
 class PathWindow(QWidget):
     send_output_signal = pyqtSignal(dict)
     send_clicked_item_name_signal = pyqtSignal(str)
+    send_export_clicked_signal = pyqtSignal()
     id_ast_match_dict = dict()
 
     def __init__(self, address=None, idlist=None):
@@ -1358,6 +1362,7 @@ class PathWindow(QWidget):
 
         # self.send_output_signal.emit(output_dict)
         self.address.getPathInfo(output_dict)
+        self.send_export_clicked_signal.emit()
         self.destroy()
 
     def cancelButton_accepted(self):
