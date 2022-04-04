@@ -814,7 +814,7 @@ class IrregularTransformer(ast.NodeTransformer):
                                          f"self._DesignParameter['{_name}']['_XYCoordinates'] = XYList"
                         final_ast = ast.parse(final_sentence).body
                         return final_ast
-                    elif info_dict['bus'] == 'Auto':
+                    else :
                         tmp_node = element_ast.Text()
                         tmp_node.name = f"f'{_name}<{{i}}>'"
                         tmp_node.layer = _layer
