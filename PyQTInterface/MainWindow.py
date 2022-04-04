@@ -3743,6 +3743,7 @@ class _CustomView(QGraphicsView):
         visual_ungroup.setShortcut('Ctrl+G')
 
         menu = QMenu(self)
+        menu.addAction(constraint_create_array)
         if self.scene().selectedItems():
             if self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 3:
                 menu.addAction(flatten_sref)
@@ -3750,7 +3751,7 @@ class _CustomView(QGraphicsView):
                 menu.addAction(copy_from_cell_parameter_to_constraints)
 
 
-            menu.addAction(constraint_create_array)
+
             menu.addAction(convert_to_sref)
             # menu.addAction(flatten_sref)
             menu.addAction(inspect_path_connection)
