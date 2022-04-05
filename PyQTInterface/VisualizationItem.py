@@ -95,6 +95,7 @@ class _RectBlock(QGraphicsRectItem):
 
     def __init__(self,_BlockTraits=None):
         super().__init__()
+        self.simplified_flag = False
         self.setFlag(QGraphicsItem.ItemIsSelectable, False)
         self.shallow_highlight = False
         self.hover = False
@@ -113,6 +114,8 @@ class _RectBlock(QGraphicsRectItem):
         self.setRect(rect)
 
 
+    def simplify(self, flag=True):
+        self.simplified_flag = flag
     # def updateRect(self):
     #     # if self._BlockTraits['_DesignParametertype'] is "Boundary" :
     #     if self._BlockTraits["_XYCoordinates"] is None:
@@ -154,6 +157,8 @@ class _RectBlock(QGraphicsRectItem):
     #     self.brush.setColor(self._BlockTraits["_Color"])
 
     def paint(self, painter, option, widget=None):
+        if self.simplified_flag:
+            return
         # list_manager.layer_visible_flag_dict[self.itemtrait['layer']] is False:
         #     self.setVisible(False)
 
@@ -472,6 +477,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
     def __init__(self,_ItemTraits=None):
         super().__init__()
+        self.simplified_flag = False
         self.setBoundingRegionGranularity(1)
         self.sub_element_dict = dict()
         self._id = None
@@ -1553,6 +1559,13 @@ class _VisualizationItem(QGraphicsItemGroup):
         #
         #
         #
+
+    def simplify(self, flag=True):
+        self.simplified_flag = flag
+        shape = self.shape()
+        for child in self.childItems():
+            child.simplify(flag)
+
 
 class QGraphicsTextItemWObounding(QGraphicsTextItem):
     # pass

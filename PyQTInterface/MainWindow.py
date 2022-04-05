@@ -3741,6 +3741,8 @@ class _CustomView(QGraphicsView):
         copy_from_cell_parameter_to_constraints = QAction("Copy parameter from cell to Constraints", self)
         visual_ungroup = QAction("ungroup multiple xy index cells", self)
         visual_ungroup.setShortcut('Ctrl+G')
+        simplify_sref = QAction("Simplification", self)
+        detail_sref = QAction("Detail visual", self)
 
         menu = QMenu(self)
         menu.addAction(constraint_create_array)
@@ -3749,6 +3751,10 @@ class _CustomView(QGraphicsView):
                 menu.addAction(flatten_sref)
                 menu.addAction(copy_from_cell_parameter)
                 menu.addAction(copy_from_cell_parameter_to_constraints)
+                if self.scene().selectedItems()[0].simplified_flag == False:
+                    menu.addAction(simplify_sref)
+                else:
+                    menu.addAction(detail_sref)
 
 
 
@@ -3780,6 +3786,8 @@ class _CustomView(QGraphicsView):
         variable_create_enclosure.triggered.connect(lambda tmp: self.variable_emit('enclosure'))
         variable_create_connect.triggered.connect(lambda tmp: self.variable_emit('connect'))
         visual_ungroup.triggered.connect(self.scene().ungroup_indexed_item)
+        simplify_sref.triggered.connect(self.scene().simplify_sref)
+        detail_sref.triggered.connect(self.scene().detail_sref)
 
 
         menu.exec(event.globalPos())
@@ -4322,6 +4330,16 @@ class _CustomScene(QGraphicsScene):
                     print('Only one index exist.')
                     print(item._ItemTraits['_XYCoordinates'])
             return tmp_idx_item_dict
+
+    def simplify_sref(self):
+        for item in self.selectedItems():
+            if type(item) == VisualizationItem._VisualizationItem:
+                item.simplify(True)
+
+    def detail_sref(self):
+        for item in self.selectedItems():
+            if type(item) == VisualizationItem._VisualizationItem:
+                item.simplify(False)
 
 
 class _VersatileWindow(QWidget):
