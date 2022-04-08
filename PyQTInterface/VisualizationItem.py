@@ -1564,7 +1564,10 @@ class _VisualizationItem(QGraphicsItemGroup):
         self.simplified_flag = flag
         shape = self.shape()
         for child in self.childItems():
-            child.simplify(flag)
+            try:
+                child.simplify(flag)
+            except:
+                pass
 
 
 class QGraphicsTextItemWObounding(QGraphicsTextItem):
