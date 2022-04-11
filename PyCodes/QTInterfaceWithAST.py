@@ -789,7 +789,6 @@ class QtProject:
             return userDefineExceptions._InvalidInputError
         else:
             dp_dict_list = []
-
             try:
                 _GDSStreamObj = gds_stream.GDS_STREAM()
                 with open("{}".format(_file), 'rb') as f:
@@ -926,7 +925,7 @@ class QtProject:
         if _file == None or _topModuleName == None:
             return userDefineExceptions._InvalidInputError
         else:
-
+            stack_for_failed_dp = []
             # try:
             _GDSStreamObj = gds_stream.GDS_STREAM()
             with open("{}".format(_file), 'rb') as f:
@@ -1060,6 +1059,9 @@ class QtProject:
                         if '\x00' in _tmpSname:
                             _tmpSname = _tmpSname.split('\x00', 1)[0]
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_DesignObj_Name"] = _tmpSname
+                        if _reverse and _tmpSname not in self._DesignParameter:
+                            stack_for_failed_dp.append((_tmpStructureName, _tmpId, _tmpElement, _tmpStructureName))
+                            continue
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_DesignObj"] = copy.deepcopy(self._DesignParameter[_tmpSname])
                         for _tmpXYCoordinate in _tmpElement._ELEMENTS._XY.xy:
                             self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
@@ -1117,6 +1119,29 @@ class QtProject:
                     self._DesignParameter[_tmpStructureName][_tmpId].update_unified_expression()
 
                         # print(vars(_tmpElement._ELEMENTS))
+
+
+            while stack_for_failed_dp:
+                print(len(stack_for_failed_dp))
+                _tmpSname, _tmpId, _tmpElement, _tmpStructureName = stack_for_failed_dp.pop()
+                if _tmpId not in self._DesignParameter[_tmpSname]:
+                    stack_for_failed_dp.append((_tmpSname, _tmpId))
+                    continue
+                self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_DesignObj"] = copy.deepcopy(
+                    self._DesignParameter[_tmpSname])
+                for _tmpXYCoordinate in _tmpElement._ELEMENTS._XY.xy:
+                    self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                        "_XYCoordinates"].append(_tmpXYCoordinate)
+                if _tmpElement._ELEMENTS._STRANS != None:
+                    if _tmpElement._ELEMENTS._STRANS._STRANS != None:
+                        self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_Reflect"] = [
+                            _tmpElement._ELEMENTS._STRANS._STRANS.reflection,
+                            _tmpElement._ELEMENTS._STRANS._STRANS.abs_mag,
+                            _tmpElement._ELEMENTS._STRANS._STRANS.abs_angle]
+                    if _tmpElement._ELEMENTS._STRANS._ANGLE != None:
+                        self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
+                            "_Angle"] = _tmpElement._ELEMENTS._STRANS._ANGLE.angle
+                self._DesignParameter[_tmpStructureName][_tmpId].update_unified_expression()
             # print(self._DesignParameter)
             # except:
             #     traceback.print_exc()
