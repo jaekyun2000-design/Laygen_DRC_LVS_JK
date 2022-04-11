@@ -1580,7 +1580,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         if direction == 'Y':
             return f"abs({tf_string_a}[1] - {tf_string_b}[1])"
         else:
-            return f'math.sqrt(math.pow({tf_string_a}[0]-{tf_string_b}[0], 2) + math.pow({tf_string_a}[1]-{tf_string_b}[1], 2))'
+            return f'math.sqrt(math.pow({tf_string_a}[0]-{tf_string_b}[0], 2) + math.pow({tf_string_a}[1]-{tf_string_b}[1], 2)) if math.pow({tf_string_a}[0]-{tf_string_b}[0], 2) + math.pow({tf_string_a}[1]-{tf_string_b}[1], 2) > 0 else 0'
 
     def transform_rotate(self, node):
         arg_names, arg_indexes = self.parse_args_info(node.args[0:-1])
@@ -1661,7 +1661,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
                     element_location_sentence = transformer(location)
 
                 diff = f'abs({element_location_sentence} - {source_location_sentence}) - ({source_width_sentence} + {element_width_sentence})/2'
-                sentence = f'round( math.sqrt( {drc_sentence}**2 - ({diff})**2 ) + ({element_height_sentence})/2 )'
+                sentence = f'round( math.sqrt( {drc_sentence}**2 - ({diff})**2 ) + ({element_height_sentence})/2 ) if {drc_sentence}**2 - ({diff})**2 > 0 else 0'
                 return sentence
             elif self.flag == 'X':
                 tf_object = CustomFunctionTransformer('Y')
@@ -1676,7 +1676,7 @@ class CustomFunctionTransformer(ast.NodeTransformer):
                     element_location_sentence = transformer(location)
 
                 diff = f'abs({element_location_sentence} - {source_location_sentence}) - ({source_width_sentence} + {element_width_sentence})/2'
-                sentence = f'round( math.sqrt( math.pow({drc_sentence},2) - math.pow({diff},2) ) ) + ({element_height_sentence})/2'
+                sentence = f'round( math.sqrt( math.pow({drc_sentence},2) - math.pow({diff},2) ) ) + ({element_height_sentence})/2 if math.pow({drc_sentence},2) - math.pow({diff},2) >0 else 0'
                 return sentence
 
         else:
