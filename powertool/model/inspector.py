@@ -22,6 +22,7 @@ class array_inspector(inspector):
 
         self.cluster_model.layer_matching()
         self.cluster_model.sref_matching()
+        self.cluster_model.divide_false_pre_group()
         self.cluster_model.build_layer_ist_qt()
         self.cluster_model.intersection_matching_qt()
         self.cluster_model.delete_solo_element_group()

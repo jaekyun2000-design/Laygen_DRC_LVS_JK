@@ -580,6 +580,118 @@ class determinstic_clustering(clustering):
     def search_path_intersection_points(self, dp):
         return self.geo_searching.search_path_intersection_points(dp)
 
+    def divide_false_pre_group(self):
+        '''
+        when the elements of pre-group have different interval, then seperate it two groups
+        '''
+        def find_min_value(list):
+            min_value = list[0]
+            for i in list:
+                if i < min_value:
+                    min_value = i
+            return min_value
+
+        def find_max_value(list):
+            max_value = list[0]
+            for i in list:
+                if i > max_value:
+                    max_value = i
+            return max_value
+
+        processed_group = []
+        while self.array_groups:
+            group_candidate = self.array_groups.pop(0)
+            if 'precharge_left_pmos_supply' in group_candidate:
+                print('debug')
+            if len(group_candidate) == 1:
+                continue
+            dp_type = self._DesignParameter[group_candidate[0]]['_DesignParametertype']
+            if dp_type == 1 or dp_type == 3:
+                dp_x_coordinates = [self._DesignParameter[dp_name]['_XYCoordinates'][0][0] for dp_name in group_candidate]
+                dp_y_coordinates = [self._DesignParameter[dp_name]['_XYCoordinates'][0][1] for dp_name in group_candidate]
+            elif dp_type == 2:
+                dp_x_coordinates = [self._DesignParameter[dp_name]['_XYCoordinates'][0][0][0] for dp_name in
+                                    group_candidate]
+                dp_y_coordinates = [self._DesignParameter[dp_name]['_XYCoordinates'][0][0][1] for dp_name in
+                                    group_candidate]
+                #check every elements of dp_x_coordinates has same value
+            x_check = len(set(dp_x_coordinates))
+            y_check = len(set(dp_y_coordinates))
+            if x_check == 1 and y_check != 1:# same x value, different y value
+                sorting_list = [(coord, name) for coord, name in zip(dp_y_coordinates, group_candidate)]
+                sorting_list.sort(key=lambda x: x[0])
+                # group_candidate.sort(key=lambda x: dp_y_coordinates)
+                # dp_y_coordinates.sort()
+                group_candidate = [name for coord, name in sorting_list]
+                dp_y_coordinates = [coord for coord, name in sorting_list]
+                # find dp_y_coordinates's element's value difference for every index
+                dp_y_coordinates_diff = [dp_y_coordinates[i+1] - dp_y_coordinates[i] for i in range(len(dp_y_coordinates)-1)]
+                # find the index of dp_y_coordinates_diff which has the differnt value
+                diff_list = list(set(dp_y_coordinates_diff))
+                if len(diff_list) == 1:
+                    processed_group.append(group_candidate)
+                    continue
+                # elif len(diff_list) == 2:
+                #     seperate_index = dp_y_coordinates_diff.index(find_min_value(dp_y_coordinates_diff))
+                #     processed_group.append(group_candidate[:seperate_index])
+                #     processed_group.append(group_candidate[seperate_index:])
+                else:
+                    diff_set=list(set(dp_y_coordinates_diff))
+                    diff_count = [dp_y_coordinates_diff.count(diff_set[i]) for i in range(len(diff_set))]
+                    min_count_value = find_min_value(diff_count)
+                    if diff_set.count(min_count_value) == 1:
+                        min_freq_value = diff_set[diff_count.index(find_min_value(diff_count))]
+                        seperate_index = dp_y_coordinates_diff.index(min_freq_value)
+                        processed_group.append(group_candidate[:seperate_index+1])
+                        self.array_groups.append(group_candidate[seperate_index+1:])
+                    else:
+                        min_count_values = [diff_set[i] for i, x in enumerate(diff_count) if x == min_count_value]
+                        seperate_index_list = [dp_y_coordinates_diff.index(x) for x in min_count_values]
+                        seperate_index = find_min_value(seperate_index_list)
+                        # processed_group.append(group_candidate[:seperate_index+1])
+                        self.array_groups.append(group_candidate[:seperate_index+1])
+                        self.array_groups.append(group_candidate[seperate_index+1:])
+
+                    # idx_list = [dp_y_coordinates_diff.index(value) for value in diff_list]
+                    # for i in range(len(idx_list)-1):
+                    #     processed_group.append(group_candidate[idx_list[i]:idx_list[i+1]])
+            elif x_check != 1 and y_check == 1:
+                sorting_list = [(coord, name) for coord, name in zip(dp_x_coordinates, group_candidate)]
+                sorting_list.sort(key=lambda x: x[0])
+                group_candidate = [name for coord, name in sorting_list]
+                dp_x_coordinates = [coord for coord, name in sorting_list]
+                # group_candidate.sort(key=lambda x: dp_x_coordinates)
+                # dp_x_coordinates.sort()
+                dp_x_coordinates_diff = [dp_x_coordinates[i+1] - dp_x_coordinates[i] for i in range(len(dp_x_coordinates)-1)]
+                diff_list = list(set(dp_x_coordinates_diff))
+                if len(diff_list) == 1:
+                    processed_group.append(group_candidate)
+                    continue
+                # elif len(diff_list) == 2:
+                #     seperate_index = dp_x_coordinates_diff.index(find_min_value(dp_x_coordinates_diff))
+                #     processed_group.append(group_candidate[:seperate_index])
+                #     processed_group.append(group_candidate[seperate_index:])
+                else:
+                    diff_set=list(set(dp_x_coordinates_diff))
+                    diff_count = [dp_x_coordinates_diff.count(diff_set[i]) for i in range(len(diff_set))]
+                    min_count_value = find_min_value(diff_count)
+                    if diff_set.count(min_count_value) == 1:
+                        min_freq_value = diff_set[diff_count.index(find_min_value(diff_count))]
+                        seperate_index = dp_x_coordinates_diff.index(min_freq_value)
+                        processed_group.append(group_candidate[:seperate_index+1])
+                        self.array_groups.append(group_candidate[seperate_index+1:])
+                    else:
+                        min_count_values = [diff_set[i] for i, x in enumerate(diff_count) if x == min_count_value]
+                        seperate_index_list = [dp_x_coordinates_diff.index(x) for x in min_count_values]
+                        seperate_index = find_min_value(seperate_index_list)
+                        self.array_groups.append(group_candidate[:seperate_index+1])
+                        self.array_groups.append(group_candidate[seperate_index+1:])
+
+            else:
+                continue
+        self.array_groups = processed_group
+
+
 
 # file = './smaple.csv'
 # df_data = pd.read_csv(file)
