@@ -330,6 +330,7 @@ class _MainWindow(QMainWindow):
         auto_pathpoint_action = QAction("Inspect path point", self)
         auto_tech_process_change_action = QAction("Change technology node", self)
         create_sub_module_action = QAction("create sub module from sref", self)
+        count_array_number = QAction("Count Total Arrays", self)
 
         trace_memory_action.setShortcut('Ctrl+5')
         trace_memory_action.triggered.connect(trace_memeory)
@@ -346,6 +347,9 @@ class _MainWindow(QMainWindow):
         create_sub_module_action.setShortcut('Ctrl+9')
         create_sub_module_action.triggered.connect(self.create_submodule_by_sref)
 
+        count_array_number.setShortcut('Ctrl+4')
+        count_array_number.triggered.connect(self.count_array_number)
+
         automation_menu = menubar.addMenu("&Automation")
         automation_menu.setObjectName("top_menu_widget")
         automation_menu.addAction(trace_memory_action)
@@ -353,6 +357,7 @@ class _MainWindow(QMainWindow):
         automation_menu.addAction(auto_pathpoint_action)
         automation_menu.addAction(auto_tech_process_change_action)
         automation_menu.addAction(create_sub_module_action)
+        automation_menu.addAction(count_array_number)
 
         # automation_menu.setStyleSheet("background-color: rgb(178, 41, 100)")
         # self.setStyleSheet("background-color: rgb(178, 41, 100)")
@@ -879,6 +884,17 @@ class _MainWindow(QMainWindow):
 
     def create_new_window(self, dict, key):
         dict[key] = _MainWindow()
+
+    def count_array_number(self):
+        array_number = 0
+        for qt_dc in self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName].values():
+            if isinstance(qt_dc._ast, variable_ast.Array):
+                if qt_dc._ast.info_dict['type'] == 'pin_array':
+                    continue
+                else:
+                    array_number += 1
+        print('array number:', array_number)
+        return array_number
 
     def create_submodule_by_sref(self, test=None):
         selected_items = self.scene.selectedItems()
