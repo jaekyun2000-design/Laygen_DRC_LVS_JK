@@ -359,10 +359,10 @@ class GeometricField:
         return intersected_dp_hierarchy_names
 
     def search_path_intersection_points(self, dp):
-        if dp['_ElementName'] == 'POLY_path_20':
-            print('dbg')
         x_min_list, x_max_list, y_min_list, y_max_list = [], [], [], []
         intersection_point_list = []
+        if type(dp['_Width']) == str:
+            dp['_Width'] = int(dp['_Width'])
         for i in range(len(dp['_XYCoordinates'][0])):
             if i + 1 != len(dp['_XYCoordinates'][0]):
                 if dp['_XYCoordinates'][0][i][0] == dp['_XYCoordinates'][0][i + 1][0]:
@@ -432,8 +432,83 @@ class GeometricField:
                 print(f'idx = {node.data[1]}')
             intersection_point_list.append( \
                 [[node.data[0]['_Hierarchy'][node.data[1][0]][node.data[1][1]], node.data[1]] if type(node.data[1]) == list \
-                 else [node.data[0]['_Hierarchy'][node.data[1]], node.data[1]] \
-                 for node in intersected_node])
+                 else [node.data[0]['_Hierarchy'][node.data[1]], node.data[1]]\
+                 for node in intersected_node if dp['_id'] != node.data[0]['_ElementName']])
+        return intersection_point_list[0]
+    def search_path_intersection_at_vertex(self, dp):
+        x_min_list, x_max_list, y_min_list, y_max_list = [], [], [], []
+        intersection_point_list = []
+        if type(dp['_Width']) == str:
+            dp['_Width'] = int(dp['_Width'])
+        for i in range(len(dp['_XYCoordinates'][0])):
+            if i + 1 != len(dp['_XYCoordinates'][0]):
+                if dp['_XYCoordinates'][0][i][0] == dp['_XYCoordinates'][0][i + 1][0]:
+                    direction = 'vertical'
+                    if dp['_XYCoordinates'][0][i][1] < dp['_XYCoordinates'][0][i + 1][1]:
+                        direction += 'up'
+                    else:
+                        direction += 'down'
+                else:
+                    direction = 'horizontal'
+                    if dp['_XYCoordinates'][0][i][0] < dp['_XYCoordinates'][0][i + 1][0]:
+                        direction += 'right'
+                    else:
+                        direction += 'left'
+
+                if 'horizontal' in direction:
+                    if 'right' in direction:
+                        x_min_list.append(dp['_XYCoordinates'][0][i][0])
+                        x_max_list.append(dp['_XYCoordinates'][0][i][0] + 1)
+                    else:
+                        x_min_list.append(dp['_XYCoordinates'][0][i][0] - 1)
+                        x_max_list.append(dp['_XYCoordinates'][0][i][0])
+                    y_min_list.append(dp['_XYCoordinates'][0][i][1] - dp['_Width'] / 2)
+                    y_max_list.append(dp['_XYCoordinates'][0][i][1] + dp['_Width'] / 2)
+                elif 'vertical' in direction:
+                    x_min_list.append(dp['_XYCoordinates'][0][i][0] - dp['_Width'] / 2)
+                    x_max_list.append(dp['_XYCoordinates'][0][i][0] + dp['_Width'] / 2)
+                    if 'up' in direction:
+                        y_min_list.append(dp['_XYCoordinates'][0][i][1])
+                        y_max_list.append(dp['_XYCoordinates'][0][i][1] + 1)
+                    else:
+                        y_min_list.append(dp['_XYCoordinates'][0][i][1] - 1)
+                        y_max_list.append(dp['_XYCoordinates'][0][i][1])
+            else:
+                if 'direction' in locals():
+                    if 'horizontal' in direction:
+                        if 'right' in direction:
+                            x_min_list.append(dp['_XYCoordinates'][0][i][0]-1)
+                            x_max_list.append(dp['_XYCoordinates'][0][i][0])
+                        else:
+                            x_min_list.append(dp['_XYCoordinates'][0][i][0])
+                            x_max_list.append(dp['_XYCoordinates'][0][i][0]+1)
+                    elif 'vertical' in direction:
+                        if 'up' in direction:
+                            y_min_list.append(dp['_XYCoordinates'][0][i][1]-1)
+                            y_max_list.append(dp['_XYCoordinates'][0][i][1])
+                        else:
+                            y_min_list.append(dp['_XYCoordinates'][0][i][1])
+                            y_max_list.append(dp['_XYCoordinates'][0][i][1]+1)
+
+
+        for i, x_min in enumerate(x_min_list):
+            vertical_tree = IST(direction='vertical')
+            k = self.interval_tree_by_layer[dp['_Layer']][x_min:x_max_list[i]]
+            k2 = sorted(self.interval_tree_by_layer[dp['_Layer']][x_min:x_max_list[i]])
+            for x_intersection_dp in sorted(self.interval_tree_by_layer[dp['_Layer']][x_min:x_max_list[i]]):
+                vertical_tree.add_element_node(dp=x_intersection_dp.data[0], idx=x_intersection_dp.data[1])
+
+            intersected_node = sorted(vertical_tree[y_min_list[i]:y_max_list[i]])
+            del vertical_tree
+
+            for node in intersected_node:
+                print(f'hierarchy: {node.data[0]["_Hierarchy"]}')
+                print(f'idx = {node.data[1]}')
+            intersection_point_list.append( \
+                [[node.data[0]['_Hierarchy'][node.data[1][0]][node.data[1][1]], node.data[1]] if type(
+                    node.data[1]) == list \
+                     else [node.data[0]['_Hierarchy'][node.data[1]], node.data[1]] \
+                 for node in intersected_node if dp['_id'] != node.data[0]['_ElementName']])
         return intersection_point_list[0]
 
     def search_intersection(self, dp):
