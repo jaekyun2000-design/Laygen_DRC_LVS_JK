@@ -13,6 +13,10 @@ import traceback
 import user_setup
 import numpy as np
 
+import time
+dl_inference_time = 0
+dl_count = 0
+
 class DesignDelegator(delegator.Delegator):
     def __init__(self, main_window):
         super(DesignDelegator, self).__init__(main_window)
@@ -510,11 +514,22 @@ class DesignDelegator(delegator.Delegator):
         # if 'model' not in self.__dict__:
         #     self.model = topAPI.element_predictor.create_element_detector_model()
         # result = self.model.predict(cell_data)
+        #calculate excution time
+        start_time = time.time()
         result = topAPI.element_predictor.model.predict(cell_data)
+        end_time = time.time()
+        time_elapsed = end_time - start_time
+        #add time to result
+        global dl_inference_time
+        global dl_count
+        dl_inference_time += time_elapsed
+        dl_count += 1
         idx = np.argmax(result)
 
+        print(dl_inference_time, dl_count, dl_inference_time/dl_count)
+
         prediction_cell_type = user_setup.data_type_list[idx-1]
-        if prediction_cell_type in ['NMOSWithDummy','PMOSWithDummy']:
+        if prediction_cell_type in ['NMOSWithDummy','PMOSWithDummy'] and user_setup.DL_Parameter:
              self.detect_parameters_nmos_debug(cell_data, cell_size)
         return user_setup.data_type_list[idx - 1]
 
