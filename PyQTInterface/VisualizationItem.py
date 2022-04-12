@@ -1465,12 +1465,16 @@ class _VisualizationItem(QGraphicsItemGroup):
             element_name = hierarchy_list.pop(0)
 
             if element_name not in tmp_vsitem.sub_element_dict:
-                element_name_with_idx_list = list(filter(lambda x: element_name in x, list(tmp_vsitem.sub_element_dict.keys())))
-                # for element in element_name_with_idx_list:
+                element_name_part = element_name.split('[')[0]
+                element_idx_part = re.findall(r'\d+', element_name)[0]
+                element_name_with_idx_list = list(filter(lambda x: element_name_part in x, list(tmp_vsitem.sub_element_dict.keys())))
+                for element in element_name_with_idx_list:
                 #     # tmp_vsitem.sub_element_dict[element].setSelected(True)
-                #     tmp_vsitem.sub_element_dict[element].set_highlight()
-                list(map(lambda element: tmp_vsitem.sub_element_dict[element].set_highlight(), element_name_with_idx_list))
-                # return None
+                    for block in tmp_vsitem.sub_element_dict[element].block:
+                        if block.index[0] == int(element_idx_part):
+                            tmp_vsitem.sub_element_dict[element].set_highlight()
+                # # list(map(lambda element: tmp_vsitem.sub_element_dict[element].set_highlight(), element_name_with_idx_list))
+                # # return None
             else:
                 tmp_vsitem = tmp_vsitem.sub_element_dict[element_name]
         # tmp_vsitem.setSelected(True)

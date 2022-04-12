@@ -1413,6 +1413,7 @@ class _MainWindow(QMainWindow):
         inspector = topAPI.inspector.path_point_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
         output = inspector.get_all_path_connection_info()
         path_list = output['path_list']
+        self.log = []
         self.path_point_reference = output['path_connection_info']
         print(output)
 
@@ -1420,15 +1421,31 @@ class _MainWindow(QMainWindow):
         self.path_point_widget.addItems([str(path['_ElementName']) for path in path_list])
 
         self.path_point_widget.itemDoubleClicked.connect(self.show_inspect_path_widget)
+        self.path_point_widget.currentItemChanged.connect(self.visualize_path_point)
         self.path_point_widget.show()
 
+    def visualize_path_point(self,current,previous):
+        self.visualItemDict[current.text()].setSelected(True)
+        if previous :
+            self.visualItemDict[previous.text()].setSelected(False)
+
     def show_inspect_path_widget(self, path_item):
+        self.path_ref_widget = QListWidget()
         row = self.sender().row(path_item)
-        reference = copy.deepcopy(self.path_point_reference[row])
-        # for ref in reference:
-        #     self.highlightVI_by_hierarchy_list(ref[0][0])
-        list(map(lambda ref: self.highlightVI_by_hierarchy_list(ref[0][0]), reference))
-        self.visualItemDict[path_item.text()].set_shallow_highlight()
+        self.path_ref_widget.addItems([str(ref) for ref in self.path_point_reference[row]])
+        self.path_ref_widget.show()
+
+        self.path_ref_widget.currentItemChanged.connect(self.visualize_path_point_ref)
+        self.path_ref_widget.itemDoubleClicked.connect(lambda item: self.save_clipboard(item.text(),None))
+        self.calculator()
+
+    def visualize_path_point_ref(self,current,previous):
+        current_ref = eval(current.text())
+        if previous :
+            previous_ref = eval(current.text())
+            self.highlightVI_by_hierarchy_list(previous_ref[0])
+        self.highlightVI_by_hierarchy_list(current_ref[0])
+        # self.visualItemDict[path_item.text()].set_shallow_highlight()
 
 
 
@@ -1545,12 +1562,18 @@ class _MainWindow(QMainWindow):
                     new_list.append(tmp)
             print(new_list)
             self.gloabal_clipboard.setText(str(new_list))
+        elif type(save_target) == str:
+            hierarchy_list = eval(save_target)
+            hierarchy = hierarchy_list[0]
+            print(hierarchy)
+            self.gloabal_clipboard.setText(str(hierarchy))
+
 
     def get_hierarchy_return_layer(self, hierarchy_list):
         module = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
         layernum2name = LayerReader._LayerNumber2CommonLayerName(LayerReader._LayerMapping)
         for i in range(len(hierarchy_list)):
-            element = re.sub("\[.\]","", hierarchy_list[i])
+            element = re.sub("\[.*\]","", hierarchy_list[i])
             hierarchy_list[i] = element
 
         if len(hierarchy_list) == 0:
