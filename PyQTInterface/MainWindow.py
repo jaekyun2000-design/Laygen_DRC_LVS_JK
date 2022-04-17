@@ -328,6 +328,7 @@ class _MainWindow(QMainWindow):
         trace_memory_action = QAction("Inspect memeory (Debuggin)", self)
         auto_array_action = QAction("Inspect array", self)
         auto_pathpoint_action = QAction("Inspect path point", self)
+        automate_path_xy_action = QAction("Inspect path xy", self)
         auto_tech_process_change_action = QAction("Change technology node", self)
         create_sub_module_action = QAction("create sub module from sref", self)
         count_array_number = QAction("Count Total Arrays", self)
@@ -350,6 +351,9 @@ class _MainWindow(QMainWindow):
         count_array_number.setShortcut('Ctrl+4')
         count_array_number.triggered.connect(self.count_array_number)
 
+        automate_path_xy_action.setShortcut('Ctrl+6')
+        automate_path_xy_action.triggered.connect(self.automate_path)
+
         automation_menu = menubar.addMenu("&Automation")
         automation_menu.setObjectName("top_menu_widget")
         automation_menu.addAction(trace_memory_action)
@@ -358,6 +362,7 @@ class _MainWindow(QMainWindow):
         automation_menu.addAction(auto_tech_process_change_action)
         automation_menu.addAction(create_sub_module_action)
         automation_menu.addAction(count_array_number)
+        automation_menu.addAction(automate_path_xy_action)
 
         # automation_menu.setStyleSheet("background-color: rgb(178, 41, 100)")
         # self.setStyleSheet("background-color: rgb(178, 41, 100)")
@@ -1418,6 +1423,7 @@ class _MainWindow(QMainWindow):
         print(output)
 
         self.path_point_widget =QListWidget()
+        self.path_point_widget.setWindowTitle('Path List')
         self.path_point_widget.addItems([str(path['_ElementName']) for path in path_list])
 
         self.path_point_widget.itemDoubleClicked.connect(self.show_inspect_path_widget)
@@ -1431,23 +1437,62 @@ class _MainWindow(QMainWindow):
 
     def show_inspect_path_widget(self, path_item):
         self.path_ref_widget = QListWidget()
+        #always on top of the other widgets
+        self.path_ref_widget.setWindowTitle('Reference Candidate')
         row = self.sender().row(path_item)
         self.path_ref_widget.addItems([str(ref) for ref in self.path_point_reference[row]])
-        self.path_ref_widget.show()
+
 
         self.path_ref_widget.currentItemChanged.connect(self.visualize_path_point_ref)
         self.path_ref_widget.itemDoubleClicked.connect(lambda item: self.save_clipboard(item.text(),None))
         self.calculator()
+        self.path_ref_widget.show()
+        # self.path_ref_widget.setWindowFlags(Qt.WindowStaysOnTopHint)
+
+
 
     def visualize_path_point_ref(self,current,previous):
         current_ref = eval(current.text())
         if previous :
-            previous_ref = eval(current.text())
+            previous_ref = eval(previous.text())
             self.highlightVI_by_hierarchy_list(previous_ref[0])
         self.highlightVI_by_hierarchy_list(current_ref[0])
         # self.visualItemDict[path_item.text()].set_shallow_highlight()
 
 
+    def automate_path(self):
+        self.inspector = topAPI.inspector.path_point_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        path_list = self.inspector.get_path_list()
+        self.path_list_widget = QListWidget()
+        self.path_list_widget.setWindowTitle('Path List')
+        self.path_list_widget.addItems([str(path['_ElementName']) for path in path_list])
+        self.path_list_widget.itemDoubleClicked.connect(self.show_automate_path_widget)
+        self.path_list_widget.currentItemChanged.connect(self.visualize_path_point)
+        self.path_list_widget.show()
+
+    def show_automate_path_widget(self, path_item):
+        path_name = path_item.text()
+        vertex_relative_element, direction = self.inspector.get_path_vertex_info(path_name)
+        self.path_vertex_widget = QListWidget()
+        self.calculator()
+        self.calculator_window.clear()
+
+        for i , vertex_element in enumerate(vertex_relative_element):
+            self.save_clipboard(vertex_element[0][0], None)
+            if i == 0:
+                self.calculator_window.xy_button.setChecked(True)
+            else:
+                if 'horizontal' in last_direction:
+                    self.calculator_window.x_button.setChecked(True)
+                elif 'vertical' in last_direction:
+                    self.calculator_window.y_button.setChecked(True)
+                else:
+                    warnings.warn('Direction not recognized')
+
+            self.calculator_window.center_buttons.click()
+            self.calculator_window.add_clicked()
+            self.calculator_window.export_path_clicked()
+            last_direction = direction[i]
 
 
     def inspect_array(self):
@@ -1549,7 +1594,10 @@ class _MainWindow(QMainWindow):
         return geo_search
 
     def save_clipboard(self,save_target,_):
-        if type(save_target) == list:
+        if type(save_target) == list and _ == None:
+            self.gloabal_clipboard.setText(str(save_target))
+
+        elif type(save_target) == list:
             new_list = list()
             print(save_target)
             print(_)
