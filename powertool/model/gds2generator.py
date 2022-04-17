@@ -447,6 +447,10 @@ class GDS2Generator():
     def convert_element(self, structure_name, element, num):
         if "_BOUNDARY" in vars(element._ELEMENTS):
             element_name = self.element_name_finder(element, num)
+            tmp_name_i = 0
+            while element_name in self.cell_dp_dict[structure_name]._DesignParameter:
+                element_name = f'{element_name}_{tmp_name_i}'
+                tmp_name_i += 1
             layer_name = LayerReader._LayerName_unified[str(element._ELEMENTS._LAYER.layer)]
             # layer_name = self.layer_num2name[element._ELEMENTS._LAYER.layer]
             # layer_name = LayerReader._LayerNumber2LayerName(element._ELEMENTS._LAYER.layer)
@@ -792,23 +796,24 @@ class CellInspector:
         return inspector(structure)
 
     def convert_pcell_name_to_generator_name(self, pcell_name):
+        pcell_name = pcell_name[:15]
         if any(list(filter(lambda pch: pch in pcell_name, ['pch','pmos','PMOS','pfet']))):
             return 'PMOSWithDummy'
         elif any(list(filter(lambda nch: nch in pcell_name, ['nch','nmos','NMOS','nfet']))):
             return 'NMOSWithDummy'
-        elif any(list(filter(lambda via: via in pcell_name, ['M2_M1_','M1V1M2']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M2_M1_','M1V1M2','ViaMet12Met2']))):
             return 'ViaMet12Met2'
-        elif any(list(filter(lambda via: via in pcell_name, ['M3_M2_','M2V2M3']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M3_M2_','M2V2M3','ViaMet22Met3']))):
             return 'ViaMet22Met3'
-        elif any(list(filter(lambda via: via in pcell_name, ['M4_M3_','M3V3M4']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M4_M3_','M3V3M4','ViaMet32Met4']))):
             return 'ViaMet32Met4'
-        elif any(list(filter(lambda via: via in pcell_name, ['M5_M4_','M4V4M5']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M5_M4_','M4V4M5','ViaMet42Met5']))):
             return 'ViaMet42Met5'
-        elif any(list(filter(lambda via: via in pcell_name, ['M6_M5_','M5V5M6']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M6_M5_','M5V5M6','ViaMet52Met6']))):
             return 'ViaMet52Met6'
-        elif any(list(filter(lambda via: via in pcell_name, ['M7_M6_','M6V6M7']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M7_M6_','M6V6M7','ViaMet62Met7']))):
             return 'ViaMet62Met7'
-        elif any(list(filter(lambda via: via in pcell_name, ['M1_PO_','PCCAM1']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M1_PO_','PCCAM1','ViaPoly2Met1']))):
             return 'ViaPoly2Met1'
         elif any(list(filter(lambda via: via in pcell_name, ['M1_POD','extStacked', 'Pbody']))):
             return 'PbodyContact'
@@ -1006,26 +1011,30 @@ class LayoutReader:
             if dp['_DesignParametertype'] == 1:
                 x_width = dp['_XWidth']
                 y_width = dp['_YWidth']
-                layer_name = LayerReader._LayerName_unified[str(dp['_Layer'])]
-                x_min = min([xy[0] for xy in dp['_XYCoordinatesProjection'][0]])
-                y_min = min([xy[1] for xy in dp['_XYCoordinatesProjection'][0]])
-                lb_xy = [x_min,y_min]
-                if layer_name in self.layer_elements:
-                    self.layer_elements[layer_name].append(element_node(layer_name,x_width,y_width,lb_xy,idx))
-                else:
-                    self.layer_elements[layer_name] = []
-                    self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy,idx))
-                idx += 1
+                # layer_name = LayerReader._LayerName_unified[str(dp['_Layer'])]
+                layer_number = str(dp['_Layer'])
+                data_number = str(dp['_Datatype'])
+                layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
+                for i in range(len(dp['_XYCoordinatesProjection'])):
+                    x_min = min([xy[0] for xy in dp['_XYCoordinatesProjection'][i]])
+                    y_min = min([xy[1] for xy in dp['_XYCoordinatesProjection'][i]])
+                    lb_xy = [x_min,y_min]
+                    if layer_name in self.layer_elements:
+                        self.layer_elements[layer_name].append(element_node(layer_name,x_width,y_width,lb_xy,idx))
+                    else:
+                        self.layer_elements[layer_name] = []
+                        self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy,idx))
+                    idx += 1
 
-                x_max = x_min + dp['_XWidth']
-                y_max = y_min + dp['_YWidth']
-                self.x_min = min(self.x_min,x_min) if self.x_min else x_min
-                self.y_min = min(self.y_min,y_min) if self.y_min else y_min
-                self.x_max = max(self.x_max,x_max) if self.x_max else x_max
-                self.y_max = max(self.y_max,y_max) if self.y_max else y_max
+                    x_max = x_min + dp['_XWidth']
+                    y_max = y_min + dp['_YWidth']
+                    self.x_min = min(self.x_min,x_min) if self.x_min else x_min
+                    self.y_min = min(self.y_min,y_min) if self.y_min else y_min
+                    self.x_max = max(self.x_max,x_max) if self.x_max else x_max
+                    self.y_max = max(self.y_max,y_max) if self.y_max else y_max
 
             elif dp['_DesignParametertype'] == 2:
-                for path_xy_point in dp['_XYCoordinatesProjection'][0]:
+                for i, path_xy_point in enumerate(dp['_XYCoordinatesProjection']):
                     x_min = min([xy[0] for xy in path_xy_point])
                     y_min = min([xy[1] for xy in path_xy_point])
                     lb_xy = [x_min, y_min]
@@ -1034,7 +1043,10 @@ class LayoutReader:
                     rt_xy = [x_max, y_max]
                     x_width = x_max - x_min
                     y_width = y_max - y_min
-                    layer_name = LayerReader._LayerName_unified[str(dp['_Layer'])]
+                    # layer_name  = LayerReader._LayerName_unified[str(dp['_Layer'])]
+                    layer_number = str(dp['_Layer'])
+                    data_number = str(dp['_Datatype'])
+                    layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
                     if layer_name in self.layer_elements:
                         self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
                     else:
