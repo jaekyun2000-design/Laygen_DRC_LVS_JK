@@ -51,16 +51,29 @@ class path_point_inspector(inspector):
         super(path_point_inspector, self).__init__(qt_design_parameters)
         self.cluster_model.build_layer_ist_qt()
         self.path_list = []
+        self.path_name_dict = dict()
         self._load_path_list()
 
     def _load_path_list(self):
         for qt_dp in self.qt_design_parameters.values():
             if qt_dp._type == 2:
                 self.path_list.append(qt_dp._DesignParameter)
+                self.path_name_dict[qt_dp._DesignParameter['_ElementName']]  = qt_dp._DesignParameter
 
     def _inspect_path_connection(self, path):
         return self.cluster_model.search_path_intersection_points(path)
 
+    def get_all_path_vertex_info(self):
+        path_vertex_info_list = []
+        for path in self.path_list:
+            path_vertex_info_list.append(self.cluster_model.search_path_vertex_intersction(path))
+        return dict(path_vertex_info = path_vertex_info_list, path_list = self.path_list)
+
+    def get_path_list(self):
+        return self.path_list
+
+    def get_path_vertex_info(self, path_name):
+        return self.cluster_model.search_path_vertex_intersction(self.path_name_dict[path_name])
 
     def get_all_path_connection_info(self):
         path_connection_info_list = []
