@@ -580,6 +580,9 @@ class determinstic_clustering(clustering):
     def search_path_intersection_points(self, dp):
         return self.geo_searching.search_path_intersection_points(dp)
 
+    def search_path_vertex_intersction(self, dp):
+        return self.geo_searching.search_path_intersection_at_vertex(dp)
+
     def divide_false_pre_group(self):
         '''
         when the elements of pre-group have different interval, then seperate it two groups

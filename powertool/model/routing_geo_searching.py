@@ -438,6 +438,7 @@ class GeometricField:
     def search_path_intersection_at_vertex(self, dp):
         x_min_list, x_max_list, y_min_list, y_max_list = [], [], [], []
         intersection_point_list = []
+        direction_list = []
         if type(dp['_Width']) == str:
             dp['_Width'] = int(dp['_Width'])
         for i in range(len(dp['_XYCoordinates'][0])):
@@ -482,6 +483,8 @@ class GeometricField:
                         else:
                             x_min_list.append(dp['_XYCoordinates'][0][i][0])
                             x_max_list.append(dp['_XYCoordinates'][0][i][0]+1)
+                        y_min_list.append(y_min_list[-1])
+                        y_max_list.append(y_max_list[-1])
                     elif 'vertical' in direction:
                         if 'up' in direction:
                             y_min_list.append(dp['_XYCoordinates'][0][i][1]-1)
@@ -489,6 +492,9 @@ class GeometricField:
                         else:
                             y_min_list.append(dp['_XYCoordinates'][0][i][1])
                             y_max_list.append(dp['_XYCoordinates'][0][i][1]+1)
+                        x_min_list.append(x_min_list[-1])
+                        x_max_list.append(x_max_list[-1])
+            direction_list.append(direction)
 
 
         for i, x_min in enumerate(x_min_list):
@@ -509,7 +515,7 @@ class GeometricField:
                     node.data[1]) == list \
                      else [node.data[0]['_Hierarchy'][node.data[1]], node.data[1]] \
                  for node in intersected_node if dp['_id'] != node.data[0]['_ElementName']])
-        return intersection_point_list[0]
+        return intersection_point_list, direction_list
 
     def search_intersection(self, dp):
         if len(dp['_XYCoordinates']) == 0:
