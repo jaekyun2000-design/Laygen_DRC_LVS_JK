@@ -1250,6 +1250,12 @@ class ExpressionCalculator(QWidget):
         elif self.purpose in ['height', 'width']:
             pass
 
+    def clear(self):
+        self.XWindow.clear()
+        self.YWindow.clear()
+        self.XYWindow.clear()
+
+
 class PathWindow(QWidget):
     send_output_signal = pyqtSignal(dict)
     send_clicked_item_name_signal = pyqtSignal(str)
