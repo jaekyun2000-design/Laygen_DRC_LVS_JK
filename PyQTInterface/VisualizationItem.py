@@ -157,7 +157,9 @@ class _RectBlock(QGraphicsRectItem):
     #     self.brush.setColor(self._BlockTraits["_Color"])
 
     def paint(self, painter, option, widget=None):
-        if self.simplified_flag:
+        if self.element_info.block_traits['_ElementName'] == 'VSS':
+            print('1')
+        if self.simplified_flag or self.element_info.block_traits['_Ignore']:
             return
         # list_manager.layer_visible_flag_dict[self.itemtrait['layer']] is False:
         #     self.setVisible(False)
@@ -606,6 +608,8 @@ class _VisualizationItem(QGraphicsItemGroup):
             self._ItemTraits['_Reflect'] = QtDesignParameter._DesignParameter['_Reflect']
         if '_Angle' in QtDesignParameter._DesignParameter:
             self._ItemTraits['_Angle'] = QtDesignParameter._DesignParameter['_Angle']
+        if '_Ignore' in QtDesignParameter._DesignParameter:
+            self._ItemTraits['_Ignore'] = QtDesignParameter._DesignParameter['_Ignore']
 
         remove_item_list= []
         for child in self.childItems():
@@ -723,6 +727,13 @@ class _VisualizationItem(QGraphicsItemGroup):
             for child in self.childItems():
                 # self.removeFromGroup(child)
                 remove_item_list.append(child)
+
+            if '_Ignore' in self._ItemTraits and self._ItemTraits['_Ignore'] == True:
+                self.block=[]
+                self.blockGeneration()
+                self.setPos(0,0)
+                return remove_item_list
+
             if self._ItemTraits['_DesignParametertype'] == 1:
                 self.block = []
                 for idx, xyPairs in enumerate(self._ItemTraits['_XYCoordinates']):
