@@ -32,7 +32,7 @@ import re, ast, time, sys
 from PyQTInterface.delegator import dpdc_delegator
 
 debugFlag = True
-
+cnn_inference_data = []
 class _BoundarySetupWindow(QWidget):
 
     send_BoundarySetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
@@ -4815,6 +4815,14 @@ class _FlatteningCell(QWidget):
         self.show()
 
     def ok_button_accepted(self, test=None):
+        with open('result.csv','w',newline='') as f:
+            global cnn_inference_data
+            print(f'len: {len(cnn_inference_data)}')
+            import csv
+            write = csv.writer(f)
+            write.writerow(['CNN name','Text name','Real Element Name'])
+            write.writerows(cnn_inference_data)
+
 
         if test:
             pass
@@ -4860,6 +4868,7 @@ class _FlatteningCell(QWidget):
         return design_object, cell_name
 
     def modifyBraches(self, item, cn):
+        global cnn_inference_data
         cell_name = QLabel(cn)
 
         flattenCheck = QCheckBox()
@@ -4880,6 +4889,9 @@ class _FlatteningCell(QWidget):
                 tmp_dp = self.dp[item.text(0)]
                 tmp_delegator = dpdc_delegator.DesignDelegator(None)
                 library_name = tmp_delegator.build_layer_matrix_by_dps(tmp_dp)
+                text_inference = topAPI.gds2generator.CellInspector().convert_pcell_name_to_generator_name(item.text(0))
+                if library_name != text_inference:
+                    cnn_inference_data.append((library_name, text_inference, item.text(0)))
                 module_index = combo.findText(library_name)
                 if module_index != -1:
                     combo.setCurrentIndex(module_index)
