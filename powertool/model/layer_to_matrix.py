@@ -71,5 +71,29 @@ if __name__ == '__main__':
     # reader = gds2generator.LayoutReader()
     # reader.load_gds('./layout_rand_gen/dataset/NMOS/0.gds', root_cell_name='0')
     # len(reader)
+    import os
+    #print cwd
     lay_to_mat = LayerToMatrix(100,100)
-    lay_to_mat.load_gds('./layout_rand_gen/dataset/C2FF/0.gds', '0')
+    lay_to_mat.load_gds('./PyQTInterface/GDSFile/rdgen/via122.gds', '999')
+    import matplotlib.pyplot as plt
+    #
+    for layer, value in lay_to_mat.matrix_by_layer.items():
+        print(layer)
+        plt.imshow(value[:, :])
+        plt.show()
+    layer_list = lay_to_mat.matrix_by_layer.keys()
+    single_data = None
+    stacked_matrix = None
+    for layer in lay_to_mat.matrix_by_layer.keys():
+        if type(stacked_matrix) == np.ndarray:
+            stacked_matrix = np.append(stacked_matrix, np.expand_dims(np.array(lay_to_mat.matrix_by_layer[layer]), 2),
+                                       axis=2)
+        else:
+            stacked_matrix = np.expand_dims(np.array(lay_to_mat.matrix_by_layer[layer]), 2)
+    single_data = np.array([stacked_matrix])
+    single_data = single_data.reshape(1, 100, 100, len(layer_list))
+    import matplotlib.pyplot as plt
+
+    for i in range(len(lay_to_mat.matrix_by_layer.keys())):
+        plt.imshow(single_data[0, :, :, i])
+        plt.show()
