@@ -2017,6 +2017,19 @@ class _MainWindow(QMainWindow):
                     dc_id = self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_name)
                     self._QTObj._qtProject._ElementManager.load_dp_dc_id(dp_id=dp_name, dc_id=dc_id)
 
+                #### conditional stmt 와 같이 특정 조건에만 만들어지는 design element가 예전에 만들어서 dp에는 있지만, 새로 업데이트 한 후에
+                #### dp에서 사라지는 경우가 있을 텐데, 이 경우 자동으로 ignore 시켜주는 과정이 필요하다고 생각
+                candidate_constraints_item = self.dockContentWidget3_2.model.findItems('', Qt.MatchContains, 1)
+                candidate_constraint_ids = [item.text() for item in candidate_constraints_item]
+                candidate_dp_name = [self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id) for dc_id in candidate_constraint_ids if self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc_id)]
+                ignore_target_dp = list(filter(lambda dp_name: dp_name not in candidate_dp_name, list(current_dpdict.keys())))
+                ignore_target_dp = list(filter(lambda dp_name: dp_name not in dp_dict, ignore_target_dp))
+                for dp_name in ignore_target_dp:
+                    current_dpdict[dp_name]._DesignParameter['_ignore'] = True
+                    ignore_vi = self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']]
+                    self.scene.removeItem(ignore_vi)
+
+
 
             ##### Element Manager Update... if needed ... #####
             # dc_dp_pair_lost_items = list(filter(lambda dp_name: self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dp_name) is None, list(dp_dict.keys())))
@@ -2041,6 +2054,8 @@ class _MainWindow(QMainWindow):
                     self.warningbox.setText(f"Variable {error_variable_name} was used at generator but not defined.")
                     self.warningbox.setIcon(QMessageBox.Warning)
                     self.warningbox.show()
+
+
 
         except:
             working_code = self.debugConstraint()
