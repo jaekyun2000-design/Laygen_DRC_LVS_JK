@@ -2025,9 +2025,10 @@ class _MainWindow(QMainWindow):
                 ignore_target_dp = list(filter(lambda dp_name: dp_name not in candidate_dp_name, list(current_dpdict.keys())))
                 ignore_target_dp = list(filter(lambda dp_name: dp_name not in dp_dict, ignore_target_dp))
                 for dp_name in ignore_target_dp:
-                    current_dpdict[dp_name]._DesignParameter['_ignore'] = True
+                    # current_dpdict[dp_name]._DesignParameter['_ignore'] = True
                     ignore_vi = self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']]
                     self.scene.removeItem(ignore_vi)
+                    del current_dpdict[dp_name]
 
 
 
