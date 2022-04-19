@@ -159,7 +159,7 @@ class _RectBlock(QGraphicsRectItem):
     def paint(self, painter, option, widget=None):
         if self.element_info.block_traits['_ElementName'] == 'VSS':
             print('1')
-        if self.simplified_flag or self.element_info.block_traits['_Ignore']:
+        if self.simplified_flag or ('_Ignore' in self.element_info.block_traits and self.element_info.block_traits['_Ignore']):
             return
         # list_manager.layer_visible_flag_dict[self.itemtrait['layer']] is False:
         #     self.setVisible(False)
@@ -730,7 +730,7 @@ class _VisualizationItem(QGraphicsItemGroup):
 
             if '_Ignore' in self._ItemTraits and self._ItemTraits['_Ignore'] == True:
                 self.block=[]
-                self.blockGeneration()
+                #self.blockGeneration()
                 self.setPos(0,0)
                 return remove_item_list
 
