@@ -4,8 +4,8 @@ import copy
 import math
 from generatorLib import DRC
 
-class opppcres_b_CDNS_6377410485842(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='opppcres_b_CDNS_6377410485842'):
+class UNITR(StickDiagram._StickDiagram):
+	def __init__(self, _DesignParameter=None, _Name='UNITR'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
