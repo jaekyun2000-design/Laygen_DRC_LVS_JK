@@ -809,8 +809,9 @@ class GDS_ANGLE():
         self.tag=tag
         self.angle=None
     def write_binary_gds_stream(self,binary_gds_stream):
+        self.angle = 0 if self.angle == None else self.angle
         fmt='>HHQ'
-        fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,excess64_8byte_encode(self.angle))
+        fmt_binary_data=struct.pack(fmt,struct.calcsize(fmt),self.tag,excess64_8byte_encode(int(self.angle)))
         binary_gds_stream.write(fmt_binary_data)
         
     def read_binary_gds_stream(self,tag,gds_data):
