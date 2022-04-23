@@ -199,7 +199,7 @@ class _MainWindow(QMainWindow):
         print("***************************Initializing Graphic Interface Start")
 
         ################# MAIN WINDOW setting ####################
-        self.setWindowTitle("S2S GUI PROJECT")
+        # self.setWindowTitle("S2S GUI PROJECT")
         # self.move(500,100)
         WIDTH = 1920
         LENGTH = 1080
@@ -701,13 +701,13 @@ class _MainWindow(QMainWindow):
 
         VBoxForPeriButton.addStretch(3)
         # VBoxForPeriButton.addWidget(self.createConstraintButton)
-        VBoxForPeriButton.addWidget(self.createConstraintWithPyCodeButton)
+        # VBoxForPeriButton.addWidget(self.createConstraintWithPyCodeButton)
         # VBoxForPeriButton.addWidget(self.createConstraintButtonASTLegacy)
         VBoxForPeriButton.addWidget(self.createConstraintButtonAST)
         VBoxForPeriButton.addWidget(self.createConstraintButtonCUSTOM)
-        VBoxForPeriButton.addWidget(self.createVariableButtonCUSTOM)
+        # VBoxForPeriButton.addWidget(self.createVariableButtonCUSTOM)
         # VBoxForPeriButton.addWidget(self.saveConstraintAsJSONButton)
-        VBoxForPeriButton.addWidget(self.saveConstraintAsPickleButton)
+        # VBoxForPeriButton.addWidget(self.saveConstraintAsPickleButton)
         # VBoxForPeriButton.addWidget(self.loadConstraintFromPickleButton)
         # VBoxForPeriButton.addWidget(self.ConstraintTemplateButton)
         # VBoxForPeriButton.addWidget(self.parsetreeEasyRun)
