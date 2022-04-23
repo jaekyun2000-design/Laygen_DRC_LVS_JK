@@ -11,6 +11,20 @@ if 'generatorLib' in dir_check or 'PyQTInterface' in dir_check:
     os.chdir('..')
 # sys.path.append('./generatorLib/generator_models')
 sys.path.append(generator_model_path)
+
+class Parm:
+    def __init__(self, name, default):
+        self.name = name
+        self.default = default
+        self.check_value()
+
+    def check_value(self):
+        if type(self.default) == str:
+            if (self.default[0] == '\'' and self.default[-1] == '\'') or (self.default[0] == '\"' and self.default[-1] == '\"'):
+                return
+            else:
+                self.default = f"\'{self.default}\'"
+
 print("*********Generator Library Loading Start")
 
 generator_list = []
@@ -36,7 +50,8 @@ for generator in glob.iglob(f'{generator_model_path}/*.py'):
             class_function_dict[generator_class_name] = dict()
             for fcn_name, fcn_obj in fcn_list:
                 args = list(inspect.signature(fcn_obj).parameters.values())[1:]
-                class_function_dict[generator_class_name][fcn_name] = args
+                args_list = [Parm(arg.name, arg.default) for arg in args]
+                class_function_dict[generator_class_name][fcn_name] = args_list
                 # class_function_dict[generator_class_name][fcn_name] = inspect.signature(fcn_obj)
 
 
