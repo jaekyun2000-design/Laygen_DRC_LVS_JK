@@ -3,14 +3,14 @@ from generatorLib import DesignParameters
 import copy
 import math
 from generatorLib import DRC
-from generatorLib.generator_models import ViaMet12Met2
-from generatorLib.generator_models import ViaMet42Met5
 from generatorLib.generator_models import ViaMet22Met3
-from generatorLib.generator_models import PSubRing
-from generatorLib.generator_models import ViaMet52Met6
-from generatorLib.generator_models import ViaMet32Met4
-from generatorLib.generator_models import transmission_gate
 from generatorLib.generator_models import polyres
+from generatorLib.generator_models import ViaMet12Met2
+from generatorLib.generator_models import ViaMet32Met4
+from generatorLib.generator_models import ViaMet52Met6
+from generatorLib.generator_models import ViaMet42Met5
+from generatorLib.generator_models import transmission_gate
+from generatorLib.generator_models import PSubRing
 
 class ResistorBankInFullResistorBank_0(StickDiagram._StickDiagram):
 	def __init__(self, _DesignParameter=None, _Name='ResistorBankInFullResistorBank_0'):

@@ -2507,12 +2507,17 @@ class _MainWindow(QMainWindow):
             self.create_dc_vi_from_top_dp(self.entireHierarchy, test=test)
 
     def create_dc_vi_from_top_dp(self, hierarchy, test=None):
-
+        import time
+        time_start = time.time()
         self.fc = SetupWindow._FlatteningCell(hierarchy, self._QTObj._qtProject._DesignParameter)
         self.fc.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.fc.show()
 
         flattening_dict = self.fc.ok_button_accepted(test)
+        if user_setup.exp_data:
+            time_widget = QMessageBox(self)
+            time_widget.setText(f"Flattening Cell: {time.time()-time_start}")
+            time_widget.show()
         self.fc.destroy()
 
         print("############################ Cell DP, DC, VISUALITEM CREATION START ###############################")
