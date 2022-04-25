@@ -1,5 +1,5 @@
 import user_setup
-if user_setup.DL_FEATURE:
+if user_setup.DL_FEATURE and user_setup.DL_Parameter:
     from powertool.model.layer_to_matrix import LayerToMatrix
     from keras import models, layers
     import numpy as np
@@ -38,7 +38,7 @@ def transform_outputs(predict_list, cell_size=None, model=None ):
     return output_dict
 
 
-if user_setup.DL_FEATURE:
+if user_setup.DL_FEATURE and user_setup.DL_Parameter:
     if user_setup.matrix_x_step == 128:
         nmos_model = tensorflow.keras.models.load_model('powertool/dl_models/tsmc65/nmos_tsmc65')
     elif user_setup.matrix_x_step == 256:

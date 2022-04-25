@@ -506,8 +506,9 @@ class DesignDelegator(delegator.Delegator):
 
         cell_data = np.array([stacked_matrix])
         # import matplotlib.pyplot as plt
-        # plt.imshow(cell_data[0, :, :, 3:6])
-        # plt.show()
+        # for i in range(cell_data.shape[-1]):
+        #     plt.imshow(cell_data[0, :, :, i])
+        #     plt.show()
         # cell_data = cell_data.reshape((1, user_setup.matrix_y_step,user_setup.matrix_y_step, len(user_setup.layer_list)))
         if not topAPI.element_predictor.model:
             topAPI.element_predictor.model = topAPI.element_predictor.create_element_detector_model()

@@ -797,7 +797,11 @@ class CellInspector:
 
     def convert_pcell_name_to_generator_name(self, pcell_name):
         pcell_name = pcell_name[:15]
-        if any(list(filter(lambda pch: pch in pcell_name, ['pch','pmos','PMOS','pfet']))):
+        if any(list(filter(lambda name: name in pcell_name, ['NMOSSubring']))):
+            return 'PSubRing'
+        elif any(list(filter(lambda name: name in pcell_name, ['PMOSSubring']))):
+            return 'NSubRing'
+        elif any(list(filter(lambda pch: pch in pcell_name, ['pch','pmos','PMOS','pfet']))):
             return 'PMOSWithDummy'
         elif any(list(filter(lambda nch: nch in pcell_name, ['nch','nmos','NMOS','nfet']))):
             return 'NMOSWithDummy'
@@ -819,6 +823,20 @@ class CellInspector:
             return 'PbodyContact'
         elif any(list(filter(lambda via: via in pcell_name, ['M1_NOD', 'Nbody']))):
             return 'NbodyContact'
+        # elif any(list(filter(lambda name: name in pcell_name, ['Oppcres','Opppcres']))):
+        #     return 'PolyResistor'
+        # elif any(list(filter(lambda name: name in pcell_name, ['Transmission']))):
+        #     return 'TransmissionGate'
+        # elif any(list(filter(lambda name: name in pcell_name, ['SlicerInSlicer']))):
+        #     return 'StrongArmLatch'
+        # elif any(list(filter(lambda name: name in pcell_name, ['SlicerWith']))):
+        #     return 'Slicer'
+        # elif any(list(filter(lambda name: name in pcell_name, ['Inverter']))):
+        #     return 'Inverter'
+        # elif any(list(filter(lambda name: name in pcell_name, ['ResistorBankInF']))):
+        #     return 'ResistorBankUnit'
+        # elif any(list(filter(lambda name: name in pcell_name, ['SRLatch']))):
+        #     return 'SRLatch'
         else:
             return None
 
