@@ -4,6 +4,7 @@ import copy
 import math
 from generatorLib import DRC
 from generatorLib.generator_models import Two2eight_inputs_mux_ver2
+from generatorLib.generator_models import ViaMet32Met4
 
 class Two2TwentyEight_MUX(StickDiagram._StickDiagram):
 	def __init__(self, _DesignParameter=None, _Name='Two2TwentyEight_MUX'):
@@ -32,6 +33,8 @@ class Two2TwentyEight_MUX(StickDiagram._StickDiagram):
 
 
 
+
+
 		# self._DesignParameter['EightMUX_1'] = self._SrefElementDeclaration(_DesignObj=Two2eight_inputs_mux_ver2._2to8inputs_mux(_Name='EightMUX_1In{}'.format(_Name)))[0]
 		# self._DesignParameter['EightMUX_1']['_DesignObj']._CalculateDesignParameter(**dict(param_muxmodule,_Input_offset=1))
 		# self._DesignParameter['EightMUX_1']['_XYCoordinates'] = [[0.0, 0.0]]
@@ -44,3 +47,25 @@ class Two2TwentyEight_MUX(StickDiagram._StickDiagram):
 		# self._DesignParameter['EightMUX_3']['_XYCoordinates'] = [[0.0, (- 3600.0)]]
 		# self._DesignParameter['EightMUX_3']['_Reflect'] = [1, 0, 0]
 		#
+		self._DesignParameter['OUTCONNECT'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='OUTCONNECTIn{}'.format(_Name)))[0]
+		self._DesignParameter['OUTCONNECT']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
+		tmp = []
+		for i in range(0,Num_of_8mux) :
+			name11 = 'EightMUX_%d'%i
+			for j in range (1,7) :
+				name12 = 'mux_module_%d'%j
+				tmp.append([((((self._DesignParameter[name11]['_XYCoordinates'][0][0] + self._DesignParameter[name11]['_DesignObj']._DesignParameter[name12]['_XYCoordinates'][0][0]) + self._DesignParameter[name11]['_DesignObj']._DesignParameter[name12]['_DesignObj']._DesignParameter['INb_m1_4']['_XYCoordinates'][0][0][0])
+							+ drc._VIAxMinWidth)) + drc._VIAxMinEnclosureByMetx * 2 + drc._MetalxMinSpace2, (self._DesignParameter['EightMUX_0']['_XYCoordinates'][0][1] + self._DesignParameter['EightMUX_0']['_DesignObj']._DesignParameter['OUT_line']['_XYCoordinates'][0][0][1]
+							-2*Cell_height*((1+i)//2)+(2*Cell_height-2*self._DesignParameter['EightMUX_0']['_DesignObj']._DesignParameter['OUT_line']['_XYCoordinates'][0][0][1])*(i%2))])
+
+		self._DesignParameter['OUTCONNECT']['_XYCoordinates'] = tmp
+		del tmp
+
+		tmp2 = [[]]
+		self._DesignParameter['OUTconnect_m3'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=self._DesignParameter['OUTCONNECT']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'])
+		for j in range (0,5) :
+			tmp2.append([self._DesignParameter['OUTCONNECT']['_XYCoordinates'][j], self._DesignParameter['OUTCONNECT']['_XYCoordinates'][-6-j]])
+
+		self._DesignParameter['OUTconnect_m3']['_XYCoordinates'] = tmp2
+		del tmp2
+	#self._DesignParameter['OUTconnect']['_XYCoordinates'] = [[][]]
