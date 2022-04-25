@@ -4900,6 +4900,8 @@ class _FlatteningCell(QWidget):
                 module_index = combo.findText(module_name)
                 if module_index != -1:
                     combo.setCurrentIndex(module_index)
+                if user_setup.exp_data:
+                    combo.setCurrentIndex(0)
 
         flattenCheck.stateChanged.connect(self.ActivateCombobox)
         macroCheck.stateChanged.connect(self.ActivateCombobox)

@@ -48,6 +48,7 @@ layer_list = ['DIFF','PIMP','POLY','METAL1', 'METAL2', 'METAL3', 'METAL4', 'META
 data_type_list = ['Inverter','NSubRing','PSubRing','NMOSWithDummy','PMOSWithDummy','NbodyContact','PbodyContact','ViaPoly2Met1','ViaMet12Met2', 'ViaMet22Met3','ViaMet32Met4','ViaMet42Met5','ViaMet52Met6',
                   'ViaMet62Met7', 'PolyResistor','SRLatch','StrongArmLatch','TransmissionGate','Slicer','ResistorBankUnit']
 
+exp_data = False
 
 
 
