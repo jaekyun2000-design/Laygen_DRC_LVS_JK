@@ -63,8 +63,8 @@ class Two2TwentyEight_MUX(StickDiagram._StickDiagram):
 
 		tmp2 = [[]]
 		self._DesignParameter['OUTconnect_m3'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=self._DesignParameter['OUTCONNECT']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'])
-		for j in range (0,5) :
-			tmp2.append([self._DesignParameter['OUTCONNECT']['_XYCoordinates'][j], self._DesignParameter['OUTCONNECT']['_XYCoordinates'][-6-j]])
+		for j in range (0,6) :
+			tmp2.append([self._DesignParameter['OUTCONNECT']['_XYCoordinates'][j], self._DesignParameter['OUTCONNECT']['_XYCoordinates'][-6+j]])
 
 		self._DesignParameter['OUTconnect_m3']['_XYCoordinates'] = tmp2
 		del tmp2

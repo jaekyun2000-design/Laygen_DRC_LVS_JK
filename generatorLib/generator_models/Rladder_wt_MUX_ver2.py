@@ -15,7 +15,7 @@ class Rladder_wt_MUX(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,Cell_height=1800,Num_of_Vref=25,UNITR_X_WIDTH=1500,UNITR_Y_LENGTH=1000,UNITR_CONT_X_NUM=None,UNITR_CONT_Y_NUM=1,Rladder_X_NUM=10,Rladder_Y_NUM=6,First_Vref_Point=4,VREF_STEP=2,MUX_INV_nmos_width=180,MUX_INV_finger=1,MUX_VDD2PMOS=410,MUX_gate_length=30,MUX_gate_spacing=100,MUX_XVT='\'RVT\'',MUX_nmos_y=375,MUX_cell_height=1800,MUX_TG_pmos_width=600,MUX_TG_nmos_width=300,MUX_TG_poly_y=760,MUX_nandin_y=860):
+	def _CalculateDesignParameter(self,MUX_offset=-5000,Cell_height=1800,Num_of_Vref=25,UNITR_X_WIDTH=1500,UNITR_Y_LENGTH=1000,UNITR_CONT_X_NUM=None,UNITR_CONT_Y_NUM=1,Rladder_X_NUM=10,Rladder_Y_NUM=6,First_Vref_Point=4,VREF_STEP=2,MUX_INV_nmos_width=180,MUX_INV_finger=1,MUX_VDD2PMOS=410,MUX_gate_length=30,MUX_gate_spacing=100,MUX_XVT='\'RVT\'',MUX_nmos_y=375,MUX_cell_height=1800,MUX_TG_pmos_width=600,MUX_TG_nmos_width=300,MUX_TG_poly_y=760,MUX_nandin_y=860):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -25,9 +25,8 @@ class Rladder_wt_MUX(StickDiagram._StickDiagram):
 		self._DesignParameter['R_ladder']['_XYCoordinates'] = [[0.0, 0.0]]
 		self._DesignParameter['MUX'] = self._SrefElementDeclaration(_DesignObj=Two2TwentyEight_MUX.Two2TwentyEight_MUX(_Name='MUXIn{}'.format(_Name)))[0]
 		self._DesignParameter['MUX']['_DesignObj']._CalculateDesignParameter(**dict(INV_nmos_width=MUX_INV_nmos_width, INV_finger=MUX_INV_finger, VDD2PMOS=MUX_VDD2PMOS, gate_length=MUX_gate_length, gate_spacing=MUX_gate_spacing, XVT=MUX_XVT, NMOS_y=MUX_nmos_y, Cell_height=MUX_cell_height, TG_pmos_width=MUX_TG_pmos_width, TG_nmos_width=MUX_TG_nmos_width, TG_poly_y=MUX_TG_poly_y, NANDIN_y=MUX_nandin_y, INPUT_num=Num_of_Vref))
-		self._DesignParameter['MUX']['_XYCoordinates'] = [[((((self._DesignParameter['R_ladder']['_XYCoordinates'][0][0] + self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['GuardRing']['_XYCoordinates'][0][0]) + self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['GuardRing']['_DesignObj']._DesignParameter['left']['_XYCoordinates'][0][0]) + self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['GuardRing']['_DesignObj']._DesignParameter['left']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['GuardRing']['_DesignObj']._DesignParameter['left']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2)-5000),
+		self._DesignParameter['MUX']['_XYCoordinates'] = [[((((self._DesignParameter['R_ladder']['_XYCoordinates'][0][0] + self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['GuardRing']['_XYCoordinates'][0][0]) + self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['GuardRing']['_DesignObj']._DesignParameter['left']['_XYCoordinates'][0][0]) + self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['GuardRing']['_DesignObj']._DesignParameter['left']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['GuardRing']['_DesignObj']._DesignParameter['left']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2)+MUX_offset),
 														   (((((self._DesignParameter['R_ladder']['_XYCoordinates'][0][1] + self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['GuardRing']['_XYCoordinates'][0][1]) + self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['GuardRing']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1]) + self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['GuardRing']['_DesignObj']._DesignParameter['bot']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['GuardRing']['_DesignObj']._DesignParameter['bot']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] / 2)) - (Cell_height * 2))]]
-
 
 		for i in range (0,Num_of_Vref) :
 
@@ -64,3 +63,12 @@ class Rladder_wt_MUX(StickDiagram._StickDiagram):
 																   [(+ ((self._DesignParameter['MUX']['_XYCoordinates'][0][0] + self._DesignParameter['MUX']['_DesignObj']._DesignParameter[muxname2]['_DesignObj']._DesignParameter[muxname]['_XYCoordinates'][0][0]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter[muxname2]['_DesignObj']._DesignParameter[muxname]['_DesignObj']._DesignParameter['Vref_in_m3_2']['_XYCoordinates'][0][0][0])),
 																	(+ ((self._DesignParameter['MUX']['_XYCoordinates'][0][1] + self._DesignParameter['MUX']['_DesignObj']._DesignParameter[muxname2]['_DesignObj']._DesignParameter[muxname]['_XYCoordinates'][0][1]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter[muxname2]['_DesignObj']._DesignParameter[muxname]['_DesignObj']._DesignParameter['Vref_in_m3_2']['_XYCoordinates'][0][0][1])
 																	 -2*Cell_height*((Eightmux_num+1)//2)+(2*Cell_height-2*self._DesignParameter['MUX']['_DesignObj']._DesignParameter[muxname2]['_DesignObj']._DesignParameter[muxname]['_DesignObj']._DesignParameter['Vref_in_m3_2']['_XYCoordinates'][0][0][1])*(Eightmux_num%2))]]]
+
+		if Num_of_Vref >= 7:
+			if (self._DesignParameter['Vref_6_m2_1']['_XYCoordinates'][0][1][0]-self._DesignParameter['Vref_6_m2_1']['_XYCoordinates'][0][0][0]) >= 0 :
+				raise NotImplementedError
+		else :
+			tmpname = 'Vref_%d_m2_1'%(Num_of_Vref-1)
+			if (self._DesignParameter[tmpname]['_XYCoordinates'][0][1][0]-self._DesignParameter[tmpname]['_XYCoordinates'][0][0][0]) >= 0 :
+				raise NotImplementedError
+			del tmpname
