@@ -882,7 +882,8 @@ class _MainWindow(QMainWindow):
                 dc._ast._id = dc._id
             if '_type' not in dc._ast.__dict__:
                 dc._ast._type = dc._type
-
+            print(f'{dc._ast._id} and {self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc._ast._id)}')
+        self._QTObj._qtProject._ElementManager.load_dp_dc_id('nset_sa','EasyDebugModule0')
         print('Fix Contaminated Design Constraints')
 
 
