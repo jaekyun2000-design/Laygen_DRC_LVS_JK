@@ -2959,6 +2959,7 @@ class _SelectedDesignListWidget(QListWidget):
                 self.sw.send_exported_sref_signal.connect(self.createDummyConstraint)
                 self.sw.send_destroy_signal.connect(self.sw.close)
             except:
+                traceback.print_exc()
                 warnings.warn('Not Implemented.')
         elif modifyingObject._ItemTraits['_DesignParametertype'] == 8:
             if modifyingObject._ItemTraits['_LayerUnifiedName'] == 'text':

@@ -220,7 +220,8 @@ class RArray(StickDiagram._StickDiagram):
 																									 + (drc._CoMinWidth+drc._CoMinSpace2) * (Ring_contact-1) + drc._CoMinWidth + drc._Metal1MinEnclosureCO2 * 2 + drc._PpMinExtensiononPactive2 * 2,
 																							  width=self._DesignParameter['PIMP_boundary_1']['_XWidth'] + drc._PpMinSpace * 2 * 2
 																							  		 + (drc._CoMinWidth+drc._CoMinSpace2) * (Ring_contact-1) + drc._CoMinWidth + drc._Metal1MinEnclosureCO2 * 2 + drc._PpMinExtensiononPactive2 * 2,
-																							  contact=Ring_contact))
+																							  #contact=Ring_contact
+																							  contact_bottom=Ring_contact,contact_top=Ring_contact,contact_left=Ring_contact,contact_right=Ring_contact))
 			self._DesignParameter['GuardRing']['_XYCoordinates'] = [self._DesignParameter['PIMP_boundary_1']['_XYCoordinates'][0]]
 
 			self._DesignParameter['M1_guard_horizontal']['_XWidth'] = self._DesignParameter['PIMP_boundary_1']['_XWidth'] + drc._PpMinSpace * 2 * 2 \

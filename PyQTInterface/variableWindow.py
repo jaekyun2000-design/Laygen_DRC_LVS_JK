@@ -1190,12 +1190,14 @@ class _DesignVariableManagerWindow(QWidget):
 
     def itemChanged(self, item):
         row = item.index().row()
-        _item = self.model.item(row).text()
+        _item = self.model.item(row).text() if self.model.item(row) else None
         if _item in self.idDict:
             if item.text() == 'dictionary':
                 return
             vid = self.idDict[_item]['vid']
             self.variableDict[vid]['value'] = item.text()
+        else:
+            warnings.warn(f"item does not found")
 
     def itemClicked(self, item):
         _item = self.model.item(item.row()).text()
