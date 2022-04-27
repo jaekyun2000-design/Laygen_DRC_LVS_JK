@@ -883,6 +883,11 @@ class _MainWindow(QMainWindow):
             if '_type' not in dc._ast.__dict__:
                 dc._ast._type = dc._type
 
+            if isinstance(dc._ast, element_ast.ElementNode):
+                if self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dc._id) == None and dc._ast.name:
+                    self._QTObj._qtProject._ElementManager.load_dp_dc_id(dc._ast.name, dc._ast._id)
+                    print(f'Fix Pairing: {dc._ast.name}-{dc._ast._id}')
+
         print('Fix Contaminated Design Constraints')
 
 
