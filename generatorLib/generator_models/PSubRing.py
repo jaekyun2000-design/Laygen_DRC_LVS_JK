@@ -50,16 +50,16 @@ class PSubRing(StickDiagram._StickDiagram):
 
 
 		self._DesignParameter['bot'] = self._SrefElementDeclaration(_DesignObj=PbodyContact._PbodyContact(_Name='botIn{}'.format(_Name)))[0]
-		self._DesignParameter['bot']['_DesignObj']._CalculatePbodyContactDesignParameter(**dict(_NumberOfPbodyCOX=((int(((width - (2 * drc._CoMinEnclosureByOD)) / (drc._CoMinWidth + drc._CoMinSpace2))) - contact_bottom) + 0), _NumberOfPbodyCOY=contact_bottom, _Met1XWidth=None, _Met1YWidth=None))
+		self._DesignParameter['bot']['_DesignObj']._CalculatePbodyContactDesignParameter(**dict(_NumberOfPbodyCOX=((int(((width - (2 * drc._CoMinEnclosureByOD)) / (drc._CoMinWidth + drc._CoMinSpace2))) - (contact_left+contact_right)//2) + 0), _NumberOfPbodyCOY=contact_bottom, _Met1XWidth=None, _Met1YWidth=None))
 		self._DesignParameter['bot']['_XYCoordinates'] = [[0, ((- height) / 2)]]
 		self._DesignParameter['top'] = self._SrefElementDeclaration(_DesignObj=PbodyContact._PbodyContact(_Name='topIn{}'.format(_Name)))[0]
-		self._DesignParameter['top']['_DesignObj']._CalculatePbodyContactDesignParameter(**dict(_NumberOfPbodyCOX=((int(((width - (2 * drc._CoMinEnclosureByOD)) / (drc._CoMinWidth + drc._CoMinSpace2))) - contact_top) + 0), _NumberOfPbodyCOY=contact_top, _Met1XWidth=None, _Met1YWidth=None))
+		self._DesignParameter['top']['_DesignObj']._CalculatePbodyContactDesignParameter(**dict(_NumberOfPbodyCOX=((int(((width - (2 * drc._CoMinEnclosureByOD)) / (drc._CoMinWidth + drc._CoMinSpace2))) - (contact_left+contact_right)//2) + 0), _NumberOfPbodyCOY=contact_top, _Met1XWidth=None, _Met1YWidth=None))
 		self._DesignParameter['top']['_XYCoordinates'] = [[0, (height / 2)]]
 		self._DesignParameter['left'] = self._SrefElementDeclaration(_DesignObj=PbodyContact._PbodyContact(_Name='leftIn{}'.format(_Name)))[0]
-		self._DesignParameter['left']['_DesignObj']._CalculatePbodyContactDesignParameter(**dict(_NumberOfPbodyCOX=contact_left, _NumberOfPbodyCOY=((0 + int(((height - (2 * drc._CoMinEnclosureByOD)) / (drc._CoMinWidth + drc._CoMinSpace2)))) - contact_left), _Met1XWidth=None, _Met1YWidth=None))
+		self._DesignParameter['left']['_DesignObj']._CalculatePbodyContactDesignParameter(**dict(_NumberOfPbodyCOX=contact_left, _NumberOfPbodyCOY=((0 + int(((height - (2 * drc._CoMinEnclosureByOD)) / (drc._CoMinWidth + drc._CoMinSpace2)))) - (contact_top+contact_bottom)//2), _Met1XWidth=None, _Met1YWidth=None))
 		self._DesignParameter['left']['_XYCoordinates'] = [[((- width) / 2), 0]]
 		self._DesignParameter['right'] = self._SrefElementDeclaration(_DesignObj=PbodyContact._PbodyContact(_Name='rightIn{}'.format(_Name)))[0]
-		self._DesignParameter['right']['_DesignObj']._CalculatePbodyContactDesignParameter(**dict(_NumberOfPbodyCOX=contact_right, _NumberOfPbodyCOY=((0 + int(((height - (2 * drc._CoMinEnclosureByOD)) / (drc._CoMinWidth + drc._CoMinSpace2)))) - contact_right), _Met1XWidth=None, _Met1YWidth=None))
+		self._DesignParameter['right']['_DesignObj']._CalculatePbodyContactDesignParameter(**dict(_NumberOfPbodyCOX=contact_right, _NumberOfPbodyCOY=((0 + int(((height - (2 * drc._CoMinEnclosureByOD)) / (drc._CoMinWidth + drc._CoMinSpace2)))) - (contact_top+contact_bottom)//2), _Met1XWidth=None, _Met1YWidth=None))
 		self._DesignParameter['right']['_XYCoordinates'] = [[(width / 2), 0]]
 		self._DesignParameter['od_bot'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['DIFF'][0], _Datatype=DesignParameters._LayerMapping['DIFF'][1], _XWidth=width+(self._DesignParameter['left']['_DesignObj']._DesignParameter['_ODLayer']['_XWidth']+self._DesignParameter['right']['_DesignObj']._DesignParameter['_ODLayer']['_XWidth'])/2, _YWidth=(0 + self._DesignParameter['bot']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth']))
 		self._DesignParameter['od_bot']['_XYCoordinates'] = [[(self._DesignParameter['left']['_XYCoordinates'][0][0]-self._DesignParameter['left']['_DesignObj']._DesignParameter['_ODLayer']['_XWidth']/2+self._DesignParameter['right']['_XYCoordinates'][0][0]+self._DesignParameter['right']['_DesignObj']._DesignParameter['_ODLayer']['_XWidth']/2)/2 ,self._DesignParameter['bot']['_XYCoordinates'][0][1]]]
