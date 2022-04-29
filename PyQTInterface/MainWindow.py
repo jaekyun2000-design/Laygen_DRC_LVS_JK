@@ -882,8 +882,12 @@ class _MainWindow(QMainWindow):
                 dc._ast._id = dc._id
             if '_type' not in dc._ast.__dict__:
                 dc._ast._type = dc._type
-            print(f'{dc._ast._id} and {self._QTObj._qtProject._ElementManager.get_dp_id_by_dc_id(dc._ast._id)}')
-        self._QTObj._qtProject._ElementManager.load_dp_dc_id('nset_sa','EasyDebugModule0')
+
+            if isinstance(dc._ast, element_ast.ElementNode):
+                if self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dc._id) == None and dc._ast.name:
+                    self._QTObj._qtProject._ElementManager.load_dp_dc_id(dc._ast.name, dc._ast._id)
+                    print(f'Fix Pairing: {dc._ast.name}-{dc._ast._id}')
+
         print('Fix Contaminated Design Constraints')
 
 
