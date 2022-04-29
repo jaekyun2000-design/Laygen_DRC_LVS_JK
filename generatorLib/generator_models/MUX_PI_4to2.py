@@ -20,8 +20,8 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
 
     def _CalculateDesignParamter(self,
                                  TristateInv1_Finger=1,
-                                 TristateInv2_Finger=2,
                                  Inv_Finger=1,
+                                 TristateInv2_Finger=2,
 
                                  TristateInv1_PMOSWidth=500,
                                  TristateInv1_NMOSWidth=250,
@@ -33,12 +33,20 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
                                  TristateInv2_VDD2PMOS=410,
                                  TristateInv2_VSS2NMOS=310,
 
+                                 TristateInv3_NumFinger_NM1=3,
+                                 TristateInv3_NumFinger_NM2=3,
+                                 TristateInv3_Width_NM1=250,
+                                 TristateInv3_Width_NM2=250,
+                                 TristateInv3_Width_PM1=500,
+                                 TristateInv3_Width_PM2=500,
+                                 TristateInv3_YCoord_InputA=750,
+
                                  Inv_NMOSWidth=200,
                                  Inv_PMOSWidth=400,
 
                                  ChannelLength=30,
                                  GateSpacing=100,
-                                 # XVT='SLVT',
+                                 XVT='SLVT',
                                  CellHeight=1800,
                                  SupplyRailType=1,
 
@@ -64,11 +72,20 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
                           TristateInv2_VDD2PMOS=TristateInv2_VDD2PMOS,
                           TristateInv2_VSS2NMOS=TristateInv2_VSS2NMOS,
 
+                          TristateInv3_NumFinger_NM1=TristateInv3_NumFinger_NM1,
+                          TristateInv3_NumFinger_NM2=TristateInv3_NumFinger_NM2,
+                          TristateInv3_Width_NM1=TristateInv3_Width_NM1,
+                          TristateInv3_Width_NM2=TristateInv3_Width_NM2,
+                          TristateInv3_Width_PM1=TristateInv3_Width_PM1,
+                          TristateInv3_Width_PM2=TristateInv3_Width_PM2,
+                          TristateInv3_YCoord_InputA=TristateInv3_YCoord_InputA,
+
                           Inv_NMOSWidth=Inv_NMOSWidth,
                           Inv_PMOSWidth=Inv_PMOSWidth,
 
                           ChannelLength=ChannelLength,
                           GateSpacing=GateSpacing,
+                          XVT=XVT,
                           CellHeight=CellHeight,
                           SupplyRailType=SupplyRailType,)
 
