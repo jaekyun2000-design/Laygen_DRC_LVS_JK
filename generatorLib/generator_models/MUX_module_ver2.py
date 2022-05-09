@@ -26,10 +26,98 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['INV'] = self._SrefElementDeclaration(_DesignObj=Inverter_iksu2._Inverter(_Name='INVIn{}'.format(_Name)))[0]
 		self._DesignParameter['INV']['_DesignObj']._CalculateDesignParameter_v3(**dict(_Finger=INV_finger, _ChannelWidth=INV_nmos_width, _ChannelLength=gate_length, _NPRatio=2, _VDD2VSSHeight=Cell_height, _VDD2PMOSHeight=VDD2PMOS, _VSS2NMOSHeight=NMOS_y, _YCoordOfInput=None, _Dummy=True, _XVT=XVT, _GateSpacing=gate_spacing, _SDWidth=66, _NumViaPMOSMet12Met2CoY=None, _NumViaNMOSMet12Met2CoY=None, _SupplyRailType=2))
 		self._DesignParameter['INV']['_XYCoordinates'] = [[0.0, 0.0]]
+
+		##dummy for INV
+		self._DesignParameter['POLY_dummy_inv_pmos'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=gate_length)
+		self._DesignParameter['POLY_dummy_inv_pmos']['_YWidth'] = self._DesignParameter['INV']['_DesignObj']._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+		self._DesignParameter['POLY_dummy_inv_nmos'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=gate_length)
+		self._DesignParameter['POLY_dummy_inv_nmos']['_YWidth'] = self._DesignParameter['INV']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+
+		if float(self._DesignParameter['POLY_dummy_inv_pmos']['_XWidth']) * float(self._DesignParameter['POLY_dummy_inv_pmos']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_inv_pmos']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_inv_pmos']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
+
+		if float(self._DesignParameter['POLY_dummy_inv_nmos']['_XWidth']) * float(self._DesignParameter['POLY_dummy_inv_nmos']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_inv_nmos']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_inv_nmos']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
+
+		Dummy_inv_pmos_height = self._DesignParameter['POLY_dummy_inv_pmos']['_YWidth']
+		Dummy_inv_nmos_height = self._DesignParameter['POLY_dummy_inv_nmos']['_YWidth']
+
+		self._DesignParameter['POLY_dummy_inv_pmos']['_XYCoordinates'] = [[(((self._DesignParameter['INV']['_XYCoordinates'][0][0]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_PMOS']['_XYCoordinates'][0][0]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																		(((self._DesignParameter['INV']['_XYCoordinates'][0][1]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_PMOS']['_XYCoordinates'][0][1]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1] - (self._DesignParameter['INV']['_DesignObj']._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) + (Dummy_inv_pmos_height / 2))],
+																		  [(((self._DesignParameter['INV']['_XYCoordinates'][0][0]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_PMOS']['_XYCoordinates'][0][0]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0]),
+																		(((self._DesignParameter['INV']['_XYCoordinates'][0][1]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_PMOS']['_XYCoordinates'][0][1]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][1] - (self._DesignParameter['INV']['_DesignObj']._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) + (Dummy_inv_pmos_height / 2))]
+																		  ]
+		self._DesignParameter['POLY_dummy_inv_nmos']['_XYCoordinates'] = [[(((self._DesignParameter['INV']['_XYCoordinates'][0][0]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_NMOS']['_XYCoordinates'][0][0]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																		(((self._DesignParameter['INV']['_XYCoordinates'][0][1]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_NMOS']['_XYCoordinates'][0][1]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1] + (self._DesignParameter['INV']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) - (Dummy_inv_nmos_height / 2))],
+																		  [(((self._DesignParameter['INV']['_XYCoordinates'][0][0]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_NMOS']['_XYCoordinates'][0][0]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0]),
+																		(((self._DesignParameter['INV']['_XYCoordinates'][0][1]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_NMOS']['_XYCoordinates'][0][1]) + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][1] + (self._DesignParameter['INV']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) - (Dummy_inv_nmos_height / 2))]
+																		  ]
+
 		nand_mos_finger = (INV_finger * 2)
 		self._DesignParameter['NAND'] = self._SrefElementDeclaration(_DesignObj=NAND3_ver2.NAND3(_Name='NANDIn{}'.format(_Name)))[0]
 		self._DesignParameter['NAND']['_DesignObj']._CalculateDesignParameter(**dict(gate_spacing=gate_spacing, nmos_width1=((3 * INV_nmos_width) / 2), nmos_width2=((3 * INV_nmos_width) / 2), pmos_width1=(2 * INV_nmos_width), pmos_width2=INV_nmos_width, nmos1_y=NMOS_y, nmos2_y=NMOS_y, pmos1_y=VDD2PMOS, pmos2_y=(VDD2PMOS + (INV_nmos_width / 2)), nmos_gate_a=nand_mos_finger, pmos_gate_a=nand_mos_finger, nmos_gate_b=nand_mos_finger, pmos_gate_b=INV_finger, nmos_gate_c=nand_mos_finger, pmos_gate_c=INV_finger, vss2vdd_height=Cell_height, sdwidth=66, supply_xdistance=300, length=gate_length, XVT=XVT, gate_y=NANDIN_y, _PCCrit=False))
 		self._DesignParameter['NAND']['_XYCoordinates'] = [[(((((- self._DesignParameter['INV']['_DesignObj']._DesignParameter['XVTLayer']['_XWidth']) / 2) - (self._DesignParameter['NAND']['_DesignObj']._DesignParameter['xvtlayer']['_XWidth'] / 2)) - gate_spacing) - gate_length), self._DesignParameter['INV']['_XYCoordinates'][0][1]]]
+
+		##dummy for NAND
+		self._DesignParameter['POLY_dummy_nand_pmos_1'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=gate_length)
+		self._DesignParameter['POLY_dummy_nand_pmos_1']['_YWidth'] = self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+		self._DesignParameter['POLY_dummy_nand_pmos_2'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=gate_length)
+		self._DesignParameter['POLY_dummy_nand_pmos_2']['_YWidth'] = self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+		self._DesignParameter['POLY_dummy_nand_nmos_1'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=gate_length)
+		self._DesignParameter['POLY_dummy_nand_nmos_1']['_YWidth'] = self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+		self._DesignParameter['POLY_dummy_nand_nmos_2'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=gate_length)
+		self._DesignParameter['POLY_dummy_nand_nmos_2']['_YWidth'] = self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+
+		if float(self._DesignParameter['POLY_dummy_nand_pmos_1']['_XWidth']) * float(self._DesignParameter['POLY_dummy_nand_pmos_1']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_nand_pmos_1']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_nand_pmos_1']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
+
+		if float(self._DesignParameter['POLY_dummy_nand_pmos_2']['_XWidth']) * float(self._DesignParameter['POLY_dummy_nand_pmos_2']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_nand_pmos_2']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_nand_pmos_2']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
+
+		if float(self._DesignParameter['POLY_dummy_nand_nmos_1']['_XWidth']) * float(self._DesignParameter['POLY_dummy_nand_nmos_1']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_nand_nmos_1']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_nand_nmos_1']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
+
+		if float(self._DesignParameter['POLY_dummy_nand_nmos_2']['_XWidth']) * float(self._DesignParameter['POLY_dummy_nand_nmos_2']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_nand_nmos_2']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_nand_nmos_2']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
+
+		Dummy_nand_pmos1_height = self._DesignParameter['POLY_dummy_nand_pmos_1']['_YWidth']
+		Dummy_nand_pmos2_height = self._DesignParameter['POLY_dummy_nand_pmos_2']['_YWidth']
+		Dummy_nand_nmos1_height = self._DesignParameter['POLY_dummy_nand_nmos_1']['_YWidth']
+		Dummy_nand_nmos2_height = self._DesignParameter['POLY_dummy_nand_nmos_2']['_YWidth']
+
+		self._DesignParameter['POLY_dummy_nand_pmos_1']['_XYCoordinates'] = [[(((self._DesignParameter['NAND']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos1']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																		(((self._DesignParameter['NAND']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos1']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1] - (self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) + (Dummy_nand_pmos1_height / 2))],
+																		  [(((self._DesignParameter['NAND']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos1']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0]),
+																		(((self._DesignParameter['NAND']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos1']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][1] - (self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) + (Dummy_nand_pmos1_height / 2))]
+																		  ]
+		self._DesignParameter['POLY_dummy_nand_pmos_2']['_XYCoordinates'] = [[(((self._DesignParameter['NAND']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																		(((self._DesignParameter['NAND']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1] - (self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) + (Dummy_nand_pmos2_height / 2))],
+																		  [(((self._DesignParameter['NAND']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0]),
+																		(((self._DesignParameter['NAND']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][1] - (self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) + (Dummy_nand_pmos2_height / 2))]
+																		  ]
+		self._DesignParameter['POLY_dummy_nand_nmos_1']['_XYCoordinates'] = [[(((self._DesignParameter['NAND']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos1']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																		(((self._DesignParameter['NAND']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos1']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1] + (self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) - (Dummy_nand_nmos1_height / 2))],
+																		  [(((self._DesignParameter['NAND']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos1']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0]),
+																		(((self._DesignParameter['NAND']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos1']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][1] + (self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) - (Dummy_nand_nmos1_height / 2))]
+																		  ]
+		self._DesignParameter['POLY_dummy_nand_nmos_2']['_XYCoordinates'] = [[(((self._DesignParameter['NAND']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos2']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																		(((self._DesignParameter['NAND']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos2']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1] + (self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) - (Dummy_nand_nmos2_height / 2))],
+																		  [(((self._DesignParameter['NAND']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos2']['_XYCoordinates'][0][0]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0]),
+																		(((self._DesignParameter['NAND']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos2']['_XYCoordinates'][0][1]) + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][1] + (self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) - (Dummy_nand_nmos2_height / 2))]
+																		  ]
+
 
 		self._DesignParameter['NAND2TG_via1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='NAND2TG_via1In{}'.format(_Name)))[0]
 		self._DesignParameter['NAND2TG_via1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
@@ -70,6 +158,45 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['TR_GATE'] = self._SrefElementDeclaration(_DesignObj=TG_2X_CRIT_SLVT_v1.TG_2X_CRIT_SLVT_v1(_Name='TR_GATEIn{}'.format(_Name)))[0]
 		self._DesignParameter['TR_GATE']['_DesignObj']._CalculateDesignParameter(**dict(nmos_gate=TG_finger, pmos_gate=TG_finger, nmos_width=TG_nmos_width, pmos_width=TG_pmos_width, length=gate_length, XVT=XVT, nmos_y=NMOS_y, pmos_y=TG_PMOS_y, gate_y=TG_poly_y, vss2vdd_height=Cell_height, gate_spacing=gate_spacing, sdwidth=66, power_xnum=2, power_xdistance=130, out_even_up_mode=True))
 		self._DesignParameter['TR_GATE']['_XYCoordinates'] = [[((((self._DesignParameter['INV']['_DesignObj']._DesignParameter['XVTLayer']['_XWidth'] / 2) + (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['XVT_boundary_1']['_XWidth'] / 2)) + gate_length) + gate_spacing), self._DesignParameter['INV']['_XYCoordinates'][0][1]]]
+
+		##dummy for tr_gate
+		self._DesignParameter['POLY_dummy_trgate_pmos'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=gate_length)
+		self._DesignParameter['POLY_dummy_trgate_pmos']['_YWidth'] = self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+		self._DesignParameter['POLY_dummy_trgate_nmos'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=gate_length)
+		self._DesignParameter['POLY_dummy_trgate_nmos']['_YWidth'] = self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+
+
+		if float(self._DesignParameter['POLY_dummy_trgate_pmos']['_XWidth']) * float(self._DesignParameter['POLY_dummy_trgate_pmos']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_trgate_pmos']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_trgate_pmos']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
+
+		if float(self._DesignParameter['POLY_dummy_trgate_nmos']['_XWidth']) * float(self._DesignParameter['POLY_dummy_trgate_nmos']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_trgate_nmos']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_trgate_nmos']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
+
+		Dummy_trgate_pmos_height = self._DesignParameter['POLY_dummy_trgate_pmos']['_YWidth']
+		Dummy_trgate_nmos_height = self._DesignParameter['POLY_dummy_trgate_nmos']['_YWidth']
+		self._DesignParameter['POLY_dummy_trgate_pmos']['_XYCoordinates'] = [[(((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																			((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1] - (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) + (Dummy_trgate_pmos_height / 2)],
+																			   [(((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0]),
+																			((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][1] - (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) + (Dummy_trgate_pmos_height / 2)],
+																			   [((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['pmos_second_podummy']['_XYCoordinates'][0][0]),
+																			((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['pmos_second_podummy']['_XYCoordinates'][0][1])- (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['pmos_second_podummy']['_YWidth'] / 2) + (Dummy_trgate_pmos_height / 2)],
+																			   [((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['pmos_second_podummy']['_XYCoordinates'][1][0]),
+																			((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['pmos_second_podummy']['_XYCoordinates'][1][1]) - (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['pmos_second_podummy']['_YWidth'] / 2) + (Dummy_trgate_pmos_height / 2)],
+																			   ]
+		self._DesignParameter['POLY_dummy_trgate_nmos']['_XYCoordinates'] = [[(((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																			((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1] + (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) - (Dummy_trgate_nmos_height / 2)],
+																			   [(((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][0]),
+																			((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][1][1] + (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2) - (Dummy_trgate_nmos_height / 2)],
+																			   [((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos_second_podummy']['_XYCoordinates'][0][0]),
+																			((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos_second_podummy']['_XYCoordinates'][0][1]) + (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos_second_podummy']['_YWidth'] / 2) - (Dummy_trgate_nmos_height / 2)],
+																			   [((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos_second_podummy']['_XYCoordinates'][1][0]),
+																			((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos_second_podummy']['_XYCoordinates'][1][1]) + (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos_second_podummy']['_YWidth'] / 2) - (Dummy_trgate_nmos_height / 2)],
+																			   ]
+
 		self._DesignParameter['VDD_M2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=self._DesignParameter['INV']['_DesignObj']._DesignParameter['NbodyContact']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'])
 		self._DesignParameter['VDD_M2']['_XYCoordinates'] = [[[(+ (self._DesignParameter['NAND']['_XYCoordinates'][0][0] + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['m2_supply']['_XYCoordinates'][1][0])), (+ (self._DesignParameter['NAND']['_XYCoordinates'][0][1] + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['m2_supply']['_XYCoordinates'][1][1]))], [(+ (self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['vdd_supply_m2_y']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['vdd_supply_m2_y']['_XYCoordinates'][0][1]))]]]
 		self._DesignParameter['VDD_DIFF'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['DIFF'][0], _Datatype=DesignParameters._LayerMapping['DIFF'][1], _Width=self._DesignParameter['NAND']['_DesignObj']._DesignParameter['supply_od']['_YWidth'])
