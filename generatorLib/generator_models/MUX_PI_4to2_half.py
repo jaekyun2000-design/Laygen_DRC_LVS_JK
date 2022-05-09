@@ -155,8 +155,8 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
                 _Width=66
             )
             self._DesignParameter['Met1Route_temp1']['_XYCoordinates'] = [[
-                [int(self.getXY('TristateInv0', 'InputVia_EN', '_Met1Layer')[0][0] + 0*UnitPitch), int(self.getXY('TristateInv0', 'InputVia_EN', '_Met1Layer')[0][1])],
-                [int(self.getXY('TristateInv0', 'InputVia_EN', '_Met1Layer')[0][0] + 2*UnitPitch), int(self.getXY('TristateInv0', 'InputVia_EN', '_Met1Layer')[0][1])],
+                [int(self.getXY('TristateInv0', 'InputVia_EN', '_Met1Layer')[0][0] + 0*UnitPitch), int(self.getXYBot('TristateInv0', 'InputVia_EN', '_Met1Layer')[0][1] + self.getWidth('Met1Route_temp1') / 2)],
+                [int(self.getXY('TristateInv0', 'InputVia_EN', '_Met1Layer')[0][0] + 2*UnitPitch), int(self.getXYBot('TristateInv0', 'InputVia_EN', '_Met1Layer')[0][1] + self.getWidth('Met1Route_temp1') / 2)],
                 [int(self.getXY('TristateInv0', 'InputVia_EN', '_Met1Layer')[0][0] + 2*UnitPitch), int(self.getXY('TristateInv1', 'InputVia_ENb', '_Met1Layer')[0][1] - self.getYWidth('TristateInv1', 'InputVia_ENb', '_Met1Layer') / 2 + self.getWidth('Met1Route_temp1')/2)],
                 [int(self.getXY('TristateInv1', 'InputVia_ENb', '_Met1Layer')[0][0]), int(self.getXY('TristateInv1', 'InputVia_ENb', '_Met1Layer')[0][1] - self.getYWidth('TristateInv1', 'InputVia_ENb', '_Met1Layer') / 2 + self.getWidth('Met1Route_temp1')/2)]
             ]]
@@ -184,8 +184,8 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             )
             self._DesignParameter['Met2Route_temp4']['_XYCoordinates'] = [[
                 [self.getXY('Via1_temp3')[0][0], self.getXY('Via1_temp3')[0][1]],
-                [self.getXY('Via1_temp3')[0][0], self.getXY('TristateInv1', 'InputVia_EN')[0][1]],
-                [self.getXY('TristateInv1', 'InputVia_EN')[0][0], self.getXY('TristateInv1', 'InputVia_EN')[0][1]],
+                [self.getXY('Via1_temp3')[0][0], self.getXYBot('TristateInv1', 'InputVia_EN', '_Met1Layer')[0][1] + self.getWidth('Met2Route_temp4') / 2],
+                [self.getXYRight('TristateInv1', 'InputVia_EN', '_Met1Layer')[0][0], self.getXYBot('TristateInv1', 'InputVia_EN', '_Met1Layer')[0][1] + self.getWidth('Met2Route_temp4') / 2],
             ]]
 
             self._DesignParameter['Via1_temp5'] = self._SrefElementDeclaration(
@@ -657,8 +657,8 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
                 _Width=66
             )
             self._DesignParameter['Met1Route_temp2_1']['_XYCoordinates'] = [[
-                [int(self.getXY('TristateInv2', 'InputVia_EN', '_Met1Layer')[0][0] + 0*UnitPitch), int(self.getXY('TristateInv2', 'InputVia_EN', '_Met1Layer')[0][1])],
-                [int(self.getXY('TristateInv2', 'InputVia_EN', '_Met1Layer')[0][0] + 2*UnitPitch), int(self.getXY('TristateInv2', 'InputVia_EN', '_Met1Layer')[0][1])],
+                [int(self.getXY('TristateInv2', 'InputVia_EN', '_Met1Layer')[0][0] + 0*UnitPitch), int(self.getXYBot('TristateInv2', 'InputVia_EN', '_Met1Layer')[0][1] + self.getWidth('Met1Route_temp2_1') / 2)],
+                [int(self.getXY('TristateInv2', 'InputVia_EN', '_Met1Layer')[0][0] + 2*UnitPitch), int(self.getXYBot('TristateInv2', 'InputVia_EN', '_Met1Layer')[0][1] + self.getWidth('Met1Route_temp2_1') / 2)],
                 [int(self.getXY('TristateInv2', 'InputVia_EN', '_Met1Layer')[0][0] + 2*UnitPitch), int(self.getXY('TristateInv1', 'InputVia_ENb', '_Met1Layer')[0][1] - self.getYWidth('TristateInv3', 'InputVia_ENb', '_Met1Layer') / 2 + self.getWidth('Met1Route_temp2_1')/2)],
                 [int(self.getXY('TristateInv3', 'InputVia_ENb', '_Met1Layer')[0][0]), int(self.getXY('TristateInv3', 'InputVia_ENb', '_Met1Layer')[0][1] - self.getYWidth('TristateInv3', 'InputVia_ENb', '_Met1Layer') / 2 + self.getWidth('Met1Route_temp2_1')/2)]
             ]]
@@ -686,8 +686,8 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             )
             self._DesignParameter['Met2Route_temp2_4']['_XYCoordinates'] = [[
                 [self.getXY('Via1_temp2_3')[0][0], self.getXY('Via1_temp2_3')[0][1]],
-                [self.getXY('Via1_temp2_3')[0][0], self.getXY('TristateInv3', 'InputVia_EN')[0][1]],
-                [self.getXY('TristateInv3', 'InputVia_EN')[0][0], self.getXY('TristateInv3', 'InputVia_EN')[0][1]],
+                [self.getXY('Via1_temp2_3')[0][0], self.getXYBot('TristateInv3', 'InputVia_EN', '_Met1Layer')[0][1] + self.getWidth('Met2Route_temp2_4') / 2],
+                [self.getXYRight('TristateInv3', 'InputVia_EN', '_Met1Layer')[0][0], self.getXYBot('TristateInv3', 'InputVia_EN', '_Met1Layer')[0][1] + self.getWidth('Met2Route_temp2_4') / 2],
             ]]
 
             self._DesignParameter['Via1_temp2_5'] = self._SrefElementDeclaration(

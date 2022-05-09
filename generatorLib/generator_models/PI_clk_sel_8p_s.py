@@ -27,13 +27,13 @@ class PI_clk_sel_8p_s(StickDiagram._StickDiagram):
 
                                  TristateInv1_PMOSWidth=500,
                                  TristateInv1_NMOSWidth=250,
-                                 TristateInv1_VDD2PMOS=400,
-                                 TristateInv1_VSS2NMOS=275,
+                                 TristateInv1_VDD2PMOS=None,    # 402
+                                 TristateInv1_VSS2NMOS=None,     # 275
 
                                  TristateInv2_PMOSWidth=400,
                                  TristateInv2_NMOSWidth=200,
-                                 TristateInv2_VDD2PMOS=401,
-                                 TristateInv2_VSS2NMOS=301,
+                                 TristateInv2_VDD2PMOS=None,     # 402
+                                 TristateInv2_VSS2NMOS=None,      # 301
 
                                  TristateInv3_NumFinger_NM1=3,
                                  TristateInv3_NumFinger_NM2=3,

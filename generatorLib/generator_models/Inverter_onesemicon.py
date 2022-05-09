@@ -100,6 +100,26 @@ class _Inverter(StickDiagram._StickDiagram):
         self._DesignParameter['_PMOS'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='PMOS_In{}'.format(_Name)))[0]
         self._DesignParameter['_PMOS']['_DesignObj']._CalculatePMOSDesignParameter(**PMOSparameters)
 
+        # dummy area
+        if '_PODummyLayer' in self._DesignParameter['_NMOS']['_DesignObj']._DesignParameter:
+            Area_NmosDummy = self.getXWidth('_NMOS', '_PODummyLayer') * self.getYWidth('_NMOS', '_PODummyLayer')
+            if Area_NmosDummy < _DRCObj._PODummyMinArea:
+                YWidth_NmosDummy_Recalc = self.CeilMinSnapSpacing(_DRCObj._PODummyMinArea / self.getXWidth('_NMOS', '_PODummyLayer'), MinSnapSpacing * 2)
+                self._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] = YWidth_NmosDummy_Recalc
+            else:
+                pass
+        else:
+            pass
+        if '_PODummyLayer' in self._DesignParameter['_PMOS']['_DesignObj']._DesignParameter:
+            Area_PmosDummy = self.getXWidth('_PMOS', '_PODummyLayer') * self.getYWidth('_PMOS', '_PODummyLayer')
+            if Area_PmosDummy < _DRCObj._PODummyMinArea:
+                YWidth_PmosDummy_Recalc = self.CeilMinSnapSpacing(_DRCObj._PODummyMinArea / self.getXWidth('_PMOS', '_PODummyLayer'), MinSnapSpacing * 2)
+                self._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] = YWidth_PmosDummy_Recalc
+            else:
+                pass
+        else:
+            pass
+
 
         ''' ---------------------------------------- Supply Rail Generation ---------------------------------------- '''
         self._DesignParameter['PbodyContact'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VSSRailIn{}'.format(_Name)))[0]

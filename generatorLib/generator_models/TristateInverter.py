@@ -33,8 +33,8 @@ class TristateInverter(StickDiagram._StickDiagram):
                                          XVT='SLVT',
 
                                          CellHeight=1800,           # Required
-                                         VDD2PMOS=400,              # Required
-                                         VSS2NMOS=275,              # Required
+                                         VDD2PMOS=400,              # Optional
+                                         VSS2NMOS=275,              # Optional
 
                                          YCoordOfInputA=None,       # Optional
                                          YCoordOfInputEN=None,      # Optional
@@ -44,7 +44,7 @@ class TristateInverter(StickDiagram._StickDiagram):
 
         drc = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
-
+        MinSnapSpacing = drc._MinSnapSpacing
 
         if SupplyRailType == 1:
             bool_deleteViaAndMet1 = False
@@ -66,10 +66,60 @@ class TristateInverter(StickDiagram._StickDiagram):
 
         self._DesignParameter['NMOS'] = self._SrefElementDeclaration(_DesignObj=CascodeNMOS._CascodeNMOS(_Name='CascodeNMOSIn{}'.format(_Name)))[0]
         self._DesignParameter['NMOS']['_DesignObj']._CalculateDesignParameter(**dict(_NMOSChannelWidth=NMOSWidth, _NMOSChannellength=ChannelLength, _NMOSDummy=True, _XVT=XVT, _GateSpacing=GateSpacing))
-        self._DesignParameter['NMOS']['_XYCoordinates'] = [[0, VSS2NMOS]]
+
         self._DesignParameter['PMOS'] = self._SrefElementDeclaration(_DesignObj=CascodePMOS._CascodePMOS(_Name='CascodePMOSIn{}'.format(_Name)))[0]
         self._DesignParameter['PMOS']['_DesignObj']._CalculateDesignParameter(**dict(_PMOSChannelWidth=PMOSWidth, _PMOSChannellength=ChannelLength, _PMOSDummy=True, _XVT=XVT, _GateSpacing=GateSpacing))
-        self._DesignParameter['PMOS']['_XYCoordinates'] = [[0, (CellHeight - VDD2PMOS)]]
+
+        # dummy area
+        if '_PODummyLayer' in self._DesignParameter['NMOS']['_DesignObj']._DesignParameter:
+            Area_NmosDummy = self.getXWidth('NMOS', '_PODummyLayer') * self.getYWidth('NMOS', '_PODummyLayer')
+            if Area_NmosDummy < drc._PODummyMinArea:
+                YWidth_NmosDummy_Recalc = self.CeilMinSnapSpacing(drc._PODummyMinArea / self.getXWidth('NMOS', '_PODummyLayer'), MinSnapSpacing * 2)
+                self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] = YWidth_NmosDummy_Recalc
+            else:
+                pass
+        else:
+            pass
+        if '_PODummyLayer' in self._DesignParameter['PMOS']['_DesignObj']._DesignParameter:
+            Area_PmosDummy = self.getXWidth('PMOS', '_PODummyLayer') * self.getYWidth('PMOS', '_PODummyLayer')
+            if Area_PmosDummy < drc._PODummyMinArea:
+                YWidth_PmosDummy_Recalc = self.CeilMinSnapSpacing(drc._PODummyMinArea / self.getXWidth('PMOS', '_PODummyLayer'), MinSnapSpacing * 2)
+                self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] = YWidth_PmosDummy_Recalc
+            else:
+                pass
+        else:
+            pass
+
+        #
+        DistanceBtwVSS2NMOS = list()
+        DistanceBtwVSS2NMOS.append(0.5 * (self.getYWidth('VSSRail', '_ODLayer') + self.getYWidth('NMOS', '_ODLayer')) + drc._OdMinSpace)
+        DistanceBtwVSS2NMOS.append(0.5 * (self.getYWidth('VSSRail', '_PPLayer') + self.getYWidth('NMOS', '_ODLayer')) + drc._OdMinSpace2Pp)
+        DistanceBtwVSS2NMOS.append(0.5 * (self.getYWidth('VSSRail', '_ODLayer') + self.getYWidth('NMOS', '_PODummyLayer')) + drc._PolygateMinSpace2OD if '_PODummyLayer' in self._DesignParameter['NMOS']['_DesignObj']._DesignParameter else 0)
+        DistanceBtwVSS2NMOS.append(0.5 * (self.getYWidth('VSSRail', '_Met1Layer') + self.getYWidth('NMOS', '_Met1Layer')) + drc._Metal1MinSpaceAtCorner if '_Met1Layer' in self._DesignParameter['VSSRail']['_DesignObj']._DesignParameter else 0)
+        VSS2NMOS_min = max(DistanceBtwVSS2NMOS)
+        if VSS2NMOS == None:
+            YCoordOfNMOS = VSS2NMOS_min
+        elif VSS2NMOS < VSS2NMOS_min:
+            raise NotImplementedError(f'VSS2NMOS={VSS2NMOS}, But VSS2NMOS_min={VSS2NMOS_min}')
+        else:
+            YCoordOfNMOS = VSS2NMOS
+
+        #
+        DistanceBtwVDD2PMOS = list()
+        DistanceBtwVDD2PMOS.append(0.5 * (self.getYWidth('VDDRail', '_ODLayer') + self.getYWidth('PMOS', '_ODLayer')) + drc._OdMinSpace)
+        DistanceBtwVDD2PMOS.append(0.5 * (self.getYWidth('VDDRail', '_ODLayer') + self.getYWidth('PMOS', '_PPLayer')) + drc._OdMinSpace2Pp)
+        DistanceBtwVDD2PMOS.append(0.5 * (self.getYWidth('VDDRail', '_ODLayer') + self.getYWidth('PMOS', '_PODummyLayer')) + drc._PolygateMinSpace2OD if '_PODummyLayer' in self._DesignParameter['PMOS']['_DesignObj']._DesignParameter else 0)
+        DistanceBtwVDD2PMOS.append(0.5 * (self.getYWidth('VDDRail', '_Met1Layer') + self.getYWidth('PMOS', '_Met1Layer')) + drc._Metal1MinSpaceAtCorner if '_Met1Layer' in self._DesignParameter['VDDRail']['_DesignObj']._DesignParameter else 0)
+        VDD2PMOS_min = max(DistanceBtwVDD2PMOS)
+        if VDD2PMOS == None:
+            YCoordOfPMOS = CellHeight - VDD2PMOS_min
+        elif VDD2PMOS < VDD2PMOS_min:
+            raise NotImplementedError(f'VDD2PMOS={VDD2PMOS}, But VDD2PMOS_min={VDD2PMOS_min}')
+        else:
+            YCoordOfPMOS = CellHeight - VDD2PMOS
+
+        self._DesignParameter['NMOS']['_XYCoordinates'] = [[0, YCoordOfNMOS]]
+        self._DesignParameter['PMOS']['_XYCoordinates'] = [[0, YCoordOfPMOS]]
 
         self._DesignParameter['VSSRouting'] = self._BoundaryElementDeclaration(
             _Layer=DesignParameters._LayerMapping['METAL1'][0],
@@ -242,7 +292,7 @@ class TristateInverter(StickDiagram._StickDiagram):
 
         drc = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
-
+        MinSnapSpacing = drc._MinSnapSpacing
 
         if SupplyRailType == 1:
             bool_deleteViaAndMet1 = False
@@ -264,10 +314,60 @@ class TristateInverter(StickDiagram._StickDiagram):
 
         self._DesignParameter['NMOS'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='NMOSIn{}'.format(_Name)))[0]
         self._DesignParameter['NMOS']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=4, _NMOSChannelWidth=NMOSWidth, _NMOSChannellength=ChannelLength, _NMOSDummy=True, _GateSpacing=GateSpacing, _SDWidth=None, _XVT=XVT))
-        self._DesignParameter['NMOS']['_XYCoordinates'] = [[0, VSS2NMOS]]
+
         self._DesignParameter['PMOS'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='PMOSIn{}'.format(_Name)))[0]
         self._DesignParameter['PMOS']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=4, _PMOSChannelWidth=PMOSWidth, _PMOSChannellength=ChannelLength, _PMOSDummy=True, _GateSpacing=GateSpacing, _SDWidth=None, _XVT=XVT))
-        self._DesignParameter['PMOS']['_XYCoordinates'] = [[0, (CellHeight - VDD2PMOS)]]
+
+        # dummy area
+        if '_PODummyLayer' in self._DesignParameter['NMOS']['_DesignObj']._DesignParameter:
+            Area_NmosDummy = self.getXWidth('NMOS', '_PODummyLayer') * self.getYWidth('NMOS', '_PODummyLayer')
+            if Area_NmosDummy < drc._PODummyMinArea:
+                YWidth_NmosDummy_Recalc = self.CeilMinSnapSpacing(drc._PODummyMinArea / self.getXWidth('NMOS', '_PODummyLayer'), MinSnapSpacing * 2)
+                self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] = YWidth_NmosDummy_Recalc
+            else:
+                pass
+        else:
+            pass
+        if '_PODummyLayer' in self._DesignParameter['PMOS']['_DesignObj']._DesignParameter:
+            Area_PmosDummy = self.getXWidth('PMOS', '_PODummyLayer') * self.getYWidth('PMOS', '_PODummyLayer')
+            if Area_PmosDummy < drc._PODummyMinArea:
+                YWidth_PmosDummy_Recalc = self.CeilMinSnapSpacing(drc._PODummyMinArea / self.getXWidth('PMOS', '_PODummyLayer'), MinSnapSpacing * 2)
+                self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] = YWidth_PmosDummy_Recalc
+            else:
+                pass
+        else:
+            pass
+
+        #
+        DistanceBtwVSS2NMOS = list()
+        DistanceBtwVSS2NMOS.append(0.5 * (self.getYWidth('VSSRail', '_ODLayer') + self.getYWidth('NMOS', '_ODLayer')) + drc._OdMinSpace)
+        DistanceBtwVSS2NMOS.append(0.5 * (self.getYWidth('VSSRail', '_PPLayer') + self.getYWidth('NMOS', '_ODLayer')) + drc._OdMinSpace2Pp)
+        DistanceBtwVSS2NMOS.append(0.5 * (self.getYWidth('VSSRail', '_ODLayer') + self.getYWidth('NMOS', '_PODummyLayer')) + drc._PolygateMinSpace2OD if '_PODummyLayer' in self._DesignParameter['NMOS']['_DesignObj']._DesignParameter else 0)
+        DistanceBtwVSS2NMOS.append(0.5 * (self.getYWidth('VSSRail', '_Met1Layer') + self.getYWidth('NMOS', '_Met1Layer')) + drc._Metal1MinSpaceAtCorner * 2 + drc._Metal1MinWidth if '_Met1Layer' in self._DesignParameter['VSSRail']['_DesignObj']._DesignParameter else 0.5 * (self.getYWidth('NMOS', '_Met1Layer') + drc._Metal1MinSpaceAtCorner))
+        VSS2NMOS_min = max(DistanceBtwVSS2NMOS)
+        if VSS2NMOS == None:
+            YCoordOfNMOS = VSS2NMOS_min
+        elif VSS2NMOS < VSS2NMOS_min:
+            raise NotImplementedError(f'VSS2NMOS={VSS2NMOS}, But VSS2NMOS_min={VSS2NMOS_min}')
+        else:
+            YCoordOfNMOS = VSS2NMOS
+
+        #
+        DistanceBtwVDD2PMOS = list()
+        DistanceBtwVDD2PMOS.append(0.5 * (self.getYWidth('VDDRail', '_ODLayer') + self.getYWidth('PMOS', '_ODLayer')) + drc._OdMinSpace)
+        DistanceBtwVDD2PMOS.append(0.5 * (self.getYWidth('VDDRail', '_ODLayer') + self.getYWidth('PMOS', '_PPLayer')) + drc._OdMinSpace2Pp)
+        DistanceBtwVDD2PMOS.append(0.5 * (self.getYWidth('VDDRail', '_ODLayer') + self.getYWidth('PMOS', '_PODummyLayer')) + drc._PolygateMinSpace2OD if '_PODummyLayer' in self._DesignParameter['PMOS']['_DesignObj']._DesignParameter else 0)
+        DistanceBtwVDD2PMOS.append(0.5 * (self.getYWidth('VDDRail', '_Met1Layer') + self.getYWidth('PMOS', '_Met1Layer')) + drc._Metal1MinSpaceAtCorner * 2 + drc._Metal1MinWidth if '_Met1Layer' in self._DesignParameter['VDDRail']['_DesignObj']._DesignParameter else 0.5 * (self.getYWidth('PMOS', '_Met1Layer') + drc._Metal1MinSpaceAtCorner))
+        VDD2PMOS_min = max(DistanceBtwVDD2PMOS)
+        if VDD2PMOS == None:
+            YCoordOfPMOS = CellHeight - VDD2PMOS_min
+        elif VDD2PMOS < VDD2PMOS_min:
+            raise NotImplementedError(f'VDD2PMOS={VDD2PMOS}, But VDD2PMOS_min={VDD2PMOS_min}')
+        else:
+            YCoordOfPMOS = CellHeight - VDD2PMOS
+
+        self._DesignParameter['NMOS']['_XYCoordinates'] = [[0, YCoordOfNMOS]]
+        self._DesignParameter['PMOS']['_XYCoordinates'] = [[0, YCoordOfPMOS]]
 
         self._DesignParameter['VSSRouting1'] = self._BoundaryElementDeclaration(
             _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
