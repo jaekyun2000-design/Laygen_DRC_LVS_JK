@@ -90,6 +90,7 @@ import user_setup
 DEBUG = user_setup.DEBUG
 subnanoMinimumScale =5 # 5 means(default)
 subnanoViewScale = 1  #
+minimum_render = 5
                       # 1 means(default): coordinates default unit is 1nm,
                       # 0.1 means: coordinates default unit is 0.1nm
                       # 10 means: coordinates default unit is 10nm
@@ -226,7 +227,8 @@ class _MainWindow(QMainWindow):
         fixAction = QAction("Fix!", self)
         undoListAction = QAction("Action List", self)
         undoAction = QAction("Undo", self)
-
+        save_svg_action = QAction("Save SVG", self)
+        save_scene = QAction("Save PDF_scene", self)
 
         # newAction.setShortcut('Ctrl+N')
         # newAction.triggered.connect(self.newProject)
@@ -261,6 +263,12 @@ class _MainWindow(QMainWindow):
         undoAction.setShortcut('Ctrl+Z')
         undoAction.triggered.connect(self.undo_stack.undo)
 
+        save_svg_action.setShortcut('Ctrl+P')
+        save_svg_action.triggered.connect(self.save_svg)
+
+        save_scene.setShortcut('Ctrl+[')
+        save_scene.triggered.connect(lambda tmp: self.save_svg(option='png'))
+
         # undo_action.setShortcut('Ctrl+Z')
         # undo_action.triggered.connect(self.undo_stack.undo)
         #
@@ -283,6 +291,8 @@ class _MainWindow(QMainWindow):
         fileMenu.addAction(fixAction)
         fileMenu.addAction(undoListAction)
         fileMenu.addAction(undoAction)
+        fileMenu.addAction(save_svg_action)
+        fileMenu.addAction(save_scene)
         # fileMenu.addAction(undo_action)
 
         #Second Menu#
@@ -384,7 +394,7 @@ class _MainWindow(QMainWindow):
         graphicView.name_list_signal.connect(self.save_clipboard)
         self.scene.send_module_name_list_signal.connect(graphicView.name_out_fcn)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
-        self.scene.setMinimumRenderSize(5)
+        self.scene.setMinimumRenderSize(minimum_render)
         graphicView.centerOn(QPointF(268,-165))
         self.setCentralWidget(graphicView)
         color = Qt.black if user_setup._Night_mode else Qt.white
@@ -3760,6 +3770,122 @@ class _MainWindow(QMainWindow):
             module = module[:-1]
             if module in self._QTObj._qtProject.__dict__[type]:
                 return module
+
+    def save_svg(self, file_name : str =None, option='svg'):
+        # option = 'svg'
+        # option = 'pdf_window'
+
+        if option == 'svg':
+            from PyQt5.QtSvg import QSvgGenerator
+            generator2 = QSvgGenerator()
+            generator2.setFileName("mainWidget.svg")
+            generator2.setSize(self.size())
+            generator2.setViewBox(self.rect())
+            painter2 = QPainter()
+            painter2.begin(generator2)
+            self.render(painter2)
+            painter2.end()
+
+            generator = QSvgGenerator()
+            image = QImage()
+            file_name = file_name if file_name else "test.svg"
+            image_name = file_name if file_name else "test.png"
+            generator.setFileName(file_name)
+
+            scene = _CustomScene()
+            # scene.setSceneRect(min(self.scene.fit_in_view_dict['left']),min(self.scene.fit_in_view_dict['bottom']), max(self.scene.fit_in_view_dict['right']), max(self.scene.fit_in_view_dict['top']))
+            for item in self.scene.items():
+                 scene.addItem(item)
+            tl = scene.sceneRect().topLeft()
+            x1 = tl.x()
+            y1 = tl.y()
+            width = scene.width() - x1
+            height= scene.height() - y1
+            scene.addRect(x1, y1, width, height, QPen(Qt.black), QBrush(Qt.black))
+            # print(scene.sceneRect().bottomLeft().x())
+            generator.setSize(scene.sceneRect().size().toSize())
+            # generator.setViewBox(QRect(x1,y1,width,height))
+
+
+            # for item in scene.items():
+            #     self.scene.addItem(item)
+
+
+            # print(width, height)
+            # print(scene.sceneRect())
+            # self.scene.addRect(x1,y1,width,height,QPen(Qt.black), QBrush(Qt.white))
+            # image = QImage()
+            painter = QPainter()
+            painter.setRenderHint(QPainter.Antialiasing)
+            painter.begin(generator)
+            scene.render(painter)
+            painter.end()
+            painter.begin(image)
+            scene.render(painter)
+            painter.end()
+            image.save(image_name)
+
+
+        elif 'pdf' in option:
+            from PyQt5.QtPrintSupport import QPrinter
+
+            if 'window' in option:
+                file_name = file_name if file_name else "window.pdf"
+                printer = QPrinter(QPrinter.HighResolution)
+                printer.setOutputFormat(QPrinter.PdfFormat)
+                printer.setOutputFileName(file_name)
+                painter = QPainter(printer)
+
+                xscale = printer.pageRect().width()*1.0 / self.width()
+                yscale = printer.pageRect().height()*1.0 / self.height()
+                scale = min(xscale,yscale)
+                painter.translate(printer.paperRect().center())
+                painter.scale(scale, scale)
+                painter.translate(-self.width()/2, -self.height()/2)
+                self.render(painter)
+                painter.end()
+            else:
+                #############################################
+                self.tmp_scene = _CustomScene()
+                # scene.setSceneRect(min(self.scene.fit_in_view_dict['left']),min(self.scene.fit_in_view_dict['bottom']), max(self.scene.fit_in_view_dict['right']), max(self.scene.fit_in_view_dict['top']))
+                for item in self.scene.items():
+                    self.tmp_scene.addItem(item)
+                tl = self.tmp_scene.sceneRect().topLeft()
+                x1 = tl.x()
+                y1 = tl.y()
+                width = self.tmp_scene.width() - x1
+                height = self.tmp_scene.height() - y1
+                self.tmp_scene.addRect(x1, y1, width, height, QPen(Qt.black), QBrush(Qt.black))
+
+
+                file_name = file_name if file_name else "layout.pdf"
+                printer2 = QPrinter(QPrinter.HighResolution)
+                printer2.setOutputFormat(QPrinter.PdfFormat)
+                printer2.setOutputFileName(file_name)
+                painter2 = QPainter(printer2)
+
+                xscale = printer2.pageRect().width() * 1.0 / self.tmp_scene.width()
+                yscale = printer2.pageRect().height() * 1.0 / self.tmp_scene.height()
+                scale = min(xscale, yscale)
+                painter2.translate(printer2.paperRect().center())
+                painter2.scale(scale, scale)
+                painter2.translate(-self.tmp_scene.width() / 2, -self.tmp_scene.height() / 2)
+                self.tmp_scene.render(painter2)
+                painter2.end()
+                print('save_end')
+
+        else:
+            print('pngstart')
+
+            # file_name = file_name if file_name else "layout.png"
+            # view = self.centralWidget()
+            # pixmap = view.grab(view.sceneRect().toRect())
+            # pixmap.save(file_name)
+            # print('pngend')
+            #
+
+
+
 
 
 class _CustomView(QGraphicsView):
