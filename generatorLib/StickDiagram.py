@@ -195,6 +195,29 @@ class _StickDiagram:
         """
         return self._getSthValue(hier_element_tuple=hier_element_tuple, SthValue='_Width', _DesignParametertype=2)
 
+
+    @staticmethod
+    def _getSignXY(element:dict):
+
+        if element['_DesignParametertype'] == 3:    # Sref
+            if element['_Reflect'] in (None, [0, 0, 0]) and element['_Angle'] in (None, 0):    # R0
+                _SignX = +1
+                _SignY = +1
+            elif element['_Reflect'] == [1, 0, 0] and element['_Angle'] in (None, 0):          # MX
+                _SignX = +1
+                _SignY = -1
+            elif element['_Reflect'] == [1, 0, 0] and element['_Angle'] == 180:                # MY
+                _SignX = -1
+                _SignY = +1
+            else:
+                raise NotImplemented
+        else:
+            _SignX = +1
+            _SignY = +1
+
+        return _SignX, _SignY
+
+
     def getXY(self, *hier_element_tuple:str):
         """ Calculate Relative Coordinates of hierarchical designObj.
 
@@ -210,30 +233,94 @@ class _StickDiagram:
             >>> self.getXY('_PMOS', '_POLayer')
             [[-1000,0], [-500,0], [+500,0], [+1000,0]]
         """
+
         if '_DesignParameter' not in self.__dict__:
             raise Exception("There is no DesignParameter.")
 
-        HierElementList = list(hier_element_tuple)
-        if HierElementList[0] not in self._DesignParameter:
-            raise Exception(f"Invalid Hierarchy element name: {HierElementList[0]}")
-        element = self._DesignParameter[HierElementList.pop(0)]
-        elementXY = element['_XYCoordinates']
+        HierElementDictList = []
+        for Element in hier_element_tuple:
+            HierElementDictList.append(dict(_ElementName=Element, _XYCoordinates=[], _SignX=0, _SignY=0))
 
-        for hierarchy_element in HierElementList:
-            if hierarchy_element not in element['_DesignObj']._DesignParameter:
-                raise Exception(f"Invalid Hierarchy element name: {hierarchy_element}.")
-            element = element['_DesignObj']._DesignParameter[hierarchy_element]
+        if HierElementDictList[0]['_ElementName'] not in self._DesignParameter:
+            raise Exception(f"Invalid Hierarchy element name: {HierElementDictList[0]['_ElementName']}")
 
-            if element['_DesignParametertype'] == 2:    # 1: Boundary, 2: Path, 3: Sref
-                raise Exception("Not Available on PathElement.")
+        element = self._DesignParameter[HierElementDictList[0]['_ElementName']]
+        HierElementDictList[0]['_XYCoordinates'] = element['_XYCoordinates']
+        HierElementDictList[0]['_SignX'] = self._getSignXY(element)[0]
+        HierElementDictList[0]['_SignY'] = self._getSignXY(element)[1]
+        # HierElementDictList[0]['_SignX'] = 1
+        # HierElementDictList[0]['_SignY'] = 1
 
-            tmpAddedXYs = []
-            for XY1 in elementXY:
-                for XY2 in element['_XYCoordinates']:
-                    tmpAddedXYs.append([XY1[0] + XY2[0], XY1[1] + XY2[1]])      # tmpXYs1 + tmpXYs2
-            elementXY = tmpAddedXYs
+        for i, hierarchy_element_dict in enumerate(HierElementDictList):
+            if i != 0:
+                if hierarchy_element_dict['_ElementName'] not in element['_DesignObj']._DesignParameter:
+                    raise Exception(f"Invalid Hierarchy element name: {hierarchy_element_dict['_ElementName']}.")
+                else:
+                    element = element['_DesignObj']._DesignParameter[hierarchy_element_dict['_ElementName']]
+
+                if element['_DesignParametertype'] == 2:    # 1: Boundary, 2: Path, 3: Sref
+                    raise Exception("Not Available on PathElement.")
+
+                HierElementDictList[i]['_XYCoordinates'] = element['_XYCoordinates']
+                HierElementDictList[i]['_SignX'] = self._getSignXY(element)[0]
+                HierElementDictList[i]['_SignY'] = self._getSignXY(element)[1]
+
+        for i in range(len(HierElementDictList), 0, -1):        # len(HierElementDictList), len(HierElementDictList)-1, ..., 3, 2, 1(Last)
+            if i == len(HierElementDictList):       # first
+                elementXY = HierElementDictList[-1]['_XYCoordinates']
+                tmpAddedXYs = []
+                for XY in elementXY:
+                    # tmpAddedXYs.append([XY[0] * HierElementDictList[i - 1]['_SignX'],
+                    #                     XY[1] * HierElementDictList[i - 1]['_SignY']])  #
+                    tmpAddedXYs.append([XY[0], XY[1]])  #
+                elementXY = tmpAddedXYs
+            else:
+                tmpAddedXYs = []
+                for XY1 in elementXY:
+                    for XY2 in HierElementDictList[i - 1]['_XYCoordinates']:
+                        tmpAddedXYs.append([XY1[0] * HierElementDictList[i - 1]['_SignX'] + XY2[0],
+                                            XY1[1] * HierElementDictList[i - 1]['_SignY'] + XY2[1]])
+                elementXY = tmpAddedXYs
 
         return elementXY
+
+
+    def _getXYwtBoudary(self, boundary:str, *hier_element_tuple:str):
+        _elementXY = self.getXY(*hier_element_tuple)
+        XWidth = self.getXWidth(*hier_element_tuple)
+        YWidth = self.getYWidth(*hier_element_tuple)
+        if boundary == 'top':
+            offset = [0, +YWidth / 2]
+        elif boundary == 'bot':
+            offset = [0, -YWidth / 2]
+        elif boundary == 'right':
+            offset = [+XWidth / 2, 0]
+        elif boundary == 'left':
+            offset = [-XWidth / 2, 0]
+        else:
+            raise Exception(f"Invalid boundary parameter: {boundary}.")
+
+        elementXY = []
+        for XYs in _elementXY:
+            elementXY.append([
+                XYs[0] + offset[0],
+                XYs[1] + offset[1]
+            ])
+
+        return elementXY
+
+    def getXYTop(self, *hier_element_tuple:str):
+        return self._getXYwtBoudary('top', *hier_element_tuple)
+
+    def getXYBot(self, *hier_element_tuple:str):
+        return self._getXYwtBoudary('bot', *hier_element_tuple)
+
+    def getXYRight(self, *hier_element_tuple:str):
+        return self._getXYwtBoudary('right', *hier_element_tuple)
+
+    def getXYLeft(self, *hier_element_tuple:str):
+        return self._getXYwtBoudary('left', *hier_element_tuple)
+
 
     def XYCoordinate2MinMaxXY(self, _XYCoordinates):
         x_list = []

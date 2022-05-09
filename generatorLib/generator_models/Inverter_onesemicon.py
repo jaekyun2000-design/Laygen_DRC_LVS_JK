@@ -100,6 +100,26 @@ class _Inverter(StickDiagram._StickDiagram):
         self._DesignParameter['_PMOS'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='PMOS_In{}'.format(_Name)))[0]
         self._DesignParameter['_PMOS']['_DesignObj']._CalculatePMOSDesignParameter(**PMOSparameters)
 
+        # dummy area
+        if '_PODummyLayer' in self._DesignParameter['_NMOS']['_DesignObj']._DesignParameter:
+            Area_NmosDummy = self.getXWidth('_NMOS', '_PODummyLayer') * self.getYWidth('_NMOS', '_PODummyLayer')
+            if Area_NmosDummy < _DRCObj._PODummyMinArea:
+                YWidth_NmosDummy_Recalc = self.CeilMinSnapSpacing(_DRCObj._PODummyMinArea / self.getXWidth('_NMOS', '_PODummyLayer'), MinSnapSpacing * 2)
+                self._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] = YWidth_NmosDummy_Recalc
+            else:
+                pass
+        else:
+            pass
+        if '_PODummyLayer' in self._DesignParameter['_PMOS']['_DesignObj']._DesignParameter:
+            Area_PmosDummy = self.getXWidth('_PMOS', '_PODummyLayer') * self.getYWidth('_PMOS', '_PODummyLayer')
+            if Area_PmosDummy < _DRCObj._PODummyMinArea:
+                YWidth_PmosDummy_Recalc = self.CeilMinSnapSpacing(_DRCObj._PODummyMinArea / self.getXWidth('_PMOS', '_PODummyLayer'), MinSnapSpacing * 2)
+                self._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] = YWidth_PmosDummy_Recalc
+            else:
+                pass
+        else:
+            pass
+
 
         ''' ---------------------------------------- Supply Rail Generation ---------------------------------------- '''
         self._DesignParameter['PbodyContact'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VSSRailIn{}'.format(_Name)))[0]
@@ -211,7 +231,10 @@ class _Inverter(StickDiagram._StickDiagram):
         else:
             DistanceBtwVSS2NMOS4 = 0
         DistanceBtwVSS2NMOS5 = 0.5 * (self.getYWidth('PbodyContact', '_PPLayer') + self.getYWidth('_NMOS', '_ODLayer')) + _DRCObj._OdMinSpace2Pp
-        DistanceBtwVSS2NMOS6 = 0.5 * (self.getYWidth('PbodyContact', '_Met2Layer') + self.getYWidth('_ViaMet12Met2OnNMOSOutput', '_Met2Layer')) + _DRCObj._MetalxMinSpace21
+        if _Finger in (1, 2):       # there is no _Met2Layer when finger is 1 or 2.
+            DistanceBtwVSS2NMOS6 = 0
+        else:
+            DistanceBtwVSS2NMOS6 = 0.5 * (self.getYWidth('PbodyContact', '_Met2Layer') + self.getYWidth('_ViaMet12Met2OnNMOSOutput', '_Met2Layer')) + _DRCObj._MetalxMinSpace21
         DistanceBtwVSS2NMOS_minimum = max(DistanceBtwVSS2NMOS1, DistanceBtwVSS2NMOS2, DistanceBtwVSS2NMOS3, DistanceBtwVSS2NMOS4, DistanceBtwVSS2NMOS5, DistanceBtwVSS2NMOS6)
 
 
@@ -226,9 +249,11 @@ class _Inverter(StickDiagram._StickDiagram):
         else:
             DistanceBtwVDD2PMOS4 = 0
         DistanceBtwVDD2PMOS5 = 0.5 * (self.getYWidth('NbodyContact', '_ODLayer') + self.getYWidth('_PMOS', '_PPLayer')) + _DRCObj._OdMinSpace2Pp
-        DistanceBtwVDD2PMOS6 = 0.5 * (self.getYWidth('NbodyContact', '_Met2Layer') + self.getYWidth('_ViaMet12Met2OnPMOSOutput', '_Met2Layer')) + _DRCObj._MetalxMinSpace21
+        if _Finger in (1, 2):  # there is no _Met2Layer when finger is 1 or 2.
+            DistanceBtwVDD2PMOS6 = 0
+        else:
+            DistanceBtwVDD2PMOS6 = 0.5 * (self.getYWidth('NbodyContact', '_Met2Layer') + self.getYWidth('_ViaMet12Met2OnPMOSOutput', '_Met2Layer')) + _DRCObj._MetalxMinSpace21
         DistanceBtwVDD2PMOS_minimum = max(DistanceBtwVDD2PMOS1, DistanceBtwVD2PMOS2, DistanceBtwVDD2PMOS3, DistanceBtwVDD2PMOS4, DistanceBtwVDD2PMOS5, DistanceBtwVDD2PMOS6)
-        print('DistanceBtwVDD2PMOS4:',DistanceBtwVDD2PMOS4)
 
         # Check Input parameter(_VSS2NMOSHeight, _VDD2PMOSHeight) & set it to minimum if input parameter is None
         if _VSS2NMOSHeight == None:
@@ -257,7 +282,7 @@ class _Inverter(StickDiagram._StickDiagram):
                 + 0.5 * WidthOfInputXM1 + _DRCObj._Metal1MinSpaceAtCorner
 
         else:  # Finger == 1, 2
-            XCoordinateOfViaF1 = self._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_XYCoordinatePMOSSupplyRouting']['_XYCoordinates'][0][0]
+            XCoordinateOfViaF1 = self._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_XYCoordinatePMOSSupplyRouting']['_XYCoordinates'][0][0] + (_ChannelLength + _GateSpacing) - self._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2 - 60 - self.getXWidth('_VIAPoly2Met1_F1', '_Met1Layer') / 2
             _XGapPolyDummyEdge2PolyEdge = \
                 (XCoordinateOfViaF1 - 0.5 * self.getXWidth('_VIAPoly2Met1_F1', '_POLayer')) \
                 - (self._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0] + 0.5 * self.getXWidth('_NMOS', '_PODummyLayer'))
@@ -782,6 +807,13 @@ class _Inverter(StickDiagram._StickDiagram):
             _Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1])
         self._DesignParameter['_NWLayer']['_Width'] = XWidth_NWLayer
         self._DesignParameter['_NWLayer']['_XYCoordinates'] = [[XYCoordinatesOfNW_top, XYCoordinatesOfNW_bot]]
+
+        self._DesignParameter['_NWLayerBoundary'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1],
+            _XWidth=XWidth_NWLayer,
+            _YWidth=XYCoordinatesOfNW_top[1]-XYCoordinatesOfNW_bot[1],
+            _XYCoordinates=[[0, (XYCoordinatesOfNW_top[1] + XYCoordinatesOfNW_bot[1]) / 2]]
+        )
 
         ''' ----------------------------------------  XVT Layer Modification --------------------------------------- '''
         if DesignParameters._Technology == 'SS28nm':
