@@ -4856,7 +4856,7 @@ class _FlatteningCell(QWidget):
                 item.setText(1, cell_name)
                 self.itemlist.append(item)
                 self.loop(item, parent_dict[key], False)
-            self.modifyBraches(item, cell_name)
+            self.modifyBraches(item, cell_name, isTop)
 
         if isTop == True:
             self.model.insertTopLevelItem(0, parent_item)
@@ -4868,7 +4868,7 @@ class _FlatteningCell(QWidget):
 
         return design_object, cell_name
 
-    def modifyBraches(self, item, cn):
+    def modifyBraches(self, item, cn, is_top=False):
         global cnn_inference_data
         cell_name = QLabel(cn)
 
@@ -4885,7 +4885,7 @@ class _FlatteningCell(QWidget):
         macroCheck.setText('OFF')
         combo.setEnabled(True)
 
-        if self.grouping:
+        if self.grouping and is_top:
             if user_setup.DL_FEATURE:
                 tmp_dp = self.dp[item.text(0)]
                 tmp_delegator = dpdc_delegator.DesignDelegator(None)
