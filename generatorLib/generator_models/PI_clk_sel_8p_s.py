@@ -41,7 +41,7 @@ class PI_clk_sel_8p_s(StickDiagram._StickDiagram):
                                  TristateInv3_Width_NM2=250,
                                  TristateInv3_Width_PM1=500,
                                  TristateInv3_Width_PM2=500,
-                                 TristateInv3_YCoord_InputA=750,
+                                 TristateInv3_YCoord_InputA=None,    # 750
 
                                  Inv_NMOSWidth=200,
                                  Inv_PMOSWidth=400,

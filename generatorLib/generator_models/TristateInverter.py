@@ -193,7 +193,7 @@ class TristateInverter(StickDiagram._StickDiagram):
             YCoordOfInputVia_ENb = YCoordOfInputENb
 
         if YCoordOfInputA == None:
-            YCoordOfInputVia_A = math.ceil((self.getXY('NMOS')[0][1] + self.getXY('PMOS')[0][1]) / 2)
+            YCoordOfInputVia_A = math.ceil((self.getXYTop('NMOS', '_Met1Layer')[0][1] + self.getXYBot('PMOS', '_Met1Layer')[0][1]) / 2)
         else:
             YCoordOfInputVia_A = YCoordOfInputA
 
@@ -1038,6 +1038,7 @@ class TristateInverter(StickDiagram._StickDiagram):
 
         drc = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
+        MinSnapSpacing = drc._MinSnapSpacing
 
         NumFinger_PM1 = NumFinger_NM1
         NumFinger_PM2 = NumFinger_NM2
@@ -1080,6 +1081,22 @@ class TristateInverter(StickDiagram._StickDiagram):
             **dict(_PMOSNumberofGate=NumFinger_PM2, _PMOSChannelWidth=Width_PM2, _PMOSChannellength=ChannelLength,
                    _PMOSDummy=True, _GateSpacing=GateSpacing, _SDWidth=66, _XVT=XVT))
         self._DesignParameter['PM2']['_XYCoordinates'] = [[(((NumFinger_PM1 + 1) * (GateSpacing + ChannelLength)) / 2), ((((self._DesignParameter['VDDRail']['_XYCoordinates'][0][1] + self._DesignParameter['VDDRail']['_DesignObj']._DesignParameter['_ODLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['VDDRail']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth'] / 2)) - drc._OdMinSpace2Pp) - (self._DesignParameter['PM2']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] / 2))]]
+
+
+        # dummy area
+        forlist = ['NM1', 'NM2', 'PM1', 'PM2']
+        for Obj in forlist:
+            if '_PODummyLayer' in self._DesignParameter[Obj]['_DesignObj']._DesignParameter:
+                Area_NmosDummy = self.getXWidth(Obj, '_PODummyLayer') * self.getYWidth(Obj, '_PODummyLayer')
+                if Area_NmosDummy < drc._PODummyMinArea:
+                    YWidth_NmosDummy_Recalc = self.CeilMinSnapSpacing(drc._PODummyMinArea / self.getXWidth(Obj, '_PODummyLayer'), MinSnapSpacing * 2)
+                    self._DesignParameter[Obj]['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] = YWidth_NmosDummy_Recalc
+                else:
+                    pass
+            else:
+                pass
+
+
         path_list = []
         if (len(self._DesignParameter['NM1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
             mode = 'vertical'
@@ -1337,7 +1354,7 @@ class TristateInverter(StickDiagram._StickDiagram):
         self._DesignParameter['Met1RouteX_NMOut'] = self._BoundaryElementDeclaration(
             _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
             _XWidth=(RightBoundary_Met1XOut - LeftBoundary_Met1XOut) + self.getXWidth('Met1RouteY_NMout'),
-            _YWidth=YWidth_Met1HorizontalRouting
+            _YWidth=drc._Metal1MinWidth
         )
         self._DesignParameter['Met1RouteX_NMOut']['_XYCoordinates'] = [[
             (RightBoundary_Met1XOut + LeftBoundary_Met1XOut) / 2,
@@ -1347,7 +1364,7 @@ class TristateInverter(StickDiagram._StickDiagram):
         self._DesignParameter['Met1RouteX_PMOut'] = self._BoundaryElementDeclaration(
             _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
             _XWidth=(RightBoundary_Met1XOut - LeftBoundary_Met1XOut) + self.getXWidth('Met1RouteY_PMout'),
-            _YWidth=YWidth_Met1HorizontalRouting
+            _YWidth=drc._Metal1MinWidth
         )
         self._DesignParameter['Met1RouteX_PMOut']['_XYCoordinates'] = [[
             (RightBoundary_Met1XOut + LeftBoundary_Met1XOut) / 2,
@@ -1370,7 +1387,9 @@ class TristateInverter(StickDiagram._StickDiagram):
 
 
         ''' Input Via A '''
-        _YCoord_InputA = (self.getXY('NM1')[0][1] + self.getXY('PM1')[0][1]) / 2 if YCoord_InputA is None else YCoord_InputA
+        topBoundary = min(self.getXYBot('PM1', '_Met1Layer')[0][1], self.getXYBot('via1ForPM2', '_Met1Layer')[0][1])
+        botBoundary = max(self.getXYTop('NM1', '_Met1Layer')[0][1], self.getXYTop('via1ForNM2', '_Met1Layer')[0][1])
+        _YCoord_InputA = (topBoundary + botBoundary) / 2 if YCoord_InputA is None else YCoord_InputA
 
         RightBoudary_InputViaA = self.getXY('NM1', '_POLayer')[-1][0] + self.getXWidth('NM1', '_POLayer') / 2 - drc._CoMinEnclosureByPOAtLeastTwoSide
         LeftBoudary_InputViaA = self.getXY('NM1', '_POLayer')[0][0] - self.getXWidth('NM1', '_POLayer') / 2 + drc._CoMinEnclosureByPOAtLeastTwoSide
@@ -1401,14 +1420,17 @@ class TristateInverter(StickDiagram._StickDiagram):
         self._DesignParameter['polyInputENb'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='polyInputENbIn{}'.format(_Name)))[0]
         self._DesignParameter['polyInputENb']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
             **dict(_ViaPoly2Met1NumberOfCOX=NumViaX_InputEN, _ViaPoly2Met1NumberOfCOY=1))
+        self._DesignParameter['polyInputEN']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = 66
+        self._DesignParameter['polyInputENb']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = 66
 
+        drcTmp58 = 58
         if YCoord_InputEN is None:
-            _YCoord_InputEN = self.getXY('Met1RouteX_NMOut')[0][1] + self.getYWidth('Met1RouteX_NMOut') / 2 + drc._Metal1MinSpace + self.getYWidth('polyInputEN', '_Met1Layer') / 2
+            _YCoord_InputEN = self.getXY('Met1RouteX_NMOut')[0][1] + self.getYWidth('Met1RouteX_NMOut') / 2 + drcTmp58 + self.getYWidth('polyInputEN', '_Met1Layer') / 2
         else:
             _YCoord_InputEN = YCoord_InputEN
 
         if YCoord_InputENb is None:
-            _YCoord_InputENb = self.getXY('Met1RouteX_PMOut')[0][1] - self.getYWidth('Met1RouteX_PMOut') / 2 - drc._Metal1MinSpace - self.getYWidth('polyInputENb', '_Met1Layer') / 2
+            _YCoord_InputENb = self.getXY('Met1RouteX_PMOut')[0][1] - self.getYWidth('Met1RouteX_PMOut') / 2 - drcTmp58 - self.getYWidth('polyInputENb', '_Met1Layer') / 2
         else:
             _YCoord_InputENb = YCoord_InputENb
 
