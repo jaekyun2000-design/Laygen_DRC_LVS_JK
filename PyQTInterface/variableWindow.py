@@ -1236,6 +1236,7 @@ class _createNewDesignVariable(QWidget):
     # idDict = dict(min_spacing=dict(vid='dummy_vid', id=list()))
     variableDict = dict()
     idDict = dict()
+    count = 0
 
     def __init__(self):
         super().__init__()
@@ -1300,9 +1301,10 @@ class _createNewDesignVariable(QWidget):
         if vid_list == ['dummy_vid']:
             vid = 'vid0'
         else:
-            tmp = int(vid_list[-1][3:])+1
-            vid = 'vid' + str(tmp)
-
+            # tmp = int(vid_list[-1][3:])+1
+            # vid = 'vid' + str(tmp)
+            vid = 'vid' + str(self.count)
+        self.count += 1
         if DV not in self.idDict:
             self.idDict[DV] = {'vid':vid, 'id':list()}
             self.variableDict[vid] = {'DV':DV, 'value':None}
