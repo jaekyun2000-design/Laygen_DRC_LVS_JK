@@ -2828,6 +2828,9 @@ class _MainWindow(QMainWindow):
 
 
     def inspect_vw_array(self, group_list):
+        if user_setup.exp_data:
+            print('exp')
+            return
         if self._CurrentModuleName in self._QTObj._qtProject._DesignParameter:
             inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
             reference = inspector.inspect_group(group_list)
