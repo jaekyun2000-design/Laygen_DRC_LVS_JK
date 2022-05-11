@@ -32,7 +32,7 @@ class Rladder_wt_MUX(StickDiagram._StickDiagram):
 		if Num_of_Vref >= 7:
 			for i in range (0,7) :
 				tmpname1 = 'mux_module_%d' %i
-				MUX_offset_tmp=drc.DRCVIAxMinSpace(2,1) + drc._VIAxMinWidth + drc._MetalxMinSpace2 -(self._DesignParameter['R_ladder']['_XYCoordinates'][0][0] + self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['_M3_vertical']['_XYCoordinates'][i+1][0][0]) + ((((self._DesignParameter['MUX']['_XYCoordinates'][0][0]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter['EightMUX_0']['_XYCoordinates'][0][0]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter['EightMUX_0']['_DesignObj']._DesignParameter[tmpname1]['_XYCoordinates'][0][0]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter['EightMUX_0']['_DesignObj']._DesignParameter[tmpname1]['_DesignObj']._DesignParameter['m3_boundary']['_XYCoordinates'][0][0])
+				MUX_offset_tmp=2*self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['_M3_vertical']['_Width'] + 2*drc._MetalxMinSpace21 - (self._DesignParameter['R_ladder']['_XYCoordinates'][0][0] + self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['_M3_vertical']['_XYCoordinates'][i+1][0][0]) + ((((self._DesignParameter['MUX']['_XYCoordinates'][0][0]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter['EightMUX_0']['_XYCoordinates'][0][0]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter['EightMUX_0']['_DesignObj']._DesignParameter[tmpname1]['_XYCoordinates'][0][0]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter['EightMUX_0']['_DesignObj']._DesignParameter[tmpname1]['_DesignObj']._DesignParameter['m3_boundary']['_XYCoordinates'][0][0])
 				if i==0 :
 					MUX_offset = MUX_offset_tmp
 				elif MUX_offset < MUX_offset_tmp :
@@ -40,7 +40,7 @@ class Rladder_wt_MUX(StickDiagram._StickDiagram):
 		else :
 			for i in range (0,Num_of_Vref) :
 				tmpname1 = 'mux_module_%d' %i
-				MUX_offset_tmp=drc.DRCVIAxMinSpace(2,1) + drc._VIAxMinWidth + drc._MetalxMinSpace2 -(self._DesignParameter['R_ladder']['_XYCoordinates'][0][0] + self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['_M3_vertical']['_XYCoordinates'][i+1][0][0]) + ((((self._DesignParameter['MUX']['_XYCoordinates'][0][0]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter['EightMUX_0']['_XYCoordinates'][0][0]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter['EightMUX_0']['_DesignObj']._DesignParameter[tmpname1]['_XYCoordinates'][0][0]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter['EightMUX_0']['_DesignObj']._DesignParameter[tmpname1]['_DesignObj']._DesignParameter['m3_boundary']['_XYCoordinates'][0][0])
+				MUX_offset_tmp=2*self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['_M3_vertical']['_Width'] + 2*drc._MetalxMinSpace21 -(self._DesignParameter['R_ladder']['_XYCoordinates'][0][0] + self._DesignParameter['R_ladder']['_DesignObj']._DesignParameter['_M3_vertical']['_XYCoordinates'][i+1][0][0]) + ((((self._DesignParameter['MUX']['_XYCoordinates'][0][0]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter['EightMUX_0']['_XYCoordinates'][0][0]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter['EightMUX_0']['_DesignObj']._DesignParameter[tmpname1]['_XYCoordinates'][0][0]) + self._DesignParameter['MUX']['_DesignObj']._DesignParameter['EightMUX_0']['_DesignObj']._DesignParameter[tmpname1]['_DesignObj']._DesignParameter['m3_boundary']['_XYCoordinates'][0][0])
 				if i==0 :
 					MUX_offset = MUX_offset_tmp
 				elif MUX_offset < MUX_offset_tmp :
