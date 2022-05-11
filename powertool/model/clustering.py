@@ -340,16 +340,19 @@ class clustering():
         hierarchy_list = [element.split('[')[0] for element in hierarchy_list]
 
         item = self._DesignParameter
-        while hierarchy_list:
-            element_name = hierarchy_list.pop(0)
-            if not hierarchy_list:
-                item = item[element_name]
-            else:
-                if type(item[element_name]['_DesignObj']) == dict:
-                    item = item[element_name]['_DesignObj']
+        try:
+            while hierarchy_list:
+                element_name = hierarchy_list.pop(0)
+                if not hierarchy_list:
+                    item = item[element_name]
                 else:
-                    item = item[element_name]['_DesignObj']._DesignParameter
-        return item
+                    if type(item[element_name]['_DesignObj']) == dict:
+                        item = item[element_name]['_DesignObj']
+                    else:
+                        item = item[element_name]['_DesignObj']._DesignParameter
+            return item
+        except:
+            traceback.print_exc()
 
     def get_array_groups(self):
         return self.array_groups
