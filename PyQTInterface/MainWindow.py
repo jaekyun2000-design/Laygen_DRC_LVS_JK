@@ -1486,6 +1486,8 @@ class _MainWindow(QMainWindow):
         self.path_list_widget.show()
 
     def show_automate_path_widget(self, path_item):
+        self.dockContentWidget3_2.get_dp_highlight_dc([path_item.text()],None)
+        self.dockContentWidget3.get_dp_highlight_dc([path_item.text()],None)
         path_name = path_item.text()
         vertex_relative_element, direction = self.inspector.get_path_vertex_info(path_name)
         self.path_vertex_widget = QListWidget()
