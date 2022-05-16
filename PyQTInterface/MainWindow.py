@@ -892,11 +892,22 @@ class _MainWindow(QMainWindow):
                 dc._ast._id = dc._id
             if '_type' not in dc._ast.__dict__:
                 dc._ast._type = dc._type
+            if 'name' in dc._ast.__dict__:
+                if type(dc._ast.name) == str and '\x00' in dc._ast.name:
+                    org_name = dc._ast.name
+                    dc._ast.name = dc._ast.name.split('\x00', 1)[0]
+                    self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][org_name].name = dc._ast.name
+                    self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dc._ast.name] = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].pop(org_name)
+
+                    self._QTObj._qtProject._ElementManager.load_dp_dc_id(dc._ast.name, dc._ast._id)
+                    print(f'Fix null naming: {dc._ast.name}')
 
             if isinstance(dc._ast, element_ast.ElementNode):
                 if self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dc._id) == None and dc._ast.name:
                     self._QTObj._qtProject._ElementManager.load_dp_dc_id(dc._ast.name, dc._ast._id)
                     print(f'Fix Pairing: {dc._ast.name}-{dc._ast._id}')
+
+
 
         print('Fix Contaminated Design Constraints')
 
