@@ -323,6 +323,8 @@ class ElementTransformer(ast.NodeTransformer):
                     node.__dict__[field] = "[" + ','.join(string_list) + "]"
                 else:
                     node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
+        if type(node.name) == str:
+            node.name = node.name.rstrip('\x00')
 
         if syntax == 'list' or syntax == 'string':
             tmp_xy = str(node.XY).replace("'", "")
