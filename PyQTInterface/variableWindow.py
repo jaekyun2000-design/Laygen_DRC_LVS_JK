@@ -1232,10 +1232,10 @@ class _DesignVariableManagerWindow(QWidget):
 class _createNewDesignVariable(QWidget):
     from generatorLib import drc_api
     send_variable_signal = pyqtSignal(list, str)
-    # variableDict = dict(dummy_vid=dict(DV='min_spacing', value=str(drc_api.drc_classified_dict['MIN_SNAP_SPACING']['_MinSnapSpacing'])))
-    # idDict = dict(min_spacing=dict(vid='dummy_vid', id=list()))
-    variableDict = dict()
-    idDict = dict()
+    variableDict = dict(dummy_vid=dict(DV='min_spacing', value=str(drc_api.drc_classified_dict['MIN_SNAP_SPACING']['_MinSnapSpacing'])))
+    idDict = dict(min_spacing=dict(vid='dummy_vid', id=list()))
+    # variableDict = dict()
+    # idDict = dict()
     count = 0
 
     def __init__(self):
@@ -1301,9 +1301,9 @@ class _createNewDesignVariable(QWidget):
         if vid_list == ['dummy_vid']:
             vid = 'vid0'
         else:
-            # tmp = int(vid_list[-1][3:])+1
-            # vid = 'vid' + str(tmp)
-            vid = 'vid' + str(self.count)
+            tmp = int(vid_list[-1][3:])+1
+            vid = 'vid' + str(tmp)
+            # vid = 'vid' + str(self.count)
         self.count += 1
         if DV not in self.idDict:
             self.idDict[DV] = {'vid':vid, 'id':list()}
