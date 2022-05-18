@@ -845,6 +845,9 @@ class ExpressionCalculator(QWidget):
 
         self.geo_text = geo_text
         self.hierarchy_list = hierarchy_list
+        #
+        if self.clipboard.current_type == 2 and geo_text in ['width','height']:
+            geo_text = 'pwidth'
 
         calc_expression = geo_text + f'({hierarchy_list})'.replace(" ","").replace("([", "(").replace("])", ")")
         if self.value_flag:

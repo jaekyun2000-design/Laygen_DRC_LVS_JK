@@ -1621,7 +1621,8 @@ class _MainWindow(QMainWindow):
         geo_search.build_IST_qt(target_cell)
         return geo_search
 
-    def save_clipboard(self,save_target,_):
+    def save_clipboard(self,save_target,_, object_type=None):
+        self.gloabal_clipboard.current_type = object_type
         if type(save_target) == list and _ == None:
             self.gloabal_clipboard.setText(str(save_target))
 
@@ -3909,7 +3910,7 @@ class _CustomView(QGraphicsView):
     send_design_message = pyqtSignal(delegator.DelegateMessage)
     send_widget_message = pyqtSignal(delegator.DelegateMessage)
     nameout_signal = pyqtSignal(str)
-    name_list_signal = pyqtSignal(list, list)
+    name_list_signal = pyqtSignal(list, list, int)
 
     def __init__(self):
         super(_CustomView, self).__init__()
@@ -4090,7 +4091,7 @@ class _CustomView(QGraphicsView):
         event.proposedAction()
         super(self).dropEvent(event)
 
-    def name_out_fcn(self,name_list,index_list):
+    def name_out_fcn(self,name_list,index_list, object_type):
         if self.getModule == None:
             name_list.insert(0,None)
             index_list.insert(0,None)
@@ -4100,7 +4101,7 @@ class _CustomView(QGraphicsView):
                 index_list.insert(0,self.getModule.block[0].index)
             else:
                 index_list.insert(0,self.getModule.index)
-        self.name_list_signal.emit(name_list,index_list)
+        self.name_list_signal.emit(name_list,index_list, object_type)
 
 class _CustomScene(QGraphicsScene):
     send_debug_signal = pyqtSignal()
@@ -4112,7 +4113,7 @@ class _CustomScene(QGraphicsScene):
     send_move_signal = pyqtSignal(QPointF)
     send_moveDone_signal = pyqtSignal()
     send_deleteItem_signal = pyqtSignal(str)
-    send_module_name_list_signal = pyqtSignal(list, list)
+    send_module_name_list_signal = pyqtSignal(list, list, int)
     send_mouse_move_signal = pyqtSignal(QGraphicsSceneMouseEvent)
     send_mouse_move_xy_signal = pyqtSignal(list)
     send_selected_list_signal = pyqtSignal(list)
@@ -4422,13 +4423,13 @@ class _CustomScene(QGraphicsScene):
                 try:
                     if item._ItemTraits['_DesignParametertype'] == 1:
                         if item.block[0].index[0] == len(item._ItemTraits['_XYCoordinates']) - 1 and len(item._ItemTraits['_XYCoordinates']) != 1:
-                            self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']],[-1])
+                            self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']],[-1],1)
                         else:
-                            self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0].index])
+                            self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0].index], 1)
                     elif item._ItemTraits['_DesignParametertype'] == 2:
-                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [f'{[item.block[0].index[0]]}'+f'{[item.block[0].index[1]]}'])
+                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [f'{[item.block[0].index[0]]}'+f'{[item.block[0].index[1]]}'],2)
                     elif item._ItemTraits['_DesignParametertype'] == 3:
-                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [0])
+                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [0],3)
                 except:
                     pass
         elif QKeyEvent.key() == Qt.Key_R:
@@ -4506,10 +4507,10 @@ class _CustomScene(QGraphicsScene):
 
         self.viewList[-1].show()
 
-    def receive_module_name(self,name_list,index_list):
+    def receive_module_name(self,name_list,index_list, object_type):
         if type(name_list) == str:
             name_list = [name_list]
-        self.send_module_name_list_signal.emit(name_list,index_list)
+        self.send_module_name_list_signal.emit(name_list,index_list, object_type)
 
     def copyItem(self, item):
         structure_dict = dict()
