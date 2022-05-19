@@ -3,12 +3,12 @@ from generatorLib import DesignParameters
 import copy
 import math
 from generatorLib import DRC
-from generatorLib.generator_models import ViaMet22Met3
+from generatorLib.generator_models import ViaPoly2Met1
 from generatorLib.generator_models import PSubRing
 from generatorLib.generator_models import ViaMet12Met2
-from generatorLib.generator_models import ViaPoly2Met1
-from generatorLib.generator_models import ViaStack
 from generatorLib.generator_models import NMOSWithDummy
+from generatorLib.generator_models import ViaStack
+from generatorLib.generator_models import ViaMet22Met3
 
 class EasyDebugModule(StickDiagram._StickDiagram):
 	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
@@ -18,7 +18,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,nmos1_gate=2,nmos1_width=500,nmos1_length=30,nmos1_gate_spacing=96,nmos1_sdwidth=50,dummy=True,pccrit=True,xvt='SLVT',nmos2_gate=2,nmos2_width=1000,nmos2_length=40,nmos2_gate_spacing=96,nmos2_sdwidth=50,nmos3_gate=1,nmos3_width=500,nmos3_length=40,nmos3_gate_spacing=96,nmos3_sdwidth=50,nguardring_co_bot=3,nguardring_co_top=2,nguardring_co_right=6,nguardring_co_left=6):
+	def _CalculateDesignParameter(self,nmos1_gate=2,nmos1_width=600,nmos1_length=30,nmos1_gate_spacing=96,nmos1_sdwidth=50,dummy=True,pccrit=True,xvt='SLVT',nmos2_gate=2,nmos2_width=200,nmos2_length=40,nmos2_gate_spacing=96,nmos2_sdwidth=50,nmos3_gate=1,nmos3_width=200,nmos3_length=40,nmos3_gate_spacing=96,nmos3_sdwidth=50,nguardring_co_bot=3,nguardring_co_top=2,nguardring_co_right=6,nguardring_co_left=6):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -392,31 +392,29 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['via_nmos1_gate']['_XYCoordinates'] = [[self._DesignParameter['nmos3_gate_input']['_XYCoordinates'][0][0], (((self._DesignParameter['nmos3_gate_input']['_XYCoordinates'][0][1] + self._DesignParameter['nmos3_gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) + (self._DesignParameter['nmos3_gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) - (self._DesignParameter['via_nmos1_gate']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))]]
 		path_list = []
 		xy_offset = [0, 0]
-		if (len(self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
+		if (len(self._DesignParameter['via_nmos1_m1_m2_supply']['_XYCoordinates']) == 1):
 		    mode = 'vertical'
-		    _width = self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
-		elif (self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
+		    _width = self._DesignParameter['via_nmos1_m1_m2_supply']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met2Layer']['_XWidth']
+		elif (self._DesignParameter['via_nmos1_m1_m2_supply']['_XYCoordinates'][0][0] == self._DesignParameter['via_nmos1_m1_m2_supply']['_XYCoordinates'][(- 1)][0]):
 		    mode = 'horizontal'
-		    _width = self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
-		elif (self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
+		    _width = self._DesignParameter['via_nmos1_m1_m2_supply']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met2Layer']['_XWidth']
+		elif (self._DesignParameter['via_nmos1_m1_m2_supply']['_XYCoordinates'][0][1] == self._DesignParameter['via_nmos1_m1_m2_supply']['_XYCoordinates'][(- 1)][1]):
 		    mode = 'vertical'
-		    _width = self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+		    _width = self._DesignParameter['via_nmos1_m1_m2_supply']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met2Layer']['_XWidth']
 		else:
 		    print('Invalid Target Input')
 		if (mode == 'vertical'):
 		    xy_with_offset = []
 		    target_y_value = [[(+ self._DesignParameter['m2_nmos2_nmo3']['_XYCoordinates'][0][0][0]), (+ self._DesignParameter['m2_nmos2_nmo3']['_XYCoordinates'][0][0][1])]][0][1]
-		    for i in range(len(self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['NMOS1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['NMOS1']['_XYCoordinates'][0][1])], self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+		    for i in range(len(self._DesignParameter['via_nmos1_m1_m2_supply']['_XYCoordinates'])):
+		        xy_with_offset.append([(x + y) for (x, y) in zip([0, 0], self._DesignParameter['via_nmos1_m1_m2_supply']['_XYCoordinates'][i])])
 		    for i in range(len(xy_with_offset)):
 		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
 		    xy_with_offset = []
 		    target_x_value = [[(+ self._DesignParameter['m2_nmos2_nmo3']['_XYCoordinates'][0][0][0]), (+ self._DesignParameter['m2_nmos2_nmo3']['_XYCoordinates'][0][0][1])]][0][0]
-		    for i in range(len(self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['NMOS1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['NMOS1']['_XYCoordinates'][0][1])], self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+		    for i in range(len(self._DesignParameter['via_nmos1_m1_m2_supply']['_XYCoordinates'])):
+		        xy_with_offset.append([(x + y) for (x, y) in zip([0, 0], self._DesignParameter['via_nmos1_m1_m2_supply']['_XYCoordinates'][i])])
 		    for i in range(len(xy_with_offset)):
 		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		for i in range(len(path_list)):
