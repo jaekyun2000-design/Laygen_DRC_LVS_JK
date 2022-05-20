@@ -166,8 +166,8 @@ class ExpressionCalculator(QWidget):
 
         for i in range(10):
             if i != 0:
-                row = ((9-i) / 3)+dl_size
-                col = ((i-1) % 3)+3
+                row = int(((9-i) / 3)+dl_size)
+                col = int(((i-1) % 3)+3)
                 main_layout.addWidget(self.digit_buttons[i], row, col)
             main_layout.addWidget(self.digit_buttons[10], dl_size+3, 3)
             main_layout.addWidget(self.digit_buttons[0], dl_size+3, 4)
