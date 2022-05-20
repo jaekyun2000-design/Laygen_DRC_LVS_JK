@@ -17,7 +17,7 @@ class dcdl_cap(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,tg_pmos_gate=2,tg_nmos_gate=2,cap_gate=1,tg_gate_spacing=None,cap_gate_spacing=None,tg_nmos_width=200,tg_pmos_width=200,tg_length=30,tg_sdwidth=None,cap_sdwidth=None,tg_dummy=False,cap_dummy=False,tg_xvt='SLVT',cap_xvt='SLVT',tg_pmos_y=210,tg_nmos_y=210,cap_nmos_width=200,cap_pmos_width=200,cap_length=150,cap_pmos_gate_y=210,cap_nmos_gate_y=210):
+	def _CalculateDesignParameter(self,tg_pmos_gate=2,tg_nmos_gate=2,cap_gate=1,tg_gate_spacing=None,cap_gate_spacing=None,tg_nmos_width=200,tg_pmos_width=200,tg_length=30,tg_sdwidth=None,cap_sdwidth=None,tg_dummy=False,cap_dummy=False,tg_xvt='SLVT',cap_xvt='SLVT',tg_pmos_y=None,tg_nmos_y=None,cap_nmos_width=200,cap_pmos_width=200,cap_length=150,cap_pmos_gate_y=None,cap_nmos_gate_y=None):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
