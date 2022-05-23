@@ -167,8 +167,8 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
                  [self.getXY('MuxHalf1', 'TristateInv2', 'NMOS', '_Met1Layer')[-1][0] - 2 * UnitPitch, YCoordOftempRoute2]]
             ]
         else:
-            YCoordOftempRoute1 = 1033
-            YCoordOftempRoute2 = 2567
+            YCoordOftempRoute1 = 1066
+            YCoordOftempRoute2 = 2534
             self._DesignParameter['Met2Path1']['_XYCoordinates'] = [
                 [[self.getXY('MuxHalf1', 'Via1_TSINV2_A')[0][0], self.getXYBot('MuxHalf1', 'Via1_TSINV2_A', '_Met2Layer')[0][1] + self.getWidth('Met2Path1') / 2],
                  [self.getXY('MuxHalf1', 'TristateInv2', 'NM2', '_Met1Layer')[-1][0] - 2 * UnitPitch, self.getXYBot('MuxHalf1', 'Via1_TSINV2_A', '_Met2Layer')[0][1] + self.getWidth('Met2Path1') / 2]]

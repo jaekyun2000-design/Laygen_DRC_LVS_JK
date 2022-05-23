@@ -69,7 +69,7 @@ class _NMOS(StickDiagram._StickDiagram):
             _LengthNMOSBtwPO = _DRCObj.DRCPolyMinSpace(_Width=_NMOSChannelWidth, _ParallelLength=_NMOSChannellength) + _NMOSChannellength
         else:
             _LengthNMOSBtwPO = _DRCObj.DRCPolygateMinSpace(_DRCObj._CoMinWidth + 2 * _DRCObj._PolygateMinSpace2Co) + _NMOSChannellength
-        if _GateSpacing:
+        if _GateSpacing != None :
             _LengthNMOSBtwPO = _GateSpacing + _NMOSChannellength
 
         print ('#############################     POLY Layer Calculation    ##############################################')
