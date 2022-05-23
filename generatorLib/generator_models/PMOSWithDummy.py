@@ -61,7 +61,7 @@ class _PMOS(StickDiagram._StickDiagram):
             _LengthPMOSBtwPO = _DRCObj.DRCPolyMinSpace(_Width=_PMOSChannelWidth, _ParallelLength=_PMOSChannellength) + _PMOSChannellength
         else:
             _LengthPMOSBtwPO = _DRCObj.DRCPolygateMinSpace(_DRCObj._CoMinWidth + 2 * _DRCObj._PolygateMinSpace2Co) + _PMOSChannellength
-        if _GateSpacing:
+        if _GateSpacing != None:
             _LengthPMOSBtwPO = _GateSpacing + _PMOSChannellength
         print ('#############################     POLY (PO/PC) Layer Calculation    ##############################################')
         # POLY Layer Coordinate Calc
