@@ -3066,7 +3066,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.EditMode = False
         self.setAnimated(True)
 
-        # self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
 
         ########## context #########
@@ -3457,13 +3457,41 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 self.warning.show()
                 return
             else:
-                selectedItem=self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
-                self.removeFlag = True
-                #self.send_SendSTMT_signal.emit(self.itemToASTDict[selectedItem.text()])
-                self.send_SendID_signal.emit(selectedItem.text())
+
+                def children_detection(parent):
+                    search_stack = [parent]
+                    children_list = []
+                    while search_stack:
+                        current = search_stack.pop()
+                        for i in range(current.rowCount()):
+                            search_stack.append(current.child(i, 0))
+                            children_list.append(current.child(i, 1))
+                    return children_list
+
+                selected_items = [self.model.itemFromIndex(idx.siblingAtColumn(1)) for idx in self.selectedIndexes()]
+                selected_items_id = list(dict.fromkeys([item.text() for item in selected_items]))
+                for _id in selected_items_id:
+                    self.removeFlag = True
+                    self.send_SendID_signal.emit(_id)
+                # selectedItem=self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
+                # print([item.text() for item in selected_items])
+                # while selected_items:
+                #     selectedItem = selected_items.pop()
+                #     if selectedItem:
+                #         # print(selectedItem.text())
+                #         # children = children_detection(selectedItem)
+                #         # print(f'children: {children}')
+                #         # for child in children:
+                #         #     if child in selected_items:
+                #         #         print('remove: {}'.format(child.text()))
+                #         #         selected_items.remove(child)
+                #         self.removeFlag = True
+                #         #self.send_SendSTMT_signal.emit(self.itemToASTDict[selectedItem.text()])
+                #         self.send_SendID_signal.emit(selectedItem.text())
 
         except:
             self.warning = QMessageBox()
+            traceback.print_exc()
             self.warning.setText("Constraint Transfer failed")
             self.warning.show()
 
@@ -4856,7 +4884,7 @@ class _FlatteningCell(QWidget):
                 item.setText(1, cell_name)
                 self.itemlist.append(item)
                 self.loop(item, parent_dict[key], False)
-            self.modifyBraches(item, cell_name)
+            self.modifyBraches(item, cell_name, isTop)
 
         if isTop == True:
             self.model.insertTopLevelItem(0, parent_item)
@@ -4868,7 +4896,7 @@ class _FlatteningCell(QWidget):
 
         return design_object, cell_name
 
-    def modifyBraches(self, item, cn):
+    def modifyBraches(self, item, cn, is_top=False):
         global cnn_inference_data
         cell_name = QLabel(cn)
 
@@ -4885,7 +4913,7 @@ class _FlatteningCell(QWidget):
         macroCheck.setText('OFF')
         combo.setEnabled(True)
 
-        if self.grouping:
+        if self.grouping and is_top:
             if user_setup.DL_FEATURE:
                 tmp_dp = self.dp[item.text(0)]
                 tmp_delegator = dpdc_delegator.DesignDelegator(None)

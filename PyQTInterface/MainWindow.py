@@ -90,6 +90,7 @@ import user_setup
 DEBUG = user_setup.DEBUG
 subnanoMinimumScale =5 # 5 means(default)
 subnanoViewScale = 1  #
+minimum_render = 5
                       # 1 means(default): coordinates default unit is 1nm,
                       # 0.1 means: coordinates default unit is 0.1nm
                       # 10 means: coordinates default unit is 10nm
@@ -226,7 +227,8 @@ class _MainWindow(QMainWindow):
         fixAction = QAction("Fix!", self)
         undoListAction = QAction("Action List", self)
         undoAction = QAction("Undo", self)
-
+        save_svg_action = QAction("Save SVG", self)
+        save_scene = QAction("Save PDF_scene", self)
 
         # newAction.setShortcut('Ctrl+N')
         # newAction.triggered.connect(self.newProject)
@@ -261,6 +263,12 @@ class _MainWindow(QMainWindow):
         undoAction.setShortcut('Ctrl+Z')
         undoAction.triggered.connect(self.undo_stack.undo)
 
+        save_svg_action.setShortcut('Ctrl+P')
+        save_svg_action.triggered.connect(self.save_svg)
+
+        save_scene.setShortcut('Ctrl+[')
+        save_scene.triggered.connect(lambda tmp: self.save_svg(option='png'))
+
         # undo_action.setShortcut('Ctrl+Z')
         # undo_action.triggered.connect(self.undo_stack.undo)
         #
@@ -283,6 +291,8 @@ class _MainWindow(QMainWindow):
         fileMenu.addAction(fixAction)
         fileMenu.addAction(undoListAction)
         fileMenu.addAction(undoAction)
+        fileMenu.addAction(save_svg_action)
+        fileMenu.addAction(save_scene)
         # fileMenu.addAction(undo_action)
 
         #Second Menu#
@@ -384,7 +394,7 @@ class _MainWindow(QMainWindow):
         graphicView.name_list_signal.connect(self.save_clipboard)
         self.scene.send_module_name_list_signal.connect(graphicView.name_out_fcn)
         self.scene.setItemIndexMethod(QGraphicsScene.NoIndex)
-        self.scene.setMinimumRenderSize(5)
+        self.scene.setMinimumRenderSize(minimum_render)
         graphicView.centerOn(QPointF(268,-165))
         self.setCentralWidget(graphicView)
         color = Qt.black if user_setup._Night_mode else Qt.white
@@ -882,11 +892,22 @@ class _MainWindow(QMainWindow):
                 dc._ast._id = dc._id
             if '_type' not in dc._ast.__dict__:
                 dc._ast._type = dc._type
+            if 'name' in dc._ast.__dict__:
+                if type(dc._ast.name) == str and '\x00' in dc._ast.name:
+                    org_name = dc._ast.name
+                    dc._ast.name = dc._ast.name.split('\x00', 1)[0]
+                    self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][org_name].name = dc._ast.name
+                    self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dc._ast.name] = self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].pop(org_name)
+
+                    self._QTObj._qtProject._ElementManager.load_dp_dc_id(dc._ast.name, dc._ast._id)
+                    print(f'Fix null naming: {dc._ast.name}')
 
             if isinstance(dc._ast, element_ast.ElementNode):
                 if self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(dc._id) == None and dc._ast.name:
                     self._QTObj._qtProject._ElementManager.load_dp_dc_id(dc._ast.name, dc._ast._id)
                     print(f'Fix Pairing: {dc._ast.name}-{dc._ast._id}')
+
+
 
         print('Fix Contaminated Design Constraints')
 
@@ -1476,6 +1497,8 @@ class _MainWindow(QMainWindow):
         self.path_list_widget.show()
 
     def show_automate_path_widget(self, path_item):
+        self.dockContentWidget3_2.get_dp_highlight_dc([path_item.text()],None)
+        self.dockContentWidget3.get_dp_highlight_dc([path_item.text()],None)
         path_name = path_item.text()
         vertex_relative_element, direction = self.inspector.get_path_vertex_info(path_name)
         self.path_vertex_widget = QListWidget()
@@ -1598,7 +1621,8 @@ class _MainWindow(QMainWindow):
         geo_search.build_IST_qt(target_cell)
         return geo_search
 
-    def save_clipboard(self,save_target,_):
+    def save_clipboard(self,save_target,_, object_type=None):
+        self.gloabal_clipboard.current_type = object_type
         if type(save_target) == list and _ == None:
             self.gloabal_clipboard.setText(str(save_target))
 
@@ -2818,6 +2842,9 @@ class _MainWindow(QMainWindow):
 
 
     def inspect_vw_array(self, group_list):
+        if user_setup.exp_data:
+            print('exp')
+            return
         if self._CurrentModuleName in self._QTObj._qtProject._DesignParameter:
             inspector = topAPI.inspector.array_inspector(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
             reference = inspector.inspect_group(group_list)
@@ -3761,13 +3788,129 @@ class _MainWindow(QMainWindow):
             if module in self._QTObj._qtProject.__dict__[type]:
                 return module
 
+    def save_svg(self, file_name : str =None, option='svg'):
+        # option = 'svg'
+        # option = 'pdf_window'
+
+        if option == 'svg':
+            from PyQt5.QtSvg import QSvgGenerator
+            generator2 = QSvgGenerator()
+            generator2.setFileName("mainWidget.svg")
+            generator2.setSize(self.size())
+            generator2.setViewBox(self.rect())
+            painter2 = QPainter()
+            painter2.begin(generator2)
+            self.render(painter2)
+            painter2.end()
+
+            generator = QSvgGenerator()
+            image = QImage()
+            file_name = file_name if file_name else "test.svg"
+            image_name = file_name if file_name else "test.png"
+            generator.setFileName(file_name)
+
+            scene = _CustomScene()
+            # scene.setSceneRect(min(self.scene.fit_in_view_dict['left']),min(self.scene.fit_in_view_dict['bottom']), max(self.scene.fit_in_view_dict['right']), max(self.scene.fit_in_view_dict['top']))
+            for item in self.scene.items():
+                 scene.addItem(item)
+            tl = scene.sceneRect().topLeft()
+            x1 = tl.x()
+            y1 = tl.y()
+            width = scene.width() - x1
+            height= scene.height() - y1
+            scene.addRect(x1, y1, width, height, QPen(Qt.black), QBrush(Qt.black))
+            # print(scene.sceneRect().bottomLeft().x())
+            generator.setSize(scene.sceneRect().size().toSize())
+            # generator.setViewBox(QRect(x1,y1,width,height))
+
+
+            # for item in scene.items():
+            #     self.scene.addItem(item)
+
+
+            # print(width, height)
+            # print(scene.sceneRect())
+            # self.scene.addRect(x1,y1,width,height,QPen(Qt.black), QBrush(Qt.white))
+            # image = QImage()
+            painter = QPainter()
+            painter.setRenderHint(QPainter.Antialiasing)
+            painter.begin(generator)
+            scene.render(painter)
+            painter.end()
+            painter.begin(image)
+            scene.render(painter)
+            painter.end()
+            image.save(image_name)
+
+
+        elif 'pdf' in option:
+            from PyQt5.QtPrintSupport import QPrinter
+
+            if 'window' in option:
+                file_name = file_name if file_name else "window.pdf"
+                printer = QPrinter(QPrinter.HighResolution)
+                printer.setOutputFormat(QPrinter.PdfFormat)
+                printer.setOutputFileName(file_name)
+                painter = QPainter(printer)
+
+                xscale = printer.pageRect().width()*1.0 / self.width()
+                yscale = printer.pageRect().height()*1.0 / self.height()
+                scale = min(xscale,yscale)
+                painter.translate(printer.paperRect().center())
+                painter.scale(scale, scale)
+                painter.translate(-self.width()/2, -self.height()/2)
+                self.render(painter)
+                painter.end()
+            else:
+                #############################################
+                self.tmp_scene = _CustomScene()
+                # scene.setSceneRect(min(self.scene.fit_in_view_dict['left']),min(self.scene.fit_in_view_dict['bottom']), max(self.scene.fit_in_view_dict['right']), max(self.scene.fit_in_view_dict['top']))
+                for item in self.scene.items():
+                    self.tmp_scene.addItem(item)
+                tl = self.tmp_scene.sceneRect().topLeft()
+                x1 = tl.x()
+                y1 = tl.y()
+                width = self.tmp_scene.width() - x1
+                height = self.tmp_scene.height() - y1
+                self.tmp_scene.addRect(x1, y1, width, height, QPen(Qt.black), QBrush(Qt.black))
+
+
+                file_name = file_name if file_name else "layout.pdf"
+                printer2 = QPrinter(QPrinter.HighResolution)
+                printer2.setOutputFormat(QPrinter.PdfFormat)
+                printer2.setOutputFileName(file_name)
+                painter2 = QPainter(printer2)
+
+                xscale = printer2.pageRect().width() * 1.0 / self.tmp_scene.width()
+                yscale = printer2.pageRect().height() * 1.0 / self.tmp_scene.height()
+                scale = min(xscale, yscale)
+                painter2.translate(printer2.paperRect().center())
+                painter2.scale(scale, scale)
+                painter2.translate(-self.tmp_scene.width() / 2, -self.tmp_scene.height() / 2)
+                self.tmp_scene.render(painter2)
+                painter2.end()
+                print('save_end')
+
+        else:
+            print('pngstart')
+
+            # file_name = file_name if file_name else "layout.png"
+            # view = self.centralWidget()
+            # pixmap = view.grab(view.sceneRect().toRect())
+            # pixmap.save(file_name)
+            # print('pngend')
+            #
+
+
+
+
 
 class _CustomView(QGraphicsView):
     variable_signal = pyqtSignal(str)
     send_design_message = pyqtSignal(delegator.DelegateMessage)
     send_widget_message = pyqtSignal(delegator.DelegateMessage)
     nameout_signal = pyqtSignal(str)
-    name_list_signal = pyqtSignal(list, list)
+    name_list_signal = pyqtSignal(list, list, int)
 
     def __init__(self):
         super(_CustomView, self).__init__()
@@ -3948,7 +4091,7 @@ class _CustomView(QGraphicsView):
         event.proposedAction()
         super(self).dropEvent(event)
 
-    def name_out_fcn(self,name_list,index_list):
+    def name_out_fcn(self,name_list,index_list, object_type):
         if self.getModule == None:
             name_list.insert(0,None)
             index_list.insert(0,None)
@@ -3958,7 +4101,7 @@ class _CustomView(QGraphicsView):
                 index_list.insert(0,self.getModule.block[0].index)
             else:
                 index_list.insert(0,self.getModule.index)
-        self.name_list_signal.emit(name_list,index_list)
+        self.name_list_signal.emit(name_list,index_list, object_type)
 
 class _CustomScene(QGraphicsScene):
     send_debug_signal = pyqtSignal()
@@ -3970,7 +4113,7 @@ class _CustomScene(QGraphicsScene):
     send_move_signal = pyqtSignal(QPointF)
     send_moveDone_signal = pyqtSignal()
     send_deleteItem_signal = pyqtSignal(str)
-    send_module_name_list_signal = pyqtSignal(list, list)
+    send_module_name_list_signal = pyqtSignal(list, list, int)
     send_mouse_move_signal = pyqtSignal(QGraphicsSceneMouseEvent)
     send_mouse_move_xy_signal = pyqtSignal(list)
     send_selected_list_signal = pyqtSignal(list)
@@ -4280,13 +4423,13 @@ class _CustomScene(QGraphicsScene):
                 try:
                     if item._ItemTraits['_DesignParametertype'] == 1:
                         if item.block[0].index[0] == len(item._ItemTraits['_XYCoordinates']) - 1 and len(item._ItemTraits['_XYCoordinates']) != 1:
-                            self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']],[-1])
+                            self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']],[-1],1)
                         else:
-                            self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0].index])
+                            self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [item.block[0].index], 1)
                     elif item._ItemTraits['_DesignParametertype'] == 2:
-                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [f'{[item.block[0].index[0]]}'+f'{[item.block[0].index[1]]}'])
+                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [f'{[item.block[0].index[0]]}'+f'{[item.block[0].index[1]]}'],2)
                     elif item._ItemTraits['_DesignParametertype'] == 3:
-                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [0])
+                        self.send_module_name_list_signal.emit([item._ItemTraits['_ElementName']], [0],3)
                 except:
                     pass
         elif QKeyEvent.key() == Qt.Key_R:
@@ -4364,10 +4507,10 @@ class _CustomScene(QGraphicsScene):
 
         self.viewList[-1].show()
 
-    def receive_module_name(self,name_list,index_list):
+    def receive_module_name(self,name_list,index_list, object_type):
         if type(name_list) == str:
             name_list = [name_list]
-        self.send_module_name_list_signal.emit(name_list,index_list)
+        self.send_module_name_list_signal.emit(name_list,index_list, object_type)
 
     def copyItem(self, item):
         structure_dict = dict()

@@ -4,9 +4,9 @@ import copy
 import math
 from generatorLib import DRC
 from generatorLib.generator_models import PMOSWithDummy
-from generatorLib.generator_models import ViaMet12Met2
-from generatorLib.generator_models import NSubRing
 from generatorLib.generator_models import ViaPoly2Met1
+from generatorLib.generator_models import NSubRing
+from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import ViaStack
 
 class EasyDebugModule(StickDiagram._StickDiagram):
@@ -17,7 +17,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,dummy=True,pccrit=True,xvt='SLVT',pmos1_gate=3,pmos1_width=400,pmos1_length=30,pmos1_gate_spacing=96,pmos1_sdwidth=50,pmos2_gate=1,pmos2_width=200,pmos2_length=40,pmos2_gate_spacing=96,pmos3_gate=1,pmos3_width=500,pmos3_length=30,pmos3_gate_spacing=96,pmos3_sdwidth=50,pmos4_gate=1,pmos4_width=700,pmos4_length=30,pmos4_gate_spacing=96,pmos4_sdwidth=50,pmos2_sdwidth=50,pguardring_co_bot=2,pguardring_co_top=3,pguardring_co_right=3,pguardring_co_left=3):
+	def _CalculateDesignParameter(self,dummy=True,pccrit=True,xvt='SLVT',pmos1_gate=3,pmos1_width=400,pmos1_length=30,pmos1_gate_spacing=96,pmos1_sdwidth=50,pmos2_gate=1,pmos2_width=200,pmos2_length=40,pmos2_gate_spacing=96,pmos3_gate=1,pmos3_width=500,pmos3_length=30,pmos3_gate_spacing=96,pmos3_sdwidth=50,pmos4_gate=1,pmos4_width=700,pmos4_length=30,pmos4_gate_spacing=96,pmos4_sdwidth=50,pmos2_sdwidth=50,pguardring_co_bot=2,pguardring_co_top=3,pguardring_co_right=6,pguardring_co_left=6):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -411,7 +411,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['poly_pmos4_x'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _Width=self._DesignParameter['pmos4_gate']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'])
 		self._DesignParameter['poly_pmos4_x']['_XYCoordinates'] = [[[((self._DesignParameter['PMOS4']['_XYCoordinates'][0][0] + self._DesignParameter['PMOS4']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['PMOS4']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / 2)), self._DesignParameter['pmos4_gate']['_XYCoordinates'][0][1]], [((self._DesignParameter['PMOS4']['_XYCoordinates'][0][0] + self._DesignParameter['PMOS4']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['PMOS4']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / 2)), self._DesignParameter['pmos4_gate']['_XYCoordinates'][0][1]]], [[((self._DesignParameter['PMOS4']['_XYCoordinates'][1][0] + self._DesignParameter['PMOS4']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['PMOS4']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / 2)), self._DesignParameter['pmos4_gate']['_XYCoordinates'][0][1]], [((self._DesignParameter['PMOS4']['_XYCoordinates'][1][0] + self._DesignParameter['PMOS4']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['PMOS4']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / 2)), self._DesignParameter['pmos4_gate']['_XYCoordinates'][0][1]]]]
 		self._DesignParameter['via_m1_m2_pmos2_gate'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='via_m1_m2_pmos2_gateIn{}'.format(_Name)))[0]
-		self._DesignParameter['via_m1_m2_pmos2_gate']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureY(**dict(_ViaMet12Met2NumberOfCOX=max(1, max(1, (1 + int((((self._DesignParameter['pmos2_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] - drc._VIAxMinSpace) - (2 * drc._VIAxMinEnclosureByMetx)) / (drc._VIAxMinWidth + drc._VIAxMinSpace)))))), _ViaMet12Met2NumberOfCOY=1))
+		self._DesignParameter['via_m1_m2_pmos2_gate']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureY(**dict(_ViaMet12Met2NumberOfCOX=max(2, max(1, (1 + int((((self._DesignParameter['pmos2_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] - drc._VIAxMinSpace) - (2 * drc._VIAxMinEnclosureByMetx)) / (drc._VIAxMinWidth + drc._VIAxMinSpace)))))), _ViaMet12Met2NumberOfCOY=1))
 		self._DesignParameter['via_m1_m2_pmos2_gate']['_XYCoordinates'] = [[self._DesignParameter['pmos2_gate']['_XYCoordinates'][0][0], (((self._DesignParameter['pmos2_gate']['_XYCoordinates'][0][1] + self._DesignParameter['pmos2_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos2_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) + (self._DesignParameter['via_m1_m2_pmos2_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))], [self._DesignParameter['pmos2_gate']['_XYCoordinates'][(- 1)][0], (((self._DesignParameter['pmos2_gate']['_XYCoordinates'][1][1] + self._DesignParameter['pmos2_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos2_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) + (self._DesignParameter['via_m1_m2_pmos2_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))]]
 		self._DesignParameter['via_m1_m3_pmos_supply'] = self._SrefElementDeclaration(_DesignObj=ViaStack._ViaStack(_Name='via_m1_m3_pmos_supplyIn{}'.format(_Name)))[0]
 		self._DesignParameter['via_m1_m3_pmos_supply']['_DesignObj']._CalculateStackMinimumEnclosureX(**dict(COX=1, COY=max(2, max(1, (1 + int((((self._DesignParameter['PMOS1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] - drc._VIAxMinSpace) - (2 * drc._VIAxMinEnclosureByMetx)) / (drc._VIAxMinWidth + drc._VIAxMinSpace)))))), start_layer=1, end_layer=3))

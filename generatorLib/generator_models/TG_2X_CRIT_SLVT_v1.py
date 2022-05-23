@@ -17,7 +17,7 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,nmos_gate=3,pmos_gate=3,nmos_width=320,pmos_width=584,length=30,XVT='SLVT',nmos_y=350,pmos_y=433,gate_y=860,vss2vdd_height=1800,gate_spacing=100,sdwidth=66,power_xnum=2,power_xdistance=130, out_even_up_mode=True):
+	def _CalculateDesignParameter(self,nmos_gate=3,pmos_gate=3,nmos_width=320,pmos_width=584,length=30,XVT='SLVT',nmos_y=350,pmos_y=433,gate_y=860,vss2vdd_height=1800,gate_spacing=100,sdwidth=66,power_xdistance=130, out_even_up_mode=True):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
