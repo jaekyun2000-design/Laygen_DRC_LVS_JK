@@ -3,6 +3,7 @@ from generatorLib import DesignParameters
 import copy
 import math
 from generatorLib import DRC
+from generatorLib import CoordinateCalc as CoordCalc
 from generatorLib.generator_models import ViaPoly2Met1
 from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import NMOSWithDummy
@@ -550,8 +551,12 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 				self._DesignParameter['m2_output_nm_routing_x'] = self._DesignParameter.pop('m2_output1_routing_x')
 				self._DesignParameter['m2_output_pm_routing_x'] = self._DesignParameter.pop('m2_output2_routing_x')
 
+		# CellXWidth
+		self.CellXWidth = self.getXY('nmos_second_podummy')[-1][0] - self.getXY('nmos_second_podummy')[0][0]
 
-	def _CalculateDesignParameter_v2(self, nmgateY=None, pmgateY=None, nmos_gate=3, pmos_gate=3, nmos_width=320, pmos_width=584, length=30, XVT='SLVT', nmos_y=350, pmos_y=433, gate_y=860, vss2vdd_height=1800, gate_spacing=100, sdwidth=66, power_xnum=2, power_xdistance=130, out_even_up_mode=True):
+
+
+	def _CalculateDesignParameter_v2(self, nmgateY=None, pmgateY=None, nmos_gate=3, pmos_gate=3, nmos_width=320, pmos_width=584, length=30, XVT='SLVT', nmos_y=350, pmos_y=433, gate_y=860, vss2vdd_height=1800, gate_spacing=100, sdwidth=66, power_xdistance=130, out_even_up_mode=True):
 
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -563,8 +568,7 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 			nmos_gate=nmos_gate, pmos_gate=pmos_gate, nmos_width=nmos_width, pmos_width=pmos_width,
 			length=length, XVT=XVT,
 			nmos_y=_nmos_y, pmos_y=_pmos_y, gate_y=gate_y, vss2vdd_height=vss2vdd_height,
-			gate_spacing=gate_spacing, sdwidth=sdwidth,
-			power_xnum=power_xnum, power_xdistance=power_xdistance,
+			gate_spacing=gate_spacing, sdwidth=sdwidth, power_xdistance=power_xdistance,
 			out_even_up_mode=out_even_up_mode
 		)
 		self._CalculateDesignParameter(**InputParams)
