@@ -24,7 +24,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		
 		self._DesignParameter['pmos'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='pmosIn{}'.format(_Name)))[0]
 		self._DesignParameter['pmos']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=finger, _PMOSChannelWidth=width, _PMOSChannellength=length, _PMOSDummy=dummy, _GateSpacing=None, _SDWidth=None, _XVT=xvt, _PCCrit=pccrit))
-		self._DesignParameter['pmos']['_XYCoordinates'] = [[213.0, (- 184.0)]]
+		self._DesignParameter['pmos']['_XYCoordinates'] = [[0, 0]]
 		via_num = max(2, max(1, (1 + int((((self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] - drc._VIAxMinSpace) - (2 * drc._VIAxMinEnclosureByMetx)) / (drc._VIAxMinWidth + drc._VIAxMinSpace))))))
 		self._DesignParameter['via_m1_m2_drain'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='via_m1_m2_drainIn{}'.format(_Name)))[0]
 		self._DesignParameter['via_m1_m2_drain']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=via_num))
