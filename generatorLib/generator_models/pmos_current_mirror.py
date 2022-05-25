@@ -123,4 +123,5 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		    path_list[i][0] = [(xy + offset) for (xy, offset) in zip(path_list[i][0], xy_offset)]
 		self._DesignParameter['m1_source_routing2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_source_routing2']['_XYCoordinates'] = path_list
-		
+
+		self._DesignParameter['pguardring']['_DesignObj']._DesignParameter['top']['_DesignObj']._DesignParameter['_COLayer']['_XYCoordinates'] = []

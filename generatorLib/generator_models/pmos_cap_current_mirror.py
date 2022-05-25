@@ -3,11 +3,11 @@ from generatorLib import DesignParameters
 import copy
 import math
 from generatorLib import DRC
-from generatorLib.generator_models import NSubRing
-from generatorLib.generator_models import ViaPoly2Met1
-from generatorLib.generator_models import ViaStack
 from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import PMOSWithDummy
+from generatorLib.generator_models import NSubRing
+from generatorLib.generator_models import ViaStack
+from generatorLib.generator_models import ViaPoly2Met1
 
 class EasyDebugModule(StickDiagram._StickDiagram):
 	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
@@ -66,13 +66,13 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		xy_offset = (0, ((- self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth']) / 2))
 		if (len(self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
 		    mode = 'vertical'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = (drc._Metal1MinWidth * 1.72)
 		elif (self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
 		    mode = 'horizontal'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = (drc._Metal1MinWidth * 1.72)
 		elif (self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
 		    mode = 'vertical'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = (drc._Metal1MinWidth * 1.72)
 		else:
 		    print('Invalid Target Input')
 		if (mode == 'vertical'):
@@ -99,13 +99,13 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		xy_offset = (0, ((- self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth']) / 2))
 		if (len(self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
 		    mode = 'vertical'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = (drc._Metal1MinWidth * 1.72)
 		elif (self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
 		    mode = 'horizontal'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = (drc._Metal1MinWidth * 1.72)
 		elif (self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
 		    mode = 'vertical'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = (drc._Metal1MinWidth * 1.72)
 		else:
 		    print('Invalid Target Input')
 		if (mode == 'vertical'):
@@ -289,13 +289,13 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		xy_offset = [0, 0]
 		if (len(self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
 		    mode = 'vertical'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = (drc._Metal1MinWidth * 1.72)
 		elif (self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
 		    mode = 'horizontal'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = (drc._Metal1MinWidth * 1.72)
 		elif (self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
 		    mode = 'vertical'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = (drc._Metal1MinWidth * 1.72)
 		else:
 		    print('Invalid Target Input')
 		if (mode == 'vertical'):
@@ -322,13 +322,13 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		xy_offset = [0, 0]
 		if (len(self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
 		    mode = 'vertical'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = (drc._Metal1MinWidth * 1.72)
 		elif (self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
 		    mode = 'horizontal'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = (drc._Metal1MinWidth * 1.72)
 		elif (self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
 		    mode = 'vertical'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = (drc._Metal1MinWidth * 1.72)
 		else:
 		    print('Invalid Target Input')
 		if (mode == 'vertical'):
@@ -383,5 +383,13 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		        xy = (self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0] if (type(self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])
 		        XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['pmos_sw1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos_sw1']['_XYCoordinates'][0][1])], xy, xy_offset)])
 		self._DesignParameter['via_source_sw1']['_XYCoordinates'] = XYList
-		self._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_DesignObj']._DesignParameter['_COLayer']['_XYCoordinates'] = []
-		
+		self._DesignParameter['additional_pp_layer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PIMP'][0], _Datatype=DesignParameters._LayerMapping['PIMP'][1], _XWidth=(((self._DesignParameter['pmos_sw2']['_XYCoordinates'][0][0] + self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) + (self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2)) - ((self._DesignParameter['pmos_cap']['_XYCoordinates'][0][0] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2))), _YWidth=(((self._DesignParameter['pmos_cap']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] / 2)) - min(((self._DesignParameter['pmos_cap']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] / 2)), ((self._DesignParameter['pmos_sw1']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] / 2)), ((self._DesignParameter['pmos_sw2']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] / 2)))))
+		self._DesignParameter['additional_pp_layer']['_XYCoordinates'] = [[((((self._DesignParameter['pmos_sw2']['_XYCoordinates'][0][0] + self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) + (self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2)) + ((self._DesignParameter['pmos_cap']['_XYCoordinates'][0][0] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2))) / 2), ((((self._DesignParameter['pmos_cap']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] / 2)) + min(((self._DesignParameter['pmos_cap']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] / 2)), ((self._DesignParameter['pmos_sw1']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] / 2)), ((self._DesignParameter['pmos_sw2']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] / 2)))) / 2)]]
+
+		xvtlayer=pmos_cap_xvt
+		_xvtlayer='_'+pmos_cap_xvt+'layer'
+		self._DesignParameter['additional_xvt_layer']=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping[xvtlayer][0], _Datatype=DesignParameters._LayerMapping[xvtlayer][1], _XWidth=(((self._DesignParameter['pmos_sw2']['_XYCoordinates'][0][0] + self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_LVTLayer']['_XYCoordinates'][0][0]) + (self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_LVTLayer']['_XWidth'] / 2)) - ((self._DesignParameter['pmos_cap']['_XYCoordinates'][0][0] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_LVTLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_LVTLayer']['_XWidth'] / 2))), _YWidth=(((self._DesignParameter['pmos_cap']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_LVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_LVTLayer']['_YWidth'] / 2)) - min(((self._DesignParameter['pmos_cap']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_LVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_LVTLayer']['_YWidth'] / 2)), ((self._DesignParameter['pmos_sw1']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_LVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_LVTLayer']['_YWidth'] / 2)), ((self._DesignParameter['pmos_sw2']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_LVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_LVTLayer']['_YWidth'] / 2)))))
+		self._DesignParameter['additional_xvt_layer']['_XYCoordinates']=[[((((self._DesignParameter['pmos_sw2']['_XYCoordinates'][0][0] + self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_LVTLayer']['_XYCoordinates'][0][0]) + (self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_LVTLayer']['_XWidth'] / 2)) + ((self._DesignParameter['pmos_cap']['_XYCoordinates'][0][0] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_LVTLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_LVTLayer']['_XWidth'] / 2))) / 2), \
+																		  (self._DesignParameter['pmos_cap']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_LVTLayer']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_LVTLayer']['_YWidth'] / 2 + min(self._DesignParameter['pmos_cap']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_LVTLayer']['_XYCoordinates'][0][1] - self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_LVTLayer']['_YWidth'] / 2, self._DesignParameter['pmos_sw1']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_LVTLayer']['_XYCoordinates'][0][1] - self._DesignParameter['pmos_sw1']['_DesignObj']._DesignParameter['_LVTLayer']['_YWidth'] / 2, self._DesignParameter['pmos_sw2']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_LVTLayer']['_XYCoordinates'][0][1] - self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_LVTLayer']['_YWidth'] / 2)/2)]]
+
+		# self._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_DesignObj']._DesignParameter['_COLayer']['_XYCoordinates'] = []
