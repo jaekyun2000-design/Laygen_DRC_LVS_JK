@@ -263,3 +263,170 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['INV4']['_XYCoordinates'] = [
             [self.getXY('TSI2')[0][0] + self._DesignParameter['TSI2']['_DesignObj'].CellXWidth / 2 + 1 * UnitPitch + self._DesignParameter['INV4']['_DesignObj'].CellXWidth / 2, 0]
         ]
+
+
+        ''' VDD Rail, VSS Rail, XVTLayer '''
+        # VSS M2
+        leftBoundary = self.getXYLeft('TG1', 'vss_supply_m2_y')[0][0]
+        rightBoundary = self.getXYRight('INV4', 'PbodyContact', '_Met2Layer')[0][0]
+        self._DesignParameter['VSSRail_Met2'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=self.getYWidth('INV4', 'PbodyContact', '_Met2Layer'),
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, 0]]
+        )
+        # VSS OD(RX)
+        leftBoundary = self.getXYLeft('TG1', 'vss_odlayer')[0][0]
+        rightBoundary = self.getXYRight('INV4', 'PbodyContact', '_ODLayer')[0][0]
+        self._DesignParameter['VSSRail_OD'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['DIFF'][0], _Datatype=DesignParameters._LayerMapping['DIFF'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=self.getYWidth('INV4', 'PbodyContact', '_ODLayer'),
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, 0]]
+        )
+        # VSS PP(BP)
+        leftBoundary = self.getXYLeft('TG1', 'vss_pplayer')[0][0]
+        rightBoundary = self.getXYRight('INV4', 'PbodyContact', '_PPLayer')[0][0]
+        self._DesignParameter['VSSRail_PP'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['PIMP'][0], _Datatype=DesignParameters._LayerMapping['PIMP'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=self.getYWidth('INV4', 'PbodyContact', '_PPLayer'),
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, 0]]
+        )
+        ## VDD
+        # VDD M2
+        leftBoundary = self.getXYLeft('TG1', 'vdd_supply_m2_y')[0][0]
+        rightBoundary = self.getXYRight('INV4', 'NbodyContact', '_Met2Layer')[0][0]
+        self._DesignParameter['VDDRail_Met2'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=self.getYWidth('INV4', 'NbodyContact', '_Met2Layer'),
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, self.getXY('INV4', 'NbodyContact', '_Met2Layer')[0][1]]]
+        )
+        # VDD OD(RX)
+        leftBoundary = self.getXYLeft('TG1', 'vdd_odlayer')[0][0]
+        rightBoundary = self.getXYRight('INV4', 'NbodyContact', '_ODLayer')[0][0]
+        self._DesignParameter['VDDRail_OD'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['DIFF'][0], _Datatype=DesignParameters._LayerMapping['DIFF'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=self.getYWidth('INV4', 'NbodyContact', '_ODLayer'),
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, self.getXY('INV4', 'NbodyContact', '_ODLayer')[0][1]]]
+        )
+
+        # NWLayer
+        leftBoundary = self.getXYLeft('TG1', 'NWELL_boundary_0')[0][0]
+        rightBoundary = self.getXYRight('INV4', '_NWLayerBoundary')[0][0]
+        topBoundary = max(
+            self.getXYTop('TG1', 'NWELL_boundary_0')[0][1],
+            self.getXYTop('TG2', 'NWELL_boundary_0')[0][1],
+            self.getXYTop('TSI1', 'nwlayer')[0][1],
+            self.getXYTop('TSI2', 'nwlayer')[0][1],
+            self.getXYTop('INV1', '_NWLayerBoundary')[0][1],
+            self.getXYTop('INV2', '_NWLayerBoundary')[0][1],
+            self.getXYTop('INV3', '_NWLayerBoundary')[0][1],
+            self.getXYTop('INV4', '_NWLayerBoundary')[0][1]
+        )
+        botBoundary = min(
+            self.getXYBot('TG1', 'NWELL_boundary_0')[0][1],
+            self.getXYBot('TG2', 'NWELL_boundary_0')[0][1],
+            self.getXYBot('TSI1', 'nwlayer')[0][1],
+            self.getXYBot('TSI2', 'nwlayer')[0][1],
+            self.getXYBot('INV1', '_NWLayerBoundary')[0][1],
+            self.getXYBot('INV2', '_NWLayerBoundary')[0][1],
+            self.getXYBot('INV3', '_NWLayerBoundary')[0][1],
+            self.getXYBot('INV4', '_NWLayerBoundary')[0][1]
+        )
+        self._DesignParameter['_NWLayer'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=topBoundary - botBoundary,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, (topBoundary + botBoundary) / 2]]
+        )
+
+        # XVTLayer
+        assert XVT in ('SLVT', 'LVT', 'RVT', 'HVT')
+        leftBoundary = self.getXYLeft('TG1', 'XVT_boundary_1')[0][0]
+        rightBoundary = self.getXYRight('INV4', 'XVTLayer')[0][0]
+        self._DesignParameter['XVTLayer'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping[XVT][0], _Datatype=DesignParameters._LayerMapping[XVT][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=self.getYWidth('INV4', 'XVTLayer'),
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, self.getXY('INV4', 'XVTLayer')[0][1]]]
+        )
+
+
+        ''' Met2 '''
+        tmpDRC_Met2Spacing = 86
+        tmpMet2Width = 66
+        ''' dib2 '''
+        YCoord_dib2 = self.getXYTop('INV1', '_ViaMet12Met2OnNMOSOutput', '_Met2Layer')[0][1] + tmpDRC_Met2Spacing + tmpMet2Width / 2
+        leftBoundary = self.getXY('TG1')[0][0] + self._DesignParameter['TG1']['_DesignObj']._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][-1][0][0] - self.getWidth('TG1', 'm1_drain_routing_y') / 2
+        rightBoundary = self.getXY('TSI1')[0][0] + self.getWidth('TSI1', 'OutputRouting') / 2   # only when TSI Finger==1
+
+        self._DesignParameter['met2_dib2'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_dib2]]
+        )
+
+
+
+        # iclkb
+        YCoord_met2iclkb = YCoord_dib2 + tmpDRC_Met2Spacing + tmpMet2Width
+        leftBoundary = self.getXY('TG1', 'gate_output', '_Met1Layer')[0][0]
+        rightBoundary = self.getXY('TSI2', 'InputVia_EN', '_Met1Layer')[0][0] - UnitPitch
+        self._DesignParameter['met2_iclkb'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_met2iclkb]]
+        )
+
+        # iclk
+        YCoord_met2iclk = YCoord_dib2 + tmpDRC_Met2Spacing + tmpMet2Width
+        leftBoundary = self.getXY('TG1', 'gate_output', '_Met1Layer')[0][0]
+        rightBoundary = self.getXY('TSI2', 'InputVia_EN', '_Met1Layer')[0][0] - UnitPitch
+        self._DesignParameter['met2_iclk'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_met2iclk]]
+        )
+
+
+
+
+        ''' Met1 '''
+        # inv2-inv3
+        leftBoundary = self.getXY('INV2', 'PIN_Y')[0][0]
+        rightBoundary = self.getXY('INV3', 'InputMet1')[0][0]
+        self._DesignParameter['met1_INV2OUT_2_INV3IN'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=self.getYWidth('INV3', 'InputMet1') if INV3_Finger in (1,2) else 66,
+            # _YWidth=66,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, self.getXY('INV3', 'InputMet1')[0][1]]]
+        )
+
+        # TG2 - INV2
+        # Align first!
+        leftBoundary = self.getXY('TG2', 'gate_output')[0][0]
+        rightBoundary = self.getXY('INV2', 'InputMet1')[0][0]
+        self._DesignParameter['met1_TG2_2_INV2'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=66,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, self.getXYBot('TG2', 'gate_output', '_Met1Layer')[0][1] + 33]]
+        )
+
+        # INV4 - TSI2(A)
+        leftBoundary = self.getXY('TSI2', 'InputVia_A', '_Met1Layer')[0][0]
+        rightBoundary = self.getXY('INV4', 'PIN_Y')[0][0]
+        self._DesignParameter['met1_INV4_2_TSI2A'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=66,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, self.getXYBot('TSI2', 'InputVia_A', '_Met1Layer')[0][1] + 33]]
+        )
+
