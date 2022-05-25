@@ -22,7 +22,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,Cell_height=2108,nf_aoi_out_pmos=1,W_aoi_out_pmos=1000,L_aoi_out_pmos=30,aoi_out_pmos_y=1000,aoi_XVT='RVT',nf_pbias_pmos=2,W_pbias_pmos=830,L_pbias_pmos=300,pbias_pmos_XVT='LVT',nf_AOI_mos=1,W_AOI_pmos=200,W_AOI_nmos=200,L_AOI_mos=30,VDD2aoi_pmos=464,VSS2aoi_nmos=332):
+	def _CalculateDesignParameter(self,Cell_height=2108,nf_aoi_out_pmos=1,W_aoi_out_pmos=1000,L_aoi_out_pmos=30,aoi_out_pmos_y=1000,aoi_XVT='RVT',nf_pbias_pmos=2,W_pbias_pmos=830,L_pbias_pmos=300,pbias_pmos_XVT='LVT',nf_AOI_mos=1,W_AOI_pmos=200,W_AOI_nmos=200,L_AOI_mos=30,VDD2aoi_pmos=550,VSS2aoi_nmos=350):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -192,34 +192,34 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		        XYList.append([((x + y) + z) for (x, y, z) in zip([(self._DesignParameter['AOI_p2']['_XYCoordinates'][0][0]), (self._DesignParameter['AOI_p2']['_XYCoordinates'][0][1])], xy, xy_offset)])
 		self._DesignParameter['aoi_p2_to_p3']['_XYCoordinates'] = XYList
 
-		##aoi_p3_input via
-		self._DesignParameter['aoi_p3_input'] = self._SrefElementDeclaration(
-			_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='aoi_p3_inputIn{}'.format(_Name)))[0]
-		self._DesignParameter['aoi_p3_input']['_DesignObj']._CalculateDesignParameterSameEnclosure(**VIAPMOSMet12)
-
-		# 1-1) Metal1 YWidth re-calculation
-		self._DesignParameter['aoi_p3_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] \
-			= max(self.getYWidth('aoi_p3_input', '_Met1Layer'), self.getYWidth('AOI_p3', '_Met1Layer'))
-
-		Area_M1for_aoi_p3_input = self.getXWidth('aoi_p3_input', '_Met1Layer') \
-											  * self.getYWidth('aoi_p3_input', '_Met1Layer')
-		if Area_M1for_aoi_p3_input < drc._Metal1MinArea:
-			YWidth_recalculated_byMinArea = self.CeilMinSnapSpacing(drc._Metal1MinArea / self.getXWidth('aoi_p3_input', '_Met1Layer'), 2 * drc._MinSnapSpacing)
-			self._DesignParameter['aoi_p3_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = YWidth_recalculated_byMinArea
-		else:
-			pass
-
-		self._DesignParameter['aoi_p3_input']['_XYCoordinates'] = None
-		XYList = []
-		xy_offset = [0, 0]
-		for i in range(len(self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])):
-		    if ((i % 2) == 0):
-		        xy = (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i][0] if (type(self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i])
-		        XYList.append([((x + y) + z) for (x, y, z) in zip([(self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]), (self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1])], xy, xy_offset)])
-		self._DesignParameter['aoi_p3_input']['_XYCoordinates'] = XYList
+		# ##aoi_p3_input via
+		# self._DesignParameter['aoi_p3_input'] = self._SrefElementDeclaration(
+		# 	_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='aoi_p3_inputIn{}'.format(_Name)))[0]
+		# self._DesignParameter['aoi_p3_input']['_DesignObj']._CalculateDesignParameterSameEnclosure(**VIAPMOSMet12)
+		#
+		# # 1-1) Metal1 YWidth re-calculation
+		# self._DesignParameter['aoi_p3_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] \
+		# 	= max(self.getYWidth('aoi_p3_input', '_Met1Layer'), self.getYWidth('AOI_p3', '_Met1Layer'))
+		#
+		# Area_M1for_aoi_p3_input = self.getXWidth('aoi_p3_input', '_Met1Layer') \
+		# 									  * self.getYWidth('aoi_p3_input', '_Met1Layer')
+		# if Area_M1for_aoi_p3_input < drc._Metal1MinArea:
+		# 	YWidth_recalculated_byMinArea = self.CeilMinSnapSpacing(drc._Metal1MinArea / self.getXWidth('aoi_p3_input', '_Met1Layer'), 2 * drc._MinSnapSpacing)
+		# 	self._DesignParameter['aoi_p3_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = YWidth_recalculated_byMinArea
+		# else:
+		# 	pass
+		#
+		# self._DesignParameter['aoi_p3_input']['_XYCoordinates'] = None
+		# XYList = []
+		# xy_offset = [0, 0]
+		# for i in range(len(self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])):
+		#     if ((i % 2) == 0):
+		#         xy = (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i][0] if (type(self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i])
+		#         XYList.append([((x + y) + z) for (x, y, z) in zip([(self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]), (self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1])], xy, xy_offset)])
+		# self._DesignParameter['aoi_p3_input']['_XYCoordinates'] = XYList
 
 		self._DesignParameter['aoi_p1p2_to_p3in'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=self._DesignParameter['aoi_p1_to_p3']['_DesignObj']._DesignParameter['_Met2Layer']['_XWidth'])
-		self._DesignParameter['aoi_p1p2_to_p3in']['_XYCoordinates'] = [[[(+ self._DesignParameter['aoi_p1_to_p3']['_XYCoordinates'][0][0]), (+ self._DesignParameter['aoi_p1_to_p3']['_XYCoordinates'][0][1])], [(+ self._DesignParameter['aoi_p3_input']['_XYCoordinates'][(- 1)][0]), (+ self._DesignParameter['aoi_p3_input']['_XYCoordinates'][(- 1)][1])]]]
+		self._DesignParameter['aoi_p1p2_to_p3in']['_XYCoordinates'] = [[[(+ self._DesignParameter['aoi_p1_to_p3']['_XYCoordinates'][0][0]), (+ self._DesignParameter['aoi_p1_to_p3']['_XYCoordinates'][0][1])], [(+ self._DesignParameter['aoi_p2_to_p3']['_XYCoordinates'][(- 1)][0]), (+ self._DesignParameter['aoi_p2_to_p3']['_XYCoordinates'][(- 1)][1])]]]
 
 		##nmos via calculation
 		YWidthOfNMOSMet1 = self._DesignParameter['AOI_n1']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']
@@ -323,22 +323,22 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
 		self._DesignParameter['n3p3_gate_via1'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='n3p3_gate_via1In{}'.format(_Name)))[0]
 		self._DesignParameter['n3p3_gate_via1']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(**dict(_ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2))
-		self._DesignParameter['n3p3_gate_via1']['_XYCoordinates'] = [[((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2 + drc._Metal1MinSpace + self._DesignParameter['n3p3_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2), (((((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2) + ((((self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2))]]
+		self._DesignParameter['n3p3_gate_via1']['_XYCoordinates'] = [[((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2 + drc._Metal1MinSpace2 + self._DesignParameter['n3p3_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2), (((((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2) + ((((self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2))]]
 		self._DesignParameter['n3p3_gate_via2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='n3p3_gate_via2In{}'.format(_Name)))[0]
 		self._DesignParameter['n3p3_gate_via2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['n3p3_gate_via2']['_XYCoordinates'] = [[((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2 + drc._Metal1MinSpace + self._DesignParameter['n3p3_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2), (((((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2) + ((((self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2))]]
+		self._DesignParameter['n3p3_gate_via2']['_XYCoordinates'] = [[((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2 + drc._Metal1MinSpace2 + self._DesignParameter['n3p3_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2), (((((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2) + ((((self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2))]]
 		self._DesignParameter['n3p3_gate_via3'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='n3p3_gate_via3In{}'.format(_Name)))[0]
 		self._DesignParameter['n3p3_gate_via3']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
-		self._DesignParameter['n3p3_gate_via3']['_XYCoordinates'] = [[((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2 + drc._Metal1MinSpace + self._DesignParameter['n3p3_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2), (((((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2) + ((((self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2))]]
+		self._DesignParameter['n3p3_gate_via3']['_XYCoordinates'] = [[((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2 + drc._Metal1MinSpace2 + self._DesignParameter['n3p3_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2), (((((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2) + ((((self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2))]]
 		self._DesignParameter['n3p3_gate_via4'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='n3p3_gate_via4In{}'.format(_Name)))[0]
 		self._DesignParameter['n3p3_gate_via4']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
-		self._DesignParameter['n3p3_gate_via4']['_XYCoordinates'] = [[((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2 + drc._Metal1MinSpace + self._DesignParameter['n3p3_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2), (((((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2) + ((((self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2))]]
+		self._DesignParameter['n3p3_gate_via4']['_XYCoordinates'] = [[((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2 + drc._Metal1MinSpace2 + self._DesignParameter['n3p3_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2), (((((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2) + ((((self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2))]]
 		self._DesignParameter['n3p3_gate_via5'] = self._SrefElementDeclaration(_DesignObj=ViaMet42Met5._ViaMet42Met5(_Name='n3p3_gate_via5In{}'.format(_Name)))[0]
 		self._DesignParameter['n3p3_gate_via5']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet42Met5NumberOfCOX=1, _ViaMet42Met5NumberOfCOY=2))
-		self._DesignParameter['n3p3_gate_via5']['_XYCoordinates'] = [[((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2 + drc._Metal1MinSpace + self._DesignParameter['n3p3_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2), (((((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2) + ((((self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2))]]
+		self._DesignParameter['n3p3_gate_via5']['_XYCoordinates'] = [[((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2 + drc._Metal1MinSpace2 + self._DesignParameter['n3p3_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2), (((((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2) + ((((self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2))]]
 		self._DesignParameter['n3p3_gate_via6'] = self._SrefElementDeclaration(_DesignObj=ViaMet52Met6._ViaMet52Met6(_Name='n3p3_gate_via6In{}'.format(_Name)))[0]
 		self._DesignParameter['n3p3_gate_via6']['_DesignObj']._CalculateViaMet52Met6DesignParameter(**dict(_ViaMet52Met6NumberOfCOX=1, _ViaMet52Met6NumberOfCOY=2))
-		self._DesignParameter['n3p3_gate_via6']['_XYCoordinates'] = [[((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2 + drc._Metal1MinSpace + self._DesignParameter['n3p3_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2), (((((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2) + ((((self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2))]]
+		self._DesignParameter['n3p3_gate_via6']['_XYCoordinates'] = [[((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2 + drc._Metal1MinSpace2 + self._DesignParameter['n3p3_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2), (((((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2) + ((((self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_RVTLayer']['_YWidth'] / 2)) / 2))]]
 
 
 
@@ -542,7 +542,13 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
 
 		self._DesignParameter['pbiaspmos_gate_in']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(**dict(_ViaPoly2Met1NumberOfCOX=POLYVIAX, _ViaPoly2Met1NumberOfCOY=1))
-		self._DesignParameter['pbiaspmos_gate_in']['_XYCoordinates'] = [[(self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][0]), (((((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][1]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2)) + (drc._CoMinWidth / 2)) + drc._CoMinEnclosureByPOAtLeastTwoSide)]]
+		self._DesignParameter['pbiaspmos_gate_in']['_XYCoordinates'] = [[(self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][0]), (((((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][1]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_ODLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth'] / 2)) - drc._Metal1MinSpace) - (self._DesignParameter['pbiaspmos_gate_in']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))]]
+
+		self._DesignParameter['pbias_poly_path'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _Width=self._DesignParameter['pbiaspmos_gate_in']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'])
+		self._DesignParameter['pbias_poly_path']['_XYCoordinates'] = [[[(((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][0]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / 2)),
+																		(((((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][1]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_ODLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth'] / 2)) - drc._Metal1MinSpace) - (self._DesignParameter['pbiaspmos_gate_in']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))],
+																	   [(((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][0]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / 2)),
+																		(((((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][1]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_ODLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth'] / 2)) - drc._Metal1MinSpace) - (self._DesignParameter['pbiaspmos_gate_in']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))]]]
 
 		# self._DesignParameter['pbiaspmos2aoipmos_via1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='pbiaspmos2aoipmos_via1In{}'.format(_Name)))[0]
 		# self._DesignParameter['pbiaspmos2aoipmos_via1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=3))
@@ -650,7 +656,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
 		self._DesignParameter['VSS']['_DesignObj']._CalculatePbodyContactDesignParameter(**dict(_NumberOfPbodyCOX=power_COX, _NumberOfPbodyCOY=2, _Met1XWidth=None, _Met1YWidth=None))
 		self._DesignParameter['VSS']['_XYCoordinates'][0][0] = (((((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][0]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) + (self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2)) / 2) + ((((self._DesignParameter['n1p1_gate_via_6']['_XYCoordinates'][0][0]) + self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0]) - (self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XWidth'] / 2)) / 2))
-		self._DesignParameter['VDD']['_DesignObj']._CalculateNbodyContactDesignParameter(**dict(_NumberOfNbodyCOX=power_COX, _NumberOfNbodyCOY=2, _Met1XWidth=None, _Met1YWidth=None))
+		self._DesignParameter['VDD']['_DesignObj']._CalculateNbodyContactDesignParameter(**dict(_NumberOfNbodyCOX=power_COX, _NumberOfNbodyCOY=4, _Met1XWidth=None, _Met1YWidth=None))
 		self._DesignParameter['VDD']['_XYCoordinates'][0][0] = (((((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][0]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) + (self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2)) / 2) + ((((self._DesignParameter['n1p1_gate_via_6']['_XYCoordinates'][0][0]) + self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0]) - (self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XWidth'] / 2)) / 2))
 
 		XWidthOfMet1 = self._DesignParameter['pbiaspmos_gate_in']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
@@ -659,8 +665,18 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['pbiaspmos_gate_in_via2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='pbiaspmos_gatein_via2In{}'.format(_Name)))[0]
 		self._DesignParameter['pbiaspmos_gate_in_via2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=Pbiasgatevia, _ViaMet12Met2NumberOfCOY=1))
 		self._DesignParameter['pbiaspmos_gate_in_via2']['_XYCoordinates'] = [[(+ ((self._DesignParameter['pbiaspmos_gate_in']['_XYCoordinates'][0][0]) + self._DesignParameter['pbiaspmos_gate_in']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter['pbiaspmos_gate_in']['_XYCoordinates'][0][1]) + self._DesignParameter['pbiaspmos_gate_in']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]))]]
+
 		self._DesignParameter['pbias_path'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=self._DesignParameter['pbiaspmos_gate_in_via2']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'])
-		self._DesignParameter['pbias_path']['_XYCoordinates'] = [[[(+ (self._DesignParameter['pbiaspmos_gate_in_via2']['_XYCoordinates'][0][0] + self._DesignParameter['pbiaspmos_gate_in_via2']['_DesignObj']._DesignParameter['_Met2Layer']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['pbiaspmos_gate_in_via2']['_XYCoordinates'][0][1] + self._DesignParameter['pbiaspmos_gate_in_via2']['_DesignObj']._DesignParameter['_Met2Layer']['_XYCoordinates'][0][1]))], [(self._DesignParameter['pbiaspmos_gate_in_via2']['_XYCoordinates'][0][0] + self._DesignParameter['pbiaspmos_gate_in_via2']['_DesignObj']._DesignParameter['_Met2Layer']['_XYCoordinates'][0][0]), ((self._DesignParameter['VSS']['_XYCoordinates'][0][1]) + self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]]
+		#self._DesignParameter['pbias_path']['_XYCoordinates'] = [[[(+ (self._DesignParameter['pbiaspmos_gate_in_via2']['_XYCoordinates'][0][0] + self._DesignParameter['pbiaspmos_gate_in_via2']['_DesignObj']._DesignParameter['_Met2Layer']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['pbiaspmos_gate_in_via2']['_XYCoordinates'][0][1] + self._DesignParameter['pbiaspmos_gate_in_via2']['_DesignObj']._DesignParameter['_Met2Layer']['_XYCoordinates'][0][1]))], [(self._DesignParameter['pbiaspmos_gate_in_via2']['_XYCoordinates'][0][0] + self._DesignParameter['pbiaspmos_gate_in_via2']['_DesignObj']._DesignParameter['_Met2Layer']['_XYCoordinates'][0][0]), ((self._DesignParameter['VSS']['_XYCoordinates'][0][1]) + self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]]
+
+		tmp_pbias_path = [[[]]]
+
+		for i in range(1, nf_pbias_pmos):
+			tmp_pbias_path.append([[((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][0]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i][0]),
+									 (+ (self._DesignParameter['pbiaspmos_gate_in_via2']['_XYCoordinates'][0][1] + self._DesignParameter['pbiaspmos_gate_in_via2']['_DesignObj']._DesignParameter['_Met2Layer']['_XYCoordinates'][0][1]))],
+									[((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][0]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i][0]),
+									 ((self._DesignParameter['VSS']['_XYCoordinates'][0][1]) + self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]])
+		self._DesignParameter['pbias_path']['_XYCoordinates'] = tmp_pbias_path
 
 		self._DesignParameter['idac_iout'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=(self._DesignParameter['pbiaspmos_out_via2']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'] * 3))
 		self._DesignParameter['idac_iout']['_XYCoordinates'] = [[[(((self._DesignParameter['pbiaspmos_out_via2']['_XYCoordinates'][0][0]) + self._DesignParameter['pbiaspmos_out_via2']['_DesignObj']._DesignParameter['_Met3Layer']['_XYCoordinates'][0][0]) + (self._DesignParameter['pbiaspmos_out_via2']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'])), (((self._DesignParameter['VDD']['_XYCoordinates'][0][1]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) + (self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))],
@@ -688,3 +704,176 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['pbias_rail'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=self._DesignParameter['row2']['_Width'])
 		self._DesignParameter['pbias_rail']['_XYCoordinates'] = [[[(((self._DesignParameter['VSS']['_XYCoordinates'][0][0]) + self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]) - (self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2)), ((self._DesignParameter['VSS']['_XYCoordinates'][0][1]) + self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])],
 																 [(((self._DesignParameter['VSS']['_XYCoordinates'][0][0]) + self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]) + (self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2)), ((self._DesignParameter['VSS']['_XYCoordinates'][0][1]) + self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]]
+
+
+		self._DesignParameter['p1p2_to_p3_tmp_m1_0'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _XWidth=self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'], _YWidth=self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'])
+		self._DesignParameter['p1p2_to_p3_tmp_m1_0']['_XYCoordinates'] = [[(self._DesignParameter['aoi_p2_to_p3']['_XYCoordinates'][0][0]), (((((self._DesignParameter['AOI_p2']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) - drc._Metal1MinSpace2) - (self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2))]]
+		if nf_AOI_mos != 1:
+			self._DesignParameter['p1p2_to_p3_tmp_m1'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _XWidth=self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'], _YWidth=self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'])
+			self._DesignParameter['p1p2_to_p3_tmp_m1']['_XYCoordinates'] = [[(self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]), (((((self._DesignParameter['AOI_p2']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) + (self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) + drc._Metal1MinSpace2) + (self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2))]]
+
+		path_list = []
+		xy_offset = [0, 0]
+		if (len(self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates']) == 1):
+		    mode = 'vertical'
+		    _width = self._DesignParameter['aoi_p2_to_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
+		elif (self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0] == self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][(- 1)][0]):
+		    mode = 'horizontal'
+		    _width = self._DesignParameter['aoi_p2_to_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
+		elif (self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1] == self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][(- 1)][1]):
+		    mode = 'vertical'
+		    _width = self._DesignParameter['aoi_p2_to_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
+		else:
+		    print('Invalid Target Input')
+		if (mode == 'vertical'):
+		    xy_with_offset = []
+		    target_y_value = [[(+ self._DesignParameter['p1p2_to_p3_tmp_m1_0']['_XYCoordinates'][0][0]), (- self._DesignParameter['p1p2_to_p3_tmp_m1_0']['_YWidth']/2 + self._DesignParameter['p1p2_to_p3_tmp_m1_0']['_XYCoordinates'][0][1])]][0][1]
+		    for i in range(len(self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])):
+		        if ((i % 2) == 1):
+		            xy_with_offset.append([(x + y) for (x, y) in zip([(self._DesignParameter['AOI_p2']['_XYCoordinates'][0][0]), (self._DesignParameter['AOI_p2']['_XYCoordinates'][0][1])], self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i])])
+		    for i in range(len(xy_with_offset)):
+		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+		elif (mode == 'horizontal'):
+		    xy_with_offset = []
+		    target_x_value = [[(+ self._DesignParameter['p1p2_to_p3_tmp_m1_0']['_XYCoordinates'][0][0]), (- self._DesignParameter['p1p2_to_p3_tmp_m1_0']['_YWidth']/2 + self._DesignParameter['p1p2_to_p3_tmp_m1_0']['_XYCoordinates'][0][1])]][0][0]
+		    for i in range(len(self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])):
+		        if ((i % 2) == 1):
+		            xy_with_offset.append([(x + y) for (x, y) in zip([(self._DesignParameter['AOI_p2']['_XYCoordinates'][0][0]), (self._DesignParameter['AOI_p2']['_XYCoordinates'][0][1])], self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i])])
+		    for i in range(len(xy_with_offset)):
+		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+		for i in range(len(path_list)):
+		    path_list[i][0] = [(xy + offset) for (xy, offset) in zip(path_list[i][0], xy_offset)]
+		self._DesignParameter['p2_out'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
+		self._DesignParameter['p2_out']['_XYCoordinates'] = path_list
+
+		if nf_AOI_mos != 1:
+			path_list = []
+			xy_offset = [0, 0]
+			if (len(self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
+			    mode = 'vertical'
+			    _width = self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			elif (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
+			    mode = 'horizontal'
+			    _width = self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			elif (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
+			    mode = 'vertical'
+			    _width = self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			else:
+			    print('Invalid Target Input')
+			if (mode == 'vertical'):
+			    xy_with_offset = []
+			    target_y_value = [[(+ self._DesignParameter['p1p2_to_p3_tmp_m1']['_XYCoordinates'][0][0]), (+ self._DesignParameter['p1p2_to_p3_tmp_m1']['_XYCoordinates'][0][1])]][0][1]
+			    for i in range(len(self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+			        if ((i % 2) == 0):
+			            xy_with_offset.append([(x + y) for (x, y) in zip([(self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]), (self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1])], self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			    for i in range(len(xy_with_offset)):
+			        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			elif (mode == 'horizontal'):
+			    xy_with_offset = []
+			    target_x_value = [[(+ self._DesignParameter['p1p2_to_p3_tmp_m1']['_XYCoordinates'][0][0]), (+ self._DesignParameter['p1p2_to_p3_tmp_m1']['_XYCoordinates'][0][1])]][0][0]
+			    for i in range(len(self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+			        if ((i % 2) == 0):
+			            xy_with_offset.append([(x + y) for (x, y) in zip([(self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]), (self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1])], self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			    for i in range(len(xy_with_offset)):
+			        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			for i in range(len(path_list)):
+			    path_list[i][0] = [(xy + offset) for (xy, offset) in zip(path_list[i][0], xy_offset)]
+			self._DesignParameter['p3_in'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
+			self._DesignParameter['p3_in']['_XYCoordinates'] = path_list
+
+			self._DesignParameter['p2_to_p3_m1_path'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['p1p2_to_p3_tmp_m1']['_YWidth'])
+			self._DesignParameter['p2_to_p3_m1_path']['_XYCoordinates'] = [[[(+ self._DesignParameter['p1p2_to_p3_tmp_m1']['_XYCoordinates'][0][0]), (+ self._DesignParameter['p1p2_to_p3_tmp_m1']['_XYCoordinates'][0][1])], [(self._DesignParameter['p3_in']['_XYCoordinates'][(- 1)][0][0] + (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2)), self._DesignParameter['p1p2_to_p3_tmp_m1']['_XYCoordinates'][0][1]]]]
+
+		self._DesignParameter['p2_to_p3_path_m1_0'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=50)
+		self._DesignParameter['p2_to_p3_path_m1_0']['_XYCoordinates'] = [[[(+ (self._DesignParameter['p1p2_to_p3_tmp_m1_0']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['p1p2_to_p3_tmp_m1_0']['_XYCoordinates'][0][1]))], [(((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0]) + (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), (self._DesignParameter['p1p2_to_p3_tmp_m1_0']['_XYCoordinates'][0][1])]]]
+		self._DesignParameter['p3_in_m1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'])
+		self._DesignParameter['p3_in_m1']['_XYCoordinates'] = [[[((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0]), (self._DesignParameter['p1p2_to_p3_tmp_m1_0']['_XYCoordinates'][0][1])], [(+ ((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]))]]]
+
+		self._DesignParameter['n1p1_met1'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _XWidth=self._DesignParameter['n1p1_gate_via_1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'], _YWidth=self._DesignParameter['n1p1_gate_via_2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'])
+		self._DesignParameter['n1p1_met1']['_XYCoordinates'] = [[(+ (self._DesignParameter['n1p1_gate_via_1']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['n1p1_gate_via_1']['_XYCoordinates'][0][1]))]]
+		self._DesignParameter['n2p2_met1'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _XWidth=self._DesignParameter['n2p2_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'], _YWidth=self._DesignParameter['n2p2_gate_via2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'])
+		self._DesignParameter['n2p2_met1']['_XYCoordinates'] = [[(+ (self._DesignParameter['n2p2_gate_via1']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['n2p2_gate_via1']['_XYCoordinates'][0][1]))]]
+		self._DesignParameter['n3p3_met1'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _XWidth=self._DesignParameter['n3p3_gate_via1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'], _YWidth=self._DesignParameter['n3p3_gate_via2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'])
+		self._DesignParameter['n3p3_met1']['_XYCoordinates'] = [[(+ (self._DesignParameter['n3p3_gate_via1']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['n3p3_gate_via1']['_XYCoordinates'][0][1]))]]
+
+		self._DesignParameter['VDD_AOI_NW'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1], _Width=(self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_ODLayer']['_XWidth'] + (2 * drc._NwMinSpacetoRX)))
+		self._DesignParameter['VDD_AOI_NW']['_XYCoordinates'] = [[[((self._DesignParameter['VDD']['_XYCoordinates'][0][0]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_ODLayer']['_XYCoordinates'][0][0]), ((((self._DesignParameter['VDD']['_XYCoordinates'][0][1]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_ODLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth'] / 2)) + drc._NwMinSpacetoRX)],
+																  [((self._DesignParameter['VDD']['_XYCoordinates'][0][0]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_ODLayer']['_XYCoordinates'][0][0]), (((self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1]) + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] / 2))]]]
+		self._DesignParameter['pbiaspmos_NW'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1], _Width=(
+					((((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][0]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) + (self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2)) - (((self._DesignParameter['aoi_out_pmos']['_XYCoordinates'][0][0]) + self._DesignParameter['aoi_out_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['aoi_out_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2))) + (2 * drc._NwMinEnclosurePactive2)))
+		self._DesignParameter['pbiaspmos_NW']['_XYCoordinates'] = [
+			[[(((((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][0]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) + (self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2)) / 2) + ((((self._DesignParameter['aoi_out_pmos']['_XYCoordinates'][0][0]) + self._DesignParameter['aoi_out_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['aoi_out_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2)) / 2)), self._DesignParameter['VDD_AOI_NW']['_XYCoordinates'][0][0][1]],
+			 [(((((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][0]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) + (self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2)) / 2) + ((((self._DesignParameter['aoi_out_pmos']['_XYCoordinates'][0][0]) + self._DesignParameter['aoi_out_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['aoi_out_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth'] / 2)) / 2)),
+			  (((self._DesignParameter['pbias_pmos']['_XYCoordinates'][0][1]) + self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] / 2))]]]
+
+
+		##pmos POLY dummy for AOI
+		self._DesignParameter['POLY_dummy_p1'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=L_AOI_mos)
+		self._DesignParameter['POLY_dummy_p1']['_YWidth'] = self._DesignParameter['AOI_p1']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+
+		self._DesignParameter['POLY_dummy_p1']['_XYCoordinates'] = [[(self._DesignParameter['AOI_p1']['_XYCoordinates'][0][0] + self._DesignParameter['AOI_p1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																	 (self._DesignParameter['AOI_p1']['_XYCoordinates'][0][1] + self._DesignParameter['AOI_p1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1])]]
+
+		if float(self._DesignParameter['POLY_dummy_p1']['_XWidth']) * float(self._DesignParameter['POLY_dummy_p1']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_p1']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_p1']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
+
+		self._DesignParameter['POLY_dummy_p2'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=L_AOI_mos)
+		self._DesignParameter['POLY_dummy_p2']['_YWidth'] = self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+
+		self._DesignParameter['POLY_dummy_p2']['_XYCoordinates'] = [[(self._DesignParameter['AOI_p2']['_XYCoordinates'][0][0] + self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																	 (self._DesignParameter['AOI_p2']['_XYCoordinates'][0][1] + self._DesignParameter['AOI_p2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1])]]
+
+		if float(self._DesignParameter['POLY_dummy_p2']['_XWidth']) * float(self._DesignParameter['POLY_dummy_p2']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_p2']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_p2']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
+
+		self._DesignParameter['POLY_dummy_p3'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=L_AOI_mos)
+		self._DesignParameter['POLY_dummy_p3']['_YWidth'] = self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+
+		self._DesignParameter['POLY_dummy_p3']['_XYCoordinates'] = [[(self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																	 (self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1])],
+																	[(self._DesignParameter['AOI_p3']['_XYCoordinates'][0][0] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][-1][0]),
+																	 (self._DesignParameter['AOI_p3']['_XYCoordinates'][0][1] + self._DesignParameter['AOI_p3']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][-1][1])]]
+
+		if float(self._DesignParameter['POLY_dummy_p3']['_XWidth']) * float(self._DesignParameter['POLY_dummy_p3']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_p3']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_p3']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
+
+		self._DesignParameter['POLY_dummy_n1'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=L_AOI_mos)
+		self._DesignParameter['POLY_dummy_n1']['_YWidth'] = self._DesignParameter['AOI_n1']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+
+		self._DesignParameter['POLY_dummy_n1']['_XYCoordinates'] = [[(self._DesignParameter['AOI_n1']['_XYCoordinates'][0][0] + self._DesignParameter['AOI_n1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																	 (self._DesignParameter['AOI_n1']['_XYCoordinates'][0][1] + self._DesignParameter['AOI_n1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1])]]
+
+		if float(self._DesignParameter['POLY_dummy_n1']['_XWidth']) * float(self._DesignParameter['POLY_dummy_n1']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_n1']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_n1']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
+
+		self._DesignParameter['POLY_dummy_n2'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=L_AOI_mos)
+		self._DesignParameter['POLY_dummy_n2']['_YWidth'] = self._DesignParameter['AOI_n2']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+
+		self._DesignParameter['POLY_dummy_n2']['_XYCoordinates'] = [[(self._DesignParameter['AOI_n2']['_XYCoordinates'][0][0] + self._DesignParameter['AOI_n2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																	 (self._DesignParameter['AOI_n2']['_XYCoordinates'][0][1] + self._DesignParameter['AOI_n2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1])]]
+
+		if float(self._DesignParameter['POLY_dummy_n2']['_XWidth']) * float(self._DesignParameter['POLY_dummy_n2']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_n2']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_n2']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
+
+		self._DesignParameter['POLY_dummy_n3'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=L_AOI_mos)
+		self._DesignParameter['POLY_dummy_n3']['_YWidth'] = self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+
+		self._DesignParameter['POLY_dummy_n3']['_XYCoordinates'] = [[(self._DesignParameter['AOI_n3']['_XYCoordinates'][0][0] + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
+																	 (self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1] + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1])],
+																	[(self._DesignParameter['AOI_n3']['_XYCoordinates'][0][0] + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][-1][0]),
+																	 (self._DesignParameter['AOI_n3']['_XYCoordinates'][0][1] + self._DesignParameter['AOI_n3']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][-1][1])]]
+
+		if float(self._DesignParameter['POLY_dummy_n3']['_XWidth']) * float(self._DesignParameter['POLY_dummy_n3']['_YWidth']) < drc._PODummyMinArea:
+			self._DesignParameter['POLY_dummy_n3']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_n3']['_XWidth']), drc._MinSnapSpacing * 2)
+		else:
+			pass
