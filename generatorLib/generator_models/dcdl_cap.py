@@ -371,10 +371,10 @@ class dcdl_cap(StickDiagram._StickDiagram):
 
 		self._DesignParameter['via_m1_m2_pmos_input'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='via_m1_m2_pmos_inputIn{}'.format(_Name)))[0]
 		self._DesignParameter['via_m1_m2_pmos_input']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureY(**dict(_ViaMet12Met2NumberOfCOX=int(max((self._DesignParameter['tg_pmos_input']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / (drc._CoMinWidth + drc._CoMinSpace)), 2)), _ViaMet12Met2NumberOfCOY=1))
-		self._DesignParameter['via_m1_m2_pmos_input']['_XYCoordinates'] = [[(+ self._DesignParameter['tg_pmos_input']['_XYCoordinates'][0][0]), (+ self._DesignParameter['tg_pmos_input']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['via_m1_m2_pmos_input']['_XYCoordinates'] = [[(+ self._DesignParameter['tg_pmos_input']['_XYCoordinates'][0][0]), (+ self._DesignParameter['tg_pmos_input']['_XYCoordinates'][0][1])]] # Here
 		self._DesignParameter['via_m1_m2_nmos_input'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='via_m1_m2_nmos_inputIn{}'.format(_Name)))[0]
 		self._DesignParameter['via_m1_m2_nmos_input']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureY(**dict(_ViaMet12Met2NumberOfCOX=int(max((self._DesignParameter['tg_nmos_input']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / (drc._CoMinWidth + drc._CoMinSpace)), 2)), _ViaMet12Met2NumberOfCOY=1))
-		self._DesignParameter['via_m1_m2_nmos_input']['_XYCoordinates'] = [[(+ self._DesignParameter['tg_nmos_input']['_XYCoordinates'][0][0]), (+ self._DesignParameter['tg_nmos_input']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['via_m1_m2_nmos_input']['_XYCoordinates'] = [[(+ self._DesignParameter['tg_nmos_input']['_XYCoordinates'][0][0]), (+ self._DesignParameter['tg_nmos_input']['_XYCoordinates'][0][1])]] # Here
 
 		path_list = []
 		if (len(self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates']) == 1):
