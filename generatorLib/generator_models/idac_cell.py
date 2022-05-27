@@ -14,7 +14,7 @@ from generatorLib.generator_models import ViaMet42Met5
 from generatorLib.generator_models import ViaMet52Met6
 from generatorLib.generator_models import ViaPoly2Met1
 
-class EasyDebugModule(StickDiagram._StickDiagram):
+class Idac_cell(StickDiagram._StickDiagram):
 	def __init__(self, _DesignParameter=None, _Name='idac_cell'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
@@ -877,3 +877,9 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter['POLY_dummy_n3']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_n3']['_XWidth']), drc._MinSnapSpacing * 2)
 		else:
 			pass
+
+		self._DesignParameter['Iout_via'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='Iout_viaIn{}'.format(_Name)))[0]
+		self._DesignParameter['Iout_via']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=3, _ViaMet32Met4NumberOfCOY=2))
+		self._DesignParameter['Iout_via']['_XYCoordinates'] = [[(self._DesignParameter['idac_iout']['_XYCoordinates'][0][0][0]), (self._DesignParameter['VDD']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['Iout_M4'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=self._DesignParameter['Iout_via']['_DesignObj']._DesignParameter['_Met4Layer']['_YWidth'])
+		self._DesignParameter['Iout_M4']['_XYCoordinates'] = [[[(((self._DesignParameter['VDD']['_XYCoordinates'][0][0]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]) - (self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2)), ((self._DesignParameter['VDD']['_XYCoordinates'][0][1]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])], [(((self._DesignParameter['VDD']['_XYCoordinates'][0][0]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]) + (self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2)), ((self._DesignParameter['VDD']['_XYCoordinates'][0][1]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]]
