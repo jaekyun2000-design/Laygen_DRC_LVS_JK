@@ -17,7 +17,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,finger=2,width=1500,length=100,dummy=True,xvt='LVT',pccrit=False,guardring_co_right=3,guardring_co_left=3,guardring_co_top=4,guardring_co_bottom=2):
+	def _CalculateDesignParameter(self,finger=2,width=1500,length=100,dummy=True,xvt='LVT',pccrit=False,guardring_co_right=3,guardring_co_left=3,guardring_co_top=4,guardring_co_bottom=2,guardring_width=None,guardring_height=None):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -81,7 +81,17 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		guardring_left = min(((min((self._DesignParameter['m1_source_routing']['_XYCoordinates'][0][0][0] - (self._DesignParameter['m1_source_routing']['_Width'] / 2)), ((self._DesignParameter['pmos']['_XYCoordinates'][0][0] + self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]) - (self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2))) - (self._DesignParameter['pguardring']['_DesignObj']._DesignParameter['left']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2)) - drc._Metal1MinSpace3), ((((self._DesignParameter['pmos']['_XYCoordinates'][0][0] + self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) - (((self._DesignParameter['pguardring']['_XYCoordinates'][0][0] + self._DesignParameter['pguardring']['_DesignObj']._DesignParameter['left']['_XYCoordinates'][0][0]) + self._DesignParameter['pguardring']['_DesignObj']._DesignParameter['left']['_DesignObj']._DesignParameter['_COLayer']['_XYCoordinates'][(- 1)][0]) - (self._DesignParameter['pguardring']['_DesignObj']._DesignParameter['left']['_DesignObj']._DesignParameter['_COLayer']['_XWidth'] / 2))) - drc._PolygateMinSpace2Co), ((((self._DesignParameter['pmos']['_XYCoordinates'][0][0] + self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) - (self._DesignParameter['pguardring']['_DesignObj']._DesignParameter['left']['_DesignObj']._DesignParameter['_ODLayer']['_XWidth'] / 2)) - drc._PolygateMinSpace2OD))
 		guardring_top = ((((self._DesignParameter['pmos']['_XYCoordinates'][0][1] + self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) + (self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) + (self._DesignParameter['pguardring']['_DesignObj']._DesignParameter['top']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) + drc._Metal1MinSpace3)
 		guardring_bottom = ((((self._DesignParameter['via_gate']['_XYCoordinates'][0][1] + self._DesignParameter['via_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['via_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) - (self._DesignParameter['pguardring']['_DesignObj']._DesignParameter['bot']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) - drc._Metal1MinSpace3)
-		self._DesignParameter['pguardring']['_DesignObj']._CalculateDesignParameter(**dict(height=(guardring_top - guardring_bottom), width=(guardring_right - guardring_left), contact_bottom=guardring_co_bottom, contact_top=guardring_co_top, contact_left=guardring_co_left, contact_right=guardring_co_right))
+		if guardring_width == None:
+			guardring_xwidth = guardring_right - guardring_left
+		elif guardring_width != None:
+			guardring_xwidth = guardring_width
+
+		if guardring_height == None:
+			guardring_yheight = guardring_top - guardring_bottom
+		elif guardring_width != None:
+			guardring_yheight = guardring_height
+
+		self._DesignParameter['pguardring']['_DesignObj']._CalculateDesignParameter(**dict(height=guardring_yheight, width=guardring_xwidth, contact_bottom=guardring_co_bottom, contact_top=guardring_co_top, contact_left=guardring_co_left, contact_right=guardring_co_right))
 		self._DesignParameter['pguardring']['_XYCoordinates'] = [[((guardring_right + guardring_left) / 2), ((guardring_top + guardring_bottom) / 2)]]
 		self._DesignParameter['nwell'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1], _XWidth=(guardring_right - guardring_left), _YWidth=(guardring_top - guardring_bottom))
 		self._DesignParameter['nwell']['_XYCoordinates'] = [[((guardring_right + guardring_left) / 2), ((guardring_top + guardring_bottom) / 2)]]

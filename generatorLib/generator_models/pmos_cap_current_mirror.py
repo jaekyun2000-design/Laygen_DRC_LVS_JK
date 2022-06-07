@@ -17,7 +17,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,LVT=None,pmos_cap_gate=16,pmos_cap_width=1500,pmos_cap_length=100,pmos_cap_dummy=False,pmos_cap_xvt='LVT',pmos_cap_pccrit=False,pmos_sw1_gate=1,pmos_sw1_width=1000,pmos_sw1_length=30,pmos_sw1_dummy=True,pmos_sw1_xvt='LVT',pmos_sw1_pccrit=True,pmos_sw2_gate=1,pmos_sw2_width=1000,pmos_sw2_length=30,pmos_sw2_dummy=True,pmos_sw2_xvt='LVT',pmos_sw2_pccrit=True,guardring_co_bottom=4,guardring_co_top=3,guardring_co_left=3,guardring_co_right=3):
+	def _CalculateDesignParameter(self,pmos_cap_gate=16,pmos_cap_width=1500,pmos_cap_length=100,pmos_cap_dummy=False,pmos_cap_xvt='LVT',pmos_cap_pccrit=False,pmos_sw1_gate=1,pmos_sw1_width=1000,pmos_sw1_length=30,pmos_sw1_dummy=True,pmos_sw1_xvt='LVT',pmos_sw1_pccrit=True,pmos_sw2_gate=1,pmos_sw2_width=1000,pmos_sw2_length=30,pmos_sw2_dummy=True,pmos_sw2_xvt='LVT',pmos_sw2_pccrit=True,guardring_co_bottom=4,guardring_co_top=3,guardring_co_left=3,guardring_co_right=3,guardring_width=None,guardring_height=None):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -255,7 +255,18 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		guardring_right = ((max(((self._DesignParameter['pmos_sw2']['_XYCoordinates'][0][0] + self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['pmos_sw2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), (((self._DesignParameter['via_m1_m4_sw2']['_XYCoordinates'][0][0] + self._DesignParameter['via_m1_m4_sw2']['_DesignObj']._DesignParameter['ViaMet12Met2']['_XYCoordinates'][0][0]) + self._DesignParameter['via_m1_m4_sw2']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]) + (self._DesignParameter['via_m1_m4_sw2']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2)), (self._DesignParameter['m1_pmos_sw2_routing']['_XYCoordinates'][(- 1)][0][0] + (self._DesignParameter['m1_pmos_sw2_routing']['_Width'] / 2))) + (self._DesignParameter['guardring']['_DesignObj']._DesignParameter['right']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2)) + drc._Metal1MinSpace3)
 		guardring_top = ((((self._DesignParameter['pmos_cap']['_XYCoordinates'][0][1] + self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) + (self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) + (self._DesignParameter['guardring']['_DesignObj']._DesignParameter['top']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) + drc._Metal1MinSpace3)
 		guardring_bottom = ((min(((self._DesignParameter['via_poly_m1_pmos_cap']['_XYCoordinates'][0][1] + self._DesignParameter['via_poly_m1_pmos_cap']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['via_poly_m1_pmos_cap']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)), ((self._DesignParameter['via_poly_m1_sw1']['_XYCoordinates'][0][1] + self._DesignParameter['via_poly_m1_sw1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['via_poly_m1_sw1']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)), ((self._DesignParameter['via_poly_m1_sw2']['_XYCoordinates'][0][1] + self._DesignParameter['via_poly_m1_sw2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['via_poly_m1_sw2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)), (((self._DesignParameter['via_m1_m3_pmos_cap']['_XYCoordinates'][0][1] + self._DesignParameter['via_m1_m3_pmos_cap']['_DesignObj']._DesignParameter['ViaMet12Met2']['_XYCoordinates'][0][1]) + self._DesignParameter['via_m1_m3_pmos_cap']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['via_m1_m3_pmos_cap']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))) - (self._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) - drc._Metal1MinSpace3)
-		self._DesignParameter['guardring']['_DesignObj']._CalculateDesignParameter(**dict(height=(guardring_top - guardring_bottom), width=(guardring_right - guardring_left), contact_bottom=guardring_co_bottom, contact_top=guardring_co_top, contact_left=guardring_co_left, contact_right=guardring_co_right))
+		if guardring_width == None :
+			guardring_xwidth=guardring_right - guardring_left
+		elif guardring_width != None :
+			guardring_xwidth=guardring_width
+
+		if guardring_height == None :
+			guardring_yheight=guardring_top - guardring_bottom
+		elif guardring_width != None :
+			guardring_yheight=guardring_height
+
+
+		self._DesignParameter['guardring']['_DesignObj']._CalculateDesignParameter(**dict(height=guardring_yheight, width=guardring_xwidth, contact_bottom=guardring_co_bottom, contact_top=guardring_co_top, contact_left=guardring_co_left, contact_right=guardring_co_right))
 		self._DesignParameter['guardring']['_XYCoordinates'] = [[((guardring_right + guardring_left) / 2), ((guardring_top + guardring_bottom) / 2)]]
 		path_list = []
 		xy_offset = [0, 0]
