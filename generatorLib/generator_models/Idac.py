@@ -15,7 +15,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self, _X_NUM=10, _Y_NUM=4, _Y_NUM_L=2, W_pbias_pmos=830, W_pbias_pmos_L=660, _Idac_cell={'Cell_height': 2108, 'nf_aoi_out_pmos': 1, 'W_aoi_out_pmos': 1000, 'L_aoi_out_pmos': 30, 'aoi_out_pmos_y': 1000, 'aoi_XVT': 'RVT', 'nf_pbias_pmos': 2, 'L_pbias_pmos': 300, 'pbias_pmos_XVT': 'LVT', 'nf_AOI_mos': 1, 'W_AOI_pmos': 200, 'W_AOI_nmos': 200, 'L_AOI_mos': 30, 'VDD2aoi_pmos': 550, 'VSS2aoi_nmos': 350}):
+	def _CalculateDesignParameter(self, _X_NUM=10, _Y_NUM=4, _Y_NUM_L=2, W_pbias_pmos=830, W_pbias_pmos_L=660, TIEL_flag=1, _Idac_cell={'Cell_height': 2108, 'nf_aoi_out_pmos': 1, 'W_aoi_out_pmos': 1000, 'L_aoi_out_pmos': 30, 'aoi_out_pmos_y': 1000, 'aoi_XVT': 'RVT', 'nf_pbias_pmos': 2, 'L_pbias_pmos': 300, 'pbias_pmos_XVT': 'LVT', 'nf_AOI_mos': 1, 'W_AOI_pmos': 200, 'W_AOI_nmos': 200, 'L_AOI_mos': 30, 'VDD2aoi_pmos': 550, 'VSS2aoi_nmos': 350}):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -117,3 +117,10 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 						(self._DesignParameter['Row_m6_paths_global']['_XYCoordinates'][(- 1)][0][1])-self._DesignParameter['Row_via']['_DesignObj']._DesignParameter['_Met5Layer']['_YWidth']/2]])
 		self._DesignParameter['Row_m5']['_XYCoordinates'] = tmp
 		del tmp
+
+		## For 1semicon design (Connects Last Row & First Col)
+		if TIEL_flag == 1 :
+			self._DesignParameter['TIEL_VIA5to6'] = self._SrefElementDeclaration(_DesignObj=ViaMet52Met6._ViaMet52Met6(_Name='TIEL_VIA5to6In{}'.format(_Name)))[0]
+			self._DesignParameter['TIEL_VIA5to6']['_DesignObj']._CalculateViaMet52Met6DesignParameter(**dict(_ViaMet52Met6NumberOfCOX=1, _ViaMet52Met6NumberOfCOY=2, _MetalType={'METAL1': 'X', 'METAL2': 'X', 'METAL3': 'X', 'METAL4': 'X', 'METAL5': 'X', 'METAL6': 'X', 'METAL7': 'X', 'METAL8': 'Z', 'METAL9': 'Z'}))
+			self._DesignParameter['TIEL_VIA5to6']['_XYCoordinates'] = [[(+ (((self._DesignParameter['Row_0']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][(_X_NUM-1)][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['col']['_XYCoordinates'][0][0][0])),
+																		(self._DesignParameter['Row_via']['_XYCoordinates'][0][1])]]
