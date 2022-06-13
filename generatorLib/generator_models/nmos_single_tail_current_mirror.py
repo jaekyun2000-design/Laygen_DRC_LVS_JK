@@ -120,5 +120,5 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
 
 
-		if (self._DesignParameter['nmos']['_XYCoordinates'][0][0]+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][1][0]-self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2)-(self._DesignParameter['m1_source_y']['_XYCoordinates'][0][0][0]+self._DesignParameter['m1_source_y']['_XWidth']/2) < drc._Metal1MinSpace12:
+		if (self._DesignParameter['nmos']['_XYCoordinates'][0][0]+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][1][0]-self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2)-(self._DesignParameter['m1_source_y']['_XYCoordinates'][0][0][0]+self._DesignParameter['m1_source_y']['_Width']/2) < drc._Metal1MinSpace12:
 			raise NotImplementedError
