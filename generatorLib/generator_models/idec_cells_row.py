@@ -13,13 +13,13 @@ class Idac_cells_row(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self, X_num=10, Idac_cell={'Cell_height':2108, 'nf_aoi_out_pmos':1, 'W_aoi_out_pmos':1000, 'L_aoi_out_pmos':30, 'aoi_out_pmos_y':1000, 'aoi_XVT':'RVT', 'nf_pbias_pmos':2, 'W_pbias_pmos':830, 'L_pbias_pmos':300, 'pbias_pmos_XVT':'LVT', 'nf_AOI_mos':1, 'W_AOI_pmos':200, 'W_AOI_nmos':200, 'L_AOI_mos':30, 'VDD2aoi_pmos':550, 'VSS2aoi_nmos':350}):
+	def _CalculateDesignParameter(self, X_num=10, _W_pbias_pmos=830, _Odd_row_flag=0, Idac_cell={'Cell_height':2108, 'nf_aoi_out_pmos':1, 'W_aoi_out_pmos':1000, 'L_aoi_out_pmos':30, 'aoi_out_pmos_y':1000, 'aoi_XVT':'RVT', 'nf_pbias_pmos':2, 'L_pbias_pmos':300, 'pbias_pmos_XVT':'LVT', 'nf_AOI_mos':1, 'W_AOI_pmos':200, 'W_AOI_nmos':200, 'L_AOI_mos':30, 'VDD2aoi_pmos':550, 'VSS2aoi_nmos':350}):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
 		
 		self._DesignParameter['Idac_cells'] = self._SrefElementDeclaration(_DesignObj=idac_cell.Idac_cell(_Name='Idac_cellsIn{}'.format(_Name)))[0]
-		self._DesignParameter['Idac_cells']['_DesignObj']._CalculateDesignParameter(**dict(**Idac_cell))
+		self._DesignParameter['Idac_cells']['_DesignObj']._CalculateDesignParameter(**dict(W_pbias_pmos=_W_pbias_pmos, Odd_row_flag=_Odd_row_flag, **Idac_cell))
 		_XYCoordinateofIdac = [[0,0]]
 
 
