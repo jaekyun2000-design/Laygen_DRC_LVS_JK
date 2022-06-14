@@ -18,7 +18,7 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,nmos_gate=3,pmos_gate=3,nmos_width=320,pmos_width=584,length=30,XVT='SLVT',nmos_y=350,pmos_y=433,gate_y=860,vss2vdd_height=1800,gate_spacing=100,sdwidth=66,power_xdistance=130, out_even_up_mode=True):
+	def _CalculateDesignParameter(self,nmos_gate=3,pmos_gate=3,nmos_width=320,pmos_width=584,length=30,XVT='SLVT',vss2nmos=350,vdd2pmos=433,gate_y=860,vss2vdd_height=1800,gate_spacing=100,sdwidth=66,power_xdistance=130, out_even_up_mode=True):
 
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -31,10 +31,10 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 		# self._DesignParameter['vdd']['_XYCoordinates'] = [[0, vss2vdd_height]]
 		# self._DesignParameter['slvtnfet_b_CDNS_637732429400_0'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='slvtnfet_b_CDNS_637732429400_0In{}'.format(_Name)))[0]
 		# self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=nmos_gate, _NMOSChannelWidth=nmos_width, _NMOSChannellength=length, _NMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT))
-		# self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], nmos_y]]
+		# self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], vss2nmos]]
 		# self._DesignParameter['slvtpfet_b_CDNS_637732429401_0'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='slvtpfet_b_CDNS_637732429401_0In{}'.format(_Name)))[0]
 		# self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=pmos_gate, _PMOSChannelWidth=pmos_width, _PMOSChannellength=length, _PMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT))
-		# self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'] = [[self._DesignParameter['vdd']['_XYCoordinates'][0][0], (vss2vdd_height - pmos_y)]]
+		# self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'] = [[self._DesignParameter['vdd']['_XYCoordinates'][0][0], (vss2vdd_height - vdd2pmos)]]
 		# self._DesignParameter['pmos_second_podummy'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=length, _YWidth=self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'])
 		# self._DesignParameter['pmos_second_podummy']['_XYCoordinates'] = [[((((self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) + (self._DesignParameter['pmos_second_podummy']['_XWidth'] / 2)) + gate_spacing), self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1]], [((((self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) - (self._DesignParameter['pmos_second_podummy']['_XWidth'] / 2)) - gate_spacing), self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1]]]
 		# self._DesignParameter['nmos_second_podummy'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=length, _YWidth=self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'])
@@ -257,24 +257,36 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 		self._DesignParameter['vdd']['_XYCoordinates'] = [[0, vss2vdd_height]]
 		self._DesignParameter['slvtnfet_b_CDNS_637732429400_0'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='slvtnfet_b_CDNS_637732429400_0In{}'.format(_Name)))[0]
 		self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=nmos_gate, _NMOSChannelWidth=nmos_width, _NMOSChannellength=length, _NMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT))
-		self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], nmos_y]]
+
+		if vss2nmos == None :
+			vss2nmos=self._DesignParameter['vss']['_XYCoordinates'][0][1]+self._DesignParameter['vss']['_DesignObj']._DesignParameter['METAL1_boundary_1']['_YWidth']/2+self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
+
+		self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], vss2nmos]]
 		self._DesignParameter['slvtpfet_b_CDNS_637732429401_0'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='slvtpfet_b_CDNS_637732429401_0In{}'.format(_Name)))[0]
 		self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=pmos_gate, _PMOSChannelWidth=pmos_width, _PMOSChannellength=length, _PMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT))
-		self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'] = [[self._DesignParameter['vdd']['_XYCoordinates'][0][0], (vss2vdd_height - pmos_y)]]
+
+		if vdd2pmos == None :
+			vdd2pmos=self._DesignParameter['vdd']['_DesignObj']._DesignParameter['METAL1_boundary_1']['_YWidth']/2+self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
+
+		self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'] = [[self._DesignParameter['vdd']['_XYCoordinates'][0][0], (vss2vdd_height - vdd2pmos)]]
 		self._DesignParameter['pmos_second_podummy'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=length, _YWidth=self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'])
 		self._DesignParameter['pmos_second_podummy']['_XYCoordinates'] = [[((((self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) + (self._DesignParameter['pmos_second_podummy']['_XWidth'] / 2)) + gate_spacing), self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1]], [((((self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) - (self._DesignParameter['pmos_second_podummy']['_XWidth'] / 2)) - gate_spacing), self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][1]]]
 		self._DesignParameter['nmos_second_podummy'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=length, _YWidth=self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'])
 		self._DesignParameter['nmos_second_podummy']['_XYCoordinates'] = [[((((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) - (self._DesignParameter['nmos_second_podummy']['_XWidth'] / 2)) - gate_spacing), self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1]], [((((self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) + (self._DesignParameter['nmos_second_podummy']['_XWidth'] / 2)) + gate_spacing), self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][1]]]
 		self._DesignParameter['vss_odlayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['DIFF'][0], _Datatype=DesignParameters._LayerMapping['DIFF'][1], _XWidth=((self._DesignParameter['nmos_second_podummy']['_XYCoordinates'][-1][0] - self._DesignParameter['nmos_second_podummy']['_XYCoordinates'][0][0]) + self._DesignParameter['nmos_second_podummy']['_XWidth']), _YWidth=(2 * drc._CoMinWidth))
 		self._DesignParameter['vss_odlayer']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], self._DesignParameter['vss']['_XYCoordinates'][0][1]]]
-		self._DesignParameter['vss_supply_m2_y'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _XWidth=self._DesignParameter['vss_odlayer']['_XWidth'], _YWidth=300)
+		self._DesignParameter['vss_supply_m2_y'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _XWidth=self._DesignParameter['vss_odlayer']['_XWidth'], _YWidth=6*drc._MetalxMinWidth)
 		self._DesignParameter['vss_supply_m2_y']['_XYCoordinates'] = [[(+ self._DesignParameter['vss_odlayer']['_XYCoordinates'][0][0]), (+ self._DesignParameter['vss_odlayer']['_XYCoordinates'][0][1])]]
 		self._DesignParameter['vdd_odlayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['DIFF'][0], _Datatype=DesignParameters._LayerMapping['DIFF'][1], _XWidth=((self._DesignParameter['pmos_second_podummy']['_XYCoordinates'][0][0] - self._DesignParameter['pmos_second_podummy']['_XYCoordinates'][(- 1)][0]) - self._DesignParameter['pmos_second_podummy']['_XWidth']), _YWidth=(2 * drc._CoMinWidth))
 		self._DesignParameter['vdd_odlayer']['_XYCoordinates'] = [[self._DesignParameter['vss_odlayer']['_XYCoordinates'][0][0], self._DesignParameter['vdd']['_XYCoordinates'][0][1]]]
-		self._DesignParameter['vdd_supply_m2_y'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _XWidth=self._DesignParameter['vdd_odlayer']['_XWidth'], _YWidth=300)
+		self._DesignParameter['vdd_supply_m2_y'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _XWidth=self._DesignParameter['vdd_odlayer']['_XWidth'], _YWidth=6*drc._MetalxMinWidth)
 		self._DesignParameter['vdd_supply_m2_y']['_XYCoordinates'] = [[(+ self._DesignParameter['vdd_odlayer']['_XYCoordinates'][0][0]), (+ self._DesignParameter['vdd_odlayer']['_XYCoordinates'][0][1])]]
 		self._DesignParameter['gate_input'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_inputIn{}'.format(_Name)))[0]
 		self._DesignParameter['gate_input']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(**dict(_ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2))
+
+		if gate_y == None :
+			gate_y=((self._DesignParameter['pmos_second_podummy']['_XYCoordinates'][0][1]-self._DesignParameter['pmos_second_podummy']['_YWidth']/2)+(self._DesignParameter['nmos_second_podummy']['_XYCoordinates'][0][1]+self._DesignParameter['nmos_second_podummy']['_YWidth']/2))/2
+
 		self._DesignParameter['gate_input']['_XYCoordinates'] = [[(min((self._DesignParameter['nmos_second_podummy']['_XYCoordinates'][0][0] + (self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtnfet_b_CDNS_637732429400_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0])), (self._DesignParameter['pmos_second_podummy']['_XYCoordinates'][(- 1)][0] + (self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_XYCoordinates'][0][0] + self._DesignParameter['slvtpfet_b_CDNS_637732429401_0']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]))) / 2), gate_y]]
 		self._DesignParameter['gate_output'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_outputIn{}'.format(_Name)))[0]
 		self._DesignParameter['gate_output']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(**dict(_ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2))
@@ -556,18 +568,18 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 
 
 
-	def _CalculateDesignParameter_v2(self, nmgateY=None, pmgateY=None, nmos_gate=3, pmos_gate=3, nmos_width=320, pmos_width=584, length=30, XVT='SLVT', nmos_y=350, pmos_y=433, gate_y=860, vss2vdd_height=1800, gate_spacing=100, sdwidth=66, power_xdistance=130, out_even_up_mode=True):
+	def _CalculateDesignParameter_v2(self, nmgateY=None, pmgateY=None, nmos_gate=3, pmos_gate=3, nmos_width=320, pmos_width=584, length=30, XVT='SLVT', vss2nmos=350, vdd2pmos=433, gate_y=860, vss2vdd_height=1800, gate_spacing=100, sdwidth=66, power_xdistance=130, out_even_up_mode=True):
 
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
 		MinSnapSpacing = drc._MinSnapSpacing
 
-		_nmos_y = 0
-		_pmos_y = 0
+		_vss2nmos = 0
+		_vdd2pmos = 0
 		InputParams = dict(
 			nmos_gate=nmos_gate, pmos_gate=pmos_gate, nmos_width=nmos_width, pmos_width=pmos_width,
 			length=length, XVT=XVT,
-			nmos_y=_nmos_y, pmos_y=_pmos_y, gate_y=gate_y, vss2vdd_height=vss2vdd_height,
+			vss2nmos=_vss2nmos, vdd2pmos=_vdd2pmos, gate_y=gate_y, vss2vdd_height=vss2vdd_height,
 			gate_spacing=gate_spacing, sdwidth=sdwidth, power_xdistance=power_xdistance,
 			out_even_up_mode=out_even_up_mode
 		)
@@ -603,12 +615,12 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 		DistanceBtwVSS2NMOS.append(0.5 * (self.getYWidth('vss_supply_m2_y') + self.getYWidth('output_nm', '_Met2Layer')) + drc._MetalxMinSpace21 if 'output_nm' in self._DesignParameter else 0)
 		VSS2NMOS_min = max(DistanceBtwVSS2NMOS)
 
-		if nmos_y == None:
+		if vss2nmos == None:
 			YCoordOfNMOS = VSS2NMOS_min
-		elif nmos_y < VSS2NMOS_min:
-			raise NotImplementedError(f'nmos_y={nmos_y}, But nmos_y_min={VSS2NMOS_min}')
+		elif vss2nmos < VSS2NMOS_min:
+			raise NotImplementedError(f'vss2nmos={vss2nmos}, But vss2nmos_min={VSS2NMOS_min}')
 		else:
-			YCoordOfNMOS = nmos_y
+			YCoordOfNMOS = vss2nmos
 		yShiftOffset = YCoordOfNMOS - self.getXY(ObjNMOS)[0][1]
 
 		ObjList_NMSide = [ObjNMOS, 'nmos_second_podummy', 'm2_output_nm_routing_x', 'output_nm', '_AddtionalMetal1onNMOS']
@@ -624,10 +636,10 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 		DistanceBtwVDD2PMOS.append(0.5 * (self.getYWidth('vdd_supply_m2_y') + self.getYWidth('output_pm', '_Met2Layer')) + drc._MetalxMinSpace21 if 'output_pm' in self._DesignParameter else 0)
 		VDD2PMOS_min = max(DistanceBtwVDD2PMOS)
 
-		if pmos_y == None:
+		if vdd2pmos == None:
 			YCoordOfPMOS = vss2vdd_height - VDD2PMOS_min
-		elif pmos_y > vss2vdd_height - VDD2PMOS_min:
-			raise NotImplementedError(f'pmos_y={pmos_y}, But pmos_y_min={vss2vdd_height - VDD2PMOS_min}')
+		elif vdd2pmos > vss2vdd_height - VDD2PMOS_min:
+			raise NotImplementedError(f'vdd2pmos={vdd2pmos}, But vdd2pmos_min={vss2vdd_height - VDD2PMOS_min}')
 		else:
 			YCoordOfPMOS = vss2vdd_height - VDD2PMOS_min
 		yShiftOffset = YCoordOfPMOS - self.getXY(ObjPMOS)[0][1]
