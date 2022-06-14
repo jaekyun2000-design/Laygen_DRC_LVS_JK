@@ -567,6 +567,20 @@ class TG_2X_CRIT_SLVT_v1(StickDiagram._StickDiagram):
 		self.CellXWidth = self.getXY('nmos_second_podummy')[-1][0] - self.getXY('nmos_second_podummy')[0][0]
 
 
+		self._DesignParameter['_VDDpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VDD')
+		self._DesignParameter['_VSSpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VSS')
+		self._DesignParameter['_ENpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='EN')
+		self._DesignParameter['_ENbpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='ENb')
+		self._DesignParameter['_Apin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='A')
+		self._DesignParameter['_Ypin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='Y')
+
+		self._DesignParameter['_VDDpin']['_XYCoordinates']=self._DesignParameter['vdd']['_XYCoordinates']
+		self._DesignParameter['_VSSpin']['_XYCoordinates']=self._DesignParameter['vss']['_XYCoordinates']
+		self._DesignParameter['_ENpin']['_XYCoordinates']=self._DesignParameter['gate_output']['_XYCoordinates']
+		self._DesignParameter['_ENbpin']['_XYCoordinates']=self._DesignParameter['gate_input']['_XYCoordinates']
+		self._DesignParameter['_Apin']['_XYCoordinates']=[[self._DesignParameter['m1_source_routing_y']['_XYCoordinates'][0][0][0], (self._DesignParameter['m1_source_routing_y']['_XYCoordinates'][0][0][1]+self._DesignParameter['m1_source_routing_y']['_XYCoordinates'][0][1][1])/2]]
+		self._DesignParameter['_Ypin']['_XYCoordinates']=[[self._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][0][0][0], (self._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][0][0][1]+self._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][0][1][1])/2]]
+
 
 	def _CalculateDesignParameter_v2(self, nmgateY=None, pmgateY=None, nmos_gate=3, pmos_gate=3, nmos_width=320, pmos_width=584, length=30, XVT='SLVT', vss2nmos=350, vdd2pmos=433, gate_y=860, vss2vdd_height=1800, gate_spacing=100, sdwidth=66, power_xdistance=130, out_even_up_mode=True):
 
