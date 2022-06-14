@@ -8,7 +8,7 @@ from generatorLib.generator_models import ViaPoly2Met1
 from generatorLib.generator_models import SupplyRails
 from generatorLib.generator_models import NMOSWithDummy
 
-class _Tie_Cell(StickDiagram._StickDiagram):
+class Tie_Cell(StickDiagram._StickDiagram):
 	def __init__(self, _DesignParameter=None, _Name='TIE_Cell'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
@@ -263,6 +263,13 @@ class _Tie_Cell(StickDiagram._StickDiagram):
 		self._DesignParameter['gate_input_routing_2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _Width=50)
 		self._DesignParameter['gate_input_routing_2']['_XYCoordinates'] = [[[((self._DesignParameter['gate_input']['_XYCoordinates'][0][0] + self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / 2)), (((self._DesignParameter['gate_input']['_XYCoordinates'][0][1] + self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2)) - (self._DesignParameter['gate_input_routing_2']['_Width'] / 2))], [(self._DesignParameter['gate_input_pmos']['_XYCoordinates'][(- 1)][0][0] + (self._DesignParameter['gate_input_pmos']['_Width'] / 2)), (((self._DesignParameter['gate_input']['_XYCoordinates'][0][1] + self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2)) - (self._DesignParameter['gate_input_routing_2']['_Width'] / 2))]]]
 
+		self._DesignParameter['_VDDpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VDD')
+		self._DesignParameter['_VSSpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VSS')
+		self._DesignParameter['_TIEHpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='TIEH')
+
+		self._DesignParameter['_VDDpin']['_XYCoordinates']=self._DesignParameter['vdd']['_XYCoordinates']
+		self._DesignParameter['_VSSpin']['_XYCoordinates']=self._DesignParameter['vss']['_XYCoordinates']
+		self._DesignParameter['_TIEHpin']['_XYCoordinates']=[[(self._DesignParameter['m1_pmos_drain_routing_x']['_XYCoordinates'][0][0][0]+self._DesignParameter['m1_pmos_drain_routing_x']['_XYCoordinates'][0][-1][0])/2, self._DesignParameter['m1_pmos_drain_routing_x']['_XYCoordinates'][0][0][1]]]
 
 
 	def _CalculateDesignParameter_tiehigh_v2(self,sd_width=66,gate_spacing=110,vdd2vss_height=1800,nmos_width=200,pmos_width=400,length=40,nmos_gate=4,pmos_gate=4,XVT='RVT'):
@@ -474,6 +481,13 @@ class _Tie_Cell(StickDiagram._StickDiagram):
 		self._DesignParameter['nw_layer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1], _XWidth=(self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_ODLayer']['_XWidth'] + (drc._NwMinEnclosurePactive2 * 2)), _YWidth=(((self._DesignParameter['vdd']['_XYCoordinates'][0][1] + self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met2Layer']['_XYCoordinates'][0][1]) + (self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] / 2)) - self._DesignParameter['gate_input']['_XYCoordinates'][0][1]))
 		self._DesignParameter['nw_layer']['_XYCoordinates'] = [[self._DesignParameter['nmos']['_XYCoordinates'][0][0], ((((self._DesignParameter['vdd']['_XYCoordinates'][0][1] + self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met2Layer']['_XYCoordinates'][0][1]) + (self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] / 2)) + self._DesignParameter['gate_input']['_XYCoordinates'][0][1]) / 2)]]
 
+		self._DesignParameter['_VDDpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VDD')
+		self._DesignParameter['_VSSpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VSS')
+		self._DesignParameter['_TIEHpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='TIEH')
+
+		self._DesignParameter['_VDDpin']['_XYCoordinates']=self._DesignParameter['vdd']['_XYCoordinates']
+		self._DesignParameter['_VSSpin']['_XYCoordinates']=self._DesignParameter['vss']['_XYCoordinates']
+		self._DesignParameter['_TIEHpin']['_XYCoordinates']=[[(self._DesignParameter['m1_pmos_drain_routing_x']['_XYCoordinates'][0][0][0]+self._DesignParameter['m1_pmos_drain_routing_x']['_XYCoordinates'][0][-1][0])/2, self._DesignParameter['m1_pmos_drain_routing_x']['_XYCoordinates'][0][0][1]]]
 
 
 	def _CalculateDesignParameter_tielow_v1(self,vss2nmos=300,vdd2pmos=500,sd_width=66,gate_spacing=110,vdd2vss_height=1800,nmos_width=200,pmos_width=400,length=40,nmos_gate=1,pmos_gate=1,XVT='RVT'):
@@ -698,6 +712,14 @@ class _Tie_Cell(StickDiagram._StickDiagram):
 		self._DesignParameter['m1_gate_drain_routing_y'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['m1_pmos_drain_gate_routing_x']['_Width'])
 		self._DesignParameter['m1_gate_drain_routing_y']['_XYCoordinates'] = [[[(+ self._DesignParameter['gate_input']['_XYCoordinates'][0][0]), (+ self._DesignParameter['gate_input']['_XYCoordinates'][0][1])-self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2], [self._DesignParameter['gate_input']['_XYCoordinates'][0][0], self._DesignParameter['m1_drain_routing_x']['_XYCoordinates'][0][0][1]]]]
 
+		self._DesignParameter['_VDDpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VDD')
+		self._DesignParameter['_VSSpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VSS')
+		self._DesignParameter['_TIELpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='TIEL')
+
+		self._DesignParameter['_VDDpin']['_XYCoordinates']=self._DesignParameter['vdd']['_XYCoordinates']
+		self._DesignParameter['_VSSpin']['_XYCoordinates']=self._DesignParameter['vss']['_XYCoordinates']
+		self._DesignParameter['_TIELpin']['_XYCoordinates']=[[(self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][0][0]+self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][-1][0])/2, self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][0][1]]]
+
 
 	def _CalculateDesignParameter_tielow_v2(self,sd_width=66,gate_spacing=110,vdd2vss_height=1800,nmos_width=200,pmos_width=400,length=40,nmos_gate=3,pmos_gate=3,XVT='RVT'):
 
@@ -785,8 +807,8 @@ class _Tie_Cell(StickDiagram._StickDiagram):
 		self._DesignParameter['RVT_boundary_0']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], (((self._DesignParameter['vdd']['_XYCoordinates'][0][1] + self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met2Layer']['_XYCoordinates'][0][1]) + (self._DesignParameter['vss']['_XYCoordinates'][0][1] + self._DesignParameter['vss']['_DesignObj']._DesignParameter['_Met2Layer']['_XYCoordinates'][0][1])) / 2)]]
 		self._DesignParameter['nwell_layer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1], _XWidth=(self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_ODLayer']['_XWidth'] + (2 * drc._NwMinEnclosurePactive2)), _YWidth=(((self._DesignParameter['vdd']['_XYCoordinates'][0][1] + self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met2Layer']['_XYCoordinates'][0][1]) + (self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] / 2)) - self._DesignParameter['gate_input']['_XYCoordinates'][0][1]))
 		self._DesignParameter['nwell_layer']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], ((((self._DesignParameter['vdd']['_XYCoordinates'][0][1] + self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met2Layer']['_XYCoordinates'][0][1]) + (self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] / 2)) + self._DesignParameter['gate_input']['_XYCoordinates'][0][1]) / 2)]]
-		self._DesignParameter['m1_nmos_drain_rougint_x'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'])
-		self._DesignParameter['m1_nmos_drain_rougint_x']['_XYCoordinates'] = [[[((self._DesignParameter['nmos']['_XYCoordinates'][0][0] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'][0][0]) - (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['nmos']['_XYCoordinates'][0][1] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) + (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) + (self._DesignParameter['m1_nmos_drain_rougint_x']['_Width'] / 2)) + drc._Metal1MinSpace2)], [((self._DesignParameter['nmos']['_XYCoordinates'][0][0] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['nmos']['_XYCoordinates'][0][1] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) + (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) + (self._DesignParameter['m1_nmos_drain_rougint_x']['_Width'] / 2)) + drc._Metal1MinSpace2)]]]
+		self._DesignParameter['m1_nmos_drain_routing_x'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'])
+		self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'] = [[[((self._DesignParameter['nmos']['_XYCoordinates'][0][0] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'][0][0]) - (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['nmos']['_XYCoordinates'][0][1] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) + (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) + (self._DesignParameter['m1_nmos_drain_routing_x']['_Width'] / 2)) + drc._Metal1MinSpace2)], [((self._DesignParameter['nmos']['_XYCoordinates'][0][0] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((((self._DesignParameter['nmos']['_XYCoordinates'][0][1] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) + (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) + (self._DesignParameter['m1_nmos_drain_routing_x']['_Width'] / 2)) + drc._Metal1MinSpace2)]]]
 		path_list = []
 		if (len(self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
 		    mode = 'vertical'
@@ -801,7 +823,7 @@ class _Tie_Cell(StickDiagram._StickDiagram):
 		    print('Invalid Target Input')
 		if (mode == 'vertical'):
 		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['m1_nmos_drain_rougint_x']['_XYCoordinates'][0][0][1])
+		    target_y_value = (0 + self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][0][1])
 		    for i in range(len(self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
 		        if ((i % 2) == 1):
 		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos']['_XYCoordinates'][0][1])], self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
@@ -809,7 +831,7 @@ class _Tie_Cell(StickDiagram._StickDiagram):
 		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
 		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['m1_nmos_drain_rougint_x']['_XYCoordinates'][0][0][0])
+		    target_x_value = (0 + self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][0][0])
 		    for i in range(len(self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
 		        if ((i % 2) == 1):
 		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos']['_XYCoordinates'][0][1])], self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
@@ -907,3 +929,11 @@ class _Tie_Cell(StickDiagram._StickDiagram):
 		self._DesignParameter['pmos_gate_routing']['_XYCoordinates'] = path_list
 		self._DesignParameter['m1_gate_routing_x'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'])
 		self._DesignParameter['m1_gate_routing_x']['_XYCoordinates'] = [[[(self._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][0][0][0] - (self._DesignParameter['m1_drain_routing_y']['_Width'] / 2)), (self._DesignParameter['gate_input']['_XYCoordinates'][0][1] + self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])], [(self._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][(- 1)][0][0] + (self._DesignParameter['m1_drain_routing_y']['_Width'] / 2)), (self._DesignParameter['gate_input']['_XYCoordinates'][0][1] + self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]]
+
+		self._DesignParameter['_VDDpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VDD')
+		self._DesignParameter['_VSSpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VSS')
+		self._DesignParameter['_TIELpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='TIEL')
+
+		self._DesignParameter['_VDDpin']['_XYCoordinates']=self._DesignParameter['vdd']['_XYCoordinates']
+		self._DesignParameter['_VSSpin']['_XYCoordinates']=self._DesignParameter['vss']['_XYCoordinates']
+		self._DesignParameter['_TIELpin']['_XYCoordinates']=[[(self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][0][0]+self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][-1][0])/2, self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][0][1]]]
