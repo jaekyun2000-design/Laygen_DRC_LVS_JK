@@ -28,6 +28,12 @@ class FillCapCell(StickDiagram._StickDiagram):
 		self._DesignParameter['vddrail'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='vddrailIn{}'.format(_Name)))[0]
 		self._DesignParameter['vddrail']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=Power_CO_Num, UnitPitch=Power_CO_Pitch, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=False, deleteViaAndMet1=False))
 		self._DesignParameter['vddrail']['_XYCoordinates'] = [[self._DesignParameter['vssrail']['_XYCoordinates'][0][0], (self._DesignParameter['vssrail']['_XYCoordinates'][0][1] + Cell_height)]]
+
+		self._DesignParameter['_VDDpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VDD')
+		self._DesignParameter['_VSSpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VSS')
+		self._DesignParameter['_VDDpin']['_XYCoordinates']=self._DesignParameter['vddrail']['_XYCoordinates']
+		self._DesignParameter['_VSSpin']['_XYCoordinates']=self._DesignParameter['vssrail']['_XYCoordinates']
+
 		self._DesignParameter['nmoscap'] = self._SrefElementDeclaration(_DesignObj=Fill_cap_mos.FILLCAP_MOS(_Name='nmoscapIn{}'.format(_Name)))[0]
 		self._DesignParameter['nmoscap']['_DesignObj']._CalculateDesignParameter(**dict(gate_x_length=Cap_poly_x_length, gate_y_width=Cap_poly_nmos_y_width, Dummy_width=40, _XVT=XVT, pmos_flag=0))
 		self._DesignParameter['nmoscap']['_XYCoordinates'] = [[self._DesignParameter['vssrail']['_XYCoordinates'][0][0], ((((self._DesignParameter['vssrail']['_XYCoordinates'][0][1] + self._DesignParameter['vssrail']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) + (self._DesignParameter['vssrail']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) + (self._DesignParameter['nmoscap']['_DesignObj']._DesignParameter['N_poly']['_YWidth'] / 2)) + vss_nmosgate_space)]]
