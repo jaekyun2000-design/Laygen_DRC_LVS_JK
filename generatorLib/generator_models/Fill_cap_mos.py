@@ -4,8 +4,8 @@ import copy
 import math
 from generatorLib import DRC
 
-class FILLCAP_5X_STD_RVT_v2(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='FILLCAP_5X_STD_RVT_v2'):
+class FILLCAP_MOS(StickDiagram._StickDiagram):
+	def __init__(self, _DesignParameter=None, _Name='FILLCAP_MOS'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
@@ -69,7 +69,7 @@ class FILLCAP_5X_STD_RVT_v2(StickDiagram._StickDiagram):
 		self._DesignParameter['_Met1Layer']['_XYCoordinates'] = [[self._DesignParameter['_Contact']['_XYCoordinates'][0][0],
 																  (self._DesignParameter['_Contact']['_XYCoordinates'][0][1]+self._DesignParameter['_Contact']['_XYCoordinates'][-1][1])/2]]
 
-		self._DesignParameter['_Met1Layer_2']['_XYCoordinates'] = [[self._DesignParameter['_Contact2']['_XYCoordinates'][1][0],
+		self._DesignParameter['_Met1Layer_2']['_XYCoordinates'] = [[self._DesignParameter['_Contact2']['_XYCoordinates'][0][0],
 		 														  (self._DesignParameter['_Contact2']['_XYCoordinates'][0][1] + self._DesignParameter['_Contact2']['_XYCoordinates'][-1][1])/2]]
 
 		##RVT layer

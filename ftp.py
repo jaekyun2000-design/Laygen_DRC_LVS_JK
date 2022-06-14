@@ -54,6 +54,7 @@ def stream(lib_name, file_name, file_path=ftp_dir, tech_file = tech_file, ip = s
         else:
             return True, 'Stream In Sucess'
     except:
+ #       traceback.print_exc()
         return False, 'Stream In Fail'
 
 
