@@ -16,7 +16,7 @@ class _Tie_Cell(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter_tiehigh_v1(self,nmos_y=300,pmos_y=500,sd_width=66,gate_spacing=110,vdd2vss_height=1800,nmos_width=200,pmos_width=400,length=40,nmos_gate=1,pmos_gate=1,XVT='RVT'):
+	def _CalculateDesignParameter_tiehigh_v1(self,vss2nmos=300,vdd2pmos=500,sd_width=66,gate_spacing=110,vdd2vss_height=1800,nmos_width=200,pmos_width=400,length=40,nmos_gate=1,pmos_gate=1,XVT='RVT'):
 
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -30,17 +30,17 @@ class _Tie_Cell(StickDiagram._StickDiagram):
 		self._DesignParameter['nmos'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='nmosIn{}'.format(_Name)))[0]
 		self._DesignParameter['nmos']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=nmos_gate, _NMOSChannelWidth=nmos_width, _NMOSChannellength=length, _NMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sd_width, _XVT=XVT))
 
-		if nmos_y == None :
-			nmos_y=self._DesignParameter['vss']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
+		if vss2nmos == None :
+			vss2nmos=self._DesignParameter['vss']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
 
-		self._DesignParameter['nmos']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], (self._DesignParameter['vss']['_XYCoordinates'][0][1] + nmos_y)]]
+		self._DesignParameter['nmos']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], (self._DesignParameter['vss']['_XYCoordinates'][0][1] + vss2nmos)]]
 		self._DesignParameter['pmos'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='pmosIn{}'.format(_Name)))[0]
 		self._DesignParameter['pmos']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=pmos_gate, _PMOSChannelWidth=pmos_width, _PMOSChannellength=length, _PMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sd_width, _XVT=XVT))
 
-		if pmos_y == None :
-			pmos_y=self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
+		if vdd2pmos == None :
+			vdd2pmos=self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
 
-		self._DesignParameter['pmos']['_XYCoordinates'] = [[self._DesignParameter['vdd']['_XYCoordinates'][0][0], (self._DesignParameter['vdd']['_XYCoordinates'][0][1] - pmos_y)]]
+		self._DesignParameter['pmos']['_XYCoordinates'] = [[self._DesignParameter['vdd']['_XYCoordinates'][0][0], (self._DesignParameter['vdd']['_XYCoordinates'][0][1] - vdd2pmos)]]
 		self._DesignParameter['vss']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=max(1, (1 + int(((((((self._DesignParameter['nmos']['_XYCoordinates'][0][0] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) - ((self._DesignParameter['nmos']['_XYCoordinates'][0][0] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2))) - drc._VIAxMinSpace) - (2 * drc._VIAxMinEnclosureByMetx)) / (drc._VIAxMinWidth + drc._VIAxMinSpace))))), UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True))
 		self._DesignParameter['vdd']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=max(1, (1 + int(((((((self._DesignParameter['pmos']['_XYCoordinates'][0][0] + self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) - ((self._DesignParameter['pmos']['_XYCoordinates'][0][0] + self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2))) - drc._VIAxMinSpace) - (2 * drc._VIAxMinEnclosureByMetx)) / (drc._VIAxMinWidth + drc._VIAxMinSpace))))), UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True))
 		self._DesignParameter['gate_input'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_inputIn{}'.format(_Name)))[0]
@@ -476,7 +476,7 @@ class _Tie_Cell(StickDiagram._StickDiagram):
 
 
 
-	def _CalculateDesignParameter_tielow_v1(self,nmos_y=300,pmos_y=500,sd_width=66,gate_spacing=110,vdd2vss_height=1800,nmos_width=200,pmos_width=400,length=40,nmos_gate=1,pmos_gate=1,XVT='RVT'):
+	def _CalculateDesignParameter_tielow_v1(self,vss2nmos=300,vdd2pmos=500,sd_width=66,gate_spacing=110,vdd2vss_height=1800,nmos_width=200,pmos_width=400,length=40,nmos_gate=1,pmos_gate=1,XVT='RVT'):
 
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -487,21 +487,21 @@ class _Tie_Cell(StickDiagram._StickDiagram):
 		self._DesignParameter['nmos'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='nmosIn{}'.format(_Name)))[0]
 		self._DesignParameter['nmos']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=nmos_gate, _NMOSChannelWidth=nmos_width, _NMOSChannellength=length, _NMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sd_width, _XVT=XVT))
 
-		if nmos_y == None :
-			nmos_y=self._DesignParameter['vss']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
+		if vss2nmos == None :
+			vss2nmos=self._DesignParameter['vss']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
 
-		self._DesignParameter['nmos']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], (self._DesignParameter['vss']['_XYCoordinates'][0][1] + nmos_y)]]
+		self._DesignParameter['nmos']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], (self._DesignParameter['vss']['_XYCoordinates'][0][1] + vss2nmos)]]
 		self._DesignParameter['vdd'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='vddIn{}'.format(_Name)))[0]
 		self._DesignParameter['vdd']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=2, UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=False))
 		self._DesignParameter['vdd']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], vdd2vss_height]]
 		self._DesignParameter['pmos'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='pmosIn{}'.format(_Name)))[0]
 		self._DesignParameter['pmos']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=pmos_gate, _PMOSChannelWidth=pmos_width, _PMOSChannellength=length, _PMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sd_width, _XVT=XVT))
 
-		if pmos_y == None :
-			pmos_y=self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
+		if vdd2pmos == None :
+			vdd2pmos=self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
 
 
-		self._DesignParameter['pmos']['_XYCoordinates'] = [[self._DesignParameter['vdd']['_XYCoordinates'][0][0], (self._DesignParameter['vdd']['_XYCoordinates'][0][1] - pmos_y)]]
+		self._DesignParameter['pmos']['_XYCoordinates'] = [[self._DesignParameter['vdd']['_XYCoordinates'][0][0], (self._DesignParameter['vdd']['_XYCoordinates'][0][1] - vdd2pmos)]]
 		self._DesignParameter['vss']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=max(1, (1 + int(((((((self._DesignParameter['nmos']['_XYCoordinates'][0][0] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) - ((self._DesignParameter['nmos']['_XYCoordinates'][0][0] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2))) - drc._VIAxMinSpace) - (2 * drc._VIAxMinEnclosureByMetx)) / (drc._VIAxMinWidth + drc._VIAxMinSpace))))), UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True))
 		self._DesignParameter['vdd']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=max(1, (1 + int(((((((self._DesignParameter['pmos']['_XYCoordinates'][0][0] + self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) - ((self._DesignParameter['pmos']['_XYCoordinates'][0][0] + self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2))) - drc._VIAxMinSpace) - (2 * drc._VIAxMinEnclosureByMetx)) / (drc._VIAxMinWidth + drc._VIAxMinSpace))))), UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=False))
 		self._DesignParameter['gate_input'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_inputIn{}'.format(_Name)))[0]
