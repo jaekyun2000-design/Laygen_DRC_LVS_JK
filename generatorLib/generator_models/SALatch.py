@@ -9,8 +9,8 @@ from generatorLib.generator_models import ViaStack
 from generatorLib.generator_models import ViaMet32Met4
 import warnings
 
-class EasyDebugModule(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
+class SALatch(StickDiagram._StickDiagram):
+	def __init__(self, _DesignParameter=None, _Name='SALatch'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
