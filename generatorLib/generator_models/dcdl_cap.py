@@ -113,7 +113,7 @@ class dcdl_cap(StickDiagram._StickDiagram):
 		YCenterbtwtgmos=_OriginXY[0][1]#((self._DesignParameter['tg_nmos']['_XYCoordinates'][0][1]+self._DesignParameter['tg_nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2)+(self._DesignParameter['tg_pmos']['_XYCoordinates'][0][1]-self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2))/2
 
 		self._DesignParameter['cap_input'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='cap_inputIn{}'.format(_Name)))[0]
-		self._DesignParameter['cap_input']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(**dict(_ViaPoly2Met1NumberOfCOX=max(1, (int(((((self._DesignParameter['cap_nmos']['_XYCoordinates'][0][0] + self._DesignParameter['cap_nmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][0]) - (self._DesignParameter['cap_nmos']['_XYCoordinates'][0][0] + self._DesignParameter['cap_nmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0])) + self._DesignParameter['cap_nmos']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']) / (drc._CoMinWidth + drc._CoMinSpace))) + 1)), _ViaPoly2Met1NumberOfCOY=1))
+		self._DesignParameter['cap_input']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(**dict(_ViaPoly2Met1NumberOfCOX=max(1, (int(((self._DesignParameter['cap_nmos']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / (drc._CoMinWidth + drc._CoMinSpace)))))), _ViaPoly2Met1NumberOfCOY=1))
 
 
 		if cap_gate2nmos == None :
@@ -128,8 +128,13 @@ class dcdl_cap(StickDiagram._StickDiagram):
 		else :
 			self._DesignParameter['cap_pmos']['_XYCoordinates'] = [[self._DesignParameter['cap_nmos']['_XYCoordinates'][0][0], (YCenterbtwtgmos + cap_gate2pmos)]]
 
+		tmp = []
 		for i in range(0,cap_gate):
-			self._DesignParameter['cap_input']['_XYCoordinates'] = [[self._DesignParameter['cap_nmos']['_XYCoordinates'][0][0]+self._DesignParameter['cap_nmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], _OriginXY[0][1]]]  # YCenterbtwtgmos]]#((((self._DesignParameter['cap_nmos']['_XYCoordinates'][0][1] + self._DesignParameter['cap_nmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['cap_nmos']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2)) + ((self._DesignParameter['cap_pmos']['_XYCoordinates'][0][1] + self._DesignParameter['cap_pmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['cap_pmos']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2))) / 2)]]
+			tmp.append([self._DesignParameter['cap_nmos']['_XYCoordinates'][0][0]+self._DesignParameter['cap_nmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], _OriginXY[0][1]])  # YCenterbtwtgmos]]#((((self._DesignParameter['cap_nmos']['_XYCoordinates'][0][1] + self._DesignParameter['cap_nmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['cap_nmos']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2)) + ((self._DesignParameter['cap_pmos']['_XYCoordinates'][0][1] + self._DesignParameter['cap_pmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['cap_pmos']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2))) / 2)]]
+
+		self._DesignParameter['cap_input']['_XYCoordinates'] = tmp
+
+		del tmp
 
 		path_list = []
 		if (len(self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
@@ -167,7 +172,7 @@ class dcdl_cap(StickDiagram._StickDiagram):
 		#         path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['m1_tg_source_routing_y'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_tg_source_routing_y']['_XYCoordinates'] = path_list
-		self._DesignParameter['m1_tg_cap_routing_x'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['tg_nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'])
+		self._DesignParameter['m1_tg_cap_routing_x'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['cap_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'])
 		self._DesignParameter['m1_tg_cap_routing_x']['_XYCoordinates'] = [[[min(self._DesignParameter['tg_pmos']['_XYCoordinates'][0][0]+self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]-self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2,self._DesignParameter['tg_nmos']['_XYCoordinates'][0][0]+self._DesignParameter['tg_nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]-self._DesignParameter['tg_nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2), self._DesignParameter['cap_input']['_XYCoordinates'][0][1]], [self._DesignParameter['cap_input']['_XYCoordinates'][0][0],self._DesignParameter['cap_input']['_XYCoordinates'][0][1]]]]
 		# self._DesignParameter['tg_pmos_input'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='tg_pmos_inputIn{}'.format(_Name)))[0]
 		# self._DesignParameter['tg_pmos_input']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureY(**dict(_ViaPoly2Met1NumberOfCOX=max(2, int((((((self._DesignParameter['tg_pmos']['_XYCoordinates'][0][0] + self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][0]) - (self._DesignParameter['tg_pmos']['_XYCoordinates'][0][0] + self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0])) + self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']) / (drc._CoMinWidth + drc._CoMinSpace)) + 1))), _ViaPoly2Met1NumberOfCOY=1))
@@ -250,13 +255,13 @@ class dcdl_cap(StickDiagram._StickDiagram):
 		path_list = []
 		if (len(self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
 		    mode = 'vertical'
-		    _width = self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+		    _width = self._DesignParameter['via_m1_m3_nmos_output']['_DesignObj']._DesignParameter['ViaMet22Met3']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth']
 		elif (self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
 		    mode = 'horizontal'
-		    _width = self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+		    _width = self._DesignParameter['via_m1_m3_nmos_output']['_DesignObj']._DesignParameter['ViaMet22Met3']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth']
 		elif (self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
 		    mode = 'vertical'
-		    _width = self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+		    _width = self._DesignParameter['via_m1_m3_nmos_output']['_DesignObj']._DesignParameter['ViaMet22Met3']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth']
 		else:
 		    print('Invalid Target Input')
 		if (mode == 'vertical'):
