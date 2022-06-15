@@ -9,7 +9,7 @@ from generatorLib import DRC
 #
 from generatorLib.generator_models import TristateInverter
 from generatorLib.generator_models import Inverter_onesemicon
-from generatorLib.generator_models import Transmission_gate
+from generatorLib.generator_models import transmission_gate
 
 from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import ViaMet22Met3
@@ -197,13 +197,13 @@ class DFF(StickDiagram._StickDiagram):
 
         self._DesignParameter['TG1'] = self._SrefElementDeclaration(
             _Reflect=[0, 0, 0], _Angle=0,
-            _DesignObj=TG_2X_CRIT_SLVT_v1.TG_2X_CRIT_SLVT_v1(_Name='TG1In{}'.format(_Name)))[0]
+            _DesignObj=transmission_gate.Transmission_gate(_Name='TG1In{}'.format(_Name)))[0]
         self._DesignParameter['TG1']['_DesignObj']._CalculateDesignParameter(**Parameters_TG1)
         self._DesignParameter['TG1']['_XYCoordinates'] = [[0, 0]]
 
         self._DesignParameter['TG2'] = self._SrefElementDeclaration(
             _Reflect=[0, 0, 0], _Angle=0,
-            _DesignObj=TG_2X_CRIT_SLVT_v1.TG_2X_CRIT_SLVT_v1(_Name='TG2In{}'.format(_Name)))[0]
+            _DesignObj=transmission_gate.Transmission_gate(_Name='TG2In{}'.format(_Name)))[0]
         self._DesignParameter['TG2']['_DesignObj']._CalculateDesignParameter(**Parameters_TG2)
         self._DesignParameter['TG2']['_XYCoordinates'] = [[0, 0]]
 

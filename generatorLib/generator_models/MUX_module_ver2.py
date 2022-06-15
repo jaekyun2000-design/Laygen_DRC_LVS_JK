@@ -8,7 +8,7 @@ from generatorLib.generator_models import NAND3_ver2
 from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import ViaMet22Met3
 from generatorLib.generator_models import ViaMet32Met4
-from generatorLib.generator_models import Transmission_gate
+from generatorLib.generator_models import transmission_gate
 
 class EasyDebugModule(StickDiagram._StickDiagram):
 	def __init__(self, _DesignParameter=None, _Name='MuxModuleVer2'):
@@ -158,7 +158,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		# self._DesignParameter['TR_GATE'] = self._SrefElementDeclaration(_DesignObj=TG_2X_CRIT_SLVT_v1.TG_2X_CRIT_SLVT_v1(_Name='TR_GATEIn{}'.format(_Name)))[0]
 		# self._DesignParameter['TR_GATE']['_DesignObj']._CalculateDesignParameter(**dict(nmos_gate=TG_finger, pmos_gate=TG_finger, nmos_width=TG_nmos_width, pmos_width=TG_pmos_width, length=gate_length, XVT=XVT, nmos_y=NMOS_y, pmos_y=TG_PMOS_y, gate_y=TG_poly_y, vss2vdd_height=Cell_height, gate_spacing=gate_spacing, sdwidth=66, power_xnum=2, power_xdistance=130, out_even_up_mode=True))
 		# self._DesignParameter['TR_GATE']['_XYCoordinates'] = [[((((self._DesignParameter['INV']['_DesignObj']._DesignParameter['XVTLayer']['_XWidth'] / 2) + (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['XVT_boundary_1']['_XWidth'] / 2)) + gate_length) + gate_spacing), self._DesignParameter['INV']['_XYCoordinates'][0][1]]]
-		self._DesignParameter['TR_GATE'] = self._SrefElementDeclaration(_DesignObj=Transmission_gate.Transmission_gate(_Name='TR_GATEIn{}'.format(_Name)))[0]
+		self._DesignParameter['TR_GATE'] = self._SrefElementDeclaration(_DesignObj=transmission_gate.Transmission_gate(_Name='TR_GATEIn{}'.format(_Name)))[0]
 		self._DesignParameter['TR_GATE']['_DesignObj']._CalculateDesignParameter(**dict(nmos_gate=TG_finger, pmos_gate=TG_finger, nmos_width=TG_nmos_width, pmos_width=TG_pmos_width, length=gate_length, XVT=XVT, vss2nmos=NMOS_y, vdd2pmos=TG_PMOS_y, gate_y=TG_poly_y, vss2vdd_height=Cell_height, gate_spacing=gate_spacing, sdwidth=66, power_xdistance=130, out_even_up_mode=True))
 		self._DesignParameter['TR_GATE']['_XYCoordinates'] = [[((((self._DesignParameter['INV']['_DesignObj']._DesignParameter['XVTLayer']['_XWidth'] / 2) + (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['XVT_boundary_1']['_XWidth'] / 2)) + gate_length) + gate_spacing), self._DesignParameter['INV']['_XYCoordinates'][0][1]]]
 		self._DesignParameter['TR_GATE']['_Reflect'] = [1, 0, 0]
