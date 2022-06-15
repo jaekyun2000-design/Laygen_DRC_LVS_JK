@@ -7,7 +7,7 @@ from generatorLib.generator_models import idec_cells_row
 from generatorLib.generator_models import ViaMet22Met3
 from generatorLib.generator_models import ViaMet52Met6
 
-class EasyDebugModule(StickDiagram._StickDiagram):
+class IDAC(StickDiagram._StickDiagram):
 	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
@@ -15,7 +15,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self, _X_NUM=10, _Y_NUM=4, _Y_NUM_L=2, W_pbias_pmos=830, W_pbias_pmos_L=660, TIEL_flag=1, _Idac_cell={'Cell_height': 2108, 'nf_aoi_out_pmos': 1, 'W_aoi_out_pmos': 1000, 'L_aoi_out_pmos': 30, 'aoi_out_pmos_y': 1000, 'aoi_XVT': 'RVT', 'nf_pbias_pmos': 2, 'L_pbias_pmos': 300, 'pbias_pmos_XVT': 'LVT', 'nf_AOI_mos': 1, 'W_AOI_pmos': 200, 'W_AOI_nmos': 200, 'L_AOI_mos': 30, 'VDD2aoi_pmos': 550, 'VSS2aoi_nmos': 350}):
+	def _CalculateDesignParameter(self, _X_NUM=10, _Y_NUM=4, _Y_NUM_L=2, W_pbias_pmos=830, W_pbias_pmos_L=660, _Idac_cell={'Cell_height': 2108, 'nf_aoi_out_pmos': 1, 'W_aoi_out_pmos': 1000, 'L_aoi_out_pmos': 30, 'aoi_out_pmos_y': 1000, 'aoi_XVT': 'RVT', 'nf_pbias_pmos': 2, 'L_pbias_pmos': 300, 'pbias_pmos_XVT': 'LVT', 'nf_AOI_mos': 1, 'W_AOI_pmos': 200, 'W_AOI_nmos': 200, 'L_AOI_mos': 30, 'VDD2aoi_pmos': 550, 'VSS2aoi_nmos': 350}, TIEL_flag=0):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
