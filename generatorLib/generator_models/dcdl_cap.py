@@ -113,7 +113,7 @@ class dcdl_cap(StickDiagram._StickDiagram):
 		YCenterbtwtgmos=_OriginXY[0][1]#((self._DesignParameter['tg_nmos']['_XYCoordinates'][0][1]+self._DesignParameter['tg_nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2)+(self._DesignParameter['tg_pmos']['_XYCoordinates'][0][1]-self._DesignParameter['tg_pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2))/2
 
 		self._DesignParameter['cap_input'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='cap_inputIn{}'.format(_Name)))[0]
-		self._DesignParameter['cap_input']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(**dict(_ViaPoly2Met1NumberOfCOX=max(1, int((((self._DesignParameter['cap_nmos']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']) / (drc._CoMinWidth + drc._CoMinSpace))))), _ViaPoly2Met1NumberOfCOY=1))
+		self._DesignParameter['cap_input']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(**dict(_ViaPoly2Met1NumberOfCOX=max(1, int((((self._DesignParameter['cap_nmos']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']-2*drc._CoMinEnclosureByPOAtLeastTwoSide) / (drc._CoMinWidth + drc._CoMinSpace)+1)))), _ViaPoly2Met1NumberOfCOY=1))
 
 
 		if cap_gate2nmos == None :
