@@ -6,7 +6,7 @@ from generatorLib import DRC
 from generatorLib.generator_models import Inverter_iksu2
 from generatorLib.generator_models import NAND3_ver2
 from generatorLib.generator_models import ViaMet12Met2
-from generatorLib.generator_models import TG_2X_CRIT_SLVT_v1
+from generatorLib.generator_models import Transmission_gate
 
 
 class EasyDebugModule(StickDiagram._StickDiagram):
@@ -56,7 +56,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter['nand2m1_3']['_XYCoordinates'] = [[[(+ self._DesignParameter['nand2inv_m1_2']['_XYCoordinates'][0][1][0] - self._DesignParameter['NAND']['_DesignObj']._DesignParameter['m1_pmos_parallel_routing_x']['_Width'] / 2), (+ self._DesignParameter['nand2inv_m1_2']['_XYCoordinates'][0][1][1])], [(self._DesignParameter['INV']['_XYCoordinates'][0][0] + self._DesignParameter['INV']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0]), self._DesignParameter['nand2inv_m1_2']['_XYCoordinates'][0][1][1]]]]
 
 		TG_PMOS_y = (VDD2PMOS + ((TG_pmos_width - (INV_nmos_width * 2)) / 2))
-		self._DesignParameter['TR_GATE'] = self._SrefElementDeclaration(_DesignObj=TG_2X_CRIT_SLVT_v1.TG_2X_CRIT_SLVT_v1(_Name='TR_GATEIn{}'.format(_Name)))[0]
+		self._DesignParameter['TR_GATE'] = self._SrefElementDeclaration(_DesignObj=Transmission_gate.Transmission_gate(_Name='TR_GATEIn{}'.format(_Name)))[0]
 		self._DesignParameter['TR_GATE']['_DesignObj']._CalculateDesignParameter(**dict(nmos_gate=1, pmos_gate=1, nmos_width=TG_nmos_width, pmos_width=TG_pmos_width, length=gate_length, XVT=XVT, nmos_y=NMOS_y, pmos_y=TG_PMOS_y, gate_y=TG_poly_y, vss2vdd_height=Cell_height, gate_spacing=gate_spacing, sdwidth=66, power_xnum=2, power_xdistance=130, out_even_up_mode=True))
 		self._DesignParameter['TR_GATE']['_XYCoordinates'] = [[((((self._DesignParameter['INV']['_DesignObj']._DesignParameter['XVTLayer']['_XWidth'] / 2) + (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['XVT_boundary_1']['_XWidth'] / 2)) + gate_length) + gate_spacing), self._DesignParameter['INV']['_XYCoordinates'][0][1]]]
 		self._DesignParameter['VDD_M2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=self._DesignParameter['INV']['_DesignObj']._DesignParameter['NbodyContact']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'])

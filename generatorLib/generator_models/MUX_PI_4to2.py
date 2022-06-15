@@ -25,13 +25,13 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
 
                                  TristateInv1_PMOSWidth=500,
                                  TristateInv1_NMOSWidth=250,
-                                 TristateInv1_VDD2PMOS=400,
-                                 TristateInv1_VSS2NMOS=275,
+                                 TristateInv1_VDD2PMOS=None,
+                                 TristateInv1_VSS2NMOS=None,
 
                                  TristateInv2_PMOSWidth=400,
                                  TristateInv2_NMOSWidth=200,
-                                 TristateInv2_VDD2PMOS=410,
-                                 TristateInv2_VSS2NMOS=310,
+                                 TristateInv2_VDD2PMOS=None,
+                                 TristateInv2_VSS2NMOS=None,
 
                                  TristateInv3_NumFinger_NM1=3,
                                  TristateInv3_NumFinger_NM2=3,
