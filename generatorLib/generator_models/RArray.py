@@ -132,8 +132,8 @@ class RArray(StickDiagram._StickDiagram):
 		del tmp
 		del tmp2
 
-		self._DesignParameter['_VDDpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VDD')
-		self._DesignParameter['_VSSpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VSS')
+		self._DesignParameter['_VDDpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT='VDD')
+		self._DesignParameter['_VSSpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT='VSS')
 		if NUMofX//2==1 :
 			self._DesignParameter['_VDDpin']['_XYCoordinates'] = [[(+ (((self._DesignParameter['Rref']['_XYCoordinates'][-NUMofY][0]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_XYCoordinates'][0][0]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0])), (+ (((self._DesignParameter['Rref']['_XYCoordinates'][-NUMofY][1]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_XYCoordinates'][0][1])+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][1]))]]
 		else :
