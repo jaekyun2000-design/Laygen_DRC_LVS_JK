@@ -107,7 +107,7 @@ class IDAC(StickDiagram._StickDiagram):
 			tmp.append([((self._DesignParameter['Row_m6_paths_global']['_XYCoordinates'][1][(- 1)][0]) + (i * Row_m5_distance)), (self._DesignParameter['Row_m6_paths_global']['_XYCoordinates'][-i-1][(-1)][1])])
 			pin_name='Row_<%d>'%i
 			self._DesignParameter[pin_name] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL5PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL5PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=270, _TEXT=pin_name)
-			self._DesignParameter[pin_name]['_XYCoordinates'] = [[((self._DesignParameter['Row_m6_paths_global']['_XYCoordinates'][1][-1][0]) + ((_Y_NUM+_Y_NUM_L-i) * Row_m5_distance)), (self._DesignParameter['Row_m6_paths_global']['_XYCoordinates'][1][-1][1]-i*200)]]
+			self._DesignParameter[pin_name]['_XYCoordinates'] = [[((self._DesignParameter['Row_m6_paths_global']['_XYCoordinates'][1][-1][0]) + ((_Y_NUM+_Y_NUM_L-i) * Row_m5_distance)), (self._DesignParameter['Row_m6_paths_global']['_XYCoordinates'][1][-1][1])]]
 		self._DesignParameter['Row_via']['_XYCoordinates'] = tmp
 		del tmp
 
