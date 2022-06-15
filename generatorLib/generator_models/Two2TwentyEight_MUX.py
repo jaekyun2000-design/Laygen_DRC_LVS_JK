@@ -28,6 +28,16 @@ class Two2TwentyEight_MUX(StickDiagram._StickDiagram):
 			self._DesignParameter[name]['_DesignObj']._CalculateDesignParameter(**dict(_INV_nmos_width=INV_nmos_width, _INV_finger=INV_finger, _VDD2PMOS=VDD2PMOS, _gate_length=gate_length, _gate_spacing=gate_spacing, _XVT=XVT, _NMOS_y=NMOS_y, _Cell_height=Cell_height,
 																					   _TG_pmos_width=TG_pmos_width, _TG_nmos_width=TG_nmos_width, _TG_poly_y=TG_poly_y, _NANDIN_y=NANDIN_y, _Num_of_MUX_modules=INPUT_num, _Input_offset=0))
 			self._DesignParameter[name]['_XYCoordinates'] = [[0.0, 0.0]]
+			nameA = 'Ain_0'
+			nameB = 'Bin_0'
+			nameC = 'Cin_0'
+			self._DesignParameter[nameA] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT=nameA)
+			self._DesignParameter[nameB] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT=nameB)
+			self._DesignParameter[nameC] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT=nameC)
+			self._DesignParameter[nameA]['_XYCoordinates'] = [[(+ ((self._DesignParameter[name]['_XYCoordinates'][0][0]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_b_via1_2']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter[name]['_XYCoordinates'][0][1]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_b_via1_2']['_XYCoordinates'][0][1]))]]
+			self._DesignParameter[nameB]['_XYCoordinates'] = [[(+ ((self._DesignParameter[name]['_XYCoordinates'][0][0]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_a_via1_2']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter[name]['_XYCoordinates'][0][1]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_a_via1_2']['_XYCoordinates'][0][1]))]]
+			self._DesignParameter[nameC]['_XYCoordinates'] = [[(+ ((self._DesignParameter[name]['_XYCoordinates'][0][0]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_c_via1_2']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter[name]['_XYCoordinates'][0][1]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_c_via1_2']['_XYCoordinates'][0][1]))]]
+
 
 		else :
 			for i in range(0,Num_of_8mux) :
@@ -40,9 +50,24 @@ class Two2TwentyEight_MUX(StickDiagram._StickDiagram):
 					self._DesignParameter[name]['_Reflect'] = [1, 0, 0]
 				self._DesignParameter[name]['_XYCoordinates'] = [[0.0, -2*Cell_height*(i//2)]]
 
+				nameA='Ain_%d'%i
+				nameB='Bin_%d'%i
+				nameC='Cin_%d'%i
 
-
-
+				if i%2==0:
+					self._DesignParameter[nameA] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT=nameA)
+					self._DesignParameter[nameB] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT=nameB)
+					self._DesignParameter[nameC] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT=nameC)
+					self._DesignParameter[nameA]['_XYCoordinates'] = [[(+ ((self._DesignParameter[name]['_XYCoordinates'][0][0]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_b_via1_2']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter[name]['_XYCoordinates'][0][1]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_b_via1_2']['_XYCoordinates'][0][1]))]]
+					self._DesignParameter[nameB]['_XYCoordinates'] = [[(+ ((self._DesignParameter[name]['_XYCoordinates'][0][0]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_a_via1_2']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter[name]['_XYCoordinates'][0][1]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_a_via1_2']['_XYCoordinates'][0][1]))]]
+					self._DesignParameter[nameC]['_XYCoordinates'] = [[(+ ((self._DesignParameter[name]['_XYCoordinates'][0][0]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_c_via1_2']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter[name]['_XYCoordinates'][0][1]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_c_via1_2']['_XYCoordinates'][0][1]))]]
+				else :
+					self._DesignParameter[nameA] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT=nameA)
+					self._DesignParameter[nameB] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT=nameB)
+					self._DesignParameter[nameC] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT=nameC)
+					self._DesignParameter[nameA]['_XYCoordinates'] = [[(+ ((self._DesignParameter[name]['_XYCoordinates'][0][0]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_b_via1_2']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter[name]['_XYCoordinates'][0][1]) - self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_b_via1_2']['_XYCoordinates'][0][1]))]]
+					self._DesignParameter[nameB]['_XYCoordinates'] = [[(+ ((self._DesignParameter[name]['_XYCoordinates'][0][0]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_a_via1_2']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter[name]['_XYCoordinates'][0][1]) - self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_a_via1_2']['_XYCoordinates'][0][1]))]]
+					self._DesignParameter[nameC]['_XYCoordinates'] = [[(+ ((self._DesignParameter[name]['_XYCoordinates'][0][0]) + self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_c_via1_2']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter[name]['_XYCoordinates'][0][1]) - self._DesignParameter[name]['_DesignObj']._DesignParameter['inv_c_via1_2']['_XYCoordinates'][0][1]))]]
 
 		# self._DesignParameter['EightMUX_1'] = self._SrefElementDeclaration(_DesignObj=Two2eight_inputs_mux_ver2._2to8inputs_mux(_Name='EightMUX_1In{}'.format(_Name)))[0]
 		# self._DesignParameter['EightMUX_1']['_DesignObj']._CalculateDesignParameter(**dict(param_muxmodule,_Input_offset=1))
