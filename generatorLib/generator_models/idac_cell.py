@@ -711,23 +711,23 @@ class Idac_cell(StickDiagram._StickDiagram):
 																											  _ViaMet12Met2NumberOfCOY=3))
 		self._DesignParameter['VDD_via_m1_to_m2']['_XYCoordinates'] = [[(+ ((self._DesignParameter['VDD']['_XYCoordinates'][0][0]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter['VDD']['_XYCoordinates'][0][1]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]))]]
 
-		self._DesignParameter['row1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL6'][0], _Datatype=DesignParameters._LayerMapping['METAL6'][1], _Width=self._DesignParameter['n3p3_gate_via6']['_DesignObj']._DesignParameter['_Met6Layer']['_XWidth'])
+		self._DesignParameter['row2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL6'][0], _Datatype=DesignParameters._LayerMapping['METAL6'][1], _Width=self._DesignParameter['n3p3_gate_via6']['_DesignObj']._DesignParameter['_Met6Layer']['_XWidth'])
 
-		if Odd_row_flag==1 :
-			self._DesignParameter['row1']['_XYCoordinates'] = [[[(+ ((self._DesignParameter['n3p3_gate_via6']['_XYCoordinates'][0][0]) + self._DesignParameter['n3p3_gate_via6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter['n3p3_gate_via6']['_XYCoordinates'][0][1]) + self._DesignParameter['n3p3_gate_via6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][1]))],
+		if Odd_row_flag== 1 :
+			self._DesignParameter['row2']['_XYCoordinates'] = [[[(+ ((self._DesignParameter['n3p3_gate_via6']['_XYCoordinates'][0][0]) + self._DesignParameter['n3p3_gate_via6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter['n3p3_gate_via6']['_XYCoordinates'][0][1]) + self._DesignParameter['n3p3_gate_via6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][1]))],
 																[((self._DesignParameter['n3p3_gate_via6']['_XYCoordinates'][0][0]) + self._DesignParameter['n3p3_gate_via6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0]), ((self._DesignParameter['VDD']['_XYCoordinates'][0][1]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]]
 		else :
-			self._DesignParameter['row1']['_XYCoordinates'] = [[[(+ ((self._DesignParameter['n3p3_gate_via6']['_XYCoordinates'][0][0]) + self._DesignParameter['n3p3_gate_via6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter['n3p3_gate_via6']['_XYCoordinates'][0][1]) + self._DesignParameter['n3p3_gate_via6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][1]))],
+			self._DesignParameter['row2']['_XYCoordinates'] = [[[(+ ((self._DesignParameter['n3p3_gate_via6']['_XYCoordinates'][0][0]) + self._DesignParameter['n3p3_gate_via6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter['n3p3_gate_via6']['_XYCoordinates'][0][1]) + self._DesignParameter['n3p3_gate_via6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][1]))],
 																[((self._DesignParameter['n3p3_gate_via6']['_XYCoordinates'][0][0]) + self._DesignParameter['n3p3_gate_via6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0]), ((self._DesignParameter['VSS']['_XYCoordinates'][0][1]) + self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]]
 
 
-		self._DesignParameter['row2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL6'][0], _Datatype=DesignParameters._LayerMapping['METAL6'][1], _Width=self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XWidth'])
+		self._DesignParameter['row1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL6'][0], _Datatype=DesignParameters._LayerMapping['METAL6'][1], _Width=self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XWidth'])
 
 		if Odd_row_flag == 1 :
-			self._DesignParameter['row2']['_XYCoordinates'] = [[[(+ ((self._DesignParameter['n1p1_gate_via_6']['_XYCoordinates'][0][0]) + self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter['n1p1_gate_via_6']['_XYCoordinates'][0][1]) + self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][1]))],
+			self._DesignParameter['row1']['_XYCoordinates'] = [[[(+ ((self._DesignParameter['n1p1_gate_via_6']['_XYCoordinates'][0][0]) + self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter['n1p1_gate_via_6']['_XYCoordinates'][0][1]) + self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][1]))],
 																[((self._DesignParameter['n1p1_gate_via_6']['_XYCoordinates'][0][0]) + self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0]), ((self._DesignParameter['VSS']['_XYCoordinates'][0][1]) + self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]]
 		else :
-			self._DesignParameter['row2']['_XYCoordinates'] = [[[(+ ((self._DesignParameter['n1p1_gate_via_6']['_XYCoordinates'][0][0]) + self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter['n1p1_gate_via_6']['_XYCoordinates'][0][1]) + self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][1]))],
+			self._DesignParameter['row1']['_XYCoordinates'] = [[[(+ ((self._DesignParameter['n1p1_gate_via_6']['_XYCoordinates'][0][0]) + self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0])), (+ ((self._DesignParameter['n1p1_gate_via_6']['_XYCoordinates'][0][1]) + self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][1]))],
 																[((self._DesignParameter['n1p1_gate_via_6']['_XYCoordinates'][0][0]) + self._DesignParameter['n1p1_gate_via_6']['_DesignObj']._DesignParameter['_Met6Layer']['_XYCoordinates'][0][0]), ((self._DesignParameter['VDD']['_XYCoordinates'][0][1]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]]
 
 		self._DesignParameter['col'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL5'][0], _Datatype=DesignParameters._LayerMapping['METAL5'][1], _Width=self._DesignParameter['n2p2_gate_via5']['_DesignObj']._DesignParameter['_Met5Layer']['_XWidth'])
@@ -737,7 +737,7 @@ class Idac_cell(StickDiagram._StickDiagram):
 		self._DesignParameter['_colpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL5PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL5PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='Col')
 		self._DesignParameter['_colpin']['_XYCoordinates'] = self._DesignParameter['n2p2_gate_via5']['_XYCoordinates']
 
-		if Odd_row_flag==1 :
+		if Odd_row_flag==0 :
 			self._DesignParameter['row1_rail'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL6'][0], _Datatype=DesignParameters._LayerMapping['METAL6'][1], _Width=self._DesignParameter['row1']['_Width'])
 			self._DesignParameter['row1_rail']['_XYCoordinates'] = [[[(((self._DesignParameter['VDD']['_XYCoordinates'][0][0]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]) - (self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2)), ((self._DesignParameter['VDD']['_XYCoordinates'][0][1]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])],
 																	 [(((self._DesignParameter['VDD']['_XYCoordinates'][0][0]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]) + (self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2)), ((self._DesignParameter['VDD']['_XYCoordinates'][0][1]) + self._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]]
@@ -758,9 +758,9 @@ class Idac_cell(StickDiagram._StickDiagram):
 																	 [(((self._DesignParameter['VSS']['_XYCoordinates'][0][0]) + self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]) + (self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2)), ((self._DesignParameter['VSS']['_XYCoordinates'][0][1]) + self._DesignParameter['VSS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]]
 
 			self._DesignParameter['_row1pin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL6PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL6PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='Row1')
-			self._DesignParameter['_row1pin']['_XYCoordinates'] = self._DesignParameter['VSS']['_XYCoordinates']
+			self._DesignParameter['_row1pin']['_XYCoordinates'] = [[self._DesignParameter['VSS']['_XYCoordinates'][0][0], self._DesignParameter['VSS']['_XYCoordinates'][0][1]]]
 			self._DesignParameter['_row2pin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL6PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL6PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='Row2')
-			self._DesignParameter['_row2pin']['_XYCoordinates'] = self._DesignParameter['VDD']['_XYCoordinates']
+			self._DesignParameter['_row2pin']['_XYCoordinates'] = [[self._DesignParameter['VDD']['_XYCoordinates'][0][0], self._DesignParameter['VDD']['_XYCoordinates'][0][1]]]
 
 
 		self._DesignParameter['pbias_rail'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=self._DesignParameter['row2']['_Width'])

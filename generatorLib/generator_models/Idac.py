@@ -61,19 +61,19 @@ class IDAC(StickDiagram._StickDiagram):
 		##pbias_global
 
 		self._DesignParameter['pbias_m2_path_global'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
-																					 _Width=self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row1_rail']['_Width'])
+																					 _Width=self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row2_rail']['_Width'])
 		self._DesignParameter['pbias_via_global'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='pbias_via_globalIn{}'.format(_Name)))[0]
 		self._DesignParameter['pbias_via_global']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=7, _ViaMet22Met3NumberOfCOY=2))
 
 		tmp = [[]]
 		tmp2 = []
 		for i in range(0, _Y_NUM+_Y_NUM_L):
-			tmp.append([[(+ (((self._DesignParameter['Row_0']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row1_rail']['_XYCoordinates'][0][1][0])),
-						(+ (((self._DesignParameter['Row_0']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row1_rail']['_XYCoordinates'][0][1][1]-2*RYdistance*(i//2)))],
-						[((((self._DesignParameter['Row_0']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row1_rail']['_XYCoordinates'][0][1][0]) + 1163),
-						(((self._DesignParameter['Row_0']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row1_rail']['_XYCoordinates'][0][1][1]-2*RYdistance*(i//2))]])
-			tmp2.append([((((self._DesignParameter['Row_0']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row1_rail']['_XYCoordinates'][0][1][0]) + 1163),
-		 				(((self._DesignParameter['Row_0']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row1_rail']['_XYCoordinates'][0][1][1] - 2 * RYdistance * (i // 2))])
+			tmp.append([[(+ (((self._DesignParameter['Row_0']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row2_rail']['_XYCoordinates'][0][1][0])),
+						(+ (((self._DesignParameter['Row_0']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row2_rail']['_XYCoordinates'][0][1][1]-2*RYdistance*(i//2)))],
+						[((((self._DesignParameter['Row_0']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row2_rail']['_XYCoordinates'][0][1][0]) + 1163),
+						(((self._DesignParameter['Row_0']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row2_rail']['_XYCoordinates'][0][1][1]-2*RYdistance*(i//2))]])
+			tmp2.append([((((self._DesignParameter['Row_0']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row2_rail']['_XYCoordinates'][0][1][0]) + 1163),
+		 				(((self._DesignParameter['Row_0']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row2_rail']['_XYCoordinates'][0][1][1] - 2 * RYdistance * (i // 2))])
 		self._DesignParameter['pbias_m2_path_global']['_XYCoordinates'] = tmp
 		self._DesignParameter['pbias_via_global']['_XYCoordinates'] = tmp2
 
@@ -86,7 +86,7 @@ class IDAC(StickDiagram._StickDiagram):
 																			 (((((self._DesignParameter['Row_0']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['VDD']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['VDD']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - ((_Y_NUM+_Y_NUM_L) * RYdistance))]]]
 
 		self._DesignParameter['Row_m6_paths_global'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL6'][0], _Datatype=DesignParameters._LayerMapping['METAL6'][1],
-																					 _Width=self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row2_rail']['_Width'])
+																					 _Width=self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row1_rail']['_Width'])
 
 		self._DesignParameter['Row_via'] = self._SrefElementDeclaration(_DesignObj=ViaMet52Met6._ViaMet52Met6(_Name='Row_viaIn{}'.format(_Name)))[0]
 		self._DesignParameter['Row_via']['_DesignObj']._CalculateViaMet52Met6DesignParameter(**dict(_ViaMet52Met6NumberOfCOX=1, _ViaMet52Met6NumberOfCOY=2, _MetalType={'METAL1': 'X', 'METAL2': 'X', 'METAL3': 'X', 'METAL4': 'X', 'METAL5': 'X', 'METAL6': 'X', 'METAL7': 'X', 'METAL8': 'Z', 'METAL9': 'Z'}))
@@ -95,10 +95,10 @@ class IDAC(StickDiagram._StickDiagram):
 
 		tmp = [[]]
 		for i in range (0, _Y_NUM+_Y_NUM_L+1):
-			tmp.append([[(+ (((self._DesignParameter['Row_0']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][-1][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row2_rail']['_XYCoordinates'][0][0][0])),
-						(+ (((self._DesignParameter['Row_0']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][-1][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row2_rail']['_XYCoordinates'][0][0][1]-i*RYdistance))],
-						[((((self._DesignParameter['Row_0']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][-1][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row2_rail']['_XYCoordinates'][0][0][0]) - 500 - (_Y_NUM+_Y_NUM_L+1)*Row_m5_distance),
-						(((self._DesignParameter['Row_0']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][-1][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row2_rail']['_XYCoordinates'][0][0][1]-i*RYdistance)]])
+			tmp.append([[(+ (((self._DesignParameter['Row_0']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][-1][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row1_rail']['_XYCoordinates'][0][0][0])),
+						(+ (((self._DesignParameter['Row_0']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][-1][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row1_rail']['_XYCoordinates'][0][0][1]-i*RYdistance))],
+						[((((self._DesignParameter['Row_0']['_XYCoordinates'][0][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][-1][0]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row1_rail']['_XYCoordinates'][0][0][0]) - 500 - (_Y_NUM+_Y_NUM_L+1)*Row_m5_distance),
+						(((self._DesignParameter['Row_0']['_XYCoordinates'][0][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_XYCoordinates'][-1][1]) + self._DesignParameter['Row_0']['_DesignObj']._DesignParameter['Idac_cells']['_DesignObj']._DesignParameter['row1_rail']['_XYCoordinates'][0][0][1]-i*RYdistance)]])
 		self._DesignParameter['Row_m6_paths_global']['_XYCoordinates'] = tmp
 		del tmp
 

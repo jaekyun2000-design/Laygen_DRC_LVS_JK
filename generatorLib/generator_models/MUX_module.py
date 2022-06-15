@@ -6,7 +6,7 @@ from generatorLib import DRC
 from generatorLib.generator_models import Inverter_iksu2
 from generatorLib.generator_models import NAND3_ver2
 from generatorLib.generator_models import ViaMet12Met2
-from generatorLib.generator_models import Transmission_gate
+from generatorLib.generator_models import transmission_gate
 
 
 class EasyDebugModule(StickDiagram._StickDiagram):
