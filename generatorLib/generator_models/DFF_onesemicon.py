@@ -9,7 +9,7 @@ from generatorLib import DRC
 #
 from generatorLib.generator_models import TristateInverter
 from generatorLib.generator_models import Inverter_onesemicon
-from generatorLib.generator_models import TG_2X_CRIT_SLVT_v1
+from generatorLib.generator_models import Transmission_gate
 
 from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import ViaMet22Met3
