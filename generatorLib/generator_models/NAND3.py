@@ -27,7 +27,7 @@ class NAND3(StickDiagram._StickDiagram):
 		self._DesignParameter['vdd'] = self._SrefElementDeclaration(_DesignObj=Z_PWR_CNT.Z_PWR_CNT(_Name='vddIn{}'.format(_Name)))[0]
 		self._DesignParameter['vdd']['_DesignObj']._CalculateDesignParameter(**dict(_Xnum=1, _Xdistance=0))
 		self._DesignParameter['nmos3'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='nmos3In{}'.format(_Name)))[0]
-		self._DesignParameter['nmos3']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=gate_c, _NMOSChannelWidth=nmos_width3, _NMOSChannellength=length, _NMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT))
+		self._DesignParameter['nmos3']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=gate_c, _NMOSChannelWidth=nmos_width3, _NMOSChannellength=length, _NMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT, _PCCrit=False))
 
 		if vss2nmos3 == None :
 			vss2nmos3 = self._DesignParameter['vss']['_DesignObj']._DesignParameter['METAL1_boundary_0']['_YWidth']/2+self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
@@ -39,7 +39,7 @@ class NAND3(StickDiagram._StickDiagram):
 			vss2nmos2 = self._DesignParameter['vss']['_DesignObj']._DesignParameter['METAL1_boundary_0']['_YWidth']/2+self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
 		self._DesignParameter['nmos2']['_XYCoordinates'] = [[((self._DesignParameter['nmos3']['_XYCoordinates'][0][0] + self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]), vss2nmos2]]
 		self._DesignParameter['nmos1'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='nmos1In{}'.format(_Name)))[0]
-		self._DesignParameter['nmos1']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=gate_a, _NMOSChannelWidth=nmos_width1, _NMOSChannellength=length, _NMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT))
+		self._DesignParameter['nmos1']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=gate_a, _NMOSChannelWidth=nmos_width1, _NMOSChannellength=length, _NMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT, _PCCrit=False))
 
 		if vss2nmos1 == None :
 			vss2nmos1 = self._DesignParameter['vss']['_DesignObj']._DesignParameter['METAL1_boundary_0']['_YWidth']/2+self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
@@ -60,7 +60,7 @@ class NAND3(StickDiagram._StickDiagram):
 			vdd2pmos2 = self._DesignParameter['vdd']['_DesignObj']._DesignParameter['METAL1_boundary_0']['_YWidth']/2+self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
 		self._DesignParameter['pmos2']['_XYCoordinates'] = [[self._DesignParameter['nmos2']['_XYCoordinates'][0][0], (vss2vdd_height - vdd2pmos2)]]
 		self._DesignParameter['pmos1'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='pmos1In{}'.format(_Name)))[0]
-		self._DesignParameter['pmos1']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=gate_a, _PMOSChannelWidth=pmos_width1, _PMOSChannellength=length, _PMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT))
+		self._DesignParameter['pmos1']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=gate_a, _PMOSChannelWidth=pmos_width1, _PMOSChannellength=length, _PMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sdwidth, _XVT=XVT, _PCCrit=False))
 
 		if vdd2pmos1 == None :
 			vdd2pmos1 = self._DesignParameter['vdd']['_DesignObj']._DesignParameter['METAL1_boundary_0']['_YWidth']/2+self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
