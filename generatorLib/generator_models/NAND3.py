@@ -17,7 +17,7 @@ class NAND3(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,gate_spacing=120,nmos_width1=270,nmos_width2=270,pmos_width1=360,pmos_width2=180,vss2nmos3=None,vss2nmos1=None,vdd2pmos3=None,vdd2pmos1=None,gate_a=5,gate_b=2,gate_c=3,vss2vdd_height=1800,sdwidth=66,length=30,XVT='RVT',gate_y=860,nmos_width3=270,pmos_width3=270,vss2nmos2=None,vdd2pmos2=None):
+	def _CalculateDesignParameter(self,gate_spacing=120,nmos_width1=270,nmos_width2=270,pmos_width1=360,pmos_width2=180,vss2nmos3=None,vss2nmos1=None,vdd2pmos3=None,vdd2pmos1=None,gate_a=5,gate_b=2,gate_c=3,vss2vdd_height=1800,sdwidth=66,length=30,XVT='RVT',gate_y=None,nmos_width3=270,pmos_width3=270,vss2nmos2=None,vdd2pmos2=None):
 
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -288,8 +288,8 @@ class NAND3(StickDiagram._StickDiagram):
 		poly_cont_c=int((max(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][-1][0]-self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0],self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][-1][0]-self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0]))/(drc._CoMinWidth+drc._CoMinSpace))
 
 		if gate_y == None :
-			gate_y=(min(self._DesignParameter['nmos1']['_XYCoordinates'][0][1]-self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2, self._DesignParameter['nmos2']['_XYCoordinates'][0][1]-self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2, self._DesignParameter['nmos3']['_XYCoordinates'][0][1]-self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2)+\
-				max(self._DesignParameter['pmos1']['_XYCoordinates'][0][1]+self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2, self._DesignParameter['pmos2']['_XYCoordinates'][0][1]+self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2, self._DesignParameter['pmos3']['_XYCoordinates'][0][1]+self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2))/2
+			gate_y=(min(self._DesignParameter['pmos1']['_XYCoordinates'][0][1]-self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2, self._DesignParameter['pmos2']['_XYCoordinates'][0][1]-self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2, self._DesignParameter['pmos3']['_XYCoordinates'][0][1]-self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2)+\
+				max(self._DesignParameter['nmos1']['_XYCoordinates'][0][1]+self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2, self._DesignParameter['nmos2']['_XYCoordinates'][0][1]+self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2, self._DesignParameter['nmos3']['_XYCoordinates'][0][1]+self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2))/2
 
 		self._DesignParameter['gate_3']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(**dict(_ViaPoly2Met1NumberOfCOX=poly_cont_a, _ViaPoly2Met1NumberOfCOY=1))
 		self._DesignParameter['gate_3']['_XYCoordinates'] = [[(self._DesignParameter['nmos3']['_XYCoordinates'][0][0]), gate_y]]
