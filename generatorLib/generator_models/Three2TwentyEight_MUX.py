@@ -3,11 +3,11 @@ from generatorLib import DesignParameters
 import copy
 import math
 from generatorLib import DRC
-from generatorLib.generator_models import Two2eight_inputs_mux_ver2
+from generatorLib.generator_models import Three2seven_inputs_mux_ver2
 from generatorLib.generator_models import ViaMet32Met4
 
-class Two2TwentyEight_MUX(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='Two2TwentyEight_MUX'):
+class Three2TwentyEight_MUX(StickDiagram._StickDiagram):
+	def __init__(self, _DesignParameter=None, _Name='Three2TwentyEight_MUX'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
@@ -24,7 +24,7 @@ class Two2TwentyEight_MUX(StickDiagram._StickDiagram):
 		if Num_of_8mux == 1 :
 			name = 'EightMUX_0'
 			name2 = 'EightMUX_0{}'
-			self._DesignParameter[name] = self._SrefElementDeclaration(_DesignObj=Two2eight_inputs_mux_ver2._2to8inputs_mux(_Name=name2.format(_Name)))[0]
+			self._DesignParameter[name] = self._SrefElementDeclaration(_DesignObj=Three2seven_inputs_mux_ver2._3to7inputs_mux(_Name=name2.format(_Name)))[0]
 			self._DesignParameter[name]['_DesignObj']._CalculateDesignParameter(**dict(_INV_nmos_width=INV_nmos_width, _INV_finger=INV_finger, _VDD2PMOS=VDD2PMOS, _gate_length=gate_length, _gate_spacing=gate_spacing, _XVT=XVT, _NMOS_y=NMOS_y, _Cell_height=Cell_height,
 																					   _TG_pmos_width=TG_pmos_width, _TG_nmos_width=TG_nmos_width, _TG_poly_y=TG_poly_y, _NANDIN_y=NANDIN_y, _Num_of_MUX_modules=INPUT_num, _Input_offset=0))
 			self._DesignParameter[name]['_XYCoordinates'] = [[0.0, 0.0]]
@@ -43,7 +43,7 @@ class Two2TwentyEight_MUX(StickDiagram._StickDiagram):
 			for i in range(0,Num_of_8mux) :
 				name = 'EightMUX_%d'%i
 				name2 = 'EightMUX_%d{}'%i
-				self._DesignParameter[name] = self._SrefElementDeclaration(_DesignObj=Two2eight_inputs_mux_ver2._2to8inputs_mux(_Name=name2.format(_Name)))[0]
+				self._DesignParameter[name] = self._SrefElementDeclaration(_DesignObj=Three2seven_inputs_mux_ver2._3to7inputs_mux(_Name=name2.format(_Name)))[0]
 				self._DesignParameter[name]['_DesignObj']._CalculateDesignParameter(**dict(_INV_nmos_width=INV_nmos_width, _INV_finger=INV_finger, _VDD2PMOS=VDD2PMOS, _gate_length=gate_length, _gate_spacing=gate_spacing, _XVT=XVT, _NMOS_y=NMOS_y, _Cell_height=Cell_height,
 																						   _TG_pmos_width=TG_pmos_width, _TG_nmos_width=TG_nmos_width, _TG_poly_y=TG_poly_y, _NANDIN_y=NANDIN_y, _Num_of_MUX_modules=7, _Input_offset=i))
 				if i%2==1 :
