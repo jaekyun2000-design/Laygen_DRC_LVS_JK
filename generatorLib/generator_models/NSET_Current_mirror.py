@@ -18,8 +18,8 @@ class EasyDebugModule(StickDiagram._StickDiagram):
         self._DesignParameter['_Name']['Name'] = _Name
 
     def _CalculateDesignParameter(self,
-                                  nmos_stack_coarse_param1={'nmos1_width':2000,'nmos1_length':500,'nmos1_gate':1,'nmos1_dummy':False,'nmos1_xvt':'RVT','nmos1_pccrit':False,'nmos2_width':2000,'nmos2_length':30,'nmos2_gate':1,'nmos2_dummy':False,'nmos2_xvt':'RVT','nmos2_pccrit':False,'guardring_bot':2,'guardring_top':2,'guardring_left':2,'guardring_right':2,'guardring_width':None,'guardring_height':None, 'diode_connect':True},
-                                  nmos_stack_fine_param2={'nmos1_width':500,'nmos1_length':500,'nmos1_gate':1,'nmos1_dummy':False,'nmos1_xvt':'RVT','nmos1_pccrit':False,'nmos2_width':2000,'nmos2_length':30,'nmos2_gate':1,'nmos2_dummy':False,'nmos2_xvt':'RVT','nmos2_pccrit':False,'guardring_bot':2,'guardring_top':2,'guardring_left':2,'guardring_right':2,'guardring_width':None,'guardring_height':None, 'diode_connect':True},
+                                  nmos_stack_coarse_param={'nmos1_width':2000,'nmos1_length':500,'nmos1_gate':1,'nmos1_dummy':False,'nmos1_xvt':'RVT','nmos1_pccrit':False,'nmos2_width':2000,'nmos2_length':30,'nmos2_gate':1,'nmos2_dummy':False,'nmos2_xvt':'RVT','nmos2_pccrit':False,'guardring_bot':2,'guardring_top':2,'guardring_left':2,'guardring_right':2,'guardring_width':None,'guardring_height':None, 'diode_connect':True},
+                                  nmos_stack_fine_param={'nmos1_width':500,'nmos1_length':500,'nmos1_gate':1,'nmos1_dummy':False,'nmos1_xvt':'RVT','nmos1_pccrit':False,'nmos2_width':2000,'nmos2_length':30,'nmos2_gate':1,'nmos2_dummy':False,'nmos2_xvt':'RVT','nmos2_pccrit':False,'guardring_bot':2,'guardring_top':2,'guardring_left':2,'guardring_right':2,'guardring_width':None,'guardring_height':None, 'diode_connect':True},
                                   nmos_stack_mirror_param={'nmos1_width': 2000, 'nmos1_length': 500, 'nmos1_gate': 1, 'nmos1_dummy': False,'nmos1_xvt': 'RVT', 'nmos1_pccrit': False, 'nmos2_width': 2000, 'nmos2_length': 30,'nmos2_gate': 1, 'nmos2_dummy': False, 'nmos2_xvt': 'RVT', 'nmos2_pccrit': False,'guardring_bot': 2, 'guardring_top': 2, 'guardring_left': 2, 'guardring_right': 2,'guardring_width': None, 'guardring_height': None, 'diode_connect': False},\
                                   guardring_width=None, guardring_height=None, coarse_num=3, fine_num=4, mirror_num=1, Xnum=3, Ynum=4):
 
@@ -29,10 +29,10 @@ class EasyDebugModule(StickDiagram._StickDiagram):
         _OriginXY=[[0,0]]
 
         self._DesignParameter['nmos_coarse'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_coarseIn{}'.format(_Name)))[0]
-        self._DesignParameter['nmos_coarse']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_coarse_param1))
+        self._DesignParameter['nmos_coarse']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_coarse_param))
 
         self._DesignParameter['nmos_fine'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_fineIn{}'.format(_Name)))[0]
-        self._DesignParameter['nmos_fine']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_fine_param2))
+        self._DesignParameter['nmos_fine']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_fine_param))
 
         self._DesignParameter['nmos_mirror'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_mirrorIn{}'.format(_Name)))[0]
         self._DesignParameter['nmos_mirror']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_mirror_param))
@@ -53,13 +53,13 @@ class EasyDebugModule(StickDiagram._StickDiagram):
         elif guardring_height!=None :
             max_guardring_height=guardring_height
 
-        nmos_stack_coarse_param1['guardring_width']=max_guardring_width
-        nmos_stack_coarse_param1['guardring_height']=max_guardring_height
-        nmos_stack_coarse_param1['diode_connect']=True
+        nmos_stack_coarse_param['guardring_width']=max_guardring_width
+        nmos_stack_coarse_param['guardring_height']=max_guardring_height
+        nmos_stack_coarse_param['diode_connect']=True
 
-        nmos_stack_fine_param2['guardring_width']=max_guardring_width
-        nmos_stack_fine_param2['guardring_height']=max_guardring_height
-        nmos_stack_fine_param2['diode_connect']=True
+        nmos_stack_fine_param['guardring_width']=max_guardring_width
+        nmos_stack_fine_param['guardring_height']=max_guardring_height
+        nmos_stack_fine_param['diode_connect']=True
 
         nmos_stack_mirror_param['guardring_width']=max_guardring_width
         nmos_stack_mirror_param['guardring_height']=max_guardring_height
@@ -67,10 +67,10 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
 
         self._DesignParameter['nmos_coarse'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_coarseIn{}'.format(_Name)))[0]
-        self._DesignParameter['nmos_coarse']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_coarse_param1))
+        self._DesignParameter['nmos_coarse']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_coarse_param))
 
         self._DesignParameter['nmos_fine'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_fineIn{}'.format(_Name)))[0]
-        self._DesignParameter['nmos_fine']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_fine_param2))
+        self._DesignParameter['nmos_fine']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_fine_param))
 
         self._DesignParameter['nmos_mirror'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_mirrorIn{}'.format(_Name)))[0]
         self._DesignParameter['nmos_mirror']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_mirror_param))
