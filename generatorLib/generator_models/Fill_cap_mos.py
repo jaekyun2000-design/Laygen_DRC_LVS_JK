@@ -24,7 +24,7 @@ class FILLCAP_MOS(StickDiagram._StickDiagram):
 		self._DesignParameter['N_poly']['_XYCoordinates'] = [[0.0, 0.0]]
 
 		##CONT layer
-		_CoYNumMax = int((gate_y_width - drc._CoMinEnclosureByOD * 2 - drc._CoMinWidth) // (drc._CoMinWidth + drc._CoMinSpace)) + 1
+		_CoYNumMax = int((gate_y_width - drc._CoMinEnclosureByODAtLeastTwoSide * 2 - drc._CoMinWidth) // (drc._CoMinWidth + drc._CoMinSpace)) + 1
 		tmpdistance = drc._CoMinSpace + drc._CoMinWidth
 
 		self._DesignParameter['_Contact']=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['CONT'][0], _Datatype=DesignParameters._LayerMapping['CONT'][1], _XWidth=None, _YWidth=None, _XYCoordinates=[])
