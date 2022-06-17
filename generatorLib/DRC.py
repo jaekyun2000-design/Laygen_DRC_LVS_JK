@@ -387,7 +387,7 @@ class DRCCO:
             self._CoMinEnclosureByOD = 8
             self._CoMinEnclosureByODAtLeastTwoSide = 30
             self._CoMinEnclosureByPO = 30
-            self._CoMinEnclosureByPOAtLeastTwoSide = 10
+            self._CoMinEnclosureByPOAtLeastTwoSide = 10 ## different with playground DRC rule
 
             ##Created By junung for OPLayer rules
             self._CoMinSpace2OP = 200
