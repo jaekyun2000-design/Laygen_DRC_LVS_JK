@@ -9,8 +9,8 @@ from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import ViaMet32Met4
 from generatorLib.generator_models import ViaMet22Met3
 
-class _2to8inputs_mux(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='_2to8inputs_mux'):
+class _3to7inputs_mux(StickDiagram._StickDiagram):
+	def __init__(self, _DesignParameter=None, _Name='_3to7inputs_mux'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
