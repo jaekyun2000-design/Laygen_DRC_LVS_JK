@@ -28,27 +28,27 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
         _OriginXY=[[0,0]]
 
-        self._DesignParameter['nmos_tail_stack1'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_tail_stack1In{}'.format(_Name)))[0]
-        self._DesignParameter['nmos_tail_stack1']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_coarse_param1))
+        self._DesignParameter['nmos_coarse'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_coarseIn{}'.format(_Name)))[0]
+        self._DesignParameter['nmos_coarse']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_coarse_param1))
 
-        self._DesignParameter['nmos_tail_stack2'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_tail_stack2In{}'.format(_Name)))[0]
-        self._DesignParameter['nmos_tail_stack2']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_fine_param2))
+        self._DesignParameter['nmos_fine'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_fineIn{}'.format(_Name)))[0]
+        self._DesignParameter['nmos_fine']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_fine_param2))
 
-        self._DesignParameter['nmos_tail_stack_non_diode'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_tail_stack_non_diodeIn{}'.format(_Name)))[0]
-        self._DesignParameter['nmos_tail_stack_non_diode']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_mirror_param))
+        self._DesignParameter['nmos_mirror'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_mirrorIn{}'.format(_Name)))[0]
+        self._DesignParameter['nmos_mirror']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_mirror_param))
 
         if guardring_width==None :
-            max_guardring_width=max(self._DesignParameter['nmos_tail_stack1']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['right']['_XYCoordinates'][0][0]-self._DesignParameter['nmos_tail_stack1']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['left']['_XYCoordinates'][0][0],\
-                                    self._DesignParameter['nmos_tail_stack2']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['right']['_XYCoordinates'][0][0]-self._DesignParameter['nmos_tail_stack2']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['left']['_XYCoordinates'][0][0],\
-                                    self._DesignParameter['nmos_tail_stack_non_diode']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['right']['_XYCoordinates'][0][0]-self._DesignParameter['nmos_tail_stack_non_diode']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['left']['_XYCoordinates'][0][0])
+            max_guardring_width=max(self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['right']['_XYCoordinates'][0][0]-self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['left']['_XYCoordinates'][0][0],\
+                                    self._DesignParameter['nmos_fine']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['right']['_XYCoordinates'][0][0]-self._DesignParameter['nmos_fine']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['left']['_XYCoordinates'][0][0],\
+                                    self._DesignParameter['nmos_mirror']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['right']['_XYCoordinates'][0][0]-self._DesignParameter['nmos_mirror']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['left']['_XYCoordinates'][0][0])
 
         elif guardring_width!=None :
             max_guardring_width=guardring_width
 
         if guardring_height==None :
-            max_guardring_height=max(self._DesignParameter['nmos_tail_stack1']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['top']['_XYCoordinates'][0][1]-self._DesignParameter['nmos_tail_stack1']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1],\
-                                    self._DesignParameter['nmos_tail_stack2']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['top']['_XYCoordinates'][0][1]-self._DesignParameter['nmos_tail_stack2']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1],\
-                                    self._DesignParameter['nmos_tail_stack_non_diode']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['top']['_XYCoordinates'][0][1]-self._DesignParameter['nmos_tail_stack_non_diode']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1])
+            max_guardring_height=max(self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['top']['_XYCoordinates'][0][1]-self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1],\
+                                    self._DesignParameter['nmos_fine']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['top']['_XYCoordinates'][0][1]-self._DesignParameter['nmos_fine']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1],\
+                                    self._DesignParameter['nmos_mirror']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['top']['_XYCoordinates'][0][1]-self._DesignParameter['nmos_mirror']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1])
 
         elif guardring_height!=None :
             max_guardring_height=guardring_height
@@ -66,18 +66,18 @@ class EasyDebugModule(StickDiagram._StickDiagram):
         nmos_stack_mirror_param['diode_connect']=False
 
 
-        self._DesignParameter['nmos_tail_stack1'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_tail_stack1In{}'.format(_Name)))[0]
-        self._DesignParameter['nmos_tail_stack1']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_coarse_param1))
+        self._DesignParameter['nmos_coarse'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_coarseIn{}'.format(_Name)))[0]
+        self._DesignParameter['nmos_coarse']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_coarse_param1))
 
-        self._DesignParameter['nmos_tail_stack2'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_tail_stack2In{}'.format(_Name)))[0]
-        self._DesignParameter['nmos_tail_stack2']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_fine_param2))
+        self._DesignParameter['nmos_fine'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_fineIn{}'.format(_Name)))[0]
+        self._DesignParameter['nmos_fine']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_fine_param2))
 
-        self._DesignParameter['nmos_tail_stack_non_diode'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_tail_stack_non_diodeIn{}'.format(_Name)))[0]
-        self._DesignParameter['nmos_tail_stack_non_diode']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_mirror_param))
+        self._DesignParameter['nmos_mirror'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_mirrorIn{}'.format(_Name)))[0]
+        self._DesignParameter['nmos_mirror']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_stack_mirror_param))
 
-        yoffset_coarse=(self._DesignParameter['nmos_tail_stack1']['_DesignObj']._DesignParameter['guardring']['_XYCoordinates'][0][1])
-        yoffset_fine=(self._DesignParameter['nmos_tail_stack2']['_DesignObj']._DesignParameter['guardring']['_XYCoordinates'][0][1])
-        yoffset_mirror=(self._DesignParameter['nmos_tail_stack_non_diode']['_DesignObj']._DesignParameter['guardring']['_XYCoordinates'][0][1])
+        yoffset_coarse=(self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_XYCoordinates'][0][1])
+        yoffset_fine=(self._DesignParameter['nmos_fine']['_DesignObj']._DesignParameter['guardring']['_XYCoordinates'][0][1])
+        yoffset_mirror=(self._DesignParameter['nmos_mirror']['_DesignObj']._DesignParameter['guardring']['_XYCoordinates'][0][1])
 
 
         tmp_array=[]
@@ -98,9 +98,9 @@ class EasyDebugModule(StickDiagram._StickDiagram):
         for k in range(0, mirror_num) :
             tmp_mirror.append([tmp_array[coarse_num+fine_num+k][0], tmp_array[coarse_num+fine_num+k][1]-yoffset_mirror])
 
-        self._DesignParameter['nmos_tail_stack1']['_XYCoordinates']=tmp_coarse
-        self._DesignParameter['nmos_tail_stack2']['_XYCoordinates']=tmp_fine
-        self._DesignParameter['nmos_tail_stack_non_diode']['_XYCoordinates']=tmp_mirror
+        self._DesignParameter['nmos_coarse']['_XYCoordinates']=tmp_coarse
+        self._DesignParameter['nmos_fine']['_XYCoordinates']=tmp_fine
+        self._DesignParameter['nmos_mirror']['_XYCoordinates']=tmp_mirror
 
         del tmp_array
         del tmp_coarse
