@@ -4,8 +4,6 @@ import copy
 import math
 from generatorLib import DRC
 from generatorLib.generator_models import nmos_stack_current_mirror
-from generatorLib.generator_models import nmos_single_current_mirror
-from generatorLib.generator_models import nmos_single_tail_current_mirror
 
 
 
