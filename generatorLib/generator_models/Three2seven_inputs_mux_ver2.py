@@ -17,7 +17,7 @@ class _3to7inputs_mux(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,_INV_nmos_width=180, _INV_finger=1, _VDD2PMOS=410, _gate_length=30, _gate_spacing=100, _XVT='RVT', _NMOS_y=375, _Cell_height=1800, _TG_pmos_width=600, _TG_nmos_width=300, _TG_poly_y=760, _NANDIN_y=860, _Num_of_MUX_modules=8, _Input_offset=0):
+	def _CalculateDesignParameter(self,_INV_nmos_width=180, _INV_finger=1, _VDD2PMOS=410, _gate_length=30, _gate_spacing=100, _XVT='RVT', _NMOS_y=375, _Cell_height=1800, _TG_pmos_width=600, _TG_nmos_width=300, _TG_poly_y=760, _NANDIN_y=860, _Num_of_MUX_modules=7, _Input_offset=0):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
