@@ -107,6 +107,8 @@ class EasyDebugModule(StickDiagram._StickDiagram):
         del tmp_fine
         del tmp_mirror
 
+        if coarse_num+fine_num+mirror_num > Xnum*Ynum :
+            raise NotImplementedError
 
 
 
