@@ -267,6 +267,12 @@ class _PMOS(StickDiagram._StickDiagram):
                     _YWidth=self._DesignParameter['_ODLayer']['_YWidth'] + 2 * _DRCObj._PCCRITExtension,
                     _XYCoordinates=_XYCoordinateOfPMOS
                 )
+                if self._DesignParameter['_POLayer']['_XWidth'] == 30 :
+                    if _GateSpacing not in (96, 222, 100, 230) :
+                        raise NotImplementedError
+                elif self._DesignParameter['_POLayer']['_XWidth'] == 34 :
+                    if _GateSpacing not in (96, 226) :
+                        raise NotImplementedError
             else:
                 pass
 
