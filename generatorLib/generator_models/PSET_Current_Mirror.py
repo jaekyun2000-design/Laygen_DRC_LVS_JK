@@ -35,9 +35,9 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['pmos_cap']['_XYCoordinates'] = [[self._DesignParameter['pmos2']['_XYCoordinates'][0][0], self._DesignParameter['pmos2']['_XYCoordinates'][0][1]+self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['pguardring']['_XYCoordinates'][0][1]+self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['pguardring']['_DesignObj']._DesignParameter['top']['_XYCoordinates'][0][1]+(self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['pmos']['_XYCoordinates'][0][1]-(self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['pguardring']['_XYCoordinates'][0][1]+self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['pguardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1]))]]
 
 		#### Constraints ####
-		if (pmos1_param['guardring_co_top']==pmos2_param['guardring_co_top']==pmos3_param['guardring_co_top']==pmos_cap_param['guardring_co_bot']) != True :
+		if (pmos1_param['guardring_co_top']==pmos2_param['guardring_co_top']==pmos3_param['guardring_co_top']==pmos_cap_param['guardring_co_bottom']) != True :
 			raise NotImplementedError
-		if (pmos1_param['guardring_co_bot']==pmos2_param['guardring_co_bot']==pmos3_param['guardring_co_bot']) != True :
+		if (pmos1_param['guardring_co_bottom']==pmos2_param['guardring_co_bottom']==pmos3_param['guardring_co_bottom']) != True :
 			raise NotImplementedError
 		if (pmos1_param['guardring_co_right']==pmos2_param['guardring_co_left']) != True :
 			raise NotImplementedError
