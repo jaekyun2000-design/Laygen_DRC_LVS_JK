@@ -371,10 +371,6 @@ class Transmission_gate(StickDiagram._StickDiagram):
 		self._DesignParameter['_Apin']['_XYCoordinates']=[[self._DesignParameter['m1_source_routing_y']['_XYCoordinates'][0][0][0], (self._DesignParameter['m1_source_routing_y']['_XYCoordinates'][0][0][1]+self._DesignParameter['m1_source_routing_y']['_XYCoordinates'][0][1][1])/2]]
 		self._DesignParameter['_Ypin']['_XYCoordinates']=[[self._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][0][0][0], (self._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][0][0][1]+self._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][0][1][1])/2]]
 
-		self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']=self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']+50
-		self._DesignParameter['gate_output']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']=self._DesignParameter['gate_output']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']+50
-
-
 
 	def _CalculateDesignParameter_v2(self, nmgateY=None, pmgateY=None, nmos_gate=3, pmos_gate=3, nmos_width=320, pmos_width=584, length=30, XVT='SLVT', vss2nmos=350, vdd2pmos=433, gate_y=860, vss2vdd_height=1800, gate_spacing=100, sdwidth=66, power_xdistance=130, out_even_up_mode=True):
 
