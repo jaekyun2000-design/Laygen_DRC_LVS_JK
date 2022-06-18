@@ -5212,7 +5212,7 @@ class DictionaryWidget(QDialog):
         output_ast.name = self.name_input if isinstance(self.name_input, str) else self.name_input.text()
         output_ast.dict_values = self.dictionary_data
         for key, value in output_ast.dict_values.items():
-            if type(value) == str and (value in ["True", "False"] or value.isdigit() or (value[0] == '[' and value[-1] == ']') or (value[0] == '{' and value[-1] == '}')):
+            if type(value) == str and (value == 'None' or value in ["True", "False"] or value.isdigit() or (value[0] == '[' and value[-1] == ']') or (value[0] == '{' and value[-1] == '}')):
                 output_ast.dict_values[key] = eval(value)
             else:
                 output_ast.dict_values[key] = value
