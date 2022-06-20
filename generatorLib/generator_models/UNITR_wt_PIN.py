@@ -24,7 +24,7 @@ class UNITR_wt_PIN(StickDiagram._StickDiagram):
 		# self._DesignParameter['upperpin']['_XYCoordinates'] = [[(+ (self._DesignParameter['UNITR']['_XYCoordinates'][0][0] + self._DesignParameter['UNITR']['_DesignObj']._DesignParameter['POLY_boundary_1']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['UNITR']['_XYCoordinates'][0][1] + self._DesignParameter['UNITR']['_DesignObj']._DesignParameter['POLY_boundary_1']['_XYCoordinates'][0][1]))]]
 		# self._DesignParameter['lowerpin'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PINDrawing'][0], _Datatype=DesignParameters._LayerMapping['METAL1PINDrawing'][1], _XWidth=self._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'], _YWidth=self._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'])
 		# self._DesignParameter['lowerpin']['_XYCoordinates'] = [[(+ (self._DesignParameter['UNITR']['_XYCoordinates'][0][0] + self._DesignParameter['UNITR']['_DesignObj']._DesignParameter['POLY_boundary_2']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['UNITR']['_XYCoordinates'][0][1] + self._DesignParameter['UNITR']['_DesignObj']._DesignParameter['POLY_boundary_2']['_XYCoordinates'][0][1]))]]
-		#
+
 		_XYCoordinateofR = [[0, 0]]
 
 		self._DesignParameter['_Contact'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['CONT'][0], _Datatype=DesignParameters._LayerMapping['CONT'][1], _XWidth=None, _YWidth=None, _XYCoordinates=[])
@@ -89,3 +89,9 @@ class UNITR_wt_PIN(StickDiagram._StickDiagram):
 		self._DesignParameter['_Met1Layer']['_YWidth'] = (CONT_Y_NUM - 1) * (drc._CoMinWidth + drc._CoMinSpace) + drc._CoMinWidth + drc._Metal1MinEnclosureCO2 * 2  # Check drc
 		self._DesignParameter['_Met1Layer']['_XYCoordinates'] = [self._DesignParameter['POLY_boundary_1']['_XYCoordinates'][0], self._DesignParameter['POLY_boundary_2']['_XYCoordinates'][0]]
 		del tmpdistance
+
+
+		self._DesignParameter['upperpin'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PINDrawing'][0], _Datatype=DesignParameters._LayerMapping['METAL1PINDrawing'][1], _XWidth=self._DesignParameter['_Met1Layer']['_XWidth'], _YWidth=self._DesignParameter['_Met1Layer']['_YWidth'])
+		self._DesignParameter['upperpin']['_XYCoordinates'] = [[(+ (self._DesignParameter['POLY_boundary_1']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['POLY_boundary_1']['_XYCoordinates'][0][1]))]]
+		self._DesignParameter['lowerpin'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PINDrawing'][0], _Datatype=DesignParameters._LayerMapping['METAL1PINDrawing'][1], _XWidth=self._DesignParameter['_Met1Layer']['_XWidth'], _YWidth=self._DesignParameter['_Met1Layer']['_YWidth'])
+		self._DesignParameter['lowerpin']['_XYCoordinates'] = [[(+ (self._DesignParameter['POLY_boundary_2']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['POLY_boundary_2']['_XYCoordinates'][0][1]))]]
