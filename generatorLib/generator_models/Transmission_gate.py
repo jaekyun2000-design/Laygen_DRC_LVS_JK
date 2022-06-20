@@ -340,16 +340,16 @@ class Transmission_gate(StickDiagram._StickDiagram):
 		if out_even_up_mode == True:
 			self._DesignParameter['output_nm'] = self._DesignParameter.pop('output2')
 			self._DesignParameter['output_pm'] = self._DesignParameter.pop('output1')
-			if len(self._DesignParameter['output_nm']['_XYCoordinates']) != 1 :
+			if len(self._DesignParameter['output_nm']['_XYCoordinates']) != 1 and len(self._DesignParameter['output_nm']['_XYCoordinates']) != 0 :
 				self._DesignParameter['m2_output_nm_routing_x'] = self._DesignParameter.pop('m2_output2_routing_x')
-			if len(self._DesignParameter['output_pm']['_XYCoordinates']) != 1 :
+			if len(self._DesignParameter['output_pm']['_XYCoordinates']) != 1 and len(self._DesignParameter['output_pm']['_XYCoordinates']) != 0 :
 				self._DesignParameter['m2_output_pm_routing_x'] = self._DesignParameter.pop('m2_output1_routing_x')
 		else:
 			self._DesignParameter['output_nm'] = self._DesignParameter.pop('output1')
 			self._DesignParameter['output_pm'] = self._DesignParameter.pop('output2')
-			if len(self._DesignParameter['output_nm']['_XYCoordinates']) != 1 :
+			if len(self._DesignParameter['output_nm']['_XYCoordinates']) != 1 and len(self._DesignParameter['output_nm']['_XYCoordinates']) != 0 :
 				self._DesignParameter['m2_output_nm_routing_x'] = self._DesignParameter.pop('m2_output1_routing_x')
-			if len(self._DesignParameter['output_pm']['_XYCoordinates']) != 1 :
+			if len(self._DesignParameter['output_pm']['_XYCoordinates']) != 1 and len(self._DesignParameter['output_pm']['_XYCoordinates']) != 0 :
 				self._DesignParameter['m2_output_pm_routing_x'] = self._DesignParameter.pop('m2_output2_routing_x')
 
 
