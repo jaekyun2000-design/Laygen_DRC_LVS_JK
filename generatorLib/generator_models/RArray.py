@@ -33,11 +33,11 @@ class RArray(StickDiagram._StickDiagram):
 
 		RYdistance = self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]\
 					 + R_Y_SPACING \
-					 + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['OP_boundary_0']['_XWidth'] + drc._OPMinspace - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] \
+					 + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['OP_boundary_0']['_XWidth'] + drc._OPMinspace - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] \
 					# drc._Metal1MinWidth * 3 ## when CONT_Y_NUM==1
 					# self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_YWidth'] \
 					# (drc._PolyoverOPlayer - drc._CoMinSpace2OP - drc._CoMinWidth - drc._CoMinEnclosureByPO2) * 2 + drc._PolygateMinSpace2
-		RXdistance = self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['OP_boundary_0']['_XWidth'] + drc._OPMinspace
+		RXdistance = self._DesignParameter['Rref']['_DesignObj']._DesignParameter['OP_boundary_0']['_XWidth'] + drc._OPMinspace
 
 		tmp = []
 		for i in range(0, NUMofX) :
@@ -52,9 +52,9 @@ class RArray(StickDiagram._StickDiagram):
 		self._DesignParameter['PRES_boundary_0'] = self._BoundaryElementDeclaration(
 			_Layer=DesignParameters._LayerMapping['PRES'][0], _Datatype=DesignParameters._LayerMapping['PRES'][1],
 			_XWidth=self._DesignParameter['Rref']['_XYCoordinates'][0][0] - self._DesignParameter['Rref']['_XYCoordinates'][-1][0] \
-					+ self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['PRES_boundary_0']['_XWidth'],
+					+ self._DesignParameter['Rref']['_DesignObj']._DesignParameter['PRES_boundary_0']['_XWidth'],
 			_YWidth=self._DesignParameter['Rref']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_XYCoordinates'][-1][1] \
-					+ self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['PRES_boundary_0']['_YWidth'])
+					+ self._DesignParameter['Rref']['_DesignObj']._DesignParameter['PRES_boundary_0']['_YWidth'])
 		self._DesignParameter['PRES_boundary_0']['_XYCoordinates'] = \
 			[[(self._DesignParameter['Rref']['_XYCoordinates'][0][0] + self._DesignParameter['Rref']['_XYCoordinates'][-1][0])/2,
 			  (self._DesignParameter['Rref']['_XYCoordinates'][0][1] + self._DesignParameter['Rref']['_XYCoordinates'][-1][1])/2]]
@@ -62,9 +62,9 @@ class RArray(StickDiagram._StickDiagram):
 		self._DesignParameter['PIMP_boundary_0'] = self._BoundaryElementDeclaration(
 			_Layer=DesignParameters._LayerMapping['PIMP'][0], _Datatype=DesignParameters._LayerMapping['PIMP'][1],
 			_XWidth=self._DesignParameter['Rref']['_XYCoordinates'][0][0] - self._DesignParameter['Rref']['_XYCoordinates'][-1][0] \
-					+ self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['PRES_boundary_0']['_XWidth'],
+					+ self._DesignParameter['Rref']['_DesignObj']._DesignParameter['PRES_boundary_0']['_XWidth'],
 			_YWidth=self._DesignParameter['Rref']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_XYCoordinates'][-1][1] \
-					+ self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['PRES_boundary_0']['_YWidth'])
+					+ self._DesignParameter['Rref']['_DesignObj']._DesignParameter['PRES_boundary_0']['_YWidth'])
 		self._DesignParameter['PIMP_boundary_0']['_XYCoordinates'] = \
 			[[(self._DesignParameter['Rref']['_XYCoordinates'][0][0] + self._DesignParameter['Rref']['_XYCoordinates'][-1][0])/2,
 			  (self._DesignParameter['Rref']['_XYCoordinates'][0][1] + self._DesignParameter['Rref']['_XYCoordinates'][-1][1])/2]]
@@ -73,17 +73,17 @@ class RArray(StickDiagram._StickDiagram):
 		##M1 routing (horizontal)
 		self._DesignParameter['M1horizontal1'] = self._BoundaryElementDeclaration(
 			_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-			_XWidth=self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] + RXdistance,
+			_XWidth=self._DesignParameter['Rref']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] + RXdistance,
 			_YWidth=drc._Metal1MinWidth * 3)  ## arbitrary
 
 		self._DesignParameter['M1horizontal2'] = self._BoundaryElementDeclaration(
 			_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-			_XWidth=self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] + RXdistance,
+			_XWidth=self._DesignParameter['Rref']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] + RXdistance,
 			_YWidth=drc._Metal1MinWidth * 3)  ## arbitrary
 
 		if CONT_Y_num > 1 :
-			self._DesignParameter['M1horizontal1']['_YWidth'] = self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']
-			self._DesignParameter['M1horizontal2']['_YWidth'] = self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']
+			self._DesignParameter['M1horizontal1']['_YWidth'] = self._DesignParameter['Rref']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']
+			self._DesignParameter['M1horizontal2']['_YWidth'] = self._DesignParameter['Rref']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']
 
 		tmp1 = []
 		tmp2 = []
@@ -108,7 +108,7 @@ class RArray(StickDiagram._StickDiagram):
 																			   _XWidth=self._DesignParameter['M1horizontal1']['_YWidth'], ## arbitrary
 																			   _YWidth=RYdistance - (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]))
 		self._DesignParameter['M1vertical2'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-																			   _XWidth=self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'],
+																			   _XWidth=self._DesignParameter['Rref']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'],
 																			   _YWidth=self._DesignParameter['M1horizontal1']['_YWidth']) ## arbitrary
 
 		_XYCoordinateofM1 = [[(self._DesignParameter['Rref']['_XYCoordinates'][0][0] + self._DesignParameter['Rref']['_XYCoordinates'][1][0])/2,
@@ -135,11 +135,11 @@ class RArray(StickDiagram._StickDiagram):
 		self._DesignParameter['_VDDpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT='VDD')
 		self._DesignParameter['_VSSpin'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT='VSS')
 		if NUMofX//2==1 :
-			self._DesignParameter['_VDDpin']['_XYCoordinates'] = [[(+ (((self._DesignParameter['Rref']['_XYCoordinates'][-NUMofY][0]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_XYCoordinates'][0][0]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0])), (+ (((self._DesignParameter['Rref']['_XYCoordinates'][-NUMofY][1]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_XYCoordinates'][0][1])+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][1]))]]
+			self._DesignParameter['_VDDpin']['_XYCoordinates'] = [[(+ (((self._DesignParameter['Rref']['_XYCoordinates'][-NUMofY][0]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]))), (+ (((self._DesignParameter['Rref']['_XYCoordinates'][-NUMofY][1]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][1])))]]
 		else :
-			self._DesignParameter['_VDDpin']['_XYCoordinates'] = [[(+ (((self._DesignParameter['Rref']['_XYCoordinates'][-1][0]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_XYCoordinates'][0][0]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0])), (+ (((self._DesignParameter['Rref']['_XYCoordinates'][-1][1]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_XYCoordinates'][0][1])+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][1]))]]
+			self._DesignParameter['_VDDpin']['_XYCoordinates'] = [[(+ (((self._DesignParameter['Rref']['_XYCoordinates'][-1][0]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]))), (+ (((self._DesignParameter['Rref']['_XYCoordinates'][-1][1]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][1])))]]
 
-		self._DesignParameter['_VSSpin']['_XYCoordinates'] = [[(+ (((self._DesignParameter['Rref']['_XYCoordinates'][0][0]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_XYCoordinates'][0][0]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0])), (+ (((self._DesignParameter['Rref']['_XYCoordinates'][0][1]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_XYCoordinates'][0][1])+self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]))]]
+		self._DesignParameter['_VSSpin']['_XYCoordinates'] = [[(+ (((self._DesignParameter['Rref']['_XYCoordinates'][0][0]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]))), (+ (((self._DesignParameter['Rref']['_XYCoordinates'][0][1]) + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])))]]
 
 		##Resistor_guard
 		if R_guard_flag == 1 :
