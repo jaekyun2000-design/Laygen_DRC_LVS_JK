@@ -171,7 +171,7 @@ class RArray(StickDiagram._StickDiagram):
 			self._DesignParameter['M1_guard_horizontal'] = self._BoundaryElementDeclaration(
 				_Layer=DesignParameters._LayerMapping['METAL1'][0],
 				_Datatype=DesignParameters._LayerMapping['METAL1'][1],
-				_XWidth=self._DesignParameter['R_guard']['_XYCoordinates'][0][0] - self._DesignParameter['R_guard']['_XYCoordinates'][-NUMofY-2][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'],
+				_XWidth=self._DesignParameter['R_guard']['_XYCoordinates'][0][0] - self._DesignParameter['R_guard']['_XYCoordinates'][-NUMofY-2][0] + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'],
 				_YWidth=self._DesignParameter['M1horizontal1']['_YWidth'])
 			self._DesignParameter['M1_guard_horizontal']['_XYCoordinates'] = [[(self._DesignParameter['R_guard']['_XYCoordinates'][0][0] + self._DesignParameter['R_guard']['_XYCoordinates'][-NUMofY-2][0])/2,
 																				self._DesignParameter['R_guard']['_XYCoordinates'][0][1]
@@ -192,12 +192,10 @@ class RArray(StickDiagram._StickDiagram):
 				_Layer=DesignParameters._LayerMapping['PRES'][0], _Datatype=DesignParameters._LayerMapping['PRES'][1],
 				_XWidth=self._DesignParameter['R_guard']['_XYCoordinates'][0][0] -
 						self._DesignParameter['R_guard']['_XYCoordinates'][-1][0] \
-						+ self._DesignParameter['R_guard']['_DesignObj']._DesignParameter['UNITR'][
-							'_DesignObj']._DesignParameter['PRES_boundary_0']['_XWidth'],
+						+ self._DesignParameter['R_guard']['_DesignObj']._DesignParameter['PRES_boundary_0']['_XWidth'],
 				_YWidth=self._DesignParameter['R_guard']['_XYCoordinates'][0][1] -
 						self._DesignParameter['R_guard']['_XYCoordinates'][-1][1] \
-						+ self._DesignParameter['R_guard']['_DesignObj']._DesignParameter['UNITR'][
-							'_DesignObj']._DesignParameter['PRES_boundary_0']['_YWidth'])
+						+ self._DesignParameter['R_guard']['_DesignObj']._DesignParameter['PRES_boundary_0']['_YWidth'])
 			self._DesignParameter['PRES_boundary_1']['_XYCoordinates'] = \
 				[[(self._DesignParameter['R_guard']['_XYCoordinates'][0][0] +
 				   self._DesignParameter['R_guard']['_XYCoordinates'][-1][0]) / 2,
@@ -208,12 +206,10 @@ class RArray(StickDiagram._StickDiagram):
 				_Layer=DesignParameters._LayerMapping['PIMP'][0], _Datatype=DesignParameters._LayerMapping['PIMP'][1],
 				_XWidth=self._DesignParameter['R_guard']['_XYCoordinates'][0][0] -
 						self._DesignParameter['R_guard']['_XYCoordinates'][-1][0] \
-						+ self._DesignParameter['R_guard']['_DesignObj']._DesignParameter['UNITR'][
-							'_DesignObj']._DesignParameter['PRES_boundary_0']['_XWidth'],
+						+ self._DesignParameter['R_guard']['_DesignObj']._DesignParameter['PRES_boundary_0']['_XWidth'],
 				_YWidth=self._DesignParameter['R_guard']['_XYCoordinates'][0][1] -
 						self._DesignParameter['R_guard']['_XYCoordinates'][-1][1] \
-						+ self._DesignParameter['R_guard']['_DesignObj']._DesignParameter['UNITR'][
-							'_DesignObj']._DesignParameter['PRES_boundary_0']['_YWidth'])
+						+ self._DesignParameter['R_guard']['_DesignObj']._DesignParameter['PRES_boundary_0']['_YWidth'])
 			self._DesignParameter['PIMP_boundary_1']['_XYCoordinates'] = \
 				[[(self._DesignParameter['R_guard']['_XYCoordinates'][0][0] +
 				   self._DesignParameter['R_guard']['_XYCoordinates'][-1][0]) / 2,
@@ -248,11 +244,11 @@ class RArray(StickDiagram._StickDiagram):
 				tmp3.append([[self._DesignParameter['Rref']['_XYCoordinates'][0][0] - i * RXdistance,
 							self._DesignParameter['Rref']['_XYCoordinates'][0][1] + RYdistance - (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]) / 2],
 						   [self._DesignParameter['Rref']['_XYCoordinates'][0][0] - i * RXdistance,
-							self._DesignParameter['Rref']['_XYCoordinates'][0][1] + RYdistance + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['PIMP_boundary_0']['_YWidth']/2 + drc._PpMinSpace * 2 + ((drc._CoMinWidth + drc._CoMinSpace2) * (Ring_contact - 1) + drc._CoMinWidth) / 2 + drc._Metal1MinEnclosureCO2 + drc._PpMinExtensiononPactive2]])
+							self._DesignParameter['Rref']['_XYCoordinates'][0][1] + RYdistance + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['PIMP_boundary_0']['_YWidth']/2 + drc._PpMinSpace * 2 + ((drc._CoMinWidth + drc._CoMinSpace2) * (Ring_contact - 1) + drc._CoMinWidth) / 2 + drc._Metal1MinEnclosureCO2 + drc._PpMinExtensiononPactive2]])
 				tmp3.append([[self._DesignParameter['Rref']['_XYCoordinates'][0][0] - i * RXdistance,
 							self._DesignParameter['Rref']['_XYCoordinates'][-1][1] - RYdistance + (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]) / 2],
 						   [self._DesignParameter['Rref']['_XYCoordinates'][0][0] - i * RXdistance,
-							self._DesignParameter['Rref']['_XYCoordinates'][-1][1] - RYdistance - (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['PIMP_boundary_0']['_YWidth']/2 + drc._PpMinSpace * 2 + ((drc._CoMinWidth + drc._CoMinSpace2) * (Ring_contact - 1) + drc._CoMinWidth) / 2 + drc._Metal1MinEnclosureCO2 + drc._PpMinExtensiononPactive2)]])
+							self._DesignParameter['Rref']['_XYCoordinates'][-1][1] - RYdistance - (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['PIMP_boundary_0']['_YWidth']/2 + drc._PpMinSpace * 2 + ((drc._CoMinWidth + drc._CoMinSpace2) * (Ring_contact - 1) + drc._CoMinWidth) / 2 + drc._Metal1MinEnclosureCO2 + drc._PpMinExtensiononPactive2)]])
 
 			self._DesignParameter['M1_Res2Ring']['_XYCoordinates'] = tmp3
 			del tmp3
@@ -273,19 +269,19 @@ class RArray(StickDiagram._StickDiagram):
 			for j in range(0, NUMofY) :
 				tmp4.append([[self._DesignParameter['Rref']['_XYCoordinates'][0][0] + RXdistance - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XWidth']/2,
 							self._DesignParameter['Rref']['_XYCoordinates'][0][1] - j * RYdistance + (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]) / 2],
-						   [self._DesignParameter['Rref']['_XYCoordinates'][0][0] + RXdistance + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['PIMP_boundary_0']['_XWidth']/2 + drc._PpMinSpace * 2 + ((drc._CoMinWidth + drc._CoMinSpace2) * (Ring_contact - 1) + drc._CoMinWidth) / 2 + drc._Metal1MinEnclosureCO2 + drc._PpMinExtensiononPactive2,
+						   [self._DesignParameter['Rref']['_XYCoordinates'][0][0] + RXdistance + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['PIMP_boundary_0']['_XWidth']/2 + drc._PpMinSpace * 2 + ((drc._CoMinWidth + drc._CoMinSpace2) * (Ring_contact - 1) + drc._CoMinWidth) / 2 + drc._Metal1MinEnclosureCO2 + drc._PpMinExtensiononPactive2,
 							self._DesignParameter['Rref']['_XYCoordinates'][0][1] - j * RYdistance + (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]) / 2]])
 				tmp4.append([[self._DesignParameter['Rref']['_XYCoordinates'][0][0] + RXdistance - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XWidth']/2,
 							self._DesignParameter['Rref']['_XYCoordinates'][0][1] - j * RYdistance - (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]) / 2],
-						   [self._DesignParameter['Rref']['_XYCoordinates'][0][0] + RXdistance + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['PIMP_boundary_0']['_XWidth']/2 + drc._PpMinSpace * 2 + ((drc._CoMinWidth + drc._CoMinSpace2) * (Ring_contact - 1) + drc._CoMinWidth) / 2 + drc._Metal1MinEnclosureCO2 + drc._PpMinExtensiononPactive2,
+						   [self._DesignParameter['Rref']['_XYCoordinates'][0][0] + RXdistance + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['PIMP_boundary_0']['_XWidth']/2 + drc._PpMinSpace * 2 + ((drc._CoMinWidth + drc._CoMinSpace2) * (Ring_contact - 1) + drc._CoMinWidth) / 2 + drc._Metal1MinEnclosureCO2 + drc._PpMinExtensiononPactive2,
 							self._DesignParameter['Rref']['_XYCoordinates'][0][1] - j * RYdistance - (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]) / 2]])
 				tmp4.append([[self._DesignParameter['Rref']['_XYCoordinates'][-1][0] - RXdistance + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XWidth']/2,
 							self._DesignParameter['Rref']['_XYCoordinates'][0][1] - j * RYdistance + (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]) / 2],
-						   [self._DesignParameter['Rref']['_XYCoordinates'][-1][0] - RXdistance - (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['PIMP_boundary_0']['_XWidth']/2 + drc._PpMinSpace * 2 + ((drc._CoMinWidth + drc._CoMinSpace2) * (Ring_contact - 1) + drc._CoMinWidth) / 2 + drc._Metal1MinEnclosureCO2 + drc._PpMinExtensiononPactive2),
+						   [self._DesignParameter['Rref']['_XYCoordinates'][-1][0] - RXdistance - (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['PIMP_boundary_0']['_XWidth']/2 + drc._PpMinSpace * 2 + ((drc._CoMinWidth + drc._CoMinSpace2) * (Ring_contact - 1) + drc._CoMinWidth) / 2 + drc._Metal1MinEnclosureCO2 + drc._PpMinExtensiononPactive2),
 							self._DesignParameter['Rref']['_XYCoordinates'][0][1] - j * RYdistance + (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]) / 2]])
 				tmp4.append([[self._DesignParameter['Rref']['_XYCoordinates'][-1][0] - RXdistance + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XWidth']/2,
 							self._DesignParameter['Rref']['_XYCoordinates'][0][1] - j * RYdistance - (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]) / 2],
-						   [self._DesignParameter['Rref']['_XYCoordinates'][-1][0] - RXdistance - (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['UNITR']['_DesignObj']._DesignParameter['PIMP_boundary_0']['_XWidth']/2 + drc._PpMinSpace * 2 + ((drc._CoMinWidth + drc._CoMinSpace2) * (Ring_contact - 1) + drc._CoMinWidth) / 2 + drc._Metal1MinEnclosureCO2 + drc._PpMinExtensiononPactive2),
+						   [self._DesignParameter['Rref']['_XYCoordinates'][-1][0] - RXdistance - (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['PIMP_boundary_0']['_XWidth']/2 + drc._PpMinSpace * 2 + ((drc._CoMinWidth + drc._CoMinSpace2) * (Ring_contact - 1) + drc._CoMinWidth) / 2 + drc._Metal1MinEnclosureCO2 + drc._PpMinExtensiononPactive2),
 							self._DesignParameter['Rref']['_XYCoordinates'][0][1] - j * RYdistance - (self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_XYCoordinates'][0][1] - self._DesignParameter['Rref']['_DesignObj']._DesignParameter['lowerpin']['_XYCoordinates'][0][1]) / 2]])
 
 			self._DesignParameter['M1_Res2Ring_hor']['_XYCoordinates'] = tmp4
