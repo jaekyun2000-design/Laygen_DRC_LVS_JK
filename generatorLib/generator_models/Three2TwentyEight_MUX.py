@@ -14,7 +14,7 @@ class Three2TwentyEight_MUX(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,INPUT_num=28,Cell_height=1800,INV_nmos_width= 180, INV_finger= 1, VDD2PMOS= 410, gate_length= 30, gate_spacing= 100, XVT= '\'RVT\'', NMOS_y= 375, TG_pmos_width= 600, TG_nmos_width= 300, TG_poly_y= 760, NANDIN_y= 860):
+	def _CalculateDesignParameter(self,INPUT_num=28,Cell_height=1800,INV_nmos_width= 180, INV_finger= 1, VDD2PMOS= 410, gate_length= 30, gate_spacing= 100, XVT= '\'RVT\'', NMOS_y= 375, TG_pmos_width= 600, TG_nmos_width= 300, TG_poly_y= 760, TG_finger=3, NANDIN_y= 860):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -26,7 +26,7 @@ class Three2TwentyEight_MUX(StickDiagram._StickDiagram):
 			name2 = 'EightMUX_0{}'
 			self._DesignParameter[name] = self._SrefElementDeclaration(_DesignObj=Three2seven_inputs_mux_ver2._3to7inputs_mux(_Name=name2.format(_Name)))[0]
 			self._DesignParameter[name]['_DesignObj']._CalculateDesignParameter(**dict(_INV_nmos_width=INV_nmos_width, _INV_finger=INV_finger, _VDD2PMOS=VDD2PMOS, _gate_length=gate_length, _gate_spacing=gate_spacing, _XVT=XVT, _NMOS_y=NMOS_y, _Cell_height=Cell_height,
-																					   _TG_pmos_width=TG_pmos_width, _TG_nmos_width=TG_nmos_width, _TG_poly_y=TG_poly_y, _NANDIN_y=NANDIN_y, _Num_of_MUX_modules=INPUT_num, _Input_offset=0))
+																					   _TG_pmos_width=TG_pmos_width, _TG_nmos_width=TG_nmos_width, _TG_poly_y=TG_poly_y, _NANDIN_y=NANDIN_y, _TG_FINGER=TG_finger, _Num_of_MUX_modules=INPUT_num, _Input_offset=0))
 			self._DesignParameter[name]['_XYCoordinates'] = [[0.0, 0.0]]
 			nameA = 'Ain_0'
 			nameB = 'Bin_0'
@@ -45,7 +45,7 @@ class Three2TwentyEight_MUX(StickDiagram._StickDiagram):
 				name2 = 'EightMUX_%d{}'%i
 				self._DesignParameter[name] = self._SrefElementDeclaration(_DesignObj=Three2seven_inputs_mux_ver2._3to7inputs_mux(_Name=name2.format(_Name)))[0]
 				self._DesignParameter[name]['_DesignObj']._CalculateDesignParameter(**dict(_INV_nmos_width=INV_nmos_width, _INV_finger=INV_finger, _VDD2PMOS=VDD2PMOS, _gate_length=gate_length, _gate_spacing=gate_spacing, _XVT=XVT, _NMOS_y=NMOS_y, _Cell_height=Cell_height,
-																						   _TG_pmos_width=TG_pmos_width, _TG_nmos_width=TG_nmos_width, _TG_poly_y=TG_poly_y, _NANDIN_y=NANDIN_y, _Num_of_MUX_modules=7, _Input_offset=i))
+																						   _TG_pmos_width=TG_pmos_width, _TG_nmos_width=TG_nmos_width, _TG_poly_y=TG_poly_y, _NANDIN_y=NANDIN_y, _TG_FINGER=TG_finger, _Num_of_MUX_modules=7, _Input_offset=i))
 				if i%2==1 :
 					self._DesignParameter[name]['_Reflect'] = [1, 0, 0]
 				self._DesignParameter[name]['_XYCoordinates'] = [[0.0, -2*Cell_height*(i//2)]]

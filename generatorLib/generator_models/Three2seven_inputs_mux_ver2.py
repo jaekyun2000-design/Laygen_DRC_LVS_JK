@@ -17,7 +17,7 @@ class _3to7inputs_mux(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,_INV_nmos_width=180, _INV_finger=1, _VDD2PMOS=410, _gate_length=30, _gate_spacing=100, _XVT='RVT', _NMOS_y=375, _Cell_height=1800, _TG_pmos_width=600, _TG_nmos_width=300, _TG_poly_y=760, _NANDIN_y=860, _Num_of_MUX_modules=7, _Input_offset=0):
+	def _CalculateDesignParameter(self,_INV_nmos_width=180, _INV_finger=1, _VDD2PMOS=410, _gate_length=30, _gate_spacing=100, _XVT='RVT', _NMOS_y=375, _Cell_height=1800, _TG_pmos_width=600, _TG_nmos_width=300, _TG_poly_y=760, _NANDIN_y=860, _TG_FINGER=3, _Num_of_MUX_modules=7, _Input_offset=0):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -29,7 +29,7 @@ class _3to7inputs_mux(StickDiagram._StickDiagram):
 			name2 = 'mux_module_%d{}'%i
 			self._DesignParameter[name] = self._SrefElementDeclaration(_DesignObj=MUX_module_ver2.EasyDebugModule(_Name=name2.format(_Name)))[0]
 			self._DesignParameter[name]['_DesignObj']._CalculateDesignParameter(**dict(INV_nmos_width=_INV_nmos_width, INV_finger=_INV_finger, VDD2PMOS=_VDD2PMOS, gate_length=_gate_length, gate_spacing=_gate_spacing, XVT=_XVT, NMOS_y=_NMOS_y,
-																					   Cell_height=_Cell_height, TG_pmos_width=_TG_pmos_width, TG_nmos_width=_TG_nmos_width, TG_poly_y=_TG_poly_y, NANDIN_y=_NANDIN_y, MUX_module_num=i, Input_offset = _Input_offset))
+																					   Cell_height=_Cell_height, TG_pmos_width=_TG_pmos_width, TG_nmos_width=_TG_nmos_width, TG_poly_y=_TG_poly_y, NANDIN_y=_NANDIN_y, TG_finger=_TG_FINGER, MUX_module_num=i, Input_offset = _Input_offset))
 			if i == 0:
 				self._DesignParameter[name]['_XYCoordinates'] = [[0, 0]]
 			else:
