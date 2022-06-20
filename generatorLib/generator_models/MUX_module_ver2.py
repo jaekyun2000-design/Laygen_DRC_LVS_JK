@@ -167,7 +167,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['POLY_dummy_trgate_pmos'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=gate_length)
 		self._DesignParameter['POLY_dummy_trgate_pmos']['_YWidth'] = self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
 		self._DesignParameter['POLY_dummy_trgate_nmos'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=gate_length)
-		self._DesignParameter['POLY_dummy_trgate_nmos']['_YWidth'] = self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
+		self._DesignParameter['POLY_dummy_trgate_nmos']['_YWidth'] = self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
 
 
 		if float(self._DesignParameter['POLY_dummy_trgate_pmos']['_XWidth']) * float(self._DesignParameter['POLY_dummy_trgate_pmos']['_YWidth']) < drc._PODummyMinArea:
