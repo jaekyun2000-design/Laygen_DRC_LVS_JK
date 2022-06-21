@@ -69,7 +69,7 @@ class UNITR_wt_PIN(StickDiagram._StickDiagram):
 		CONT_POLY_height = R_Y_LENGTH + drc._CoMinSpace2OP * 2 + drc._CoMinWidth + (CONT_Y_NUM - 1) * tmpdistance + self._DesignParameter['POLY_boundary_1']['_YWidth']
 
 		if CONT_POLY_height < self._DesignParameter['POLY_boundary_0']['_YWidth']:
-			self._DesignParameter['PRES_boundary_0'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PRES'][0], _Datatype=DesignParameters._LayerMapping['PRES'][1], _XWidth=((drc._PRESlayeroverPoly * 2) + self._DesignParameter['POLY_boundary_0']['_XWidth']), _YWidth=(self._DesignParameter['POLY_boundary_0']['_YWidth'] + drc._PRESlayeroverPoly * 2))
+			self._DesignParameter['PRES_boundary_0'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PRES'][0], _Datatype=DesignParameters._LayerMapping['PRES'][1], _XWidth=((drc._PRESlayeroverPoly * 2) + self._DesignParameter['POLY_boundary_0']['_XWidth'] + self._DesignParameter['POLY_boundary_0']['_XWidth'] // 7), _YWidth=(self._DesignParameter['POLY_boundary_0']['_YWidth'] + drc._PRESlayeroverPoly * 2))
 			self._DesignParameter['PRES_boundary_0']['_XYCoordinates'] = _XYCoordinateofR
 		else:
 			self._DesignParameter['PRES_boundary_0'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PRES'][0], _Datatype=DesignParameters._LayerMapping['PRES'][1], _XWidth=((drc._PRESlayeroverPoly * 2) + self._DesignParameter['POLY_boundary_0']['_XWidth']), _YWidth=CONT_POLY_height + drc._PRESlayeroverPoly * 2)

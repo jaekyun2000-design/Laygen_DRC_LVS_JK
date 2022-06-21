@@ -37,7 +37,7 @@ class RArray(StickDiagram._StickDiagram):
 					# drc._Metal1MinWidth * 3 ## when CONT_Y_NUM==1
 					# self._DesignParameter['Rref']['_DesignObj']._DesignParameter['upperpin']['_YWidth'] \
 					# (drc._PolyoverOPlayer - drc._CoMinSpace2OP - drc._CoMinWidth - drc._CoMinEnclosureByPO2) * 2 + drc._PolygateMinSpace2
-		RXdistance = self._DesignParameter['Rref']['_DesignObj']._DesignParameter['OP_boundary_0']['_XWidth'] + drc._OPMinspace
+		RXdistance = self._DesignParameter['Rref']['_DesignObj']._DesignParameter['OP_boundary_0']['_XWidth'] + drc._OPMinspace + self._DesignParameter['Rref']['_DesignObj']._DesignParameter['POLY_boundary_0']['_XWidth'] // 7
 
 		tmp = []
 		for i in range(0, NUMofX) :
