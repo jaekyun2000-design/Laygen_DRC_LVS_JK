@@ -141,21 +141,27 @@ class _3to7inputs_mux(StickDiagram._StickDiagram):
 		self._DesignParameter['invout_a2ab_via3'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='invout_a2ab_via3In{}'.format(_Name)))[0]
 		self._DesignParameter['invout_a2ab_via3']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=2, _ViaMet32Met4NumberOfCOY=1))
 		self._DesignParameter['invout_a2ab_via3']['_XYCoordinates'] = [[(((self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][0]) + (drc._VIAxMinWidth / 2)) + (drc._VIAxMinSpace / 2)), ( self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][1])]]
+
 		self._DesignParameter['invout_a2ab_via2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='invout_a2ab_via2In{}'.format(_Name)))[0]
 		self._DesignParameter['invout_a2ab_via2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
-		self._DesignParameter['invout_a2ab_via2']['_XYCoordinates'] = [[(self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][0]), (((self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][1]) + (drc._VIAxMinWidth / 2)) + (drc._VIAxMinSpace / 2))]]
-		self._DesignParameter['invout_a2ab_via1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='invout_a2ab_via1In{}'.format(_Name)))[0]
-		self._DesignParameter['invout_a2ab_via1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'] = [[(+ self._DesignParameter['invout_a2ab_via2']['_XYCoordinates'][0][0]), (+ self._DesignParameter['invout_a2ab_via2']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['invout_a2ab_via2']['_XYCoordinates'] = [[(+ ((self._DesignParameter['INV_ab']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_ab']['_DesignObj']._DesignParameter['_ViaMet12Met2OnPMOSOutput']['_XYCoordinates'][-1][0])), (+ ((self._DesignParameter['INV_ab']['_XYCoordinates'][0][1]) + self._DesignParameter['INV_ab']['_DesignObj']._DesignParameter['_ViaMet12Met2OnPMOSOutput']['_XYCoordinates'][-1][1]))]]
+
+		# self._DesignParameter['invout_a2ab_via2']['_XYCoordinates'] = [[(self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][0]), (((self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][1]) + (drc._VIAxMinWidth / 2)) + (drc._VIAxMinSpace / 2))]]
+		# self._DesignParameter['invout_a2ab_via1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='invout_a2ab_via1In{}'.format(_Name)))[0]
+		# self._DesignParameter['invout_a2ab_via1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
+		# self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'] = [[(+ self._DesignParameter['invout_a2ab_via2']['_XYCoordinates'][0][0]), (+ self._DesignParameter['invout_a2ab_via2']['_XYCoordinates'][0][1])]]
+
 		self._DesignParameter['invin_a2ab_via3'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='invin_a2ab_via3In{}'.format(_Name)))[0]
 		self._DesignParameter['invin_a2ab_via3']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=2, _ViaMet32Met4NumberOfCOY=1))
 		self._DesignParameter['invin_a2ab_via3']['_XYCoordinates'] = [[((((self._DesignParameter['INV_a1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0]) + (drc._VIAxMinWidth / 2)) + (drc._VIAxMinSpace / 2)), (self._DesignParameter['INVa_0_line']['_XYCoordinates'][0][0][1])]]
 		self._DesignParameter['invin_a2ab_via2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='invin_a2ab_via2In{}'.format(_Name)))[0]
 		self._DesignParameter['invin_a2ab_via2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
-		self._DesignParameter['invin_a2ab_via2']['_XYCoordinates'] = [[((self._DesignParameter['INV_a1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0]), ((self._DesignParameter['invin_a2ab_via3']['_XYCoordinates'][0][1] - (drc._VIAxMinWidth / 2)) - (drc._VIAxMinSpace / 2))]]
-		self._DesignParameter['invin_a2ab_via1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='invin_a2ab_via1In{}'.format(_Name)))[0]
-		self._DesignParameter['invin_a2ab_via1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['invin_a2ab_via1']['_XYCoordinates'] = [[(+ self._DesignParameter['invin_a2ab_via2']['_XYCoordinates'][0][0]), (+ self._DesignParameter['invin_a2ab_via2']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['invin_a2ab_via2']['_XYCoordinates'] = [[(+ ((self._DesignParameter['INV_a1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_ViaMet12Met2OnPMOSOutput']['_XYCoordinates'][-1][0])), (+ ((self._DesignParameter['INV_a1']['_XYCoordinates'][0][1]) + self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_ViaMet12Met2OnPMOSOutput']['_XYCoordinates'][-1][1]))]]
+
+		# self._DesignParameter['invin_a2ab_via2']['_XYCoordinates'] = [[((self._DesignParameter['INV_a1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0]), ((self._DesignParameter['invin_a2ab_via3']['_XYCoordinates'][0][1] - (drc._VIAxMinWidth / 2)) - (drc._VIAxMinSpace / 2))]]
+		# self._DesignParameter['invin_a2ab_via1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='invin_a2ab_via1In{}'.format(_Name)))[0]
+		# self._DesignParameter['invin_a2ab_via1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
+		# self._DesignParameter['invin_a2ab_via1']['_XYCoordinates'] = [[(+ self._DesignParameter['invin_a2ab_via2']['_XYCoordinates'][0][0]), (+ self._DesignParameter['invin_a2ab_via2']['_XYCoordinates'][0][1])]]
 
 		self._DesignParameter['invout_b2bb_via3'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='invout_b2bb_via3In{}'.format(_Name)))[0]
 		self._DesignParameter['invout_b2bb_via3']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=2, _ViaMet32Met4NumberOfCOY=1))
@@ -182,44 +188,70 @@ class _3to7inputs_mux(StickDiagram._StickDiagram):
 		self._DesignParameter['invout_c2cb_via3']['_XYCoordinates'] = [[(((self._DesignParameter['INVc_1_line']['_XYCoordinates'][0][0][0]) + (drc._VIAxMinWidth / 2)) + (drc._VIAxMinSpace / 2)), ( self._DesignParameter['INVc_1_line']['_XYCoordinates'][0][0][1])]]
 		self._DesignParameter['invout_c2cb_via2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='invout_c2cb_via2In{}'.format(_Name)))[0]
 		self._DesignParameter['invout_c2cb_via2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
-		self._DesignParameter['invout_c2cb_via2']['_XYCoordinates'] = [[(self._DesignParameter['INVc_1_line']['_XYCoordinates'][0][0][0]), (((self._DesignParameter['INVc_1_line']['_XYCoordinates'][0][0][1]) + (drc._VIAxMinWidth / 2)) + (drc._VIAxMinSpace / 2))]]
-		self._DesignParameter['invout_c2cb_via1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='invout_c2cb_via1In{}'.format(_Name)))[0]
-		self._DesignParameter['invout_c2cb_via1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['invout_c2cb_via1']['_XYCoordinates'] = [[(+ self._DesignParameter['invout_c2cb_via2']['_XYCoordinates'][0][0]), (+ self._DesignParameter['invout_c2cb_via2']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['invout_c2cb_via2']['_XYCoordinates'] = [[(+ ((self._DesignParameter['INV_cb']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_cb']['_DesignObj']._DesignParameter['_ViaMet12Met2OnPMOSOutput']['_XYCoordinates'][-1][0])), (+ ((self._DesignParameter['INV_cb']['_XYCoordinates'][0][1]) + self._DesignParameter['INV_cb']['_DesignObj']._DesignParameter['_ViaMet12Met2OnPMOSOutput']['_XYCoordinates'][-1][1]))]]
+
+		# self._DesignParameter['invout_c2cb_via2']['_XYCoordinates'] = [[(self._DesignParameter['INVc_1_line']['_XYCoordinates'][0][0][0]), (((self._DesignParameter['INVc_1_line']['_XYCoordinates'][0][0][1]) + (drc._VIAxMinWidth / 2)) + (drc._VIAxMinSpace / 2))]]
+		# self._DesignParameter['invout_c2cb_via1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='invout_c2cb_via1In{}'.format(_Name)))[0]
+		# self._DesignParameter['invout_c2cb_via1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
+		# self._DesignParameter['invout_c2cb_via1']['_XYCoordinates'] = [[(+ self._DesignParameter['invout_c2cb_via2']['_XYCoordinates'][0][0]), (+ self._DesignParameter['invout_c2cb_via2']['_XYCoordinates'][0][1])]]
 		self._DesignParameter['invin_c2cb_via3'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='invin_c2cb_via3In{}'.format(_Name)))[0]
 		self._DesignParameter['invin_c2cb_via3']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=2, _ViaMet32Met4NumberOfCOY=1))
 		self._DesignParameter['invin_c2cb_via3']['_XYCoordinates'] = [[((((self._DesignParameter['INV_c1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0]) + (drc._VIAxMinWidth / 2)) + (drc._VIAxMinSpace / 2)), (self._DesignParameter['INVc_0_line']['_XYCoordinates'][0][0][1])]]
 		self._DesignParameter['invin_c2cb_via2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='invin_c2cb_via2In{}'.format(_Name)))[0]
 		self._DesignParameter['invin_c2cb_via2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
-		self._DesignParameter['invin_c2cb_via2']['_XYCoordinates'] = [[((self._DesignParameter['INV_c1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0]), ((self._DesignParameter['invin_c2cb_via3']['_XYCoordinates'][0][1] - (drc._VIAxMinWidth / 2)) - (drc._VIAxMinSpace / 2))]]
-		self._DesignParameter['invin_c2cb_via1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='invin_c2cb_via1In{}'.format(_Name)))[0]
-		self._DesignParameter['invin_c2cb_via1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'] = [[((self._DesignParameter['INV_c1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invin_c2cb_via2']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['invin_c2cb_via2']['_XYCoordinates'] = [[(+ ((self._DesignParameter['INV_c1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_ViaMet12Met2OnPMOSOutput']['_XYCoordinates'][-1][0])), (+ ((self._DesignParameter['INV_c1']['_XYCoordinates'][0][1]) + self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_ViaMet12Met2OnPMOSOutput']['_XYCoordinates'][-1][1]))]]
+
+		# self._DesignParameter['invin_c2cb_via2']['_XYCoordinates'] = [[((self._DesignParameter['INV_c1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0]), ((self._DesignParameter['invin_c2cb_via3']['_XYCoordinates'][0][1] - (drc._VIAxMinWidth / 2)) - (drc._VIAxMinSpace / 2))]]
+		# self._DesignParameter['invin_c2cb_via1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='invin_c2cb_via1In{}'.format(_Name)))[0]
+		# self._DesignParameter['invin_c2cb_via1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
+		# self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'] = [[((self._DesignParameter['INV_c1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invin_c2cb_via2']['_XYCoordinates'][0][1])]]
 
 
 		self._DesignParameter['inv_c_via1_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv_c_via1_1In{}'.format(_Name)))[0]
 		self._DesignParameter['inv_c_via1_1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['inv_c_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_c1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['inv_c_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_c1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0]), (+ self._DesignParameter['INV_c1']['_XYCoordinates'][0][1]) + self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]//2+self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]//2]]
 		self._DesignParameter['inv_c_via1_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv_c_via1_2In{}'.format(_Name)))[0]
 		self._DesignParameter['inv_c_via1_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
 		if ((_Num_of_MUX_modules*_INV_finger)//2 > 2):
-			self._DesignParameter['inv_c_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_c0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c0']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'][0][1])]]
+			self._DesignParameter['inv_c_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_c0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c0']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['INV_c1']['_XYCoordinates'][0][1]) + self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]//2+self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]//2]]
 		else:
-			self._DesignParameter['inv_c_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_c0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c0']['_DesignObj']._DesignParameter['_VIAPoly2Met1_F1']['_XYCoordinates'][0][0]), (+ self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'][0][1])]]
+			self._DesignParameter['inv_c_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_c0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c0']['_DesignObj']._DesignParameter['_VIAPoly2Met1_F1']['_XYCoordinates'][0][0]), (+ self._DesignParameter['INV_c1']['_XYCoordinates'][0][1]) + self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]//2+self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]//2]]
 
 		self._DesignParameter['Cbuf_line_1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
-		self._DesignParameter['Cbuf_line_1']['_XYCoordinates'] = [[[self._DesignParameter['inv_c_via1_1']['_XYCoordinates'][0][0], self._DesignParameter['INVc_0_line']['_XYCoordinates'][0][0][1]], [self._DesignParameter['inv_c_via1_2']['_XYCoordinates'][0][0], self._DesignParameter['INVc_0_line']['_XYCoordinates'][0][0][1]]]]
+		self._DesignParameter['Cbuf_line_1']['_XYCoordinates'] = [[[self._DesignParameter['inv_c_via1_1']['_XYCoordinates'][0][0], self._DesignParameter['inv_c_via1_1']['_XYCoordinates'][0][1]], [self._DesignParameter['inv_c_via1_2']['_XYCoordinates'][0][0], self._DesignParameter['inv_c_via1_2']['_XYCoordinates'][0][1]]]]
 
 		self._DesignParameter['inv_cb_via1_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv_cb_via1_1In{}'.format(_Name)))[0]
 		self._DesignParameter['inv_cb_via1_1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['inv_cb_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_cb']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_cb']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['inv_cb_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_cb']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_cb']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0]), (self._DesignParameter['INV_c1']['_XYCoordinates'][0][1] + self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]//2+ self._DesignParameter['INV_c1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]//2)]]
 
 		self._DesignParameter['inv_cb_via1_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv_cb_via1_2In{}'.format(_Name)))[0]
 		self._DesignParameter['inv_cb_via1_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['inv_cb_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_c0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c0']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['inv_cb_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_c0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_c0']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][0][0][0]), (self._DesignParameter['INV_c0']['_XYCoordinates'][0][1]+self._DesignParameter['INV_c0']['_DesignObj']._DesignParameter['_NMOS']['_XYCoordinates'][0][1]+self._DesignParameter['INV_c0']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['inv_cb_via2_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='inv_cb_via2_2In{}'.format(_Name)))[0]
+		self._DesignParameter['inv_cb_via2_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
+		self._DesignParameter['inv_cb_via2_2']['_XYCoordinates'] = self._DesignParameter['inv_cb_via1_2']['_XYCoordinates']
+		self._DesignParameter['inv_cb_via3_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='inv_cb_via3_2In{}'.format(_Name)))[0]
+		self._DesignParameter['inv_cb_via3_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
+		self._DesignParameter['inv_cb_via3_2']['_XYCoordinates'] = self._DesignParameter['inv_cb_via1_2']['_XYCoordinates']
 
-		self._DesignParameter['Cbuf_line_2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
-		self._DesignParameter['Cbuf_line_2']['_XYCoordinates'] = [[[self._DesignParameter['inv_cb_via1_1']['_XYCoordinates'][0][0], self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][1]], [self._DesignParameter['inv_cb_via1_2']['_XYCoordinates'][0][0], self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][1]]]]
+		self._DesignParameter['Cbuf_line_2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
+		self._DesignParameter['Cbuf_line_2']['_XYCoordinates'] = [[[self._DesignParameter['inv_cb_via1_1']['_XYCoordinates'][0][0],
+																	self._DesignParameter['inv_cb_via1_2']['_XYCoordinates'][0][1]],
+																   [self._DesignParameter['inv_cb_via1_2']['_XYCoordinates'][0][0],
+																	self._DesignParameter['inv_cb_via1_2']['_XYCoordinates'][0][1]]]]
+
+		self._DesignParameter['inv_cb_via3_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='inv_cb_via3_1In{}'.format(_Name)))[0]
+		self._DesignParameter['inv_cb_via3_1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
+		self._DesignParameter['inv_cb_via3_1']['_XYCoordinates'] = [[self._DesignParameter['inv_cb_via1_1']['_XYCoordinates'][0][0],self._DesignParameter['inv_cb_via1_2']['_XYCoordinates'][0][1]]]
+		self._DesignParameter['inv_cb_via2_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='inv_cb_via2_1In{}'.format(_Name)))[0]
+		self._DesignParameter['inv_cb_via2_1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
+		self._DesignParameter['inv_cb_via2_1']['_XYCoordinates'] = [[self._DesignParameter['inv_cb_via1_1']['_XYCoordinates'][0][0],self._DesignParameter['inv_cb_via1_1']['_XYCoordinates'][0][1]]]
+
+		self._DesignParameter['Cbuf_line_2_1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
+		self._DesignParameter['Cbuf_line_2_1']['_XYCoordinates'] = [[[self._DesignParameter['inv_cb_via1_1']['_XYCoordinates'][0][0],
+																	self._DesignParameter['inv_cb_via1_2']['_XYCoordinates'][0][1]],
+																   [self._DesignParameter['inv_cb_via1_1']['_XYCoordinates'][0][0],
+																	self._DesignParameter['inv_cb_via1_1']['_XYCoordinates'][0][1]]]]
 
 		self._DesignParameter['POLY_dummy_C1'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=_gate_length)
 		self._DesignParameter['POLY_dummy_C1']['_YWidth'] = self._DesignParameter['INV_cb']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
@@ -268,27 +300,62 @@ class _3to7inputs_mux(StickDiagram._StickDiagram):
 
 		self._DesignParameter['inv_a_via1_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv_a_via1_1In{}'.format(_Name)))[0]
 		self._DesignParameter['inv_a_via1_1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['inv_a_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_a1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['inv_a_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_a1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0]), (+ self._DesignParameter['INV_a1']['_XYCoordinates'][0][1]) + self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]//2+self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]//2]]
+
+		# self._DesignParameter['inv_a_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_a1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'][0][1])]]
 		self._DesignParameter['inv_a_via1_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv_a_via1_2In{}'.format(_Name)))[0]
 		self._DesignParameter['inv_a_via1_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
 		if ((_Num_of_MUX_modules*_INV_finger)//2 > 2):
-			self._DesignParameter['inv_a_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_a0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a0']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'][0][1])]]
+			self._DesignParameter['inv_a_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_a0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a0']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['INV_a1']['_XYCoordinates'][0][1]) + self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]//2+self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]//2]]
+			# self._DesignParameter['inv_a_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_a0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a0']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'][0][1])]]
 		else:
-			self._DesignParameter['inv_a_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_a0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a0']['_DesignObj']._DesignParameter['_VIAPoly2Met1_F1']['_XYCoordinates'][0][0]), (+ self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'][0][1])]]
+			self._DesignParameter['inv_a_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_a0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a0']['_DesignObj']._DesignParameter['_VIAPoly2Met1_F1']['_XYCoordinates'][0][0]), (+ self._DesignParameter['INV_a1']['_XYCoordinates'][0][1]) + self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]//2+self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]//2]]
+			# self._DesignParameter['inv_a_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_a0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a0']['_DesignObj']._DesignParameter['_VIAPoly2Met1_F1']['_XYCoordinates'][0][0]), (+ self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'][0][1])]]
 
 		self._DesignParameter['Abuf_line_1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
-		self._DesignParameter['Abuf_line_1']['_XYCoordinates'] = [[[self._DesignParameter['inv_a_via1_1']['_XYCoordinates'][0][0], self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][1]], [self._DesignParameter['inv_a_via1_2']['_XYCoordinates'][0][0], self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][1]]]]
+		self._DesignParameter['Abuf_line_1']['_XYCoordinates'] = [[[self._DesignParameter['inv_a_via1_1']['_XYCoordinates'][0][0], self._DesignParameter['inv_a_via1_1']['_XYCoordinates'][0][1]], [self._DesignParameter['inv_a_via1_2']['_XYCoordinates'][0][0], self._DesignParameter['inv_a_via1_2']['_XYCoordinates'][0][1]]]]
+
+		# self._DesignParameter['Abuf_line_1']['_XYCoordinates'] = [[[self._DesignParameter['inv_a_via1_1']['_XYCoordinates'][0][0], self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][1]], [self._DesignParameter['inv_a_via1_2']['_XYCoordinates'][0][0], self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][1]]]]
 
 		self._DesignParameter['inv_ab_via1_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv_ab_via1_1In{}'.format(_Name)))[0]
 		self._DesignParameter['inv_ab_via1_1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['inv_ab_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_ab']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_ab']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['inv_ab_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_ab']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_ab']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0]), (self._DesignParameter['INV_a1']['_XYCoordinates'][0][1] + self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]//2+ self._DesignParameter['INV_a1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]//2)]]
+
+		# self._DesignParameter['inv_ab_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_ab']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_ab']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'][0][1])]]
 
 		self._DesignParameter['inv_ab_via1_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv_ab_via1_2In{}'.format(_Name)))[0]
 		self._DesignParameter['inv_ab_via1_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['inv_ab_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_a0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a0']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['inv_ab_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_a0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a0']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][0][0][0]), (self._DesignParameter['INV_a0']['_XYCoordinates'][0][1]+self._DesignParameter['INV_a0']['_DesignObj']._DesignParameter['_NMOS']['_XYCoordinates'][0][1]+self._DesignParameter['INV_a0']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]
+		# self._DesignParameter['inv_ab_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_a0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_a0']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'][0][1])]]
 
-		self._DesignParameter['Abuf_line_2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
-		self._DesignParameter['Abuf_line_2']['_XYCoordinates'] = [[[self._DesignParameter['inv_ab_via1_1']['_XYCoordinates'][0][0], self._DesignParameter['INVc_0_line']['_XYCoordinates'][0][0][1]], [self._DesignParameter['inv_ab_via1_2']['_XYCoordinates'][0][0], self._DesignParameter['INVc_0_line']['_XYCoordinates'][0][0][1]]]]
+		# self._DesignParameter['Abuf_line_2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
+		# self._DesignParameter['Abuf_line_2']['_XYCoordinates'] = [[[self._DesignParameter['inv_ab_via1_1']['_XYCoordinates'][0][0], self._DesignParameter['INVc_0_line']['_XYCoordinates'][0][0][1]], [self._DesignParameter['inv_ab_via1_2']['_XYCoordinates'][0][0], self._DesignParameter['INVc_0_line']['_XYCoordinates'][0][0][1]]]]
+
+		self._DesignParameter['inv_ab_via2_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='inv_ab_via2_2In{}'.format(_Name)))[0]
+		self._DesignParameter['inv_ab_via2_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
+		self._DesignParameter['inv_ab_via2_2']['_XYCoordinates'] = self._DesignParameter['inv_ab_via1_2']['_XYCoordinates']
+		self._DesignParameter['inv_ab_via3_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='inv_ab_via3_2In{}'.format(_Name)))[0]
+		self._DesignParameter['inv_ab_via3_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
+		self._DesignParameter['inv_ab_via3_2']['_XYCoordinates'] = self._DesignParameter['inv_ab_via1_2']['_XYCoordinates']
+
+		self._DesignParameter['Abuf_line_2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
+		self._DesignParameter['Abuf_line_2']['_XYCoordinates'] = [[[self._DesignParameter['inv_ab_via1_1']['_XYCoordinates'][0][0],
+																	self._DesignParameter['inv_ab_via1_2']['_XYCoordinates'][0][1]],
+																   [self._DesignParameter['inv_ab_via1_2']['_XYCoordinates'][0][0],
+																	self._DesignParameter['inv_ab_via1_2']['_XYCoordinates'][0][1]]]]
+
+		self._DesignParameter['inv_ab_via3_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='inv_ab_via3_1In{}'.format(_Name)))[0]
+		self._DesignParameter['inv_ab_via3_1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
+		self._DesignParameter['inv_ab_via3_1']['_XYCoordinates'] = [[self._DesignParameter['inv_ab_via1_1']['_XYCoordinates'][0][0],self._DesignParameter['inv_ab_via1_2']['_XYCoordinates'][0][1]]]
+		self._DesignParameter['inv_ab_via2_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='inv_ab_via2_1In{}'.format(_Name)))[0]
+		self._DesignParameter['inv_ab_via2_1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
+		self._DesignParameter['inv_ab_via2_1']['_XYCoordinates'] = [[self._DesignParameter['inv_ab_via1_1']['_XYCoordinates'][0][0],self._DesignParameter['inv_ab_via1_1']['_XYCoordinates'][0][1]]]
+
+		self._DesignParameter['Abuf_line_2_1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
+		self._DesignParameter['Abuf_line_2_1']['_XYCoordinates'] = [[[self._DesignParameter['inv_ab_via1_1']['_XYCoordinates'][0][0],
+																	self._DesignParameter['inv_ab_via1_2']['_XYCoordinates'][0][1]],
+																   [self._DesignParameter['inv_ab_via1_1']['_XYCoordinates'][0][0],
+																	self._DesignParameter['inv_ab_via1_1']['_XYCoordinates'][0][1]]]]
 
 		self._DesignParameter['POLY_dummy_A1'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=_gate_length)
 		self._DesignParameter['POLY_dummy_A1']['_YWidth'] = self._DesignParameter['INV_ab']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
@@ -326,33 +393,70 @@ class _3to7inputs_mux(StickDiagram._StickDiagram):
 
 		self._DesignParameter['inv_b_via1_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv_b_via1_1In{}'.format(_Name)))[0]
 		self._DesignParameter['inv_b_via1_1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['inv_b_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_b1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_b1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['inv_b_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_b1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_b1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0]), (+ self._DesignParameter['INV_b1']['_XYCoordinates'][0][1]) + self._DesignParameter['INV_b1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]//2+self._DesignParameter['INV_b1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]//2]]
+		# self._DesignParameter['inv_b_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_b1']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_b1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'][0][1])]]
+
 		self._DesignParameter['inv_b_via1_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv_b_via1_2In{}'.format(_Name)))[0]
 		self._DesignParameter['inv_b_via1_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
 		if ((_Num_of_MUX_modules*_INV_finger)//2 > 2):
-			self._DesignParameter['inv_b_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_b0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_b0']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'][0][1])]]
+			self._DesignParameter['inv_b_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_b0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_b0']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['INV_b1']['_XYCoordinates'][0][1]) + self._DesignParameter['INV_b1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]//2+self._DesignParameter['INV_b1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]//2]]
+			# self._DesignParameter['inv_b_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_b0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_b0']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'][0][1])]]
 		else:
-			self._DesignParameter['inv_b_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_b0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_b0']['_DesignObj']._DesignParameter['_VIAPoly2Met1_F1']['_XYCoordinates'][0][0]), (+ self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'][0][1])]]
+			self._DesignParameter['inv_b_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_b0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_b0']['_DesignObj']._DesignParameter['_VIAPoly2Met1_F1']['_XYCoordinates'][0][0]), (+ self._DesignParameter['INV_b1']['_XYCoordinates'][0][1]) + self._DesignParameter['INV_b1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]//2+self._DesignParameter['INV_b1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]//2]]
+			# self._DesignParameter['inv_b_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_b0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_b0']['_DesignObj']._DesignParameter['_VIAPoly2Met1_F1']['_XYCoordinates'][0][0]), (+ self._DesignParameter['invin_c2cb_via1']['_XYCoordinates'][0][1])]]
 
 		self._DesignParameter['Bbuf_line_1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
-		self._DesignParameter['Bbuf_line_1']['_XYCoordinates'] = [[[self._DesignParameter['inv_b_via1_1']['_XYCoordinates'][0][0], self._DesignParameter['INVc_0_line']['_XYCoordinates'][0][0][1]], [self._DesignParameter['inv_b_via1_2']['_XYCoordinates'][0][0], self._DesignParameter['INVc_0_line']['_XYCoordinates'][0][0][1]]]]
+		self._DesignParameter['Bbuf_line_1']['_XYCoordinates'] = [[[self._DesignParameter['inv_b_via1_1']['_XYCoordinates'][0][0], self._DesignParameter['inv_b_via1_1']['_XYCoordinates'][0][1]], [self._DesignParameter['inv_b_via1_2']['_XYCoordinates'][0][0], self._DesignParameter['inv_b_via1_2']['_XYCoordinates'][0][1]]]]
+
+		# self._DesignParameter['Bbuf_line_1']['_XYCoordinates'] = [[[self._DesignParameter['inv_b_via1_1']['_XYCoordinates'][0][0], self._DesignParameter['INVc_0_line']['_XYCoordinates'][0][0][1]], [self._DesignParameter['inv_b_via1_2']['_XYCoordinates'][0][0], self._DesignParameter['INVc_0_line']['_XYCoordinates'][0][0][1]]]]
 
 		self._DesignParameter['inv_bb_via1_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv_bb_via1_1In{}'.format(_Name)))[0]
 		self._DesignParameter['inv_bb_via1_1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['inv_bb_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_bb']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_bb']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['inv_bb_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_bb']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_bb']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0]), (self._DesignParameter['INV_b1']['_XYCoordinates'][0][1] + self._DesignParameter['INV_b1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]//2+ self._DesignParameter['INV_b1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]//2)]]
+
+		# self._DesignParameter['inv_bb_via1_1']['_XYCoordinates'] = [[((self._DesignParameter['INV_bb']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_bb']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'][0][1])]]
 
 		self._DesignParameter['inv_bb_via1_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv_bb_via1_2In{}'.format(_Name)))[0]
 		self._DesignParameter['inv_bb_via1_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['inv_bb_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_b0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_b0']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'][0][1])]]
+		self._DesignParameter['inv_bb_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_b0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_b0']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][0][0][0]), (self._DesignParameter['INV_b0']['_XYCoordinates'][0][1]+self._DesignParameter['INV_b0']['_DesignObj']._DesignParameter['_NMOS']['_XYCoordinates'][0][1]+self._DesignParameter['INV_b0']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])]]
 
-		self._DesignParameter['Bbuf_line_2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
-		self._DesignParameter['Bbuf_line_2']['_XYCoordinates'] = [[[self._DesignParameter['inv_bb_via1_1']['_XYCoordinates'][0][0], self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][1]], [self._DesignParameter['inv_bb_via1_2']['_XYCoordinates'][0][0], self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][1]]]]
+		# self._DesignParameter['inv_bb_via1_2']['_XYCoordinates'] = [[((self._DesignParameter['INV_b0']['_XYCoordinates'][0][0]) + self._DesignParameter['INV_b0']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0]), (+ self._DesignParameter['invout_a2ab_via1']['_XYCoordinates'][0][1])]]
+
+		# self._DesignParameter['Bbuf_line_2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
+		# self._DesignParameter['Bbuf_line_2']['_XYCoordinates'] = [[[self._DesignParameter['inv_bb_via1_1']['_XYCoordinates'][0][0], self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][1]], [self._DesignParameter['inv_bb_via1_2']['_XYCoordinates'][0][0], self._DesignParameter['INVa_1_line']['_XYCoordinates'][0][0][1]]]]
+
+		self._DesignParameter['inv_bb_via2_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='inv_bb_via2_2In{}'.format(_Name)))[0]
+		self._DesignParameter['inv_bb_via2_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
+		self._DesignParameter['inv_bb_via2_2']['_XYCoordinates'] = self._DesignParameter['inv_bb_via1_2']['_XYCoordinates']
+		self._DesignParameter['inv_bb_via3_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='inv_bb_via3_2In{}'.format(_Name)))[0]
+		self._DesignParameter['inv_bb_via3_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
+		self._DesignParameter['inv_bb_via3_2']['_XYCoordinates'] = self._DesignParameter['inv_bb_via1_2']['_XYCoordinates']
+
+		self._DesignParameter['Bbuf_line_2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
+		self._DesignParameter['Bbuf_line_2']['_XYCoordinates'] = [[[self._DesignParameter['inv_bb_via1_1']['_XYCoordinates'][0][0],
+																	self._DesignParameter['inv_bb_via1_2']['_XYCoordinates'][0][1]],
+																   [self._DesignParameter['inv_bb_via1_2']['_XYCoordinates'][0][0],
+																	self._DesignParameter['inv_bb_via1_2']['_XYCoordinates'][0][1]]]]
+
+		self._DesignParameter['inv_bb_via3_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='inv_bb_via3_1In{}'.format(_Name)))[0]
+		self._DesignParameter['inv_bb_via3_1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
+		self._DesignParameter['inv_bb_via3_1']['_XYCoordinates'] = [[self._DesignParameter['inv_bb_via1_1']['_XYCoordinates'][0][0],self._DesignParameter['inv_bb_via1_2']['_XYCoordinates'][0][1]]]
+		self._DesignParameter['inv_bb_via2_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='inv_bb_via2_1In{}'.format(_Name)))[0]
+		self._DesignParameter['inv_bb_via2_1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
+		self._DesignParameter['inv_bb_via2_1']['_XYCoordinates'] = [[self._DesignParameter['inv_bb_via1_1']['_XYCoordinates'][0][0],self._DesignParameter['inv_bb_via1_1']['_XYCoordinates'][0][1]]]
+
+		self._DesignParameter['Bbuf_line_2_1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=(drc._VIAxMinWidth + (2 * drc._Metal1MinEnclosureVia3)))
+		self._DesignParameter['Bbuf_line_2_1']['_XYCoordinates'] = [[[self._DesignParameter['inv_bb_via1_1']['_XYCoordinates'][0][0],
+																	self._DesignParameter['inv_bb_via1_2']['_XYCoordinates'][0][1]],
+																   [self._DesignParameter['inv_bb_via1_1']['_XYCoordinates'][0][0],
+																	self._DesignParameter['inv_bb_via1_1']['_XYCoordinates'][0][1]]]]
 
 		self._DesignParameter['POLY_dummy_B1'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=_gate_length)
 		self._DesignParameter['POLY_dummy_B1']['_YWidth'] = self._DesignParameter['INV_bb']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']
 
 		self._DesignParameter['POLY_dummy_B1']['_XYCoordinates'] = [[(self._DesignParameter['INV_bb']['_XYCoordinates'][0][0] + self._DesignParameter['INV_bb']['_DesignObj']._DesignParameter['_NMOS']['_XYCoordinates'][0][0] + self._DesignParameter['INV_bb']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]),
 																	 (self._DesignParameter['INV_bb']['_XYCoordinates'][0][1] + self._DesignParameter['INV_bb']['_DesignObj']._DesignParameter['_NMOS']['_XYCoordinates'][0][1] + self._DesignParameter['INV_bb']['_DesignObj']._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1])]]
+
 
 		if float(self._DesignParameter['POLY_dummy_B1']['_XWidth']) * float(self._DesignParameter['POLY_dummy_B1']['_YWidth']) < drc._PODummyMinArea:
 			self._DesignParameter['POLY_dummy_B1']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_B1']['_XWidth']), drc._MinSnapSpacing * 2)
@@ -380,6 +484,15 @@ class _3to7inputs_mux(StickDiagram._StickDiagram):
 			self._DesignParameter['POLY_dummy_B3']['_YWidth'] = self.CeilMinSnapSpacing(float(drc._PODummyMinArea) / float(self._DesignParameter['POLY_dummy_B3']['_XWidth']), drc._MinSnapSpacing * 2)
 		else:
 			pass
+
+		self._DesignParameter['INVa_0_line_1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=self._DesignParameter['invin_a2ab_via2']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'])
+		self._DesignParameter['INVa_0_line_1']['_XYCoordinates'] = [[[(+ (self._DesignParameter['invin_a2ab_via2']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['invin_a2ab_via2']['_XYCoordinates'][0][1]))], [(self._DesignParameter['invin_a2ab_via2']['_XYCoordinates'][0][0]), (self._DesignParameter['invin_a2ab_via3']['_XYCoordinates'][0][1])]]]
+		self._DesignParameter['INVa_1_line_1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=self._DesignParameter['invout_a2ab_via2']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'])
+		self._DesignParameter['INVa_1_line_1']['_XYCoordinates'] = [[[(+ (self._DesignParameter['invout_a2ab_via2']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['invout_a2ab_via2']['_XYCoordinates'][0][1]))], [(self._DesignParameter['invout_a2ab_via2']['_XYCoordinates'][0][0]), (self._DesignParameter['invout_a2ab_via3']['_XYCoordinates'][0][1])]]]
+		self._DesignParameter['INVc_0_line_1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=self._DesignParameter['invin_c2cb_via2']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'])
+		self._DesignParameter['INVc_0_line_1']['_XYCoordinates'] = [[[(+ (self._DesignParameter['invin_c2cb_via2']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['invin_c2cb_via2']['_XYCoordinates'][0][1]))], [(self._DesignParameter['invin_c2cb_via2']['_XYCoordinates'][0][0]), (self._DesignParameter['invin_c2cb_via3']['_XYCoordinates'][0][1])]]]
+		self._DesignParameter['INVc_1_line_1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=self._DesignParameter['invout_c2cb_via2']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'])
+		self._DesignParameter['INVc_1_line_1']['_XYCoordinates'] = [[[(+ (self._DesignParameter['invout_c2cb_via2']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['invout_c2cb_via2']['_XYCoordinates'][0][1]))], [(self._DesignParameter['invout_c2cb_via2']['_XYCoordinates'][0][0]), (self._DesignParameter['invout_c2cb_via3']['_XYCoordinates'][0][1])]]]
 
 
 		self._DesignParameter['OUT_line'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=self._DesignParameter['mux_module_0']['_DesignObj']._DesignParameter['OUTvia3']['_DesignObj']._DesignParameter['_Met4Layer']['_YWidth'])
