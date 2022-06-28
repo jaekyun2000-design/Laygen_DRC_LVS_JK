@@ -99,7 +99,7 @@ class Three2TwentyEight_MUX(StickDiagram._StickDiagram):
 				name11 = 'EightMUX_%d'%i
 				for j in range (1,7) :
 					name12 = 'mux_module_%d'%j
-					tmp.append([((self._DesignParameter[name11]['_XYCoordinates'][0][0] + self._DesignParameter[name11]['_DesignObj']._DesignParameter[name12]['_XYCoordinates'][0][0]) + self._DesignParameter[name11]['_DesignObj']._DesignParameter[name12]['_DesignObj']._DesignParameter['INb_m1_4']['_XYCoordinates'][0][0][0])
+					tmp.append([((self._DesignParameter[name11]['_XYCoordinates'][0][0] + self._DesignParameter[name11]['_DesignObj']._DesignParameter[name12]['_XYCoordinates'][0][0]) + self._DesignParameter[name11]['_DesignObj']._DesignParameter[name12]['_DesignObj']._DesignParameter['INb_m2_4']['_XYCoordinates'][0][0][0])
 								+ drc._VIAxMinWidth + 2 * max([drc._Metal1MinEnclosureVia3,drc._MetalxMinEnclosureVia3]) + drc._MetalxMinSpace2
 								   , (self._DesignParameter['EightMUX_0']['_XYCoordinates'][0][1] + self._DesignParameter['EightMUX_0']['_DesignObj']._DesignParameter['OUT_line']['_XYCoordinates'][0][0][1]
 								-2*Cell_height*((1+i)//2)+(2*Cell_height-2*self._DesignParameter['EightMUX_0']['_DesignObj']._DesignParameter['OUT_line']['_XYCoordinates'][0][0][1])*(i%2))])
