@@ -193,8 +193,8 @@ class SALatch(StickDiagram._StickDiagram):
 		if pset_params['pmos1_gate'] >= nset_params['nmos1_gate']+nset_params['nmos2_gate']*2:
 			raise NotImplementedError("The number of pmos1 gate finger should be smaller.")
 
-		if pset_params['pmos1_gate'] == 1 :
-			raise NotImplementedError("The number of pmos1 gate finger should be larger than 1.")
+		if pset_params['pmos1_gate'] < 3 :
+			raise NotImplementedError("The number of pmos1 gate finger should be larger than 2.")
 
 		if nset_params['nmos2_gate'] < 2 :
 			raise NotImplementedError("The number of nmos2 gate finger should be bigger than 1")
