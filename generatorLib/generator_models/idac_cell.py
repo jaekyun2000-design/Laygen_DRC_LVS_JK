@@ -573,7 +573,7 @@ class Idac_cell(StickDiagram._StickDiagram):
 			self._DesignParameter['VDD2pbiaspmos']['_XYCoordinates'][-1][1][0] -= self._DesignParameter['pbias_pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']*2
 
 		##pmos via calculation
-		YWidthOfPMOSMet1 = self._DesignParameter['aoi_out_pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']//2
+		YWidthOfPMOSMet1 = (self._DesignParameter['aoi_out_pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']-drc._MetalxMinSpace42)//2
 		NumViaYPMOS = int((YWidthOfPMOSMet1 - 2 * drc._Metal1MinEnclosureVia3-drc._VIAxMinWidth) / (drc._VIAxMinWidth + drc._VIAxMinSpace)+1)
 
 		VIAPMOSMet12 = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
@@ -630,7 +630,7 @@ class Idac_cell(StickDiagram._StickDiagram):
 		# self._DesignParameter['pbiaspmos_out_via'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='pbiaspmos_out_viaIn{}'.format(_Name)))[0]
 		# self._DesignParameter['pbiaspmos_out_via']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=3))
 
-		NumViaYPMOS = int((YWidthOfPMOSMet1 - 2 * drc._Metal1MinEnclosureVia3-drc._VIAxMinWidth) / (drc._VIAxMinWidth + drc._VIAxMinSpace))
+		NumViaYPMOS = int((YWidthOfPMOSMet1 - 2 * drc._Metal1MinEnclosureVia3-drc._VIAxMinWidth) / (drc._VIAxMinWidth + drc._VIAxMinSpace)+1)
 
 		VIAPMOSMet12 = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
 		VIAPMOSMet12['_ViaMet12Met2NumberOfCOX'] = 1
