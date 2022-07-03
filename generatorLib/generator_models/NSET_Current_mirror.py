@@ -169,7 +169,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
                                   nmos_stack_mirror_param={'nmos1_width': 2000, 'nmos1_length': 500, 'nmos1_gate': 1, 'nmos1_dummy': False,'nmos1_xvt': 'RVT', 'nmos1_pccrit': False, 'nmos2_width': 2000, 'nmos2_length': 30,'nmos2_gate': 1, 'nmos2_dummy': False, 'nmos2_xvt': 'RVT', 'nmos2_pccrit': False,'guardring_bot': 2, 'guardring_top': 2, 'guardring_left': 2, 'guardring_right': 2,'guardring_width': None, 'guardring_height': None, 'diode_connect': False},\
                                   nmos_single_sw_param={'nmos_gate':2,'nmos_width':1000,'nmos_length':30,'nmos_dummy':True,'xvt':'SLVT','pccrit':True,'guardring_right':2,'guardring_left':2,'guardring_bot':2,'guardring_top':2,'guardring_width':None,'guardring_height':None},\
                                   nmos_single_tail_param={'nmos_gate':1,'nmos_width':2000,'nmos_length':500,'nmos_dummy':False,'xvt':'RVT','pccrit':False,'guardring_left':2,'guardring_right':2,'guardring_top':2,'guardring_bot':2,'guardring_width':None,'guardring_height':None},\
-                                  #nmos_single_cap_param={''},\
+                                  ##nmos_single_cap_param={''},\
                                   guardring_width=None, guardring_height=None, mirror_num2=4, coarse_num=3, fine_num=4, mirror_num=1, Xnum=3, Ynum=4):
 
         drc = DRC.DRC()
