@@ -168,7 +168,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
                                   nmos_stack_fine_param={'nmos1_width':500,'nmos1_length':500,'nmos1_gate':1,'nmos1_dummy':False,'nmos1_xvt':'RVT','nmos1_pccrit':False,'nmos2_width':2000,'nmos2_length':30,'nmos2_gate':1,'nmos2_dummy':False,'nmos2_xvt':'RVT','nmos2_pccrit':False,'guardring_bot':2,'guardring_top':2,'guardring_left':2,'guardring_right':2,'guardring_width':None,'guardring_height':None, 'diode_connect':True},
                                   nmos_stack_mirror_param={'nmos1_width': 2000, 'nmos1_length': 500, 'nmos1_gate': 1, 'nmos1_dummy': False,'nmos1_xvt': 'RVT', 'nmos1_pccrit': False, 'nmos2_width': 2000, 'nmos2_length': 30,'nmos2_gate': 1, 'nmos2_dummy': False, 'nmos2_xvt': 'RVT', 'nmos2_pccrit': False,'guardring_bot': 2, 'guardring_top': 2, 'guardring_left': 2, 'guardring_right': 2,'guardring_width': None, 'guardring_height': None, 'diode_connect': False},\
                                   nmos_single_sw_param={'nmos_gate':2,'nmos_width':1000,'nmos_length':30,'nmos_dummy':True,'xvt':'SLVT','pccrit':True,'guardring_right':2,'guardring_left':2,'guardring_bot':2,'guardring_top':2,'guardring_width':None,'guardring_height':None},\
-                                  nmos_single_tail_param={'nmos_gate':1,'nmos_width':2000,'nmos_length':500,'nmos_dummy':False,'xvt':'RVT','pccrit':False,'guardring_left':2,'guardring_right':2,'guardring_top':2,'guardring_bot':2,'guardring_width':None,'guardring_height':None},\
+                                  nmos_single_tail_param={'nmos1_gate':1,'nmos1_width':2000,'nmos1_length':500,'nmos1_dummy':False,'nmos1_xvt':'RVT','nmos1_pccrit':False,'guardring_left':2,'guardring_right':2,'guardring_top':2,'guardring_bot':2,'guardring_width':None,'guardring_height':None},\
                                   ##nmos_single_cap_param={''},\
                                   guardring_width=None, guardring_height=None, mirror_num2=4, coarse_num=3, fine_num=4, mirror_num=1, Xnum=3, Ynum=4):
 
@@ -190,7 +190,14 @@ class EasyDebugModule(StickDiagram._StickDiagram):
         self._DesignParameter['nmos_sw'] = self._SrefElementDeclaration(_DesignObj=nmos_single_current_mirror.EasyDebugModule(_Name='nmos_swIn{}'.format(_Name)))[0]
         self._DesignParameter['nmos_sw']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_single_sw_param))
 
-        self._DesignParameter['nmos_mirror_2'] = self._SrefElementDeclaration(_DesignObj=nmos_single_tail_current_mirror.EasyDebugModule(_Name='nmos_mirror2In{}'.format(_Name)))[0]
+        nmos_single_tail_param['nmos2_gate']=nmos_stack_coarse_param['nmos2_gate']
+        nmos_single_tail_param['nmos2_width']=nmos_stack_coarse_param['nmos2_width']
+        nmos_single_tail_param['nmos2_length']=nmos_stack_coarse_param['nmos2_length']
+        nmos_single_tail_param['nmos2_dummy']=nmos_stack_coarse_param['nmos2_dummy']
+        nmos_single_tail_param['nmos2_pccrit']=nmos_stack_coarse_param['nmos2_pccrit']
+        nmos_single_tail_param['nmos2_xvt']=nmos_stack_coarse_param['nmos2_xvt']
+
+        self._DesignParameter['nmos_mirror_2'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_mirror2In{}'.format(_Name)))[0]
         self._DesignParameter['nmos_mirror_2']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_single_tail_param))
 
         if guardring_width==None :
@@ -242,8 +249,8 @@ class EasyDebugModule(StickDiagram._StickDiagram):
         self._DesignParameter['nmos_sw'] = self._SrefElementDeclaration(_DesignObj=nmos_single_current_mirror.EasyDebugModule(_Name='nmos_swIn{}'.format(_Name)))[0]
         self._DesignParameter['nmos_sw']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_single_sw_param))
 
-        self._DesignParameter['nmos_mirror_2'] = self._SrefElementDeclaration(_DesignObj=nmos_single_tail_current_mirror.EasyDebugModule(_Name='nmos_mirror2In{}'.format(_Name)))[0]
-        self._DesignParameter['nmos_mirror_2']['_DesignObj']._CalculateDesignParameter(**dict(**nmos_single_tail_param))
+        self._DesignParameter['nmos_mirror_2'] = self._SrefElementDeclaration(_DesignObj=nmos_stack_current_mirror.EasyDebugModule(_Name='nmos_mirror2In{}'.format(_Name)))[0]
+        self._DesignParameter['nmos_mirror_2']['_DesignObj']._CalculateDesignParameter_single(**dict(**nmos_single_tail_param))
 
         yoffset_coarse=(self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_XYCoordinates'][0][1])
         yoffset_fine=(self._DesignParameter['nmos_fine']['_DesignObj']._DesignParameter['guardring']['_XYCoordinates'][0][1])
@@ -351,7 +358,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
         if mirror_num2+coarse_num+fine_num+mirror_num > Xnum*Ynum :
             raise NotImplementedError
 
-        if (nmos_stack_coarse_param['nmos1_length'] == nmos_stack_fine_param['nmos1_length'] == nmos_stack_mirror_param['nmos1_length'] == nmos_single_tail_param['nmos_length']) == False :
+        if (nmos_stack_coarse_param['nmos1_length'] == nmos_stack_fine_param['nmos1_length'] == nmos_stack_mirror_param['nmos1_length'] == nmos_single_tail_param['nmos1_length']) == False :
             raise NotImplementedError
 
         if (nmos_stack_coarse_param['nmos2_length'] == nmos_stack_fine_param['nmos2_length'] == nmos_stack_mirror_param['nmos2_length']) == False :
