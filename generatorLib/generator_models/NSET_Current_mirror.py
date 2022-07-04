@@ -159,7 +159,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
         if (nmos_stack_coarse_param['nmos2_length'] == nmos_stack_fine_param['nmos2_length'] == nmos_stack_mirror_param['nmos2_length']) == False :
             raise NotImplementedError
 
-        if Xnum*Ynum % total_num >= Xnum :
+        if (Xnum*Ynum) - total_num >= Xnum :
             raise NotImplementedError
 
 
