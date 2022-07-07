@@ -55,6 +55,7 @@ class DRCOD:
             self._OdlayeroverPoly = 76 ## Added by 1joon for DIFF layer rules
             self._PolylayeroverOd = 70 ## Added by 1joon for DIFF layer rules
             self._PolylayeroverOd2 = 105 ## Added by 1joon for DIFF layer rules
+            self._OdSpace_ncap = 220 ## Added by jicho / ncap pcell od y space = 220
 
 
         if user_setup._Technology == 'TSMC65nm':
@@ -227,6 +228,7 @@ class DRCPOLYGATE:
             self._PMOS2GuardringMinSpace = 90
             self._NMOS2GuardringMinSpace = 90
             self._PolygateWithPCCRIT = 71
+            self._PolygateSpace_ncap=160 ## jicho / polygate space is 160 in ncap pcell.
 
             self._OPlayeroverPoly = 200  ### Created by junung for OP layer rules
             self._PolyoverOPlayer = 400  ### Created by junung for OP layer rules

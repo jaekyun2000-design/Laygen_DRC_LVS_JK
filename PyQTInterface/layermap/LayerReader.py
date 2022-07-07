@@ -942,26 +942,21 @@ def run_for_process_update():
         _LayerMapping.update({'SLVT': _LayerMappingTmp[('SLVT', 'drawing')]})
     if _Technology == 'SS28nm':
         _LayerMapping.update({'RVT': _LayerMappingTmp[('RVT', 'drawing')]})
-
     
     if _Technology == 'SS28nm':
         _LayerMapping.update({'OUTLINE': _LayerMappingTmp[('OUTLINE', 'drawing')]})
 
-
     if _Technology == 'SS28nm':
         _LayerMapping.update({'RXPIN': _LayerMappingTmp[('RX', 'pin')]})
-
-    
 
     if _Technology == 'SS28nm':
         _LayerMapping.update({'PCPIN': _LayerMappingTmp[('PC', 'pin')]})
 
-    
-
     if _Technology == 'SS28nm':
         _LayerMapping.update({'PCCRIT': _LayerMappingTmp[('PC', 'crit')]})
 
-    
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'NCAP': _LayerMappingTmp[('NCAP', 'drawing')]})
 
     if _Technology == 'SS28nm':
         _LayerMapping.update({'M1PIN': _LayerMappingTmp[('M1', 'pin')]})
