@@ -85,5 +85,5 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			elif guardring_height != None :
 				guardring_Yheight=guardring_height
 
-			self._DesignParameter['guardring']['_DesignObj']._CalculateDesignParameter(**dict(height=guardring_Yheight, width=guardring_Xwidth, contact_bottom=guardring_left, contact_top=guardring_top, contact_left=guardring_left, contact_right=guardring_right))
+			self._DesignParameter['guardring']['_DesignObj']._CalculateDesignParameter(**dict(height=guardring_Yheight, width=guardring_Xwidth, contact_bottom=guardring_bot, contact_top=guardring_top, contact_left=guardring_left, contact_right=guardring_right))
 			self._DesignParameter['guardring']['_XYCoordinates']=_OriginXY
