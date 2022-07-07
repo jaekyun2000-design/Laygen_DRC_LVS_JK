@@ -228,7 +228,8 @@ class DRCPOLYGATE:
             self._PMOS2GuardringMinSpace = 90
             self._NMOS2GuardringMinSpace = 90
             self._PolygateWithPCCRIT = 71
-            self._PolygateSpace_ncap=160 ## jicho / polygate space is 160 in ncap pcell.
+            self._PolygateSpace_ncap = 160 ## jicho / in pcell
+            self._PolygateMinEnclosureByNcap=500 ## jicho
 
             self._OPlayeroverPoly = 200  ### Created by junung for OP layer rules
             self._PolyoverOPlayer = 400  ### Created by junung for OP layer rules
