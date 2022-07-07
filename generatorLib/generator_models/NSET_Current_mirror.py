@@ -9,6 +9,7 @@ from generatorLib.generator_models import nmos_single_current_mirror
 from generatorLib.generator_models import NCAP
 from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import ViaMet22Met3
+from generatorLib.generator_models import ViaStack
 
 class EasyDebugModule(StickDiagram._StickDiagram):
     def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
@@ -320,6 +321,41 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
         self._DesignParameter['ncap']['_XYCoordinates']=[[(tmp_array[-1][0]+tmp_array[0][0])/2, tmp_array[-1][1]-max_guardring_height/2-ncap_guardring_height/2]]
 
+        self._DesignParameter['via_m1_m3_mirror2']=self._SrefElementDeclaration(_DesignObj=ViaStack._ViaStack(_Name='viam1m3_mirror2In{}'.format(_Name)))[0]
+        self._DesignParameter['via_m1_m3_mirror2']['_DesignObj']._CalculateStackMinimumEnclosureX(**dict(COX=1, COY=max(1,int(self._DesignParameter['nmos_mirror_2']['_DesignObj']._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/(drc._VIAxMinWidth+drc._VIAxMinSpace))), start_layer=1, end_layer=3))
+
+        tmp=[]
+        for i in range(0, len(self._DesignParameter['nmos_mirror_2']['_XYCoordinates'])):
+            tmp.append([self._DesignParameter['nmos_mirror_2']['_XYCoordinates'][i][0]+self._DesignParameter['nmos_mirror_2']['_DesignObj']._DesignParameter['nmos1']['_XYCoordinates'][0][0]+self._DesignParameter['nmos_mirror_2']['_DesignObj']._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0], self._DesignParameter['nmos_mirror_2']['_XYCoordinates'][i][1]+self._DesignParameter['nmos_mirror_2']['_DesignObj']._DesignParameter['nmos1']['_XYCoordinates'][0][1]+self._DesignParameter['nmos_mirror_2']['_DesignObj']._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][1]])
+
+        self._DesignParameter['via_m1_m3_mirror2']['_XYCoordinates']=tmp
+        del tmp
+
+        self._DesignParameter['m3_mirror2_y']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=None)
+        self._DesignParameter['m3_mirror2_y']['_Width']=self._DesignParameter['via_m1_m3_mirror2']['_DesignObj']._DesignParameter['ViaMet22Met3']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth']
+
+        tmp=[]
+        for i in range(0, len(self._DesignParameter['nmos_mirror_2']['_XYCoordinates'])):
+            tmp.append([self._DesignParameter['via_m1_m3_mirror2']['_XYCoordinates'][i], [self._DesignParameter['via_m1_m3_mirror2']['_XYCoordinates'][i][0], self._DesignParameter['nmos_sw']['_XYCoordinates'][0][1]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'][0][1]]])
+
+        self._DesignParameter['m3_mirror2_y']['_XYCoordinates']=tmp
+        del tmp
+
+        self._DesignParameter['m4_mirror2_sw_x']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=None)
+        self._DesignParameter['m4_mirror2_sw_x']['_Width']=min(drc._MetalxMinWidth*3, self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_DesignObj']._DesignParameter['ViaMet32Met4']['_DesignObj']._DesignParameter['_Met4Layer']['_YWidth'])
+        self._DesignParameter['m4_mirror2_sw_x']['_XYCoordinates']=[[[self._DesignParameter['m3_mirror2_y']['_XYCoordinates'][0][0][0]-self._DesignParameter['m3_mirror2_y']['_Width']/2, self._DesignParameter['nmos_sw']['_XYCoordinates'][0][1]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'][0][1]], [self._DesignParameter['m3_mirror2_y']['_XYCoordinates'][Xnum-1][0][0]+self._DesignParameter['m3_mirror2_y']['_Width']/2, self._DesignParameter['nmos_sw']['_XYCoordinates'][0][1]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'][0][1]]]]
+
+        self._DesignParameter['Via_m3_m4_mirror2_sw']=self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='Via_m3_m4_mirror2_swIn{}'.format(_Name)))[0]
+        self._DesignParameter['Via_m3_m4_mirror2_sw']['_DesignObj']._CalculateViaMet32Met4DesignParameterMinimumEnclosureX(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
+
+        tmp=[]
+        for i in range(0, Xnum):
+            tmp.append([self._DesignParameter['m3_mirror2_y']['_XYCoordinates'][i][0][0], self._DesignParameter['m4_mirror2_sw_x']['_XYCoordinates'][0][0][1]])
+
+        self._DesignParameter['Via_m3_m4_mirror2_sw']['_XYCoordinates']=tmp
+        del tmp
+
+
         self._DesignParameter['m3_connect_y']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=None)
         self._DesignParameter['m3_connect_y']['_Width']=2*drc._MetalxMinWidth
 
@@ -346,7 +382,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
         tmp=[]
 
         for i in range(Xnum, total_num):
-            tmp.append([tmp_array[i][0]+gate_x, tmp_array[i][1]+self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['top']['_XYCoordinates'][0][1]])
+            tmp.append([tmp_array[i][0]+gate_x-xoffset_coarse, tmp_array[i][1]+self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['top']['_XYCoordinates'][0][1]])
 
         self._DesignParameter['Via_m3_m4']['_XYCoordinates']=tmp
         del tmp
