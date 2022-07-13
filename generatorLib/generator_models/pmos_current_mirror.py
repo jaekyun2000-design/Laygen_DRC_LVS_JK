@@ -134,3 +134,6 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['m1_source_routing2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_source_routing2']['_XYCoordinates'] = path_list
 
+		self._DesignParameter['m2_output_x']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=None)
+		self._DesignParameter['m2_output_x']['_Width']=min(drc._MetalxMinWidth*3,self.getYWidth('via_m1_m2_drain','_Met2Layer'))
+		self._DesignParameter['m2_output_x']['_XYCoordinates']=[[self._DesignParameter['via_m1_m2_drain']['_XYCoordinates'][0], self._DesignParameter['via_m1_m2_drain']['_XYCoordinates'][-1]]]

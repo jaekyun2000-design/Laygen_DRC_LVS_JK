@@ -5,6 +5,7 @@ import math
 from generatorLib import DRC
 from generatorLib.generator_models import NSET_Current_mirror
 from generatorLib.generator_models import PSET_Current_Mirror
+from generatorLib.generator_models import ViaMet42Met5
 
 class EasyDebugModule(StickDiagram._StickDiagram):
 	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
@@ -51,3 +52,36 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
 		self._DesignParameter['nset']['_XYCoordinates'] = [[self._DesignParameter['pset']['_XYCoordinates'][0][0], _Ycoordinate_nset]]
 
+		self._DesignParameter['m4_pnrouting_x']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=self.getWidth('nset','m4_mirror2_sw_x'))
+		self._DesignParameter['m4_pnrouting_x']['_XYCoordinates']=[[[self.getXY('nset','nmos_sw','via_m1_m4_drain')[0][0], self.getXY('nset','nmos_sw','via_m1_m4_drain')[0][1]], [self.getXY('pset','pmos1','via_m1_m4')[0][0], self.getXY('nset','nmos_sw','via_m1_m4_drain')[0][1]]],\
+																 [[self.getXY('nset','nmos_sw')[-1][0]+self._DesignParameter['nset']['_DesignObj']._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_drain']['_XYCoordinates'][0][0], self.getXY('nset','nmos_sw','via_m1_m4_drain')[0][1]], [self.getXY('pset','pmos3','via_m1_m4')[0][0], self.getXY('nset','nmos_sw','via_m1_m4_drain')[0][1]]]]
+
+		self._DesignParameter['m5_pnrouting_y']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL5'][0], _Datatype=DesignParameters._LayerMapping['METAL5'][1], _Width=self.getXWidth('pset','via_m2_m5_drain_pmos3','ViaMet42Met5','_Met5Layer'))
+		self._DesignParameter['m5_pnrouting_y']['_XYCoordinates']=[[self.getXY('pset','via_m2_m5_drain_pmos1'), [self.getXY('pset','pmos1','via_m1_m4')[0][0], self.getXY('nset','nmos_sw','via_m1_m4_drain')[0][1]]],\
+																 [[self.getXY('nset','nmos_sw')[-1][0]+self._DesignParameter['nset']['_DesignObj']._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_drain']['_XYCoordinates'][0][0], self.getXY('nset','nmos_sw','via_m1_m4_drain')[0][1]], [self.getXY('pset','pmos3','via_m1_m4')[0][0], self.getXY('nset','nmos_sw','via_m1_m4_drain')[0][1]]]]
+
+		self._DesignParameter['m5_routing_y']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL5'][0], _Datatype=DesignParameters._LayerMapping['METAL5'][1], _Width=2*drc._MetalxMinWidth)
+		tmp=[]
+		tmp.append([self.getXY('pset','via_m2_m5_sw1')[0], [self.getXY('pset','via_m2_m5_sw1')[0][0], self._DesignParameter['nset']['_XYCoordinates'][0][1]+self._DesignParameter['nset']['_DesignObj']._DesignParameter['m4_connect_x']['_XYCoordinates'][0][0][1]]])
+		tmp.append([self.getXY('pset','Via_m3_m4_pmos_sw')[0], [self.getXY('pset','Via_m3_m4_pmos_sw')[0][0], self.getXY('nset','via_m1_m4_mirror')[0][1]]])
+		self._DesignParameter['m5_routing_y']['_XYCoordinates']=tmp
+		del tmp
+
+		self._DesignParameter['via_m4_m5_routing']=self._SrefElementDeclaration(_DesignObj=ViaMet42Met5._ViaMet42Met5(_Name='via_m4_m5_routingIn{}'.format(_Name)))[0]
+		self._DesignParameter['via_m4_m5_routing']['_DesignObj']._CalculateViaMet42Met5DesignParameterMinimumEnclosureX(**dict(_ViaMet42Met5NumberOfCOX=2, _ViaMet42Met5NumberOfCOY=2))
+		self._DesignParameter['via_m4_m5_routing']['_XYCoordinates'] = [[self._DesignParameter['m5_routing_y']['_XYCoordinates'][0][0][0], self._DesignParameter['nset']['_XYCoordinates'][0][1]+self._DesignParameter['nset']['_DesignObj']._DesignParameter['m4_connect_x']['_XYCoordinates'][0][0][1]]]
+
+		self._DesignParameter['via_m4_m5_pnrouting']=self._SrefElementDeclaration(_DesignObj=ViaMet42Met5._ViaMet42Met5(_Name='via_m4_m5_routingIn{}'.format(_Name)))[0]
+		self._DesignParameter['via_m4_m5_pnrouting']['_DesignObj']._CalculateViaMet42Met5DesignParameterMinimumEnclosureX(**dict(_ViaMet42Met5NumberOfCOX=2, _ViaMet42Met5NumberOfCOY=2))
+		self._DesignParameter['via_m4_m5_pnrouting']['_XYCoordinates'] = [[self._DesignParameter['m5_routing_y']['_XYCoordinates'][1][0][0], self._DesignParameter['m5_routing_y']['_XYCoordinates'][1][1][1]]]
+
+		self._DesignParameter['m4_routing_x']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=4*drc._MetalxMinWidth)
+		self._DesignParameter['m4_routing_x']['_XYCoordinates']=[[self._DesignParameter['via_m4_m5_pnrouting']['_XYCoordinates'][0], [self.getXY('nset','via_m1_m4_mirror')[0][0], self._DesignParameter['via_m4_m5_pnrouting']['_XYCoordinates'][0][1]]]]
+
+		self._DesignParameter['m5_routing_sw_y']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL5'][0], _Datatype=DesignParameters._LayerMapping['METAL5'][1], _Width=self.getXWidth('pset','via_m2_m5_drain_pmos1','ViaMet42Met5','_Met5Layer'))
+		self._DesignParameter['m5_routing_sw_y']['_XYCoordinates']=[[self.getXY('pset','via_m2_m5_drain_pmos1')[-1], [self.getXY('pset','via_m2_m5_drain_pmos1')[-1][0], self.getXY('nset','nmos_sw','via_m1_m4_drain')[0][1]]], \
+																	[self.getXY('pset','via_m2_m5_drain_pmos3')[0], [self.getXY('pset','via_m2_m5_drain_pmos3')[0][0], self.getXY('nset','nmos_sw','via_m1_m4_drain')[0][1]]]]
+
+		self._DesignParameter['via_m4_m5_sw']=self._SrefElementDeclaration(_DesignObj=ViaMet42Met5._ViaMet42Met5(_Name='via_m4_m5_routingIn{}'.format(_Name)))[0]
+		self._DesignParameter['via_m4_m5_sw']['_DesignObj']._CalculateViaMet42Met5DesignParameterMinimumEnclosureX(**dict(_ViaMet42Met5NumberOfCOX=2, _ViaMet42Met5NumberOfCOY=2))
+		self._DesignParameter['via_m4_m5_sw']['_XYCoordinates'] = [self._DesignParameter['m5_routing_sw_y']['_XYCoordinates'][0][1], self._DesignParameter['m5_routing_sw_y']['_XYCoordinates'][1][1]]

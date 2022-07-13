@@ -162,6 +162,9 @@ class EasyDebugModule(StickDiagram._StickDiagram):
         if (nmos_stack_coarse_param['nmos2_length'] == nmos_stack_fine_param['nmos2_length'] == nmos_stack_mirror_param['nmos2_length']) == False :
             raise NotImplementedError
 
+        if (nmos_stack_coarse_param['nmos2_gate'] == nmos_stack_fine_param['nmos2_gate'] == nmos_stack_mirror_param['nmos2_gate'] == 1) == False :
+            raise NotImplementedError
+
         if (Xnum*Ynum) - total_num >= Xnum :
             raise NotImplementedError
 
@@ -343,7 +346,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
         self._DesignParameter['m4_mirror2_sw_x']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=None)
         self._DesignParameter['m4_mirror2_sw_x']['_Width']=min(drc._MetalxMinWidth*3, self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_DesignObj']._DesignParameter['ViaMet32Met4']['_DesignObj']._DesignParameter['_Met4Layer']['_YWidth'])
-        self._DesignParameter['m4_mirror2_sw_x']['_XYCoordinates']=[[[self._DesignParameter['m3_mirror2_y']['_XYCoordinates'][0][0][0]-self._DesignParameter['m3_mirror2_y']['_Width']/2, self._DesignParameter['nmos_sw']['_XYCoordinates'][0][1]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'][0][1]], [self._DesignParameter['m3_mirror2_y']['_XYCoordinates'][Xnum-1][0][0]+self._DesignParameter['m3_mirror2_y']['_Width']/2, self._DesignParameter['nmos_sw']['_XYCoordinates'][0][1]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'][0][1]]]]
+        self._DesignParameter['m4_mirror2_sw_x']['_XYCoordinates']=[[[min(self._DesignParameter['m3_mirror2_y']['_XYCoordinates'][0][0][0]-self._DesignParameter['m3_mirror2_y']['_Width']/2, self._DesignParameter['nmos_sw']['_XYCoordinates'][0][0]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_drain']['_XYCoordinates'][0][0]), self._DesignParameter['nmos_sw']['_XYCoordinates'][0][1]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'][0][1]], [max(self._DesignParameter['m3_mirror2_y']['_XYCoordinates'][Xnum-1][0][0]+self._DesignParameter['m3_mirror2_y']['_Width']/2,self._DesignParameter['nmos_sw']['_XYCoordinates'][-1][0]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_drain']['_XYCoordinates'][-1][0]), self._DesignParameter['nmos_sw']['_XYCoordinates'][0][1]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'][0][1]]]]
 
         self._DesignParameter['Via_m3_m4_mirror2_sw']=self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='Via_m3_m4_mirror2_swIn{}'.format(_Name)))[0]
         self._DesignParameter['Via_m3_m4_mirror2_sw']['_DesignObj']._CalculateViaMet32Met4DesignParameterMinimumEnclosureX(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
@@ -453,6 +456,11 @@ class EasyDebugModule(StickDiagram._StickDiagram):
         self._DesignParameter['M1_ncap_x']['_XYCoordinates']=tmp
         del tmp
 
+        self._DesignParameter['via_m1_m4_mirror']=self._SrefElementDeclaration(_DesignObj=ViaStack._ViaStack(_Name='via_m1_m4_mirrorIn{}'.format(_Name)))[0]
+        num_via= max(1, (1 + int(((((self._DesignParameter['nmos_mirror']['_DesignObj']._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2) - drc._VIAxMinSpace) - (2 * drc._VIAxMinEnclosureByMetx)) / (drc._VIAxMinWidth + drc._VIAxMinSpace)))) - 1)
+        self._DesignParameter['via_m1_m4_mirror']['_DesignObj']._CalculateStackMinimumEnclosureX(**dict(COX=1, COY=num_via, start_layer=1, end_layer=4))
+        self._DesignParameter['via_m1_m4_mirror']['_XYCoordinates']=[[self.getXY('nmos_mirror','nmos2','_Met1Layer')[-1][0], self.getXY('nmos_mirror','nmos2','_Met1Layer')[-1][1]-self.getYWidth('nmos_mirror','nmos2','_Met1Layer')/2+self.getYWidth('via_m1_m4_mirror','ViaMet12Met2','_Met1Layer')/2]]
+
 
         if mirror_num2+coarse_num+fine_num+mirror_num > Xnum*Ynum :
             raise NotImplementedError
@@ -462,6 +470,10 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
         if (nmos_stack_coarse_param['nmos2_length'] == nmos_stack_fine_param['nmos2_length'] == nmos_stack_mirror_param['nmos2_length']) == False :
             raise NotImplementedError
+
+        if (nmos_stack_coarse_param['nmos2_gate'] == nmos_stack_fine_param['nmos2_gate'] == nmos_stack_mirror_param['nmos2_gate'] == 1) == False :
+            raise NotImplementedError
+
 
         # if Xnum*Ynum % total_num >= Xnum :
         #     raise NotImplementedError
