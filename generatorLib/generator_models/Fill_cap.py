@@ -15,7 +15,7 @@ class FillCapCell(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,Cap_poly_x_length=500,Cap_poly_nmos_y_width=200,Cap_poly_pmos_y_width=500,Cell_height=1800,Power_CO_Pitch=150,Power_CO_Num=4,vss_nmosgate_space=58,vdd_pmosgate_space=58,gate2pwr_co_num=2, XVT='RVT'):
+	def _CalculateDesignParameter(self,Cap_poly_x_length=500,Cap_poly_nmos_y_width=200,Cap_poly_pmos_y_width=500,Cell_height=1800,Power_CO_Pitch=150,Power_CO_Num=None,vss_nmosgate_space=58,vdd_pmosgate_space=58,gate2pwr_co_num=2, XVT='RVT'):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -26,7 +26,15 @@ class FillCapCell(StickDiagram._StickDiagram):
 
 		if Min_height > Cell_height :
 			raise NotImplementedError
+		elif Power_CO_Pitch < (drc._VIAxMinSpace + drc._VIAxMinWidth) :
+			raise NotImplementedError
 		else:
+
+			Auto_Numpitch_flag = 0
+			if Power_CO_Num == None :
+				Power_CO_Num = 1
+				Auto_Numpitch_flag = 1
+
 			self._DesignParameter['vssrail'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='vssrailIn{}'.format(_Name)))[0]
 			self._DesignParameter['vssrail']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=Power_CO_Num, UnitPitch=Power_CO_Pitch, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True, deleteViaAndMet1=False))
 			self._DesignParameter['vssrail']['_XYCoordinates'] = [[0.0, 0.0]]
@@ -47,6 +55,7 @@ class FillCapCell(StickDiagram._StickDiagram):
 			self._DesignParameter['pmoscap']['_XYCoordinates'] = [[(self._DesignParameter['vddrail']['_XYCoordinates'][0][0] + self._DesignParameter['vddrail']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]), ((((self._DesignParameter['vddrail']['_XYCoordinates'][0][1] + self._DesignParameter['vddrail']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['vddrail']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] // 2)) - (self._DesignParameter['pmoscap']['_DesignObj']._DesignParameter['N_poly']['_YWidth'] // 2)) - vdd_pmosgate_space)]]
 			self._DesignParameter['PIMP'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['PIMP'][0], _Datatype=DesignParameters._LayerMapping['PIMP'][1], _Width=self._DesignParameter['pmoscap']['_DesignObj']._DesignParameter['XVT']['_XWidth'])
 			self._DesignParameter['PIMP']['_XYCoordinates'] = [[[(self._DesignParameter['pmoscap']['_XYCoordinates'][0][0] + self._DesignParameter['pmoscap']['_DesignObj']._DesignParameter['XVT']['_XYCoordinates'][0][0]), ((self._DesignParameter['pmoscap']['_XYCoordinates'][0][1] + self._DesignParameter['pmoscap']['_DesignObj']._DesignParameter['XVT']['_XYCoordinates'][0][1]) + (self._DesignParameter['pmoscap']['_DesignObj']._DesignParameter['XVT']['_YWidth'] // 2))], [(self._DesignParameter['pmoscap']['_XYCoordinates'][0][0] + self._DesignParameter['pmoscap']['_DesignObj']._DesignParameter['XVT']['_XYCoordinates'][0][0]), ((((self._DesignParameter['pmoscap']['_XYCoordinates'][0][1] + self._DesignParameter['pmoscap']['_DesignObj']._DesignParameter['N_poly']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmoscap']['_DesignObj']._DesignParameter['N_poly']['_YWidth'] // 2)) // 2) + (((self._DesignParameter['nmoscap']['_XYCoordinates'][0][1] + self._DesignParameter['nmoscap']['_DesignObj']._DesignParameter['N_poly']['_XYCoordinates'][0][1]) + (self._DesignParameter['nmoscap']['_DesignObj']._DesignParameter['N_poly']['_YWidth'] // 2)) // 2))]]]
+
 
 			if DesignParameters._Technology == 'SS28nm':
 				assert XVT in ('SLVT', 'LVT', 'RVT', 'HVT')
@@ -100,4 +109,13 @@ class FillCapCell(StickDiagram._StickDiagram):
 			self._DesignParameter['viaL']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(**dict(_ViaPoly2Met1NumberOfCOX=gate2pwr_co_num, _ViaPoly2Met1NumberOfCOY=1))
 			self._DesignParameter['viaL']['_XYCoordinates'] = [[(((self._DesignParameter['n_polyrouting']['_XYCoordinates'][0][1][0] + drc._Metal1MinEnclosureCO2) + (drc._CoMinWidth // 2)) + (((drc._CoMinWidth + drc._CoMinSpace) * (gate2pwr_co_num - 1)) // 2)), self._DesignParameter['n_polyrouting']['_XYCoordinates'][0][0][1]]]
 
+			M1_span = (((self._DesignParameter['nmos_R']['_XYCoordinates'][0][0][0]) - (self._DesignParameter['nmos_R']['_Width'] / 2)) - (((self._DesignParameter['viaL']['_XYCoordinates'][0][0]) + self._DesignParameter['viaL']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]) + (self._DesignParameter['viaL']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2)))
+
+			if M1_span < drc._Metal1MinSpace2 :
+				raise NotImplementedError
+
+			if Auto_Numpitch_flag == 1:
+				Power_CO_Num = int(((self._DesignParameter['pmos_R']['_XYCoordinates'][0][0][0]) - self._DesignParameter['pmos_L']['_XYCoordinates'][0][0][0] + self._DesignParameter['pmos_L']['_Width']) // Power_CO_Pitch)
+				self._DesignParameter['vssrail']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=Power_CO_Num, UnitPitch=Power_CO_Pitch, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True, deleteViaAndMet1=False))
+				self._DesignParameter['vddrail']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=Power_CO_Num, UnitPitch=Power_CO_Pitch, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=False, deleteViaAndMet1=False))
 

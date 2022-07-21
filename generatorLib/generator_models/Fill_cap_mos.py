@@ -55,6 +55,9 @@ class FILLCAP_MOS(StickDiagram._StickDiagram):
 																					_YWidth=gate_y_width)
 		self._DesignParameter['DIFF_boundary_2']['_XYCoordinates'] = [[0.0, 0.0]]
 
+		if gate_y_width < (drc._CoMinEnclosureByODAtLeastTwoSide * 2 + drc._CoMinWidth) :
+			raise NotImplementedError
+
 		##M1 layer
 		self._DesignParameter['_Met1Layer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],
 													  _Datatype=DesignParameters._LayerMapping['METAL1'][1])
