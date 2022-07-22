@@ -21,6 +21,11 @@ class Tie_Cell(StickDiagram._StickDiagram):
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
 
+		if sd_width == None :
+			sd_width=drc._Metal1MinSpace2
+		if gate_spacing == None :
+			gate_spacing=drc._PolygateMinSpace
+
 		self._DesignParameter['vss'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='vssIn{}'.format(_Name)))[0]
 		self._DesignParameter['vss']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=2, UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True))
 		self._DesignParameter['vss']['_XYCoordinates'] = [[0.0, 0.0]]
@@ -506,6 +511,11 @@ class Tie_Cell(StickDiagram._StickDiagram):
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
 
+		if sd_width == None :
+			sd_width=drc._Metal1MinSpace2
+		if gate_spacing == None :
+			gate_spacing=drc._PolygateMinSpace
+
 		self._DesignParameter['vss'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='vssIn{}'.format(_Name)))[0]
 		self._DesignParameter['vss']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=2, UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True))
 		self._DesignParameter['vss']['_XYCoordinates'] = [[0.0, 0.0]]
@@ -959,3 +969,4 @@ class Tie_Cell(StickDiagram._StickDiagram):
 	# 	self._DesignParameter['_VDDpin']['_XYCoordinates']=self._DesignParameter['vdd']['_XYCoordinates']
 	# 	self._DesignParameter['_VSSpin']['_XYCoordinates']=self._DesignParameter['vss']['_XYCoordinates']
 	# 	self._DesignParameter['_TIELpin']['_XYCoordinates']=[[(self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][0][0]+self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][-1][0])/2, self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][0][1]]]
+
