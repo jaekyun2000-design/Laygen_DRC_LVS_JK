@@ -562,12 +562,6 @@ class INVERTER_COARSE(StickDiagram._StickDiagram):
         self._DesignParameter['nwell']['_XWidth'] = nwell_xwidth
         self._DesignParameter['nwell']['_YWidth'] = nwell_ywidth
 
-        self._DesignParameter['additional_met1_p'] = self._BoundaryElementDeclaration(
-            _Layer=DesignParameters._LayerMapping['METAL1'][0],
-            _Datatype=DesignParameters._LayerMapping['METAL1'][1])
-        self._DesignParameter['addtional_met1_n'] = self._BoundaryElementDeclaration(
-            _Layer=DesignParameters._LayerMapping['METAL1'][0],
-            _Datatype=DesignParameters._LayerMapping['METAL1'][1])
 
         """
         Supply VSS VDD Routing
@@ -595,6 +589,7 @@ class INVERTER_COARSE(StickDiagram._StickDiagram):
                                       self.getXYLeft('pmos1','pmos', '_PODummyLayer')[0][0])
         self.rightmost_poly_edge = max(self.getXYRight('nmos2','nmos','_PODummyLayer')[-1][0],
                                       self.getXYRight('pmos2','pmos', '_PODummyLayer')[-1][0])
+        self.cell_width = self.rightmost_poly_edge - self.leftmost_poly_edge
 
 
 
