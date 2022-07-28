@@ -91,10 +91,12 @@ class _NMOS(StickDiagram._StickDiagram):
         self._DesignParameter['nmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
             **nmos_via_inputs)
 
+        if space_bw_gate_nmos < drc._Metal1MinSpace2:
+            space_bw_gate_nmos = drc._Metal1MinSpace2
         nmos_input_via_y_value = \
             0 + self._DesignParameter['nmos']['_DesignObj']._DesignParameter\
             ['_Met1Layer']['_YWidth'] / 2 + self._DesignParameter['nmos_gate_via']['_DesignObj']\
-                ._DesignParameter['_Met1Layer']['_YWidth'] / 2 + drc._Metal1MinSpace2 + space_bw_gate_nmos
+                ._DesignParameter['_Met1Layer']['_YWidth'] / 2 + space_bw_gate_nmos
         self._DesignParameter['nmos_gate_via']['_XYCoordinates'] = [[0, nmos_input_via_y_value]]
 
         """
@@ -140,7 +142,7 @@ class _NMOS(StickDiagram._StickDiagram):
             supply_points = \
             self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates']
             self._DesignParameter['_XYCoordinateSupplyRouting'] = dict(_DesignParametertype= 7, _XYCoordinates = supply_points)
-        self.offset_value = abs(nmos_y_value)
+        self.offset_value = self.getXY('nmos_gate_via','_Met1Layer')[0][1]
 
         if gate_option == 'left':    # X value Calibre (-)
             if tmp_num_for_gate != 2:
@@ -153,6 +155,7 @@ class _NMOS(StickDiagram._StickDiagram):
                                       self.getXYBot('nmos_gate_via', '_POLayer')[0][1]
                     self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][1] = nmos_input_via_y_value + calibre_y_value
                 self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][0] = calibre_x_value
+                self.offset_value = self.getXY('nmos_gate_via', '_Met1Layer')[0][1]
         elif gate_option == 'right':    # X value Calibre (+)
             if tmp_num_for_gate != 2:
                 raise Exception(f"{gate_option} option is not provided: gate number = {tmp_num_for_gate}")
@@ -164,6 +167,7 @@ class _NMOS(StickDiagram._StickDiagram):
                     calibre_y_value = self.getXYTop('nmos','_PODummyLayer')[0][1] + drc._PolygateMinSpace - \
                                       self.getXYBot('nmos_gate_via', '_POLayer')[0][1]
                     self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][1] = nmos_input_via_y_value + calibre_y_value
+                    self.offset_value = self.getXY('nmos_gate_via', '_Met1Layer')[0][1]
         elif gate_option == 'rotate':
             calibre_value = (self.getYWidth('nmos_gate_via', '_Met1Layer') - self.getXWidth('nmos_gate_via', '_Met1Layer')) / 2
             self.offset_value = self.offset_value - calibre_value
