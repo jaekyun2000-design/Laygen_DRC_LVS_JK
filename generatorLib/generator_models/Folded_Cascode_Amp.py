@@ -15,7 +15,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
             self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
         self._DesignParameter['_Name']['Name'] = _Name
 
-    def _CalculateDesignParameter(self, pmos_pdn_single_sw_param={'_PMOSNumberofGate':8, '_PMOSChannelWidth':2000, '_PMOSChannellength':30, '_PMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None}, \
+    def _CalculateDesignParameter(self, pmos_pdn_single_sw_param={'_PMOSNumberofGate':8, '_PMOSChannelWidth':2000, '_PMOSChannellength':30, '_PMOSDummy':True, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None}, \
                                         pmos_pdn_pair_sw_param={'_PMOSNumberofGate':32, '_PMOSChannelWidth':250, '_PMOSChannellength':30, '_PMOSDummy':True, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None}, \
                                         pmos_current_pair1_param={'_PMOSNumberofGate':8, '_PMOSChannelWidth':5000, '_PMOSChannellength':1000, '_PMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None}, \
                                         pmos_current_pair2_param={'_PMOSNumberofGate':8, '_PMOSChannelWidth':5000, '_PMOSChannellength':1000, '_PMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None},\
@@ -181,4 +181,136 @@ class EasyDebugModule(StickDiagram._StickDiagram):
             self._DesignParameter['met1_gate_vbp1']['_XYCoordinates']=tmp
             del tmp
 
-            self._DesignParameter
+            self._DesignParameter['gate_pdn_single_sw']=self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_pdn_single_swIn{}'.format(_Name)))[0]
+            self._DesignParameter['gate_pdn_single_sw']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(_ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2)
+
+            XCoordinate_single_sw=self._DesignParameter['pmos_vbp2']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_vbp2']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]-self.getXWidth('pmos_vbp2','_PPLayer')/2-(self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][-1][0]+self.getXWidth('pmos_pdn_single_sw','_PPLayer')/2)-drc._PpMinSpace
+            YCoordinate_gate_sw=self._DesignParameter['gate_vbp2']['_XYCoordinates'][-1][1]-self.getYWidth('gate_vbp2','_POLayer')/2+self.getYWidth('gate_pdn_single_sw','_POLayer')/2
+
+            self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates']=[[XCoordinate_single_sw, YCoordinate_gate_sw+self.getYWidth('gate_pdn_single_sw','_Met1Layer')/2+self.getYWidth('pmos_pdn_single_sw','_Met1Layer')/2+3*drc._Metal1MinSpace]]
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_XYCoordinatePMOSSupplyRouting']['_XYCoordinates'])):
+                tmp.append([self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_XYCoordinatePMOSSupplyRouting']['_XYCoordinates'][i][0], YCoordinate_gate_sw])
+            self._DesignParameter['gate_pdn_single_sw']['_XYCoordinates']=tmp
+            del tmp
+
+            self._DesignParameter['poly_pdn_single_sw_x']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],_Datatype=DesignParameters._LayerMapping['POLY'][1], _XYCoordinates=[], _Width=None)
+            self._DesignParameter['poly_pdn_single_sw_x']['_Width']=self.getYWidth('gate_pdn_single_sw','_POLayer')
+            self._DesignParameter['poly_pdn_single_sw_x']['_XYCoordinates']=[[self._DesignParameter['gate_pdn_single_sw']['_XYCoordinates'][0], self._DesignParameter['gate_pdn_single_sw']['_XYCoordinates'][-1]]]
+
+            self._DesignParameter['poly_pdn_single_sw_y']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],_Datatype=DesignParameters._LayerMapping['POLY'][1], _XYCoordinates=[], _Width=None)
+            self._DesignParameter['poly_pdn_single_sw_y']['_Width']=self.getXWidth('pmos_pdn_single_sw','_POLayer')
+            tmp=[]
+            for i in range(0,len(self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][0][1]], \
+                            [self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['gate_pdn_single_sw']['_XYCoordinates'][0][1]]])
+            self._DesignParameter['poly_pdn_single_sw_y']['_XYCoordinates']=tmp
+
+            self._DesignParameter['pmos_vb2']['_XYCoordinates']=[[min(self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]-self.getXWidth('pmos_pdn_single_sw','_PPLayer')/2-self.getXWidth('pmos_vb2','_PPLayer')/2-drc._PpMinSpace, self._DesignParameter['pmos_vbp1']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_vbp1']['_DesignObj']._DesignParameter['_PPLayer']['_XYCoordinates'][0][0]-self.getXWidth('pmos_vbp1','_PPLayer')/2-self.getXWidth('pmos_input','_PPLayer')/2-drc._PpMinSpace), self._DesignParameter['pmos_vbp2']['_XYCoordinates'][0][1]]]
+            self._DesignParameter['pmos_input']['_XYCoordinates']=[[self.getXY('pmos_vb2')[0][0], self.getXY('pmos_vbp1')[0][1]], [self.getXY('pmos_vb2')[0][0], self.getXY('pmos_vbp1')[0][1]+self.getYWidth('pmos_input','_Met1Layer')+19*drc._Metal1MinSpace]]
+
+            self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'].append([self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][0]-self.getXWidth('pmos_vb2','_PPLayer')/2-self.getXWidth('pmos_pdn_single_sw','_PPLayer')/2-drc._PpMinSpace, self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][0][1]])
+
+            self._DesignParameter['gate_1_pdn_single_sw']=self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_1_pdn_single_swIn{}'.format(_Name)))[0]
+            self._DesignParameter['gate_1_pdn_single_sw']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(_ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2)
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_XYCoordinatePMOSSupplyRouting']['_XYCoordinates'])):
+                tmp.append([2*self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][0]-self._DesignParameter['gate_pdn_single_sw']['_XYCoordinates'][i][0], self._DesignParameter['gate_pdn_single_sw']['_XYCoordinates'][0][1]])
+            self._DesignParameter['gate_1_pdn_single_sw']['_XYCoordinates']=tmp
+            del tmp
+
+            self._DesignParameter['poly_1_pdn_single_sw_x']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],_Datatype=DesignParameters._LayerMapping['POLY'][1], _XYCoordinates=[], _Width=None)
+            self._DesignParameter['poly_1_pdn_single_sw_x']['_Width']=self.getYWidth('gate_pdn_single_sw','_POLayer')
+            self._DesignParameter['poly_1_pdn_single_sw_x']['_XYCoordinates']=[[self._DesignParameter['gate_1_pdn_single_sw']['_XYCoordinates'][0], self._DesignParameter['gate_1_pdn_single_sw']['_XYCoordinates'][-1]]]
+
+            self._DesignParameter['poly_1_pdn_single_sw_y']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],_Datatype=DesignParameters._LayerMapping['POLY'][1], _XYCoordinates=[], _Width=None)
+            self._DesignParameter['poly_1_pdn_single_sw_y']['_Width']=self.getXWidth('pmos_pdn_single_sw','_POLayer')
+            tmp=[]
+            for i in range(0,len(self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][1][1]], \
+                            [self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['gate_1_pdn_single_sw']['_XYCoordinates'][0][1]]])
+            self._DesignParameter['poly_1_pdn_single_sw_y']['_XYCoordinates']=tmp
+            del tmp
+
+            self._DesignParameter['gate_inputn']=self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_inputpIn{}'.format(_Name)))[0]
+            self._DesignParameter['gate_inputn']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(_ViaPoly2Met1NumberOfCOX=2, _ViaPoly2Met1NumberOfCOY=1)
+            tmp=[]
+            for i in range(0,len(self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0],\
+                            self._DesignParameter['pmos_input']['_XYCoordinates'][0][1]+self.getYWidth('pmos_input','_POLayer')/2])
+                tmp.append([self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0],\
+                            self._DesignParameter['pmos_input']['_XYCoordinates'][0][1]-self.getYWidth('pmos_input','_POLayer')/2])
+            self._DesignParameter['gate_inputn']['_XYCoordinates']=tmp
+            del tmp
+
+            self._DesignParameter['gate_inputp']=self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_inputnIn{}'.format(_Name)))[0]
+            self._DesignParameter['gate_inputp']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(_ViaPoly2Met1NumberOfCOX=2, _ViaPoly2Met1NumberOfCOY=1)
+            tmp=[]
+            for i in range(0,len(self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([self._DesignParameter['pmos_input']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0],\
+                            self._DesignParameter['pmos_input']['_XYCoordinates'][1][1]+self.getYWidth('pmos_input','_POLayer')/2])
+                tmp.append([self._DesignParameter['pmos_input']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0],\
+                            self._DesignParameter['pmos_input']['_XYCoordinates'][1][1]-self.getYWidth('pmos_input','_POLayer')/2])
+            self._DesignParameter['gate_inputp']['_XYCoordinates']=tmp
+            del tmp
+
+            self._DesignParameter['gate_vb2']=self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_vb2In{}'.format(_Name)))[0]
+            self._DesignParameter['gate_vb2']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(_ViaPoly2Met1NumberOfCOX=2, _ViaPoly2Met1NumberOfCOY=1)
+            tmp=[]
+            for i in range(0,len(self._DesignParameter['pmos_vb2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_vb2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0],\
+                            self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][1]+self.getYWidth('pmos_vb2','_POLayer')/2])
+                tmp.append([self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_vb2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0],\
+                            self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][1]-self.getYWidth('pmos_vb2','_POLayer')/2])
+            self._DesignParameter['gate_vb2']['_XYCoordinates']=tmp
+            del tmp
+
+            self._DesignParameter['poly_gate_input']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],_Datatype=DesignParameters._LayerMapping['POLY'][1], _XYCoordinates=[], _Width=None)
+            self._DesignParameter['poly_gate_input']['_Width']=self.getXWidth('pmos_input','_POLayer')
+            tmp=[]
+            for i in range(0,len(self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_input']['_XYCoordinates'][0][1]+self.getYWidth('pmos_input','_POLayer')/2+self.getYWidth('gate_inputp','_POLayer')/2],\
+                            [self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_input']['_XYCoordinates'][0][1]-self.getYWidth('pmos_input','_POLayer')/2-self.getYWidth('gate_inputp','_POLayer')/2]])
+                tmp.append([[self._DesignParameter['pmos_input']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_input']['_XYCoordinates'][1][1]+self.getYWidth('pmos_input','_POLayer')/2+self.getYWidth('gate_inputn','_POLayer')/2],\
+                            [self._DesignParameter['pmos_input']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_input']['_XYCoordinates'][1][1]-self.getYWidth('pmos_input','_POLayer')/2-self.getYWidth('gate_inputn','_POLayer')/2]])
+            self._DesignParameter['poly_gate_input']['_XYCoordinates']=tmp
+            del tmp
+
+            self._DesignParameter['poly_vb2']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],_Datatype=DesignParameters._LayerMapping['POLY'][1], _XYCoordinates=[], _Width=None)
+            self._DesignParameter['poly_vb2']['_Width']=self.getXWidth('pmos_vb2','_POLayer')
+            tmp=[]
+            for i in range(0,len(self._DesignParameter['pmos_vb2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_vb2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][1]+self.getYWidth('pmos_vb2','_POLayer')/2+self.getYWidth('gate_vb2','_POLayer')/2],\
+                            [self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_vb2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][1]-self.getYWidth('pmos_vb2','_POLayer')/2-self.getYWidth('gate_vb2','_POLayer')/2]])
+            self._DesignParameter['poly_vb2']['_XYCoordinates']=tmp
+            del tmp
+
+            self._DesignParameter['met1_gate_input']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[], _Width=None)
+            self._DesignParameter['met1_gate_input']['_Width']=self.getXWidth('gate_inputp','_Met1Layer')
+            tmp=[]
+            for i in range(0,len(self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_input']['_XYCoordinates'][0][1]+self.getYWidth('pmos_input','_POLayer')/2],\
+                            [self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_input']['_XYCoordinates'][0][1]-self.getYWidth('pmos_input','_POLayer')/2]])
+                tmp.append([[self._DesignParameter['pmos_input']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_input']['_XYCoordinates'][1][1]+self.getYWidth('pmos_input','_POLayer')/2],\
+                            [self._DesignParameter['pmos_input']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_input']['_XYCoordinates'][1][1]-self.getYWidth('pmos_input','_POLayer')/2]])
+            self._DesignParameter['met1_gate_input']['_XYCoordinates']=tmp
+            del tmp
+
+            self._DesignParameter['met1_gate_vb2']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[], _Width=None)
+            self._DesignParameter['met1_gate_vb2']['_Width']=self.getXWidth('gate_vb2','_Met1Layer')
+            tmp=[]
+            for i in range(0,len(self._DesignParameter['pmos_vb2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_vb2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][1]+self.getYWidth('pmos_vb2','_POLayer')/2],\
+                            [self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_vb2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][1]-self.getYWidth('pmos_vb2','_POLayer')/2]])
+            self._DesignParameter['met1_gate_vb2']['_XYCoordinates']=tmp
+            del tmp
+
+            self._DesignParameter['pplayer1']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['PIMP'][0],_Datatype=DesignParameters._LayerMapping['PIMP'][1], _XYCoordinates=[], _Width=None)
+            self._DesignParameter['pplayer1']['_Width']=min(self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][0]+self.getXWidth('pmos_vb2','_PPLayer')/2,self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]+self.getXWidth('pmos_input','_PPLayer')/2)-min(self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][1][0]-self.getXWidth('pmos_pdn_single_sw','_PPLayer')/2,self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]-self.getXWidth('pmos_input','_PPLayer')/2)
+            self._DesignParameter['pplayer1']['_XYCoordinates']=[[[(min(self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][0]+self.getXWidth('pmos_vb2','_PPLayer')/2,self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]+self.getXWidth('pmos_input','_PPLayer')/2)+min(self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][1][0]-self.getXWidth('pmos_pdn_single_sw','_PPLayer')/2,self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]-self.getXWidth('pmos_input','_PPLayer')/2))/2, self._DesignParameter['pmos_input']['_XYCoordinates'][1][1]+self.getYWidth('pmos_input','_PPLayer')/2],\
+                                                                  [(min(self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][0]+self.getXWidth('pmos_vb2','_PPLayer')/2,self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]+self.getXWidth('pmos_input','_PPLayer')/2)+min(self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][1][0]-self.getXWidth('pmos_pdn_single_sw','_PPLayer')/2,self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]-self.getXWidth('pmos_input','_PPLayer')/2))/2, self._DesignParameter['pmos_vb2']['_XYCoordinates'][0][1]-self.getYWidth('pmos_vb2','_PPLayer')/2]]]
+
+            self._DesignParameter['pplayer2']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['PIMP'][0],_Datatype=DesignParameters._LayerMapping['PIMP'][1], _XYCoordinates=[], _Width=None)
+            self._DesignParameter['pplayer2']['_Width']=self._DesignParameter['pmos_vbp1']['_XYCoordinates'][0][1]+self.getYWidth('pmos_vbp1','_PPLayer')/2-min(self._DesignParameter['pmos_vbp2']['_XYCoordinates'][0][1]-self.getYWidth('pmos_vbp2','_PPLayer')/2, self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][0][1]-self.getYWidth('pmos_pdn_single_sw','_PPLayer')/2)
+            self._DesignParameter['pplayer2']['_XYCoordinates']=[[[min(self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]-self.getXWidth('pmos_input','_PPLayer')/2, self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][1][0]-self.getXWidth('pmos_pdn_single_sw','_PPLayer')/2), (self._DesignParameter['pmos_vbp1']['_XYCoordinates'][0][1]+self.getYWidth('pmos_vbp1','_PPLayer')/2+min(self._DesignParameter['pmos_vbp2']['_XYCoordinates'][0][1]-self.getYWidth('pmos_vbp2','_PPLayer')/2, self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][0][1]-self.getYWidth('pmos_pdn_single_sw','_PPLayer')/2))/2],\
+                                                                  [max(self._DesignParameter['pmos_vbp2']['_XYCoordinates'][1][0]+self.getXWidth('pmos_vbp2','_PPLayer')/2, self._DesignParameter['pmos_vbp1']['_XYCoordinates'][1][0]+self.getXWidth('pmos_vbp1','_PPLayer')/2,self._DesignParameter['pmos_pdn_pair_sw']['_XYCoordinates'][1][0]+self.getXWidth('pmos_pdn_pair_sw','_PPLayer')), (self._DesignParameter['pmos_vbp1']['_XYCoordinates'][0][1]+self.getYWidth('pmos_vbp1','_PPLayer')/2+min(self._DesignParameter['pmos_vbp2']['_XYCoordinates'][0][1]-self.getYWidth('pmos_vbp2','_PPLayer')/2, self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][0][1]-self.getYWidth('pmos_pdn_single_sw','_PPLayer')/2))/2]]]
