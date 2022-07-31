@@ -9,7 +9,7 @@ from generatorLib.generator_models import SupplyRails
 from generatorLib.generator_models import NMOSWithDummy
 
 class Tie_Cell(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='TIEH_2X_STD_v1'):
+	def __init__(self, _DesignParameter=None, _Name='Tie Cell'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:

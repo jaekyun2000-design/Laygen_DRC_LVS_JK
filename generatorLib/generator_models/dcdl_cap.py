@@ -10,7 +10,7 @@ from generatorLib.generator_models import NMOSWithDummy
 from generatorLib.generator_models import ViaPoly2Met1
 
 class dcdl_cap(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='dcdl_cap'):
+	def __init__(self, _DesignParameter=None, _Name='DCDL Cap'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
