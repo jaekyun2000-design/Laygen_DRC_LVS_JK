@@ -1,9 +1,8 @@
-import DRCchecker
-import StickDiagram
-import DesignParameters
-import DRC
-import user_define_exceptions
-import ftplib
+from generatorLib import StickDiagram
+from generatorLib import DesignParameters
+import copy
+import math
+from generatorLib import DRC
 
 class _Opppcres(StickDiagram._StickDiagram) :
 
