@@ -9,7 +9,7 @@ from generatorLib.generator_models import NMOSWithDummy
 from generatorLib.generator_models import PMOSWithDummy
 from generatorLib.generator_models import ViaMet12Met2
 
-class NAND3(StickDiagram._StickDiagram):
+class _NAND3(StickDiagram._StickDiagram):
 	def __init__(self, _DesignParameter=None, _Name='NAND3'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter

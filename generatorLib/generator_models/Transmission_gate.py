@@ -10,7 +10,7 @@ from generatorLib.generator_models import NMOSWithDummy
 from generatorLib.generator_models import PMOSWithDummy
 from generatorLib.generator_models import Z_PWR_CNT
 
-class Transmission_gate(StickDiagram._StickDiagram):
+class _Transmission_gate(StickDiagram._StickDiagram):
 	def __init__(self, _DesignParameter=None, _Name='Transmission_gate'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
