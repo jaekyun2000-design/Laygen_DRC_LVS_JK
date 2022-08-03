@@ -15,7 +15,7 @@ class _NMOS(StickDiagram._StickDiagram):
                                         via_coy = None, space_bw_gate_nmos = None,
                                         gate_option = None)
 
-    def __init__(self, _DesignParameter=None, _Name='nmos_with_gate'):
+    def __init__(self, _DesignParameter=None, _Name='MS_nmos_with_gate'):
         if _DesignParameter != None:
             self._DesignParameter = _DesignParameter
         else:
@@ -29,6 +29,7 @@ class _NMOS(StickDiagram._StickDiagram):
 
                                   via_coy = None, space_bw_gate_nmos = None, gate_option = None):
         drc = DRC.DRC()
+        _MinSnapSpacing = drc._MinSnapSpacing
         _Name = self._DesignParameter['_Name']['_Name']
         if space_bw_gate_nmos == None:
             space_bw_gate_nmos = 0
@@ -91,13 +92,43 @@ class _NMOS(StickDiagram._StickDiagram):
         self._DesignParameter['nmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
             **nmos_via_inputs)
 
-        if space_bw_gate_nmos < drc._Metal1MinSpace2:
-            space_bw_gate_nmos = drc._Metal1MinSpace2
-        nmos_input_via_y_value = \
+        nmos_input_via_y_value = self.CeilMinSnapSpacing(\
             0 + self._DesignParameter['nmos']['_DesignObj']._DesignParameter\
             ['_Met1Layer']['_YWidth'] / 2 + self._DesignParameter['nmos_gate_via']['_DesignObj']\
-                ._DesignParameter['_Met1Layer']['_YWidth'] / 2 + space_bw_gate_nmos
+                ._DesignParameter['_Met1Layer']['_YWidth'] / 2 + space_bw_gate_nmos + drc._Metal1MinSpace2,
+            _MinSnapSpacing)
         self._DesignParameter['nmos_gate_via']['_XYCoordinates'] = [[0, nmos_input_via_y_value]]
+
+        if gate_option == 'left':    # X value Calibre (-)
+            if tmp_num_for_gate != 2:
+                raise Exception(f"{gate_option} option is not provided: gate number = {tmp_num_for_gate}")
+            else:
+                rightmostedge = 0 + channel_length/2
+                calibre_x_value = self.CeilMinSnapSpacing(rightmostedge - self.getXWidth('nmos_gate_via', '_POLayer') / 2,
+                                                          _MinSnapSpacing)
+                if self.getXYTop('nmos','_PODummyLayer')[0][1] + drc._PolygateMinSpace > self.getXYBot('nmos_gate_via','_POLayer')[0][1]:
+                    calibre_y_value = self.getXYTop('nmos','_PODummyLayer')[0][1] + drc._PolygateMinSpace - \
+                                      self.getXYBot('nmos_gate_via', '_POLayer')[0][1]
+                    self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][1] = nmos_input_via_y_value + calibre_y_value
+                self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][0] = calibre_x_value
+        elif gate_option == 'right':    # X value Calibre (+)
+            if tmp_num_for_gate != 2:
+                raise Exception(f"{gate_option} option is not provided: gate number = {tmp_num_for_gate}")
+            else:
+                leftmostedge = 0 - channel_length/2
+                calibre_x_value = self.CeilMinSnapSpacing(leftmostedge + self.getXWidth('nmos_gate_via', '_POLayer') / 2,
+                                                          _MinSnapSpacing)
+                self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][0] = calibre_x_value
+                if self.getXYTop('nmos',' _PODummyLayer')[0][1] + drc._PolygateMinSpace > self.getXYBot('nmos_gate_via','_POLayer')[0][1]:
+                    calibre_y_value = self.getXYTop('nmos','_PODummyLayer')[0][1] + drc._PolygateMinSpace - \
+                                      self.getXYBot('nmos_gate_via', '_POLayer')[0][1]
+                    self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][1] = nmos_input_via_y_value + calibre_y_value
+        self.offset_value = self.getXY('nmos_gate_via', '_Met1Layer')[0][1]
+        if gate_option == 'rotate':
+            calibre_value = self.CeilMinSnapSpacing((self.getYWidth('nmos_gate_via', '_Met1Layer') - self.getXWidth('nmos_gate_via', '_Met1Layer')) / 2,
+                                                    _MinSnapSpacing)
+            self.offset_value = self.offset_value - calibre_value
+
 
         """
         Routing
@@ -108,91 +139,99 @@ class _NMOS(StickDiagram._StickDiagram):
             _Width=None)
         nmos_offset = self._DesignParameter['nmos']['_XYCoordinates']
         nmos_poly_ref = self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_POLayer']
-        nmos_y_value =  self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][1]
+        gate_y_value =  self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][1]
 
         leftmostedge = nmos_offset[0][0] + nmos_poly_ref['_XYCoordinates'][0][0] - nmos_poly_ref['_XWidth'] / 2
         rightmostedge = nmos_offset[0][0] + nmos_poly_ref['_XYCoordinates'][-1][0] + nmos_poly_ref['_XWidth'] / 2
 
         nmos_target = []
-        nmos_target.append([[leftmostedge, nmos_y_value], [rightmostedge, nmos_y_value]])
+        nmos_target.append([[leftmostedge, gate_y_value], [rightmostedge, gate_y_value]])
 
         self._DesignParameter['additional_poly1']['_Width'] = self._DesignParameter['nmos_gate_via']\
             ['_DesignObj']._DesignParameter['_POLayer']['_YWidth']
         self._DesignParameter['additional_poly1']['_XYCoordinates'] = nmos_target
 
+
         if nmos_offset[0][1] + nmos_poly_ref['_XYCoordinates'][0][1] + nmos_poly_ref['_YWidth'] / 2 < \
-                nmos_y_value - self._DesignParameter['nmos_gate_via']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2:
+                gate_y_value - self._DesignParameter['nmos_gate_via']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2:
             self._DesignParameter['additional_poly2'] = self._PathElementDeclaration(
                 _Layer=DesignParameters._LayerMapping['POLY'][0],
                 _Datatype=DesignParameters._LayerMapping['POLY'][1],
                 _Width=nmos_poly_ref['_XWidth'])
-            nmos_path = []
+            poly_path = []
             poly_source = []
             poly_target = []
             for i in range(len(nmos_poly_ref['_XYCoordinates'])):
                 poly_source.append([a + b for a, b in zip (nmos_poly_ref['_XYCoordinates'][i], nmos_offset[0])])
-                poly_target.append([nmos_poly_ref['_XYCoordinates'][i][0] + nmos_offset[0][0], nmos_y_value])
-                nmos_path.append([poly_source[i],poly_target[i]])
-            self._DesignParameter['additional_poly2']['_XYCoordinates'] = nmos_path
-
-            output_points =\
-            self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates']
-            self._DesignParameter['_XYCoordinateOutputRouting'] = dict(_DesignParametertype= 7, _XYCoordinates = output_points)
-
-            supply_points = \
-            self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates']
-            self._DesignParameter['_XYCoordinateSupplyRouting'] = dict(_DesignParametertype= 7, _XYCoordinates = supply_points)
-        self.offset_value = self.getXY('nmos_gate_via','_Met1Layer')[0][1]
-
-        if gate_option == 'left':    # X value Calibre (-)
-            if tmp_num_for_gate != 2:
-                raise Exception(f"{gate_option} option is not provided: gate number = {tmp_num_for_gate}")
-            else:
-                rightmostedge = 0 + channel_length/2
-                calibre_x_value = rightmostedge - self.getXWidth('nmos_gate_via', '_POLayer') / 2
-                if self.getXYTop('nmos','_PODummyLayer')[0][1] + drc._PolygateMinSpace > self.getXYBot('nmos_gate_via','_POLayer')[0][1]:
-                    calibre_y_value = self.getXYTop('nmos','_PODummyLayer')[0][1] + drc._PolygateMinSpace - \
-                                      self.getXYBot('nmos_gate_via', '_POLayer')[0][1]
-                    self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][1] = nmos_input_via_y_value + calibre_y_value
-                self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][0] = calibre_x_value
-                self.offset_value = self.getXY('nmos_gate_via', '_Met1Layer')[0][1]
-        elif gate_option == 'right':    # X value Calibre (+)
-            if tmp_num_for_gate != 2:
-                raise Exception(f"{gate_option} option is not provided: gate number = {tmp_num_for_gate}")
-            else:
-                leftmostedge = 0 - channel_length/2
-                calibre_x_value = leftmostedge + self.getXWidth('nmos_gate_via', '_POLayer') / 2
-                self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][0] = calibre_x_value
-                if self.getXYTop('nmos',' _PODummyLayer')[0][1] + drc._PolygateMinSpace > self.getXYBot('nmos_gate_via','_POLayer')[0][1]:
-                    calibre_y_value = self.getXYTop('nmos','_PODummyLayer')[0][1] + drc._PolygateMinSpace - \
-                                      self.getXYBot('nmos_gate_via', '_POLayer')[0][1]
-                    self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][1] = nmos_input_via_y_value + calibre_y_value
-                    self.offset_value = self.getXY('nmos_gate_via', '_Met1Layer')[0][1]
-        elif gate_option == 'rotate':
-            calibre_value = (self.getYWidth('nmos_gate_via', '_Met1Layer') - self.getXWidth('nmos_gate_via', '_Met1Layer')) / 2
-            self.offset_value = self.offset_value - calibre_value
-
-
-
+                poly_target.append([nmos_poly_ref['_XYCoordinates'][i][0] + nmos_offset[0][0], gate_y_value])
+                poly_path.append([poly_source[i],poly_target[i]])
+            self._DesignParameter['additional_poly2']['_XYCoordinates'] = poly_path
 
 if __name__ == '__main__':
-    Obj = _NMOS()
-    Obj._CalculateDesignParameter(finger=1, channel_width=200, channel_length=30,
-                                  dummy=True, XVT='SLVT',PCCrit=True, space_bw_gate_nmos= 500)
+    for i in range(20):
+        import random
+        gate_options = ['left', 'right', 'rotate']
+        gate_option = random.choice(gate_options)
+        finger = random.randrange(1, 14, 1)
+        if finger != 1:
+            gate_option = None
+        # finger_on_p = random.randrange(1, 11, 1)
+        # finger_coarse_p1 = random.randrange(1, 11, 1)
+        # finger_coarse_p2 = random.randrange(1, 11, 1)
+        # finger_coarse_n1 = random.randrange(1, 11, 1)
+        # finger_coarse_n2 = random.randrange(1, 11, 1)
+        # finger_fine_p1 = random.randrange(1, 11, 1)
+        # finger_fine_p2 = random.randrange(1, 11, 1)
+        # finger_fine_n1 = random.randrange(1, 11, 1)
+        # finger_fine_n2 = random.randrange(1, 11, 1)
+        #
+        # finger_out_n = random.randrange(1, 11, 1)
+        # finger_out_p = random.randrange(1, 11, 1)
 
-    Obj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=Obj._DesignParameter)
-    _fileName = 'MS_nmos_with_gate.gds'
-    testStreamFile = open('./MS_nmos_with_gate.gds', 'wb')
-    tmp = Obj._CreateGDSStream(Obj._DesignParameter['_GDSFile']['_GDSFile'])
-    tmp.write_binary_gds_stream(testStreamFile)
-    testStreamFile.close()
+        channel_width = random.randrange(200, 850, 50)
+        # channel_width_coarse_n1 = random.randrange(200, 650, 50)
+        # channel_width_coarse_n2 = random.randrange(200, 650, 50)
+        # channel_width_fine_n1 = random.randrange(200, 650, 50)
+        # channel_width_fine_n2 = random.randrange(200, 650, 50)
+        # channel_width_out_n = random.randrange(200, 650, 50)
 
-    import ftplib
+        # channel_width_on_p = random.randrange(400, 1350, 50)
+        # channel_width_coarse_p1 = random.randrange(400, 1350, 50)
+        # channel_width_coarse_p2 = random.randrange(400, 1350, 50)
+        # channel_width_fine_p1 = random.randrange(400, 1350, 50)
+        # channel_width_fine_p2 = random.randrange(400, 1350, 50)
+        # channel_width_out_p = random.randrange(400, 1350, 50)
 
-    ftp = ftplib.FTP('141.223.29.62')
-    ftp.login('kms95', 'dosel545')
-    ftp.cwd('/mnt/sdb/kms95/Desktop')
-    myfile = open('MS_nmos_with_gate.gds', 'rb')
-    ftp.storbinary('STOR MS_nmos_with_gate.gds', myfile)
-    myfile.close()
-    ftp.close()
+        space_bw_gate_nmos = random.randrange(0, 100, 2)
+        # supply_num_coy = random.randrange(1, 5, 1)
+        # coarse_fine_dimension = random.randrange(2, 8, 1)
+        dummy = random.randrange(0, 2, 1)
+        channel_length = random.randrange(30, 100, 2)
+
+        Obj = _NMOS()
+        Obj._CalculateDesignParameter(finger=finger, channel_width=channel_width, channel_length=channel_length,
+                                      dummy=dummy, XVT='SLVT',PCCrit=True, space_bw_gate_nmos= space_bw_gate_nmos,
+                                      gate_option = gate_option)
+
+        Obj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=Obj._DesignParameter)
+        _fileName = 'MS_nmos_with_gate.gds'
+        testStreamFile = open('./MS_nmos_with_gate.gds', 'wb')
+        tmp = Obj._CreateGDSStream(Obj._DesignParameter['_GDSFile']['_GDSFile'])
+        tmp.write_binary_gds_stream(testStreamFile)
+        testStreamFile.close()
+
+        import ftplib
+
+        ftp = ftplib.FTP('141.223.29.62')
+        ftp.login('kms95', 'dosel545')
+        ftp.cwd('/mnt/sdb/kms95/OPUS/ss28')
+        myfile = open('MS_nmos_with_gate.gds', 'rb')
+        ftp.storbinary('STOR MS_nmos_with_gate.gds', myfile)
+        myfile.close()
+        ftp.close()
+
+        import DRCchecker
+
+        _DRC = DRCchecker.DRCchecker('kms95', 'dosel545', '/mnt/sdb/kms95/OPUS/ss28', '/mnt/sdb/kms95/OPUS/ss28/DRC/run',
+                                     'MS_nmos_with_gate', 'MS_nmos_with_gate')
+        _DRC.DRCchecker()
