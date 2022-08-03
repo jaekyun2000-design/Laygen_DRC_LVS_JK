@@ -28,6 +28,7 @@ class _PMOS(StickDiagram._StickDiagram):
 
                                   via_coy = None, gate_option = None):
         drc = DRC.DRC()
+        _MinSnapSpacing = drc._MinSnapSpacing
         _Name = self._DesignParameter['_Name']['_Name']
         if space_bw_gate_pmos == None:
             space_bw_gate_pmos = 0
@@ -91,12 +92,50 @@ class _PMOS(StickDiagram._StickDiagram):
         self._DesignParameter['pmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
             **pmos_via_inputs)
 
-        pmos_input_via_y_value = \
+        pmos_input_via_y_value = self.FloorMinSnapSpacing(\
             0 - self._DesignParameter['pmos']['_DesignObj']._DesignParameter\
             ['_Met1Layer']['_YWidth'] / 2 - self._DesignParameter['pmos_gate_via']\
-            ['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2 - drc._Metal1MinSpace2 - space_bw_gate_pmos
+            ['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2 - drc._Metal1MinSpace2 - space_bw_gate_pmos,
+            _MinSnapSpacing)
 
         self._DesignParameter['pmos_gate_via']['_XYCoordinates'] = [[0, pmos_input_via_y_value]]
+
+        if gate_option == 'left':  # X value Calibre (-)
+            if tmp_num_for_gate != 2:
+                raise Exception(f"{gate_option} option is not provided: gate number = {tmp_num_for_gate}")
+            else:
+                rightmostedge = 0 + channel_length / 2
+                calibre_x_value = self.FloorMinSnapSpacing(rightmostedge - self.getXWidth('pmos_gate_via', '_POLayer') / 2,
+                                                           _MinSnapSpacing)
+                if self.getXYBot('pmos', '_PODummyLayer')[0][1] - drc._PolygateMinSpace < \
+                        self.getXYTop('pmos_gate_via', '_POLayer')[0][1]:
+                    calibre_y_value = abs(self.getXYBot('pmos', '_PODummyLayer')[0][1] - drc._PolygateMinSpace - \
+                                      self.getXYTop('pmos_gate_via', '_POLayer')[0][1])
+                    self._DesignParameter['pmos_gate_via']['_XYCoordinates'][0][1] = pmos_input_via_y_value - calibre_y_value
+                self._DesignParameter['pmos_gate_via']['_XYCoordinates'][0][0] = calibre_x_value
+        elif gate_option == 'right':  # X value Calibre (+)
+            if tmp_num_for_gate != 2:
+                raise Exception(f"{gate_option} option is not provided: gate number = {tmp_num_for_gate}")
+            else:
+                leftmostedge = 0 - channel_length / 2
+                calibre_x_value = self.FloorMinSnapSpacing(leftmostedge + self.getXWidth('pmos_gate_via', '_POLayer') / 2,
+                                                           _MinSnapSpacing)
+                self._DesignParameter['pmos_gate_via']['_XYCoordinates'][0][0] = calibre_x_value
+                if self.getXYBot('pmos', ' _PODummyLayer')[0][1] - drc._PolygateMinSpace < \
+                        self.getXYTop('pmos_gate_via', '_POLayer')[0][1]:
+                    calibre_y_value = abs(self.getXYBot('pmos', '_PODummyLayer')[0][1] - drc._PolygateMinSpace - \
+                                      self.getXYTop('pmos_gate_via', '_POLayer')[0][1])
+                    self._DesignParameter['pmos_gate_via']['_XYCoordinates'][0][1] = pmos_input_via_y_value - calibre_y_value
+        self.offset_value = abs(self.getXY('pmos_gate_via', '_Met1Layer')[0][1])
+        if gate_option == 'rotate':
+            drc_test = self.getXYBot('pmos', '_PODummyLayer')[0][1] - self.getXYTop('pmos_gate_via', '_POLayer')[0][1]
+            if drc_test < drc._PolygateMinSpace:
+                calibre_y_value = drc._PolygateMinSpace - drc_test
+                self._DesignParameter['pmos_gate_via']['_XYCoordinates'][0][1] = pmos_input_via_y_value - calibre_y_value
+                self.offset_value = abs(self.getXY('pmos_gate_via', '_Met1Layer')[0][1])
+            calibre_value = self.FloorMinSnapSpacing((self.getYWidth('pmos_gate_via', '_Met1Layer') - self.getXWidth('pmos_gate_via', '_Met1Layer')) / 2,
+                                                     _MinSnapSpacing)
+            self.offset_value = self.offset_value - calibre_value
 
         """
         Routing
@@ -133,49 +172,6 @@ class _PMOS(StickDiagram._StickDiagram):
                 poly_target.append([pmos_poly_ref['_XYCoordinates'][i][0] + pmos_offset[0][0], pmos_y_value])
                 pmos_path.append([poly_source[i],poly_target[i]])
             self._DesignParameter['additional_poly2']['_XYCoordinates'] = pmos_path
-
-        output_points = \
-            self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting'][
-                '_XYCoordinates']
-        self._DesignParameter['_XYCoordinateNMOSOutputRouting'] = dict(_DesignParametertype=7, _XYCoordinates=output_points)
-
-        supply_points = \
-            self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_XYCoordinatePMOSSupplyRouting'][
-                '_XYCoordinates']
-        self._DesignParameter['_XYCoordinateNMOSSupplyRouting'] = dict(_DesignParametertype=7, _XYCoordinates=supply_points)
-        self.offset_value = abs(self.getXY('pmos_gate_via','_Met1Layer')[0][1])
-
-        if gate_option == 'left':  # X value Calibre (-)
-            if tmp_num_for_gate != 2:
-                raise Exception(f"{gate_option} option is not provided: gate number = {tmp_num_for_gate}")
-            else:
-                rightmostedge = 0 + channel_length / 2
-                calibre_x_value = rightmostedge - self.getXWidth('pmos_gate_via', '_POLayer') / 2
-                if self.getXYBot('pmos', '_PODummyLayer')[0][1] - drc._PolygateMinSpace < \
-                        self.getXYTop('pmos_gate_via', '_POLayer')[0][1]:
-                    calibre_y_value = abs(self.getXYBot('pmos', '_PODummyLayer')[0][1] - drc._PolygateMinSpace - \
-                                      self.getXYTop('pmos_gate_via', '_POLayer')[0][1])
-                    self._DesignParameter['pmos_gate_via']['_XYCoordinates'][0][1] = pmos_input_via_y_value - calibre_y_value
-                self._DesignParameter['pmos_gate_via']['_XYCoordinates'][0][0] = calibre_x_value
-                self.offset_value = abs(self.getXY('pmos_gate_via', '_Met1Layer')[0][1])
-        elif gate_option == 'right':  # X value Calibre (+)
-            if tmp_num_for_gate != 2:
-                raise Exception(f"{gate_option} option is not provided: gate number = {tmp_num_for_gate}")
-            else:
-                leftmostedge = 0 - channel_length / 2
-                calibre_x_value = leftmostedge + self.getXWidth('pmos_gate_via', '_POLayer') / 2
-                self._DesignParameter['pmos_gate_via']['_XYCoordinates'][0][0] = calibre_x_value
-                if self.getXYBot('pmos', ' _PODummyLayer')[0][1] - drc._PolygateMinSpace < \
-                        self.getXYTop('pmos_gate_via', '_POLayer')[0][1]:
-                    calibre_y_value = abs(self.getXYBot('pmos', '_PODummyLayer')[0][1] - drc._PolygateMinSpace - \
-                                      self.getXYTop('pmos_gate_via', '_POLayer')[0][1])
-                    self._DesignParameter['pmos_gate_via']['_XYCoordinates'][0][1] = pmos_input_via_y_value - calibre_y_value
-                self.offset_value = abs(self.getXY('pmos_gate_via', '_Met1Layer')[0][1])
-        elif gate_option == 'rotate':
-            calibre_value = (self.getYWidth('pmos_gate_via', '_Met1Layer') - self.getXWidth('pmos_gate_via',
-                                                                                            '_Met1Layer')) / 2
-            self.offset_value = self.offset_value - calibre_value
-
 
 if __name__ == '__main__':
     Obj = _PMOS()

@@ -17,7 +17,8 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
                                             finger1=None, channel_width1=None,
                                             finger2=None, channel_width2=None,
                                             supply_num_coy = None, supply_num_cox = None,
-                                            distance_to_vdd = None, distance_to_vss = None
+                                            distance_to_vdd = None, distance_to_vss = None,
+                                            space_bw_gate_nmos = None, space_bw_gate_pmos = None
                                            )
     def __init__(self, _DesignParameter=None, _Name='MS_inverter_on_out'):
         if _DesignParameter != None:
@@ -35,11 +36,13 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
 
                                   gap_bw_mos_gates=None,
                                   supply_num_coy=None, supply_num_cox=None,
-                                  distance_to_vdd=None, distance_to_vss=None
+                                  distance_to_vdd=None, distance_to_vss=None, space_bw_gate_nmos = None,
+                                  space_bw_gate_pmos=None
                                   ):
 
         drc = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
+        _MinSnapSpacing=drc._MinSnapSpacing
 
         nmos_inputs = copy.deepcopy(NMOSWithGate._NMOS._ParametersForDesignCalculation)
         nmos_inputs['finger'] = finger2
@@ -50,6 +53,8 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
         nmos_inputs['XVT'] = XVT
         if finger2 == 1:
             nmos_inputs['gate_option'] = 'left'
+        if space_bw_gate_nmos != None:
+            nmos_inputs['space_bw_gate_nmos'] = space_bw_gate_nmos
 
         pmos_inputs = copy.deepcopy(PMOSWithGate._PMOS._ParametersForDesignCalculation)
         pmos_inputs['finger'] = finger1
@@ -59,7 +64,9 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
         pmos_inputs['PCCrit'] = PCCrit
         pmos_inputs['XVT'] = XVT
         if finger1 == 1:
-            pmos_inputs['gate_option'] = 'rotate'
+            pmos_inputs['gate_option'] = 'left'
+        if space_bw_gate_pmos != None:
+            pmos_inputs['space_bw_gate_pmos'] = space_bw_gate_pmos
 
         self._DesignParameter['nmos'] = self._SrefElementDeclaration(_DesignObj=NMOSWithGate._NMOS(_DesignParameter=None,
                                                                         _Name='nmos_in_{}'.format(_Name)))[0]
@@ -72,9 +79,7 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
         self._DesignParameter['pmos']['_XYCoordinates'] = [[0, 0]]     # tmp value
 
 
-        gap_bw_mos_gates_min = 4 * drc._Metal1MinSpace + 4 * max(
-                self.getYWidth('nmos','nmos_gate_via', '_Met1Layer'),
-                self.getYWidth('pmos', 'pmos_gate_via', '_Met1Layer'))
+        gap_bw_mos_gates_min =2 * drc._Metal1MinSpace + 3 * self.getYWidth('nmos', 'nmos_gate_via', '_Met1Layer')
         if gap_bw_mos_gates == None:
             gap_bw_mos_gates = gap_bw_mos_gates_min
         else:
@@ -83,10 +88,10 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
                 gap_bw_mos_gates = gap_bw_mos_gates_min
             else:
                 pass
-        nmos_y_value = 0 - gap_bw_mos_gates/2 -\
-                        self._DesignParameter['nmos']['_DesignObj'].offset_value
-        pmos_y_value = 0 + gap_bw_mos_gates/2 +\
-                        self._DesignParameter['pmos']['_DesignObj'].offset_value
+        nmos_y_value =  self.CeilMinSnapSpacing(0 - gap_bw_mos_gates/2 -\
+                        self._DesignParameter['nmos']['_DesignObj'].offset_value, _MinSnapSpacing)
+        pmos_y_value =  self.CeilMinSnapSpacing(0 + gap_bw_mos_gates/2 +\
+                        self._DesignParameter['pmos']['_DesignObj'].offset_value, _MinSnapSpacing)
 
         self._DesignParameter['nmos']['_XYCoordinates'] = [[0, nmos_y_value]]
         self._DesignParameter['pmos']['_XYCoordinates'] = [[0, pmos_y_value]]
@@ -96,26 +101,29 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
         """
         self._DesignParameter['input_routing'] = self._PathElementDeclaration(
             _Layer=DesignParameters._LayerMapping['METAL1'][0],
-            _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-            _Width=drc._Metal1MinWidth)
+            _Datatype=DesignParameters._LayerMapping['METAL1'][1])
+
         min_cox = min(len(self.getXY('nmos', 'nmos_gate_via','_COLayer')),
                       len(self.getXY('pmos', 'pmos_gate_via','_COLayer')))
 
-        routing_path_num = min_cox // 3
-        min_gate_width = min(self.getXWidth('nmos', 'nmos_gate_via','_Met1Layer'),
-                             self.getXWidth('pmos', 'pmos_gate_via','_Met1Layer'))
-        if routing_path_num == 0:
-            routing_path_num = 1
-        unit_interval = min_gate_width / (routing_path_num+1)
-        path_nmos_points = []
-        path_pmos_points = []
-        path_inputs = []
-        for i in range(routing_path_num):
-            path_nmos_points.append([int(0 - min_gate_width / 2 + (i + 1) * unit_interval),
-                                      self.getXY('nmos', 'nmos_gate_via','_Met1Layer')[0][1]])
-            path_pmos_points.append([int(0 - min_gate_width / 2 + (i + 1) * unit_interval),
-                                      self.getXY('pmos', 'pmos_gate_via','_Met1Layer')[0][1]])
-            path_inputs.append([path_nmos_points[i], path_pmos_points[i]])
+        routing_path_level = min_cox // 3
+        if routing_path_level == 0:
+            routing_path_level = 1
+        self._DesignParameter['input_routing']['_Width'] = drc._Metal1MinWidth * routing_path_level
+        # min_gate_width = min(self.getXWidth('nmos', 'nmos_gate_via','_Met1Layer'),
+        #                      self.getXWidth('pmos', 'pmos_gate_via','_Met1Layer'))
+        # path_nmos_points = []
+        # path_pmos_points = []
+        x_value = self.getXY('pmos','pmos_gate_via', '_Met1Layer')[0][0]
+        y_value_n = self.getXY('nmos', 'nmos_gate_via', '_Met1Layer')[0][1]
+
+        path_inputs = [[[x_value, y_value_n],self.getXY('pmos','pmos_gate_via', '_Met1Layer')[0]]]
+        # for i in range(routing_path_num):
+        #     path_nmos_points.append([int(0 - min_gate_width / 2 + (i + 1) * unit_interval),
+        #                               self.getXY('nmos', 'nmos_gate_via','_Met1Layer')[0][1]])
+        #     path_pmos_points.append([int(0 - min_gate_width / 2 + (i + 1) * unit_interval),
+        #                               self.getXY('pmos', 'pmos_gate_via','_Met1Layer')[0][1]])
+        #     path_inputs.append([path_nmos_points[i], path_pmos_points[i]])
 
         self._DesignParameter['input_routing']['_XYCoordinates'] = path_inputs
 
@@ -135,26 +143,34 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
 
         exec(via_code_pmos_output)
         exec(via_code_nmos_output)
+        cnt = 1
+        while(1):
+            cnt = cnt + 1
+            drc_test2 = self.getXYBot('nmos','nmos_gate_via', '_Met1Layer')[0][1] -\
+                        self.getXYTop('nmos_output_via', '_Met1Layer')[0][1]
+            if drc_test2 < drc._Metal1MinSpace2:
+                calibre_value = drc._Metal1MinSpace2 - drc_test2
+                del self._DesignParameter['nmos_output_via']
+                calibre_for_input =self.CeilMinSnapSpacing(\
+                    self._DesignParameter['nmos']['_DesignObj'].offset_value +\
+                    calibre_value - (self.getYWidth('nmos', 'nmos', '_Met1Layer')/2 + self.getYWidth('nmos', 'nmos_gate_via',
+                                                    '_Met1Layer')/2), _MinSnapSpacing)
+                nmos_inputs['space_bw_gate_nmos'] = calibre_for_input
+                self._DesignParameter['nmos']['_DesignObj']._CalculateDesignParameter(**nmos_inputs)
 
-        drc_test2 = self.getXYBot('nmos','nmos_gate_via', '_Met1Layer')[0][1] -\
-                    self.getXYTop('nmos_output_via', '_Met1Layer')[0][1]
-        if drc_test2 < drc._Metal1MinSpace2:
-            calibre_value = drc._Metal1MinSpace2 - drc_test2
-            del self._DesignParameter['nmos_output_via']
-            calibre_for_input =\
-                self._DesignParameter['nmos']['_DesignObj'].offset_value +\
-                calibre_value - (self.getYWidth('nmos', 'nmos', '_Met1Layer')/2 + self.getYWidth('nmos', 'nmos_gate_via', '_Met1Layer')/2)
-            nmos_inputs['space_bw_gate_nmos'] = calibre_for_input
-            self._DesignParameter['nmos']['_DesignObj']._CalculateDesignParameter(**nmos_inputs)
-
-            nmos_y_value = 0 - gap_bw_mos_gates / 2 - \
-                            self._DesignParameter['nmos']['_DesignObj'].offset_value
-            self._DesignParameter['nmos']['_XYCoordinates'] = [[0, nmos_y_value]]
-            via_code_nmos_output = utility.functions.create_output_via(self, _Name=_Name,
-                                                                        via_name='nmos_output_via',
-                                                                        hierarchy_list=['nmos', 'nmos'],
-                                                                        mos_type='nmos')
-            exec(via_code_nmos_output)
+                nmos_y_value =  self.FloorMinSnapSpacing(0 - gap_bw_mos_gates / 2 - \
+                                self._DesignParameter['nmos']['_DesignObj'].offset_value, _MinSnapSpacing)
+                self._DesignParameter['nmos']['_XYCoordinates'] = [[0, nmos_y_value]]
+                via_code_nmos_output = utility.functions.create_output_via(self, _Name=_Name,
+                                                                            via_name='nmos_output_via',
+                                                                            hierarchy_list=['nmos', 'nmos'],
+                                                                            mos_type='nmos')
+                exec(via_code_nmos_output)
+            else:
+                break
+            if cnt > 2:
+                raise Exception("DRC calibration failed")
+                break
 
         """
         Output via Routing
@@ -234,12 +250,16 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
             self._DesignParameter['vss']['_DesignObj']._CalculatePbodyContactDesignParameter(**vss_inputs)
             self._DesignParameter['vdd']['_DesignObj']._CalculateNbodyContactDesignParameter(**vdd_inputs)
 
-        lower_met1_bound = min(self.getXY('nmos','nmos','_Met1Layer')[0][1] - self.getYWidth('nmos','nmos','_Met1Layer')/2,
-                self.getXY('nmos_output_via','_Met1Layer')[0][1] - self.getYWidth('nmos_output_via','_Met1Layer')/2)
-        higher_met1_bound = self.getXY('pmos','pmos','_Met1Layer')[0][1] + self.getYWidth('pmos','pmos','_Met1Layer')/2
+        lower_met1_bound = self.FloorMinSnapSpacing(\
+            min(self.getXY('nmos','nmos','_Met1Layer')[0][1] - self.getYWidth('nmos','nmos','_Met1Layer')/2,
+                self.getXY('nmos_output_via','_Met1Layer')[0][1] - self.getYWidth('nmos_output_via','_Met1Layer')/2), _MinSnapSpacing)
+        higher_met1_bound = self.CeilMinSnapSpacing(\
+            self.getXY('pmos','pmos','_Met1Layer')[0][1] + self.getYWidth('pmos','pmos','_Met1Layer')/2 , _MinSnapSpacing)
 
-        vss_y_value = lower_met1_bound - self.getYWidth('vss','_Met1Layer')/2 - drc._Metal1MinSpace3
-        vdd_y_value = higher_met1_bound + self.getYWidth('vdd', '_Met1Layer') / 2 + drc._Metal1MinSpace3
+        vss_y_value = self.FloorMinSnapSpacing(\
+            lower_met1_bound - self.getYWidth('vss','_Met1Layer')/2 - drc._Metal1MinSpace3, _MinSnapSpacing)
+        vdd_y_value = self.CeilMinSnapSpacing(\
+            higher_met1_bound + self.getYWidth('vdd', '_Met1Layer') / 2 + drc._Metal1MinSpace3, _MinSnapSpacing)
 
 
         if distance_to_vss != None:
@@ -289,12 +309,12 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
             _Datatype=DesignParameters._LayerMapping['NWELL'][1])
 
         nwell_bot = self.getXYBot('pmos', 'pmos', f'_{XVT}Layer')[0][1]
-        nwell_top = self.getXYTop('vdd', '_ODLayer')[0][1] + drc._NwMinSpacetoNactive
-        nwell_left = self.getXYLeft('vdd', '_ODLayer')[0][0] - drc._NwMinSpacetoNactive
-        nwell_right = self.getXYRight('vdd', '_ODLayer')[0][0] + drc._NwMinSpacetoNactive
-        nwell_y_center = (nwell_top + nwell_bot) / 2
-        nwell_x_center = (nwell_left + nwell_right) / 2
-        nwell_xwidth = nwell_left - nwell_right
+        nwell_top = self.getXYTop('vdd', '_ODLayer')[0][1] + drc._NwMinEnclosurePactive2* 2
+        nwell_left = self.getXYLeft('vdd', '_ODLayer')[0][0] - drc._NwMinEnclosurePactive2* 2
+        nwell_right = self.getXYRight('vdd', '_ODLayer')[0][0] + drc._NwMinEnclosurePactive2* 2
+        nwell_y_center = self.CeilMinSnapSpacing((nwell_top + nwell_bot) / 2, _MinSnapSpacing)
+        nwell_x_center = self.CeilMinSnapSpacing((nwell_left + nwell_right) / 2, _MinSnapSpacing)
+        nwell_xwidth = nwell_right - nwell_left
         nwell_ywidth = nwell_top - nwell_bot
         self._DesignParameter['nwell']['_XYCoordinates'] = [[nwell_x_center, nwell_y_center]]
         self._DesignParameter['nwell']['_XWidth'] = nwell_xwidth
@@ -313,16 +333,19 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
             _Width=drc._Metal1MinWidth)
         supply_path = []
         for i in range(len(nmos_supply_points)):
-            supply_path.append([[nmos_supply_points[i][0],nmos_supply_points[0][1]], [nmos_supply_points[i][0], vss_y_value]])
+            supply_path.append([[nmos_supply_points[i][0],nmos_supply_points[0][1]], [nmos_supply_points[i][0], distance_to_vss]])
         for i in range(len(pmos_supply_points)):
-            supply_path.append([[pmos_supply_points[i][0], pmos_supply_points[0][1]],[pmos_supply_points[i][0], vdd_y_value]])
+            supply_path.append([[pmos_supply_points[i][0], pmos_supply_points[0][1]],[pmos_supply_points[i][0], distance_to_vdd]])
         self._DesignParameter['supply_routing']['_XYCoordinates'] = supply_path
 
         self.space_bw_gate_nmos_met1_edges = self.getXYBot('nmos', 'nmos_gate_via', '_Met1Layer')[0][1] -\
             self.getXYTop('nmos', 'nmos', '_Met1Layer')[0][1]
-        self.space_bw_np_gate_centers = gap_bw_mos_gates
+        self.space_bw_gate_pmos_met1_edges = abs(self.getXYTop('pmos', 'pmos_gate_via', '_Met1Layer')[0][1] -\
+            self.getXYBot('pmos', 'pmos', '_Met1Layer')[0][1])
+        self.space_bw_np_gate_centers = self.getXY('pmos','pmos_gate_via','_Met1Layer')[0][1] - \
+                                        self.getXY('nmos', 'nmos_gate_via', '_Met1Layer')[0][1]
         self.distance_to_vdd = self._DesignParameter['vdd']['_XYCoordinates'][0][1]
-        self.distance_to_vss = self._DesignParameter['vss']['_XYCoordinates'][0][1]
+        self.distance_to_vss = abs(self._DesignParameter['vss']['_XYCoordinates'][0][1])
 
         self.leftmost_poly_edge = min(self.getXYLeft('nmos','nmos','_PODummyLayer')[0][0],
                                       self.getXYLeft('pmos','pmos', '_PODummyLayer')[0][0])
@@ -330,28 +353,81 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
                                       self.getXYRight('pmos','pmos', '_PODummyLayer')[-1][0])
         self.cell_width = self.rightmost_poly_edge - self.leftmost_poly_edge
 
+        # self._DesignParameter['additional_xvt_layer'] = self._BoundaryElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping[f'{XVT}'][0],
+        #     _Datatype=DesignParameters._LayerMapping[f'{XVT}'][1])
+        # if
+
+
 
 if __name__ == '__main__':
-    Obj = INVERTER_ON_OUT()
-    Obj._CalculateDesignParameter(channel_length=30, dummy=True, PCCrit=True, XVT='SLVT',
-                                  finger1=9, channel_width1=400,
-                                  finger2=6, channel_width2=200,
-                                  )
+    for i in range(20):
+        import random
 
-    Obj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=Obj._DesignParameter)
-    _fileName = 'MS_Inverter_on_out.gds'
-    testStreamFile = open('./MS_Inverter_on_out.gds', 'wb')
-    tmp = Obj._CreateGDSStream(Obj._DesignParameter['_GDSFile']['_GDSFile'])
-    tmp.write_binary_gds_stream(testStreamFile)
-    testStreamFile.close()
+        # gate_options = ['left', 'right', 'rotate']
+        # gate_option = random.choice(gate_options)
+        finger1 = random.randrange(1, 14, 1)
+        finger2 = random.randrange(1, 14, 1)
 
-    import ftplib
+        # finger_on_p = random.randrange(1, 11, 1)
+        # finger_coarse_p1 = random.randrange(1, 11, 1)
+        # finger_coarse_p2 = random.randrange(1, 11, 1)
+        # finger_coarse_n1 = random.randrange(1, 11, 1)
+        # finger_coarse_n2 = random.randrange(1, 11, 1)
+        # finger_fine_p1 = random.randrange(1, 11, 1)
+        # finger_fine_p2 = random.randrange(1, 11, 1)
+        # finger_fine_n1 = random.randrange(1, 11, 1)
+        # finger_fine_n2 = random.randrange(1, 11, 1)
+        #
+        # finger_out_n = random.randrange(1, 11, 1)
+        # finger_out_p = random.randrange(1, 11, 1)
 
-    ftp = ftplib.FTP('141.223.29.62')
-    ftp.login('kms95', 'dosel545')
-    ftp.cwd('/mnt/sdb/kms95/Desktop')
-    myfile = open('MS_Inverter_on_out.gds', 'rb')
-    ftp.storbinary('STOR MS_Inverter_on_out.gds', myfile)
-    myfile.close()
-    ftp.close()
+        channel_width1 = random.randrange(400, 850, 50)
+        channel_width2 = random.randrange(200, 850, 50)
+        # channel_width_coarse_n1 = random.randrange(200, 650, 50)
+        # channel_width_coarse_n2 = random.randrange(200, 650, 50)
+        # channel_width_fine_n1 = random.randrange(200, 650, 50)
+        # channel_width_fine_n2 = random.randrange(200, 650, 50)
+        # channel_width_out_n = random.randrange(200, 650, 50)
 
+        # channel_width_on_p = random.randrange(400, 1350, 50)
+        # channel_width_coarse_p1 = random.randrange(400, 1350, 50)
+        # channel_width_coarse_p2 = random.randrange(400, 1350, 50)
+        # channel_width_fine_p1 = random.randrange(400, 1350, 50)
+        # channel_width_fine_p2 = random.randrange(400, 1350, 50)
+        # channel_width_out_p = random.randrange(400, 1350, 50)
+
+        space_bw_gate_nmos = random.randrange(0, 100, 2)
+        # supply_num_coy = random.randrange(1, 5, 1)
+        # coarse_fine_dimension = random.randrange(2, 8, 1)
+        dummy = random.randrange(0, 2, 1)
+        channel_length = random.randrange(30, 100, 2)
+
+        Obj = INVERTER_ON_OUT()
+        Obj._CalculateDesignParameter(channel_length=channel_length, dummy=dummy, PCCrit=True, XVT='SLVT',
+                                      finger1=finger1, channel_width1=channel_width1,
+                                      finger2=finger2, channel_width2=channel_width2,space_bw_gate_nmos = space_bw_gate_nmos
+                                      )
+
+        Obj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=Obj._DesignParameter)
+        _fileName = 'MS_inverter_on_out.gds'
+        testStreamFile = open('./MS_inverter_on_out.gds', 'wb')
+        tmp = Obj._CreateGDSStream(Obj._DesignParameter['_GDSFile']['_GDSFile'])
+        tmp.write_binary_gds_stream(testStreamFile)
+        testStreamFile.close()
+
+        import ftplib
+
+        ftp = ftplib.FTP('141.223.29.62')
+        ftp.login('kms95', 'dosel545')
+        ftp.cwd('/mnt/sdb/kms95/OPUS/ss28')
+        myfile = open('MS_inverter_on_out.gds', 'rb')
+        ftp.storbinary('STOR MS_inverter_on_out.gds', myfile)
+        myfile.close()
+        ftp.close()
+
+        import DRCchecker
+
+        _DRC = DRCchecker.DRCchecker('kms95', 'dosel545', '/mnt/sdb/kms95/OPUS/ss28', '/mnt/sdb/kms95/OPUS/ss28/DRC/run',
+                                     'MS_inverter_on_out', 'MS_inverter_on_out')
+        _DRC.DRCchecker()
