@@ -8,8 +8,8 @@ from generatorLib.generator_models import ViaPoly2Met1
 from generatorLib.generator_models import SupplyRails
 from generatorLib.generator_models import NMOSWithDummy
 
-class Tie_Cell(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='TIEH_2X_STD_v1'):
+class _Tie_Cell(StickDiagram._StickDiagram):
+	def __init__(self, _DesignParameter=None, _Name='Tie Cell'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:

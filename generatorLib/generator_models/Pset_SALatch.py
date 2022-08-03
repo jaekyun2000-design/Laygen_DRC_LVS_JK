@@ -11,7 +11,7 @@ from generatorLib.generator_models import ViaStack
 import math
 
 class EasyDebugModule(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
+	def __init__(self, _DesignParameter=None, _Name='Pset_SALatch'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
