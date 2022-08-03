@@ -442,7 +442,7 @@ class _Nset_SALatch(StickDiagram._StickDiagram):
 		        xy_with_offset.append([(x + y) for (x, y) in zip([0, 0], self._DesignParameter['via_nmos1_m1_m2_supply']['_XYCoordinates'][i])])
 		    for i in range(len(xy_with_offset)):
 		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
-		for i in range(len(path_list)):
+		for i in range(len(path_list)) :
 		    path_list[i][0] = [(xy + offset) for (xy, offset) in zip(path_list[i][0], xy_offset)]
 		self._DesignParameter['m2_nmos1_drain'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=_width)
 		self._DesignParameter['m2_nmos1_drain']['_XYCoordinates'] = path_list
