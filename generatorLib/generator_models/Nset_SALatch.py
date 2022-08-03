@@ -10,7 +10,7 @@ from generatorLib.generator_models import NMOSWithDummy
 from generatorLib.generator_models import ViaStack
 from generatorLib.generator_models import ViaMet22Met3
 
-class EasyDebugModule(StickDiagram._StickDiagram):
+class _Nset_SALatch(StickDiagram._StickDiagram):
 	def __init__(self, _DesignParameter=None, _Name='Nset_SALatch'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
@@ -19,7 +19,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['_Name']['Name'] = _Name
 
 	def _CalculateDesignParameter(self,nmos1_gate=2,nmos1_width=600,nmos1_length=30,nmos1_gate_spacing=96,nmos1_sdwidth=50,dummy=True,pccrit=True,xvt='SLVT',nmos2_gate=2,nmos2_width=200,nmos2_length=40,nmos2_gate_spacing=96,nmos2_sdwidth=50,nmos3_gate=1,nmos3_width=200,nmos3_length=40,nmos3_gate_spacing=96,nmos3_sdwidth=50,nguardring_co_bot=3,nguardring_co_top=2,nguardring_co_right=6,nguardring_co_left=6):
-	
+
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
 		MinSnapSpacing=drc._MinSnapSpacing
@@ -397,7 +397,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		for i in range(len(path_list)):
 		    path_list[i][0] = [(xy + offset) for (xy, offset) in zip(path_list[i][0], xy_offset)]
-		self._DesignParameter['m1_nmos1_supply'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
+		self._DesignParameter['m1_nmos1_supply'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'])
 		self._DesignParameter['m1_nmos1_supply']['_XYCoordinates'] = path_list
 		self._DesignParameter['slvt_nmos2_nmos3'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['SLVT'][0], _Datatype=DesignParameters._LayerMapping['SLVT'][1], _XWidth=(self._DesignParameter['NMOS2']['_XYCoordinates'][0][0] - self._DesignParameter['NMOS3']['_XYCoordinates'][0][0]), _YWidth=min(self._DesignParameter['NMOS3']['_DesignObj']._DesignParameter['_SLVTLayer']['_YWidth'], self._DesignParameter['NMOS2']['_DesignObj']._DesignParameter['_SLVTLayer']['_YWidth']))
 		self._DesignParameter['slvt_nmos2_nmos3']['_XYCoordinates'] = [[(((self._DesignParameter['NMOS3']['_XYCoordinates'][0][0] + self._DesignParameter['NMOS3']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['NMOS2']['_XYCoordinates'][0][0] + self._DesignParameter['NMOS2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0])) / 2), ((min(((self._DesignParameter['NMOS3']['_XYCoordinates'][1][1] + self._DesignParameter['NMOS3']['_DesignObj']._DesignParameter['_SLVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['NMOS3']['_DesignObj']._DesignParameter['_SLVTLayer']['_YWidth'] / 2)), ((self._DesignParameter['NMOS2']['_XYCoordinates'][1][1] + self._DesignParameter['NMOS2']['_DesignObj']._DesignParameter['_SLVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['NMOS2']['_DesignObj']._DesignParameter['_SLVTLayer']['_YWidth'] / 2))) + max(((self._DesignParameter['NMOS3']['_XYCoordinates'][1][1] + self._DesignParameter['NMOS3']['_DesignObj']._DesignParameter['_SLVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['NMOS3']['_DesignObj']._DesignParameter['_SLVTLayer']['_YWidth'] / 2)), ((self._DesignParameter['NMOS2']['_XYCoordinates'][1][1] + self._DesignParameter['NMOS2']['_DesignObj']._DesignParameter['_SLVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['NMOS2']['_DesignObj']._DesignParameter['_SLVTLayer']['_YWidth'] / 2)))) / 2)], [(((self._DesignParameter['NMOS2']['_XYCoordinates'][1][0] + self._DesignParameter['NMOS2']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['NMOS3']['_XYCoordinates'][1][0] + self._DesignParameter['NMOS3']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0])) / 2), ((min(((self._DesignParameter['NMOS3']['_XYCoordinates'][1][1] + self._DesignParameter['NMOS3']['_DesignObj']._DesignParameter['_SLVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['NMOS3']['_DesignObj']._DesignParameter['_SLVTLayer']['_YWidth'] / 2)), ((self._DesignParameter['NMOS2']['_XYCoordinates'][1][1] + self._DesignParameter['NMOS2']['_DesignObj']._DesignParameter['_SLVTLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['NMOS2']['_DesignObj']._DesignParameter['_SLVTLayer']['_YWidth'] / 2))) + max(((self._DesignParameter['NMOS3']['_XYCoordinates'][1][1] + self._DesignParameter['NMOS3']['_DesignObj']._DesignParameter['_SLVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['NMOS3']['_DesignObj']._DesignParameter['_SLVTLayer']['_YWidth'] / 2)), ((self._DesignParameter['NMOS2']['_XYCoordinates'][1][1] + self._DesignParameter['NMOS2']['_DesignObj']._DesignParameter['_SLVTLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['NMOS2']['_DesignObj']._DesignParameter['_SLVTLayer']['_YWidth'] / 2)))) / 2)]]
@@ -450,3 +450,11 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['NMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']=self._DesignParameter['via_nmos1_m1_m2_supply']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
 		self._DesignParameter['NMOS2']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']=self._DesignParameter['via_nmos2_m1_m2_supply']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
 		self._DesignParameter['NMOS3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']=self._DesignParameter['via_nmos2_m1_m2_supply']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
+
+		self._DesignParameter['m1_nmos2_source_y']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=None)
+		self._DesignParameter['m1_nmos2_source_y']['_Width']=self.getXWidth('NMOS2','_Met1Layer')
+		tmp=[]
+		for i in range(0,len(self._DesignParameter['NMOS2']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'])):
+			tmp.append([[self._DesignParameter['via_nmos2_m1_m2_supply']['_XYCoordinates'][i][0], self._DesignParameter['NMOS2']['_XYCoordinates'][0][1]], [self._DesignParameter['via_nmos2_m1_m2_supply']['_XYCoordinates'][i][0], self._DesignParameter['via_nmos2_m1_m2_supply']['_XYCoordinates'][0][1]]])
+			tmp.append([[self._DesignParameter['via_nmos2_1_m1_m2_supply']['_XYCoordinates'][i][0], self._DesignParameter['NMOS2']['_XYCoordinates'][1][1]], [self._DesignParameter['via_nmos2_1_m1_m2_supply']['_XYCoordinates'][i][0], self._DesignParameter['via_nmos2_1_m1_m2_supply']['_XYCoordinates'][0][1]]])
+		self._DesignParameter['m1_nmos2_source_y']['_XYCoordinates']=tmp
