@@ -52,9 +52,9 @@ class DRCOD:
             self._OdMinSpace = 80
             self._OdMinSpace3 = 100
             self._OdMinSpace2Pp = 56  # GR370 : VSS - NMOS distance for 1semicon
-            self._OdlayeroverPoly = 76 ## Added by 1joon for DIFF layer rules
-            self._PolylayeroverOd = 70 ## Added by 1joon for DIFF layer rules
-            self._PolylayeroverOd2 = 105 ## Added by 1joon for DIFF layer rules
+            self._OdlayeroverPoly = 76 ## GR110: Added by 1joon for DIFF layer rules
+            self._PolylayeroverOd = 70 ## GR111w: When poly chaneel length >= 0.070, Added by 1joon for DIFF layer rules
+            self._PolylayeroverOd2 = 105 ## GR111w2: When poly channel length >= 0.090, Added by 1joon for DIFF layer rules
             self._OdSpace_ncap = 220 ## Added by jicho / ncap pcell od y space = 220
 
 
