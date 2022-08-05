@@ -10,6 +10,8 @@ class DRCMultiplicantForMinEdgeWidth:  ####?????????????????????????????????????
     def __init__(self):
         if user_setup._Technology == 'SS28nm':
             self._MultiplicantForMinEdgeWidth = 1
+        if user_setup._Technology == 'SS65nm':      # ?
+            self._MultiplicantForMinEdgeWidth = 1
         if user_setup._Technology == 'TSMC45nm':
             self._MultiplicantForMinEdgeWidth = 1
         if user_setup._Technology == 'TSMC65nm':
@@ -25,9 +27,11 @@ class DRCMultiplicantForMinEdgeWidth:  ####?????????????????????????????????????
         return self._MultiplicantForMinEdgeWidth * _MinWidth
 
 
-class DRCMinSnapSpacing:  ####????????????????????????????????????????????????????????????????????????
+class DRCMinSnapSpacing:
     def __init__(self):
         if user_setup._Technology == 'SS28nm':
+            self._MinSnapSpacing = 1
+        if user_setup._Technology == 'SS65nm':
             self._MinSnapSpacing = 1
         if user_setup._Technology == 'TSMC45nm':
             self._MinSnapSpacing = 5
@@ -57,6 +61,12 @@ class DRCOD:
             self._PolylayeroverOd2 = 105 ## GR111w2: When poly channel length >= 0.090, Added by 1joon for DIFF layer rules
             self._OdSpace_ncap = 220 ## Added by jicho / ncap pcell od y space = 220
 
+        if user_setup._Technology == 'SS65nm':
+            self._OdMinWidth = 120              # 1.a.1
+            self._OdMinSpace = 140              # 1.c.1
+            self._OdMinSpace2Pp = None          # 보류. 28nm에서 다른 방식으로 고려?
+            self._PolylayeroverOd2 = None       #
+            self._OdSpace_ncap = None           #
 
         if user_setup._Technology == 'TSMC65nm':
             self._OdMinWidth = 150
@@ -117,20 +127,33 @@ class DRCPP:
             self._PpMinExtensiononPactive = 80
             self._PpMinEnclosureOfPo = 110
             self._PpMinEnclosureOfPtypePoRes = 140
+            
         if user_setup._Technology == 'SS28nm':
             self._PpMinWidth = 170
             self._PpMinSpace = 170
             self._PpMinExtensiononPactive = 56
             self._PpMinExtensiononPactive2 = 21
             self._PpMinEnclosureOfPo = 0
-            self._PpMinEnclosureOfPo2 = 0
-            self._PpMinEnclosureOfPtypePoRes = 240
-            self._PpMinExtensiononPactive3 = 20
+            self._PpMinArea = 160000  ## Added By Junung
 
+            self._PpMinEnclosureOfPtypePoRes = 240
             self._PpMinSpacetoPRES = 170  ##ADDED BY Junung
             self._RXMinSpacetoPRES = 230  ##Added By Junung
             self._RXMinSpacetoOP = 160  ## Added By Junung
-            self._PpMinArea = 160000  ## Added By Junung
+
+
+        if user_setup._Technology == 'SS65nm':
+            self._PpMinWidth = 200                      # 11.a
+            self._PpMinSpace = 200                      # 11.c
+            self._PpMinExtensiononPactive = 110         # 11.b.2_lv
+            self._PpMinExtensiononPactive2 = 40         # 11.b.1
+            self._PpMinEnclosureOfPo = 180              # 11.g
+            self._PpMinArea = 180000                    # 11.i
+
+            self._PpMinEnclosureOfPtypePoRes = None     # 보류
+            self._PpMinSpacetoPRES = None               # 보류
+            self._RXMinSpacetoPRES = None               # 보류
+            self._RXMinSpacetoOP = None                 # 보류
 
         if user_setup._Technology == 'TSMC65nm':
             self._PpMinWidth = 180
@@ -139,18 +162,21 @@ class DRCPP:
             self._PpMinExtensiononPactive2 = 20  # PP.EX.2  Pactive2 -> for suppy rail (PW STRAP)
             self._PpMinEnclosureOfPo = 150
             self._PpMinEnclosureOfPtypePoRes = 200
+            
         if user_setup._Technology == 'TSMC90nm':
             self._PpMinWidth = 240
             self._PpMinSpace = 240
             self._PpMinExtensiononPactive = 130
             self._PpMinEnclosureOfPo = 200
             self._PpMinEnclosureOfPtypePoRes = 200
+            
         if user_setup._Technology == 'TSMC130nm':
             self._PpMinWidth = 310
             self._PpMinSpace = 310
             self._PpMinExtensiononPactive = 180
             self._PpMinEnclosureOfPo = 200
             self._PpMinEnclosureOfPtypePoRes = 200
+            
         if user_setup._Technology == 'TSMC180nm':
             self._PpMinWidth = 440
             self._PpMinSpace = 440
@@ -173,6 +199,13 @@ class DRCNP:
             self._NpMinExtensiononNactive = 130
             self._NpMinExtensiononNactive2 = 0  # Nactive2 -> for supply rail
             self._NpMinEnclosureOfPo = 150
+        if user_setup._Technology == 'SS65nm':
+            self._NpMinWidth = 200                  # 10.a
+            self._NpMinSpace = 200                  # 10.d
+            self._NpMinExtensiononNactive = 110     # 10.b.2    (NMOS) ACTIVE not NWELL
+            self._NpMinExtensiononNactive2 = 40     # 10.b.1    (Nbody) ACTIVE general
+            self._NpMinEnclosureOfPo = 180          # 10.g
+            self._NpMinArea = 180000                # 10.h
         if user_setup._Technology == 'TSMC65nm':
             self._NpMinWidth = 180
             self._NpMinSpace = 180
@@ -206,7 +239,6 @@ class DRCPOLYGATE:
             self._PolygateMinSpace2Co = 40
             self._PolygateMinSpace2OD = 30
             self._PolygateMinSpace2PolygateInSameRPO = 180
-            # self._PolygateMinEnclosureByNW=1000
             self._PolygateMinExtensionOnOD = 90
             self._PolygateOnODMinWidth1 = 140
             self._PolygateOnODMinWidth2 = 160
@@ -240,8 +272,35 @@ class DRCPOLYGATE:
             self._PCCRITMinLengthofPOLayer = 35  #### ADDED(by JiCho) !
             self._PODummyMinArea = 11000  ### ADDED(by JiCho)!
             self._PoDummyLengthToMove = 50  ### ADDED(by JiCho)!
-            # self._PODummyMinSpace1 = 96
-            # self._PODummyMinSpace2 = 222
+
+        if user_setup._Technology == 'SS65nm':
+            self._PolygateMinWidth = 80                     # 8.a.1
+            self._PolygateMinSpace = 240                    # 8.c.1
+            self._PolygateMinSpace2 = None
+            self._PolygateMinSpace2Co = 100                 # 13.c.1
+            self._PolygateMinSpace2Co2 = None
+            self._PolygateMinSpace2OD = 70                  # 8.f
+            self._PolygateMinSpace2PolygateInSameRPO = None
+            self._PolygateMinExtensionOnOD = 120            # 8.g.1   - in p-cell, 150
+
+            self._PolygateMinExtensionOnOD2 = None
+            self._PolygateMinExtensionOnOD3 = None
+            self._PolygateMinSpaceAtCorner = None
+            self._PMOS2GuardringMinSpace = None
+            self._NMOS2GuardringMinSpace = None
+            self._PolygateWithPCCRIT = None
+            self._PolygateSpace_ncap = None
+            self._PolygateMinEnclosureByNcap = None
+
+            self._OPlayeroverPoly = None
+            self._PolyoverOPlayer = None
+            self._PRESlayeroverPoly = None
+            self._OPMinspace = None
+
+            self._PCCRITExtension = None
+            self._PCCRITMinLengthofPOLayer = None
+            self._PODummyMinArea = 50000                    # 8.m ->
+            self._PoDummyLengthToMove = None
 
         if user_setup._Technology == 'TSMC65nm':
             self._PolygateMinWidth = 60  # A
@@ -250,7 +309,6 @@ class DRCPOLYGATE:
             self._PolygateMinSpace2Co = 55  # ???????????????
             self._PolygateMinSpace2OD = 50  # ???????????????
             self._PolygateMinSpace2PolygateInSameRPO = 250  # N
-            # self._PolygateMinEnclosureByNW=1000
             self._PolygateMinExtensionOnOD = 140  # O
             self._PolygateMinExtensionOnODX = 115  # PO.EX.2
             self._PolygateMinSpaceAtCorner = 140  # S1/S2
@@ -262,7 +320,6 @@ class DRCPOLYGATE:
             self._PolygateMinSpace2Co = 70
             self._PolygateMinSpace2OD = 50
             self._PolygateMinSpace2PolygateInSameRPO = 250
-            # self._PolygateMinEnclosureByNW=430
             self._PolygateMinExtensionOnOD = 160
             self._PolygateMinSpaceAtCorner = 140
         if user_setup._Technology == 'TSMC130nm':
@@ -271,7 +328,6 @@ class DRCPOLYGATE:
             self._PolygateMinSpace2Co = 110
             self._PolygateMinSpace2OD = 70
             self._PolygateMinSpace2PolygateInSameRPO = 180
-            # self._PolygateMinEnclosureByNW=430
             self._PolygateMinExtensionOnOD = 180
             self._PolygateMinSpaceAtCorner = 180
         if user_setup._Technology == 'TSMC180nm':
@@ -280,11 +336,14 @@ class DRCPOLYGATE:
             self._PolygateMinSpace2Co = 220
             self._PolygateMinSpace2OD = 100
             self._PolygateMinSpace2PolygateInSameRPO = 250
-            # self._PolygateMinEnclosureByNW=430
             self._PolygateMinExtensionOnOD = 220
             self._PolygateMinSpaceAtCorner = 375
 
     def DRCPolygateMinExtensionOnOD(self, _ChannelLength = None):
+        """
+        HOW TO USE
+
+        """
         if _ChannelLength == None:
             raise NotImplementedError
         if user_setup._Technology == 'SS28nm':
@@ -298,6 +357,10 @@ class DRCPOLYGATE:
             return self._PolygateMinExtensionOnOD
 
     def DRCPolygateMinSpace(self, _TmpLengthBtwPolyEdge=None):
+        """
+        HOW TO USE
+
+        """
         if user_setup._Technology == 'TSMC45nm':
             if _TmpLengthBtwPolyEdge <= self._PolygateOnODMinWidth1:
                 return self._PolygateOnODMinWidth1
@@ -325,6 +388,10 @@ class DRCPOLYGATE:
     #             return self._PolygateMinSpace2
 
     def DRCPolyMinSpace(self, _Width=None, _ParallelLength=None):
+        """
+        HOW TO USE
+
+        """
         if user_setup._Technology == 'TSMC45nm':
             if _Width == None and _ParallelLength == None:
                 return self._PolygateMinSpace
@@ -396,6 +463,26 @@ class DRCCO:
             self._CoMinSpace2OP = 200
             self._CoMinEnclosureByPO2 = 12  ##only in poly for resistor? Created by junung
             self._CoArrayMaxWidth = 1211  ## Added by jicho
+
+        if user_setup._Technology == 'SS65nm':
+            self._CoMinWidth = 90                               # 13.a.1
+            self._CoMinSpace = 110                              # 13.b.1
+            self._CoMinSpace2 = self._CoMinSpace                # Not found
+            self._CoMinSpaceDifferentNet = 180                  # 13.k - {EXT (CNT AND GPOLY) (CNT AND ACTIVE) < 180}
+            self._CoMinSpaceFor3neighboring \
+                = self._CoMinSpace                              # Not found
+            self._CoMinEnclosureByOD = 40                       # 13.e.1
+            self._CoMinEnclosureByODAtLeastTwoSide \
+                = self._CoMinEnclosureByOD                      # Not found
+            self._CoMinEnclosureByPO = 10                       # 13.f
+            self._CoMinEnclosureByPOAtLeastTwoSide \
+                = self._CoMinEnclosureByPO                      # Not found
+
+            self._CoMinSpace2OP = None                          # 보류
+            self._CoMinEnclosureByPO2 = None                    # 보류
+            self._CoArrayMaxWidth = None                        # 보류
+
+            self._CoMinSpace2OD = 100                           # 13.n
 
         if user_setup._Technology == 'TSMC65nm':
             self._CoMinWidth = 90
@@ -963,12 +1050,24 @@ class DRCNW:
         if user_setup._Technology == 'SS28nm':
             self._NwMinWidth = 260  # A
             self._NwMinSpace = 260  # C
+            self._NwMinEnclosureNactive = 56
             self._NwMinEnclosurePactive = 56  # H
             self._NwMinEnclosurePactive2 = 112  # GR260a
             self._NwMinSpacetoNactive = 56  #
             self._NwMinSpacetoRX = 60
             self._NwMinSpacetoSLVT = 170  # ADDED! (by JiCho)
             self._NwMinArea = 500000
+
+        if user_setup._Technology == 'SS65nm':
+            self._NwMinWidth = 520                      # 5.a
+            self._NwMinSpace = 520                      # 5.b.1
+            self._NwMinEnclosureNactive = 100           # 1.e.1
+            self._NwMinEnclosurePactive = 300           # referenced by p-cell / {ENC (ACTIVE AND PPLUS) NWELL}  - 1.g.1 (220)
+            self._NwMinEnclosurePactive2 = self._NwMinEnclosurePactive          # -
+            self._NwMinSpacetoNactive = 220             # 1.f.1     Nactive = (NACTIVE not NWELL)
+            self._NwMinSpacetoRX = 100                  # 1.h.1
+            self._NwMinSpacetoSLVT = None               # 보류.
+            self._NwMinArea = self._NwMinWidth ** 2     # -
 
         if user_setup._Technology == 'TSMC65nm':
             self._NwMinWidth = 470
@@ -1017,6 +1116,15 @@ class DRCVIAx:
             self._VIAxMinSpaceFor3neighboring = 92  # C
             self._VIAxMinEnclosureByMetx = 0  # D
             self._VIAxMinEnclosureByMetxTwoOppositeSide = 32  # E
+
+        if user_setup._Technology == 'SS65nm':                  # VIA2까지 유효
+            self._VIAxMinWidth = 100                                # 15.a
+            self._VIAxMinSpace = 120                                # 15.b
+            self._VIAxMinSpace2 = 330                               # 15.c   Dense_V1 -> V1 with more than or equal to 8 (n>=8)
+            self._VIAxMinSpaceDifferentNet = None                   # 보류
+            self._VIAxMinSpaceFor3neighboring = None                # 보류
+            self._VIAxMinEnclosureByMetx = 10                       # 15.d
+            self._VIAxMinEnclosureByMetxTwoOppositeSide = 40        # 15.e.1 (MET1 checked, MET2,3,,,)
 
         if user_setup._Technology == 'TSMC65nm':
             self._VIAxMinWidth = 100
@@ -2357,21 +2465,21 @@ class DRCRPO:
             return self._RPOMinExtensionOnPO
 
 
-class DRCSLVT:
-    def __init__(self):
-        if user_setup._Technology == 'SS28nm':
-            self._SlvtMinWidth = 170
-            self._SlvtMinSpace = 170
-            self._SlvtMinExtensionOnOD = 56
-            self._SlvtMinArea = 95000
-            self._SlvtMinArea2 = 160000  ## SLVT (BH) Minimum Area 0.16um^2, junung
-
-    def DRCSLVTMinSpace(self, _Width=None, _ParallelLength=None):
-        if user_setup._Technology == 'SS28nm':
-            if _Width == None and _ParallelLength == None:
-                return self._SlvtMinSpace
-            else:
-                return self._SlvtMinSpace
+# class DRCSLVT:
+#     def __init__(self):
+#         if user_setup._Technology == 'SS28nm':
+#             self._SlvtMinWidth = 170
+#             self._SlvtMinSpace = 170
+#             self._SlvtMinExtensionOnOD = 56
+#             self._SlvtMinArea = 95000
+#             self._SlvtMinArea2 = 160000  ## SLVT (BH) Minimum Area 0.16um^2, junung
+#
+#     def DRCSLVTMinSpace(self, _Width=None, _ParallelLength=None):
+#         if user_setup._Technology == 'SS28nm':
+#             if _Width == None and _ParallelLength == None:
+#                 return self._SlvtMinSpace
+#             else:
+#                 return self._SlvtMinSpace
 
 
 class DRCXVT:
@@ -2384,7 +2492,14 @@ class DRCXVT:
             self._XvtMinEnclosureOfODX = 35  # This value is calculated by GRSLVT9a(horizontal direction)
             self._XvtMinEnclosureOfODY = 56  # GRSLVT9b (vertical direction,  same with _XvtMinExtensionOnOD)
             self._XvtMinArea = 95000
-            self._XvtMinArea2 = 160000
+
+        elif user_setup._Technology == 'SS65nm':
+            self._XvtMinWidth = 230                     # 11.5.a =0.2 (P) / 10.5.a =0.23 (N) -> choose big one
+            self._XvtMinSpace = 230                     # 11.5.c =0.2 (P) / 10.5.e =0.23 (N) -> choose big one
+            self._XvtMinExtensionOnOD = 70              # 11.5.b, 10.5.b
+            self._XvtMinEnclosureOfODX = 70             # same with _XvtMinExtensionOnOD
+            self._XvtMinEnclosureOfODY = 180            # 11.5.g, 10.5.d
+            self._XvtMinArea = self._XvtMinWidth ** 2   # -
 
         elif user_setup._Technology == 'TSMC65nm':
             self._XvtMinWidth = 180  # VTL_N_W_1
@@ -2392,11 +2507,10 @@ class DRCXVT:
             self._XvtMinEnclosureOfODX = 10  # This value is calculated by VTL_N_EN1(horizontal direction)
             self._XvtMinEnclosureOfODY = 160  # VTL_N_EN2 (vertical direction)
             self._XvtMinArea = 270000  # VTL_N_A_1 = VTL_N_A_2
-            # self._XvtMinArea2 = 160000
 
 
 class DRC(DRCMultiplicantForMinEdgeWidth, DRCOD, DRCPOLYGATE, DRCPP, DRCNP, DRCCO, DRCMETAL1, DRCMETALy, DRCVIAy,
-          DRCMETALz, DRCVIAz, DRCMETALr, DRCVIAr, DRCNW, DRCVIAx, DRCMETALx, DRCMinSnapSpacing, DRCRPO, DRCSLVT,
+          DRCMETALz, DRCVIAz, DRCMETALr, DRCVIAr, DRCNW, DRCVIAx, DRCMETALx, DRCMinSnapSpacing, DRCRPO,
           DRCXVT):
     def __init__(self):
         DRCNW.__init__(self)
@@ -2416,7 +2530,7 @@ class DRC(DRCMultiplicantForMinEdgeWidth, DRCOD, DRCPOLYGATE, DRCPP, DRCNP, DRCC
         DRCMETALr.__init__(self)
         DRCMinSnapSpacing.__init__(self)
         DRCRPO.__init__(self)
-        DRCSLVT.__init__(self)
+        # DRCSLVT.__init__(self)
         DRCXVT.__init__(self)
     # def CalculateMinimumDistanceBtwElements(self, _Element1 = None, _Element2 = None):
     #     if _Element1 == None or _Element2 == None:
