@@ -342,7 +342,8 @@ class DRCPOLYGATE:
     def DRCPolygateMinExtensionOnOD(self, _ChannelLength = None):
         """
         HOW TO USE
-
+        nmos, pmos 소자의 channellength를 바꿀 시 Poly Layer가 OD Layer 위를 양방향으로 벗어나는 y방향 길이. (PCell을 그대로 인용)
+        input으로 mos의 length를 입력.
         """
         if _ChannelLength == None:
             raise NotImplementedError
@@ -359,7 +360,8 @@ class DRCPOLYGATE:
     def DRCPolygateMinSpace(self, _TmpLengthBtwPolyEdge=None):
         """
         HOW TO USE
-
+        nmos, pmos 소자의 channellength를 바꿀 시 Poly gate 사이의 x방향 거리. (PCell을 그대로 인용)
+        input으로 mos의 length 입력.
         """
         if user_setup._Technology == 'TSMC45nm':
             if _TmpLengthBtwPolyEdge <= self._PolygateOnODMinWidth1:
@@ -390,7 +392,9 @@ class DRCPOLYGATE:
     def DRCPolyMinSpace(self, _Width=None, _ParallelLength=None):
         """
         HOW TO USE
-
+        nmos, pmos 소자의 channellength와 fingerwidth를 바꿀 시 Poly gate 사이의 x방향 거리. (PCell을 그대로 인용)
+        input으로 mos의 length과 fingerwidth를 입력.
+        SS28nm의 경우, length에 따라서만 poly gate 사이의 거리가 바뀌는 것으로 파악.
         """
         if user_setup._Technology == 'TSMC45nm':
             if _Width == None and _ParallelLength == None:
