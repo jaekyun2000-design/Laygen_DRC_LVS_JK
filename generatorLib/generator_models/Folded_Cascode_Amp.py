@@ -25,8 +25,8 @@ class EasyDebugModule(StickDiagram._StickDiagram):
                                                         'pmos_input_param':{'_PMOSNumberofGate':8, '_PMOSChannelWidth':5000, '_PMOSChannellength':1000, '_PMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None}, \
                                                         'pmos_guardring_co_left':1,'pmos_guardring_co_right':1, 'pmos_guardring_co_top':1, 'pmos_guardring_co_bot':2, 'pmos_guardring_height1':None, 'pmos_guardring_width1':None, 'pmos_guardring_width2':None, 'pmos_guardring_height2':None},\
                                                         nset_param={'nmos_pdn_sw_param':{'_NMOSNumberofGate':1, '_NMOSChannelWidth':2000, '_NMOSChannellength':30, '_NMOSDummy':True, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None}, \
-                                                        'nmos_current_pair1_param':{'_NMOSNumberofGate':8, '_NMOSChannelWidth':5000, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None}, \
-                                                        'nmos_current_pair2_param':{'_NMOSNumberofGate':8, '_NMOSChannelWidth':5000, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None},\
+                                                        'nmos_current_pair1_param':{'_NMOSNumberofGate':4, '_NMOSChannelWidth':5000, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None}, \
+                                                        'nmos_current_pair2_param':{'_NMOSNumberofGate':4, '_NMOSChannelWidth':5000, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None},\
                                                         'nmos_current_single_param':{'_NMOSNumberofGate':4, '_NMOSChannelWidth':5000, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None},\
                                                         'nmos_input_param':{'_NMOSNumberofGate':8, '_NMOSChannelWidth':2500, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None}, \
                                                         'nmos_guardring_co_left':1,'nmos_guardring_co_right':1, 'nmos_guardring_co_top':1, 'nmos_guardring_co_bot':2, 'nmos_guardring_height1':None, 'nmos_guardring_width1':None, 'nmos_guardring_width2':None, 'nmos_guardring_height2':None}) :
@@ -328,13 +328,13 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
             self._DesignParameter['nguardring1']=self._SrefElementDeclaration(_DesignObj=NSubRing.NSubRing(_Name='nguardring1In{}'.format(_Name)))[0]
             self._DesignParameter['nguardring1']['_DesignObj']._CalculateDesignParameter(height=5000,width=3000,contact_bottom=pset_param['pmos_guardring_co_top'],contact_top=pset_param['pmos_guardring_co_top'],contact_left=pset_param['pmos_guardring_co_left'],contact_right=pset_param['pmos_guardring_co_top'])
-            if pset_param['nguardring_height1'] != None :
-                nguardring_yheight1=pset_param['nguardring_height1']
-            elif pset_param['nguardring_height1'] == None :
+            if pset_param['pmos_guardring_height1'] != None :
+                nguardring_yheight1=pset_param['pmos_guardring_height1']
+            elif pset_param['pmos_guardring_height1'] == None :
                 nguardring_yheight1=(self._DesignParameter['gate_inputp']['_XYCoordinates'][0][1]+self.getYWidth('gate_inputp','_Met1Layer')/2+self.getYWidth('nguardring1','top','_Met1Layer')/2+drc._Metal1MinSpace3)-(self._DesignParameter['gate_vbp1']['_XYCoordinates'][0][1]+self.getYWidth('gate_vbp1','_Met1Layer')/2+self.getYWidth('nguardring1','top','_Met1Layer')/2+drc._Metal1MinSpace3)
-            if pset_param['nguardring_width1'] != None :
-                nguardring_xwidth1=pset_param['nguardring_width1']
-            elif pset_param['nguardring_width1'] == None :
+            if pset_param['pmos_guardring_width1'] != None :
+                nguardring_xwidth1=pset_param['pmos_guardring_width1']
+            elif pset_param['pmos_guardring_width1'] == None :
                 nguardring_xwidth1=max(self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0]+self.getXWidth('pmos_pdn_single_sw','_Met1Layer')/2+self.getYWidth('nguardring1','top','_Met1Layer')/2+drc._Metal1MinSpace3, self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0]+self.getXWidth('pmos_input','_Met1Layer')/2+self.getYWidth('nguardring1','top','_Met1Layer')/2+drc._Metal1MinSpace3)\
                                    -min(self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]-self.getXWidth('pmos_pdn_single_sw','_Met1Layer')/2-self.getYWidth('nguardring1','top','_Met1Layer')/2-drc._Metal1MinSpace3,self._DesignParameter['pmos_input']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]-self.getXWidth('pmos_input','_Met1Layer')/2-self.getYWidth('nguardring1','top','_Met1Layer')/2-drc._Metal1MinSpace3)
             self._DesignParameter['nguardring1']['_DesignObj']._CalculateDesignParameter(height=nguardring_yheight1,width=nguardring_xwidth1,contact_bottom=pset_param['pmos_guardring_co_top'],contact_top=pset_param['pmos_guardring_co_top'],contact_left=pset_param['pmos_guardring_co_left'],contact_right=pset_param['pmos_guardring_co_top'])
@@ -346,13 +346,13 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
             self._DesignParameter['nguardring2']=self._SrefElementDeclaration(_DesignObj=NSubRing.NSubRing(_Name='nguardring2In{}'.format(_Name)))[0]
             self._DesignParameter['nguardring2']['_DesignObj']._CalculateDesignParameter(height=5000,width=3000,contact_bottom=pset_param['pmos_guardring_co_bot'],contact_top=pset_param['pmos_guardring_co_top'],contact_left=pset_param['pmos_guardring_co_left'],contact_right=pset_param['pmos_guardring_co_top'])
-            if pset_param['nguardring_height2'] != None :
-                nguardring_yheight2=pset_param['nguardring_height2']
-            elif pset_param['nguardring_height2'] == None :
+            if pset_param['pmos_guardring_height2'] != None :
+                nguardring_yheight2=pset_param['pmos_guardring_height2']
+            elif pset_param['pmos_guardring_height2'] == None :
                 nguardring_yheight2=(self._DesignParameter['gate_vbp1']['_XYCoordinates'][0][1]+self.getYWidth('gate_vbp1','_Met1Layer')/2+self.getYWidth('nguardring2','top','_Met1Layer')/2+drc._Metal1MinSpace3)-min(self._DesignParameter['gate_vbp2']['_XYCoordinates'][-1][1]-self.getYWidth('gate_vbp2','_Met1Layer')/2-self.getYWidth('nguardring2','bot','_Met1Layer')/2-drc._Metal1MinSpace3,self._DesignParameter['gate_pdn_single_sw']['_XYCoordinates'][0][1]-self.getYWidth('gate_pdn_single_sw','_Met1Layer')/2-self.getYWidth('nguardring2','bot','_Met1Layer')/2-drc._Metal1MinSpace3,self._DesignParameter['gate_vb2']['_XYCoordinates'][-1][1]-self.getYWidth('gate_vb2','_Met1Layer')/2-self.getYWidth('nguardring2','bot','_Met1Layer')/2-drc._Metal1MinSpace3)
-            if pset_param['nguardring_width2'] != None :
-                nguardring_xwidth2=pset_param['nguardring_width2']
-            elif pset_param['nguardring_width2'] == None :
+            if pset_param['pmos_guardring_width2'] != None :
+                nguardring_xwidth2=pset_param['pmos_guardring_width2']
+            elif pset_param['pmos_guardring_width2'] == None :
                 nguardring_xwidth2=max(self._DesignParameter['pmos_vbp1']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_vbp1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0]+self.getXWidth('pmos_vbp1','_Met1Layer')/2+self.getXWidth('nguardring2','right','_Met1Layer')/2+drc._Metal1MinSpace3, self._DesignParameter['pmos_vbp2']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_vbp2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0]+self.getXWidth('pmos_vbp2','_Met1Layer')/2+self.getXWidth('nguardring2','right','_Met1Layer')/2+drc._Metal1MinSpace3, self._DesignParameter['pmos_pdn_pair_sw']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_pdn_pair_sw']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0]+self.getXWidth('pmos_pdn_pair_sw','_Met1Layer')/2+self.getXWidth('nguardring2','right','_Met1Layer')/2+drc._Metal1MinSpace3)\
                                    -min(self._DesignParameter['pmos_pdn_single_sw']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_pdn_single_sw']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]-self.getXWidth('pmos_pdn_single_sw','_Met1Layer')/2-self.getXWidth('nguardring2','left','_Met1Layer')/2-drc._Metal1MinSpace3,self._DesignParameter['pmos_input']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_input']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]-self.getXWidth('pmos_input','_Met1Layer')/2-self.getXWidth('nguardring2','left','_Met1Layer')/2-drc._Metal1MinSpace3)
             self._DesignParameter['nguardring2']['_DesignObj']._CalculateDesignParameter(height=nguardring_yheight2,width=nguardring_xwidth2,contact_bottom=pset_param['pmos_guardring_co_bot'],contact_top=pset_param['pmos_guardring_co_top'],contact_left=pset_param['pmos_guardring_co_left'],contact_right=pset_param['pmos_guardring_co_right'])
@@ -405,7 +405,140 @@ class EasyDebugModule(StickDiagram._StickDiagram):
             self._DesignParameter['nmos_n0']=self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='nmos_n0In{}'.format(_Name)))[0]
             self._DesignParameter['nmos_n0']['_DesignObj']._CalculateNMOSDesignParameter(**dict(**nset_param['nmos_current_pair2_param']))
 
-            self._DesignParameter['nmos_input']['_XYCoordinates']=[[self.getXY('pmos_input')[0][0], self.getXY('nguardring1','top')[0][1]+self.getYWidth('nguardring1','top','_Met1Layer')*3/2+drc._Metal1MinSpace3], [self.getXY('pmos_input')[0][0], ]]
+            self._DesignParameter['gate_ninputn']=self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_ninputnIn{}'.format(_Name)))[0]
+            self._DesignParameter['gate_ninputn']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(_ViaPoly2Met1NumberOfCOX=2, _ViaPoly2Met1NumberOfCOY=1)
+            self._DesignParameter['gate_ninputp']=self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_ninputpIn{}'.format(_Name)))[0]
+            self._DesignParameter['gate_ninputp']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(_ViaPoly2Met1NumberOfCOX=2, _ViaPoly2Met1NumberOfCOY=1)
+            self._DesignParameter['gate_vbn1']=self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_vbn1In{}'.format(_Name)))[0]
+            self._DesignParameter['gate_vbn1']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(_ViaPoly2Met1NumberOfCOX=2, _ViaPoly2Met1NumberOfCOY=1)
+            self._DesignParameter['gate_vb1']=self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_vb1In{}'.format(_Name)))[0]
+            self._DesignParameter['gate_vb1']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(_ViaPoly2Met1NumberOfCOX=2, _ViaPoly2Met1NumberOfCOY=1)
+            self._DesignParameter['gate_n0']=self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_n0In{}'.format(_Name)))[0]
+            self._DesignParameter['gate_n0']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(_ViaPoly2Met1NumberOfCOX=2, _ViaPoly2Met1NumberOfCOY=1)
+
+            self._DesignParameter['nmos_input']['_XYCoordinates']=[[self.getXY('pmos_input')[0][0], self.getXY('nguardring1','top')[0][1]+self.getYWidth('nguardring1','top','_Met1Layer')*3/2+drc._Metal1MinSpace3*2+self.getYWidth('nmos_input','_POLayer')/2+self.getYWidth('gate_ninputn','_Met1Layer')/2], [self.getXY('pmos_input')[0][0], self.getXY('nguardring1','top')[0][1]+self.getYWidth('nguardring1','top','_Met1Layer')*3/2+drc._Metal1MinSpace3*2+self.getYWidth('nmos_input','_POLayer')/2+self.getYWidth('gate_ninputn','_Met1Layer')/2+self.getYWidth('nmos_input','_Met1Layer')+19*drc._Metal1MinSpace]]
+            self._DesignParameter['nmos_vb1']['_XYCoordinates']=[[self.getXY('nmos_input')[0][0], self.getXY('nmos_input')[1][1]+self.getYWidth('nmos_input','_Met1Layer')/2+self.getYWidth('nmos_vb1','_Met1Layer')/2+19*drc._Metal1MinSpace]]
+
+            _Lengthbtwmet1=self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][1][0]-self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]
+            self._DesignParameter['nmos_vbn1']['_XYCoordinates']=[[_OriginXY[0][0]-_Lengthbtwmet1*(len(self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])-1)/2-drc._Metal1MinSpace*5.2, self.getXY('additional_od_top')[0][0][1]+self.getWidth('additional_od_top')*3/2+drc._Metal1MinSpace3*2+self.getYWidth('nmos_vbn1','_POLayer')/2+self.getYWidth('gate_vbn1','_Met1Layer')/2], [_OriginXY[0][0]+_Lengthbtwmet1*(len(self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])-1)/2+drc._Metal1MinSpace*5.2, self.getXY('additional_od_top')[0][0][1]+self.getWidth('additional_od_top')*3/2+drc._Metal1MinSpace3*2+self.getYWidth('nmos_vbn1','_POLayer')/2+self.getYWidth('gate_vbn1','_Met1Layer')/2]]
+            self._DesignParameter['nmos_n0']['_XYCoordinates']=[[self._DesignParameter['nmos_vbn1']['_XYCoordinates'][0][0], self.getXY('nmos_vbn1')[0][1]+self.getYWidth('nmos_vbn1','_Met1Layer')/2+self.getYWidth('nmos_n0','_Met1Layer')/2+19*drc._Metal1MinSpace], [self._DesignParameter['nmos_vbn1']['_XYCoordinates'][1][0], self.getXY('nmos_vbn1')[0][1]+self.getYWidth('nmos_vbn1','_Met1Layer')/2+self.getYWidth('nmos_n0','_Met1Layer')/2+19*drc._Metal1MinSpace]]
+
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([self.getXY('nmos_vbn1')[0][0]+self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vbn1')[0][1]+self.getYWidth('nmos_vbn1','_POLayer')/2])
+                tmp.append([self.getXY('nmos_vbn1')[0][0]+self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vbn1')[0][1]-self.getYWidth('nmos_vbn1','_POLayer')/2])
+                tmp.append([self.getXY('nmos_vbn1')[1][0]+self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vbn1')[1][1]+self.getYWidth('nmos_vbn1','_POLayer')/2])
+                tmp.append([self.getXY('nmos_vbn1')[1][0]+self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vbn1')[1][1]-self.getYWidth('nmos_vbn1','_POLayer')/2])
+            self._DesignParameter['gate_vbn1']['_XYCoordinates']=tmp
+            del tmp
+
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['nmos_vb1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([self.getXY('nmos_vb1')[0][0]+self._DesignParameter['nmos_vb1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vb1')[0][1]+self.getYWidth('nmos_vb1','_POLayer')/2])
+                tmp.append([self.getXY('nmos_vb1')[0][0]+self._DesignParameter['nmos_vb1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vb1')[0][1]-self.getYWidth('nmos_vb1','_POLayer')/2])
+            self._DesignParameter['gate_vb1']['_XYCoordinates']=tmp
+            del tmp
+
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([self.getXY('nmos_n0')[0][0]+self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_n0')[0][1]+self.getYWidth('nmos_n0','_POLayer')/2])
+                tmp.append([self.getXY('nmos_n0')[0][0]+self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_n0')[0][1]-self.getYWidth('nmos_n0','_POLayer')/2])
+                tmp.append([self.getXY('nmos_n0')[1][0]+self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_n0')[1][1]+self.getYWidth('nmos_n0','_POLayer')/2])
+                tmp.append([self.getXY('nmos_n0')[1][0]+self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_n0')[1][1]-self.getYWidth('nmos_n0','_POLayer')/2])
+            self._DesignParameter['gate_n0']['_XYCoordinates']=tmp
+            del tmp
+
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([self.getXY('nmos_input')[0][0]+self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_input')[0][1]+self.getYWidth('nmos_input','_POLayer')/2])
+                tmp.append([self.getXY('nmos_input')[0][0]+self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_input')[0][1]-self.getYWidth('nmos_input','_POLayer')/2])
+            self._DesignParameter['gate_ninputp']['_XYCoordinates']=tmp
+            del tmp
+
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([self.getXY('nmos_input')[1][0]+self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_input')[1][1]+self.getYWidth('nmos_input','_POLayer')/2])
+                tmp.append([self.getXY('nmos_input')[1][0]+self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_input')[1][1]-self.getYWidth('nmos_input','_POLayer')/2])
+            self._DesignParameter['gate_ninputn']['_XYCoordinates']=tmp
+            del tmp
+
+            self._DesignParameter['m1_nvb1']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[], _Width=self.getXWidth('gate_vb1','_Met1Layer'))
+            self._DesignParameter['m1_nn0']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[], _Width=self.getXWidth('gate_n0','_Met1Layer'))
+            self._DesignParameter['m1_nvbn1']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[], _Width=self.getXWidth('gate_vbn1','_Met1Layer'))
+            self._DesignParameter['m1_ninput']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[], _Width=self.getXWidth('gate_ninputn','_Met1Layer'))
+
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['nmos_vb1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self.getXY('nmos_vb1')[0][0]+self._DesignParameter['nmos_vb1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vb1')[0][1]+self.getYWidth('nmos_vb1','_POLayer')/2],\
+                            [self.getXY('nmos_vb1')[0][0]+self._DesignParameter['nmos_vb1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vb1')[0][1]-self.getYWidth('nmos_vb1','_POLayer')/2]])
+            self._DesignParameter['m1_nvb1']['_XYCoordinates']=tmp
+            del tmp
+
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self.getXY('nmos_vbn1')[0][0]+self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vbn1')[0][1]+self.getYWidth('nmos_vbn1','_POLayer')/2],\
+                            [self.getXY('nmos_vbn1')[0][0]+self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vbn1')[0][1]-self.getYWidth('nmos_vbn1','_POLayer')/2]])
+                tmp.append([[self.getXY('nmos_vbn1')[1][0]+self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vbn1')[1][1]+self.getYWidth('nmos_vbn1','_POLayer')/2],\
+                            [self.getXY('nmos_vbn1')[1][0]+self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vbn1')[1][1]-self.getYWidth('nmos_vbn1','_POLayer')/2]])
+            self._DesignParameter['m1_nvbn1']['_XYCoordinates']=tmp
+            del tmp
+
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self.getXY('nmos_n0')[0][0]+self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_n0')[0][1]+self.getYWidth('nmos_n0','_POLayer')/2],\
+                            [self.getXY('nmos_n0')[0][0]+self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_n0')[0][1]-self.getYWidth('nmos_n0','_POLayer')/2]])
+                tmp.append([[self.getXY('nmos_n0')[1][0]+self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_n0')[1][1]+self.getYWidth('nmos_n0','_POLayer')/2],\
+                            [self.getXY('nmos_n0')[1][0]+self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_n0')[1][1]-self.getYWidth('nmos_n0','_POLayer')/2]])
+            self._DesignParameter['m1_nn0']['_XYCoordinates']=tmp
+            del tmp
+
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self.getXY('nmos_input')[0][0]+self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_input')[0][1]+self.getYWidth('nmos_input','_POLayer')/2],\
+                            [self.getXY('nmos_input')[0][0]+self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_input')[0][1]-self.getYWidth('nmos_input','_POLayer')/2]])
+                tmp.append([[self.getXY('nmos_input')[1][0]+self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_input')[1][1]+self.getYWidth('nmos_input','_POLayer')/2],\
+                            [self.getXY('nmos_input')[1][0]+self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_input')[1][1]-self.getYWidth('nmos_input','_POLayer')/2]])
+            self._DesignParameter['m1_ninput']['_XYCoordinates']=tmp
+            del tmp
+
+            self._DesignParameter['poly_nvb1']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],_Datatype=DesignParameters._LayerMapping['POLY'][1], _XYCoordinates=[], _Width=self.getXWidth('nmos_vb1','_POLayer'))
+            self._DesignParameter['poly_nn0']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],_Datatype=DesignParameters._LayerMapping['POLY'][1], _XYCoordinates=[], _Width=self.getXWidth('nmos_n0','_POLayer'))
+            self._DesignParameter['poly_nvbn1']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],_Datatype=DesignParameters._LayerMapping['POLY'][1], _XYCoordinates=[], _Width=self.getXWidth('nmos_vbn1','_POLayer'))
+            self._DesignParameter['poly_ninput']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0],_Datatype=DesignParameters._LayerMapping['POLY'][1], _XYCoordinates=[], _Width=self.getXWidth('nmos_input','_POLayer'))
+
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['nmos_vb1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self.getXY('nmos_vb1')[0][0]+self._DesignParameter['nmos_vb1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vb1')[0][1]+self.getYWidth('nmos_vb1','_POLayer')/2+self.getYWidth('gate_vb1','_POLayer')/2],\
+                            [self.getXY('nmos_vb1')[0][0]+self._DesignParameter['nmos_vb1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vb1')[0][1]-self.getYWidth('nmos_vb1','_POLayer')/2-self.getYWidth('gate_vb1','_POLayer')/2]])
+            self._DesignParameter['poly_nvb1']['_XYCoordinates']=tmp
+            del tmp
+
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self.getXY('nmos_vbn1')[0][0]+self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vbn1')[0][1]+self.getYWidth('nmos_vbn1','_POLayer')/2+self.getYWidth('gate_vbn1','_POLayer')/2],\
+                            [self.getXY('nmos_vbn1')[0][0]+self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vbn1')[0][1]-self.getYWidth('nmos_vbn1','_POLayer')/2-self.getYWidth('gate_vbn1','_POLayer')/2]])
+                tmp.append([[self.getXY('nmos_vbn1')[1][0]+self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vbn1')[1][1]+self.getYWidth('nmos_vbn1','_POLayer')/2+self.getYWidth('gate_vbn1','_POLayer')/2],\
+                            [self.getXY('nmos_vbn1')[1][0]+self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_vbn1')[1][1]-self.getYWidth('nmos_vbn1','_POLayer')/2-self.getYWidth('gate_vbn1','_POLayer')/2]])
+            self._DesignParameter['poly_nvbn1']['_XYCoordinates']=tmp
+            del tmp
+
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self.getXY('nmos_n0')[0][0]+self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_n0')[0][1]+self.getYWidth('nmos_n0','_POLayer')/2+self.getYWidth('gate_n0','_POLayer')/2],\
+                            [self.getXY('nmos_n0')[0][0]+self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_n0')[0][1]-self.getYWidth('nmos_n0','_POLayer')/2-self.getYWidth('gate_n0','_POLayer')/2]])
+                tmp.append([[self.getXY('nmos_n0')[1][0]+self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_n0')[1][1]+self.getYWidth('nmos_n0','_POLayer')/2+self.getYWidth('gate_n0','_POLayer')/2],\
+                            [self.getXY('nmos_n0')[1][0]+self._DesignParameter['nmos_n0']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_n0')[1][1]-self.getYWidth('nmos_n0','_POLayer')/2-self.getYWidth('gate_n0','_POLayer')/2]])
+            self._DesignParameter['poly_nn0']['_XYCoordinates']=tmp
+            del tmp
+
+            tmp=[]
+            for i in range(0, len(self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+                tmp.append([[self.getXY('nmos_input')[0][0]+self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_input')[0][1]+self.getYWidth('nmos_input','_POLayer')/2+self.getYWidth('gate_ninputn','_POLayer')/2],\
+                            [self.getXY('nmos_input')[0][0]+self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_input')[0][1]-self.getYWidth('nmos_input','_POLayer')/2-self.getYWidth('gate_ninputn','_POLayer')/2]])
+                tmp.append([[self.getXY('nmos_input')[1][0]+self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_input')[1][1]+self.getYWidth('nmos_input','_POLayer')/2+self.getYWidth('gate_ninputn','_POLayer')/2],\
+                            [self.getXY('nmos_input')[1][0]+self._DesignParameter['nmos_input']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i][0], self.getXY('nmos_input')[1][1]-self.getYWidth('nmos_input','_POLayer')/2-self.getYWidth('gate_ninputn','_POLayer')/2]])
+            self._DesignParameter['poly_ninput']['_XYCoordinates']=tmp
+            del tmp
 
 
-    def _CalculateDesignParameter_common_source_amp(self):
+    # def _CalculateDesignParameter_common_source_amp(self):
