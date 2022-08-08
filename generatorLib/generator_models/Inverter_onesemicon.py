@@ -926,3 +926,102 @@ class _Inverter(StickDiagram._StickDiagram):
         print('     {} Calculation End     '.format(_Name).center(105, '#'))
         print(''.center(105, '#'))
 
+
+if __name__ == '__main__':
+    from Private import Myinfo
+    import DRCchecker
+    # from SthPack import PlaygroundBot
+
+    My = Myinfo.USER(DesignParameters._Technology)
+    # Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
+
+    libname = 'TEST_InverterOne'
+    cellname = 'InverterOne'
+    _fileName = cellname + '.gds'
+
+    ''' Input Parameters for Layout Object '''
+    InputParams = dict(
+        _Finger=1,
+        _ChannelWidth=200,
+        _ChannelLength=30,
+        _NPRatio=2,
+
+        _VDD2VSSHeight=1800,
+        _VDD2PMOSHeight=None,
+        _VSS2NMOSHeight=None,
+        _YCoordOfInput=None,
+
+        _Dummy=True,
+        _XVT='SLVT',
+        _GateSpacing=100,
+        _SDWidth=66,
+
+        _NumViaPMOSMet12Met2CoY=None,
+        _NumViaNMOSMet12Met2CoY=None,
+        _SupplyRailType=1,
+    )
+
+    Mode_DRCCheck = False  # True | False
+    Num_DRCCheck = 10
+
+    for ii in range(0, Num_DRCCheck if Mode_DRCCheck else 1):
+        if Mode_DRCCheck:
+            ''' Random Parameters for Layout Object '''
+
+        else:
+            pass
+        print("=============================   Last Layout Object's Input Parameters are   ==========================")
+        tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+        print(tmpStr)
+        print("======================================================================================================")
+
+        ''' Generate Layout Object '''
+        LayoutObj = _Inverter(_Name=cellname)
+        LayoutObj._CalculateDesignParameter_v3(**InputParams)
+        LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+        testStreamFile = open('./{}'.format(_fileName), 'wb')
+        tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+        tmp.write_binary_gds_stream(testStreamFile)
+        testStreamFile.close()
+
+        print('#################################      Sending to FTP Server...      #################################')
+        Checker = DRCchecker.DRCchecker(
+            username=My.ID,
+            password=My.PW,
+            WorkDir=My.Dir_Work,
+            DRCrunDir=My.Dir_DRCrun,
+            GDSDir=My.Dir_GDS,
+            libname=libname,
+            cellname=cellname,
+        )
+        Checker.Upload2FTP()
+
+        Checker.StreamIn(tech=DesignParameters._Technology)
+
+        # if Mode_DRCCheck:
+        #     print('###############      DRC checking... {0}/{1}      ##################'.format(ii + 1, Num_DRCCheck))
+        #     # Bot.send2Bot(f'Start DRCChecker...\nTotal Number Of Run : {Num_DRCCheck}')
+        #     try:
+        #         Checker.DRCchecker()
+        #     except Exception as e:
+        #         print('Error Occurred: ', e)
+        #         print("=============================   Last Layout Object's Input Parameters are   =============================")
+        #         tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+        #         print(tmpStr)
+        #         print("=========================================================================================================")
+        #
+        #         Bot.send2Bot(f'Error Occurred During Checking DRC({ii + 1}/{Num_DRCCheck})...\n'
+        #                      f'ErrMsg : {e}\n'
+        #                      f'============================='
+        #                      f'{tmpStr}\n'
+        #                      f'=============================')
+        #     else:
+        #         if (ii + 1) == Num_DRCCheck:
+        #             Bot.send2Bot(f'Checking DRC Finished.\nTotal Number Of Run : {Num_DRCCheck}')
+        #             # elapsed time, start time, end time, main python file name
+        #         else:
+        #             pass
+        # else:
+        #     Checker.StreamIn(tech=DesignParameters._Technology)
+
+    print('########################################      Finished       ###########################################')
