@@ -1023,8 +1023,72 @@ class LayoutReader:
         gds2gen = GDS2Generator()
         gds2gen.load_gds(gds_file)
         gds2gen.set_root_cell(root_cell_name)
+        self.load_dp(gds2gen.root_cell._DesignParameter)
+        # geo_field = routing_geo_searching.GeometricField()
+        # geo_field.xy_projection_to_main_coordinates_system(gds2gen.root_cell._DesignParameter)
+        # def create_layer_element_by_dp(dp, idx):
+        #     if dp['_DesignParametertype'] == 1:
+        #         x_width = dp['_XWidth']
+        #         y_width = dp['_YWidth']
+        #         # layer_name = LayerReader._LayerName_unified[str(dp['_Layer'])]
+        #         layer_number = str(dp['_Layer'])
+        #         data_number = str(dp['_Datatype'])
+        #         layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
+        #         for i in range(len(dp['_XYCoordinatesProjection'])):
+        #             x_min = min([xy[0] for xy in dp['_XYCoordinatesProjection'][i]])
+        #             y_min = min([xy[1] for xy in dp['_XYCoordinatesProjection'][i]])
+        #             lb_xy = [x_min,y_min]
+        #             if layer_name in self.layer_elements:
+        #                 self.layer_elements[layer_name].append(element_node(layer_name,x_width,y_width,lb_xy,idx))
+        #             else:
+        #                 self.layer_elements[layer_name] = []
+        #                 self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy,idx))
+        #             idx += 1
+        #
+        #             x_max = x_min + dp['_XWidth']
+        #             y_max = y_min + dp['_YWidth']
+        #             self.x_min = min(self.x_min,x_min) if self.x_min else x_min
+        #             self.y_min = min(self.y_min,y_min) if self.y_min else y_min
+        #             self.x_max = max(self.x_max,x_max) if self.x_max else x_max
+        #             self.y_max = max(self.y_max,y_max) if self.y_max else y_max
+        #
+        #     elif dp['_DesignParametertype'] == 2:
+        #         for i, path_xy_point in enumerate(dp['_XYCoordinatesProjection']):
+        #             x_min = min([xy[0] for xy in path_xy_point])
+        #             y_min = min([xy[1] for xy in path_xy_point])
+        #             lb_xy = [x_min, y_min]
+        #             x_max = max([xy[0] for xy in path_xy_point])
+        #             y_max = max([xy[1] for xy in path_xy_point])
+        #             rt_xy = [x_max, y_max]
+        #             x_width = x_max - x_min
+        #             y_width = y_max - y_min
+        #             # layer_name  = LayerReader._LayerName_unified[str(dp['_Layer'])]
+        #             layer_number = str(dp['_Layer'])
+        #             data_number = str(dp['_Datatype'])
+        #             layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
+        #             if layer_name in self.layer_elements:
+        #                 self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
+        #             else:
+        #                 self.layer_elements[layer_name] = []
+        #                 self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
+        #             idx += 1
+        #             self.x_min = min(self.x_min, x_min) if self.x_min else x_min
+        #             self.y_min = min(self.y_min, y_min) if self.y_min else y_min
+        #             self.x_max = max(self.x_max, x_max) if self.x_max else x_max
+        #             self.y_max = max(self.y_max, y_max) if self.y_max else y_max
+        #     elif dp['_DesignParametertype'] == 3:
+        #         for sub_dp in dp['_DesignObj']._DesignParameter.values():
+        #             idx = create_layer_element_by_dp(sub_dp,idx)
+        #     return idx
+        #
+        # idx = 0
+        # for dp in gds2gen.root_cell._DesignParameter.values():
+        #     create_layer_element_by_dp(dp, idx)
+
+    def load_dp(self, top_dp):
         geo_field = routing_geo_searching.GeometricField()
-        geo_field.xy_projection_to_main_coordinates_system(gds2gen.root_cell._DesignParameter)
+        geo_field.xy_projection_to_main_coordinates_system(top_dp)
+
         def create_layer_element_by_dp(dp, idx):
             if dp['_DesignParametertype'] == 1:
                 x_width = dp['_XWidth']
@@ -1032,56 +1096,74 @@ class LayoutReader:
                 # layer_name = LayerReader._LayerName_unified[str(dp['_Layer'])]
                 layer_number = str(dp['_Layer'])
                 data_number = str(dp['_Datatype'])
-                layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
+                layer_name = None
+                if dp['_Layer'] == None or dp['_Datatype'] == None:
+                    if '_LayerUnifiedName' in dp and dp['_LayerUnifiedName']!= None:
+                        layer_name = dp['_LayerUnifiedName']
+                    else:
+                        return idx
+                if not layer_name:
+                    layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
                 for i in range(len(dp['_XYCoordinatesProjection'])):
                     x_min = min([xy[0] for xy in dp['_XYCoordinatesProjection'][i]])
                     y_min = min([xy[1] for xy in dp['_XYCoordinatesProjection'][i]])
-                    lb_xy = [x_min,y_min]
+                    lb_xy = [x_min, y_min]
                     if layer_name in self.layer_elements:
-                        self.layer_elements[layer_name].append(element_node(layer_name,x_width,y_width,lb_xy,idx))
+                        self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
                     else:
                         self.layer_elements[layer_name] = []
-                        self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy,idx))
+                        self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
                     idx += 1
 
                     x_max = x_min + dp['_XWidth']
                     y_max = y_min + dp['_YWidth']
-                    self.x_min = min(self.x_min,x_min) if self.x_min else x_min
-                    self.y_min = min(self.y_min,y_min) if self.y_min else y_min
-                    self.x_max = max(self.x_max,x_max) if self.x_max else x_max
-                    self.y_max = max(self.y_max,y_max) if self.y_max else y_max
-
-            elif dp['_DesignParametertype'] == 2:
-                for i, path_xy_point in enumerate(dp['_XYCoordinatesProjection']):
-                    x_min = min([xy[0] for xy in path_xy_point])
-                    y_min = min([xy[1] for xy in path_xy_point])
-                    lb_xy = [x_min, y_min]
-                    x_max = max([xy[0] for xy in path_xy_point])
-                    y_max = max([xy[1] for xy in path_xy_point])
-                    rt_xy = [x_max, y_max]
-                    x_width = x_max - x_min
-                    y_width = y_max - y_min
-                    # layer_name  = LayerReader._LayerName_unified[str(dp['_Layer'])]
-                    layer_number = str(dp['_Layer'])
-                    data_number = str(dp['_Datatype'])
-                    layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
-                    if layer_name in self.layer_elements:
-                        self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
-                    else:
-                        self.layer_elements[layer_name] = []
-                        self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
-                    idx += 1
                     self.x_min = min(self.x_min, x_min) if self.x_min else x_min
                     self.y_min = min(self.y_min, y_min) if self.y_min else y_min
                     self.x_max = max(self.x_max, x_max) if self.x_max else x_max
                     self.y_max = max(self.y_max, y_max) if self.y_max else y_max
+
+            elif dp['_DesignParametertype'] == 2:
+                for i, path_xy_points in enumerate(dp['_XYCoordinatesProjection']):
+                    for path_xy_point in path_xy_points:
+                        x_min = min([xy[0] for xy in path_xy_point])
+                        y_min = min([xy[1] for xy in path_xy_point])
+                        lb_xy = [x_min, y_min]
+                        x_max = max([xy[0] for xy in path_xy_point])
+                        y_max = max([xy[1] for xy in path_xy_point])
+                        rt_xy = [x_max, y_max]
+                        x_width = x_max - x_min
+                        y_width = y_max - y_min
+                        # except:
+                        #     x_min = min([xy[0] for xy in path_xy_point[0]])
+                        #     y_min = min([xy[1] for xy in path_xy_point[0]])
+                        #     lb_xy = [x_min, y_min]
+                        #     x_max = max([xy[0] for xy in path_xy_point[0]])
+                        #     y_max = max([xy[1] for xy in path_xy_point[0]])
+                        #     rt_xy = [x_max, y_max]
+                        #     x_width = x_max - x_min
+                        #     y_width = y_max - y_min
+
+                        # layer_name  = LayerReader._LayerName_unified[str(dp['_Layer'])]
+                        layer_number = str(dp['_Layer'])
+                        data_number = str(dp['_Datatype'])
+                        layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
+                        if layer_name in self.layer_elements:
+                            self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
+                        else:
+                            self.layer_elements[layer_name] = []
+                            self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
+                        idx += 1
+                        self.x_min = min(self.x_min, x_min) if self.x_min else x_min
+                        self.y_min = min(self.y_min, y_min) if self.y_min else y_min
+                        self.x_max = max(self.x_max, x_max) if self.x_max else x_max
+                        self.y_max = max(self.y_max, y_max) if self.y_max else y_max
             elif dp['_DesignParametertype'] == 3:
                 for sub_dp in dp['_DesignObj']._DesignParameter.values():
-                    idx = create_layer_element_by_dp(sub_dp,idx)
+                    idx = create_layer_element_by_dp(sub_dp, idx)
             return idx
 
         idx = 0
-        for dp in gds2gen.root_cell._DesignParameter.values():
+        for dp in top_dp.values():
             create_layer_element_by_dp(dp, idx)
 
     def __len__(self):
@@ -1089,6 +1171,9 @@ class LayoutReader:
         for elements_list in self.layer_elements.values():
             length += len(elements_list)
         return length
+
+    def get_bounding_box(self):
+        return [self.x_min, self.y_min, self.x_max, self.y_max]
 
 
 

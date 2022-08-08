@@ -588,10 +588,10 @@ class _MainWindow(QMainWindow):
         dockWidget2_2.setWidget(self.design_modifier)
 
         self.addDockWidget(Qt.LeftDockWidgetArea,dockWidget2_2)
-        self.scene.send_selected_list_signal.connect(lambda items: self.design_modifier.update_form(
-            self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName]\
-                [self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(items[0]._id)])
-                                                     )
+        # self.scene.send_selected_list_signal.connect(lambda items: self.design_modifier.update_form(
+        #     self._QTObj._qtProject._DesignConstraint[self._CurrentModuleName]\
+        #         [self._QTObj._qtProject._ElementManager.get_dc_id_by_dp_id(items[0]._id)])
+        #                                              )
         # self.design_modifier.send_update_qt_constraint_signal.connect(lambda target_id, update_dict:
         #                                                               self.design_delegator.update_qt_constraint(
         #                                                                   target_id, updated_dict=update_dict
@@ -2840,6 +2840,18 @@ class _MainWindow(QMainWindow):
                 self.dict_widget.send_variable_ast.connect(lambda _ast: self.dv.create_dict(_ast.name, _ast.dict_values))
             self.dict_widget.show()
 
+        elif 'object_detection' in _type:
+            # inf_model = topAPI.object_detection.inference_model
+            dp_names = [vis_item._ItemTraits['_ElementName'] for vis_item in self.scene.selectedItems()]
+
+            # update_unified_expression
+            poi = [self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][dp_name] for dp_name in dp_names]
+            # map(lambda x: x.update_unified_expression(), poi)
+            for dp in poi:
+                dp.update_unified_expression()
+            self.design_delegator.object_detection(poi)
+
+
 
     def inspect_vw_array(self, group_list):
         if user_setup.exp_data:
@@ -3999,6 +4011,7 @@ class _CustomView(QGraphicsView):
         visual_ungroup.setShortcut('Ctrl+G')
         simplify_sref = QAction("Simplification", self)
         detail_sref = QAction("Detail visual", self)
+        object_detection = QAction("Object detection", self)
 
         menu = QMenu(self)
         menu.addAction(constraint_create_array)
@@ -4022,6 +4035,8 @@ class _CustomView(QGraphicsView):
             # menu.addAction(variable_create_enclosure)
             # menu.addAction(variable_create_connect)
             menu.addAction(visual_ungroup)
+            if 'DL_DETECTION' in user_setup.__dir__() and user_setup.DL_DETECTION:
+                menu.addAction(object_detection)
 
         if self.scene().selectedItems():
             if self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 1:
@@ -4044,6 +4059,7 @@ class _CustomView(QGraphicsView):
         visual_ungroup.triggered.connect(self.scene().ungroup_indexed_item)
         simplify_sref.triggered.connect(self.scene().simplify_sref)
         detail_sref.triggered.connect(self.scene().detail_sref)
+        object_detection.triggered.connect(lambda tmp: self.variable_emit('object_detection'))
 
 
         menu.exec(event.globalPos())
@@ -4077,6 +4093,9 @@ class _CustomView(QGraphicsView):
             self.variable_signal.emit('copy_parms')
         elif type == 'copy_parms to constraints':
             self.variable_signal.emit('copy_parms to constraints')
+        elif type == 'object_detection':
+            self.variable_signal.emit('object_detection')
+
         # elif type == 'ungroup':
         #     self.variable_signal.emit('ungroup')
 
@@ -4596,6 +4615,8 @@ class _CustomScene(QGraphicsScene):
         for item in self.selectedItems():
             if type(item) == VisualizationItem._VisualizationItem:
                 item.simplify(False)
+
+
 
 
 class _VersatileWindow(QWidget):
