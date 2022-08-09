@@ -235,16 +235,24 @@ class GeometricField:
                 base_xy_internal = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][sref_idx])
                 sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect)
                 sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle)
-                try:
-                    for name, sub_dp in dp['_DesignObj']._DesignParameter.items():
+                if type(dp['_DesignObj']) == dict:
+                    for name, sub_qtdp in dp['_DesignObj'].items():
+                        sub_dp = sub_qtdp._DesignParameter
                         if sub_dp['_DesignParametertype'] in [1,2,3]:
                             structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
                             structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
                             structure_hierarchy_tmp.append(name)
                             self.design_parameter_projection(sub_dp, structure_hierarchy=structure_hierarchy_tmp,
                                                                 reflect=sub_reflect, angle=sub_angle, base_xy=base_xy_internal)
-                except:
-                    print('a')
+                else:
+                    for name, sub_dp in dp['_DesignObj']._DesignParameter.items():
+                        if sub_dp['_DesignParametertype'] in [1, 2, 3]:
+                            structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
+                            structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
+                            structure_hierarchy_tmp.append(name)
+                            self.design_parameter_projection(sub_dp, structure_hierarchy=structure_hierarchy_tmp,
+                                                             reflect=sub_reflect, angle=sub_angle,
+                                                             base_xy=base_xy_internal)
 
     def draw_by_projection_xy(self, _DesignParameter):
         fig, ax = plt.subplots()

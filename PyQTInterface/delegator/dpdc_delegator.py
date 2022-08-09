@@ -564,5 +564,3 @@ class DesignDelegator(delegator.Delegator):
         lm.load_dp(top_dp, user_setup.min_step_size,bb=False)
         topAPI.object_detection.inference(lm)
 
-        print('a')
-        # lr.load_dp()

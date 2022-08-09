@@ -1104,6 +1104,9 @@ class LayoutReader:
                         return idx
                 if not layer_name:
                     layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
+                if '_XYCoordinatesProjection' not in dp:
+                    warnings.warn('_XYCoordinatesProjection not in dp')
+                    return idx
                 for i in range(len(dp['_XYCoordinatesProjection'])):
                     x_min = min([xy[0] for xy in dp['_XYCoordinatesProjection'][i]])
                     y_min = min([xy[1] for xy in dp['_XYCoordinatesProjection'][i]])
@@ -1158,8 +1161,14 @@ class LayoutReader:
                         self.x_max = max(self.x_max, x_max) if self.x_max else x_max
                         self.y_max = max(self.y_max, y_max) if self.y_max else y_max
             elif dp['_DesignParametertype'] == 3:
-                for sub_dp in dp['_DesignObj']._DesignParameter.values():
-                    idx = create_layer_element_by_dp(sub_dp, idx)
+                if type(dp['_DesignObj']) == dict:
+                    for sub_qtdp in dp['_DesignObj'].values():
+                        sub_dp = sub_qtdp._DesignParameter
+                        idx = create_layer_element_by_dp(sub_dp, idx)
+                else:
+                    for sub_dp in dp['_DesignObj']._DesignParameter.values():
+                        idx = create_layer_element_by_dp(sub_dp, idx)
+
             return idx
 
         idx = 0
