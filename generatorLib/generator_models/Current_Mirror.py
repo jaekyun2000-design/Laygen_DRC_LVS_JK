@@ -7,8 +7,8 @@ from generatorLib.generator_models import NSET_Current_mirror
 from generatorLib.generator_models import PSET_Current_Mirror
 from generatorLib.generator_models import ViaMet42Met5
 
-class EasyDebugModule(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
+class _Current_Mirror(StickDiagram._StickDiagram):
+	def __init__(self, _DesignParameter=None, _Name='Current_Mirror'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
@@ -24,7 +24,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		_Name = self._DesignParameter['_Name']['_Name']
 		_OriginXY=[[0,0]]
 
-		self._DesignParameter['nset'] = self._SrefElementDeclaration(_DesignObj=NSET_Current_mirror.EasyDebugModule(_Name='nsetIn{}'.format(_Name)))[0]
+		self._DesignParameter['nset'] = self._SrefElementDeclaration(_DesignObj=NSET_Current_mirror._NSET_Current_Mirror(_Name='nsetIn{}'.format(_Name)))[0]
 		self._DesignParameter['nset']['_DesignObj']._CalculateDesignParameter_v1(**dict(**nset_param))
 
 		self._DesignParameter['nset']['_XYCoordinates'] = _OriginXY
@@ -41,10 +41,10 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
 		
-		self._DesignParameter['pset'] = self._SrefElementDeclaration(_DesignObj=PSET_Current_Mirror.EasyDebugModule(_Name='psetIn{}'.format(_Name)))[0]
+		self._DesignParameter['pset'] = self._SrefElementDeclaration(_DesignObj=PSET_Current_Mirror._PSET_Current_Mirror(_Name='psetIn{}'.format(_Name)))[0]
 		self._DesignParameter['pset']['_DesignObj']._CalculateDesignParameter(**dict(**pset_param))
 		self._DesignParameter['pset']['_XYCoordinates'] = [[0, 0]]
-		self._DesignParameter['nset'] = self._SrefElementDeclaration(_DesignObj=NSET_Current_mirror.EasyDebugModule(_Name='nsetIn{}'.format(_Name)))[0]
+		self._DesignParameter['nset'] = self._SrefElementDeclaration(_DesignObj=NSET_Current_mirror._NSET_Current_Mirror(_Name='nsetIn{}'.format(_Name)))[0]
 		self._DesignParameter['nset']['_DesignObj']._CalculateDesignParameter_v2(**dict(**nset_param))
 
 		_Ycoordinate_nset=self._DesignParameter['pset']['_XYCoordinates'][0][1]+self._DesignParameter['pset']['_DesignObj']._DesignParameter['pmos2']['_XYCoordinates'][0][1]+self._DesignParameter['pset']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['pguardring']['_XYCoordinates'][0][1]+self._DesignParameter['pset']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['pguardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1]-self._DesignParameter['pset']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['pguardring']['_DesignObj']._DesignParameter['bot']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2-\

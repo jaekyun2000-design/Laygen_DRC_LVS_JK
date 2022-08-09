@@ -366,7 +366,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
 
             #### Nset Generation ####
-            self._DesignParameter['nmos_pdn_sw']=self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='pmos_pdn_pair_swIn{}'.format(_Name)))[0]
+            self._DesignParameter['nmos_pdn_sw']=self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='nmos_pdn_pair_swIn{}'.format(_Name)))[0]
             self._DesignParameter['nmos_pdn_sw']['_DesignObj']._CalculateNMOSDesignParameter(**dict(**nset_param['nmos_pdn_sw_param']))
 
             self._DesignParameter['nmos_vb1']=self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='nmos_vb1In{}'.format(_Name)))[0]

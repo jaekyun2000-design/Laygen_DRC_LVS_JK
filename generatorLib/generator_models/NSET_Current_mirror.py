@@ -11,8 +11,8 @@ from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import ViaMet22Met3
 from generatorLib.generator_models import ViaStack
 
-class EasyDebugModule(StickDiagram._StickDiagram):
-    def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
+class _NSET_Current_Mirror(StickDiagram._StickDiagram):
+    def __init__(self, _DesignParameter=None, _Name='NSET_Current_Mirror'):
         if _DesignParameter != None:
             self._DesignParameter = _DesignParameter
         else:

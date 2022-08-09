@@ -7,8 +7,8 @@ from generatorLib.generator_models import NMOSWithDummy
 from generatorLib.generator_models import ViaPoly2Met1
 from generatorLib.generator_models import PSubRing
 
-class EasyDebugModule(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
+class _NCap(StickDiagram._StickDiagram):
+	def __init__(self, _DesignParameter=None, _Name='NCap'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
