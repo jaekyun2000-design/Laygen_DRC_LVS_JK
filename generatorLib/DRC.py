@@ -131,9 +131,11 @@ class DRCPP:
         if user_setup._Technology == 'SS28nm':
             self._PpMinWidth = 170
             self._PpMinSpace = 170
-            self._PpMinExtensiononPactive = 56
+            self._PpMinExtensiononPactive = 56      # do not use
+            self._PpMinEnclosureOfPactiveX = 56
+            self._PpMinEnclosureOfPactiveY = 56
             self._PpMinExtensiononPactive2 = 21
-            self._PpMinEnclosureOfPo = 0
+            self._PpMinEnclosureOfPo = 0            # when ?
             self._PpMinArea = 160000  ## Added By Junung
 
             self._PpMinEnclosureOfPtypePoRes = 240
@@ -145,9 +147,11 @@ class DRCPP:
         if user_setup._Technology == 'SS65nm':
             self._PpMinWidth = 200                      # 11.a
             self._PpMinSpace = 200                      # 11.c
-            self._PpMinExtensiononPactive = 110         # 11.b.2_lv     => PMOS x-direction (ACTIVE AND NWELL)
+            self._PpMinExtensiononPactive = 110         # do not use
+            self._PpMinEnclosurOfPactiveX = 110         # 11.b.2_lv     => PMOS x-direction (ACTIVE AND NWELL)
+            self._PpMinEnclosurOfPactiveY = 180         # 11.g          => PMOS y-direction (pgate)
             self._PpMinExtensiononPactive2 = 40         # 11.b.1        => VSS Rail x,y-direction
-            self._PpMinEnclosureOfPo = 180              # 11.g          => PMOS y-direction (pgate)
+            self._PpMinEnclosureOfPo = None             #
             self._PpMinArea = 180000                    # 11.i
 
             self._PpMinEnclosureOfPtypePoRes = None     # 보류
@@ -194,17 +198,21 @@ class DRCNP:
             self._NpMinExtensiononNactive2 = 20  # Nactive2 -> for supply rail
             self._NpMinEnclosureOfPo = 110
         if user_setup._Technology == 'SS28nm':  # There is no NP layer in 28nm, junung
-            self._NpMinWidth = 180
-            self._NpMinSpace = 180
-            self._NpMinExtensiononNactive = 130
-            self._NpMinExtensiononNactive2 = 0  # Nactive2 -> for supply rail
-            self._NpMinEnclosureOfPo = 150
+            self._NpMinWidth = None
+            self._NpMinSpace = None
+            self._NpMinExtensiononNactive = None
+            self._NpMinEnclosureOfNactiveX = None
+            self._NpMinEnclosureOfNactiveY = None
+            self._NpMinExtensiononNactive2 = None
+            self._NpMinEnclosureOfPo = None
         if user_setup._Technology == 'SS65nm':
             self._NpMinWidth = 200                  # 10.a
             self._NpMinSpace = 200                  # 10.d
-            self._NpMinExtensiononNactive = 110     # 10.b.2    (NMOS) x-direction (ACTIVE not NWELL)
+            self._NpMinExtensiononNactive = 110     # do not use
+            self._NpMinEnclosureOfNactiveX = 110    # 10.b.2    (NMOS) x-direction (ACTIVE not NWELL)
+            self._NpMinEnclosureOfNactiveY = 180    # 10.g      (NMOS) y-direction (ngate)
             self._NpMinExtensiononNactive2 = 40     # 10.b.1    (Nbody) VSS Rail x,y-direction
-            self._NpMinEnclosureOfPo = 180          # 10.g      (NMOS) y-direction (ngate)
+            self._NpMinEnclosureOfPo = None         #
             self._NpMinArea = 180000                # 10.h
         if user_setup._Technology == 'TSMC65nm':
             self._NpMinWidth = 180
@@ -339,11 +347,15 @@ class DRCPOLYGATE:
             self._PolygateMinSpaceAtCorner = 375
 
     def DRCPolygateMinExtensionOnOD(self, _ChannelLength=None):
-        """
-        nmos, pmos 소자의 channellength를 바꿀 시 Poly Layer가 OD Layer 위를 양방향으로 벗어나는 y방향 길이. (PCell을 그대로 인용)
+        """ MOSFET ChannelLength에 따른 OD(RX,ACTIVE) Layer 위아래 y방향으로 Extension 되는 길이(p-cell참고) 계산
+
+        author: jicho
 
         Args:
             _ChannelLength : channel length of MOSFET
+        Returns:
+            +-y 방향으로 PolyGate Extension 되는 길이(only one-side length)
+
         """
         if _ChannelLength == None:
             raise NotImplementedError
@@ -360,10 +372,16 @@ class DRCPOLYGATE:
             return self._PolygateMinExtensionOnOD       # Add -elif- statements when tech. is verified.
 
     def DRCPolygateMinSpace(self, _TmpLengthBtwPolyEdge=None):
-        """
-        HOW TO USE
-        nmos, pmos 소자의 channellength를 바꿀 시 Poly gate 사이의 x방향 거리. (PCell을 그대로 인용)
-        input으로 mos의 length 입력.
+        """ NMOS PMOS PolyGate 간의 x방향 간격 계산(edge-to-edge)
+
+        Note:
+            기존에 존재했던 code. -> 정확한 rule인지 모름
+            (Only for TSMC45nm ?)
+        Args:
+            _TmpLengthBtwPolyEdge: def DRCPolyMinSpace 의 반환값
+        Returns:
+            @TSMC45nm,   - 양자화되어 새로 계산된 PolyGate 간의 간격(edge-to-edge)
+            @other tech, - input value 그대로 반환
         """
         if user_setup._Technology == 'TSMC45nm':
             if _TmpLengthBtwPolyEdge <= self._PolygateOnODMinWidth1:
@@ -372,31 +390,20 @@ class DRCPOLYGATE:
                 return self._PolygateOnODMinWidth2
             elif _TmpLengthBtwPolyEdge <= self._PolygateOnODMinWidth3:
                 return self._PolygateOnODMinWidth3
-
-        if user_setup._Technology == 'SS28nm':
+        else:
             return _TmpLengthBtwPolyEdge
-        if user_setup._Technology == 'TSMC65nm':
-            return _TmpLengthBtwPolyEdge
-        if user_setup._Technology == 'TSMC90nm':
-            return _TmpLengthBtwPolyEdge
-        if user_setup._Technology == 'TSMC130nm':
-            return _TmpLengthBtwPolyEdge
-        if user_setup._Technology == 'TSMC180nm':
-            return _TmpLengthBtwPolyEdge
-
-    # def DRCPolyDummyMinSpace(self, _Width=None, _ParallelLength=None):
-    #     if user_setup._Technology=='SS28nm':
-    #         if _Width==None  and _ParallelLength < 48:
-    #             return self._PolygateMinSpace1
-    #         else:
-    #             return self._PolygateMinSpace2
 
     def DRCPolyMinSpace(self, _Width=None, _ParallelLength=None):
-        """
-        HOW TO USE
-        nmos, pmos 소자의 channellength와 fingerwidth를 바꿀 시 Poly gate 사이의 x방향 거리. (PCell을 그대로 인용)
-        input으로 mos의 length과 fingerwidth를 입력.
-        SS28nm의 경우, length에 따라서만 poly gate 사이의 거리가 바뀌는 것으로 파악.
+        """ MOSFET PolyGate의 width, length에 따른 PolyGate간의 간격(edge-to-edge)
+
+        Note:
+            기존에 존재했던 code 기반. -> tsmc tech는 정확한 rule인지 모름
+            SS28nm의 경우, length에 따라서만 poly gate 사이의 거리가 바뀌는 것으로 파악(p-cell).
+        Args:
+            _Width: Channel Width
+            _ParallelLength: Channel Length
+        Returns:
+            MOSFET PolyGate 간의 간격(edge-to-edge)
         """
         if user_setup._Technology == 'TSMC45nm':
             if _Width == None and _ParallelLength == None:
@@ -890,12 +897,12 @@ class DRCMETAL1:
         if user_setup._Technology == 'SS65nm':
             self._Metal1MinWidth = 100                  # 14.a.1
             self._Metal1MinSpace = 110                  # 14.c.1a
-            self._Metal1MinSpace2 = 180                 # 14.c.2    ( 0.72 < w =<  4.0)
+            self._Metal1MinSpace2 = 180                 # 14.c.2    ( 0.72 < w =<  4.0)     : both widh and height (w)
             self._Metal1MinSpace3 = 500                 # 14.c.3    ( 4.0  < w =<  7.0)
             self._Metal1MinSpace4 = 1000                # 14.c.4    ( 7.0  < w =< 10.0)
             self._Metal1MinSpace5 = 2000                # 14.c.5    (10.0  < w)
-
-            self._Metal1MinSpaceAtCorner = None         # -
+            self._Metal1MinSpaceAtCorner = \
+                self._Metal1MinSpace                    # -
 
             self._Metal1MinEnclosureCO = 10             # 14.d
             self._Metal1MinEnclosureCO2 = 40            # 14.e.1    (two opposite sides)
@@ -2013,8 +2020,8 @@ class DRCMETALx:
             self._MetalxMinSpace2 = 180                 # 16.c.2    (0.72 < w =< 2.8)
             self._MetalxMinSpace3 = 340                 # 16.c.3    (2.8 < w =< 8.0)
             self._MetalxMinSpace4 = 1020                # 16.c.4    (8.0 < w)
-
-            self._MetalxMinSpaceAtCorner = None         # -
+            self._MetalxMinSpaceAtCorner = \
+                self._MetalxMinSpace                    # -
 
             self._MetalxMinEnclosureCO = 10             # 16.d(VIA1 - MET2)
             self._MetalxMinEnclosureCO2 = 40            # 16.e.1(VIA1 - MET2)
@@ -2211,7 +2218,7 @@ class DRCMETALy:
             self._MetalyMinSpace = 120                  # m5.1x.c
             self._MetalyMinSpace2 = 180                 # m5.1x.c.2     (0.72 < w =< 2.8)
             self._MetalyMinSpace3 = 340                 # m5.1x.c.3     (2.8  < w =< 8.0)
-            self._MetalyMinSpace4 = 1020                # m5.1x.c.4     (8.0 < w)
+            self._MetalyMinSpace4 = 1020                # m5.1x.c.4     (8.0  < w)
 
             self._MetalyMinEnclosureCO = 10             # m5.1x.d
             self._MetalyMinEnclosureCO2 = 40            # m5.1x.e
@@ -2354,7 +2361,7 @@ class DRCMETALz:
 
         if user_setup._Technology == 'SS65nm':      # M6_2X
             self._MetalzMinWidth = 160                  # m6.2x.a
-            self._MetalzMaxWidth = 80000                # m6.2x.b
+            self._MetalzMaxWidth = 80000                # m6.2x.b       both with and length at the same time
             self._MetalzMinSpace = 200                  # m6.2x.c
             self._MetalzMinSpace2 = 240                 # m6.2x.c.2     (2 < w =< 5)
             self._MetalzMinSpace3 = 600                 # m6.2x.c.3     (5 < w =< 10)
@@ -2478,8 +2485,8 @@ class DRCMETALr:
 
         if user_setup._Technology == 'SS65nm':      # MET7T
             self._MetalrMinWidth = 440                  # 22.a
-            self._MetalrMaxWidth = None                 # -
-            self._MetalrMinSpace = 460                  # 22.b.1a   440? thin/thick
+            self._MetalrMaxWidth = None                 # Not Found
+            self._MetalrMinSpace = 460                  # 22.b.1a
             self._MetalrMinSpace2 = 1000                # 22.b.2    (5 < w)
 
             self._MetalrMinEnclosureCO = 10             # 22.c
@@ -2690,36 +2697,36 @@ class DRCXVT:
             self._XvtMinArea = 270000  # VTL_N_A_1 = VTL_N_A_2
 
 
-class DRCMetalMap:
-    def getMetalType(self, MetalLayerNum:int):
-        if user_setup._Technology == 'SS28nm':
-            if MetalLayerNum == 1:
-                return '1'
-            elif MetalLayerNum in (2, 3, 4):
-                return 'x'
-            else:
-                raise NotImplementedError
-        elif user_setup._Technology == 'SS65nm':
-            if MetalLayerNum == 1:
-                return '1'
-            elif MetalLayerNum in (2, 3, 4):
-                return 'x'
-            elif MetalLayerNum == 5:
-                return 'y'
-            elif MetalLayerNum == 6:
-                return 'z'
-            elif MetalLayerNum == 7:
-                return 'r'
-            else:
-                raise NotImplementedError
-        else:
-            raise NotImplementedError
+# class DRCMetalMap:
+#     def getMetalType(self, MetalLayerNum:int):
+#         if user_setup._Technology == 'SS28nm':
+#             if MetalLayerNum == 1:
+#                 return '1'
+#             elif MetalLayerNum in (2, 3, 4):
+#                 return 'x'
+#             else:
+#                 raise NotImplementedError
+#         elif user_setup._Technology == 'SS65nm':
+#             if MetalLayerNum == 1:
+#                 return '1'
+#             elif MetalLayerNum in (2, 3, 4):
+#                 return 'x'
+#             elif MetalLayerNum == 5:
+#                 return 'y'
+#             elif MetalLayerNum == 6:
+#                 return 'z'
+#             elif MetalLayerNum == 7:
+#                 return 'r'
+#             else:
+#                 raise NotImplementedError
+#         else:
+#             raise NotImplementedError
 
 
 
 class DRC(DRCMultiplicantForMinEdgeWidth, DRCOD, DRCPOLYGATE, DRCPP, DRCNP, DRCCO, DRCMETAL1, DRCMETALy, DRCVIAy,
           DRCMETALz, DRCVIAz, DRCMETALr, DRCVIAr, DRCNW, DRCVIAx, DRCMETALx, DRCMinSnapSpacing, DRCRPO,
-          DRCXVT, DRCMetalMap):
+          DRCXVT):
     def __init__(self):
         DRCNW.__init__(self)
         DRCOD.__init__(self)
@@ -2738,8 +2745,6 @@ class DRC(DRCMultiplicantForMinEdgeWidth, DRCOD, DRCPOLYGATE, DRCPP, DRCNP, DRCC
         DRCMETALr.__init__(self)
         DRCMinSnapSpacing.__init__(self)
         DRCRPO.__init__(self)
-        # DRCSLVT.__init__(self)
-        DRCXVT.__init__(self)
         DRCXVT.__init__(self)
 
 

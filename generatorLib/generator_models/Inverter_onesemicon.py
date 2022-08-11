@@ -929,7 +929,7 @@ class _Inverter(StickDiagram._StickDiagram):
 
 if __name__ == '__main__':
     from Private import Myinfo
-    import DRCchecker
+    import DRCchecker_test2 as DRCchecker
     # from SthPack import PlaygroundBot
 
     My = Myinfo.USER(DesignParameters._Technology)
@@ -941,20 +941,20 @@ if __name__ == '__main__':
 
     ''' Input Parameters for Layout Object '''
     InputParams = dict(
-        _Finger=1,
-        _ChannelWidth=200,
+        _Finger=7,
+        _ChannelWidth=400,
         _ChannelLength=30,
         _NPRatio=2,
 
-        _VDD2VSSHeight=1800,
+        _VDD2VSSHeight=2200,    # 1800
         _VDD2PMOSHeight=None,
         _VSS2NMOSHeight=None,
         _YCoordOfInput=None,
 
         _Dummy=True,
         _XVT='SLVT',
-        _GateSpacing=100,
-        _SDWidth=66,
+        _GateSpacing=100,     # 100 -> 고정?
+        _SDWidth=None,        # 66
 
         _NumViaPMOSMet12Met2CoY=None,
         _NumViaNMOSMet12Met2CoY=None,
