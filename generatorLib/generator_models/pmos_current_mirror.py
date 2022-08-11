@@ -9,8 +9,8 @@ from generatorLib.generator_models import ViaStack
 from generatorLib.generator_models import ViaPoly2Met1
 from generatorLib.generator_models import ViaMet12Met2
 
-class EasyDebugModule(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
+class _pmos_current_mirror(StickDiagram._StickDiagram):
+	def __init__(self, _DesignParameter=None, _Name='pmos_current_mirror'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
@@ -18,10 +18,10 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['_Name']['Name'] = _Name
 
 	def _CalculateDesignParameter(self,finger=2,width=1500,length=100,dummy=True,xvt='LVT',pccrit=False,guardring_co_right=3,guardring_co_left=3,guardring_co_top=4,guardring_co_bottom=2,guardring_width=None,guardring_height=None):
-	
+
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
-		
+
 		self._DesignParameter['pmos'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='pmosIn{}'.format(_Name)))[0]
 		self._DesignParameter['pmos']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=finger, _PMOSChannelWidth=width, _PMOSChannellength=length, _PMOSDummy=dummy, _GateSpacing=None, _SDWidth=None, _XVT=xvt, _PCCrit=pccrit))
 		self._DesignParameter['pmos']['_XYCoordinates'] = [[0, 0]]
@@ -96,7 +96,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['nwell'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1], _XWidth=(guardring_right - guardring_left), _YWidth=(guardring_top - guardring_bottom))
 		self._DesignParameter['nwell']['_XYCoordinates'] = [[((guardring_right + guardring_left) / 2), ((guardring_top + guardring_bottom) / 2)]]
 		self._DesignParameter['via_m1_m4'] = self._SrefElementDeclaration(_DesignObj=ViaStack._ViaStack(_Name='via_m1_m4In{}'.format(_Name)))[0]
-		self._DesignParameter['via_m1_m4']['_DesignObj']._CalculateStackMinimumEnclosureY(**dict(COX=max(2, max(1, (1 + int((((self._DesignParameter['via_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] - drc._VIAxMinSpace) - (2 * drc._VIAxMinEnclosureByMetx)) / (drc._VIAxMinWidth + drc._VIAxMinSpace)))))), COY=1, start_layer=1, end_layer=4))
+		self._DesignParameter['via_m1_m4']['_DesignObj']._CalculateStackMinimumEnclosureX(**dict(COX=max(2, max(1, (1 + int((((self._DesignParameter['via_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] - drc._VIAxMinSpace) - (2 * drc._VIAxMinEnclosureByMetx)) / (drc._VIAxMinWidth + drc._VIAxMinSpace)))))), COY=1, start_layer=1, end_layer=4))
 		self._DesignParameter['via_m1_m4']['_XYCoordinates'] = [[(+ self._DesignParameter['via_gate']['_XYCoordinates'][0][0]), (+ self._DesignParameter['via_gate']['_XYCoordinates'][0][1])]]
 		self._DesignParameter['m1_gate'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _XWidth=max(self._DesignParameter['via_m1_m4']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'], self._DesignParameter['via_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']), _YWidth=max(self._DesignParameter['via_m1_m4']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'], self._DesignParameter['via_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']))
 		self._DesignParameter['m1_gate']['_XYCoordinates'] = [[(+ self._DesignParameter['via_m1_m4']['_XYCoordinates'][0][0]), (+ self._DesignParameter['via_m1_m4']['_XYCoordinates'][0][1])]]
@@ -133,7 +133,3 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		    path_list[i][0] = [(xy + offset) for (xy, offset) in zip(path_list[i][0], xy_offset)]
 		self._DesignParameter['m1_source_routing2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_source_routing2']['_XYCoordinates'] = path_list
-
-		self._DesignParameter['m2_output_x']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=None)
-		self._DesignParameter['m2_output_x']['_Width']=min(drc._MetalxMinWidth*3,self.getYWidth('via_m1_m2_drain','_Met2Layer'))
-		self._DesignParameter['m2_output_x']['_XYCoordinates']=[[self._DesignParameter['via_m1_m2_drain']['_XYCoordinates'][0], self._DesignParameter['via_m1_m2_drain']['_XYCoordinates'][-1]]]
