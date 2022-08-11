@@ -6,27 +6,6 @@ import user_setup
 _Technology= user_setup._Technology
 
 
-class DRCMultiplicantForMinEdgeWidth:  ####????????????????????????????????????????????????????????????????????????
-    def __init__(self):
-        if user_setup._Technology == 'SS28nm':
-            self._MultiplicantForMinEdgeWidth = 1
-        if user_setup._Technology == 'SS65nm':
-            self._MultiplicantForMinEdgeWidth = 1
-        if user_setup._Technology == 'TSMC45nm':
-            self._MultiplicantForMinEdgeWidth = 1
-        if user_setup._Technology == 'TSMC65nm':
-            self._MultiplicantForMinEdgeWidth = 1
-        if user_setup._Technology == 'TSMC90nm':
-            self._MultiplicantForMinEdgeWidth = 0
-        if user_setup._Technology == 'TSMC130nm':
-            self._MultiplicantForMinEdgeWidth = 0
-        if user_setup._Technology == 'TSMC180nm':
-            self._MultiplicantForMinEdgeWidth = 0
-
-    def DRCMinEdgeWidth(self, _MinWidth=None):
-        return self._MultiplicantForMinEdgeWidth * _MinWidth
-
-
 class DRCMinSnapSpacing:
     def __init__(self):
         if user_setup._Technology == 'SS28nm':
@@ -463,10 +442,10 @@ class DRCCO:
 
         if user_setup._Technology == 'SS28nm':
             self._CoMinWidth = 40
-            self._CoMinSpace = 60
-            self._CoMinSpace2 = 60
-            self._CoMinSpaceDifferentNet = 78
-            self._CoMinSpaceFor3neighboring = 92
+            self._CoMinSpace = 60                           # 203a
+            self._CoMinSpace2 = self._CoMinSpace            # not found
+            self._CoMinSpaceDifferentNet = 78               # 204b
+            self._CoMinSpaceFor3neighboring = 92            # not found
             self._CoMinEnclosureByOD = 8
             self._CoMinEnclosureByODAtLeastTwoSide = 30
             self._CoMinEnclosureByPO = 30
@@ -480,7 +459,7 @@ class DRCCO:
         if user_setup._Technology == 'SS65nm':
             self._CoMinWidth = 90                               # 13.a.1
             self._CoMinSpace = 110                              # 13.b.1
-            self._CoMinSpace2 = self._CoMinSpace                # Not found
+            self._CoMinSpace2 = self._CoMinSpace                # Not found(checked)
             self._CoMinSpaceDifferentNet = 180                  # 13.k - {EXT (CNT AND GPOLY) (CNT AND ACTIVE) < 180}
             self._CoMinSpaceFor3neighboring \
                 = self._CoMinSpace                              # Not found
@@ -489,7 +468,7 @@ class DRCCO:
                 = self._CoMinEnclosureByOD                      # Not found
             self._CoMinEnclosureByPO = 10                       # 13.f
             self._CoMinEnclosureByPOAtLeastTwoSide \
-                = self._CoMinEnclosureByPO                      # Not found
+                = self._CoMinEnclosureByPO                      # Not found(checked)
 
             self._CoMinSpace2OP = None                          # 보류
             self._CoMinEnclosureByPO2 = None                    # 보류
@@ -553,10 +532,11 @@ class DRCCO:
         if user_setup._Technology == 'SS28nm':
             if NumOfCOX == None and NumOfCOY == None:
                 return self._CoMinSpace
-            elif (2 < NumOfCOY and 2 <= NumOfCOX) or (2 <= NumOfCOY and 2 < NumOfCOX):
-                return self._CoMinSpace2
             else:
                 return self._CoMinSpace
+
+        if user_setup._Technology == 'SS65nm':
+            return self._CoMinSpace
 
         if user_setup._Technology == 'TSMC65nm':
             if NumOfCOX == None and NumOfCOY == None:
@@ -908,7 +888,8 @@ class DRCMETAL1:
             self._Metal1MinEnclosureCO2 = 40            # 14.e.1    (two opposite sides)
             self._Metal1MinEnclosureVia1 = 10           # 15.d
             self._Metal1MinEnclosureVia12 = 40          # 15.e.1    (two opposite sides)
-            self._Metal1MinEnclosureVia3 = None
+            self._Metal1MinEnclosureVia3 = \
+                self._Metal1MinEnclosureVia12           # -
             self._Metal1MinArea = 80000                 # 14.f.1
 
         if user_setup._Technology == 'TSMC65nm':
@@ -2025,7 +2006,8 @@ class DRCMETALx:
 
             self._MetalxMinEnclosureCO = 10             # 16.d(VIA1 - MET2)
             self._MetalxMinEnclosureCO2 = 40            # 16.e.1(VIA1 - MET2)
-            self._MetalxMinEnclosureVia3 = None         # for same enclosure ?? only for ss28nm?
+            self._MetalxMinEnclosureVia3 = \
+                self._MetalxMinEnclosureCO2             # for same enclosure ?? only for ss28nm?
             self._MetalxMinArea = 100000                # 16.f.1
 
 
@@ -2222,7 +2204,8 @@ class DRCMETALy:
 
             self._MetalyMinEnclosureCO = 10             # m5.1x.d
             self._MetalyMinEnclosureCO2 = 40            # m5.1x.e
-            self._MetalyMinEnclosureVia3 = None
+            self._MetalyMinEnclosureVia3 = \
+                self._MetalyMinEnclosureCO2             #
             self._MetalyMinArea = 100000                # m5.1x.f
 
         if user_setup._Technology == 'TSMC65nm':
@@ -2369,7 +2352,8 @@ class DRCMETALz:
 
             self._MetalzMinEnclosureCO = 20             # m6.2x.d
             self._MetalzMinEnclosureCO2 = 100           # m6.2x.e
-            self._MetalzMinEnclosureVia3 = None
+            self._MetalzMinEnclosureVia3 = \
+                self._MetalzMinEnclosureCO2             # -
             self._MetalzMinArea = 100000                # m6.2x.f
 
         if user_setup._Technology == 'TSMC65nm':
@@ -2491,7 +2475,8 @@ class DRCMETALr:
 
             self._MetalrMinEnclosureCO = 10             # 22.c
             self._MetalrMinEnclosureCO2 = 120           # 22.d
-            self._MetalrMinEnclosureVia3 = None
+            self._MetalrMinEnclosureVia3 = \
+                self._MetalrMinEnclosureCO2
             self._MetalrMinArea = 320000                # 22.e
 
         if user_setup._Technology == 'TSMC65nm':
@@ -2676,9 +2661,9 @@ class DRCXVT:
         if user_setup._Technology == 'SS28nm':
             self._XvtMinWidth = 170
             self._XvtMinSpace = 170
-            self._XvtMinExtensionOnOD = 56  # GRSLVT9b
-            self._XvtMinEnclosureOfODX = 35  # This value is calculated by GRSLVT9a(horizontal direction)
-            self._XvtMinEnclosureOfODY = 56  # GRSLVT9b (vertical direction,  same with _XvtMinExtensionOnOD)
+            self._XvtMinExtensionOnOD = 56              # GRSLVT9b
+            self._XvtMinEnclosureOfODX = 35             # calculated by GRSLVT9a (horizontal direction)
+            self._XvtMinEnclosureOfODY = 56             # GRSLVT9b (vertical direction, same with _XvtMinExtensionOnOD)
             self._XvtMinArea = 95000
 
         elif user_setup._Technology == 'SS65nm':
@@ -2690,11 +2675,11 @@ class DRCXVT:
             self._XvtMinArea = self._XvtMinWidth ** 2   # -
 
         elif user_setup._Technology == 'TSMC65nm':
-            self._XvtMinWidth = 180  # VTL_N_W_1
-            self._XvtMinSpace = 180  # VTL_N_S_1 (there are other space rules)
-            self._XvtMinEnclosureOfODX = 10  # This value is calculated by VTL_N_EN1(horizontal direction)
-            self._XvtMinEnclosureOfODY = 160  # VTL_N_EN2 (vertical direction)
-            self._XvtMinArea = 270000  # VTL_N_A_1 = VTL_N_A_2
+            self._XvtMinWidth = 180                     # VTL_N_W_1
+            self._XvtMinSpace = 180                     # VTL_N_S_1 (there are other space rules)
+            self._XvtMinEnclosureOfODX = 10             # This value is calculated by VTL_N_EN1(horizontal direction)
+            self._XvtMinEnclosureOfODY = 160            # VTL_N_EN2 (vertical direction)
+            self._XvtMinArea = 270000                   # VTL_N_A_1 = VTL_N_A_2
 
 
 # class DRCMetalMap:
@@ -2724,9 +2709,8 @@ class DRCXVT:
 
 
 
-class DRC(DRCMultiplicantForMinEdgeWidth, DRCOD, DRCPOLYGATE, DRCPP, DRCNP, DRCCO, DRCMETAL1, DRCMETALy, DRCVIAy,
-          DRCMETALz, DRCVIAz, DRCMETALr, DRCVIAr, DRCNW, DRCVIAx, DRCMETALx, DRCMinSnapSpacing, DRCRPO,
-          DRCXVT):
+class DRC(DRCMinSnapSpacing, DRCOD, DRCPOLYGATE, DRCPP, DRCNP, DRCCO, DRCMETAL1, DRCMETALy, DRCVIAy,
+          DRCMETALz, DRCVIAz, DRCMETALr, DRCVIAr, DRCNW, DRCVIAx, DRCMETALx, DRCRPO, DRCXVT):
     def __init__(self):
         DRCNW.__init__(self)
         DRCOD.__init__(self)

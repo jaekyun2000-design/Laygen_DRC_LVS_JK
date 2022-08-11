@@ -9,12 +9,9 @@ from generatorLib import DRC
 #
 from generatorLib.generator_models import NMOSWithDummy
 from generatorLib.generator_models import PMOSWithDummy
-from generatorLib.generator_models import NbodyContact
-from generatorLib.generator_models import PbodyContact
 from generatorLib.generator_models import ViaPoly2Met1
 from generatorLib.generator_models import ViaPoly2Met1_resize
 from generatorLib.generator_models import ViaMet12Met2
-from generatorLib.generator_models import ViaMet22Met3
 from generatorLib.generator_models import SupplyRails
 from generatorLib.generator_models import Z_PWR_CNT
 
