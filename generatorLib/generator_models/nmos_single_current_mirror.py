@@ -8,19 +8,19 @@ from generatorLib.generator_models import ViaStack
 from generatorLib.generator_models import PSubRing
 from generatorLib.generator_models import ViaPoly2Met1
 
-class EasyDebugModule(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
+class _nmos_single_current_mirror(StickDiagram._StickDiagram):
+	def __init__(self, _DesignParameter=None, _Name='nmos_single_current_mirror'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,nmos_gate=2,nmos_width=1000,nmos_length=30,nmos_dummy=True,xvt='SLVT',pccrit=True,guardring_right=2,guardring_left=2,guardring_bot=2,guardring_top=2,guardring_width=None,guardring_height=None):
-	
+	def _CalculateDesignParameter(self,nmos_gate=2,nmos_width=1000,nmos_length=30,nmos_dummy=True,xvt='SLVT',pccrit=True,guardring_right=2,guardring_left=2,guardring_bot=2,guardring_top=2,guardring_width=None,guardring_height=None ):
+
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
-		
+
 		self._DesignParameter['nmos'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='nmosIn{}'.format(_Name)))[0]
 		self._DesignParameter['nmos']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=nmos_gate, _NMOSChannelWidth=nmos_width, _NMOSChannellength=nmos_length, _NMOSDummy=nmos_dummy, _GateSpacing=None, _SDWidth=None, _XVT=xvt, _PCCrit=pccrit))
 		self._DesignParameter['nmos']['_XYCoordinates'] = [[0, 0]]
@@ -46,11 +46,6 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		        xy = (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0] if (type(self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])
 		        XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['nmos']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos']['_XYCoordinates'][0][1])], xy, xy_offset)])
 		self._DesignParameter['via_m1_m4_source']['_XYCoordinates'] = XYList
-
-		self._DesignParameter['m4_output']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=None)
-		self._DesignParameter['m4_output']['_Width']=min(drc._MetalxMinWidth*3, self._DesignParameter['via_m1_m4_source']['_DesignObj']._DesignParameter['ViaMet32Met4']['_DesignObj']._DesignParameter['_Met4Layer']['_YWidth'])
-		self._DesignParameter['m4_output']['_XYCoordinates']=[[self._DesignParameter['via_m1_m4_source']['_XYCoordinates'][0], self._DesignParameter['via_m1_m4_source']['_XYCoordinates'][-1]]]
-
 		self._DesignParameter['poly_gate'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='poly_gateIn{}'.format(_Name)))[0]
 		self._DesignParameter['poly_gate']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureY(**dict(_ViaPoly2Met1NumberOfCOX=num_cont, _ViaPoly2Met1NumberOfCOY=1))
 		self._DesignParameter['poly_gate']['_XYCoordinates'] = [[self._DesignParameter['nmos']['_XYCoordinates'][0][0], ((max(((self._DesignParameter['nmos']['_XYCoordinates'][0][1] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) + (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)), (((self._DesignParameter['via_m1_m4_drain']['_XYCoordinates'][0][1] + self._DesignParameter['via_m1_m4_drain']['_DesignObj']._DesignParameter['ViaMet12Met2']['_XYCoordinates'][0][1]) + self._DesignParameter['via_m1_m4_drain']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) + (self._DesignParameter['via_m1_m4_drain']['_DesignObj']._DesignParameter['ViaMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))) + (self._DesignParameter['poly_gate']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) + drc._Metal1MinSpace2)]]
