@@ -125,6 +125,12 @@ class _NMOS(StickDiagram._StickDiagram):
                     self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][1] = nmos_input_via_y_value + calibre_y_value
         self.offset_value = self.getXY('nmos_gate_via', '_Met1Layer')[0][1]
         if gate_option == 'rotate':
+            drc_test = self.getXYTop('nmos', '_PODummyLayer')[0][1] - self.getXYBot('nmos_gate_via', '_POLayer')[0][1]
+            if abs(drc_test)< drc._PolygateMinSpace:
+                calibre_y_value = drc._PolygateMinSpace - abs(drc_test)
+                self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][
+                    1] = nmos_input_via_y_value + calibre_y_value
+                self.offset_value = abs(self.getXY('nmos_gate_via', '_Met1Layer')[0][1])
             calibre_value = self.CeilMinSnapSpacing((self.getYWidth('nmos_gate_via', '_Met1Layer') - self.getXWidth('nmos_gate_via', '_Met1Layer')) / 2,
                                                     _MinSnapSpacing)
             self.offset_value = self.offset_value - calibre_value
