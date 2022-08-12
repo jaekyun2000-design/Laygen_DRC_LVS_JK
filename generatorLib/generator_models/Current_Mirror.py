@@ -103,3 +103,5 @@ class _Current_Mirror(StickDiagram._StickDiagram):
 	# 	self._DesignParameter['via_m4_m5_routing']=self._SrefElementDeclaration(_DesignObj=ViaMet42Met5._ViaMet42Met5(_Name='via_m4_m5_routingIn{}'.format(_Name)))[0]
 	# 	self._DesignParameter['via_m4_m5_routing']['_DesignObj']._CalculateViaMet42Met5DesignParameterMinimumEnclosureX(**dict(_ViaMet42Met5NumberOfCOX=2, _ViaMet42Met5NumberOfCOY=2))
 	# 	self._DesignParameter['via_m4_m5_routing']['_XYCoordinates'] = [[self._DesignParameter['m5_routing_y']['_XYCoordinates'][0][0][0], self._DesignParameter['nset']['_XYCoordinates'][0][1]+self._DesignParameter['nset']['_DesignObj']._DesignParameter['m4_connect_x']['_XYCoordinates'][0][0][1]]]
+
+############################### 보류 중 ###################################
