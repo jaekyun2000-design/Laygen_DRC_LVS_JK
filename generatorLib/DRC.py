@@ -68,11 +68,13 @@ class DRCOD:
                 return self._OdMinSpace
             elif (120 < _Width and 140 < _ParallelLength):
                 return self._OdMinSpace3
-
             else:
                 return self._OdMinSpace
 
         if user_setup._Technology == 'SS28nm':
+            return self._OdMinSpace
+
+        if user_setup._Technology == 'SS65nm':      # need to check
             return self._OdMinSpace
 
         if user_setup._Technology == 'TSMC65nm':
@@ -80,17 +82,17 @@ class DRCOD:
                 return self._OdMinSpace
             elif (150 < _Width and 200 < _ParallelLength):
                 return self._OdMinSpace3
-
             else:
                 return self._OdMinSpace
+
         if user_setup._Technology == 'TSMC90nm':
             if _Width == None and _ParallelLength == None:
                 return self._OdMinSpace
             elif (300 < _Width and 230 < _ParallelLength):
                 return self._OdMinSpace2
-
             else:
                 return self._OdMinSpace
+
         if user_setup._Technology == 'TSMC130nm':
             return self._OdMinSpace
 
@@ -2007,7 +2009,7 @@ class DRCMETALx:
             self._MetalxMinEnclosureCO = 10             # 16.d(VIA1 - MET2)
             self._MetalxMinEnclosureCO2 = 40            # 16.e.1(VIA1 - MET2)
             self._MetalxMinEnclosureVia3 = \
-                self._MetalxMinEnclosureCO2             # for same enclosure ?? only for ss28nm?
+                self._MetalxMinEnclosureCO2             # -
             self._MetalxMinArea = 100000                # 16.f.1
 
 
@@ -2205,7 +2207,7 @@ class DRCMETALy:
             self._MetalyMinEnclosureCO = 10             # m5.1x.d
             self._MetalyMinEnclosureCO2 = 40            # m5.1x.e
             self._MetalyMinEnclosureVia3 = \
-                self._MetalyMinEnclosureCO2             #
+                self._MetalyMinEnclosureCO2             # -
             self._MetalyMinArea = 100000                # m5.1x.f
 
         if user_setup._Technology == 'TSMC65nm':
@@ -2476,7 +2478,7 @@ class DRCMETALr:
             self._MetalrMinEnclosureCO = 10             # 22.c
             self._MetalrMinEnclosureCO2 = 120           # 22.d
             self._MetalrMinEnclosureVia3 = \
-                self._MetalrMinEnclosureCO2
+                self._MetalrMinEnclosureCO2             # -
             self._MetalrMinArea = 320000                # 22.e
 
         if user_setup._Technology == 'TSMC65nm':
@@ -2682,31 +2684,29 @@ class DRCXVT:
             self._XvtMinArea = 270000                   # VTL_N_A_1 = VTL_N_A_2
 
 
-# class DRCMetalMap:
-#     def getMetalType(self, MetalLayerNum:int):
-#         if user_setup._Technology == 'SS28nm':
-#             if MetalLayerNum == 1:
-#                 return '1'
-#             elif MetalLayerNum in (2, 3, 4):
-#                 return 'x'
-#             else:
-#                 raise NotImplementedError
-#         elif user_setup._Technology == 'SS65nm':
-#             if MetalLayerNum == 1:
-#                 return '1'
-#             elif MetalLayerNum in (2, 3, 4):
-#                 return 'x'
-#             elif MetalLayerNum == 5:
-#                 return 'y'
-#             elif MetalLayerNum == 6:
-#                 return 'z'
-#             elif MetalLayerNum == 7:
-#                 return 'r'
-#             else:
-#                 raise NotImplementedError
-#         else:
-#             raise NotImplementedError
-
+class DRCMetalMap:
+    def getMetalType(self, MetalLayerNum=None):
+        if user_setup._Technology == 'SS28nm':
+            MetalLayerMap = {
+                1: '1',
+                2: 'x',
+                3: 'x',
+                4: 'x',
+            }
+            return MetalLayerMap.get(MetalLayerNum)
+        elif user_setup._Technology == 'SS65nm':
+            MetalLayerMap = {
+                1: '1',
+                2: 'x',
+                3: 'x',
+                4: 'x',
+                5: 'y',
+                6: 'z',
+                7: 'r'
+            }
+            return MetalLayerMap.get(MetalLayerNum)
+        else:
+            raise NotImplementedError
 
 
 class DRC(DRCMinSnapSpacing, DRCOD, DRCPOLYGATE, DRCPP, DRCNP, DRCCO, DRCMETAL1, DRCMETALy, DRCVIAy,
@@ -2730,7 +2730,6 @@ class DRC(DRCMinSnapSpacing, DRCOD, DRCPOLYGATE, DRCPP, DRCNP, DRCCO, DRCMETAL1,
         DRCMinSnapSpacing.__init__(self)
         DRCRPO.__init__(self)
         DRCXVT.__init__(self)
-
 
 
     # def CalculateMinimumDistanceBtwElements(self, _Element1 = None, _Element2 = None):
