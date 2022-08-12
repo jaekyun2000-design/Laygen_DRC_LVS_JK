@@ -43,7 +43,7 @@ def run_for_process_update():
         _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/SS28nm/cmos28lp_tech.layermap')
         _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
     elif _Technology == 'SS65nm':
-        _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/SS65nm/lf6s_tech.layermap')      # Not yet exist layermap file
+        _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/SS65nm/lf6s_tech.layermap')
         _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
     elif _Technology == 'TSMC180nm':
         _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/TSMC180nm/tsmc18rf.layermap')
