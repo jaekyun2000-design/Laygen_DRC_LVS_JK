@@ -12,7 +12,8 @@ class _PMOS(StickDiagram._StickDiagram):
                                         finger = None, channel_width = None, channel_length = None,
                                         dummy = None, PCCrit = None, XVT=None,
 
-                                        via_coy = None,space_bw_gate_pmos = None, gate_option = None)
+                                        via_coy = None,space_bw_gate_pmos = None, gate_option = None,
+                                        enclosure_option = None)
 
     def __init__(self, _DesignParameter=None, _Name='pmos_with_gate'):
         if _DesignParameter != None:
@@ -26,12 +27,17 @@ class _PMOS(StickDiagram._StickDiagram):
     def _CalculateDesignParameter(self, finger=None, channel_width=None, channel_length=None,
                                  dummy=None, XVT=None, PCCrit=None, space_bw_gate_pmos = None,
 
-                                  via_coy = None, gate_option = None):
+                                  via_coy = None, gate_option = None, enclosure_option = None):
         drc = DRC.DRC()
         _MinSnapSpacing = drc._MinSnapSpacing
         _Name = self._DesignParameter['_Name']['_Name']
         if space_bw_gate_pmos == None:
             space_bw_gate_pmos = 0
+        if enclosure_option != None:
+            if enclosure_option == 'x':
+                enclosure_option = 'X'
+            elif enclosure_option == 'y':
+                enclosure_option = 'Y'
 
         pmos_inputs = copy.deepcopy(PMOSWithDummy._PMOS._ParametersForDesignCalculation)
         pmos_inputs['_PMOSNumberofGate'] = finger
@@ -69,8 +75,15 @@ class _PMOS(StickDiagram._StickDiagram):
 
         while (1):
             pmos_via_inputs['_ViaPoly2Met1NumberOfCOX'] = tmp_num_for_gate
-            self._DesignParameter['pmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
-                **pmos_via_inputs)
+            if enclosure_option == None:
+                self._DesignParameter['pmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
+                    **pmos_via_inputs)
+            elif enclosure_option == 'X':
+                self._DesignParameter['pmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(
+                    **pmos_via_inputs)
+            elif enclosure_option == 'Y':
+                self._DesignParameter['pmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureY(
+                    **pmos_via_inputs)
             if self._DesignParameter['pmos_gate_via']['_DesignObj']._DesignParameter['_POLayer'][
                 '_XWidth'] < width_coverage:
                 tmp_num_for_gate = tmp_num_for_gate + 1
@@ -86,11 +99,15 @@ class _PMOS(StickDiagram._StickDiagram):
         else:
             pmos_via_inputs['_ViaPoly2Met1NumberOfCOX'] = tmp_num_for_gate
 
-
-        self._DesignParameter['pmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
-            **pmos_via_inputs)
-        self._DesignParameter['pmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
-            **pmos_via_inputs)
+        if enclosure_option == None:
+            self._DesignParameter['pmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
+                **pmos_via_inputs)
+        elif enclosure_option == 'X':
+            self._DesignParameter['pmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(
+                **pmos_via_inputs)
+        elif enclosure_option == 'Y':
+            self._DesignParameter['pmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureY(
+                **pmos_via_inputs)
 
         pmos_input_via_y_value = self.FloorMinSnapSpacing(\
             0 - self._DesignParameter['pmos']['_DesignObj']._DesignParameter\
