@@ -18,7 +18,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,INV_nmos_width=180,INV_finger=1,VDD2PMOS=410,gate_length=30,gate_spacing=100,XVT='RVT',NMOS_y=375,Cell_height=1800,TG_pmos_width=600,TG_nmos_width=300,TG_poly_y=760,NANDIN_y=860,TG_finger=3,MUX_module_num=1,Input_offset=0):
+	def _CalculateDesignParameter(self,INV_nmos_width=200,INV_finger=1,VDD2PMOS=380,gate_length=30,gate_spacing=100,XVT='RVT',NMOS_y=420,Cell_height=1800,TG_pmos_width=600,TG_nmos_width=300,TG_poly_y=800,NANDIN_y=900,TG_finger=3,MUX_module_num=1,Input_offset=0):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -219,21 +219,21 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['NAND2TG_M4_1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=self._DesignParameter['NAND2TG_via1']['_DesignObj']._DesignParameter['_Met2Layer']['_XWidth'])
 		self._DesignParameter['NAND2TG_M4_1']['_XYCoordinates'] = [[[(+ self._DesignParameter['NAND2TG_via1']['_XYCoordinates'][0][0]), (+ self._DesignParameter['NAND2TG_via1']['_XYCoordinates'][0][1] - drc.DRCVIAxMinSpace(2,1)/2 - drc._VIAxMinWidth/2)], [(self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['gate_output']['_XYCoordinates'][0][0]), self._DesignParameter['NAND2TG_via1']['_XYCoordinates'][0][1] - drc.DRCVIAxMinSpace(2,1)/2 - drc._VIAxMinWidth/2]]]
 
-		self._DesignParameter['nand2tg_via'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='nand2tg_viaIn{}'.format(_Name)))[0]
-		self._DesignParameter['nand2tg_via']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
-		self._DesignParameter['nand2tg_via']['_XYCoordinates'] = [[(+ self._DesignParameter['NAND2TG_M4_1']['_XYCoordinates'][0][1][0]), (+ self._DesignParameter['NAND2TG_M4_1']['_XYCoordinates'][0][1][1] + drc.DRCVIAxMinSpace(2,1)/2 + drc._VIAxMinWidth/2)]]
-
-		self._DesignParameter['nand2tg_via_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='nand2tg_via_2In{}'.format(_Name)))[0]
-		self._DesignParameter['nand2tg_via_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
-		self._DesignParameter['nand2tg_via_2']['_XYCoordinates'] = [[(+ self._DesignParameter['NAND2TG_M4_1']['_XYCoordinates'][0][1][0]), (+ self._DesignParameter['NAND2TG_M4_1']['_XYCoordinates'][0][1][1] + drc.DRCVIAxMinSpace(2,1)/2 + drc._VIAxMinWidth/2)]]
-
-
 		self._DesignParameter['nand2tg_via_3'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='nand2tg_via_3In{}'.format(_Name)))[0]
 		self._DesignParameter['nand2tg_via_3']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
 		self._DesignParameter['nand2tg_via_3']['_XYCoordinates'] = [[(+ self._DesignParameter['NAND2TG_M4_1']['_XYCoordinates'][0][1][0]), (+ self._DesignParameter['NAND2TG_M4_1']['_XYCoordinates'][0][1][1] + drc.DRCVIAxMinSpace(2,1)/2 + drc._VIAxMinWidth/2)]]
 
-		self._DesignParameter['nand2tg_M1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=self._DesignParameter['nand2tg_via']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'])
-		self._DesignParameter['nand2tg_M1']['_XYCoordinates'] = [[[(+ self._DesignParameter['nand2tg_via']['_XYCoordinates'][0][0]), (+ self._DesignParameter['nand2tg_via']['_XYCoordinates'][0][1])], [self._DesignParameter['nand2tg_via']['_XYCoordinates'][0][0], (((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['gate_output']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['gate_output']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['gate_output']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))]]]
+		self._DesignParameter['nand2tg_M3'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=self._DesignParameter['nand2tg_via_3']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'])
+		self._DesignParameter['nand2tg_M3']['_XYCoordinates'] = [[[(+ self._DesignParameter['nand2tg_via_3']['_XYCoordinates'][0][0]), (+ self._DesignParameter['nand2tg_via_3']['_XYCoordinates'][0][1])], [self._DesignParameter['nand2tg_via_3']['_XYCoordinates'][0][0], (((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['gate_output']['_XYCoordinates'][0][1]) + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['gate_output']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['gate_output']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))]]]
+
+		self._DesignParameter['nand2tg_via'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='nand2tg_viaIn{}'.format(_Name)))[0]
+		self._DesignParameter['nand2tg_via']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))
+		self._DesignParameter['nand2tg_via']['_XYCoordinates'] = [[(+ self._DesignParameter['NAND2TG_M4_1']['_XYCoordinates'][0][1][0]), (self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['gate_output']['_XYCoordinates'][0][1] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['gate_output']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1] - self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['gate_output']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)]]
+
+		self._DesignParameter['nand2tg_via_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='nand2tg_via_2In{}'.format(_Name)))[0]
+		self._DesignParameter['nand2tg_via_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
+		self._DesignParameter['nand2tg_via_2']['_XYCoordinates'] = [[(+ self._DesignParameter['NAND2TG_M4_1']['_XYCoordinates'][0][1][0]), (self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['gate_output']['_XYCoordinates'][0][1] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['gate_output']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1] - self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['gate_output']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)]]
+
 		self._DesignParameter['NW_all'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1], _Width=self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['NWELL_boundary_0']['_YWidth'])
 		self._DesignParameter['NW_all']['_XYCoordinates'] = [[[((self._DesignParameter['NAND']['_XYCoordinates'][0][0] + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nw_layer']['_XYCoordinates'][0][0]) - (self._DesignParameter['NAND']['_DesignObj']._DesignParameter['nw_layer']['_XWidth'] / 2)),
 															   ((((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['NWELL_boundary_0']['_XYCoordinates'][0][1]))))],
@@ -349,8 +349,11 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['OUTvia2']['_DesignObj']._CalculateViaMet22Met3DesignParameterMinimumEnclosureX(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
 		self._DesignParameter['OUTvia2']['_XYCoordinates'] = [[(+ ((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos']['_XYCoordinates'][0][0]) - self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['output_nm']['_XYCoordinates'][-1][0])), (+ ((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['output_nm']['_XYCoordinates'][0][1])))]]
 		self._DesignParameter['OUTvia3'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='OUTvia3In{}'.format(_Name)))[0]
-		self._DesignParameter['OUTvia3']['_DesignObj']._CalculateViaMet32Met4DesignParameterMinimumEnclosureX(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
+		self._DesignParameter['OUTvia3']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
 		self._DesignParameter['OUTvia3']['_XYCoordinates'] = [[(+ ((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos']['_XYCoordinates'][0][0]) - self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['output_nm']['_XYCoordinates'][-1][0])), (+ ((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['output_nm']['_XYCoordinates'][0][1])))]]
+
+		self._DesignParameter['OUTvia_m3_boundary'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _XWidth=self._DesignParameter['OUTvia3']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'], _YWidth=self._DesignParameter['OUTvia2']['_DesignObj']._DesignParameter['_Met3Layer']['_YWidth'])
+		self._DesignParameter['OUTvia_m3_boundary']['_XYCoordinates'] = [self._DesignParameter['OUTvia2']['_XYCoordinates'][0]]
 
 		self._DesignParameter['Vref_in_via1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Vref_in_via1In{}'.format(_Name)))[0]
 		self._DesignParameter['Vref_in_via1']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2))

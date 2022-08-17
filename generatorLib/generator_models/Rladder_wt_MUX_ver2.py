@@ -15,7 +15,7 @@ class Rladder_wt_MUX(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,Num_of_Vref=25,UNITR_X_WIDTH=1500,UNITR_Y_LENGTH=1000,UNITR_CONT_X_NUM=None,UNITR_CONT_Y_NUM=1,Rladder_X_NUM=10,Rladder_Y_NUM=6,First_Vref_Point=4,VREF_STEP=2,MUX_INV_nmos_width=180,MUX_INV_finger=1,MUX_VDD2PMOS=410,MUX_gate_length=30,MUX_gate_spacing=100,MUX_XVT='\'RVT\'',MUX_nmos_y=375,MUX_cell_height=1800,MUX_TG_pmos_width=600,MUX_TG_nmos_width=300,MUX_TG_poly_y=760,MUX_TG_finger=3,MUX_nandin_y=860):
+	def _CalculateDesignParameter(self,Num_of_Vref=25,UNITR_X_WIDTH=1500,UNITR_Y_LENGTH=1000,UNITR_CONT_X_NUM=None,UNITR_CONT_Y_NUM=1,Rladder_X_NUM=10,Rladder_Y_NUM=6,First_Vref_Point=4,VREF_STEP=2,MUX_INV_nmos_width=200,MUX_INV_finger=1,MUX_VDD2PMOS=380,MUX_gate_length=30,MUX_gate_spacing=100,MUX_XVT='\'RVT\'',MUX_nmos_y=420,MUX_cell_height=1800,MUX_TG_pmos_width=600,MUX_TG_nmos_width=300,MUX_TG_poly_y=800,MUX_TG_finger=3,MUX_nandin_y=900):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
