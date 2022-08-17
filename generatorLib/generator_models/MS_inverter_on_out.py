@@ -201,7 +201,7 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
         x_value = min(tmp1,tmp2)
         source_y = self._DesignParameter['pmos_output_routing']['_XYCoordinates'][0][-1][1]
         target_y= self._DesignParameter['nmos_output_routing']['_XYCoordinates'][0][-1][1]
-        output_path =[[x_value, source_y],[x_value, target_y]]
+        output_path =[[tmp1, source_y], [x_value, source_y],[x_value, target_y],[tmp2, target_y]]
         self._DesignParameter['output_routing']['_XYCoordinates'] = [output_path]
 
         """
@@ -260,6 +260,15 @@ class INVERTER_ON_OUT(StickDiagram._StickDiagram):
             lower_met1_bound - self.getYWidth('vss','_Met1Layer')/2 - drc._Metal1MinSpace3, _MinSnapSpacing)
         vdd_y_value = self.CeilMinSnapSpacing(\
             higher_met1_bound + self.getYWidth('vdd', '_Met1Layer') / 2 + drc._Metal1MinSpace3, _MinSnapSpacing)
+
+        drc_poly1 = vdd_y_value - self.getYWidth('vdd', '_Met1Layer') / 2 - \
+                    (self.getXYTop('pmos', 'pmos', '_POLayer')[0][1] + drc._PolygateMinSpace2OD)
+        drc_poly2 = (self.getXYBot('nmos', 'nmos', '_POLayer')[0][1] - drc._PolygateMinSpace2OD) - \
+                    (vss_y_value + self.getYWidth('vss', '_Met1Layer') / 2)
+        if drc_poly1 < 0:
+            vdd_y_value = vdd_y_value + abs(drc_poly1)
+        if drc_poly2 < 0:
+            vss_y_value = vss_y_value - abs(drc_poly2)
 
 
         if distance_to_vss != None:

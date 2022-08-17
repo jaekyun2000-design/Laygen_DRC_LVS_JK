@@ -13,7 +13,7 @@ class _NMOS(StickDiagram._StickDiagram):
                                         dummy = None, PCCrit = None, XVT=None,
 
                                         via_coy = None, space_bw_gate_nmos = None,
-                                        gate_option = None)
+                                        gate_option = None, enclosure_option = None)
 
     def __init__(self, _DesignParameter=None, _Name='MS_nmos_with_gate'):
         if _DesignParameter != None:
@@ -27,12 +27,18 @@ class _NMOS(StickDiagram._StickDiagram):
     def _CalculateDesignParameter(self, finger=None, channel_width=None, channel_length=None,
                                  dummy=None, XVT=None, PCCrit=None,
 
-                                  via_coy = None, space_bw_gate_nmos = None, gate_option = None):
+                                  via_coy = None, space_bw_gate_nmos = None, gate_option = None,
+                                  enclosure_option = None):
         drc = DRC.DRC()
         _MinSnapSpacing = drc._MinSnapSpacing
         _Name = self._DesignParameter['_Name']['_Name']
         if space_bw_gate_nmos == None:
             space_bw_gate_nmos = 0
+        if enclosure_option != None:
+            if enclosure_option == 'x':
+                enclosure_option = 'X'
+            elif enclosure_option == 'y':
+                enclosure_option = 'Y'
 
         nmos_inputs = copy.deepcopy(NMOSWithDummy._NMOS._ParametersForDesignCalculation)
         nmos_inputs['_NMOSNumberofGate'] = finger
@@ -70,8 +76,16 @@ class _NMOS(StickDiagram._StickDiagram):
 
         while (1):
             nmos_via_inputs['_ViaPoly2Met1NumberOfCOX'] = tmp_num_for_gate
-            self._DesignParameter['nmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
-                **nmos_via_inputs)
+            if enclosure_option == None:
+                self._DesignParameter['nmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
+                    **nmos_via_inputs)
+            elif enclosure_option == 'X':
+                self._DesignParameter['nmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(
+                    **nmos_via_inputs)
+            elif enclosure_option == 'Y':
+                self._DesignParameter['nmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureY(
+                    **nmos_via_inputs)
+
             if self._DesignParameter['nmos_gate_via']['_DesignObj']._DesignParameter['_POLayer'][
                 '_XWidth'] < width_coverage:
                 tmp_num_for_gate = tmp_num_for_gate + 1
@@ -87,10 +101,15 @@ class _NMOS(StickDiagram._StickDiagram):
         else:
             nmos_via_inputs['_ViaPoly2Met1NumberOfCOX'] = tmp_num_for_gate
 
-        self._DesignParameter['nmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
-            **nmos_via_inputs)
-        self._DesignParameter['nmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
-            **nmos_via_inputs)
+        if enclosure_option == None:
+            self._DesignParameter['nmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
+                **nmos_via_inputs)
+        elif enclosure_option == 'X':
+            self._DesignParameter['nmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(
+                **nmos_via_inputs)
+        elif enclosure_option == 'Y':
+            self._DesignParameter['nmos_gate_via']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureY(
+                **nmos_via_inputs)
 
         nmos_input_via_y_value = self.CeilMinSnapSpacing(\
             0 + self._DesignParameter['nmos']['_DesignObj']._DesignParameter\
@@ -125,6 +144,12 @@ class _NMOS(StickDiagram._StickDiagram):
                     self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][1] = nmos_input_via_y_value + calibre_y_value
         self.offset_value = self.getXY('nmos_gate_via', '_Met1Layer')[0][1]
         if gate_option == 'rotate':
+            drc_test = self.getXYTop('nmos', '_PODummyLayer')[0][1] - self.getXYBot('nmos_gate_via', '_POLayer')[0][1]
+            if abs(drc_test)< drc._PolygateMinSpace:
+                calibre_y_value = drc._PolygateMinSpace - abs(drc_test)
+                self._DesignParameter['nmos_gate_via']['_XYCoordinates'][0][
+                    1] = nmos_input_via_y_value + calibre_y_value
+                self.offset_value = abs(self.getXY('nmos_gate_via', '_Met1Layer')[0][1])
             calibre_value = self.CeilMinSnapSpacing((self.getYWidth('nmos_gate_via', '_Met1Layer') - self.getXWidth('nmos_gate_via', '_Met1Layer')) / 2,
                                                     _MinSnapSpacing)
             self.offset_value = self.offset_value - calibre_value

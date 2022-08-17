@@ -96,7 +96,7 @@ class SupplyRail(StickDiagram._StickDiagram):
                 _XYCoordinates=_XYCoord,
             )
         else:
-            if DesignParameters._Technology != '028nm':             # @ Samsung 28nm, There is No 'NPLayer(NIMP)'
+            if DesignParameters._Technology != 'SS28nm':             # @ Samsung 28nm, There is No 'NPLayer(NIMP)'
                 assert PpNpYWidth >= max(self.getYWidth('_ODLayer') + 2 * _DRCObj._NpMinExtensiononNactive2, _DRCObj._NpMinWidth)
                 self._DesignParameter['_NPLayer'] = self._BoundaryElementDeclaration(
                     _Layer=DesignParameters._LayerMapping['NIMP'][0],

@@ -9,8 +9,8 @@ from generatorLib.generator_models import NSubRing
 from generatorLib.generator_models import ViaStack
 from generatorLib.generator_models import ViaPoly2Met1
 
-class EasyDebugModule(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
+class _pmos_cap_current_mirror(StickDiagram._StickDiagram):
+	def __init__(self, _DesignParameter=None, _Name='pmos_cap_current_mirror'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
@@ -18,10 +18,10 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		self._DesignParameter['_Name']['Name'] = _Name
 
 	def _CalculateDesignParameter(self,pmos_cap_gate=16,pmos_cap_width=1500,pmos_cap_length=100,pmos_cap_dummy=False,pmos_cap_xvt='LVT',pmos_cap_pccrit=False,pmos_sw1_gate=1,pmos_sw1_width=1000,pmos_sw1_length=30,pmos_sw1_dummy=True,pmos_sw1_xvt='LVT',pmos_sw1_pccrit=True,pmos_sw2_gate=1,pmos_sw2_width=1000,pmos_sw2_length=30,pmos_sw2_dummy=True,pmos_sw2_xvt='LVT',pmos_sw2_pccrit=True,guardring_co_bottom=4,guardring_co_top=3,guardring_co_left=3,guardring_co_right=3,guardring_width=None,guardring_height=None):
-	
+
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
-		
+
 		self._DesignParameter['pmos_cap'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='pmos_capIn{}'.format(_Name)))[0]
 		self._DesignParameter['pmos_cap']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=pmos_cap_gate, _PMOSChannelWidth=pmos_cap_width, _PMOSChannellength=pmos_cap_length, _PMOSDummy=pmos_cap_dummy, _GateSpacing=None, _SDWidth=None, _XVT=pmos_cap_xvt, _PCCrit=pmos_cap_pccrit))
 		self._DesignParameter['pmos_cap']['_XYCoordinates'] = [[0.0, 0.0]]
@@ -35,13 +35,13 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		xy_offset = (0, ((- self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth']) / 2))
 		if (len(self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
 		    mode = 'vertical'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = self.getXWidth('pmos_sw1','_Met1Layer')#(drc._Metal1MinWidth * 2.2)
 		elif (self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
 		    mode = 'horizontal'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = self.getXWidth('pmos_sw1','_Met1Layer')#(drc._Metal1MinWidth * 2.2)
 		elif (self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['pmos_cap']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
 		    mode = 'vertical'
-		    _width = (drc._Metal1MinWidth * 2.2)
+		    _width = self.getXWidth('pmos_sw1','_Met1Layer')#(drc._Metal1MinWidth * 2.2)
 		else:
 		    print('Invalid Target Input')
 		if (mode == 'vertical'):

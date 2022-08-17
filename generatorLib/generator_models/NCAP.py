@@ -7,8 +7,8 @@ from generatorLib.generator_models import NMOSWithDummy
 from generatorLib.generator_models import ViaPoly2Met1
 from generatorLib.generator_models import PSubRing
 
-class EasyDebugModule(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
+class _NCap(StickDiagram._StickDiagram):
+	def __init__(self, _DesignParameter=None, _Name='NCap'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
@@ -87,3 +87,8 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 
 			self._DesignParameter['guardring']['_DesignObj']._CalculateDesignParameter(**dict(height=guardring_Yheight, width=guardring_Xwidth, contact_bottom=guardring_bot, contact_top=guardring_top, contact_left=guardring_left, contact_right=guardring_right))
 			self._DesignParameter['guardring']['_XYCoordinates']=_OriginXY
+
+			if guardring_Xwidth < self._DesignParameter['NWELL']['_XWidth']+self._DesignParameter['guardring']['_DesignObj']._DesignParameter['right']['_DesignObj']._DesignParameter['_ODLayer']['_XWidth']/2+self._DesignParameter['guardring']['_DesignObj']._DesignParameter['left']['_DesignObj']._DesignParameter['_ODLayer']['_XWidth']/2+2*drc._NwMinSpacetoRX :
+				raise NotImplementedError
+			if guardring_Yheight < self._DesignParameter['NWELL']['_YWidth']+self._DesignParameter['guardring']['_DesignObj']._DesignParameter['top']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth']/2+self._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth']/2+2*drc._NwMinSpacetoRX :
+				raise NotImplementedError
