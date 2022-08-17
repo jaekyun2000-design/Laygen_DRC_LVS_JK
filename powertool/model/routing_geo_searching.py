@@ -106,9 +106,9 @@ class GeometricField:
                         y_width = dp['_Width']
                     xy_pair = [(a + b) / 2 for a, b in zip(transformed_xy_pairs[i], transformed_xy_pairs[i + 1])]
                     five_point_xy = self.stick_diagram.CenterCoordinateAndWidth2XYCoordinate(xy_pair, x_width, y_width)
-                    transformed_five_point_xy = [base_xy + reflect.dot(angle).dot(xy) for xy in five_point_xy]
+                    # transformed_five_point_xy = [base_xy + reflect.dot(angle).dot(xy) for xy in five_point_xy]
                     transformed_five_point_xy_ordered = self.stick_diagram.MinMaxXY2XYCoordinate(
-                        self.stick_diagram.XYCoordinate2MinMaxXY(transformed_five_point_xy))
+                        self.stick_diagram.XYCoordinate2MinMaxXY(five_point_xy))
                     transformed_five_point_xy_list.append(transformed_five_point_xy_ordered)
                     if '_Hierarchy' not in dp:
                         dp['_Hierarchy'] = copy.deepcopy([[structure_hierarchy]])
@@ -132,7 +132,7 @@ class GeometricField:
             # structure_hierarchy.append(dp['_ElementName'])
             ############ 이 부분에서 idx 처리 해야함! #####################
             for sref_idx in range(len(dp['_XYCoordinates'])):
-                base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][sref_idx])
+                base_xy_internal = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][sref_idx])
                 sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect) if '_Reflect' in dp else reflect
                 sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle) if '_Angle' in dp else angle
                 # base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][0])
@@ -146,7 +146,7 @@ class GeometricField:
                             structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
                             structure_hierarchy_tmp.append(name)
                             self.qt_design_parameter_projection(sub_qt_dp, structure_hierarchy=structure_hierarchy_tmp,
-                                                                reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
+                                                                reflect=sub_reflect, angle=sub_angle, base_xy=base_xy_internal)
                 else:
                     try:
                         for name, sub_qt_dp in dp['_DesignObj'].items():
@@ -156,7 +156,7 @@ class GeometricField:
                                 structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
                                 structure_hierarchy_tmp.append(name)
                                 self.qt_design_parameter_projection(sub_qt_dp, structure_hierarchy=structure_hierarchy_tmp,
-                                                                    reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
+                                                                    reflect=sub_reflect, angle=sub_angle, base_xy=base_xy_internal)
                     except:
                         warnings.warn('No design Obj')
 
@@ -207,9 +207,11 @@ class GeometricField:
                         y_width = dp['_Width']
                     xy_pair = [(a + b) / 2 for a, b in zip(transformed_xy_pairs[i], transformed_xy_pairs[i + 1])]
                     five_point_xy = self.stick_diagram.CenterCoordinateAndWidth2XYCoordinate(xy_pair, x_width, y_width)
-                    transformed_five_point_xy = [base_xy + reflect.dot(angle).dot(xy) for xy in five_point_xy]
+                    # transformed_five_point_xy = [base_xy + reflect.dot(angle).dot(xy) for xy in five_point_xy]
+                    # transformed_five_point_xy_ordered = self.stick_diagram.MinMaxXY2XYCoordinate(
+                    #     self.stick_diagram.XYCoordinate2MinMaxXY(transformed_five_point_xy))
                     transformed_five_point_xy_ordered = self.stick_diagram.MinMaxXY2XYCoordinate(
-                        self.stick_diagram.XYCoordinate2MinMaxXY(transformed_five_point_xy))
+                        self.stick_diagram.XYCoordinate2MinMaxXY(five_point_xy))
                     transformed_five_point_xy_list.append(transformed_five_point_xy_ordered)
                     if '_Hierarchy' not in dp:
                         dp['_Hierarchy'] = copy.deepcopy([[structure_hierarchy]])
@@ -230,16 +232,27 @@ class GeometricField:
         elif dp['_DesignParametertype'] in [3, 31]:
             # structure_hierarchy.append(dp['_ElementName'])
             for sref_idx in range(len(dp['_XYCoordinates'])):
-                base_xy = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][sref_idx])
+                base_xy_internal = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][sref_idx])
                 sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect)
                 sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle)
-                for name, sub_dp in dp['_DesignObj']._DesignParameter.items():
-                    if sub_dp['_DesignParametertype'] in [1,2,3]:
-                        structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
-                        structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
-                        structure_hierarchy_tmp.append(name)
-                        self.design_parameter_projection(sub_dp, structure_hierarchy=structure_hierarchy_tmp,
-                                                            reflect=sub_reflect, angle=sub_angle, base_xy=base_xy)
+                if type(dp['_DesignObj']) == dict:
+                    for name, sub_qtdp in dp['_DesignObj'].items():
+                        sub_dp = sub_qtdp._DesignParameter
+                        if sub_dp['_DesignParametertype'] in [1,2,3]:
+                            structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
+                            structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
+                            structure_hierarchy_tmp.append(name)
+                            self.design_parameter_projection(sub_dp, structure_hierarchy=structure_hierarchy_tmp,
+                                                                reflect=sub_reflect, angle=sub_angle, base_xy=base_xy_internal)
+                else:
+                    for name, sub_dp in dp['_DesignObj']._DesignParameter.items():
+                        if sub_dp['_DesignParametertype'] in [1, 2, 3]:
+                            structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
+                            structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
+                            structure_hierarchy_tmp.append(name)
+                            self.design_parameter_projection(sub_dp, structure_hierarchy=structure_hierarchy_tmp,
+                                                             reflect=sub_reflect, angle=sub_angle,
+                                                             base_xy=base_xy_internal)
 
     def draw_by_projection_xy(self, _DesignParameter):
         fig, ax = plt.subplots()

@@ -2,11 +2,11 @@
 
 # Required module
 ```sh
-#python_version = 3.8
+#python_version = 3.9
 $ pip install astunparse PyQt5 intervaltree sklearn matplotlib pandas paramiko
 
 #To use optional features
-$ pip install tensorflow==2.5
+$ pip install tensorflow==2.6
 ```
   
   

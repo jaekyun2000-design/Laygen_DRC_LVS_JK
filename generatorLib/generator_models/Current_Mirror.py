@@ -67,6 +67,7 @@ class _Current_Mirror(StickDiagram._StickDiagram):
 	# 											   'nmos_stack_mirror_param': {'nmos1_width': 2000, 'nmos1_length': 500, 'nmos1_gate': 1, 'nmos1_dummy': False, 'nmos1_xvt': 'RVT', 'nmos1_pccrit': False, 'nmos2_width': 2000, 'nmos2_length': 30, 'nmos2_gate': 1, 'nmos2_dummy': False, 'nmos2_xvt': 'RVT', 'nmos2_pccrit': False, 'guardring_bot': 2, 'guardring_top': 2, 'guardring_left': 2, 'guardring_right': 2, 'guardring_width': None, 'guardring_height': None, 'diode_connect': False}, \
 	# 											   'nmos_single_sw_param':{'nmos_gate':2,'nmos_width':1000,'nmos_length':30,'nmos_dummy':True,'xvt':'SLVT','pccrit':True,'guardring_right':2,'guardring_left':2,'guardring_bot':2,'guardring_top':2,'guardring_width':None,'guardring_height':None},\
     #                               				   'nmos_single_tail_param':{'nmos1_gate':1,'nmos1_width':2000,'nmos1_length':500,'nmos1_dummy':False,'nmos1_xvt':'RVT','nmos1_pccrit':False,'guardring_left':2,'guardring_right':2,'guardring_top':2,'guardring_bot':2,'guardring_width':None,'guardring_height':None},\
+	# 											   'nmos_cap_param':{'length':2500, 'width':1000, 'Xnum':1, 'Ynum':4, 'Guardring':True, 'guardring_height':None, 'guardring_width':None, 'guardring_right':2, 'guardring_left':2, 'guardring_top':2, 'guardring_bot':2},\
 	# 											   'guardring_width': None, 'guardring_height': None, 'mirror_num2':4, 'coarse_num': 4, 'fine_num': 3, 'mirror_num': 1, 'Xnum': 3, 'Ynum':4}):
 	#
 	# 	drc = DRC.DRC()
@@ -103,3 +104,4 @@ class _Current_Mirror(StickDiagram._StickDiagram):
 	# 	self._DesignParameter['via_m4_m5_routing']['_DesignObj']._CalculateViaMet42Met5DesignParameterMinimumEnclosureX(**dict(_ViaMet42Met5NumberOfCOX=2, _ViaMet42Met5NumberOfCOY=2))
 	# 	self._DesignParameter['via_m4_m5_routing']['_XYCoordinates'] = [[self._DesignParameter['m5_routing_y']['_XYCoordinates'][0][0][0], self._DesignParameter['nset']['_XYCoordinates'][0][1]+self._DesignParameter['nset']['_DesignObj']._DesignParameter['m4_connect_x']['_XYCoordinates'][0][0][1]]]
 
+############################### 보류 중 ###################################

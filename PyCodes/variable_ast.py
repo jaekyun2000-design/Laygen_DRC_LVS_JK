@@ -836,8 +836,8 @@ class IrregularTransformer(ast.NodeTransformer):
         ###############################################################################################################
         ###############################################################################################################
         elif _flag == 'offset':
-            info_dict['x_offset'] = info_dict['x_offset'].replace('\n','')
-            info_dict['y_offset'] = info_dict['y_offset'].replace('\n','')
+            info_dict['x_offset'] = info_dict['x_offset'].replace('\n','') if info_dict['x_offset'] != '' else 0
+            info_dict['y_offset'] = info_dict['y_offset'].replace('\n','') if info_dict['y_offset'] != '' else 0
             info_dict['row'] = info_dict['row'].replace('\n','')
             info_dict['col'] = info_dict['col'].replace('\n','')
             if 'path' in _type:
@@ -880,6 +880,26 @@ class IrregularTransformer(ast.NodeTransformer):
                 tmp_node.parameters = info_dict['sref_item_dict']['parameters']
                 tmp_code_ast = element_ast.ElementTransformer().visit_Sref(tmp_node)
                 tmp_code = astunparse.unparse(tmp_code_ast)
+            elif 'boundary' in _type:
+                info_dict['XY_ref'] = info_dict['XY_ref'].replace('\n', '')
+
+                loop_code = f"XYList = []\n" \
+                            f"xy_base = {info_dict['XY_ref'][1:-1]}\n" \
+                            f"for i in range({info_dict['row']}):\n" \
+                            f"\tfor j in range({info_dict['col']}):\n" \
+                            f"\t\tx = j*{info_dict['x_offset']}\n" \
+                            f"\t\ty = i*{info_dict['y_offset']}\n" \
+                            f"\t\tXYList.append([a+b for a,b in zip(xy_base, [x,y])])\n" \
+                            f"self._DesignParameter['{_name}']['_XYCoordinates'] = XYList"
+                tmp_node = element_ast.Boundary()
+                tmp_node.name = _name
+                tmp_node.XY = 'None'
+                tmp_node.layer = _layer
+                tmp_node.width = info_dict['width_input']
+                tmp_node.height = info_dict['height_input']
+                tmp_code_ast = element_ast.ElementTransformer().visit_Boundary(tmp_node)
+                tmp_code = astunparse.unparse(tmp_code_ast)
+
             else:
                 raise Exception("Not Implemeneted Yet")
             final_sentence = f"{tmp_code}" \

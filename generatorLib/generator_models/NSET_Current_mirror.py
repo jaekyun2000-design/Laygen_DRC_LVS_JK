@@ -424,24 +424,35 @@ class _NSET_Current_Mirror(StickDiagram._StickDiagram):
         self._DesignParameter['m3_mirror2_y']['_Width']=self._DesignParameter['via_m1_m3_mirror2']['_DesignObj']._DesignParameter['ViaMet22Met3']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth']
 
         tmp=[]
-        for i in range(0, len(self._DesignParameter['nmos_mirror_2']['_XYCoordinates'])):
-            tmp.append([self._DesignParameter['via_m1_m3_mirror2']['_XYCoordinates'][i], [self._DesignParameter['via_m1_m3_mirror2']['_XYCoordinates'][i][0], self.getXY('nmos_sw','guardring','bot')]])
+        for i in range(0, Xnum):
+            tmp.append([self._DesignParameter['via_m1_m3_mirror2']['_XYCoordinates'][i], [self._DesignParameter['via_m1_m3_mirror2']['_XYCoordinates'][i][0], self.getXY('nmos_sw','guardring','bot')[0][1]]])
 
         self._DesignParameter['m3_mirror2_y']['_XYCoordinates']=tmp
         del tmp
 
         self._DesignParameter['m4_mirror2_sw_x']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=None)
         self._DesignParameter['m4_mirror2_sw_x']['_Width']=min(drc._MetalxMinWidth*3, self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_DesignObj']._DesignParameter['ViaMet32Met4']['_DesignObj']._DesignParameter['_Met4Layer']['_YWidth'])
-        self._DesignParameter['m4_mirror2_sw_x']['_XYCoordinates']=[[[min(self._DesignParameter['m3_mirror2_y']['_XYCoordinates'][0][0][0]-self._DesignParameter['m3_mirror2_y']['_Width']/2, self._DesignParameter['nmos_sw']['_XYCoordinates'][0][0]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_drain']['_XYCoordinates'][0][0]), self.getXY('nmos_sw','guardring','bot')], [max(self._DesignParameter['nmos_sw']['_XYCoordinates'][1][0]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_drain']['_XYCoordinates'][-1][0], ), self.getXY('nmos_sw','guardring','bot')]]]
+        self._DesignParameter['m4_mirror2_sw_x']['_XYCoordinates']=[[[min(self._DesignParameter['m3_mirror2_y']['_XYCoordinates'][0][0][0]-self._DesignParameter['m3_mirror2_y']['_Width']/2, self._DesignParameter['nmos_sw']['_XYCoordinates'][0][0]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_drain']['_XYCoordinates'][0][0]), self.getXY('nmos_sw','guardring','bot')[0][1]], [max(self._DesignParameter['nmos_sw']['_XYCoordinates'][1][0]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_drain']['_XYCoordinates'][-1][0], self._DesignParameter['m3_mirror2_y']['_XYCoordinates'][-1][0][0]+self._DesignParameter['m3_mirror2_y']['_Width']/2), self.getXY('nmos_sw','guardring','bot')[0][1]]]]
 
         self._DesignParameter['Via_m3_m4_mirror2_sw']=self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='Via_m3_m4_mirror2_swIn{}'.format(_Name)))[0]
-        self._DesignParameter['Via_m3_m4_mirror2_sw']['_DesignObj']._CalculateViaMet32Met4DesignParameterMinimumEnclosureX(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=2))
+        self._DesignParameter['Via_m3_m4_mirror2_sw']['_DesignObj']._CalculateViaMet32Met4DesignParameterMinimumEnclosureY(**dict(_ViaMet32Met4NumberOfCOX=2, _ViaMet32Met4NumberOfCOY=2))
 
         tmp=[]
         for i in range(0, Xnum):
             tmp.append([self._DesignParameter['m3_mirror2_y']['_XYCoordinates'][i][0][0], self._DesignParameter['m4_mirror2_sw_x']['_XYCoordinates'][0][0][1]])
 
         self._DesignParameter['Via_m3_m4_mirror2_sw']['_XYCoordinates']=tmp
+        del tmp
+
+        tmp = []
+        self._DesignParameter['m4_sw_y']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=None)
+        self._DesignParameter['m4_sw_y']['_Width']=self.getXWidth('nmos_sw','via_m1_m4_source','ViaMet32Met4','_Met4Layer')
+        for i in range(0, len(self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'])):
+            tmp.append([[self._DesignParameter['nmos_sw']['_XYCoordinates'][0][0]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'][i][0], self._DesignParameter['nmos_sw']['_XYCoordinates'][0][1]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'][i][1]], \
+                        [self._DesignParameter['nmos_sw']['_XYCoordinates'][0][0]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'][i][0], self._DesignParameter['m4_mirror2_sw_x']['_XYCoordinates'][0][0][1]]])
+            tmp.append([[self._DesignParameter['nmos_sw']['_XYCoordinates'][1][0]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'][i][0], self._DesignParameter['nmos_sw']['_XYCoordinates'][1][1]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'][i][1]], \
+                        [self._DesignParameter['nmos_sw']['_XYCoordinates'][1][0]+self._DesignParameter['nmos_sw']['_DesignObj']._DesignParameter['via_m1_m4_source']['_XYCoordinates'][i][0], self._DesignParameter['m4_mirror2_sw_x']['_XYCoordinates'][0][0][1]]])
+        self._DesignParameter['m4_sw_y']['_XYCoordinates'] = tmp
         del tmp
 
         gate_x=self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['via_m1_m3_nmos1_gate']['_XYCoordinates'][0][0]
@@ -455,11 +466,11 @@ class _NSET_Current_Mirror(StickDiagram._StickDiagram):
 
         if Ynum > 1 :
             for i in range(0, Xnum*(Ynum-1)):
-                tmp.append([tmp_array[i][0]+gate_x, tmp_array[i][1]+self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1]])
+                tmp.append([tmp_array[i][0]+gate_x-xoffset_coarse, tmp_array[i][1]+self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1]])
 
         if Ynum == 1 :
             for i in range(0,total_num):
-                tmp.append([tmp_array[i][0]+gate_x, tmp_array[i][1]+self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1]])
+                tmp.append([tmp_array[i][0]+gate_x-xoffset_coarse, tmp_array[i][1]+self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1]])
 
         self._DesignParameter['Via_m3_m4']['_XYCoordinates']=tmp
         del tmp
@@ -468,14 +479,32 @@ class _NSET_Current_Mirror(StickDiagram._StickDiagram):
         self._DesignParameter['m3_connect_y']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=None)
         self._DesignParameter['m3_connect_y']['_Width']=min(2*drc._MetalxMinWidth, self.getXWidth('nmos_coarse','via_m1_m3_nmos1_gate','ViaMet22Met3','_Met3Layer'))
 
+        if Ynum > 1 :
+            tmp1=[]
+            for i in range(0,tmp_x):
+                tmp1.append([[tmp_array[i][0]+gate_x-xoffset_coarse-self.getXWidth('nmos_mirror_2','via_m1_m3_nmos1_gate','ViaMet22Met3','_Met3Layer')/2+self._DesignParameter['m3_connect_y']['_Width']/2, tmp_array[0][1]+gate_y], [tmp_array[i][0]+gate_x-xoffset_coarse-self.getXWidth('nmos_mirror_2','via_m1_m3_nmos1_gate','ViaMet22Met3','_Met3Layer')/2+self._DesignParameter['m3_connect_y']['_Width']/2, self._DesignParameter['ncap']['_XYCoordinates'][0][1]+self._DesignParameter['ncap']['_DesignObj']._DesignParameter['via_poly_m1']['_XYCoordinates'][-1][1]]])
 
+            tmp2=[]
+            for i in range(tmp_x,Xnum):
+                tmp2.append([[tmp_array[i][0]+gate_x-xoffset_coarse-self.getXWidth('nmos_mirror_2','via_m1_m3_nmos1_gate','ViaMet22Met3','_Met3Layer')/2+self._DesignParameter['m3_connect_y']['_Width']/2, tmp_array[0][1]+gate_y], [tmp_array[i][0]+gate_x-xoffset_coarse-self.getXWidth('nmos_mirror_2','via_m1_m3_nmos1_gate','ViaMet22Met3','_Met3Layer')/2+self._DesignParameter['m3_connect_y']['_Width']/2, self._DesignParameter['ncap']['_XYCoordinates'][0][1]+self._DesignParameter['ncap']['_DesignObj']._DesignParameter['via_poly_m1']['_XYCoordinates'][-1][1]]])
 
-        tmp1=[]
-        for i in range(0,tmp_x):
-            tmp1.append([[tmp_array[i][0]+gate_x-xoffset_coarse, tmp_array[0][1]+gate_y], [tmp_array[i][0]+gate_x-xoffset_coarse, self._DesignParameter['ncap']['_XYCoordinates'][0][1]+self._DesignParameter['ncap']['_DesignObj']._DesignParameter['via_poly_m1']['_XYCoordinates'][-1][1]]])
+        if Ynum == 1 :
+            tmp1=[]
+            for i in range(0,tmp_x):
+                tmp1.append([[tmp_array[i][0]+gate_x, tmp_array[0][1]+gate_y], [tmp_array[i][0]+gate_x, self._DesignParameter['ncap']['_XYCoordinates'][0][1]+self._DesignParameter['ncap']['_DesignObj']._DesignParameter['via_poly_m1']['_XYCoordinates'][-1][1]]])
+            tmp2=[]
 
-        self._DesignParameter['m3_connect_y']['_XYCoordinates']=tmp1
+        self._DesignParameter['m3_connect_y']['_XYCoordinates']=tmp1+tmp2
         del tmp1
+        del tmp2
+
+
+        # tmp1=[]
+        # for i in range(0,tmp_x):
+        #     tmp1.append([[tmp_array[i][0]+gate_x-xoffset_coarse-self.getXWidth('nmos_coarse','via_m1_m3_nmos1_gate','ViaMet22Met3','_Met3Layer')/2+self._DesignParameter['m3_connect_y']['_Width']/2, tmp_array[0][1]+gate_y], [tmp_array[i][0]+gate_x-xoffset_coarse-self.getXWidth('nmos_coarse','via_m1_m3_nmos1_gate','ViaMet22Met3','_Met3Layer')/2+self._DesignParameter['m3_connect_y']['_Width']/2, self._DesignParameter['ncap']['_XYCoordinates'][0][1]+self._DesignParameter['ncap']['_DesignObj']._DesignParameter['via_poly_m1']['_XYCoordinates'][-1][1]]])
+        #
+        # self._DesignParameter['m3_connect_y']['_XYCoordinates']=tmp1
+        # del tmp1
 
 
 
@@ -484,19 +513,57 @@ class _NSET_Current_Mirror(StickDiagram._StickDiagram):
         self._DesignParameter['m4_connect_x']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=None)
         self._DesignParameter['m4_connect_x']['_Width']=2*drc._MetalxMinWidth
 
-        if Ynum==2:
-             tmp.append([[tmp_array[0][0]+gate_x, self._DesignParameter['Via_m3_m4']['_XYCoordinates'][0][1]], [self._DesignParameter['Via_m3_m4']['_XYCoordinates'][-1][0], self._DesignParameter['Via_m3_m4']['_XYCoordinates'][0][1]]])
-             self._DesignParameter['m4_connect_x']['_XYCoordinates']=tmp
-             del tmp
+        if Ynum>1:
+            for j in range(0, Ynum-1):
+                tmp.append([[self._DesignParameter['Via_m3_m4']['_XYCoordinates'][0][0], self._DesignParameter['Via_m3_m4']['_XYCoordinates'][Xnum*j][1]], [self._DesignParameter['Via_m3_m4']['_XYCoordinates'][-1][0], self._DesignParameter['Via_m3_m4']['_XYCoordinates'][Xnum*j][1]]])
 
-        if Ynum>2:
-            for j in range(0, Ynum-2):
-                tmp.append([[tmp_array[0][0]+gate_x, tmp_array[Xnum*j][1]+self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1]], [tmp_array[Xnum-1][0]+gate_x, tmp_array[Xnum*j][1]+self._DesignParameter['nmos_coarse']['_DesignObj']._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_XYCoordinates'][0][1]]])
+        if Ynum == 1 :
+                tmp.append([[self._DesignParameter['Via_m3_m4']['_XYCoordinates'][0][0], self._DesignParameter['Via_m3_m4']['_XYCoordinates'][0][1]], [self._DesignParameter['Via_m3_m4']['_XYCoordinates'][-1][0], self._DesignParameter['Via_m3_m4']['_XYCoordinates'][0][1]]])
 
-            tmp.append([[tmp_array[0][0]+gate_x, self._DesignParameter['Via_m3_m4']['_XYCoordinates'][-1][1]], [tmp_array[total_num-1][0]+gate_x, self._DesignParameter['Via_m3_m4']['_XYCoordinates'][-1][1]]])
+        self._DesignParameter['m4_connect_x']['_XYCoordinates']=tmp
+        del tmp
 
-            self._DesignParameter['m4_connect_x']['_XYCoordinates']=tmp
-            del tmp
+
+
+        # self._DesignParameter['m3_connect_y']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1], _Width=None)
+        # self._DesignParameter['m3_connect_y']['_Width']=min(2*drc._MetalxMinWidth, self.getXWidth('nmos_coarse','via_m1_m3_nmos1_gate','ViaMet22Met3','_Met3Layer'))
+        #
+        # if Ynum > 1 :
+        #     tmp1=[]
+        #     for i in range(0,tmp_x):
+        #         tmp1.append([[tmp_array[i][0]+gate_x-self.getXWidth('nmos_coarse','via_m1_m3_nmos1_gate','ViaMet22Met3','_Met3Layer')/2+self._DesignParameter['m3_connect_y']['_Width']/2, tmp_array[0][1]+gate_y], [tmp_array[i][0]+gate_x-self.getXWidth('nmos_coarse','via_m1_m3_nmos1_gate','ViaMet22Met3','_Met3Layer')/2+self._DesignParameter['m3_connect_y']['_Width']/2, tmp_array[-1][1]+gate_y]])
+        #
+        #     tmp2=[]
+        #     for i in range(tmp_x,Xnum):
+        #         tmp2.append([[tmp_array[i][0]+gate_x-self.getXWidth('nmos_coarse','via_m1_m3_nmos1_gate','ViaMet22Met3','_Met3Layer')/2+self._DesignParameter['m3_connect_y']['_Width']/2, tmp_array[0][1]+gate_y], [tmp_array[i][0]+gate_x-self.getXWidth('nmos_coarse','via_m1_m3_nmos1_gate','ViaMet22Met3','_Met3Layer')/2+self._DesignParameter['m3_connect_y']['_Width']/2, self._DesignParameter['Via_m3_m4']['_XYCoordinates'][-1][1]]])
+        #
+        # if Ynum == 1 :
+        #     tmp1=[]
+        #     for i in range(0,tmp_x):
+        #         tmp1.append([[tmp_array[i][0]+gate_x, tmp_array[0][1]+gate_y], [tmp_array[i][0]+gate_x, self._DesignParameter['Via_m3_m4']['_XYCoordinates'][-1][1]]])
+        #     tmp2=[]
+        #
+        # self._DesignParameter['m3_connect_y']['_XYCoordinates']=tmp1+tmp2
+        # del tmp1
+        # del tmp2
+
+        # tmp=[]
+        #
+        # self._DesignParameter['m4_connect_x']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0], _Datatype=DesignParameters._LayerMapping['METAL4'][1], _Width=None)
+        # self._DesignParameter['m4_connect_x']['_Width']=2*drc._MetalxMinWidth
+        #
+        # if Ynum>1:
+        #     for j in range(0, Ynum-1):
+        #         tmp.append([[self._DesignParameter['Via_m3_m4']['_XYCoordinates'][0][0], self._DesignParameter['Via_m3_m4']['_XYCoordinates'][Xnum*j][1]], [self._DesignParameter['Via_m3_m4']['_XYCoordinates'][-1][0], self._DesignParameter['Via_m3_m4']['_XYCoordinates'][Xnum*j][1]]])
+        #
+        # if Ynum == 1 :
+        #         tmp.append([[self._DesignParameter['Via_m3_m4']['_XYCoordinates'][0][0], self._DesignParameter['Via_m3_m4']['_XYCoordinates'][0][1]], [self._DesignParameter['Via_m3_m4']['_XYCoordinates'][-1][0], self._DesignParameter['Via_m3_m4']['_XYCoordinates'][0][1]]])
+        #
+        # self._DesignParameter['m4_connect_x']['_XYCoordinates']=tmp
+        # del tmp
+
+
+
 
         self._DesignParameter['via_m1_m2_ncap']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='via_m1_m2_ncapIn{}'.format(_Name)))[0]
         num_via_ncap=max(1,int(self._DesignParameter['ncap']['_DesignObj']._DesignParameter['via_poly_m1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/(drc._VIAxMinWidth+drc._VIAxMinSpace)) - 1)
@@ -563,14 +630,17 @@ class _NSET_Current_Mirror(StickDiagram._StickDiagram):
         if (nmos_stack_coarse_param['nmos1_length'] == nmos_stack_fine_param['nmos1_length'] == nmos_stack_mirror_param['nmos1_length'] == nmos_single_tail_param['nmos1_length']) == False :
             raise NotImplementedError
 
+        if DesignParameters._Technology=='SS28nm':
+            if nmos_single_tail_param['nmos1_length'] < 200 :
+                raise NotImplementedError
+
         if (nmos_stack_coarse_param['nmos2_length'] == nmos_stack_fine_param['nmos2_length'] == nmos_stack_mirror_param['nmos2_length']) == False :
             raise NotImplementedError
 
         if (nmos_stack_coarse_param['nmos2_gate'] == nmos_stack_fine_param['nmos2_gate'] == nmos_stack_mirror_param['nmos2_gate'] == 1) == False :
             raise NotImplementedError
 
-
-        # if Xnum*Ynum % total_num >= Xnum :
-        #     raise NotImplementedError
+        if Xnum != mirror_num2 :
+            raise NotImplementedError
 
 
