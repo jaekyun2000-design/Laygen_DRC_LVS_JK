@@ -400,6 +400,9 @@ class DRCPOLYGATE:
             else:
                 return self._PolygateMinSpace2
 
+        if user_setup._Technology == 'SS65nm':
+            return self._PolygateMinSpace              # temporal... need to check  (pcell 290 why??)
+
         if user_setup._Technology == 'TSMC65nm':
             if _Width == None and _ParallelLength == None:
                 return self._PolygateMinSpace
@@ -1127,18 +1130,18 @@ class DRCVIAx:
             self._VIAxMinEnclosureByMetxTwoOppositeSide = 30
 
         if user_setup._Technology == 'SS28nm':
-            self._VIAxMinWidth = 50  # A
-            self._VIAxMinSpace = 80  # B
-            self._VIAxMinSpace2 = 92  # C
-            self._VIAxMinSpaceDifferentNet = 80  # B1
-            self._VIAxMinSpaceFor3neighboring = 92  # C
-            self._VIAxMinEnclosureByMetx = 0  # D
-            self._VIAxMinEnclosureByMetxTwoOppositeSide = 32  # E
+            self._VIAxMinWidth = 50                                 # 550               A
+            self._VIAxMinSpace = 80                                 # 553q1             B
+            self._VIAxMinSpace2 = 92                                # 553q2             C
+            self._VIAxMinSpaceDifferentNet = 80                     # B1
+            self._VIAxMinSpaceFor3neighboring = 92                  # C
+            self._VIAxMinEnclosureByMetx = 0                        # 611               D
+            self._VIAxMinEnclosureByMetxTwoOppositeSide = 32        # 611c (611_or)     E
 
         if user_setup._Technology == 'SS65nm':                  # VIA1, VIA2
             self._VIAxMinWidth = 100                                # 15.a
             self._VIAxMinSpace = 120                                # 15.b
-            self._VIAxMinSpace2 = 330                               # 15.c   Dense_V1 -> V1 with more than or equal to 8 (n>=8)
+            self._VIAxMinSpace2 = 340                               # 15.c   Dense_V1 -> V1 with more than or equal to 8 (n>=8)
             self._VIAxMinSpaceDifferentNet = None                   # 보류
             self._VIAxMinSpaceFor3neighboring = None                # 보류
             self._VIAxMinEnclosureByMetx = 10                       # 15.d
@@ -1417,8 +1420,8 @@ class DRCVIAy:
             self._VIAyMinSpace2 = 340                                   # 19.c
             self._VIAyMinSpaceDifferentNet = None                       # -
             self._VIAyMinSpaceFor3neighboring = None                    # -
-            self._VIAyMinEnclosureByMetxOrMety = 10                     # 19.d   (MET3 - VIA3 :0.01) | (MET4 - V4_1X :0.01)
-            self._VIAyMinEnclosureByMetxOrMetyTwoOppositeSide = 40      # 19.e.1 (MET3 - VIA3 :0.04) | (MET4 - V4_1X :0.04)
+            self._VIAyMinEnclosureByMetxOrMety = 10                     # 19.d   (MET3 - VIA3 :0.01) | (MET4 - V4_1X :0.01) | (M5_1X - V4_1X :0.01)
+            self._VIAyMinEnclosureByMetxOrMetyTwoOppositeSide = 40      # 19.e.1 (MET3 - VIA3 :0.04) | (MET4 - V4_1X :0.04) | (M5_1X - V4_1X :0.04)
 
         if user_setup._Technology == 'TSMC65nm':
             self._VIAyMinWidth = 200
@@ -1601,12 +1604,12 @@ class DRCVIAz:
             self._VIAzMinEnclosureByMetxOrMetyTwoOppositeSide = 80
 
         if user_setup._Technology == 'SS65nm':          # V5_2X
-            self._VIAzMinWidth = 160                                # v5.2x.a
-            self._VIAzMinSpace = 160                                # v5.2x.b
-            self._VIAzMinSpace2 = 360                               # v5.2x.c
-            self._VIAzMinSpaceFor3neighboring = None                # -
-            self._VIAzMinEnclosureByMetxOrMety = 10                 # v5.2x.d (V5_2X - M5_1X: 10) | m6.2x.d(V5_2X - M6_2X: 20)
-            self._VIAzMinEnclosureByMetxOrMetyTwoOppositeSide = 40  # v5.2x.e (V5_2X - M5_1X: 40) | m6.2x.e(V5_2X - M6_2X: 100)
+            self._VIAzMinWidth = 160                                    # v5.2x.a
+            self._VIAzMinSpace = 160                                    # v5.2x.b
+            self._VIAzMinSpace2 = 360                                   # v5.2x.c
+            self._VIAzMinSpaceFor3neighboring = None                    # -
+            self._VIAzMinEnclosureByMetxOrMety = 20                     # v5.2x.d (V5_2X - M5_1X: 10) | m6.2x.d(V5_2X - M6_2X: 20)
+            self._VIAzMinEnclosureByMetxOrMetyTwoOppositeSide = 100     # v5.2x.e (V5_2X - M5_1X: 40) | m6.2x.e(V5_2X - M6_2X: 100)
 
         if user_setup._Technology == 'TSMC65nm':
             self._VIAzMinWidth = 360
@@ -1786,10 +1789,10 @@ class DRCVIAr:
         if user_setup._Technology == 'SS65nm':      # VIA6F
             self._VIArMinWidth = 160                                    # 21.a
             self._VIArMinSpace = 160                                    # 21.b
-            self._VIArMinSpace2 = 360                                   # 21.c
+            self._VIArMinSpace2 = 370                                   # 21.c
             self._VIArMinSpaceFor3neighboring = None                    # -
             self._VIArMinEnclosureByMetxOrMety = 20                     # 21.d.1 (V6F - M6: 20)  | 22.c (V6F - M7T: 10)
-            self._VIArMinEnclosureByMetxOrMetyTwoOppositeSide = 100     # 21.e.1 (V6F - M6: 100) | 22.d (V6F - M7T: 120)
+            self._VIArMinEnclosureByMetxOrMetyTwoOppositeSide = 120     # 21.e.1 (V6F - M6: 100) | 22.d (V6F - M7T: 120)
 
         if user_setup._Technology == 'TSMC65nm':
             self._VIArMinWidth = 460

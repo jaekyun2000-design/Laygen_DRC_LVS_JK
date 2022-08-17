@@ -26,6 +26,16 @@ class _ViaMet12Met2(StickDiagram._StickDiagram):
 
 
     def _CalculateViaMet12Met2DesignParameter(self, _ViaMet12Met2NumberOfCOX=None, _ViaMet12Met2NumberOfCOY=None ):
+        """
+            Via Spacing:
+                - x,y-direction same spacing.
+                - _DRCObj.DRCVIAxMinSpace(NumX, NumY)
+            Enclosure:
+                - opposite side min enclosure(~~Via12, ~~CO2)
+                - Met1, Metx(Met2) 중 max enclosure value를 모든 metal에 적용.
+                - max([_DRCObj._Metal1MinEnclosureVia12, _DRCObj._MetalxMinEnclosureCO2])
+
+        """
         print ('#########################################################################################################')
         print(('                                    {}  ViaMet12Met2 Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name'])))
         print ('#########################################################################################################')
@@ -90,7 +100,16 @@ class _ViaMet12Met2(StickDiagram._StickDiagram):
 
 
     def _CalculateViaMet12Met2DesignParameterMinimumEnclosureX(self, _ViaMet12Met2NumberOfCOX=None, _ViaMet12Met2NumberOfCOY=None ):
+        """
+            Via Spacing:
+                - x,y-direction same spacing.
+                - _DRCObj.DRCVIAxMinSpace(NumX, NumY)
+            Enclosure:
+                - x(horizontal): min enclosure(drc.~~Via1, drc.~~CO)
+                - y(vertical): opposite side min enclosure(drc.~~Via12, drc.~~CO2)
+                - 각 x,y direction에서 Met1, Metx(Met2) 중 max enclosure value를 모든 metal에 적용.
 
+        """
         print ('#########################################################################################################')
         print(('                                    {}  ViaMet12Met2 Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name'])))
         print ('#########################################################################################################')
@@ -157,7 +176,16 @@ class _ViaMet12Met2(StickDiagram._StickDiagram):
         print ('#########################################################################################################')
 
     def _CalculateViaMet12Met2DesignParameterMinimumEnclosureY(self, _ViaMet12Met2NumberOfCOX=None, _ViaMet12Met2NumberOfCOY=None ):
+        """
+            Via Spacing:
+                - x,y-direction same spacing.
+                - _DRCObj.DRCVIAxMinSpace(NumX, NumY)
+            Enclosure:
+                - x(horizontal): opposite side min enclosure(drc.~~Via12, drc.~~CO2)
+                - y(vertical): min enclosure(drc.~~Via1, drc.~~CO)
+                - 각 x,y direction에서 Met1, Metx(Met2) 중 max enclosure value를 모든 metal에 적용.
 
+        """
         print ('#########################################################################################################')
         print(('                                    {}  ViaMet12Met2 Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name'])))
         print ('#########################################################################################################')
@@ -223,6 +251,19 @@ class _ViaMet12Met2(StickDiagram._StickDiagram):
 
 
     def _CalculateDesignParameterSameEnclosure(self, _ViaMet12Met2NumberOfCOX=None, _ViaMet12Met2NumberOfCOY=None):
+        """
+            Note:
+                - SS28nm 에서만 적용된 rule 이용.
+                - 나머지 공정에서는 _CalculateDesignParameter() 와 동일한 output.
+            Via Spacing:
+                - x,y-direction same spacing.
+                - _DRCObj.DRCVIAxMinSpace(NumX, NumY)
+            Enclosure:
+                - x,y-direction 모두 same enclosure 적용 (drc.~~Via3)
+                - max([_DRCObj._Metal1MinEnclosureVia3,_DRCObj._MetalxMinEnclosureVia3])
+                - 각 x,y direction에서 Met1, Metx(Met2) 중 max enclosure value를 모든 metal에 적용.
+
+        """
         print ('#########################################################################################################')
         print(('                                    {}  ViaMet12Met2 Calculation Start                                    '.format(self._DesignParameter['_Name']['_Name'])))
         print ('#########################################################################################################')
@@ -281,12 +322,12 @@ class _ViaMet12Met2(StickDiagram._StickDiagram):
 
     @classmethod
     def _CalculateNumViaByXYWidth(cls, XWidth=None, YWidth=None, Mode=None):
-        '''
+        """
         :param XWidth:
         :param YWidth:
         :param Mode:    None or 'MinEnclosureX' or 'MinEnclosureY'
         :return:
-        '''
+        """
 
         _DRCObj = DRC.DRC()
 

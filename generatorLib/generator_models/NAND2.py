@@ -21,368 +21,192 @@ class NAND2(StickDiagram._StickDiagram):
             self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
         self._DesignParameter['_Name']['Name'] = _Name
 
-    # def _CalculateDesignParameter(self,CellHeight=1800,ChannelLength=30,GateSpacing=100,XVT='SLVT',NMOSWidth=400,PMOSWidth=400,YCoordOfInputOutput=900,NumFinger=3,YCoordOfNM=350,YCoordOfPM=1400):
-    #
-    #     drc = DRC.DRC()
-    #     _Name = self._DesignParameter['_Name']['_Name']
-    #
-    #     # YWidth_Met1HorizontalRouting = drc._Metal1MinWidth  # 50
-    #     YWidth_Met1HorizontalRouting = 66
-    #
-    #     self._DesignParameter['VSSRail'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VSSRailIn{}'.format(_Name)))[0]
-    #     self._DesignParameter['VSSRail']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=((NumFinger * 2) + 1), UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True, deleteViaAndMet1=True))
-    #     self._DesignParameter['VSSRail']['_XYCoordinates'] = [[0.0, 0.0]]
-    #     self._DesignParameter['VDDRail'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VDDRailIn{}'.format(_Name)))[0]
-    #     self._DesignParameter['VDDRail']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=((NumFinger * 2) + 1), UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=False, deleteViaAndMet1=True))
-    #     self._DesignParameter['VDDRail']['_XYCoordinates'] = [[0, CellHeight]]
-    #     self._DesignParameter['NMOS'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='NMOSIn{}'.format(_Name)))[0]
-    #     self._DesignParameter['NMOS']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=(NumFinger * 2), _NMOSChannelWidth=NMOSWidth, _NMOSChannellength=ChannelLength, _NMOSDummy=True, _GateSpacing=GateSpacing, _SDWidth=66, _XVT=XVT))
-    #     self._DesignParameter['NMOS']['_XYCoordinates'] = [[0, YCoordOfNM]]
-    #     self._DesignParameter['PMOS'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='PMOSIn{}'.format(_Name)))[0]
-    #     self._DesignParameter['PMOS']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=(NumFinger * 2), _PMOSChannelWidth=PMOSWidth, _PMOSChannellength=ChannelLength, _PMOSDummy=True, _GateSpacing=GateSpacing, _SDWidth=66, _XVT=XVT))
-    #     self._DesignParameter['PMOS']['_XYCoordinates'] = [[0, YCoordOfPM]]
-    #     self._DesignParameter['ViaPoly_InputA'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1_resize._ViaPoly2Met1_resize(_Name='ViaPoly_InputAIn{}'.format(_Name)))[0]    # manually edited
-    #     self._DesignParameter['ViaPoly_InputA']['_DesignObj']._CalculateDesignParameter(
-    #         **dict(_ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2,
-    #                Met1XWidth=66, Met1YWidth=200, POXWidth=50, POYWidth=200))  # manually edited
-    #     self._DesignParameter['ViaPoly_InputA']['_XYCoordinates'] = [[(self._DesignParameter['NMOS']['_XYCoordinates'][0][0] + self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]), YCoordOfInputOutput]]
-    #     self._DesignParameter['ViaPoly_InputB'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1_resize._ViaPoly2Met1_resize(_Name='ViaPoly_InputBIn{}'.format(_Name)))[0]    # manually edited
-    #     self._DesignParameter['ViaPoly_InputB']['_DesignObj']._CalculateDesignParameter(
-    #         **dict(_ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2,
-    #                Met1XWidth=66, Met1YWidth=200, POXWidth=50, POYWidth=200))  # manually edited
-    #     self._DesignParameter['ViaPoly_InputB']['_XYCoordinates'] = [[(self._DesignParameter['NMOS']['_XYCoordinates'][0][0] + self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][(- 1)][0]), YCoordOfInputOutput]]
-    #     XYList = []
-    #     xy_offset = (0, ((- (self._DesignParameter['PMOS']['_XYCoordinates'][0][1] + self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1])) + CellHeight))
-    #     for i in range(len(self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])):
-    #         if ((i % 2) == 0):
-    #             xy = (self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i][0] if (type(self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i])
-    #             XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['PMOS']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['PMOS']['_XYCoordinates'][0][1])], xy, xy_offset)])
-    #     self._DesignParameter['ViaForVDD'] = self._SrefElementDeclaration(_DesignObj=Z_PWR_CNT.Z_PWR_CNT(_Name='ViaForVDDIn{}'.format(_Name)))[0]
-    #     self._DesignParameter['ViaForVDD']['_DesignObj']._CalculateDesignParameter(**dict(_Xnum=1, _Xdistance=0))
-    #     self._DesignParameter['ViaForVDD']['_XYCoordinates'] = XYList
-    #     path_list = []
-    #     if (len(self._DesignParameter['ViaForVDD']['_XYCoordinates']) == 1):
-    #         mode = 'vertical'
-    #         _width = self._DesignParameter['ViaForVDD']['_DesignObj']._DesignParameter['METAL1_boundary_0']['_XWidth']
-    #     elif (self._DesignParameter['ViaForVDD']['_XYCoordinates'][0][0] == self._DesignParameter['ViaForVDD']['_XYCoordinates'][(- 1)][0]):
-    #         mode = 'horizontal'
-    #         _width = self._DesignParameter['ViaForVDD']['_DesignObj']._DesignParameter['METAL1_boundary_0']['_XWidth']
-    #     elif (self._DesignParameter['ViaForVDD']['_XYCoordinates'][0][1] == self._DesignParameter['ViaForVDD']['_XYCoordinates'][(- 1)][1]):
-    #         mode = 'vertical'
-    #         _width = self._DesignParameter['ViaForVDD']['_DesignObj']._DesignParameter['METAL1_boundary_0']['_XWidth']
-    #     else:
-    #         print('Invalid Target Input')
-    #     if (mode == 'vertical'):
-    #         xy_with_offset = []
-    #         target_y_value = ((self._DesignParameter['PMOS']['_XYCoordinates'][0][1] + self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) + (self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))
-    #         for i in range(len(self._DesignParameter['ViaForVDD']['_XYCoordinates'])):
-    #             xy_with_offset.append([(x + y) for (x, y) in zip([0, 0], self._DesignParameter['ViaForVDD']['_XYCoordinates'][i])])
-    #         for i in range(len(xy_with_offset)):
-    #             path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
-    #     elif (mode == 'horizontal'):
-    #         xy_with_offset = []
-    #         target_x_value = (self._DesignParameter['PMOS']['_XYCoordinates'][0][0] + self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0])
-    #         for i in range(len(self._DesignParameter['ViaForVDD']['_XYCoordinates'])):
-    #             xy_with_offset.append([(x + y) for (x, y) in zip([0, 0], self._DesignParameter['ViaForVDD']['_XYCoordinates'][i])])
-    #         for i in range(len(xy_with_offset)):
-    #             path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
-    #     self._DesignParameter['Met1RouteY_VDD'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
-    #     self._DesignParameter['Met1RouteY_VDD']['_XYCoordinates'] = path_list
-    #     path_list = []
-    #     if (len(self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates']) == 1):
-    #         mode = 'vertical'
-    #         _width = self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
-    #     elif (self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0] == self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][0]):
-    #         mode = 'horizontal'
-    #         _width = self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
-    #     elif (self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1] == self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][1]):
-    #         mode = 'vertical'
-    #         _width = self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
-    #     else:
-    #         print('Invalid Target Input')
-    #     if (mode == 'vertical'):
-    #         xy_with_offset = []
-    #         target_y_value = ((self._DesignParameter['ViaPoly_InputA']['_XYCoordinates'][0][1] + self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2))
-    #         for i in range(len(self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
-    #             xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['NMOS']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['NMOS']['_XYCoordinates'][0][1])], self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
-    #         for i in range(len(xy_with_offset)):
-    #             path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
-    #     elif (mode == 'horizontal'):
-    #         xy_with_offset = []
-    #         target_x_value = (self._DesignParameter['ViaPoly_InputA']['_XYCoordinates'][0][0] + self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0])
-    #         for i in range(len(self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
-    #             xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['NMOS']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['NMOS']['_XYCoordinates'][0][1])], self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
-    #         for i in range(len(xy_with_offset)):
-    #             path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
-    #     self._DesignParameter['PolyRouteY_NM'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _Width=_width)
-    #     self._DesignParameter['PolyRouteY_NM']['_XYCoordinates'] = path_list
-    #     path_list = []
-    #     if (len(self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates']) == 1):
-    #         mode = 'vertical'
-    #         _width = self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
-    #     elif (self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0] == self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][0]):
-    #         mode = 'horizontal'
-    #         _width = self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
-    #     elif (self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1] == self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][1]):
-    #         mode = 'vertical'
-    #         _width = self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
-    #     else:
-    #         print('Invalid Target Input')
-    #     if (mode == 'vertical'):
-    #         xy_with_offset = []
-    #         target_y_value = ((self._DesignParameter['ViaPoly_InputA']['_XYCoordinates'][0][1] + self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2))
-    #         for i in range(len(self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
-    #             xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['PMOS']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['PMOS']['_XYCoordinates'][0][1])], self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
-    #         for i in range(len(xy_with_offset)):
-    #             path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
-    #     elif (mode == 'horizontal'):
-    #         xy_with_offset = []
-    #         target_x_value = (self._DesignParameter['ViaPoly_InputA']['_XYCoordinates'][0][0] + self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0])
-    #         for i in range(len(self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
-    #             xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['PMOS']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['PMOS']['_XYCoordinates'][0][1])], self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
-    #         for i in range(len(xy_with_offset)):
-    #             path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
-    #     self._DesignParameter['PolyRouteY_PM'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _Width=_width)
-    #     self._DesignParameter['PolyRouteY_PM']['_XYCoordinates'] = path_list
-    #     XYList = []
-    #     xy_offset = (0, (((- self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']) / 2) - ((drc._Metal1MinSpaceAtCorner + YWidth_Met1HorizontalRouting) / 2)))  # Manually Edited
-    #     for i in range(len(self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])):
-    #         if ((i % 2) == 1):
-    #             XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['PMOS']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['PMOS']['_XYCoordinates'][0][1])], self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][i], xy_offset)])
-    #     self._DesignParameter['Met1RouteY_PMOutput'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _XWidth=self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'], _YWidth=(drc._Metal1MinSpaceAtCorner + YWidth_Met1HorizontalRouting))  # Manually Edited
-    #     self._DesignParameter['Met1RouteY_PMOutput']['_XYCoordinates'] = XYList
-    #     self._DesignParameter['Met1RouteX_PMOutput'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _XWidth=((self._DesignParameter['Met1RouteY_PMOutput']['_XYCoordinates'][(- 1)][0] + (self._DesignParameter['Met1RouteY_PMOutput']['_XWidth'] / 2)) - (self._DesignParameter['Met1RouteY_PMOutput']['_XYCoordinates'][0][0] - (self._DesignParameter['Met1RouteY_PMOutput']['_XWidth'] / 2))), _YWidth=YWidth_Met1HorizontalRouting)  # Manually Edit
-    #     self._DesignParameter['Met1RouteX_PMOutput']['_XYCoordinates'] = [[(((self._DesignParameter['Met1RouteY_PMOutput']['_XYCoordinates'][(- 1)][0] + (self._DesignParameter['Met1RouteY_PMOutput']['_XWidth'] / 2)) + (self._DesignParameter['Met1RouteY_PMOutput']['_XYCoordinates'][0][0] - (self._DesignParameter['Met1RouteY_PMOutput']['_XWidth'] / 2))) / 2), ((((self._DesignParameter['PMOS']['_XYCoordinates'][0][1] + self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) - drc._Metal1MinSpaceAtCorner) - (self._DesignParameter['Met1RouteX_PMOutput']['_YWidth'] / 2))]]
-    #     self._DesignParameter['PolyRouteX_NMInputA'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=(((self._DesignParameter['NMOS']['_XYCoordinates'][0][0] + self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(NumFinger - 1)][0]) + (self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / 2)) - ((self._DesignParameter['ViaPoly_InputA']['_XYCoordinates'][0][0] + self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / 2))), _YWidth=50)
-    #     self._DesignParameter['PolyRouteX_NMInputA']['_XYCoordinates'] = [[((((self._DesignParameter['NMOS']['_XYCoordinates'][0][0] + self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(NumFinger - 1)][0]) + (self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / 2)) + ((self._DesignParameter['ViaPoly_InputA']['_XYCoordinates'][0][0] + self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / 2))) / 2), (((self._DesignParameter['ViaPoly_InputA']['_XYCoordinates'][0][1] + self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2)) + (self._DesignParameter['PolyRouteX_NMInputA']['_YWidth'] / 2))]]
-    #     self._DesignParameter['PolyRouteX_PMInputA'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=self._DesignParameter['PolyRouteX_NMInputA']['_XWidth'], _YWidth=self._DesignParameter['PolyRouteX_NMInputA']['_YWidth'])
-    #     self._DesignParameter['PolyRouteX_PMInputA']['_XYCoordinates'] = [[self._DesignParameter['PolyRouteX_NMInputA']['_XYCoordinates'][0][0], (((self._DesignParameter['ViaPoly_InputA']['_XYCoordinates'][0][1] + self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['ViaPoly_InputA']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2)) - (self._DesignParameter['PolyRouteX_PMInputA']['_YWidth'] / 2))]]
-    #     self._DesignParameter['PolyRouteX_PMInputB'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=self._DesignParameter['PolyRouteX_NMInputA']['_XWidth'], _YWidth=self._DesignParameter['PolyRouteX_NMInputA']['_YWidth'])
-    #     self._DesignParameter['PolyRouteX_PMInputB']['_XYCoordinates'] = [[((((self._DesignParameter['ViaPoly_InputB']['_XYCoordinates'][0][0] + self._DesignParameter['ViaPoly_InputB']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0]) + (self._DesignParameter['ViaPoly_InputB']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / 2)) + ((self._DesignParameter['PMOS']['_XYCoordinates'][0][0] + self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][NumFinger][0]) - (self._DesignParameter['PMOS']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] / 2))) / 2), self._DesignParameter['PolyRouteX_PMInputA']['_XYCoordinates'][0][1]]]
-    #     self._DesignParameter['PolyRouteX_NMInputB'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=self._DesignParameter['PolyRouteX_NMInputA']['_XWidth'], _YWidth=self._DesignParameter['PolyRouteX_NMInputA']['_YWidth'])
-    #     self._DesignParameter['PolyRouteX_NMInputB']['_XYCoordinates'] = [[self._DesignParameter['PolyRouteX_PMInputB']['_XYCoordinates'][0][0], self._DesignParameter['PolyRouteX_NMInputA']['_XYCoordinates'][0][1]]]
-    #
-    #     # nand2_8.bin finish
-    #
-    #
-    #     ''' Code Generater '''
-    #
-    #     # Met1Routing
-    #     self._DesignParameter['Met1RouteY_NMOutput'] = self._BoundaryElementDeclaration(
-    #         _Layer=DesignParameters._LayerMapping['METAL1'][0],
-    #         _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-    #         _XWidth=self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'],
-    #         _YWidth=(drc._Metal1MinSpaceAtCorner + YWidth_Met1HorizontalRouting)
-    #     )
-    #     self._DesignParameter['Met1RouteY_NMDown'] = self._BoundaryElementDeclaration(
-    #         _Layer=DesignParameters._LayerMapping['METAL1'][0],
-    #         _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-    #         _XWidth=self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'],
-    #         _YWidth=(drc._Metal1MinSpaceAtCorner + YWidth_Met1HorizontalRouting)
-    #     )
-    #
-    #     tmpXYs_NMout = []
-    #     tmpXYs_NMintermediate = []
-    #     for i in range(0, NumFinger + 1):
-    #         if i % 2 == 1:
-    #             tmpXYs_NMout.append(
-    #                 CoordCalc.Sum(self.getXY('NMOS', '_Met1Layer')[NumFinger - i],
-    #                               [0, self.getYWidth('NMOS', '_Met1Layer')/2],
-    #                               [0, self.getYWidth('Met1RouteY_NMOutput')/2])
-    #             )
-    #         else:
-    #             tmpXYs_NMintermediate.append(
-    #                 CoordCalc.Sum(self.getXY('NMOS', '_Met1Layer')[NumFinger - i],
-    #                               [0, -self.getYWidth('NMOS', '_Met1Layer')/2],
-    #                               [0, -self.getYWidth('Met1RouteY_NMDown')/2])
-    #             )
-    #     self._DesignParameter['Met1RouteY_NMOutput']['_XYCoordinates'] = tmpXYs_NMout
-    #     self._DesignParameter['Met1RouteY_NMDown']['_XYCoordinates'] = tmpXYs_NMintermediate
-    #
-    #
-    #     self._DesignParameter['Met1RouteX_NMOutput'] = self._BoundaryElementDeclaration(
-    #         _Layer=DesignParameters._LayerMapping['METAL1'][0],
-    #         _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-    #         _XWidth=CoordCalc.getXYCoords_MaxX(self.getXY('Met1RouteY_NMOutput'))[0][0] - CoordCalc.getXYCoords_MinX(self.getXY('Met1RouteY_NMOutput'))[0][0] + self.getXWidth('Met1RouteY_NMOutput'),
-    #         _YWidth=YWidth_Met1HorizontalRouting
-    #     )
-    #     self._DesignParameter['Met1RouteX_NMOutput']['_XYCoordinates'] = [[
-    #         (self.getXY('Met1RouteY_NMOutput')[0][0] + self.getXY('Met1RouteY_NMOutput')[-1][0]) / 2,
-    #         self.getXY('Met1RouteY_NMOutput')[0][1] + self.getYWidth('Met1RouteY_NMOutput') / 2 - self.getYWidth('Met1RouteX_NMOutput') / 2
-    #     ]]
-    #
-    #     self._DesignParameter['Met1RouteX_NMDown'] = self._BoundaryElementDeclaration(
-    #         _Layer=DesignParameters._LayerMapping['METAL1'][0],
-    #         _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-    #         _XWidth=CoordCalc.getXYCoords_MaxX(self.getXY('Met1RouteY_NMDown'))[0][0] - CoordCalc.getXYCoords_MinX(self.getXY('Met1RouteY_NMDown'))[0][0] + self.getXWidth('Met1RouteY_NMDown'),
-    #         _YWidth=YWidth_Met1HorizontalRouting
-    #     )
-    #     self._DesignParameter['Met1RouteX_NMDown']['_XYCoordinates'] = [[
-    #         (self.getXY('Met1RouteY_NMDown')[0][0] + self.getXY('Met1RouteY_NMDown')[-1][0]) / 2,
-    #         self.getXY('Met1RouteY_NMDown')[0][1] - self.getYWidth('Met1RouteY_NMDown')/2 + self.getYWidth('Met1RouteX_NMDown')/2
-    #     ]]
-    #
-    #     #
-    #     self._DesignParameter['Met1RouteY_NMUp'] = self._BoundaryElementDeclaration(
-    #         _Layer=DesignParameters._LayerMapping['METAL1'][0],
-    #         _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-    #         _XWidth=self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'],
-    #         _YWidth=(drc._Metal1MinSpaceAtCorner + YWidth_Met1HorizontalRouting)
-    #     )
-    #     self._DesignParameter['Met1RouteY_NM2VSS'] = self._BoundaryElementDeclaration(
-    #         _Layer=DesignParameters._LayerMapping['METAL1'][0],
-    #         _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-    #         _XWidth=self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'],
-    #         _YWidth=self.getXY('NMOS', '_Met1Layer')[0][1] - self.getYWidth('NMOS', '_Met1Layer')/2
-    #     )
-    #     tmpXYs_NMup = []
-    #     tmpXYs_NM2VSS = []
-    #     for i in range(0, NumFinger + 1):
-    #         if i % 2 == 0:
-    #             tmpXYs_NMup.append(
-    #                 CoordCalc.Sum(self.getXY('NMOS', '_Met1Layer')[NumFinger + i],
-    #                               [0, self.getYWidth('NMOS', '_Met1Layer') / 2],
-    #                               [0, self.getYWidth('Met1RouteY_NMUp') / 2])
-    #             )
-    #         else:
-    #             tmpXYs_NM2VSS.append(
-    #                 CoordCalc.Sum(self.getXY('NMOS', '_Met1Layer')[NumFinger + i],
-    #                               [0, -self.getYWidth('NMOS', '_Met1Layer') / 2],
-    #                               [0, -self.getYWidth('Met1RouteY_NM2VSS') / 2])
-    #             )
-    #     self._DesignParameter['Met1RouteY_NMUp']['_XYCoordinates'] = tmpXYs_NMup
-    #     self._DesignParameter['Met1RouteY_NM2VSS']['_XYCoordinates'] = tmpXYs_NM2VSS
-    #
-    #     self._DesignParameter['Met1RouteX_NMUp'] = self._BoundaryElementDeclaration(
-    #         _Layer=DesignParameters._LayerMapping['METAL1'][0],
-    #         _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-    #         _XWidth=CoordCalc.getXYCoords_MaxX(self.getXY('Met1RouteY_NMUp'))[0][0] - CoordCalc.getXYCoords_MinX(self.getXY('Met1RouteY_NMUp'))[0][0] + self.getXWidth('Met1RouteY_NMUp'),
-    #         _YWidth=YWidth_Met1HorizontalRouting
-    #     )
-    #     self._DesignParameter['Met1RouteX_NMUp']['_XYCoordinates'] = [[
-    #         (self.getXY('Met1RouteY_NMUp')[0][0] + self.getXY('Met1RouteY_NMUp')[-1][0]) / 2,
-    #         self.getXY('Met1RouteY_NMUp')[0][1] + self.getYWidth('Met1RouteY_NMUp') / 2 - self.getYWidth('Met1RouteX_NMUp') / 2
-    #     ]]
-    #
-    #     # VSS Via
-    #     tmpXYs = []
-    #     for XYs in self.getXY('Met1RouteY_NM2VSS'):
-    #         tmpXYs.append(CoordCalc.Sum(XYs, [0, -self.getYWidth('Met1RouteY_NM2VSS') / 2]))
-    #
-    #     self._DesignParameter['ViaForVSS'] = self._SrefElementDeclaration(_DesignObj=Z_PWR_CNT.Z_PWR_CNT(_Name='ViaForVSSIn{}'.format(_Name)))[0]
-    #     self._DesignParameter['ViaForVSS']['_DesignObj']._CalculateDesignParameter(**dict(_Xnum=1, _Xdistance=0))
-    #     self._DesignParameter['ViaForVSS']['_XYCoordinates'] = tmpXYs
-    #
-    #     # Nwell Layer
-    #     YCoord_NwellTopBoundary = self.getXY('VDDRail', '_ODLayer')[0][1] + self.getYWidth('VDDRail', '_ODLayer') / 2 + drc._NwMinEnclosurePactive
-    #     YCoord_NwellBotBoundary = self.getXY('PMOS', '_ODLayer')[0][1] - (self.getYWidth('PMOS', '_ODLayer') / 2 + drc._NwMinEnclosurePactive)
-    #     self._DesignParameter['NwellLayer'] = self._BoundaryElementDeclaration(
-    #         _Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1],
-    #         _XWidth=self.getXWidth('PMOS', '_ODLayer') + 2 * drc._NwMinEnclosurePactive2,
-    #         _YWidth=YCoord_NwellTopBoundary - YCoord_NwellBotBoundary,
-    #         _XYCoordinates=[[0, (YCoord_NwellTopBoundary + YCoord_NwellBotBoundary)/2]]
-    #     )
-    #
-    #     self._DesignParameter['XVTLayer'] = self._BoundaryElementDeclaration(
-    #         _Layer=DesignParameters._LayerMapping[XVT][0], _Datatype=DesignParameters._LayerMapping[XVT][1],
-    #         _XWidth=self.getXWidth('VSSRail', '_ODLayer'),
-    #         _YWidth=CellHeight,
-    #         _XYCoordinates=[[0, CellHeight / 2]]
-    #     )
-    #
-    #     # Met1YRouting NMout - PMout
-    #     XWidth_Met1YRouting = self.getXWidth('Met1RouteY_NMUp')
-    #     self._DesignParameter['Met1RouteY_NM2PM'] = self._BoundaryElementDeclaration(
-    #         _Layer=DesignParameters._LayerMapping['METAL1'][0],
-    #         _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-    #         _XWidth=XWidth_Met1YRouting,
-    #         _YWidth=(self.getXY('Met1RouteX_PMOutput')[0][1] - self.getYWidth('Met1RouteX_PMOutput')/2) - (self.getXY('Met1RouteX_NMUp')[0][1] + self.getYWidth('Met1RouteX_NMUp')/2)
-    #     )
-    #     self._DesignParameter['Met1RouteY_NM2PM']['_XYCoordinates'] = [[
-    #         self.getXY('NMOS', '_Met1Layer')[NumFinger-1][0] + self.getXWidth('NMOS', '_Met1Layer') / 2 - self.getXWidth('Met1RouteY_NM2PM') / 2,
-    #         ((self.getXY('Met1RouteX_PMOutput')[0][1] - self.getYWidth('Met1RouteX_PMOutput') / 2) + (self.getXY('Met1RouteX_NMUp')[0][1] + self.getYWidth('Met1RouteX_NMUp') / 2)) / 2
-    #     ]]
-    #
-    #     if NumFinger == 1:
-    #         del self._DesignParameter['NMOS']
-    #         del self._DesignParameter['Met1RouteX_NMUp']
-    #         del self._DesignParameter['Met1RouteY_NMUp']
-    #         del self._DesignParameter['Met1RouteX_NMDown']
-    #         del self._DesignParameter['Met1RouteY_NMDown']
-    #         del self._DesignParameter['Met1RouteX_NMOutput']
-    #         del self._DesignParameter['Met1RouteY_NMOutput']
-    #         del self._DesignParameter['Met1RouteY_NM2PM']
-    #
-    #         self._DesignParameter['NMOS'] = self._SrefElementDeclaration(_DesignObj=CascodeNMOS._CascodeNMOS(_Name='NMOSIn{}'.format(_Name)))[0]
-    #         self._DesignParameter['NMOS']['_DesignObj']._CalculateDesignParameter(
-    #             **dict(_NMOSChannelWidth=NMOSWidth, _NMOSChannellength=ChannelLength,
-    #                    _NMOSDummy=True, _GateSpacing=GateSpacing, _SDWidth=66, _XVT=XVT))
-    #         self._DesignParameter['NMOS']['_XYCoordinates'] = [[0, YCoordOfNM]]
-    #
-    #         self._DesignParameter['Met1RouteX_NM2PM'] = self._BoundaryElementDeclaration(
-    #             _Layer=DesignParameters._LayerMapping['METAL1'][0],
-    #             _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-    #             _XWidth=(self.getXY('Met1RouteY_PMOutput')[0][0] + self.getXWidth('Met1RouteY_PMOutput')/2) - (self.getXY('NMOS', '_Met1Layer')[0][0] - self.getXWidth('NMOS', '_Met1Layer') / 2),
-    #             _YWidth=self.getXWidth('NMOS', '_Met1Layer')
-    #         )
-    #         self._DesignParameter['Met1RouteX_NM2PM']['_XYCoordinates'] = [[
-    #             ((self.getXY('Met1RouteY_PMOutput')[0][0] + self.getXWidth('Met1RouteY_PMOutput') / 2) + (self.getXY('NMOS', '_Met1Layer')[0][0] - self.getXWidth('NMOS', '_Met1Layer') / 2)) / 2,
-    #             self.getXY('NMOS', '_Met1Layer')[0][1] + self.getYWidth('NMOS', '_Met1Layer') / 2 - self.getYWidth('Met1RouteX_NM2PM') / 2
-    #         ]]
-    #
-    #         self._DesignParameter['Met1RouteY_NM2PM'] = self._BoundaryElementDeclaration(
-    #             _Layer=DesignParameters._LayerMapping['METAL1'][0],
-    #             _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-    #             _XWidth=self.getXWidth('Met1RouteY_PMOutput'),
-    #             _YWidth=(self.getXY('Met1RouteY_PMOutput')[0][1] - self.getYWidth('Met1RouteY_PMOutput')/2) - (self.getXY('Met1RouteX_NM2PM')[0][1] + self.getYWidth('Met1RouteX_NM2PM')/2)
-    #         )
-    #         self._DesignParameter['Met1RouteY_NM2PM']['_XYCoordinates'] = [[
-    #             self.getXY('Met1RouteY_PMOutput')[0][0],
-    #             ((self.getXY('Met1RouteY_PMOutput')[0][1] - self.getYWidth('Met1RouteY_PMOutput') / 2) + (self.getXY('Met1RouteX_NM2PM')[0][1] + self.getYWidth('Met1RouteX_NM2PM') / 2)) / 2
-    #         ]]
-    #
-    #     else:
-    #         pass
-    #
-    #
-    #
-    #     # ''' Pin(Label) '''
-    #     # self._DesignParameter['PIN_VSS'] = self._TextElementDeclaration(
-    #     #     _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
-    #     #     _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
-    #     #     _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.04, _Angle=0, _TEXT='VSS',
-    #     #     _XYCoordinates=[[0, 0]]
-    #     # )
-    #     # self._DesignParameter['PIN_VDD'] = self._TextElementDeclaration(
-    #     #     _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
-    #     #     _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
-    #     #     _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.04, _Angle=0, _TEXT='VDD',
-    #     #     _XYCoordinates=[[0, CellHeight]]
-    #     # )
-    #     # self._DesignParameter['PIN_A'] = self._TextElementDeclaration(
-    #     #     _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
-    #     #     _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
-    #     #     _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='A',
-    #     #     _XYCoordinates=[self.getXY('ViaPoly_InputA')[0]],
-    #     # )
-    #     # self._DesignParameter['PIN_B'] = self._TextElementDeclaration(
-    #     #     _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
-    #     #     _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
-    #     #     _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='B',
-    #     #     _XYCoordinates=[self.getXY('ViaPoly_InputB')[0]],
-    #     # )
-    #     # self._DesignParameter['PIN_Y'] = self._TextElementDeclaration(
-    #     #     _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
-    #     #     _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
-    #     #     _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='Y',
-    #     #     _XYCoordinates=[[self.getXY('Met1RouteY_NM2PM')[0][0], YCoordOfInputOutput]]
-    #     # )
-    #
+        self.Num_HorizontalInputViaMode = 5
+
+
+    def _CalcMinDistance(self):
+
+        drc = DRC.DRC()
+
+        ''' (1) VSS2NMOS_min {NumFinger_NM, SupplyRailType}'''
+        DistanceBtwVSS2NMOS1 = 0.5 * (self.getYWidth('VSSRail', '_PPLayer') + self.getYWidth('NMOS', '_POLayer'))
+        DistanceBtwVSS2NMOS2 = 0.5 * (self.getYWidth('VSSRail', '_ODLayer') + self.getYWidth('NMOS', '_ODLayer')) + drc._OdMinSpace  # OD Layer(for Pbody) - OD Layer (for NMOS)     OD=RX
+        if '_PODummyLayer' in self._DesignParameter['NMOS']['_DesignObj']._DesignParameter:
+            DistanceBtwVSS2NMOS3 = 0.5 * (self.getYWidth('VSSRail', '_ODLayer') + self.getYWidth('NMOS', '_PODummyLayer')) + drc._PolygateMinSpace2OD  # OD Layer(for Pbody) - PO Dummy Layer (for NMOS)     OD=RX
+        else:
+            DistanceBtwVSS2NMOS3 = 0
+
+        # NumFinger_NM
+        # SupplyRailType
+        if self.NumFinger_NM == 1 and self.SupplyRailType == 1:
+            DistanceBtwVSS2NMOS4 = 0.5 * (self.getYWidth('VSSRail', '_Met1Layer') + self.getXY('NMOS', '_Met1Layer')[0][1]) + drc._Metal1MinSpaceAtCorner
+        elif self.NumFinger_NM > 1 and self.SupplyRailType == 1:
+            DistanceBtwVSS2NMOS4 = 0.5 * self.getYWidth('VSSRail', '_Met1Layer') + (self.getXY('NMOS')[0][1] - self.getXYBot('Met1RouteX_NMDown')[0][1]) + drc._Metal1MinSpaceAtCorner
+        elif self.NumFinger_NM == 1 and self.SupplyRailType == 2:
+            DistanceBtwVSS2NMOS4 = 0.5 * drc._Metal1MinSpaceAtCorner
+        else:       # if self.NumFinger_NM != 1 and self.SupplyRailType == 2:
+            DistanceBtwVSS2NMOS4 = (self.getXY('NMOS')[0][1] - self.getXYBot('Met1RouteX_NMDown')[0][1]) + 0.5 * drc._Metal1MinSpaceAtCorner
+
+        DistanceBtwVSS2NMOS5 = 0.5 * (self.getYWidth('VSSRail', '_PPLayer') + self.getYWidth('NMOS', '_ODLayer')) + drc._OdMinSpace2Pp
+        VSS2NMOS_min = max(DistanceBtwVSS2NMOS1, DistanceBtwVSS2NMOS2, DistanceBtwVSS2NMOS3, DistanceBtwVSS2NMOS4, DistanceBtwVSS2NMOS5)
+
+        ''' (2) VDD2PMOS_min {SupplyRailType}'''
+        if '_NPLayer' in self._DesignParameter['PMOS']['_DesignObj']._DesignParameter:
+            DistanceBtwVDD2PMOS1 = 0.5 * (self.getYWidth('VDDRail', '_NPLayer') + self.getYWidth('PMOS', '_POLayer'))       # need to check
+        else:
+            DistanceBtwVDD2PMOS1 = 0
+        DistanceBtwVDD2PMOS2 = 0.5 * (self.getYWidth('VDDRail', '_ODLayer') + self.getYWidth('PMOS', '_ODLayer')) + drc._OdMinSpace  # OD Layer(for Nbody) - OD Layer (for PMOS)     OD=RX
+        if '_PODummyLayer' in self._DesignParameter['PMOS']['_DesignObj']._DesignParameter:
+            DistanceBtwVDD2PMOS3 = 0.5 * (self.getYWidth('VDDRail', '_ODLayer') + self.getYWidth('PMOS', '_PODummyLayer')) + drc._PolygateMinSpace2OD  # OD Layer(for Nbody) - PO Dummy Layer (for PMOS)     OD=RX
+        else:
+            DistanceBtwVDD2PMOS3 = 0
+        if self.SupplyRailType == 1:
+            DistanceBtwVDD2PMOS4 = 0.5 * (self.getYWidth('VDDRail', '_Met1Layer') + self.getYWidth('PMOS', '_Met1Layer')) + drc._Metal1MinSpaceAtCorner
+        else:   # self.SupplyRailType == 2:
+            DistanceBtwVDD2PMOS4 = 0.5 * self.getYWidth('PMOS', '_Met1Layer') + 0.5 * drc._Metal1MinSpaceAtCorner
+        DistanceBtwVDD2PMOS5 = 0.5 * (self.getYWidth('VDDRail', '_ODLayer') + self.getYWidth('PMOS', '_PPLayer')) + drc._OdMinSpace2Pp
+
+        VDD2PMOS_min = max(DistanceBtwVDD2PMOS1, DistanceBtwVDD2PMOS2, DistanceBtwVDD2PMOS3, DistanceBtwVDD2PMOS4, DistanceBtwVDD2PMOS5)
+
+
+        ''' (3) NMOS2IO_min {finger_max , finger_nmos} '''
+        gapBtwMet1 = drc._Metal1MinSpaceAtCorner
+        if self.NumFinger_NM == 1:
+            DistanceBtwNMOS2IO1 = 0.5 * (self.getYWidth('NMOS', '_Met1Layer') + self.getYWidth('ViaPoly_InputAB', '_Met1Layer')) + gapBtwMet1
+        elif max(self.NumFinger_PM, self.NumFinger_NM) < self.Num_HorizontalInputViaMode:
+            DistanceBtwNMOS2IO1 = 0.5 * self.getYWidth('ViaPoly_InputAB', '_Met1Layer') + (self.getXYTop('Met1RouteX_OutputPM2NM_NMside')[0][1] - self.getXY('NMOS')[0][1]) + gapBtwMet1
+        else:  # finger_max >= self.Num_HorizontalInputViaMode:  same with second case?
+            DistanceBtwNMOS2IO1 = 0.5 * self.getYWidth('ViaPoly_InputAB', '_Met1Layer') + (self.getXYTop('Met1RouteX_OutputPM2NM_NMside')[0][1] - self.getXY('NMOS')[0][1]) + gapBtwMet1
+        NMOS2IO_min = DistanceBtwNMOS2IO1
+
+        ''' (4) PMOS2IO_min {finger_pmos, finger_nmos} '''
+        gapBtwMet1 = drc._Metal1MinSpaceAtCorner
+        if self.NumFinger_PM == 1:
+            if self.NumFinger_NM == 1:
+                DistanceBtwPMOS2IO1 = 0.5 * (self.getYWidth('PMOS', '_Met1Layer') + self.getYWidth('ViaPoly_InputAB', '_Met1Layer')) + gapBtwMet1
+            elif self.NumFinger_NM < self.Num_HorizontalInputViaMode:
+                DistanceBtwPMOS2IO1 = 0.5 * self.getYWidth('ViaPoly_InputAB', '_Met1Layer') + (self.getXY('PMOS')[0][1] - self.getXYBot('Met1RouteX_PMOutput')[0][1]) + gapBtwMet1
+            else:  # self.NumFinger_NM > 1
+                DistanceBtwPMOS2IO1 = 0.5 * (self.getYWidth('PMOS', '_Met1Layer') + self.getYWidth('ViaPoly_InputAB', '_Met1Layer')) + gapBtwMet1
+        else:  # self.NumFinger_PM > 1:
+            DistanceBtwPMOS2IO1 = 0.5 * self.getYWidth('ViaPoly_InputAB', '_Met1Layer') + (self.getXY('PMOS')[0][1] - self.getXYBot('Met1RouteX_PMOutput')[0][1]) + gapBtwMet1
+        PMOS2IO_min = DistanceBtwPMOS2IO1
+
+
+        print('** minimum Y-distance Calculation ------')
+        print(f'VSS2NMOS_min = {VSS2NMOS_min}')
+        print(f'VDD2PMOS_min = {VDD2PMOS_min}')
+        print(f'NMOS2IO_min = {NMOS2IO_min}')
+        print(f'PMOS2IO_min = {PMOS2IO_min}')
+
+        return dict(VSS2NMOS_min=VSS2NMOS_min, VDD2PMOS_min=VDD2PMOS_min, NMOS2IO_min=NMOS2IO_min, PMOS2IO_min=PMOS2IO_min)
+
+    def _CalculateDesignParameter(self,
+                                  NumFinger_PM=2,
+                                  NumFinger_NM=1,
+                                  PMOSWidth=400,
+                                  NMOSWidth=400,
+
+                                  CellHeight=None,
+                                  YCoordOfNM=None,
+                                  YCoordOfPM=None,
+                                  YCoordOfInputOutput=None,
+
+                                  ChannelLength=30,
+                                  GateSpacing=100, XVT='SLVT',
+                                  SupplyRailType=2,
+                                  ):
+
+        tmpLength = NMOSWidth + PMOSWidth
+
+        self._CalculateDesignParameter_v2(
+            NumFinger_NM=NumFinger_NM,
+            NumFinger_PM=NumFinger_PM,
+            NMOSWidth=NMOSWidth,
+            PMOSWidth=PMOSWidth,
+
+            YCoordOfNM=tmpLength * 3,
+            YCoordOfInputOutput=tmpLength * 6,
+            YCoordOfPM=tmpLength * 9,
+            CellHeight=tmpLength * 12,
+
+            ChannelLength=ChannelLength,
+            GateSpacing=GateSpacing, XVT=XVT,
+            SupplyRailType=SupplyRailType,
+        )
+
+        ''' Calc Y-distance '''
+        MinDistance = self._CalcMinDistance()   # dict VSS2NMOS_min, VDD2PMOS_min, NMOS2IO_min, PMOS2IO_min
+
+        # CellHeight   - top priority
+        MinCellHeight = MinDistance['VSS2NMOS_min'] + MinDistance['NMOS2IO_min'] + MinDistance['PMOS2IO_min'] + MinDistance['VDD2PMOS_min']
+        if CellHeight == None:
+            _CellHeight = MinCellHeight
+        elif CellHeight < MinCellHeight:
+            raise NotImplementedError(f"Input CellHeight={CellHeight}, But MinCellHeight={MinCellHeight}")
+        else:
+            _CellHeight = CellHeight
+
+        # YCoordOfNM
+        if YCoordOfNM == None:
+            _YCoordOfNM = MinDistance['VSS2NMOS_min']
+        elif YCoordOfNM < MinDistance['VSS2NMOS_min']:
+            raise NotImplementedError(f"Input YCoordOfNM={YCoordOfNM}, But VSS2NMOS_min={MinDistance['VSS2NMOS_min']}")
+        else:
+            _YCoordOfNM = YCoordOfNM
+
+        # YCoordOfPM
+        if YCoordOfPM == None:
+            _YCoordOfPM = _CellHeight - MinDistance['VDD2PMOS_min']
+        elif YCoordOfPM > _CellHeight - MinDistance['VDD2PMOS_min']:
+            raise NotImplementedError(f"Input YCoordOfPM={YCoordOfPM}, But YCoordOfPM_min={_CellHeight - MinDistance['VDD2PMOS_min']}")
+        else:
+            _YCoordOfPM = YCoordOfPM
+
+
+
+        # YCoordOfInputOutput
+        if (_YCoordOfPM - _YCoordOfNM) < (MinDistance['NMOS2IO_min'] + MinDistance['PMOS2IO_min']):
+            raise NotImplementedError('Too short btw NMOS and PMOS')
+
+        if YCoordOfInputOutput == None:
+            _YCoordOfInputOutput = ((_YCoordOfNM + MinDistance['NMOS2IO_min']) + (_YCoordOfPM - MinDistance['PMOS2IO_min'])) / 2
+        elif YCoordOfInputOutput < _YCoordOfNM + MinDistance['NMOS2IO_min']:
+            raise NotImplementedError(f"YCoordOfInputOutput={YCoordOfInputOutput}, But MinBoundary={_YCoordOfNM + MinDistance['NMOS2IO_min']}")
+        elif YCoordOfInputOutput > _YCoordOfPM - MinDistance['PMOS2IO_min']:
+            raise NotImplementedError(f"YCoordOfInputOutput={YCoordOfInputOutput}, But MaxBoundary={_YCoordOfPM - MinDistance['PMOS2IO_min']}")
+        else:
+            _YCoordOfInputOutput = YCoordOfInputOutput
+
+
+
+
+        # initialize
+        del self._DesignParameter
+        self.__init__()
+
+        # re-calculate
+        self._CalculateDesignParameter_v2(
+            NumFinger_NM=NumFinger_NM,
+            NumFinger_PM=NumFinger_PM,
+            NMOSWidth=NMOSWidth,
+            PMOSWidth=PMOSWidth,
+
+            YCoordOfNM=_YCoordOfNM,
+            YCoordOfInputOutput=_YCoordOfInputOutput,
+            YCoordOfPM=_YCoordOfPM,
+            CellHeight=_CellHeight,
+
+            ChannelLength=ChannelLength,
+            GateSpacing=GateSpacing, XVT=XVT,
+            SupplyRailType=SupplyRailType,
+        )
+
 
     def _CalculateDesignParameter_v2(self,
                                      NumFinger_NM=1,
                                      NumFinger_PM=2,
-                                     NMOSWidth=400,
+                                     NMOSWidth=200,
                                      PMOSWidth=400,
                                      CellHeight=1800,
                                      YCoordOfNM=350,
@@ -390,14 +214,25 @@ class NAND2(StickDiagram._StickDiagram):
                                      YCoordOfInputOutput=900,
                                      ChannelLength=30,
                                      GateSpacing=100, XVT='SLVT',
-                                     SupplyRailType=1,):
+                                     SupplyRailType=2,
+                                     ):
+        """
+            Do Not Use this function directly. Use def _CalculateDesignParameter.
+
+
+        """
+
+        self.NumFinger_NM = NumFinger_NM
+        self.NumFinger_PM = NumFinger_PM
+        self.NMOSWidth = NMOSWidth
+        self.PMOSWidth = PMOSWidth
+        self.SupplyRailType = SupplyRailType
 
         drc = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
 
         # YWidth_Met1HorizontalRouting = drc._Metal1MinWidth  # 50
         YWidth_Met1HorizontalRouting = 66
-        Num_HorizontalInputViaMode = 5
 
         ''' --------------------------------------- Supply Rails and MOSFET ---------------------------------------- '''
         self._DesignParameter['VSSRail'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VSSRailIn{}'.format(_Name)))[0]
@@ -455,7 +290,7 @@ class NAND2(StickDiagram._StickDiagram):
             _Datatype=DesignParameters._LayerMapping['METAL1'][1],
             _XWidth=self.getXWidth('PMOS', '_Met1Layer'),
             _YWidth=CellHeight - (self.getXY('PMOS', '_Met1Layer')[0][1] + self.getYWidth('PMOS', '_Met1Layer') / 2)
-        )
+        )       # stretch
         tmpXYs = []
         for i, XYs in enumerate(self.getXY('PMOS', '_Met1Layer')):
             if i % 2 == 0:
@@ -556,7 +391,7 @@ class NAND2(StickDiagram._StickDiagram):
             _Datatype=DesignParameters._LayerMapping['METAL1'][1],
             _XWidth=self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'],
             _YWidth=self.getXY('NMOS', '_Met1Layer')[0][1] - self.getYWidth('NMOS', '_Met1Layer')/2
-        )
+        )       # stretch
         tmpXYs_NMup = []
         tmpXYs_NM2VSS = []
         for i in range(0, NumFinger_NM + 1):
@@ -601,7 +436,7 @@ class NAND2(StickDiagram._StickDiagram):
 
         ''' Input Via Out Output Met1 '''
 
-        if max(NumFinger_NM, NumFinger_PM) < Num_HorizontalInputViaMode:
+        if max(NumFinger_NM, NumFinger_PM) < self.Num_HorizontalInputViaMode:
             if max(NumFinger_NM, NumFinger_PM) == 1:                    # (N,P) = (1,1)
                 XCoord_OutputMet1Y = 0
                 XCoord_InputA = self.getXY('PMOS', '_Met1Layer')[0][0]
@@ -813,7 +648,7 @@ class NAND2(StickDiagram._StickDiagram):
                 ]]
             )
 
-        #  if not max(NumFinger_NM, NumFinger_PM) < Num_HorizontalInputViaMode:
+        #  if not max(NumFinger_NM, NumFinger_PM) < self.Num_HorizontalInputViaMode:
         else:
             topBoundary_Met1YOutputPM2NM = self.getXY('Met1RouteX_PMOutput')[0][1] + self.getYWidth('Met1RouteX_PMOutput') / 2
             botBoundary_Met1YOutputPM2NM = self.getXY('Met1RouteX_NMOutput')[0][1] + self.getYWidth('Met1RouteX_NMOutput') / 2 + drc._Metal1MinSpaceAtCorner
@@ -1008,7 +843,7 @@ class NAND2(StickDiagram._StickDiagram):
                     ((self.getXY('PolyRouteX_PM_InputA')[0][1] - self.getYWidth('PolyRouteX_PM_InputA') / 2) + (self.getXY('PolyRouteX_NM_InputA')[0][1] + self.getYWidth('PolyRouteX_NM_InputA') / 2)) / 2
                 ]]
             )
-        # End of 'if max(NumFinger_NM, NumFinger_PM) < Num_HorizontalInputViaMode:   else:   '
+        # End of 'if max(NumFinger_NM, NumFinger_PM) < self.Num_HorizontalInputViaMode:   else:   '
 
         if NumFinger_NM == 1:
             del self._DesignParameter['NMOS']
@@ -1075,3 +910,106 @@ class NAND2(StickDiagram._StickDiagram):
             _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='Y',
             _XYCoordinates=[[self.getXY('Met1RouteY_OutputPM2NM')[0][0], YCoordOfInputOutput]]
         )
+
+
+if __name__ == '__main__':
+    from Private import Myinfo
+    import DRCchecker_test2 as DRCchecker
+    from generatorLib.IksuPack import PlaygroundBot
+
+    My = Myinfo.USER(DesignParameters._Technology)
+    Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
+
+    libname = 'TEST_NAND2'
+    cellname = 'NAND2'
+    _fileName = cellname + '.gds'
+
+    ''' Input Parameters for Layout Object '''
+    InputParams = dict(
+        NumFinger_NM=1,
+        NumFinger_PM=1,
+        NMOSWidth=400,
+        PMOSWidth=400,
+
+        CellHeight=1800,
+        YCoordOfNM=None,        # 347
+        YCoordOfPM=None,
+        YCoordOfInputOutput=None,
+
+        ChannelLength=30,
+        GateSpacing=100,
+        XVT='SLVT',
+        SupplyRailType=2,
+    )
+
+
+    Mode_DRCCheck = False  # True | False
+    Num_DRCCheck = 1
+
+    for ii in range(0, Num_DRCCheck if Mode_DRCCheck else 1):
+        if Mode_DRCCheck:
+            ''' Random Parameters for Layout Object '''
+            InputParams['NumFinger_NM'] = DRCchecker.RandomParam(start=1, stop=20, step=1)
+            InputParams['NumFinger_PM'] = DRCchecker.RandomParam(start=1, stop=20, step=1)
+            InputParams['NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+            InputParams['PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+        else:
+            pass
+        print("=============================   Last Layout Object's Input Parameters are   ==========================")
+        tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+        print(tmpStr)
+        print("======================================================================================================")
+
+        ''' Generate Layout Object '''
+        LayoutObj = NAND2(_Name=cellname)
+        LayoutObj._CalculateDesignParameter(**InputParams)
+        LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+        testStreamFile = open('./{}'.format(_fileName), 'wb')
+        tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+        tmp.write_binary_gds_stream(testStreamFile)
+        testStreamFile.close()
+
+        print('#################################      Sending to FTP Server...      #################################')
+        Checker = DRCchecker.DRCchecker(
+            username=My.ID,
+            password=My.PW,
+            WorkDir=My.Dir_Work,
+            DRCrunDir=My.Dir_DRCrun,
+            GDSDir=My.Dir_GDS,
+            libname=libname,
+            cellname=cellname,
+        )
+        Checker.Upload2FTP()
+
+        # Checker.StreamIn(tech=DesignParameters._Technology)
+
+        if Mode_DRCCheck:
+            print('###############      DRC checking... {0}/{1}      ##################'.format(ii + 1, Num_DRCCheck))
+            # Bot.send2Bot(f'Start DRCChecker...\nTotal Number Of Run : {Num_DRCCheck}')
+            try:
+                Checker.DRCchecker()
+            except Exception as e:
+                print('Error Occurred: ', e)
+                print(
+                    "=============================   Last Layout Object's Input Parameters are   =============================")
+                tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+                print(tmpStr)
+                print(
+                    "=========================================================================================================")
+
+                Bot.send2Bot(f'Error Occurred During Checking DRC({ii + 1}/{Num_DRCCheck})...\n'
+                             f'ErrMsg : {e}\n'
+                             f'============================='
+                             f'{tmpStr}\n'
+                             f'=============================')
+            else:
+                if (ii + 1) == Num_DRCCheck:
+                    pass
+                    Bot.send2Bot(f'Checking DRC Finished.\nTotal Number Of Run : {Num_DRCCheck}')
+                    # elapsed time, start time, end time, main python file name
+                else:
+                    pass
+        else:
+            Checker.StreamIn(tech=DesignParameters._Technology)
+
+    print('########################################      Finished       ###########################################')

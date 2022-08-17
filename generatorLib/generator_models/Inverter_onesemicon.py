@@ -43,24 +43,15 @@ class _Inverter(StickDiagram._StickDiagram):
                                      _XVT='SLVT',
                                      _GateSpacing=100,
                                      _SDWidth=66,
-
-                                     _NumViaPMOSMet12Met2CoY=None,
-                                     _NumViaNMOSMet12Met2CoY=None,
-                                     _SupplyRailType=1,
                                      ):
-        """
-        :param _Finger:
-        :param _ChannelWidth:
-        :param _ChannelLength:
-        :param _NPRatio:
-        :param _Dummy:
-        :param _XVT:
-        :param _GateSpacing:
-        :param _VDD2VSSHeight:
-        :param _NumViaPMOSMet12Met2CoY: (optional, but recommended to None) | None(default) : calculated by 'YWidth of MOSFET's S/D Metal1', minimum : 2
-        :param _NumViaNMOSMet12Met2CoY: (optional, but recommended to None) | None(default) : calculated by 'YWidth of MOSFET's S/D Metal1', minimum : 2
-        :return:
-        """
+
+        _NumViaPMOSMet12Met2CoY = None
+        _NumViaNMOSMet12Met2CoY = None
+        _SupplyRailType = 1
+
+        '''
+        
+        '''
 
         _DRCObj = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
@@ -152,7 +143,7 @@ class _Inverter(StickDiagram._StickDiagram):
         # 1) VIA Generation for PMOS Output ----------------------------------------------------------------------------
         if _NumViaPMOSMet12Met2CoY == None:  # Default : calculate
             YWidthOfPMOSMet1 = self._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']
-            NumViaYPMOS = int((YWidthOfPMOSMet1 - 2 * _DRCObj._Metal1MinEnclosureVia3) / (_DRCObj._VIAxMinWidth + _DRCObj._VIAxMinSpace)) + 1
+            NumViaYPMOS = int((YWidthOfPMOSMet1 - 2 * _DRCObj._Metal1MinEnclosureVia3 - _DRCObj._VIAxMinWidth) / (_DRCObj._VIAxMinWidth + _DRCObj._VIAxMinSpace)) + 1
         else:
             NumViaYPMOS = _NumViaPMOSMet12Met2CoY
 
@@ -179,7 +170,7 @@ class _Inverter(StickDiagram._StickDiagram):
         # 2) VIA Generation for NMOS Output ----------------------------------------------------------------------------
         if _NumViaNMOSMet12Met2CoY == None:  # Default : calculate
             YWidthOfNMOSMet1 = self._DesignParameter['_NMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']
-            NumViaYNMOS = int((YWidthOfNMOSMet1 - 2 * _DRCObj._Metal1MinEnclosureVia3) / (_DRCObj._VIAxMinWidth + _DRCObj._VIAxMinSpace)) + 1
+            NumViaYNMOS = int((YWidthOfNMOSMet1 - 2 * _DRCObj._Metal1MinEnclosureVia3 - _DRCObj._VIAxMinWidth) / (_DRCObj._VIAxMinWidth + _DRCObj._VIAxMinSpace)) + 1
         else:
             NumViaYNMOS = _NumViaNMOSMet12Met2CoY
 
@@ -723,8 +714,12 @@ class _Inverter(StickDiagram._StickDiagram):
                 _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='ViaMet12Met2forInput2In{}'.format(_Name)))[0]
             self._DesignParameter['_ViaMet12Met2forInput2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**_ViaMet12Met2forInput2)
             self._DesignParameter['_ViaMet12Met2forInput2']['_XYCoordinates'] = \
-                [[self._DesignParameter['_PMOS']['_XYCoordinates'][0][0] + self._DesignParameter['_VIAMOSPoly2Met1RightMost']['_XYCoordinates'][0][0],
-                  self._DesignParameter['_VIAPMOSPoly2Met1']['_XYCoordinates'][0][1]]]
+                [[self._DesignParameter['_PMOS']['_XYCoordinates'][0][0] + self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'][0][0],
+                  self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'][0][1]]]
+                # [[self._DesignParameter['_PMOS']['_XYCoordinates'][0][0] + self._DesignParameter['_VIAPMOSPoly2Met1']['_XYCoordinates'][0][0],
+                #   self._DesignParameter['_VIAPMOSPoly2Met1']['_XYCoordinates'][0][1]]]
+                # [[self._DesignParameter['_PMOS']['_XYCoordinates'][0][0] + self._DesignParameter['_VIAMOSPoly2Met1RightMost']['_XYCoordinates'][0][0],
+                #   self._DesignParameter['_VIAPMOSPoly2Met1']['_XYCoordinates'][0][1]]]
 
             # (2) Normal width
             if '_VIAPMOSPoly2Met1' in self._DesignParameter:
@@ -896,27 +891,28 @@ class _Inverter(StickDiagram._StickDiagram):
         # CellXWidth
         self.CellXWidth = (_Finger + 1) * (_GateSpacing + _ChannelLength)
 
-        # Input Met1 Information
-        self._DesignParameter['InputMet1'] = self._BoundaryElementDeclaration(
-            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1])
-        if flag_horizontal_inputvia_PCCOM1:
-            self._DesignParameter['InputMet1']['_XWidth'] = self.getXWidth('_VIANMOSPoly2Met1', '_Met1Layer')
-            self._DesignParameter['InputMet1']['_YWidth'] = self.getYWidth('_VIANMOSPoly2Met1', '_Met1Layer')
-            self._DesignParameter['InputMet1']['_XYCoordinates'] = self.getXY('_VIANMOSPoly2Met1', '_Met1Layer')
-
-        elif '_VIAPoly2Met1_F1' in self._DesignParameter:
-            self._DesignParameter['InputMet1']['_XWidth'] = self.getXWidth('_VIAPoly2Met1_F1', '_Met1Layer')
-            self._DesignParameter['InputMet1']['_YWidth'] = self.getYWidth('_VIAPoly2Met1_F1', '_Met1Layer')
-            self._DesignParameter['InputMet1']['_XYCoordinates'] = self.getXY('_VIAPoly2Met1_F1', '_Met1Layer')
-
-        else:           # Not Yet Implemented
-            self._DesignParameter['InputMet1']['_XWidth'] = self.getWidth('_InputRouting')
-            self._DesignParameter['InputMet1']['_YWidth'] = \
-                abs(self._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1] - self._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1])
-            self._DesignParameter['InputMet1']['_XYCoordinates'] = [
-                [self._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0],
-                 (self._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1] + self._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]) / 2]
-            ]
+        ''' 수정이 필요함. '''
+        # # Input Met1 Information
+        # self._DesignParameter['InputMet1'] = self._BoundaryElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1])
+        # if flag_horizontal_inputvia_PCCOM1:
+        #     self._DesignParameter['InputMet1']['_XWidth'] = self.getXWidth('_VIANMOSPoly2Met1', '_Met1Layer')
+        #     self._DesignParameter['InputMet1']['_YWidth'] = self.getYWidth('_VIANMOSPoly2Met1', '_Met1Layer')
+        #     self._DesignParameter['InputMet1']['_XYCoordinates'] = self.getXY('_VIANMOSPoly2Met1', '_Met1Layer')
+        #
+        # elif '_VIAPoly2Met1_F1' in self._DesignParameter:
+        #     self._DesignParameter['InputMet1']['_XWidth'] = self.getXWidth('_VIAPoly2Met1_F1', '_Met1Layer')
+        #     self._DesignParameter['InputMet1']['_YWidth'] = self.getYWidth('_VIAPoly2Met1_F1', '_Met1Layer')
+        #     self._DesignParameter['InputMet1']['_XYCoordinates'] = self.getXY('_VIAPoly2Met1_F1', '_Met1Layer')
+        #
+        # else:           # Not Yet Implemented
+        #     self._DesignParameter['InputMet1']['_XWidth'] = self.getWidth('_InputRouting')
+        #     self._DesignParameter['InputMet1']['_YWidth'] = \
+        #         abs(self._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1] - self._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1])
+        #     self._DesignParameter['InputMet1']['_XYCoordinates'] = [
+        #         [self._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0],
+        #          (self._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1] + self._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1]) / 2]
+        #     ]
 
 
         print(''.center(105, '#'))
@@ -927,10 +923,10 @@ class _Inverter(StickDiagram._StickDiagram):
 if __name__ == '__main__':
     from Private import Myinfo
     import DRCchecker_test2 as DRCchecker
-    # from SthPack import PlaygroundBot
+    from generatorLib.IksuPack import PlaygroundBot
 
     My = Myinfo.USER(DesignParameters._Technology)
-    # Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
+    Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
 
     libname = 'TEST_InverterOne'
     cellname = 'InverterOne'
@@ -938,33 +934,36 @@ if __name__ == '__main__':
 
     ''' Input Parameters for Layout Object '''
     InputParams = dict(
-        _Finger=7,
+        _Finger=1,
         _ChannelWidth=400,
         _ChannelLength=30,
-        _NPRatio=2,
+        _NPRatio=1,
 
-        _VDD2VSSHeight=2200,    # 1800
+        _VDD2VSSHeight=None,    # 1800
         _VDD2PMOSHeight=None,
         _VSS2NMOSHeight=None,
-        _YCoordOfInput=None,
 
         _Dummy=True,
         _XVT='SLVT',
         _GateSpacing=100,     # 100 -> 고정?
         _SDWidth=None,        # 66
 
-        _NumViaPMOSMet12Met2CoY=None,
-        _NumViaNMOSMet12Met2CoY=None,
-        _SupplyRailType=1,
     )
 
-    Mode_DRCCheck = False  # True | False
+    _YCoordOfInput = None,
+
+
+
+    Mode_DRCCheck = True  # True | False
     Num_DRCCheck = 10
 
     for ii in range(0, Num_DRCCheck if Mode_DRCCheck else 1):
         if Mode_DRCCheck:
             ''' Random Parameters for Layout Object '''
-
+            InputParams['_Finger'] = DRCchecker.RandomParam(start=1, stop=20, step=1)
+            InputParams['_ChannelWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+            # InputParams['_NPRatio'] = DRCchecker.RandomParam(start=1, stop=4, step=0.1)
+            # InputParams['_VDD2VSSHeight'] = DRCchecker.RandomParam(start=2, stop=5, step=1)
         else:
             pass
         print("=============================   Last Layout Object's Input Parameters are   ==========================")
@@ -995,30 +994,31 @@ if __name__ == '__main__':
 
         Checker.StreamIn(tech=DesignParameters._Technology)
 
-        # if Mode_DRCCheck:
-        #     print('###############      DRC checking... {0}/{1}      ##################'.format(ii + 1, Num_DRCCheck))
-        #     # Bot.send2Bot(f'Start DRCChecker...\nTotal Number Of Run : {Num_DRCCheck}')
-        #     try:
-        #         Checker.DRCchecker()
-        #     except Exception as e:
-        #         print('Error Occurred: ', e)
-        #         print("=============================   Last Layout Object's Input Parameters are   =============================")
-        #         tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
-        #         print(tmpStr)
-        #         print("=========================================================================================================")
-        #
-        #         Bot.send2Bot(f'Error Occurred During Checking DRC({ii + 1}/{Num_DRCCheck})...\n'
-        #                      f'ErrMsg : {e}\n'
-        #                      f'============================='
-        #                      f'{tmpStr}\n'
-        #                      f'=============================')
-        #     else:
-        #         if (ii + 1) == Num_DRCCheck:
-        #             Bot.send2Bot(f'Checking DRC Finished.\nTotal Number Of Run : {Num_DRCCheck}')
-        #             # elapsed time, start time, end time, main python file name
-        #         else:
-        #             pass
-        # else:
-        #     Checker.StreamIn(tech=DesignParameters._Technology)
+        if Mode_DRCCheck:
+            print('###############      DRC checking... {0}/{1}      ##################'.format(ii + 1, Num_DRCCheck))
+            # Bot.send2Bot(f'Start DRCChecker...\nTotal Number Of Run : {Num_DRCCheck}')
+            try:
+                Checker.DRCchecker()
+            except Exception as e:
+                print('Error Occurred: ', e)
+                print("=============================   Last Layout Object's Input Parameters are   =============================")
+                tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+                print(tmpStr)
+                print("=========================================================================================================")
+
+                Bot.send2Bot(f'Error Occurred During Checking DRC({ii + 1}/{Num_DRCCheck})...\n'
+                             f'ErrMsg : {e}\n'
+                             f'============================='
+                             f'{tmpStr}\n'
+                             f'=============================')
+            else:
+                if (ii + 1) == Num_DRCCheck:
+                    pass
+                    Bot.send2Bot(f'Checking DRC Finished.\nTotal Number Of Run : {Num_DRCCheck}')
+                    # elapsed time, start time, end time, main python file name
+                else:
+                    pass
+        else:
+            Checker.StreamIn(tech=DesignParameters._Technology)
 
     print('########################################      Finished       ###########################################')
