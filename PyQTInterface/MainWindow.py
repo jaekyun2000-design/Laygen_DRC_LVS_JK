@@ -317,7 +317,7 @@ class _MainWindow(QMainWindow):
         moduleManagementAction.setShortcut('Ctrl+0')
         moduleManagementAction.triggered.connect(self.moduleManage)
 
-        self.module_name_list = []
+        self.module_name_list = [self._CurrentModuleName]
         self.module_dict = {self._CurrentModuleName: self} if self._CurrentModuleName else dict()
         self.entireHierarchy = dict()
         self.original_fcn_name = "CalculateDesignParameter"

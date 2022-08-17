@@ -520,7 +520,7 @@ class variableContentWidget(QWidget):
             if name == 'boundary':
                 field_list = ['name', 'layer', 'XY_ref', 'width', 'width_text', 'height', 'height_text', 'x_offset',
                               'y_offset', 'row', 'col', 'width_input', 'height_input']
-                input_type_list = ['line', 'combo', 'list', 'combo', 'line', 'combo', 'line', 'line', 'line',
+                input_type_list = ['line', 'combo', 'line', 'combo', 'line', 'combo', 'line', 'line', 'line',
                                    'double_line', None, None, None]
             elif name == 'path':
                 field_list = ['name', 'layer', 'XY_path_ref', 'width', 'width_text', 'x_offset', 'y_offset', 'row', 'col', 'width_input']
