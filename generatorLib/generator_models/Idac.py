@@ -8,7 +8,7 @@ from generatorLib.generator_models import ViaMet22Met3
 from generatorLib.generator_models import ViaMet52Met6
 
 class IDAC(StickDiagram._StickDiagram):
-	def __init__(self, _DesignParameter=None, _Name='EasyDebugModule'):
+	def __init__(self, _DesignParameter=None, _Name='IDAC'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
 		else:
