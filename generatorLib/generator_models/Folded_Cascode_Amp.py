@@ -930,10 +930,35 @@ class _Folded_Cascode_Amp(StickDiagram._StickDiagram):
                                                                    [self._DesignParameter['nmos_vbn1']['_XYCoordinates'][1][0]+self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][-1][0], self._DesignParameter['via12_drain_vbn1']['_XYCoordinates'][-1][1]]]]
 
         self._DesignParameter['via23_drain_vbp1']=self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='via23_drain_vbp1In{}'.format(_Name)))[0]
-        ViaNumY=max(2,int(self.getYWidth('m2_drain_vbp1','_Met2Layer')/(drc._VIAxMinSpace+drc._VIAxMinWidth)))
-        self._DesignParameter['via23_drain_vbp1']['_DesignObj']._CalculateDesignParameterSameEnclosure( _ViaMet12Met2NumberOfCOX=ViaNumY, _ViaMet12Met2NumberOfCOY=ViaNumY)
+        ViaNumY=max(2,int(self.getWidth('m2_drain_vbp1')/(drc._VIAxMinSpace+drc._VIAxMinWidth)))
+        self._DesignParameter['via23_drain_vbp1']['_DesignObj']._CalculateDesignParameterSameEnclosure( _ViaMet22Met3NumberOfCOX=ViaNumY, _ViaMet22Met3NumberOfCOY=ViaNumY)
         self._DesignParameter['via23_drain_vbp1']['_XYCoordinates']=[[self._DesignParameter['pmos_vbp1']['_XYCoordinates'][0][0]+self._DesignParameter['pmos_vbp1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][-1][0], self._DesignParameter['m2_drain_vbp1']['_XYCoordinates'][0][0][1]], \
-                                                               [self._DesignParameter['pmos_vbp1']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_vbp1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0], self._DesignParameter['m2_drain_vbp1']['_XYCoordinates'][0][0][1]]]
+                                                                     [self._DesignParameter['pmos_vbp1']['_XYCoordinates'][1][0]+self._DesignParameter['pmos_vbp1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0], self._DesignParameter['m2_drain_vbp1']['_XYCoordinates'][0][0][1]]]
 
         self._DesignParameter['via23_drain_n0']=self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='via23_drain_n0In{}'.format(_Name)))[0]
-        ViaNumY=max(2,int(self.getYWidth('m2_gate_n0','_Met2Layer')/(drc._VIAxMinSpace+drc._VIAxMinWidth)))
+        ViaNumY=max(2,int(self.getWidth('m2_gate_n0')/(drc._VIAxMinSpace+drc._VIAxMinWidth)))
+        self._DesignParameter['via23_drain_n0']['_DesignObj']._CalculateDesignParameterSameEnclosure( _ViaMet22Met3NumberOfCOX=ViaNumY, _ViaMet22Met3NumberOfCOY=ViaNumY)
+        self._DesignParameter['via23_drain_n0']['_XYCoordinates']=[[self._DesignParameter['via23_drain_vbp1']['_XYCoordinates'][0][0], self._DesignParameter['m2_gate_n0']['_XYCoordinates'][1][0][1]]]
+
+        self._DesignParameter['via23_drain_vbn1']=self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='via23_drain_vbn1In{}'.format(_Name)))[0]
+        ViaNumY=max(2,int(self.getWidth('m2_drain_vbn1')/(drc._VIAxMinSpace+drc._VIAxMinWidth)))
+        self._DesignParameter['via23_drain_vbn1']['_DesignObj']._CalculateDesignParameterSameEnclosure( _ViaMet22Met3NumberOfCOX=ViaNumY, _ViaMet22Met3NumberOfCOY=ViaNumY)
+        self._DesignParameter['via23_drain_vbn1']['_XYCoordinates']=[[self._DesignParameter['via23_drain_vbp1']['_XYCoordinates'][0][0], self._DesignParameter['m2_drain_vbn1']['_XYCoordinates'][0][0][1]],\
+                                                                     [self._DesignParameter['via23_drain_vbp1']['_XYCoordinates'][1][0], self._DesignParameter['m2_source_vbn1']['_XYCoordinates'][1][0][1]]]
+
+        self._DesignParameter['m3_vbp1_n0']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0],_Datatype=DesignParameters._LayerMapping['METAL3'][1], _XYCoordinates=[], _Width=None)
+        self._DesignParameter['m3_vbp1_n0']['_Width']=self._DesignParameter['via23_drain_vbp1']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth']
+        self._DesignParameter['m3_vbp1_n0']['_XYCoordinates']=[[self._DesignParameter['via23_drain_vbp1']['_XYCoordinates'][0], self._DesignParameter['via23_drain_n0']['_XYCoordinates'][0]]]
+
+        self._DesignParameter['m3_vbp1_vbn1']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0],_Datatype=DesignParameters._LayerMapping['METAL3'][1], _XYCoordinates=[], _Width=None)
+        self._DesignParameter['m3_vbp1_vbn1']['_Width']=self._DesignParameter['via23_drain_vbp1']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth']
+        self._DesignParameter['m3_vbp1_vbn1']['_XYCoordinates']=[[self._DesignParameter['via23_drain_vbp1']['_XYCoordinates'][1], self._DesignParameter['via23_drain_vbn1']['_XYCoordinates'][1]]]
+
+        self._DesignParameter['via12_pdn_pair_sw']=self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='via12_pdn_pair_swIn{}'.format(_Name)))[0]
+        ViaNumY=max(2,int(self.getWidth('m2_vbp_pdn_pair')/(drc._VIAxMinSpace+drc._VIAxMinWidth)))
+        self._DesignParameter['via12_pdn_pair_sw']['_DesignObj']._CalculateDesignParameterSameEnclosure( _ViaMet22Met3NumberOfCOX=ViaNumY, _ViaMet22Met3NumberOfCOY=ViaNumY)
+        self._DesignParameter['via12_pdn_pair_sw']['_XYCoordinates']=[[self._DesignParameter['via23_drain_vbp1']['_XYCoordinates'][0][0]-self.getXWidth('via23_drain_vbp1','_Met3Layer')/2-self.getXWidth('via12_pdn_pair_sw','_Met3Layer')/2-drc._MetalxMinSpace3, self._DesignParameter['m2_vbp_pdn_pair']['_XYCoordinates'][0][0][1]],\
+                                                                      [self._DesignParameter['via23_drain_vbp1']['_XYCoordinates'][1][0]+self.getXWidth('via23_drain_vbp1','_Met3Layer')/2+self.getXWidth('via12_pdn_pair_sw','_Met3Layer')/2+drc._MetalxMinSpace3, self._DesignParameter['m2_vbp_pdn_pair']['_XYCoordinates'][0][0][1]]]
+
+        self._DesignParameter['m1_vb1_input']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[], _Width=None)
+        self._DesignParameter['m1_vb1_input']['_Width']=
