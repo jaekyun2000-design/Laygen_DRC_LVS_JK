@@ -182,8 +182,9 @@ class NAND2(StickDiagram._StickDiagram):
 
 
         # initialize
+        tmpName = self._DesignParameter['_Name']['_Name']
         del self._DesignParameter
-        self.__init__()
+        self.__init__(_Name=tmpName)
 
         # re-calculate
         self._CalculateDesignParameter_v2(

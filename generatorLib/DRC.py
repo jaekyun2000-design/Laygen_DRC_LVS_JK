@@ -402,7 +402,7 @@ class DRCPOLYGATE:
                 return self._PolygateMinSpace2
 
         if user_setup._Technology == 'SS65nm':
-            return self._PolygateMinSpace              # temporal... need to check  (pcell 290 why??)
+            return self._PolygateMinSpace__              # temporal... need to check  (pcell 290 why??)
 
         if user_setup._Technology == 'TSMC65nm':
             if _Width == None and _ParallelLength == None:
