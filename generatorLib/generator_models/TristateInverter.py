@@ -17,7 +17,7 @@ from generatorLib.generator_models import Z_PWR_CNT
 
 class TristateInverter(StickDiagram._StickDiagram):
     def __init__(self, _DesignParameter=None, _Name='TristateInverter'):
-        if _DesignParameter != None:
+        if _DesignParameter is not None:
             self._DesignParameter = _DesignParameter
         else:
             self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
@@ -1858,7 +1858,8 @@ class TristateInverter(StickDiagram._StickDiagram):
 
         TopBoundary_Met1YOut = (self.getXY('Met1RouteX_PMOut')[0][1] - self.getYWidth('Met1RouteX_PMOut') / 2)
         BotBoundary_Met1YOut = (self.getXY('Met1RouteX_NMOut')[0][1] + self.getYWidth('Met1RouteX_NMOut') / 2)
-        XWidth_Met1YOut = self.getXWidth('Met1RouteY_PMout') * (len(self.getXY('Met1RouteY_PMout')) // 2)
+        # XWidth_Met1YOut = self.getXWidth('Met1RouteY_PMout') * (len(self.getXY('Met1RouteY_PMout')) // 2)
+        XWidth_Met1YOut = self.getXWidth('Met1RouteY_PMout')
 
         self._DesignParameter['Met1RouteY_Out'] = self._BoundaryElementDeclaration(
             _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
