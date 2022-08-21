@@ -1207,13 +1207,13 @@ class _Folded_Cascode_Amp(StickDiagram._StickDiagram):
         self._DesignParameter['m3_pdn_pair_sw']['_XYCoordinates']=[[[self._DesignParameter['via23_ninput_pdn_pair_sw_2']['_XYCoordinates'][0][0], self._DesignParameter['via23_ninput_pdn_pair_sw_2']['_XYCoordinates'][0][1]], [self._DesignParameter['via23_drain_pdn_pair_sw']['_XYCoordinates'][0][0], self._DesignParameter['via23_drain_pdn_pair_sw']['_XYCoordinates'][0][1]]],\
                                                           [[self._DesignParameter['via23_ninput_pdn_pair_sw_2']['_XYCoordinates'][1][0], self._DesignParameter['via23_ninput_pdn_pair_sw_2']['_XYCoordinates'][1][1]], [self._DesignParameter['via23_drain_pdn_pair_sw']['_XYCoordinates'][1][0], self._DesignParameter['via23_drain_pdn_pair_sw']['_XYCoordinates'][1][1]]]]
 
-        self._DesignParameter['via12_drain_pdn_sw']=self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='via12_drain_pdn_swIn{}'.format(_Name)))[0]
-        self._DesignParameter['via12_drain_pdn_sw']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX( _ViaMet22Met3NumberOfCOX=2, _ViaMet22Met3NumberOfCOY=2)
-        tmp=[]
-        for i in range(0,len(self._DesignParameter['nmos_pdn_sw_param']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'])):
-            tmp.append([self._DesignParameter['nmos_pdn_sw_param']['_XYCoordinates'][0][0]+self._DesignParameter['nmos_pdn_sw_param']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'], ])
-        self._DesignParameter['via12_drain_pdn_sw']['_XYCoordinates']=[[, ]]
-
-        self._DesignParameter['via12_source_pdn_sw']=self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='via12_source_pdn_swIn{}'.format(_Name)))[0]
-        self._DesignParameter['via12_source_pdn_sw']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX( _ViaMet22Met3NumberOfCOX=2, _ViaMet22Met3NumberOfCOY=2)
-        self._DesignParameter['via12_source_pdn_sw']['_XYCoordinates']=[[, ]]
+        # self._DesignParameter['via12_drain_pdn_sw']=self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='via12_drain_pdn_swIn{}'.format(_Name)))[0]
+        # self._DesignParameter['via12_drain_pdn_sw']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX( _ViaMet22Met3NumberOfCOX=2, _ViaMet22Met3NumberOfCOY=2)
+        # tmp=[]
+        # for i in range(0,len(self._DesignParameter['nmos_pdn_sw_param']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'])):
+        #     tmp.append([self._DesignParameter['nmos_pdn_sw_param']['_XYCoordinates'][0][0]+self._DesignParameter['nmos_pdn_sw_param']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'], ])
+        # self._DesignParameter['via12_drain_pdn_sw']['_XYCoordinates']=[[, ]]
+        #
+        # self._DesignParameter['via12_source_pdn_sw']=self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='via12_source_pdn_swIn{}'.format(_Name)))[0]
+        # self._DesignParameter['via12_source_pdn_sw']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX( _ViaMet22Met3NumberOfCOX=2, _ViaMet22Met3NumberOfCOY=2)
+        # self._DesignParameter['via12_source_pdn_sw']['_XYCoordinates']=[[, ]]
