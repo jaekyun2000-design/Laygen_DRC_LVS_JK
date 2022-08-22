@@ -1604,7 +1604,7 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             yDistancePMOS = self.getXYBot('Inv0', '_PMOS', '_PODummyLayer')[0][1] - self.getXYTop('TristateInv1', 'InputVia_A', '_POLayer')[0][1]
             yDistanceNMOS = self.getXYBot('TristateInv1', 'InputVia_A', '_POLayer')[0][1] - self.getXYTop('Inv0', '_PMOS', '_PODummyLayer')[0][1]
             if xDistance ** 2 + min(yDistancePMOS, yDistanceNMOS) ** 2 < drc._PolygateMinSpace ** 2 or yDistancePMOS < 0 or yDistanceNMOS < 0:
-                yDistance_min_byDRC = self.FloorMinSnapSpacing(math.sqrt(drc._PolygateMinSpace ** 2 - xDistance ** 2), drc._MinSnapSpacing)
+                yDistance_min_byDRC = self.CeilMinSnapSpacing(math.sqrt(drc._PolygateMinSpace ** 2 - xDistance ** 2), drc._MinSnapSpacing)
                 yMax = min(self.getXYBot('Inv0', '_PMOS', '_PODummyLayer')[0][1], self.getXYBot('TristateInv1', 'PMOS', '_PODummyLayer')[0][1]) - yDistance_min_byDRC
                 yMin = max(self.getXYTop('Inv0', '_NMOS', '_PODummyLayer')[0][1], self.getXYTop('TristateInv1', 'NMOS', '_PODummyLayer')[0][1]) + yDistance_min_byDRC
                 if yMax - yMin < self.getYWidth('TristateInv1', 'InputVia_A', '_POLayer'):
@@ -1675,7 +1675,7 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             yDistancePMOS = self.getXYBot('TristateInv1', tmpStrPMOS, '_PODummyLayer')[0][1] - self.getXYTop('Inv0', '_VIAPoly2Met1_F1', '_POLayer')[0][1]
             yDistanceNMOS = self.getXYBot('Inv0', '_VIAPoly2Met1_F1', '_POLayer')[0][1] - self.getXYTop('TristateInv1', tmpStrNMOS, '_PODummyLayer')[0][1]
             if xDistance ** 2 + min(yDistancePMOS, yDistanceNMOS) ** 2 < drc._PolygateMinSpace ** 2 or yDistancePMOS < 0 or yDistanceNMOS < 0:
-                yDistance_min_byDRC = self.FloorMinSnapSpacing(math.sqrt(drc._PolygateMinSpace ** 2 - xDistance ** 2), drc._MinSnapSpacing)
+                yDistance_min_byDRC = self.CeilMinSnapSpacing(math.sqrt(drc._PolygateMinSpace ** 2 - xDistance ** 2), drc._MinSnapSpacing)
                 yMax = min(self.getXYBot('TristateInv1', tmpStrPMOS, '_PODummyLayer')[0][1], self.getXYBot('Inv0', '_PMOS', '_PODummyLayer')[0][1]) - yDistance_min_byDRC
                 yMin = max(self.getXYTop('TristateInv1', tmpStrNMOS, '_PODummyLayer')[0][1], self.getXYTop('Inv0', '_NMOS', '_PODummyLayer')[0][1]) + yDistance_min_byDRC
                 if yMax - yMin < self.getYWidth('Inv0', '_VIAPoly2Met1_F1', '_POLayer'):

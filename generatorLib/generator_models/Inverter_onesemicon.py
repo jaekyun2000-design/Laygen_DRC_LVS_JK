@@ -692,16 +692,20 @@ class _Inverter(StickDiagram._StickDiagram):
         Strategy : Route Input M1 on the same YCoordinates as the SupplyRouting M1
                    (Supply M1 outside the poly gate route is ignored)
         '''
+        self._DesignParameter['_InputRouting'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1])
+        self._DesignParameter['_InputRouting']['_Width'] = _DRCObj._VIAxMinWidth + 2 * _DRCObj._Metal1MinEnclosureVia3
+
         tmpInputRouting = []
         if '_VIAMOSPoly2Met1LeftMost' in self._DesignParameter:
-            tmpInputRouting.append(self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'])
+            # tmpInputRouting.append(self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'])
+            tmpInputRouting.append([
+                [self.getXYLeft('_VIAMOSPoly2Met1LeftMost', '_Met1Layer')[0][0] + self.getWidth('_InputRouting') / 2, self.getXY('_VIAMOSPoly2Met1LeftMost')[0][1]],
+                [self.getXYLeft('_VIAMOSPoly2Met1LeftMost', '_Met1Layer')[1][0] + self.getWidth('_InputRouting') / 2, self.getXY('_VIAMOSPoly2Met1LeftMost')[1][1]],
+            ])
         if '_VIANMOSPoly2Met1' in self._DesignParameter:
             for i in range(0, len(self._DesignParameter['_VIANMOSPoly2Met1']['_XYCoordinates'])):
                 tmpInputRouting.append([self._DesignParameter['_VIANMOSPoly2Met1']['_XYCoordinates'][i],
                                         self._DesignParameter['_VIAPMOSPoly2Met1']['_XYCoordinates'][i]])
-
-        self._DesignParameter['_InputRouting'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1])
-        self._DesignParameter['_InputRouting']['_Width'] = _DRCObj._VIAxMinWidth + 2 * _DRCObj._Metal1MinEnclosureVia3
         self._DesignParameter['_InputRouting']['_XYCoordinates'] = tmpInputRouting
 
         ################################################################################################################
@@ -741,6 +745,17 @@ class _Inverter(StickDiagram._StickDiagram):
                 self._DesignParameter['_ViaMet12Met2forInput2']['_XYCoordinates'] = \
                     [[self.getXYRight('_VIAMOSPoly2Met1LeftMost', '_Met1Layer')[0][0] - self.getXWidth('_ViaMet12Met2forInput2', '_Met1Layer') / 2,
                       self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'][0][1]]]
+
+                leftBoundary = min(self.getXYLeft('_ViaMet12Met2forInput2', '_Met1Layer')[0][0], self.getXYLeft('_VIAMOSPoly2Met1LeftMost', '_Met1Layer')[0][0])
+                rightBoundary = max(self.getXYRight('_ViaMet12Met2forInput2', '_Met1Layer')[0][0], self.getXYRight('_VIAMOSPoly2Met1LeftMost', '_Met1Layer')[0][0])
+                self._DesignParameter['Met1Boundarytmp'] = self._BoundaryElementDeclaration(
+                    _Layer=DesignParameters._LayerMapping['METAL1'][0],
+                    _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                    _XWidth=(rightBoundary-leftBoundary),
+                    _YWidth=max(self.getYWidth('_ViaMet12Met2forInput2', '_Met1Layer'), self.getYWidth('_VIAMOSPoly2Met1LeftMost', '_Met1Layer')),
+                    _XYCoordinates=[[(rightBoundary+leftBoundary) / 2, self.getXY('_ViaMet12Met2forInput2')[0][1]]]
+                )
+
             else:
                 self._DesignParameter['_ViaMet12Met2forInput2']['_XYCoordinates'] = \
                     [[self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'][0][0],
@@ -819,10 +834,10 @@ class _Inverter(StickDiagram._StickDiagram):
                                               [0, -self._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth'] / 2 - _DRCObj._NwMinEnclosurePactive])
         YWidth_NWLayer = abs(XYCoordinatesOfNW_top[1] - XYCoordinatesOfNW_bot[1])
 
-        if (XWidth_NWLayer * YWidth_NWLayer) < _DRCObj._NwMinArea:
-            XWidth_NWLayer = self.CeilMinSnapSpacing(_DRCObj._NwMinArea / YWidth_NWLayer, 2 * MinSnapSpacing)
-        else:
-            pass
+        # if (XWidth_NWLayer * YWidth_NWLayer) < _DRCObj._NwMinArea:
+        #     XWidth_NWLayer = self.CeilMinSnapSpacing(_DRCObj._NwMinArea / YWidth_NWLayer, 2 * MinSnapSpacing)
+        # else:
+        #     pass
 
         self._DesignParameter['_NWLayer'] = self._PathElementDeclaration(
             _Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1])

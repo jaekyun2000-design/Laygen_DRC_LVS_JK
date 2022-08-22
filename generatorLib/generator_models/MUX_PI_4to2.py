@@ -303,8 +303,23 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
             _XWidth=self.getXWidth('Met1Boundary7'),
             _YWidth=self.getYWidth('Met1Boundary7')
         )
+
+        yCoord = self.getXYTop('Via1ForPath1', '_Met1Layer')[0][1] - self.getYWidth('Met1Boundary7') / 2        # prev.
+
+        # calc.  boundary = centerCoord
+        topBoundary_via1Met1 = self.getXYTop('Via1ForPath1', '_Met1Layer')[0][1] - self.getYWidth('Met1Boundary7') / 2
+        botBoundary_via1Met1 = self.getXYBot('Via1ForPath1', '_Met1Layer')[0][1] + self.getYWidth('Met1Boundary7') / 2
+        topBoundary_invPmos = self.getXYBot('MuxHalf1', 'Inv1', '_PMOS', '_Met1Layer')[0][1] - drc._Metal1MinSpaceAtCorner - self.getYWidth('Met1Boundary7') / 2
+        botBoundary_invNmos = self.getXYTop('MuxHalf1', 'Inv1', '_NMOS', '_Met1Layer')[0][1] + drc._Metal1MinSpaceAtCorner + self.getYWidth('Met1Boundary7') / 2
+        topBoundary = min(topBoundary_via1Met1, topBoundary_invPmos)
+        botBoundary = max(botBoundary_via1Met1, botBoundary_invNmos)
+        if topBoundary < botBoundary:
+            raise NotImplementedError
+        else:
+            yCoord = (topBoundary + botBoundary) / 2
+
         self._DesignParameter['Met1Boundary7']['_XYCoordinates'] = [
-            [(rightBoundary + leftBoundary) / 2, self.getXYTop('Via1ForPath1', '_Met1Layer')[0][1] - self.getYWidth('Met1Boundary7') / 2]
+            [(rightBoundary + leftBoundary) / 2, yCoord]
         ]
         self._DesignParameter['Met1Boundary8']['_XYCoordinates'] = [
             [(rightBoundary + leftBoundary) / 2, _CellHeight * 2 - self.getXY('Met1Boundary7')[0][1]]
@@ -728,8 +743,8 @@ if __name__ == '__main__':
         cellname=cellname,
     )
 
-    Mode_DRCCheck = False  # True | False
-    Num_DRCCheck = 20
+    Mode_DRCCheck = True  # True | False
+    Num_DRCCheck = 10
 
     if Mode_DRCCheck:
         ErrCount = 0            # DRC error
