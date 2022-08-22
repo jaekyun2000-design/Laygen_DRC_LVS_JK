@@ -594,8 +594,8 @@ class MOSCAP_ON(StickDiagram._StickDiagram):
 
         nwell_bot = self.getXYBot('pmos1', 'pmos', f'_{XVT}Layer')[0][1]
         nwell_top = self.getXYTop('vdd', '_ODLayer')[0][1] + drc._NwMinEnclosurePactive2
-        nwell_left = self.getXYLeft('vdd', '_ODLayer')[0][0] - drc._NwMinEnclosurePactive2
-        nwell_right = self.getXYRight('vdd', '_ODLayer')[0][0] + drc._NwMinEnclosurePactive2
+        nwell_left = self.getXYLeft('vdd', '_ODLayer')[0][0] - drc._NwMinSpacetoSLVT
+        nwell_right = self.getXYRight('vdd', '_ODLayer')[0][0] + drc._NwMinSpacetoSLVT
         nwell_y_center = self.CeilMinSnapSpacing((nwell_top + nwell_bot) / 2, _MinSnapSpacing)
         nwell_x_center = self.CeilMinSnapSpacing((nwell_left + nwell_right) / 2, _MinSnapSpacing)
         nwell_xwidth = nwell_left - nwell_right

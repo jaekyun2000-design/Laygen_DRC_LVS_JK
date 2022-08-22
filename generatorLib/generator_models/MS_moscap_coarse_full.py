@@ -232,6 +232,21 @@ class MOSCAP_COARSE_FULL(StickDiagram._StickDiagram):
         self._DesignParameter['additional_met1_layer']['_XWidth'] = 2 * met1_rightmostedge
         self._DesignParameter['additional_met1_layer']['_YWidth'] = met1_height
         self._DesignParameter['additional_met1_layer']['_XYCoordinates'] = [[0, distance_to_vdd], [0, 0], [0, -distance_to_vdd]]
+
+
+        self._DesignParameter['additional_nwell_layer'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['NWELL'][0],
+            _Datatype=DesignParameters._LayerMapping['NWELL'][1])
+
+        nw_top = max(self.getXYTop('moscap_coarse_full2','moscap_1','moscap_on', 'nwell')[0][1],
+                        self.getXYTop('moscap_coarse_full2','moscap_1', 'inverter_sel', 'nwell')[0][1])
+        nw_bot = min(self.getXYBot('moscap_coarse_full2','moscap_1', 'moscap_on', 'nwell')[0][1],
+                        self.getXYBot('moscap_coarse_full2','moscap_1', 'inverter_sel', 'nwell')[0][1])
+        nw_hor_edge = self.getXYRight('moscap_coarse_full2', f'moscap_{array_dimension}', 'moscap_on', 'nwell')[0][0]
+        nw_y_center = self.CeilMinSnapSpacing((nw_top + nw_bot) / 2, _MinSnapSpacing)
+        self._DesignParameter['additional_nwell_layer']['_XYCoordinates'] = [[0, nw_y_center], [0, - nw_y_center]]
+        self._DesignParameter['additional_nwell_layer']['_XWidth'] = 2 * nw_hor_edge
+        self._DesignParameter['additional_nwell_layer']['_YWidth'] = (nw_top - nw_bot)
         print("test")
 
 
@@ -239,7 +254,7 @@ class MOSCAP_COARSE_FULL(StickDiagram._StickDiagram):
 if __name__ == '__main__':
     Obj = MOSCAP_COARSE_FULL()
     import random
-    for i in range(0,3):
+    for i in range(0,5):
 
         # Obj._CalculateDesignParameter(channel_length=30, dummy=True, PCCrit=None, XVT='SLVT',
         #                               finger_sel_p=5, finger_sel_n=2,

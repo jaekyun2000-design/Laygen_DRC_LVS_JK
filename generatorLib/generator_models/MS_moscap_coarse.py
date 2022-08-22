@@ -139,6 +139,10 @@ class MOSCAP_COARSE_FINE(StickDiagram._StickDiagram):
         inv_sel_input['space_bw_gate_pmos'] = space_bw_gate_pmos - drc._Metal1MinSpace2
         moscap_on_input['space_bw_gate_pmos'] = space_bw_gate_pmos - drc._Metal1MinSpace2
 
+        self._DesignParameter['inverter_sel']['_DesignObj']._CalculateDesignParameter(**inv_sel_input)
+        self._DesignParameter['moscap_on']['_DesignObj']._CalculateDesignParameter(**moscap_on_input)
+
+
 
         """
         vdd, vss rail alignment
@@ -147,6 +151,7 @@ class MOSCAP_COARSE_FINE(StickDiagram._StickDiagram):
         if distance_to_vdd == None:
             distance_to_vdd = max(self._DesignParameter['inverter_sel']['_DesignObj'].distance_to_vdd,
                                   self._DesignParameter['moscap_on']['_DesignObj'].distance_to_vdd)
+        if distance_to_vss == None:
             distance_to_vss = max(self._DesignParameter['inverter_sel']['_DesignObj'].distance_to_vss,
                                   self._DesignParameter['moscap_on']['_DesignObj'].distance_to_vss)
 
@@ -157,7 +162,6 @@ class MOSCAP_COARSE_FINE(StickDiagram._StickDiagram):
 
         self._DesignParameter['inverter_sel']['_DesignObj']._CalculateDesignParameter(**inv_sel_input)
         self._DesignParameter['moscap_on']['_DesignObj']._CalculateDesignParameter(**moscap_on_input)
-
 
         """
         inv_sel to via12, via12 to moscap routing
