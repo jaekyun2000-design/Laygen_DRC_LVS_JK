@@ -219,7 +219,7 @@ class INVERTER_SEL(StickDiagram._StickDiagram):
         vss_inputs = copy.deepcopy(PbodyContact._PbodyContact._ParametersForDesignCalculation)
         vdd_inputs = copy.deepcopy(NbodyContact._NbodyContact._ParametersForDesignCalculation)
 
-        if (supply_num_coy != None) and (supply_num_cox >= 1):
+        if supply_num_coy != None:
             vss_inputs['_NumberOfPbodyCOY'] = supply_num_coy
             vdd_inputs['_NumberOfNbodyCOY'] = supply_num_coy
         else:

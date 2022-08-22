@@ -26,7 +26,7 @@ class MOSCAP_COARSE_FINE(StickDiagram._StickDiagram):
                                            supply_num_coy=None, supply_num_cox=None,
                                            distance_to_vdd=None, distance_to_vss=None,
                                            space_bw_gate_nmos=None, space_bw_gate_pmos=None,
-                                           gap_bw_mos_gates=None
+                                           gap_bw_mos_gates=None, target_cell = None
                                            )
     def __init__(self, _DesignParameter=None, _Name='MS_moscap_coarse_fine'):
         if _DesignParameter != None:
@@ -50,7 +50,7 @@ class MOSCAP_COARSE_FINE(StickDiagram._StickDiagram):
                                   supply_num_coy=None, supply_num_cox=None,
                                   distance_to_vdd=None, distance_to_vss=None,
                                   space_bw_gate_nmos=None, space_bw_gate_pmos=None,
-                                  gap_bw_mos_gates=None
+                                  gap_bw_mos_gates=None, target_cell = None
                                   ):
         drc = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
@@ -112,7 +112,7 @@ class MOSCAP_COARSE_FINE(StickDiagram._StickDiagram):
 
         via_x_value = (self.getXY('inverter_sel','pmos', 'pmos', '_Met1Layer')[-1][0] +
             self.getXY('moscap_on', 'pmos1', 'pmos', '_Met1Layer')[0][0]) // 2
-        if finger_on == 1:
+        if target_cell == 'fine':
             via_y_value = self.getXYTop('inverter_sel', 'pmos', 'pmos_gate_via', '_Met1Layer')[0][1] - \
                 self.getYWidth('via_sel_b', '_Met1Layer') / 2
         else:

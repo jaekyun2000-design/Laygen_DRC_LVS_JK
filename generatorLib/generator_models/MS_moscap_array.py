@@ -68,7 +68,7 @@ class MOSCAP_ARRAY(StickDiagram._StickDiagram):
             supply_num_coy=supply_num_coy, supply_num_cox=supply_num_cox,
             distance_to_vdd=distance_to_vdd, distance_to_vss=distance_to_vss,
             space_bw_gate_nmos=space_bw_gate_nmos, space_bw_gate_pmos=space_bw_gate_pmos,
-            gap_bw_mos_gates=gap_bw_mos_gates
+            gap_bw_mos_gates=gap_bw_mos_gates, target_cell = target_cell
             )
         for i in range(array_dimension):
             self._DesignParameter[f'moscap_{i+1}'] = \
@@ -101,8 +101,8 @@ class MOSCAP_ARRAY(StickDiagram._StickDiagram):
         self.distance_to_vdd = self.getXY('moscap_1', 'moscap_on', 'vdd','_Met1Layer')[0][1]
         self.distance_to_vss = abs(self.getXY('moscap_1', 'moscap_on', 'vss','_Met1Layer')[0][1])
 
-        self.leftmost_poly_edge = min(self.getXYLeft('moscap_1', 'moscap_on', 'nmos1','nmos','_PODummyLayer')[0][0],
-                                      self.getXYLeft('moscap_1', 'moscap_on', 'pmos1','pmos', '_PODummyLayer')[0][0])
+        self.leftmost_poly_edge = min(self.getXYLeft('moscap_1', 'inverter_sel', 'nmos','nmos','_PODummyLayer')[0][0],
+                                      self.getXYLeft('moscap_1', 'inverter_sel', 'pmos','pmos', '_PODummyLayer')[0][0])
         self.rightmost_poly_edge = max(self.getXYRight(f'moscap_{array_dimension}','moscap_on', 'nmos2','nmos','_PODummyLayer')[-1][0],
                                       self.getXYRight(f'moscap_{array_dimension}','moscap_on', 'pmos2','pmos', '_PODummyLayer')[-1][0])
         self.cell_width = self.rightmost_poly_edge - self.leftmost_poly_edge
