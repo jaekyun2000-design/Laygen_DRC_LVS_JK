@@ -240,13 +240,13 @@ class MOSCAP_COARSE_FULL(StickDiagram._StickDiagram):
 
         nw_top = max(self.getXYTop('moscap_coarse_full2','moscap_1','moscap_on', 'nwell')[0][1],
                         self.getXYTop('moscap_coarse_full2','moscap_1', 'inverter_sel', 'nwell')[0][1])
-        nw_bot = min(self.getXYBot('moscap_coarse_full2','moscap_1', 'moscap_on', 'nwell')[0][1],
-                        self.getXYBot('moscap_coarse_full2','moscap_1', 'inverter_sel', 'nwell')[0][1])
+        # nw_bot = min(self.getXYBot('moscap_coarse_full2','moscap_1', 'moscap_on', 'nwell')[0][1],
+        #                 self.getXYBot('moscap_coarse_full2','moscap_1', 'inverter_sel', 'nwell')[0][1])
         nw_hor_edge = self.getXYRight('moscap_coarse_full2', f'moscap_{array_dimension}', 'moscap_on', 'nwell')[0][0]
-        nw_y_center = self.CeilMinSnapSpacing((nw_top + nw_bot) / 2, _MinSnapSpacing)
+        nw_y_center = self.CeilMinSnapSpacing((nw_top + xvt_bot_p) / 2, _MinSnapSpacing)
         self._DesignParameter['additional_nwell_layer']['_XYCoordinates'] = [[0, nw_y_center], [0, - nw_y_center]]
         self._DesignParameter['additional_nwell_layer']['_XWidth'] = 2 * nw_hor_edge
-        self._DesignParameter['additional_nwell_layer']['_YWidth'] = (nw_top - nw_bot)
+        self._DesignParameter['additional_nwell_layer']['_YWidth'] = (nw_top - xvt_bot_p)
         print("test")
 
 
@@ -254,7 +254,7 @@ class MOSCAP_COARSE_FULL(StickDiagram._StickDiagram):
 if __name__ == '__main__':
     Obj = MOSCAP_COARSE_FULL()
     import random
-    for i in range(0,5):
+    for i in range(0,50):
 
         # Obj._CalculateDesignParameter(channel_length=30, dummy=True, PCCrit=None, XVT='SLVT',
         #                               finger_sel_p=5, finger_sel_n=2,
