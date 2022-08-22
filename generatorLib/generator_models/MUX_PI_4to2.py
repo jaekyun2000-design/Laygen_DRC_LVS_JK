@@ -686,18 +686,18 @@ if __name__ == '__main__':
 
     # drc check
     InputParams = dict(
-        TristateInv1_Finger=11,
-        TristateInv1_PMOSWidth=760,
-        TristateInv1_NMOSWidth=420,
+        TristateInv1_Finger=7,
+        TristateInv1_PMOSWidth=200,
+        TristateInv1_NMOSWidth=240,
         TristateInv1_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
         TristateInv1_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
         TristateInv1_YCoordOfInputA=None,  # Optional
         TristateInv1_YCoordOfInputEN=None,  # Optional
         TristateInv1_YCoordOfInputENb=None,  # Optional
 
-        TristateInv2_Finger=1,
-        TristateInv2_PMOSWidth=980,
-        TristateInv2_NMOSWidth=480,
+        TristateInv2_Finger=10,
+        TristateInv2_PMOSWidth=480,
+        TristateInv2_NMOSWidth=520,
         TristateInv2_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
         TristateInv2_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
         TristateInv2_YCoordOfInputA=None,  # Optional
@@ -705,8 +705,8 @@ if __name__ == '__main__':
         TristateInv2_YCoordOfInputENb=None,  # Optional
 
         Inv_Finger=10,
-        Inv_PMOSWidth=580,
-        Inv_NMOSWidth=880,
+        Inv_PMOSWidth=640,
+        Inv_NMOSWidth=720,
         Inv_VDD2PMOS=None,  # Optional
         Inv_VSS2NMOS=None,  # Optional
         Inv_YCoordOfInOut=None,  # Optional
@@ -728,7 +728,7 @@ if __name__ == '__main__':
         cellname=cellname,
     )
 
-    Mode_DRCCheck = True  # True | False
+    Mode_DRCCheck = False  # True | False
     Num_DRCCheck = 20
 
     if Mode_DRCCheck:
@@ -737,16 +737,16 @@ if __name__ == '__main__':
 
         start_time = time.time()
         for ii in range(0, Num_DRCCheck):
-            # if ii == 0:
-            #     Bot.send2Bot(f'Start DRC checker...\nCellName: {cellname}\nTotal # of Run: {Num_DRCCheck}')
+            if ii == 0:
+                Bot.send2Bot(f'Start DRC checker...\nCellName: {cellname}\nTotal # of Run: {Num_DRCCheck}')
 
             forLoopCntMax = 10
             for iii in range(0, forLoopCntMax):
                 try:
                     ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
-                    InputParams['TristateInv1_Finger'] = DRCchecker.RandomParam(start=1, stop=15, step=1)
-                    InputParams['TristateInv2_Finger'] = DRCchecker.RandomParam(start=1, stop=15, step=1)
-                    InputParams['Inv_Finger'] = DRCchecker.RandomParam(start=1, stop=15, step=1)
+                    InputParams['TristateInv1_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
+                    InputParams['TristateInv2_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
+                    InputParams['Inv_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
 
                     InputParams['TristateInv1_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
                     InputParams['TristateInv1_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)

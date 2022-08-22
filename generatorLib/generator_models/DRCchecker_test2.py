@@ -239,7 +239,7 @@ class DRCchecker:
             raise NotImplemented
         CommandLine_StreamIn = f"strmin -library '{self.libname}' -strmFile '{self.GDSDir}/{self.cellname}.gds' -attachTechFileOfLib {TechFile} -logFile 'strmIn.log'"
         commandlines1 = CommandLine_ChangeDir + CommandLine_StreamIn
-        # commandlines1 = commandlines1 + " -noDetectVias"                # Option. To identify Via Objects' Names (For Debugging) | option 활성화하면 streamIn 속도 조금 느려짐.
+        commandlines1 = commandlines1 + " -noDetectVias"                # Option. To identify Via Objects' Names (For Debugging) | option 활성화하면 streamIn 속도 조금 느려짐.
         print(f"commandline1: {commandlines1}")
         stdin, stdout, stderr = ssh.exec_command(commandlines1)         # 이전 라이브러리 존재하면 streamin 느려짐. 없을때 0.5 ~ 1s, 있을떄 3 ~ 6s
 
