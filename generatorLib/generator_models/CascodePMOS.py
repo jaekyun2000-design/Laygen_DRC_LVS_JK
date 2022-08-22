@@ -20,7 +20,8 @@ class _CascodePMOS(PMOSWithDummy._PMOS):
         XYCoordOfPMOSDrain = CoordCalc.getXYCoords_MinX(self.getXY('_Met1Layer'))
         XYCoordOfPMOSSource = CoordCalc.getXYCoords_MaxX(self.getXY('_Met1Layer'))
         self._DesignParameter['_Met1Layer']['_XYCoordinates'] = XYCoordOfPMOSDrain + XYCoordOfPMOSSource
-        self._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'] = XYCoordOfPMOSDrain + XYCoordOfPMOSSource
+        if '_METAL1PINDrawing':
+            self._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'] = XYCoordOfPMOSDrain + XYCoordOfPMOSSource
         self._DesignParameter['_COLayer']['_XYCoordinates'] = \
             CoordCalc.getXYCoords_MinX(self.getXY('_COLayer')) + CoordCalc.getXYCoords_MaxX(self.getXY('_COLayer'))
 

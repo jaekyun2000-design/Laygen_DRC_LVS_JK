@@ -46,7 +46,7 @@ def run_for_process_update():
         _LayDatNameTmp = _ExtendLayDatNum2LayDatName(_ExtendLayerMappingTmp)
         _LayerNum2CommonName = _LayerNumber2CommonLayerName(_LayerMappingTmp)
     elif _Technology == 'SS65nm':
-        _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/SS65nm/cmos28lp_tech.layermap')  # Not yet exist
+        _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/SS65nm/lf6s_tech.layermap')
         _LayerMappingTmp, _ExtendLayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
         _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
         # _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
