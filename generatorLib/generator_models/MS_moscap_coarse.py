@@ -112,9 +112,13 @@ class MOSCAP_COARSE_FINE(StickDiagram._StickDiagram):
 
         via_x_value = (self.getXY('inverter_sel','pmos', 'pmos', '_Met1Layer')[-1][0] +
             self.getXY('moscap_on', 'pmos1', 'pmos', '_Met1Layer')[0][0]) // 2
-        via_y_value = self.getXYTop('inverter_sel', 'pmos', 'pmos_gate_via', '_Met1Layer')[0][1] - \
-            self.getYWidth('via_sel_b', '_Met1Layer') / 2
+        if finger_on == 1:
+            via_y_value = self.getXYTop('inverter_sel', 'pmos', 'pmos_gate_via', '_Met1Layer')[0][1] - \
+                self.getYWidth('via_sel_b', '_Met1Layer') / 2
+        else:
+            via_y_value = self.getXY('inverter_sel', 'pmos', 'pmos_gate_via', '_Met1Layer')[0][1]
         self._DesignParameter['via_sel_b']['_XYCoordinates'] = [[via_x_value, via_y_value]]
+
         """
         gate_bw_mos alignment
         """
@@ -165,7 +169,8 @@ class MOSCAP_COARSE_FINE(StickDiagram._StickDiagram):
             _Datatype=DesignParameters._LayerMapping['METAL2'][1],
             _Width=self.getYWidth('moscap_on', 'pmos2', 'pmos_gate_via', '_Met1Layer'))
 
-        path1_source_x = self.getXY('inverter_sel', 'pmos', 'pmos', '_Met1Layer')[-1][0]
+        path1_source_x = self._DesignParameter['inverter_sel']['_DesignObj'].x_value_output + \
+                         self._DesignParameter['inverter_sel']['_XYCoordinates'][0][0]
         path1_target_x = self.getXY('via_sel_b', '_Met1Layer')[0][0]
         self._DesignParameter['out_in_routing1']['_XYCoordinates'] = [[[path1_source_x, y_common],
                                                                        [path1_target_x, y_common]]]
@@ -194,10 +199,23 @@ class MOSCAP_COARSE_FINE(StickDiagram._StickDiagram):
         self._DesignParameter['sel_routing']['_XYCoordinates'] = [[[path_source_x, y_common],
                                                                        [path_target_x, y_common]]]
 
-        # calibre_value = self.CeilMinSnapSpacing(self.getYWidth('via_sel_b','_Met2Layer') / 2 - \
-        #                                         self._DesignParameter['out_in_routing1']['_Width'] / 2, _MinSnapSpacing)
-        # self._DesignParameter['via_sel_b']['_XYCoordinates'] = [[via_x_value, via_y_value + calibre_value]]
-        print("A")
+        self.space_bw_gate_nmos_met1_edges = self.getXYBot('moscap_on', 'nmos2', 'nmos_gate_via', '_Met1Layer')[0][1] -\
+            self.getXYTop('moscap_on', 'nmos2', 'nmos', '_Met1Layer')[0][1]
+        self.space_bw_gate_pmos_met1_edges = abs(self.getXYTop('moscap_on', 'pmos2', 'pmos_gate_via', '_Met1Layer')[0][1] -\
+            self.getXYBot('moscap_on', 'pmos2', 'pmos', '_Met1Layer')[0][1])
+
+        self.space_bw_np_gate_centers = self.getXY('moscap_on', 'pmos1', 'pmos_gate_via','_Met1Layer')[0][1] - \
+                                        self.getXY('moscap_on', 'nmos1', 'nmos_gate_via', '_Met1Layer')[0][1]
+
+        self.distance_to_vdd = self.getXY('moscap_on', 'vdd', '_Met1Layer')[0][1]
+        self.distance_to_vss = abs(self.getXY('moscap_on', 'vss', '_Met1Layer')[0][1])
+
+        self.leftmost_poly_edge = min(self.getXYLeft('inverter_sel', 'nmos','nmos','_PODummyLayer')[0][0],
+                                      self.getXYLeft('inverter_sel','pmos','pmos', '_PODummyLayer')[0][0])
+        self.rightmost_poly_edge = max(self.getXYRight('moscap_on','nmos2','nmos','_PODummyLayer')[-1][0],
+                                      self.getXYRight('moscap_on','pmos2','pmos', '_PODummyLayer')[-1][0])
+        self.cell_width = self.rightmost_poly_edge - self.leftmost_poly_edge
+
 
 if __name__ == '__main__':
     Obj = MOSCAP_COARSE_FINE()

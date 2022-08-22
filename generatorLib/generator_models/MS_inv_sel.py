@@ -175,6 +175,7 @@ class INVERTER_SEL(StickDiagram._StickDiagram):
         output_path =[[tmp1, source_y], [x_value, source_y],[x_value, target_y],[tmp2, target_y]]
         self._DesignParameter['output_routing']['_XYCoordinates'] = [output_path]
         x_value_output = x_value
+        self.x_value_output = x_value_output
 
         """
         Input Routing
