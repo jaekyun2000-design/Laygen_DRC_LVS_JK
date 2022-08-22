@@ -1,6 +1,7 @@
 import ftplib
 import random
 import paramiko
+import sys
 from generatorLib import DesignParameters
 
 '''
@@ -54,13 +55,14 @@ class DRCchecker:
         ssh.connect(self.server, port=self.port, username=self.username, password=self.password)
 
 
-        commandlines1 = "cd {0}; source setup.cshrc; strmin -library '{1}' -strmFile '{3}/{2}.gds' -attachTechFileOfLib '{4}' -logFile 'strmIn.log'"
-        stdin, stdout, stderr = ssh.exec_command(commandlines1.format(self.WorkDir, self.libname, self.cellname, self.GDSDir, Techlib))
-        result1 = stdout.read().decode('utf-8')
-        print('print after commandlines1 : ')
-        print(result1)
-        if (result1.split()[-6]) != "'0'":
-            raise Exception("Library name already Existing or XStream ERROR!!")
+        # commandlines1 = "cd {0}; source setup.cshrc; strmin -library '{1}' -strmFile '{3}/{2}.gds' -attachTechFileOfLib '{4}' -logFile 'strmIn.log'"
+        # print(f"commandlines1: {commandlines1.format(self.WorkDir, self.libname, self.cellname, self.GDSDir, Techlib)}")
+        # stdin, stdout, stderr = ssh.exec_command(commandlines1.format(self.WorkDir, self.libname, self.cellname, self.GDSDir, Techlib))
+        # result1 = stdout.read().decode('utf-8')
+        # print('print after commandlines1 : ')
+        # print(result1)
+        # if (result1.split()[-6]) != "'0'":
+        #     raise Exception("Library name already Existing or XStream ERROR!!")
 
         if DesignParameters._Technology == 'SS28nm' :
             commandlines2 = "cd {0}; source setup.cshrc; strmout -library '{1}' -strmFile '{3}/{2}.calibre.db' -topCell '{2}' -view layout -runDir '{3}' -logFile 'PIPO.LOG.{1}' -layerMap '/home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp_tech_7U1x_2T8x_LB/cmos28lp_tech.layermap' -objectMap '/home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp_tech_7U1x_2T8x_LB/cmos28lp_tech.objectmap' -case 'Preserve' -convertDot 'node' -noWarn '156 246 269 270 315 333'"
@@ -85,24 +87,44 @@ class DRCchecker:
         if (result2.split()[-6]) != "'0'":
             raise Exception("XstreamOut ERROR")
 
-        commandlines3 = "cd {0}; sed -i '9s,.*,LAYOUT PATH  \"{0}/{1}.calibre.db\",' {2}; sed -i '10s,.*,LAYOUT PRIMARY \"{1}\",' {2}; sed -i '13s,.*,DRC RESULTS DATABASE \"{1}.drc.results\" ASCII,' {2}; sed -i '18s,.*,DRC SUMMARY REPORT \"{1}.drc.summary\" REPLACE HIER,' {2}"
+        ''' drc run directory에 rule file ? 존재해야힘/ DRCfile... '''
+        # commandlines3 = "cd {0}; sed -i '9s,.*,LAYOUT PATH  \"{0}/{1}.calibre.db\",' {2}; sed -i '10s,.*,LAYOUT PRIMARY \"{1}\",' {2}; sed -i '13s,.*,DRC RESULTS DATABASE \"{1}.drc.results\" ASCII,' {2}; sed -i '18s,.*,DRC SUMMARY REPORT \"{1}.drc.summary\" REPLACE HIER,' {2}"
+        commandlines3 = "cd {0}; sed -i '9s,.*,LAYOUT PATH  \"{1}.calibre.db\",' {2}; sed -i '10s,.*,LAYOUT PRIMARY \"{1}\",' {2}; sed -i '13s,.*,DRC RESULTS DATABASE \"{1}.drc.results\" ASCII,' {2}; sed -i '18s,.*,DRC SUMMARY REPORT \"{1}.drc.summary\" REPLACE HIER,' {2}"
         stdin, stdout, stderr = ssh.exec_command(commandlines3.format(self.DRCrunDir, self.cellname, DRCfile))
         print(f'print after commandlines3 :')
         print(f"stdout: {stdout.read().decode('utf-8')}")
         print(f"stderr: {stderr.read().decode('utf-8')}")
 
-        commandlines33 = f"cd {self.WorkDir}; rm {self.cellname}.drc.summary"        # delete previous summary file
+        #commandlines33 = f"cd {self.WorkDir}; rm {self.cellname}.drc.summary"        # delete previous summary file
+        commandlines33 = f"cd {self.DRCrunDir}; rm {self.cellname}.drc.summary"        # delete previous summary file
         stdin, stdout, stderr = ssh.exec_command(commandlines33)
         print(f'print after commandlines33 :')
         print(f"stdout: {stdout.read().decode('utf-8')}")
         print(f"stderr: {stderr.read().decode('utf-8')}")
 
-        commandlines4 = "cd {0}; source setup.cshrc; calibre -drc -hier -turbo -turbo_litho -nowait {1}/{2}"
+        # commandlines4 = "cd {0}; source setup.cshrc; calibre -drc -hier -turbo -turbo_litho -nowait {1}/{2}"
+        commandlines4 = "cd {0}; source setup.cshrc; calibre -drc -hier -nowait {1}/{2}"
         stdin, stdout, stderr = ssh.exec_command(commandlines4.format(self.WorkDir, self.DRCrunDir, DRCfile))
-        stdout.read()
+        # stdin, __, stderr = ssh.exec_command(commandlines4.format(self.WorkDir, self.DRCrunDir, DRCfile))
+        print(f'print after commandlines4 :')
+        # stdout.read().decode('utf8')        # 24s 1:53s no print
+        # stdout.read().decode('utf-8')         # 1:58s
+        # stdout.read()                           # 2:04s no print
+
+        while 1:
+            lines = stdout.readlines(1000000)              # 21s 17s
+            if not lines:
+                break
+            for line in lines:
+                print(line, end="")
+                # print(line)
+
+        # for line in iter(stdout.readline, ""):              # 1:01s print
+        #     print(line, end="")
 
         readfile = ssh.open_sftp()
-        file = readfile.open('{0}/{1}.drc.summary'.format(self.WorkDir, self.cellname))
+        # file = readfile.open('{0}/{1}.drc.summary'.format(self.WorkDir, self.cellname))
+        file = readfile.open('{0}/{1}.drc.summary'.format(self.DRCrunDir, self.cellname))
         print(f"Reading '{self.WorkDir}/{self.cellname}.drc.summary' for check DRC Error......")
         if DesignParameters._Technology == 'SS28nm' :
             for line in (file.readlines()[-2:-1]):        # 'TOTAL DRC Results Generated:   656 (656)\n'
@@ -198,27 +220,45 @@ class DRCchecker:
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(hostname=self.server, port=self.port, username=self.username, password=self.password)
+        print('SSH Connected...')
 
         if tech in ('SS28nm', None):
             TechFile = 'cmos28lp'
-        elif tech == '065nm':
+        elif tech == 'SS65nm':
+            TechFile = 'lf6s'
+        elif tech == 'TSMC65nm':
             TechFile = 'tsmcN65'
-        elif tech == '045nm' :
-            TechFile = 'tsmcN45'
-        elif tech == '090nm' :
-            TechFile = 'tsmcN90rf'
-
         else:
             raise NotImplemented
-        filename = self.cellname + '.gds'
-        commandlines1 = "cd {0}; source setup.cshrc; strmin -library '{1}' -strmFile '{2}/{3}' -attachTechFileOfLib {4} -logFile 'strmIn.log'"
-        commandlines1 = commandlines1 + " -noDetectVias"      # To identify Via Objects' Names (For Debugging)
-        stdin, stdout, stderr = ssh.exec_command(commandlines1.format(self.WorkDir, self.libname, self.GDSDir, filename, TechFile))
-        result1 = stdout.read().decode('utf-8')
 
-        print('   Stream In   '.center(105, '-'))
-        print(result1)
-        if (result1.split()[-6]) != "'0'":          # Example of result1's Last Line : INFO (XSTRM-234): Translation completed. '0' error(s) and '125' warning(s) found.
+        if tech in ('SS28nm', None):
+            CommandLine_ChangeDir = f"cd {self.WorkDir}; source setup.cshrc;"
+        elif tech == 'SS65nm':
+            CommandLine_ChangeDir = f"s65;"
+        else:
+            raise NotImplemented
+        CommandLine_StreamIn = f"strmin -library '{self.libname}' -strmFile '{self.GDSDir}/{self.cellname}.gds' -attachTechFileOfLib {TechFile} -logFile 'strmIn.log'"
+        commandlines1 = CommandLine_ChangeDir + CommandLine_StreamIn
+        # commandlines1 = commandlines1 + " -noDetectVias"                # Option. To identify Via Objects' Names (For Debugging) | option 활성화하면 streamIn 속도 조금 느려짐.
+        print(f"commandline1: {commandlines1}")
+        stdin, stdout, stderr = ssh.exec_command(commandlines1)         # 이전 라이브러리 존재하면 streamin 느려짐. 없을때 0.5 ~ 1s, 있을떄 3 ~ 6s
+
+
+        ''' prev code '''
+        # result1 = stdout.read().decode('utf-8')
+        #
+        # print('   Stream In   '.center(105, '-'))
+        # print(result1)
+        # if (result1.split()[-6]) != "'0'":          # Example of result1's Last Line : INFO (XSTRM-234): Translation completed. '0' error(s) and '125' warning(s) found.
+        #     raise Exception("Library name already Existing or XStream ERROR!!")
+        ''' modified code '''
+        while 1:
+            lines = stdout.readlines(1000000)              #
+            if not lines:
+                break
+            for line in lines:
+                print(line, end="")
+        if (line.split()[-6]) != "'0'":          # Example of result1's Last Line : INFO (XSTRM-234): Translation completed. '0' error(s) and '125' warning(s) found.
             raise Exception("Library name already Existing or XStream ERROR!!")
 
         ssh.close()

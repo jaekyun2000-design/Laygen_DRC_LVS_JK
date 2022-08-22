@@ -21,7 +21,8 @@ class _CascodeNMOS(NMOSWithDummy._NMOS):
         XYCoordOfNMOSDrain = CoordCalc.getXYCoords_MinX(self.getXY('_Met1Layer'))
         XYCoordOfNMOSSource = CoordCalc.getXYCoords_MaxX(self.getXY('_Met1Layer'))
         self._DesignParameter['_Met1Layer']['_XYCoordinates'] = XYCoordOfNMOSDrain + XYCoordOfNMOSSource
-        self._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'] = XYCoordOfNMOSDrain + XYCoordOfNMOSSource
+        if '_METAL1PINDrawing' in self._DesignParameter:
+            self._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'] = XYCoordOfNMOSDrain + XYCoordOfNMOSSource
         self._DesignParameter['_COLayer']['_XYCoordinates'] = \
             CoordCalc.getXYCoords_MinX(self.getXY('_COLayer')) + CoordCalc.getXYCoords_MaxX(self.getXY('_COLayer'))
 
