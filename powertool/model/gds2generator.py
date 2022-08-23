@@ -16,6 +16,8 @@ from generatorLib import DRC
 drc = DRC.DRC()
 import types
 import lab_feature
+from generatorLib.StickDiagram import *
+
 
 def load_pickle(file_name):
     with open(file_name, 'rb') as f:
@@ -303,8 +305,10 @@ class GDS2Generator():
         tmp_ast.body[0].body = tmp_sub_ast.body
         self.code = astunparse.unparse(tmp_ast)
         self.code += '\nself.root_cell._CalculateDesignParameter = types.MethodType(_CalculateDesignParameter, self.root_cell)'
+        # self.code = 'from generatorLib.StickDiagram import *\n' + self.code
         self.code = 'for name in self.libraries.class_name_dict:\n' \
                     '\tglobals()[name] = self.libraries.libraries[name]\n' + self.code
+        print(self.code)
         exec(self.code,globals(),locals())
 
         # self.root_cell._CalculateDesignParameter = types.MethodType(_CalculateDesignParameter, self.root_cell)
@@ -1103,7 +1107,11 @@ class LayoutReader:
                     else:
                         return idx
                 if not layer_name:
-                    layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
+                    # layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
+                    layer_name = LayerReader._LayDatNameTmp[layer_number][data_number][0] if \
+                    LayerReader._LayDatNameTmp[layer_number][data_number][1] == 'drawing' else None
+                    if not layer_name:
+                        return idx
                 if '_XYCoordinatesProjection' not in dp:
                     warnings.warn('_XYCoordinatesProjection not in dp')
                     return idx
