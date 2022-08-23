@@ -344,8 +344,9 @@ if __name__ == '__main__':
 
         _DRC = DRCchecker.DRCchecker('kms95','dosel545','/mnt/sdb/kms95/OPUS/ss28','/mnt/sdb/kms95/OPUS/ss28/DRC/run',
                                      'MS_moscap_coarse_full','MS_moscap_coarse_full')
-        _DRC.DRCchecker()
         print(f"Count of Loop : {cnt}")
+        _DRC.DRCchecker()
+
         print("Waiting For 10 seconds before another loop....")
         cnt = cnt + 1
         time.sleep(10)
