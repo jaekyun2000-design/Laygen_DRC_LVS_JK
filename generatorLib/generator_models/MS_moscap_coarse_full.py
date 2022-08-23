@@ -240,22 +240,27 @@ class MOSCAP_COARSE_FULL(StickDiagram._StickDiagram):
 
         nw_top = max(self.getXYTop('moscap_coarse_full2','moscap_1','moscap_on', 'nwell')[0][1],
                         self.getXYTop('moscap_coarse_full2','moscap_1', 'inverter_sel', 'nwell')[0][1])
-        # nw_bot = min(self.getXYBot('moscap_coarse_full2','moscap_1', 'moscap_on', 'nwell')[0][1],
-        #                 self.getXYBot('moscap_coarse_full2','moscap_1', 'inverter_sel', 'nwell')[0][1])
+
         nw_hor_edge = self.getXYRight('moscap_coarse_full2', f'moscap_{array_dimension}', 'moscap_on', 'nwell')[0][0]
-        nw_y_center = self.CeilMinSnapSpacing((nw_top + xvt_bot_p) / 2, _MinSnapSpacing)
+
+        nw_y_center = self.FloorMinSnapSpacing((nw_top + xvt_bot_p) / 2, _MinSnapSpacing)
         self._DesignParameter['additional_nwell_layer']['_XYCoordinates'] = [[0, nw_y_center], [0, - nw_y_center]]
         self._DesignParameter['additional_nwell_layer']['_XWidth'] = 2 * nw_hor_edge
         self._DesignParameter['additional_nwell_layer']['_YWidth'] = (nw_top - xvt_bot_p)
-        print("test")
+
+
+
 
 
 
 if __name__ == '__main__':
     Obj = MOSCAP_COARSE_FULL()
     import random
-    for i in range(0,50):
-
+    import time
+    cnt = 1
+    for i in range(0,100):
+        print("Generating Random Input Variables...")
+        time.sleep(5)
         # Obj._CalculateDesignParameter(channel_length=30, dummy=True, PCCrit=None, XVT='SLVT',
         #                               finger_sel_p=5, finger_sel_n=2,
         #                               finger_on=4,
@@ -316,7 +321,8 @@ if __name__ == '__main__':
                     supply_num_coy = supply_num_coy,
                     gap_bw_mos_gates = gap_bw_mos_gates, array_dimension = array_dimension
         )
-
+        print("Waiting For 10 seconds before Calculation initialization...")
+        time.sleep(10)
         Obj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=Obj._DesignParameter)
         _fileName = 'MS_moscap_coarse_full.gds'
         testStreamFile = open('./MS_moscap_coarse_full.gds', 'wb')
@@ -339,4 +345,8 @@ if __name__ == '__main__':
         _DRC = DRCchecker.DRCchecker('kms95','dosel545','/mnt/sdb/kms95/OPUS/ss28','/mnt/sdb/kms95/OPUS/ss28/DRC/run',
                                      'MS_moscap_coarse_full','MS_moscap_coarse_full')
         _DRC.DRCchecker()
+        print(f"Count of Loop : {cnt}")
+        print("Waiting For 10 seconds before another loop....")
+        cnt = cnt + 1
+        time.sleep(10)
 

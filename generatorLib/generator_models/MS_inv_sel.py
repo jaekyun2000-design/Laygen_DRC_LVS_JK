@@ -191,12 +191,10 @@ class INVERTER_SEL(StickDiagram._StickDiagram):
         if routing_path_level == 0:
             routing_path_level = 1
         self._DesignParameter['input_routing']['_Width'] = drc._Metal1MinWidth * routing_path_level
-        if finger1 == 1:
+        if finger1 == 1 and finger2 ==1:
             self._DesignParameter['input_routing']['_Width'] = self.getXWidth('pmos', 'pmos_gate_via', '_Met1Layer')
-        x_value = self.getXY('pmos','pmos_gate_via', '_Met1Layer')[0][0]
-        y_value_n = self.getXY('nmos', 'nmos_gate_via', '_Met1Layer')[0][1]
-        y_value_p = self.getXY('pmos', 'pmos_gate_via', '_Met1Layer')[0][1]
-        if finger1 != 1:
+
+        if finger1 != 1 and finger2 != 1:
             if abs(x_value - x_value_output) < drc._MetalxMinWidth * 2:
                 calibre_value = 2 * drc._MetalxMinWidth - abs(x_value - x_value_output)
                 x_value = x_value - calibre_value
@@ -204,6 +202,11 @@ class INVERTER_SEL(StickDiagram._StickDiagram):
                             self.getYWidth('nmos', 'nmos_gate_via', '_Met1Layer') / 2
                 y_value_p = self.getXY('pmos', 'pmos_gate_via', '_Met1Layer')[0][1] + \
                             self.getYWidth('pmos', 'pmos_gate_via', '_Met1Layer') / 2
+        else:
+            x_value = self.getXY('pmos', 'pmos_gate_via', '_Met1Layer')[0][0]
+            y_value_n = self.getXY('nmos', 'nmos_gate_via', '_Met1Layer')[0][1]
+            y_value_p = self.getXY('pmos', 'pmos_gate_via', '_Met1Layer')[0][1]
+
         path_inputs = [[[x_value, y_value_n],[x_value, y_value_p]]]
         self._DesignParameter['input_routing']['_XYCoordinates'] = path_inputs
 
