@@ -3,6 +3,8 @@ from generatorLib import DRC
 
 from generatorLib.generator_models import MS_moscap_array
 from generatorLib.generator_models import MS_inv_sel
+from generatorLib.generator_models import ViaMet12Met2
+from generatorLib.generator_models import ViaMet22Met3
 from generatorLib import StickDiagram
 from generatorLib import DesignParameters
 
@@ -260,6 +262,62 @@ class MOSCAP_FINE_FULL(StickDiagram._StickDiagram):
         self._DesignParameter[f'inv3']['_DesignObj']._CalculateDesignParameter(**inv3_inputs)
         self._DesignParameter[f'moscap_fine_array']['_DesignObj']._CalculateDesignParameter(**moscap_fine_inputs)
 
+        """
+        Via for Inv_1 Load (Moscap Fine Array Input) Generation
+        """
+        self._DesignParameter['via_for_moscap_fine'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(
+            _Name='via_for_moscap_fine_in_{}'.format(_Name)))[0]
+        via_inputs = copy.deepcopy(ViaMet22Met3._ViaMet22Met3._ParametersForDesignCalculation)
+        via_inputs['_ViaMet22Met3NumberOfCOX'] = 1
+        via_inputs['_ViaMet22Met3NumberOfCOY'] = 2
+        self._DesignParameter['via_for_moscap_fine']['_DesignObj']._CalculateViaMet22Met3DesignParameterMinimumEnclosureX(
+            **via_inputs)
+
+        tmp_xy = self.getXYTop('inv3', 'nmos_output_via', '_Met2Layer')[-1]
+        calibre_value = self.getYWidth('via_for_moscap_fine', '_Met3Layer') / 2
+        via_xy = [[tmp_xy[0], tmp_xy[1] - calibre_value]]
+        self._DesignParameter['via_for_moscap_fine']['_XYCoordinates'] = via_xy
+
+        """
+        Via23 Routing
+        """
+        self._DesignParameter['inv3_moscap_routing'] = self._PathElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL3'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL3'][1],
+            _Width=drc._MetalxMinWidth)
+
+        path_target = via_xy[0]
+        path_source = self.getXY('moscap_fine_array', 'via_for_input', '_Met3Layer')[0]
+        if path_target[1] != path_source[1]:
+            path_xy = [[path_target, [path_source[0],path_target[1]],[[path_source[0],path_target[1]], path_source]]]
+        else:
+            path_xy = [[path_target, path_source]]
+        self._DesignParameter['inv3_moscap_routing']['_XYCoordinates'] = path_xy
+
+        """
+        Via12 Generation
+        """
+        self._DesignParameter['via_12_array'] = \
+        self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(
+            _Name='via_12_array_in_{}'.format(_Name)))[0]
+        via_inputs = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+        via_inputs['_ViaMet12Met2NumberOfCOX'] = 2
+        via_inputs['_ViaMet12Met2NumberOfCOY'] = 1
+        self._DesignParameter['via_12_array'][
+            '_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureY(
+            **via_inputs)
+        common_y = self.getXYTop('inv2','pmos','pmos_gate_via','_Met1Layer')[0][1] - \
+            self.getYWidth('via_12_array', '_Met1Layer') / 2
+        x_value1 = self.getXYLeft('inv1','pmos','pmos_gate_via','_Met1Layer')[0][0] - \
+                   self.getXWidth('via_12_array', '_Met1Layer') / 2
+        x_value2 = self.getXYRight('inv1','pmos','pmos_gate_via','_Met1Layer')[0][0] + \
+                   self.getXWidth('via_12_array', '_Met1Layer') / 2
+        x_value3 = self.getXYRight('inv2','pmos','pmos_gate_via','_Met1Layer')[0][0] - \
+            self.getYWidth('via_12_array', '_Met1Layer') / 2
+
+
+        via_xy = [[x_value1, common_y], [x_value2, common_y], [x_value3, common_y]]
+        self._DesignParameter['via_12_array']['_XYCoordinates'] = via_xy
         print("test")
 
 
