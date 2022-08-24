@@ -8,7 +8,7 @@ from generatorLib import DRC
 
 #
 from generatorLib.generator_models import TristateInverter
-from generatorLib.generator_models import Inverter_onesemicon
+from generatorLib.generator_models import Inverter
 from generatorLib.generator_models import Transmission_gate
 
 from generatorLib.generator_models import ViaMet12Met2
@@ -221,22 +221,22 @@ class DFF(StickDiagram._StickDiagram):
 
         self._DesignParameter['INV1'] = self._SrefElementDeclaration(
             _Reflect=[0, 0, 0], _Angle=0,
-            _DesignObj=Inverter_onesemicon._Inverter(_Name='INV1In{}'.format(_Name)))[0]
+            _DesignObj=Inverter._Inverter(_Name='INV1In{}'.format(_Name)))[0]
         self._DesignParameter['INV1']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_INV1)
         self._DesignParameter['INV1']['_XYCoordinates'] = [[0, 0]]
         self._DesignParameter['INV2'] = self._SrefElementDeclaration(
             _Reflect=[0, 0, 0], _Angle=0,
-            _DesignObj=Inverter_onesemicon._Inverter(_Name='INV2In{}'.format(_Name)))[0]
+            _DesignObj=Inverter._Inverter(_Name='INV2In{}'.format(_Name)))[0]
         self._DesignParameter['INV2']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_INV2)
         self._DesignParameter['INV2']['_XYCoordinates'] = [[0, 0]]
         self._DesignParameter['INV3'] = self._SrefElementDeclaration(
             _Reflect=[0, 0, 0], _Angle=0,
-            _DesignObj=Inverter_onesemicon._Inverter(_Name='INV3In{}'.format(_Name)))[0]
+            _DesignObj=Inverter._Inverter(_Name='INV3In{}'.format(_Name)))[0]
         self._DesignParameter['INV3']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_INV3)
         self._DesignParameter['INV3']['_XYCoordinates'] = [[0, 0]]
         self._DesignParameter['INV4'] = self._SrefElementDeclaration(
             _Reflect=[1, 0, 0], _Angle=180,
-            _DesignObj=Inverter_onesemicon._Inverter(_Name='INV4In{}'.format(_Name)))[0]
+            _DesignObj=Inverter._Inverter(_Name='INV4In{}'.format(_Name)))[0]
         self._DesignParameter['INV4']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_INV4)
         self._DesignParameter['INV4']['_XYCoordinates'] = [[0, 0]]
 

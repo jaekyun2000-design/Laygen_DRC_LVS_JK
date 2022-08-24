@@ -1007,27 +1007,33 @@ if __name__ == '__main__':
     My = Myinfo.USER(DesignParameters._Technology)
     Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
 
-    libname = 'TEST_InverterOne'
-    cellname = 'InverterOne'
+
+    libname = 'TEST_INV'
+    cellname = 'Inverter'
     _fileName = cellname + '.gds'
 
     ''' Input Parameters for Layout Object '''
-    InputParams = dict(
-        _Finger=11,
-        _ChannelWidth=680,
-        _ChannelLength=30,
-        _NPRatio=1,
 
-        _VDD2VSSHeight=None,    # 1800
+    InputParams = dict(
+        _Finger=1,
+        _ChannelWidth=200,
+        _ChannelLength=30,
+        _NPRatio=2,
+
+        _VDD2VSSHeight=1800,
         _VDD2PMOSHeight=None,
         _VSS2NMOSHeight=None,
+        _YCoordOfInput=None,
 
         _Dummy=True,
         _XVT='SLVT',
-        _GateSpacing=100,     # 100 -> 고정?
-        _SDWidth=None,        # 66
-
+        _GateSpacing=100,
+        _SDWidth=66,
+        _SupplyRailType=1
     )
+
+    Mode_DRCCheck = True  # True | False
+    Num_DRCCheck = 200
 
     Checker = DRCchecker.DRCchecker(
         username=My.ID,
@@ -1039,41 +1045,49 @@ if __name__ == '__main__':
         cellname=cellname,
     )
 
-    Mode_DRCCheck = False  # True | False
-    Num_DRCCheck = 30
+
 
     if Mode_DRCCheck:
-        ErrCount = 0
+        ErrCount = 0            # DRC error
+        knownErrorCount = 0     # failed to generate design. NotImplementedError
+
         start_time = time.time()
         for ii in range(0, Num_DRCCheck):
-            # if ii == 0:
-            #     Bot.send2Bot(f'Start DRC checker...\nCellName: {cellname}\nTotal # of Run: {Num_DRCCheck}')
+            if ii == 0:
+                Bot.send2Bot(f'Start DRC checker...\nCellName: {cellname}\nTotal # of Run: {Num_DRCCheck}')
 
-            ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
-            InputParams['TristateInv1_Finger'] = DRCchecker.RandomParam(start=1, stop=15, step=1)
-            InputParams['TristateInv2_Finger'] = DRCchecker.RandomParam(start=1, stop=15, step=1)
-            InputParams['Inv_Finger'] = DRCchecker.RandomParam(start=1, stop=15, step=1)
+            forLoopCntMax = 10
+            for iii in range(0, forLoopCntMax):
+                try:
+                    ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
+                    InputParams['_Finger'] = DRCchecker.RandomParam(start=1, stop=15, step=1)
+                    PMOSWidth = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['_ChannelWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['_NPRatio'] = PMOSWidth / InputParams['_ChannelWidth']
 
-            InputParams['TristateInv1_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-            InputParams['TristateInv1_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-            InputParams['TristateInv2_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-            InputParams['TristateInv2_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-            InputParams['Inv_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-            InputParams['Inv_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['_SupplyRailType'] = DRCchecker.RandomParam(start=1, stop=2, step=1)
 
-            print("   Last Layout Object's Input Parameters are   ".center(105, '='))
-            tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
-            print(tmpStr)
-            print("".center(105, '='))
+                    print("   Last Layout Object's Input Parameters are   ".center(105, '='))
+                    tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+                    print(tmpStr)
+                    print("".center(105, '='))
 
-            ''' ---------------------------------- Generate Layout Object -------------------------------------------'''
-            LayoutObj = _Inverter(_Name=cellname)
-            LayoutObj._CalculateDesignParameter_v3(**InputParams)
-            LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
-            testStreamFile = open('./{}'.format(_fileName), 'wb')
-            tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
-            tmp.write_binary_gds_stream(testStreamFile)
-            testStreamFile.close()
+                    ''' ---------------------------------- Generate Layout Object -------------------------------------------'''
+                    LayoutObj = _Inverter(_Name=cellname)
+                    LayoutObj._CalculateDesignParameter_v3(**InputParams)
+                    LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+                    with open(f'./{_fileName}', 'wb') as testStreamFile:
+                        tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+                        tmp.write_binary_gds_stream(testStreamFile)
+                except NotImplementedError:  # something known error !
+                    print(f"forLoopCnt = {iii + 1}")
+                    if iii + 1 == forLoopCntMax:
+                        raise NotImplementedError
+                else:
+                    knownErrorCount = knownErrorCount + iii
+                    # Bot.send2Bot(f"NotImplementedError...\nknownErrorCount = {knownErrorCount}")
+                    break
+            # end of for loop
 
             print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
             Checker.Upload2FTP()
@@ -1091,6 +1105,7 @@ if __name__ == '__main__':
                 m, s = divmod(time.time() - start_time, 60)
                 h, m = divmod(m, 60)
                 Bot.send2Bot(f'Error Occurred During Checking DRC({ii + 1}/{Num_DRCCheck})...\n'
+                             f'CellName : {cellname}\n'
                              f'ErrMsg : {e}\n'
                              f'============================\n'
                              f'** InputParameters:\n'
@@ -1104,7 +1119,8 @@ if __name__ == '__main__':
                 h, m = divmod(m, 60)
                 Bot.send2Bot(f'DRC Checker Finished.\n'
                              f'CellName: {cellname}\n'
-                             f'Total # of Err: {ErrCount}\n'
+                             f'Total # of known Err: {knownErrorCount}\n'
+                             f'Total # of DRC Err: {ErrCount}\n'
                              f'Total # of Run: {Num_DRCCheck}\n'
                              f'Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
     else:
@@ -1112,10 +1128,9 @@ if __name__ == '__main__':
         LayoutObj = _Inverter(_Name=cellname)
         LayoutObj._CalculateDesignParameter_v3(**InputParams)
         LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
-        testStreamFile = open('./{}'.format(_fileName), 'wb')
-        tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
-        tmp.write_binary_gds_stream(testStreamFile)
-        testStreamFile.close()
+        with open(f'./{_fileName}', 'wb') as testStreamFile:
+            tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+            tmp.write_binary_gds_stream(testStreamFile)
 
         print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
         Checker.Upload2FTP()

@@ -9,7 +9,7 @@ from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import ViaMet22Met3
 from generatorLib.generator_models import MUX_PI_4to2
 from generatorLib.generator_models import MUX_PI_4to2_half
-from generatorLib.generator_models import Inverter_onesemicon
+from generatorLib.generator_models import Inverter
 
 
 class PI_clk_sel_8p_s(StickDiagram._StickDiagram):
@@ -101,7 +101,7 @@ class PI_clk_sel_8p_s(StickDiagram._StickDiagram):
             # _SDWidth=SDWidth,
             _SupplyRailType=SupplyRailType
         )
-        self._DesignParameter['INV2_CalcMinHeight'] = self._SrefElementDeclaration(_DesignObj=Inverter_onesemicon._Inverter(_Name='INV2_CalcMinHeightIn{}'.format(_Name)))[0]
+        self._DesignParameter['INV2_CalcMinHeight'] = self._SrefElementDeclaration(_DesignObj=Inverter._Inverter(_Name='INV2_CalcMinHeightIn{}'.format(_Name)))[0]
         minCellHeight_INV = self._DesignParameter['INV2_CalcMinHeight']['_DesignObj']._CalcMinHeight(**ParametersForMinHeightCalc_Inv2)
         minCellHeight = max(minCellHeight_MUX4to2Half, minCellHeight_INV)
 
@@ -178,16 +178,16 @@ class PI_clk_sel_8p_s(StickDiagram._StickDiagram):
 
 
         self._DesignParameter['Inv0'] = self._SrefElementDeclaration(
-            _Reflect=[0, 0, 0], _Angle=0, _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv0In{}'.format(_Name)))[0]
+            _Reflect=[0, 0, 0], _Angle=0, _DesignObj=Inverter._Inverter(_Name='Inv0In{}'.format(_Name)))[0]
         self._DesignParameter['Inv0']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_Inv)
         self._DesignParameter['Inv1'] = self._SrefElementDeclaration(
-            _Reflect=[1, 0, 0], _Angle=0, _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv1In{}'.format(_Name)))[0]
+            _Reflect=[1, 0, 0], _Angle=0, _DesignObj=Inverter._Inverter(_Name='Inv1In{}'.format(_Name)))[0]
         self._DesignParameter['Inv1']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_Inv)
         self._DesignParameter['Inv2'] = self._SrefElementDeclaration(
-            _Reflect=[0, 0, 0], _Angle=0, _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv2In{}'.format(_Name)))[0]
+            _Reflect=[0, 0, 0], _Angle=0, _DesignObj=Inverter._Inverter(_Name='Inv2In{}'.format(_Name)))[0]
         self._DesignParameter['Inv2']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_Inv)
         self._DesignParameter['Inv3'] = self._SrefElementDeclaration(
-            _Reflect=[1, 0, 0], _Angle=0, _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv3In{}'.format(_Name)))[0]
+            _Reflect=[1, 0, 0], _Angle=0, _DesignObj=Inverter._Inverter(_Name='Inv3In{}'.format(_Name)))[0]
         self._DesignParameter['Inv3']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_Inv)
 
         XCoord_Inv = self.getXYRight('Mux1', 'MuxHalf1', 'VDDRail')[0][0] + self._DesignParameter['Inv2']['_DesignObj'].CellXWidth / 2
@@ -218,16 +218,16 @@ class PI_clk_sel_8p_s(StickDiagram._StickDiagram):
                     del self._DesignParameter['Inv3']
                     Parameters_Inv['_YCoordOfInput'] = (yMax + yMin) / 2
                     self._DesignParameter['Inv0'] = self._SrefElementDeclaration(
-                        _Reflect=[0, 0, 0], _Angle=0, _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv0In{}'.format(_Name)))[0]
+                        _Reflect=[0, 0, 0], _Angle=0, _DesignObj=Inverter._Inverter(_Name='Inv0In{}'.format(_Name)))[0]
                     self._DesignParameter['Inv0']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_Inv)
                     self._DesignParameter['Inv1'] = self._SrefElementDeclaration(
-                        _Reflect=[1, 0, 0], _Angle=0, _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv1In{}'.format(_Name)))[0]
+                        _Reflect=[1, 0, 0], _Angle=0, _DesignObj=Inverter._Inverter(_Name='Inv1In{}'.format(_Name)))[0]
                     self._DesignParameter['Inv1']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_Inv)
                     self._DesignParameter['Inv2'] = self._SrefElementDeclaration(
-                        _Reflect=[0, 0, 0], _Angle=0, _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv2In{}'.format(_Name)))[0]
+                        _Reflect=[0, 0, 0], _Angle=0, _DesignObj=Inverter._Inverter(_Name='Inv2In{}'.format(_Name)))[0]
                     self._DesignParameter['Inv2']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_Inv)
                     self._DesignParameter['Inv3'] = self._SrefElementDeclaration(
-                        _Reflect=[1, 0, 0], _Angle=0, _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv3In{}'.format(_Name)))[0]
+                        _Reflect=[1, 0, 0], _Angle=0, _DesignObj=Inverter._Inverter(_Name='Inv3In{}'.format(_Name)))[0]
                     self._DesignParameter['Inv3']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_Inv)
 
                     XCoord_Inv = self.getXYRight('Mux1', 'MuxHalf1', 'VDDRail')[0][0] + self._DesignParameter['Inv2']['_DesignObj'].CellXWidth / 2
@@ -554,18 +554,18 @@ if __name__ == '__main__':
     ''' Input Parameters for Layout Object '''
 
     InputParams = dict(
-        TristateInv1_Finger=4,
-        TristateInv1_PMOSWidth=220,
-        TristateInv1_NMOSWidth=400,
+        TristateInv1_Finger=10,
+        TristateInv1_PMOSWidth=880,
+        TristateInv1_NMOSWidth=300,
         TristateInv1_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
         TristateInv1_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
         TristateInv1_YCoordOfInputA=None,  # Optional
         TristateInv1_YCoordOfInputEN=None,  # Optional
         TristateInv1_YCoordOfInputENb=None,  # Optional
 
-        TristateInv2_Finger=1,
-        TristateInv2_PMOSWidth=280,
-        TristateInv2_NMOSWidth=640,
+        TristateInv2_Finger=4,
+        TristateInv2_PMOSWidth=440,
+        TristateInv2_NMOSWidth=280,
         TristateInv2_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
         TristateInv2_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
         TristateInv2_YCoordOfInputA=None,  # Optional
@@ -573,15 +573,15 @@ if __name__ == '__main__':
         TristateInv2_YCoordOfInputENb=None,  # Optional
 
         Inv_Finger=6,
-        Inv_PMOSWidth=520,
-        Inv_NMOSWidth=220,
+        Inv_PMOSWidth=980,
+        Inv_NMOSWidth=800,
         Inv_VDD2PMOS=None,  # Optional
         Inv_VSS2NMOS=None,  # Optional
         Inv_YCoordOfInOut=None,  # Optional
 
-        Inv2_Finger=7,
-        Inv2_PMOSWidth=680,
-        Inv2_NMOSWidth=940,
+        Inv2_Finger=5,
+        Inv2_PMOSWidth=660,
+        Inv2_NMOSWidth=860,
         Inv2_VDD2PMOS=None,  # Optional
         Inv2_VSS2NMOS=None,  # Optional
         Inv2_YCoordOfInOut=None,  # Optional

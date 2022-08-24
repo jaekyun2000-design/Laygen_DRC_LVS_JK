@@ -6,7 +6,7 @@ import time
 from generatorLib import DRC
 from generatorLib import CoordinateCalc as CoordCalc
 from generatorLib.generator_models import TristateInverter
-from generatorLib.generator_models import Inverter_onesemicon
+from generatorLib.generator_models import Inverter
 from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import ViaMet22Met3
 
@@ -1586,13 +1586,13 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
 
         ''' ----------------------------------------------- Inverter ----------------------------------------------- '''
         self._DesignParameter['Inv0'] = self._SrefElementDeclaration(
-            _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv0In{}'.format(_Name)))[0]
+            _DesignObj=Inverter._Inverter(_Name='Inv0In{}'.format(_Name)))[0]
         self._DesignParameter['Inv0']['_DesignObj']._CalculateDesignParameter_v3(**Parameters2_Inv)
         self._DesignParameter['Inv0']['_XYCoordinates'] = [
             [self.getXY('TristateInv1')[0][0] + self._DesignParameter['TristateInv1']['_DesignObj'].CellXWidth / 2 + self._DesignParameter['Inv0']['_DesignObj'].CellXWidth / 2, 0]
         ]
         self._DesignParameter['Inv1'] = self._SrefElementDeclaration(
-            _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv1In{}'.format(_Name)))[0]
+            _DesignObj=Inverter._Inverter(_Name='Inv1In{}'.format(_Name)))[0]
         self._DesignParameter['Inv1']['_DesignObj']._CalculateDesignParameter_v3(**Parameters2_Inv)
         self._DesignParameter['Inv1']['_XYCoordinates'] = [
             [self.getXY('Inv0')[0][0] + self._DesignParameter['Inv0']['_DesignObj'].CellXWidth / 2 + self._DesignParameter['Inv1']['_DesignObj'].CellXWidth / 2, 0]
@@ -1686,14 +1686,14 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
                     del self._DesignParameter['Inv1']
                     Parameters2_Inv['_YCoordOfInput'] = (yMax + yMin) / 2
                     self._DesignParameter['Inv0'] = self._SrefElementDeclaration(
-                        _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv0In{}'.format(_Name)))[0]
+                        _DesignObj=Inverter._Inverter(_Name='Inv0In{}'.format(_Name)))[0]
                     self._DesignParameter['Inv0']['_DesignObj']._CalculateDesignParameter_v3(**Parameters2_Inv)
                     self._DesignParameter['Inv0']['_XYCoordinates'] = [
                         [self.getXY('TristateInv1')[0][0] + self._DesignParameter['TristateInv1']['_DesignObj'].CellXWidth / 2 + self._DesignParameter['Inv0']['_DesignObj'].CellXWidth / 2,
                          0]
                     ]
                     self._DesignParameter['Inv1'] = self._SrefElementDeclaration(
-                        _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv1In{}'.format(_Name)))[0]
+                        _DesignObj=Inverter._Inverter(_Name='Inv1In{}'.format(_Name)))[0]
                     self._DesignParameter['Inv1']['_DesignObj']._CalculateDesignParameter_v3(**Parameters2_Inv)
                     self._DesignParameter['Inv1']['_XYCoordinates'] = [
                         [self.getXY('Inv0')[0][0] + self._DesignParameter['Inv0']['_DesignObj'].CellXWidth / 2 +
@@ -2525,7 +2525,7 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             _DesignObj=TristateInverter.TristateInverter(_Name='TSINV23_CellheightCalcIn{}'.format(_Name)))[0]
         MinHeight_TSINV23 = self._DesignParameter['TSINV23_CellheightCalc']['_DesignObj']._CalcMinHeight(**Parameters3_TristateInv23)
         self._DesignParameter['INV_CellheightCalc'] = self._SrefElementDeclaration(
-            _DesignObj=Inverter_onesemicon._Inverter(_Name='INV_CellheightCalcIn{}'.format(_Name)))[0]
+            _DesignObj=Inverter._Inverter(_Name='INV_CellheightCalcIn{}'.format(_Name)))[0]
         MinHeight_INV = self._DesignParameter['INV_CellheightCalc']['_DesignObj']._CalcMinHeight(**Parameters2_Inv)
 
         minHeight = max(MinHeight_TSINV01, MinHeight_TSINV23, MinHeight_INV)
