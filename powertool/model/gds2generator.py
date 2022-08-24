@@ -1108,7 +1108,7 @@ class LayoutReader:
                         return idx
                 if not layer_name:
                     # layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
-                    layer_name = LayerReader._LayDatNameTmp[layer_number][data_number][0] if \
+                    layer_name = LayerReader._LayDatNumToName[layer_number][data_number] if \
                     LayerReader._LayDatNameTmp[layer_number][data_number][1] == 'drawing' else None
                     if not layer_name:
                         return idx
