@@ -20,8 +20,8 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
 
     def _CalculateDesignParamter_v2(self,
                                     TristateInv1_Finger=1,
-                                    TristateInv1_PMOSWidth=400,
-                                    TristateInv1_NMOSWidth=200,
+                                    TristateInv1_PMOSWidth=500,
+                                    TristateInv1_NMOSWidth=250,
                                     TristateInv1_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
                                     TristateInv1_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
                                     TristateInv1_YCoordOfInputA=None,  # Optional
@@ -38,16 +38,16 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
                                     TristateInv2_YCoordOfInputENb=None,  # Optional
 
                                     Inv_Finger=1,
-                                    Inv_NMOSWidth=200,
                                     Inv_PMOSWidth=400,
+                                    Inv_NMOSWidth=200,
                                     Inv_VDD2PMOS=None,  # Optional
                                     Inv_VSS2NMOS=None,  # Optional
                                     Inv_YCoordOfInOut=None,  # Optional
 
+                                    CellHeight=1800,
                                     ChannelLength=30,
                                     GateSpacing=100,
                                     XVT='SLVT',
-                                    CellHeight=1800,
                                     SupplyRailType=1,
                                     ):
         """
@@ -666,28 +666,62 @@ if __name__ == '__main__':
     _fileName = cellname + '.gds'
 
     ''' Input Parameters for Layout Object '''
+    InputParams = dict(
+        TristateInv1_Finger=1,
+        TristateInv1_PMOSWidth=500,
+        TristateInv1_NMOSWidth=250,
+        TristateInv1_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
+        TristateInv1_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
+        TristateInv1_YCoordOfInputA=None,  # Optional
+        TristateInv1_YCoordOfInputEN=None,  # Optional
+        TristateInv1_YCoordOfInputENb=None,  # Optional
+
+        TristateInv2_Finger=2,
+        TristateInv2_PMOSWidth=400,
+        TristateInv2_NMOSWidth=200,
+        TristateInv2_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
+        TristateInv2_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
+        TristateInv2_YCoordOfInputA=None,  # Optional
+        TristateInv2_YCoordOfInputEN=None,  # Optional
+        TristateInv2_YCoordOfInputENb=None,  # Optional
+
+        Inv_Finger=1,
+        Inv_PMOSWidth=400,
+        Inv_NMOSWidth=200,
+        Inv_VDD2PMOS=None,  # Optional
+        Inv_VSS2NMOS=None,  # Optional
+        Inv_YCoordOfInOut=None,  # Optional
+
+        ChannelLength=30,
+        GateSpacing=100,
+        XVT='SLVT',
+        CellHeight=None,            #
+        SupplyRailType=2,
+    )
+
+    # drc check
     # InputParams = dict(
-    #     TristateInv1_Finger=3,
-    #     TristateInv1_PMOSWidth=400,
-    #     TristateInv1_NMOSWidth=250,
+    #     TristateInv1_Finger=7,
+    #     TristateInv1_PMOSWidth=200,
+    #     TristateInv1_NMOSWidth=240,
     #     TristateInv1_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
     #     TristateInv1_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
     #     TristateInv1_YCoordOfInputA=None,  # Optional
     #     TristateInv1_YCoordOfInputEN=None,  # Optional
     #     TristateInv1_YCoordOfInputENb=None,  # Optional
     #
-    #     TristateInv2_Finger=12,
-    #     TristateInv2_PMOSWidth=400,
-    #     TristateInv2_NMOSWidth=200,
+    #     TristateInv2_Finger=10,
+    #     TristateInv2_PMOSWidth=480,
+    #     TristateInv2_NMOSWidth=520,
     #     TristateInv2_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
     #     TristateInv2_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
     #     TristateInv2_YCoordOfInputA=None,  # Optional
     #     TristateInv2_YCoordOfInputEN=None,  # Optional
     #     TristateInv2_YCoordOfInputENb=None,  # Optional
     #
-    #     Inv_Finger=9,
-    #     Inv_PMOSWidth=400,
-    #     Inv_NMOSWidth=200,
+    #     Inv_Finger=10,
+    #     Inv_PMOSWidth=640,
+    #     Inv_NMOSWidth=720,
     #     Inv_VDD2PMOS=None,  # Optional
     #     Inv_VSS2NMOS=None,  # Optional
     #     Inv_YCoordOfInOut=None,  # Optional
@@ -699,40 +733,6 @@ if __name__ == '__main__':
     #     SupplyRailType=1,
     # )
 
-    # drc check
-    InputParams = dict(
-        TristateInv1_Finger=7,
-        TristateInv1_PMOSWidth=200,
-        TristateInv1_NMOSWidth=240,
-        TristateInv1_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
-        TristateInv1_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
-        TristateInv1_YCoordOfInputA=None,  # Optional
-        TristateInv1_YCoordOfInputEN=None,  # Optional
-        TristateInv1_YCoordOfInputENb=None,  # Optional
-
-        TristateInv2_Finger=10,
-        TristateInv2_PMOSWidth=480,
-        TristateInv2_NMOSWidth=520,
-        TristateInv2_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
-        TristateInv2_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
-        TristateInv2_YCoordOfInputA=None,  # Optional
-        TristateInv2_YCoordOfInputEN=None,  # Optional
-        TristateInv2_YCoordOfInputENb=None,  # Optional
-
-        Inv_Finger=10,
-        Inv_PMOSWidth=640,
-        Inv_NMOSWidth=720,
-        Inv_VDD2PMOS=None,  # Optional
-        Inv_VSS2NMOS=None,  # Optional
-        Inv_YCoordOfInOut=None,  # Optional
-
-        ChannelLength=30,
-        GateSpacing=100,
-        XVT='SLVT',
-        CellHeight=None,            #
-        SupplyRailType=1,
-    )
-
     Checker = DRCchecker.DRCchecker(
         username=My.ID,
         password=My.PW,
@@ -743,7 +743,7 @@ if __name__ == '__main__':
         cellname=cellname,
     )
 
-    Mode_DRCCheck = True  # True | False
+    Mode_DRCCheck = False  # True | False
     Num_DRCCheck = 10
 
     if Mode_DRCCheck:

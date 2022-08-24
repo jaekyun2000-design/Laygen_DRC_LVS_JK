@@ -963,8 +963,8 @@ if __name__ == '__main__':
     ''' Input Parameters for Layout Object '''
 
     InputParams = dict(
-        NumFinger_PM=2,
-        NumFinger_NM=1,
+        NumFinger_PM=5,
+        NumFinger_NM=5,
         PMOSWidth=960,
         NMOSWidth=280,
 
@@ -979,7 +979,7 @@ if __name__ == '__main__':
         SupplyRailType=2,
     )
 
-    Mode_DRCCheck = True  # True | False
+    Mode_DRCCheck = False  # True | False
     Num_DRCCheck = 10
 
     Checker = DRCchecker.DRCchecker(

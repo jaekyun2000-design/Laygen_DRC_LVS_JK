@@ -601,8 +601,11 @@ class TristateInverter(StickDiagram._StickDiagram):
             **dict(_ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2,
                    Met1XWidth=66, Met1YWidth=200, POXWidth=40, POYWidth=200))
 
-        Xgap_InputContactPoly2DummyPoly = (-(GateSpacing + ChannelLength) - self.getXWidth('InputVia_EN', '_POLayer') / 2) \
-                                          - (self.getXY('NMOS', '_PODummyLayer')[0][0] + self.getXWidth('NMOS', '_PODummyLayer') / 2)
+        met1Width = self.getXWidth('NMOS', '_Met1Layer')
+        xCoordOfInputViaENandENb = -met1Width / 2 - drc._Metal1MinSpaceAtCorner - self.getXWidth('InputVia_EN', '_Met1Layer') / 2
+
+        # Xgap_InputContactPoly2DummyPoly = (-(GateSpacing + ChannelLength) - self.getXWidth('InputVia_EN', '_POLayer') / 2) - self.getXYRight('NMOS', '_PODummyLayer')[0][0]   # prev one
+        Xgap_InputContactPoly2DummyPoly = (xCoordOfInputViaENandENb - self.getXWidth('InputVia_EN', '_POLayer') / 2) - self.getXYRight('NMOS', '_PODummyLayer')[0][0]
         Ygap_InputContactPoly2DummyPoly = math.ceil(math.sqrt(drc._PolygateMinSpaceAtCorner ** 2 - Xgap_InputContactPoly2DummyPoly ** 2))
 
         Ymin_Via_EN = math.ceil(self.getXYTop('NMOS', '_PODummyLayer')[0][1]
@@ -636,6 +639,11 @@ class TristateInverter(StickDiagram._StickDiagram):
 
         self._DesignParameter['InputVia_EN']['_XYCoordinates'] = [[int(self.getXY('NMOS', '_Met1Layer')[0][0]), YCoordOfInputVia_EN]]
         self._DesignParameter['InputVia_ENb']['_XYCoordinates'] = [[int(self.getXY('NMOS', '_Met1Layer')[0][0]), YCoordOfInputVia_ENb]]
+
+        self._DesignParameter['InputVia_EN']['_XYCoordinates'] = [[xCoordOfInputViaENandENb, YCoordOfInputVia_EN]]
+        self._DesignParameter['InputVia_ENb']['_XYCoordinates'] = [[xCoordOfInputViaENandENb, YCoordOfInputVia_ENb]]
+
+
         self._DesignParameter['InputVia_A']['_XYCoordinates'] = [[XCoordOfInputVia_A, YCoordOfInputVia_A]]
         self._DesignParameter['POLY_boundary_30'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=ChannelLength, _YWidth=(((self._DesignParameter['InputVia_EN']['_XYCoordinates'][0][1] + self._DesignParameter['InputVia_EN']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['InputVia_EN']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2)) - ((self._DesignParameter['NMOS']['_XYCoordinates'][0][1] + self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2))))
         self._DesignParameter['POLY_boundary_30']['_XYCoordinates'] = [[(self._DesignParameter['NMOS']['_XYCoordinates'][0][0] + self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0]), ((((self._DesignParameter['InputVia_EN']['_XYCoordinates'][0][1] + self._DesignParameter['InputVia_EN']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['InputVia_EN']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2)) + ((self._DesignParameter['NMOS']['_XYCoordinates'][0][1] + self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['NMOS']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2))) / 2)]]
@@ -1553,44 +1561,44 @@ if __name__ == '__main__':
 
     ''' Input Parameters for Layout Object '''
 
-    # InputParams = dict(
-    #     NumFinger=2,
-    #     PMOSWidth=200,
-    #     NMOSWidth=420,
-    #
-    #     ChannelLength=30,
-    #     GateSpacing=100,
-    #     XVT='SLVT',
-    #
-    #     CellHeight=None,  # Option
-    #     VDD2PMOS=None,  # Option (Not work when finger >= 3)
-    #     VSS2NMOS=None,  # Option (Not work when finger >= 3)
-    #
-    #     YCoordOfInputA=None,  # Optional
-    #     YCoordOfInputEN=None,  # Optional
-    #     YCoordOfInputENb=None,  # Optional
-    #     SupplyRailType=1  # (Not work when finger >= 3)
-    # )
     InputParams = dict(
-        NumFinger_NM1 = 4,
-        NumFinger_NM2 = 5,
-        Width_NM1 = 780,
-        Width_NM2 = 380,
-        Width_PM1 = 920,
-        Width_PM2 = 840,
+        NumFinger=1,
+        PMOSWidth=500,
+        NMOSWidth=250,
 
-        CellHeight = None,  # Option
-        YCoordOfInputA = None,  # Option
-        YCoordOfInputEN = None,  # Option
-        YCoordOfInputENb = None,  # Option
+        ChannelLength=30,
+        GateSpacing=100,
+        XVT='SLVT',
 
-        ChannelLength = 30,
-        GateSpacing = 100,
-        XVT = 'SLVT'
+        CellHeight=None,  # Option
+        VDD2PMOS=None,  # Option (Not work when finger >= 3)
+        VSS2NMOS=None,  # Option (Not work when finger >= 3)
+
+        YCoordOfInputA=None,  # Optional
+        YCoordOfInputEN=None,  # Optional
+        YCoordOfInputENb=None,  # Optional
+        SupplyRailType=2  # (Not work when finger >= 3)
     )
+    # InputParams = dict(
+    #     NumFinger_NM1 = 4,
+    #     NumFinger_NM2 = 5,
+    #     Width_NM1 = 780,
+    #     Width_NM2 = 380,
+    #     Width_PM1 = 920,
+    #     Width_PM2 = 840,
+    #
+    #     CellHeight = 1800,  # Option
+    #     YCoordOfInputA = None,  # Option
+    #     YCoordOfInputEN = None,  # Option
+    #     YCoordOfInputENb = None,  # Option
+    #
+    #     ChannelLength = 30,
+    #     GateSpacing = 100,
+    #     XVT = 'SLVT'
+    # )
 
 
-    Mode_DRCCheck = True  # True | False
+    Mode_DRCCheck = False  # True | False
     Num_DRCCheck = 50
 
     Checker = DRCchecker.DRCchecker(
@@ -1634,8 +1642,8 @@ if __name__ == '__main__':
 
                     ''' ---------------------------------- Generate Layout Object -------------------------------------------'''
                     LayoutObj = TristateInverter(_Name=cellname)
-                    # LayoutObj._CalculateDesignParameter(**InputParams)
-                    LayoutObj._CalculateDesignParameterF3(**InputParams)
+                    LayoutObj._CalculateDesignParameter(**InputParams)
+                    # LayoutObj._CalculateDesignParameterF3(**InputParams)
                     LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
                     testStreamFile = open('./{}'.format(_fileName), 'wb')
                     tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
@@ -1688,8 +1696,8 @@ if __name__ == '__main__':
     else:
         ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
         LayoutObj = TristateInverter(_Name=cellname)
-        # LayoutObj._CalculateDesignParameter(**InputParams)
-        LayoutObj._CalculateDesignParameterF3(**InputParams)
+        LayoutObj._CalculateDesignParameter(**InputParams)
+        # LayoutObj._CalculateDesignParameterF3(**InputParams)
         LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
         testStreamFile = open('./{}'.format(_fileName), 'wb')
         tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
