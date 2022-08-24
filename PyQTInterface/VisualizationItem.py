@@ -1091,10 +1091,13 @@ class _VisualizationItem(QGraphicsItemGroup):
                         pass
                     elif self._ItemTraits['_Reflect'] == [0, 0, 0]:
                         rot = self._ItemTraits['_Angle']
-                        sub_element_vi.setRotation(rot)
+                        if self._ItemTraits['_Angle'] is None:
+                            pass
+                        else:
+                            sub_element_vi.setRotation(rot)
                     elif self._ItemTraits['_Reflect'] == [1, 0, 0]:
                         sub_element_vi.setTransform(QTransform(1,0,0,-1,0,0))
-                        if self._ItemTraits['_Angle'] == None:
+                        if self._ItemTraits['_Angle'] is None:
                             pass
                         else:
                             rot = 360 - self._ItemTraits['_Angle']

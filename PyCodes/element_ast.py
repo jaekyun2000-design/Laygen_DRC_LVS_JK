@@ -77,7 +77,8 @@ class Sref(ElementNode):
         'className',    # class name str
         'XY',       # double list or str
         'calculate_fcn',
-        'parameters'
+        'parameters',
+        'reflect'
     )
 
 
@@ -385,6 +386,8 @@ class ElementTransformer(ast.NodeTransformer):
                 if field == 'XY':
                     string_list = [string[1:-1] for string in string_list]
                     node.__dict__[field] = "[" + ','.join(string_list) + "]"
+                elif field == 'reflect':
+                    pass
                 else:
                     node.__dict__[field] = astunparse.unparse(tmp_ast).replace('\n', '')
 
