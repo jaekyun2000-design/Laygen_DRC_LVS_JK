@@ -695,7 +695,7 @@ if __name__ == '__main__':
         ChannelLength=30,
         GateSpacing=100,
         XVT='SLVT',
-        CellHeight=None,            #
+        CellHeight=1800,            #
         SupplyRailType=2,
     )
 
@@ -744,7 +744,7 @@ if __name__ == '__main__':
     )
 
     Mode_DRCCheck = False  # True | False
-    Num_DRCCheck = 10
+    Num_DRCCheck = 2
 
     if Mode_DRCCheck:
         ErrCount = 0            # DRC error
@@ -759,16 +759,16 @@ if __name__ == '__main__':
             for iii in range(0, forLoopCntMax):
                 try:
                     ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
-                    InputParams['TristateInv1_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
-                    InputParams['TristateInv2_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
-                    InputParams['Inv_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
-
-                    InputParams['TristateInv1_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['TristateInv1_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['TristateInv2_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['TristateInv2_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['Inv_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['Inv_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['TristateInv1_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
+                    # InputParams['TristateInv2_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
+                    # InputParams['Inv_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
+                    #
+                    # InputParams['TristateInv1_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['TristateInv1_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['TristateInv2_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['TristateInv2_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['Inv_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['Inv_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
 
                     print("   Last Layout Object's Input Parameters are   ".center(105, '='))
                     tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())

@@ -25,9 +25,9 @@ class TristateInverter(StickDiagram._StickDiagram):
         self._DesignParameter['_Name']['Name'] = _Name
 
     def _CalculateDesignParameter(self,
-                                  NumFinger=4,
-                                  PMOSWidth=400,
-                                  NMOSWidth=200,
+                                  NumFinger=1,
+                                  PMOSWidth=500,
+                                  NMOSWidth=250,
 
                                   CellHeight=1800,  # Option
                                   VDD2PMOS=None,  # Option (Not work when finger >= 3)
@@ -96,7 +96,8 @@ class TristateInverter(StickDiagram._StickDiagram):
                 CellHeight=CellHeight,              # Option
                 YCoordOfInputA=YCoordOfInputA,      # Option
                 YCoordOfInputEN=YCoordOfInputEN,    # Option
-                YCoordOfInputENb=YCoordOfInputENb   # Option
+                YCoordOfInputENb=YCoordOfInputENb,   # Option
+                SupplyRailType=SupplyRailType
             )
 
 
@@ -115,7 +116,8 @@ class TristateInverter(StickDiagram._StickDiagram):
 
                                     ChannelLength=30,
                                     GateSpacing=100,
-                                    XVT='SLVT'
+                                    XVT='SLVT',
+                                    SupplyRailType=1
                                     ):
         """
             main def when finger >= 3,
@@ -138,7 +140,8 @@ class TristateInverter(StickDiagram._StickDiagram):
             CellHeight=tmpLength * 10,
             YCoordOfInputA=None,
             YCoordOfInputEN=None,
-            YCoordOfInputENb=None
+            YCoordOfInputENb=None,
+            SupplyRailType=SupplyRailType
         )
 
         # # prev. calc.
@@ -206,7 +209,8 @@ class TristateInverter(StickDiagram._StickDiagram):
             CellHeight=_CellHeight,
             YCoordOfInputA=YCoordOfInputA,
             YCoordOfInputEN=YCoordOfInputEN,
-            YCoordOfInputENb=YCoordOfInputENb
+            YCoordOfInputENb=YCoordOfInputENb,
+            SupplyRailType=SupplyRailType
         )
 
 
@@ -295,7 +299,8 @@ class TristateInverter(StickDiagram._StickDiagram):
                 CellHeight=tmpLength * 10,
                 YCoordOfInputA=None,
                 YCoordOfInputEN=None,
-                YCoordOfInputENb=None
+                YCoordOfInputENb=None,
+                SupplyRailType=SupplyRailType
             )
 
             # # 1) conservative
@@ -350,7 +355,8 @@ class TristateInverter(StickDiagram._StickDiagram):
             CellHeight=tmpLength * 10,
             YCoordOfInputA=None,
             YCoordOfInputEN=None,
-            YCoordOfInputENb=None
+            YCoordOfInputENb=None,
+            SupplyRailType=SupplyRailType
         )
 
         # # 1) conservative
@@ -1083,12 +1089,20 @@ class TristateInverter(StickDiagram._StickDiagram):
                                                   CellHeight=1800,         # Required
                                                   YCoordOfInputA=None,       # Option
                                                   YCoordOfInputEN=None,     # Option
-                                                  YCoordOfInputENb=None     # Option
+                                                  YCoordOfInputENb=None,     # Option
+                                                 SupplyRailType=1
                                                   ):
 
         drc = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
         MinSnapSpacing = drc._MinSnapSpacing
+
+        if SupplyRailType == 1:
+            bool_deleteViaAndMet1 = False
+        elif SupplyRailType == 2:
+            bool_deleteViaAndMet1 = True
+        else:
+            raise NotImplementedError
 
         NumFinger_PM1 = NumFinger_NM1
         NumFinger_PM2 = NumFinger_NM2
@@ -1101,12 +1115,12 @@ class TristateInverter(StickDiagram._StickDiagram):
         self._DesignParameter['VSSRail'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VSSRailIn{}'.format(_Name)))[0]
         self._DesignParameter['VSSRail']['_DesignObj']._CalculateDesignParameter(
             **dict(NumPitch=max(NumPitch_NM, NumPitch_PM), UnitPitch=(GateSpacing + ChannelLength), Met1YWidth=80,
-                   Met2YWidth=300, PpNpYWidth=180, isPbody=True))
+                   Met2YWidth=300, PpNpYWidth=180, isPbody=True, deleteViaAndMet1=False))
         self._DesignParameter['VSSRail']['_XYCoordinates'] = [[0.0, 0.0]]
         self._DesignParameter['VDDRail'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VDDRailIn{}'.format(_Name)))[0]
         self._DesignParameter['VDDRail']['_DesignObj']._CalculateDesignParameter(
             **dict(NumPitch=max(NumPitch_NM, NumPitch_PM), UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180,
-                   isPbody=False))
+                   isPbody=False, deleteViaAndMet1=False))
         self._DesignParameter['VDDRail']['_XYCoordinates'] = [[0, CellHeight]]
 
 
@@ -1543,6 +1557,83 @@ class TristateInverter(StickDiagram._StickDiagram):
             tmpXYs.append([XYs[0], (topBoundary_PolyRouteYPM2 + botBoundary_PolyRouteYPM2) / 2])
         self._DesignParameter['PolyRouteYPM2']['_XYCoordinates'] = tmpXYs
 
+        #
+        del self._DesignParameter['VSSRail']
+        del self._DesignParameter['VDDRail']
+
+        self._DesignParameter['VSSRail'] = \
+        self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VSSRailIn{}'.format(_Name)))[0]
+        self._DesignParameter['VSSRail']['_DesignObj']._CalculateDesignParameter(
+            **dict(NumPitch=max(NumPitch_NM, NumPitch_PM), UnitPitch=(GateSpacing + ChannelLength), Met1YWidth=80,
+                   Met2YWidth=300, PpNpYWidth=180, isPbody=True, deleteViaAndMet1=bool_deleteViaAndMet1))
+        self._DesignParameter['VSSRail']['_XYCoordinates'] = [[0.0, 0.0]]
+        self._DesignParameter['VDDRail'] = \
+        self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VDDRailIn{}'.format(_Name)))[0]
+        self._DesignParameter['VDDRail']['_DesignObj']._CalculateDesignParameter(
+            **dict(NumPitch=max(NumPitch_NM, NumPitch_PM), UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180,
+                   isPbody=False, deleteViaAndMet1=bool_deleteViaAndMet1))
+        self._DesignParameter['VDDRail']['_XYCoordinates'] = [[0, CellHeight]]
+
+        # VSSRouting
+        if SupplyRailType == 2:
+            self._DesignParameter['ViaForVSS'] = self._SrefElementDeclaration(_DesignObj=Z_PWR_CNT.Z_PWR_CNT(_Name='ViaForVSSIn{}'.format(_Name)))[0]
+            self._DesignParameter['ViaForVSS']['_DesignObj']._CalculateDesignParameter(**dict(_Xnum=1, _Xdistance=0))
+
+            self._DesignParameter['ViaForVDD'] = self._SrefElementDeclaration(_DesignObj=Z_PWR_CNT.Z_PWR_CNT(_Name='ViaForVDDIn{}'.format(_Name)))[0]
+            self._DesignParameter['ViaForVDD']['_DesignObj']._CalculateDesignParameter(**dict(_Xnum=1, _Xdistance=0))
+
+            tmpXYs1 = []     # [[[x1,y1],[x2,y2]], [[x1,y1],[x2,y2]]]
+            tmpXYs2 = []     # [[[x1,y1],[x2,y2]], [[x1,y1],[x2,y2]]]
+            for XY in self._DesignParameter['VSSRouting']['_XYCoordinates']:
+                tmpXYs1.append([XY[0][0],0])
+                tmpXYs2.append([XY[0][0],CellHeight])
+
+            self._DesignParameter['ViaForVSS']['_XYCoordinates'] = tmpXYs1
+            self._DesignParameter['ViaForVDD']['_XYCoordinates'] = tmpXYs2
+        else:
+            pass
+
+
+        ''' ---------------------------------------------- Pin(Label) ---------------------------------------------- '''
+        self._DesignParameter['PIN_VSS'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.04, _Angle=0, _TEXT='VSS',
+            _XYCoordinates=[[0, 0]]
+        )
+        self._DesignParameter['PIN_VDD'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.04, _Angle=0, _TEXT='VDD',
+            _XYCoordinates=[[0, CellHeight]]
+        )
+        self._DesignParameter['PIN_A'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='A',
+            _XYCoordinates=[self.getXY('polyInputA')[0]],
+        )
+        self._DesignParameter['PIN_EN'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='EN',
+            _XYCoordinates=[self.getXY('polyInputEN')[0]],
+        )
+        self._DesignParameter['PIN_ENb'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='ENb',
+            _XYCoordinates=[self.getXY('polyInputENb')[0]],
+        )
+        self._DesignParameter['PIN_Y'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='Y',
+            _XYCoordinates=[[self.getXY('Met1RouteY_Out')[0][0], self.getXY('polyInputA')[0][1]]]
+        )
+
+
+
         # CellXWidth
         self.CellXWidth = self.getXY('NM2', '_PODummyLayer')[-1][0] - self.getXY('NM1', '_PODummyLayer')[0][0]
 
@@ -1562,45 +1653,46 @@ if __name__ == '__main__':
 
     ''' Input Parameters for Layout Object '''
 
-    InputParams = dict(
-        NumFinger=1,
-        PMOSWidth=500,
-        NMOSWidth=250,
-
-        ChannelLength=30,
-        GateSpacing=100,
-        XVT='SLVT',
-
-        CellHeight=None,  # Option
-        VDD2PMOS=None,  # Option (Not work when finger >= 3)
-        VSS2NMOS=None,  # Option (Not work when finger >= 3)
-
-        YCoordOfInputA=None,  # Optional
-        YCoordOfInputEN=None,  # Optional
-        YCoordOfInputENb=None,  # Optional
-        SupplyRailType=2  # (Not work when finger >= 3)
-    )
     # InputParams = dict(
-    #     NumFinger_NM1 = 4,
-    #     NumFinger_NM2 = 5,
-    #     Width_NM1 = 780,
-    #     Width_NM2 = 380,
-    #     Width_PM1 = 920,
-    #     Width_PM2 = 840,
+    #     NumFinger=2,
+    #     PMOSWidth=400,
+    #     NMOSWidth=200,
     #
-    #     CellHeight = 1800,  # Option
-    #     YCoordOfInputA = None,  # Option
-    #     YCoordOfInputEN = None,  # Option
-    #     YCoordOfInputENb = None,  # Option
+    #     ChannelLength=30,
+    #     GateSpacing=100,
+    #     XVT='SLVT',
     #
-    #     ChannelLength = 30,
-    #     GateSpacing = 100,
-    #     XVT = 'SLVT'
+    #     CellHeight=1800,  # Option
+    #     VDD2PMOS=None,  # Option (Not work when finger >= 3)
+    #     VSS2NMOS=None,  # Option (Not work when finger >= 3)
+    #
+    #     YCoordOfInputA=None,  # Optional
+    #     YCoordOfInputEN=None,  # Optional
+    #     YCoordOfInputENb=None,  # Optional
+    #     SupplyRailType=2  # (Not work when finger >= 3)
     # )
+    InputParams = dict(
+        NumFinger_NM1 = 6,
+        NumFinger_NM2 = 5,
+        Width_NM1 = 360,
+        Width_NM2 = 260,
+        Width_PM1 = 540,
+        Width_PM2 = 560,
+
+        CellHeight = None,  # Option
+        YCoordOfInputA = None,  # Option
+        YCoordOfInputEN = None,  # Option
+        YCoordOfInputENb = None,  # Option
+
+        ChannelLength = 30,
+        GateSpacing = 100,
+        XVT = 'SLVT',
+        SupplyRailType=2
+    )
 
 
-    Mode_DRCCheck = False  # True | False
-    Num_DRCCheck = 50
+    Mode_DRCCheck = True  # True | False
+    Num_DRCCheck = 2
 
     Checker = DRCchecker.DRCchecker(
         username=My.ID,
@@ -1629,12 +1721,12 @@ if __name__ == '__main__':
                     # InputParams['PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
                     # InputParams['NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
 
-                    InputParams['NumFinger_NM1'] = DRCchecker.RandomParam(start=3, stop=10, step=1)
-                    InputParams['NumFinger_NM2'] = DRCchecker.RandomParam(start=3, stop=10, step=1)
-                    InputParams['Width_NM1'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['Width_NM2'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['Width_PM1'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['Width_PM2'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['NumFinger_NM1'] = DRCchecker.RandomParam(start=3, stop=10, step=1)
+                    # InputParams['NumFinger_NM2'] = DRCchecker.RandomParam(start=3, stop=10, step=1)
+                    # InputParams['Width_NM1'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['Width_NM2'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['Width_PM1'] = DRCchecker.RandomParam(start=InputParams['Width_NM1'], stop=min(InputParams['Width_NM1']*3,1000), step=20)
+                    # InputParams['Width_PM2'] = DRCchecker.RandomParam(start=InputParams['Width_NM2'], stop=min(InputParams['Width_NM2']*3,1000), step=20)
 
                     print("   Last Layout Object's Input Parameters are   ".center(105, '='))
                     tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
@@ -1643,8 +1735,8 @@ if __name__ == '__main__':
 
                     ''' ---------------------------------- Generate Layout Object -------------------------------------------'''
                     LayoutObj = TristateInverter(_Name=cellname)
-                    LayoutObj._CalculateDesignParameter(**InputParams)
-                    # LayoutObj._CalculateDesignParameterF3(**InputParams)
+                    # LayoutObj._CalculateDesignParameter(**InputParams)
+                    LayoutObj._CalculateDesignParameterF3(**InputParams)
                     LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
                     testStreamFile = open('./{}'.format(_fileName), 'wb')
                     tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
@@ -1697,8 +1789,8 @@ if __name__ == '__main__':
     else:
         ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
         LayoutObj = TristateInverter(_Name=cellname)
-        LayoutObj._CalculateDesignParameter(**InputParams)
-        # LayoutObj._CalculateDesignParameterF3(**InputParams)
+        # LayoutObj._CalculateDesignParameter(**InputParams)
+        LayoutObj._CalculateDesignParameterF3(**InputParams)
         LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
         testStreamFile = open('./{}'.format(_fileName), 'wb')
         tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])

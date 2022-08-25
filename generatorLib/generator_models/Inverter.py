@@ -1059,11 +1059,11 @@ if __name__ == '__main__':
     ''' Input Parameters for Layout Object '''
 
     InputParams = dict(
-        NumFinger=12,
-        PMOSWidth=200,
-        NMOSWidth=400,
+        NumFinger=1,
+        PMOSWidth=400,
+        NMOSWidth=200,
 
-        CellHeight=None,
+        CellHeight=1800,
         VDD2PMOS=None,
         VSS2NMOS=None,
         YCoordOfInput=None,
@@ -1075,8 +1075,8 @@ if __name__ == '__main__':
         SupplyRailType=1
     )
 
-    Mode_DRCCheck = True  # True | False
-    Num_DRCCheck = 100
+    Mode_DRCCheck = False  # True | False
+    Num_DRCCheck = 5
 
     Checker = DRCchecker.DRCchecker(
         username=My.ID,
@@ -1102,10 +1102,10 @@ if __name__ == '__main__':
             for iii in range(0, forLoopCntMax):
                 try:
                     ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
-                    InputParams['NumFinger'] = DRCchecker.RandomParam(start=1, stop=20, step=1)
-                    InputParams['NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['SupplyRailType'] = DRCchecker.RandomParam(start=1, stop=2, step=1)
+                    # InputParams['NumFinger'] = DRCchecker.RandomParam(start=1, stop=20, step=1)
+                    # InputParams['NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['SupplyRailType'] = DRCchecker.RandomParam(start=1, stop=2, step=1)
 
                     print("   Last Layout Object's Input Parameters are   ".center(105, '='))
                     tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
