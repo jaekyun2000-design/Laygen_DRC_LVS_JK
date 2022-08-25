@@ -18,7 +18,7 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
             self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
         self._DesignParameter['_Name']['Name'] = _Name
 
-    def _CalculateDesignParamter_v2(self,
+    def _CalculateDesignParameter_v2(self,
                                     TristateInv1_Finger=1,
                                     TristateInv1_PMOSWidth=500,
                                     TristateInv1_NMOSWidth=250,
@@ -777,7 +777,7 @@ if __name__ == '__main__':
 
                     ''' ---------------------------------- Generate Layout Object -------------------------------------------'''
                     LayoutObj = MUX_PI_4to2(_Name=cellname)
-                    LayoutObj._CalculateDesignParamter_v2(**InputParams)
+                    LayoutObj._CalculateDesignParameter_v2(**InputParams)
                     LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
                     testStreamFile = open('./{}'.format(_fileName), 'wb')
                     tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
@@ -829,7 +829,7 @@ if __name__ == '__main__':
     else:
         ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
         LayoutObj = MUX_PI_4to2(_Name=cellname)
-        LayoutObj._CalculateDesignParamter_v2(**InputParams)
+        LayoutObj._CalculateDesignParameter_v2(**InputParams)
         LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
         testStreamFile = open('./{}'.format(_fileName), 'wb')
         tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])

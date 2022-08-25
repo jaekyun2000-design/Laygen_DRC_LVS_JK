@@ -311,7 +311,7 @@ class TristateInverter(StickDiagram._StickDiagram):
             GapBtwInputVia = drc._Metal1MinSpaceAtCorner
             Met1GapBtw_ViaEN_ViaENb = self.getXYBot('polyInputENb', '_Met1Layer')[0][1] - \
                                       self.getXYTop('polyInputEN', '_Met1Layer')[0][1]
-            Margin_byMet1 = Met1GapBtw_ViaEN_ViaENb - 2 * drc._Metal1MinSpaceAtCorner - self.getYWidth('polyInputA', '_Met1Layer')
+            Margin_byMet1 = Met1GapBtw_ViaEN_ViaENb - 2 * drc._Metal1MinSpaceAtCorner - self.getYWidth('polyInputA', '_Met1Layer') -10  # t
             CellHeight_min = tmpLength * 10 - Margin_byMet1
         # end of if-elif-else
 
@@ -1450,6 +1450,7 @@ class TristateInverter(StickDiagram._StickDiagram):
         self._DesignParameter['polyInputA'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='polyInputAIn{}'.format(_Name)))[0]
         self._DesignParameter['polyInputA']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(
             **dict(_ViaPoly2Met1NumberOfCOX=NumViaX_InputA, _ViaPoly2Met1NumberOfCOY=1))
+        self._DesignParameter['polyInputA']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = 66
 
         # boundary => polyInputA's center Ycoordinate
         topBoundary_byMet1 = min(self.getXYBot('PM1', '_Met1Layer')[0][1], self.getXYBot('via1ForPM2', '_Met1Layer')[0][1]) - drc._Metal1MinSpaceAtCorner - self.getYWidth('polyInputA', '_Met1Layer') / 2
