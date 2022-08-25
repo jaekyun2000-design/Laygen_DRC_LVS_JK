@@ -291,8 +291,8 @@ class ElementManager:
                     tmpDP[key] = ast.__dict__['calculate_fcn']
                 elif key == 'parameters':
                     tmpDP[key] = ast.__dict__['parameters']
-                elif key == 'reflect':
-                    tmpDP['_Reflect'] = ast.__dict__['reflect']
+                # elif key == 'reflect':
+                #     tmpDP['_Reflect'] = ast.__dict__['reflect']
             tmpDP['_DesignParametertype'] = 3
         elif ASTmodule._getASTtype(ast) == 'MacroCell':
             tmpDP = dict()
