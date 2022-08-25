@@ -1543,6 +1543,47 @@ class TristateInverter(StickDiagram._StickDiagram):
             tmpXYs.append([XYs[0], (topBoundary_PolyRouteYPM2 + botBoundary_PolyRouteYPM2) / 2])
         self._DesignParameter['PolyRouteYPM2']['_XYCoordinates'] = tmpXYs
 
+
+        ''' ---------------------------------------------- Pin(Label) ---------------------------------------------- '''
+        self._DesignParameter['PIN_VSS'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.04, _Angle=0, _TEXT='VSS',
+            _XYCoordinates=[[0, 0]]
+        )
+        self._DesignParameter['PIN_VDD'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.04, _Angle=0, _TEXT='VDD',
+            _XYCoordinates=[[0, CellHeight]]
+        )
+        self._DesignParameter['PIN_A'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='A',
+            _XYCoordinates=[self.getXY('polyInputA')[0]],
+        )
+        self._DesignParameter['PIN_EN'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='EN',
+            _XYCoordinates=[self.getXY('polyInputEN')[0]],
+        )
+        self._DesignParameter['PIN_ENb'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='ENb',
+            _XYCoordinates=[self.getXY('polyInputENb')[0]],
+        )
+        self._DesignParameter['PIN_Y'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='Y',
+            _XYCoordinates=[[self.getXY('Met1RouteY_Out')[0][0], self.getXY('polyInputA')[0][1]]]
+        )
+
+
+
         # CellXWidth
         self.CellXWidth = self.getXY('NM2', '_PODummyLayer')[-1][0] - self.getXY('NM1', '_PODummyLayer')[0][0]
 
@@ -1562,41 +1603,41 @@ if __name__ == '__main__':
 
     ''' Input Parameters for Layout Object '''
 
-    InputParams = dict(
-        NumFinger=1,
-        PMOSWidth=500,
-        NMOSWidth=250,
-
-        ChannelLength=30,
-        GateSpacing=100,
-        XVT='SLVT',
-
-        CellHeight=None,  # Option
-        VDD2PMOS=None,  # Option (Not work when finger >= 3)
-        VSS2NMOS=None,  # Option (Not work when finger >= 3)
-
-        YCoordOfInputA=None,  # Optional
-        YCoordOfInputEN=None,  # Optional
-        YCoordOfInputENb=None,  # Optional
-        SupplyRailType=2  # (Not work when finger >= 3)
-    )
     # InputParams = dict(
-    #     NumFinger_NM1 = 4,
-    #     NumFinger_NM2 = 5,
-    #     Width_NM1 = 780,
-    #     Width_NM2 = 380,
-    #     Width_PM1 = 920,
-    #     Width_PM2 = 840,
+    #     NumFinger=1,
+    #     PMOSWidth=500,
+    #     NMOSWidth=250,
     #
-    #     CellHeight = 1800,  # Option
-    #     YCoordOfInputA = None,  # Option
-    #     YCoordOfInputEN = None,  # Option
-    #     YCoordOfInputENb = None,  # Option
+    #     ChannelLength=30,
+    #     GateSpacing=100,
+    #     XVT='SLVT',
     #
-    #     ChannelLength = 30,
-    #     GateSpacing = 100,
-    #     XVT = 'SLVT'
+    #     CellHeight=None,  # Option
+    #     VDD2PMOS=None,  # Option (Not work when finger >= 3)
+    #     VSS2NMOS=None,  # Option (Not work when finger >= 3)
+    #
+    #     YCoordOfInputA=None,  # Optional
+    #     YCoordOfInputEN=None,  # Optional
+    #     YCoordOfInputENb=None,  # Optional
+    #     SupplyRailType=2  # (Not work when finger >= 3)
     # )
+    InputParams = dict(
+        NumFinger_NM1 = 3,
+        NumFinger_NM2 = 5,
+        Width_NM1 = 400,
+        Width_NM2 = 250,
+        Width_PM1 = 800,
+        Width_PM2 = 500,
+
+        CellHeight = 1900,  # Option
+        YCoordOfInputA = None,  # Option
+        YCoordOfInputEN = None,  # Option
+        YCoordOfInputENb = None,  # Option
+
+        ChannelLength = 30,
+        GateSpacing = 100,
+        XVT = 'SLVT'
+    )
 
 
     Mode_DRCCheck = False  # True | False
@@ -1643,8 +1684,8 @@ if __name__ == '__main__':
 
                     ''' ---------------------------------- Generate Layout Object -------------------------------------------'''
                     LayoutObj = TristateInverter(_Name=cellname)
-                    LayoutObj._CalculateDesignParameter(**InputParams)
-                    # LayoutObj._CalculateDesignParameterF3(**InputParams)
+                    # LayoutObj._CalculateDesignParameter(**InputParams)
+                    LayoutObj._CalculateDesignParameterF3(**InputParams)
                     LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
                     testStreamFile = open('./{}'.format(_fileName), 'wb')
                     tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
@@ -1697,8 +1738,8 @@ if __name__ == '__main__':
     else:
         ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
         LayoutObj = TristateInverter(_Name=cellname)
-        LayoutObj._CalculateDesignParameter(**InputParams)
-        # LayoutObj._CalculateDesignParameterF3(**InputParams)
+        # LayoutObj._CalculateDesignParameter(**InputParams)
+        LayoutObj._CalculateDesignParameterF3(**InputParams)
         LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
         testStreamFile = open('./{}'.format(_fileName), 'wb')
         tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])

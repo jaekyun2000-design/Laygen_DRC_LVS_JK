@@ -10,6 +10,7 @@ from generatorLib.generator_models import ViaMet22Met3
 from generatorLib.generator_models import MUX_PI_4to2
 from generatorLib.generator_models import MUX_PI_4to2_half
 from generatorLib.generator_models import Inverter
+from generatorLib.generator_models import SupplyRails
 
 
 class PI_clk_sel_8p_s(StickDiagram._StickDiagram):
@@ -68,7 +69,7 @@ class PI_clk_sel_8p_s(StickDiagram._StickDiagram):
         drc = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
 
-        UnitPitch = ChannelLength + GateSpacing
+        unitPitch = ChannelLength + GateSpacing
 
         # Minimum CellHeight Calculation
         ParametersForMinHeightCalc_MUX4to2 = dict(
@@ -105,7 +106,36 @@ class PI_clk_sel_8p_s(StickDiagram._StickDiagram):
         minCellHeight_INV = self._DesignParameter['INV2_CalcMinHeight']['_DesignObj']._CalcMinHeight(**ParametersForMinHeightCalc_Inv2)
         minCellHeight = max(minCellHeight_MUX4to2Half, minCellHeight_INV)
 
+        #
+        ParametersForMinHeightCalc2_MUX4to2 = ParametersForMinHeightCalc_MUX4to2
+        ParametersForMinHeightCalc2_MUX4to2['CellHeight'] = minCellHeight
+        self._DesignParameter['MuxHalf_CalcMinHeight2'] = self._SrefElementDeclaration(
+            _DesignObj=MUX_PI_4to2_half.MUX_PI_4to2_half(_Name='MuxHalf_CalcMinHeight2In{}'.format(_Name)))[0]
+        self._DesignParameter['MuxHalf_CalcMinHeight2']['_DesignObj']._CalculateDesignParamter_v2(**ParametersForMinHeightCalc2_MUX4to2)
+
+        self._DesignParameter['MuxHalf_CalcMinHeight2']['_XYCoordinates'] = [[0, 0]]     # tmp
+        self._DesignParameter['INV2_CalcMinHeight']['_XYCoordinates'] = [[0, 0]]        # tmp
+        pplayerYWidthMux = minCellHeight_MUX4to2Half - self.getXYBot('MuxHalf_CalcMinHeight2', '_PPLayerForPMOS')[0][1]
+        pplayerYWidthInv2 = minCellHeight_INV - self.getXYBot('INV2_CalcMinHeight', '_PMOS', '_PPLayer')[0][1]
+        ppLayerYWidthMax = max(pplayerYWidthMux, pplayerYWidthInv2)
+        topBoundaryOD_max = minCellHeight - ppLayerYWidthMax - drc._OdMinSpace2Pp
+
+        tmpStr1 = 'NMOS' if TristateInv1_Finger in (1,2) else 'NM1'
+        tmpStr2 = 'NMOS' if TristateInv2_Finger in (1,2) else 'NM1'
+
+        topBoundaryOD_MuxTSINV1 = self.getXYTop('MuxHalf_CalcMinHeight2', 'TristateInv0', tmpStr1, '_ODLayer')[0][1]
+        topBoundaryOD_MuxTSINV2 = self.getXYTop('MuxHalf_CalcMinHeight2', 'TristateInv2', tmpStr2, '_ODLayer')[0][1]
+        topBoundaryOD_MuxINV = self.getXYTop('MuxHalf_CalcMinHeight2', 'Inv0', '_NMOS', '_ODLayer')[0][1]
+        topBoundaryOD_Mux = max(topBoundaryOD_MuxTSINV1, topBoundaryOD_MuxTSINV2, topBoundaryOD_MuxINV)
+        topBoundaryOD_INV2 = self.getXYTop('INV2_CalcMinHeight', '_NMOS', '_ODLayer')[0][1]
+        topBoundaryOD_forMinCalc = max(topBoundaryOD_Mux, topBoundaryOD_INV2)
+
+        if topBoundaryOD_forMinCalc > topBoundaryOD_max:
+            minCellHeight = minCellHeight + (topBoundaryOD_forMinCalc - topBoundaryOD_max)
+
+
         del self._DesignParameter['MuxHalf_CalcMinHeight']
+        del self._DesignParameter['MuxHalf_CalcMinHeight2']
         del self._DesignParameter['INV2_CalcMinHeight']
 
         if CellHeight == None:
@@ -241,8 +271,79 @@ class PI_clk_sel_8p_s(StickDiagram._StickDiagram):
             pass
 
 
+
+
+
+
+
         ''' --- TristateInverter3 - LastInverter '''
         if TristateInv2_Finger == 1:
+            # shift right inv0123
+            xCoord_inv_recalc = self.getXY('Inv0')[0][0] + unitPitch
+            self._DesignParameter['Inv0']['_XYCoordinates'][0][0] = xCoord_inv_recalc
+            self._DesignParameter['Inv1']['_XYCoordinates'][0][0] = xCoord_inv_recalc
+            self._DesignParameter['Inv2']['_XYCoordinates'][0][0] = xCoord_inv_recalc
+            self._DesignParameter['Inv3']['_XYCoordinates'][0][0] = xCoord_inv_recalc
+
+            #
+            self._DesignParameter['Met1Path01'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=66,)
+            xy1 = [self.getXY('Inv0', 'InputMet1')[0][0], self.getXY('Inv0', 'InputMet1')[0][1]]
+            xy2 = [self.getXYRight('Mux1', 'MuxHalf1', 'VDDRail')[0][0] + unitPitch / 2, self.getXY('Inv0', 'InputMet1')[0][1]]
+
+            d1 = abs((self.getXY('Inv0', 'InputMet1')[0][1] + self.getWidth('Met1Path01') / 2) - self.getXYBot('Mux1', 'MuxHalf1', 'TristateInv3','InputVia_A', '_Met1Layer')[0][1])
+            d2 = abs((self.getXY('Inv0', 'InputMet1')[0][1] + self.getWidth('Met1Path01') / 2) - self.getXYTop('Mux1', 'MuxHalf1', 'TristateInv3','InputVia_A', '_Met1Layer')[0][1])
+            d3 = abs((self.getXY('Inv0', 'InputMet1')[0][1] - self.getWidth('Met1Path01') / 2) - self.getXYBot('Mux1', 'MuxHalf1', 'TristateInv3','InputVia_A', '_Met1Layer')[0][1])
+            d4 = abs((self.getXY('Inv0', 'InputMet1')[0][1] - self.getWidth('Met1Path01') / 2) - self.getXYTop('Mux1', 'MuxHalf1', 'TristateInv3','InputVia_A', '_Met1Layer')[0][1])
+            if min(d1, d2, d3, d4) > drc._Metal1MinSpaceAtCorner:
+                XYList = [[xy1, xy2]]
+            else:
+                topBoundary1 = self.getXYBot('Mux1', 'MuxHalf1', 'TristateInv3','InputVia_A', '_Met1Layer')[0][1] - drc._Metal1MinSpaceAtCorner - self.getWidth('Met1Path01') / 2
+                topBoundary2 = self.getXY('Inv0', 'InputMet1')[0][1] - drc._Metal1MinSpaceAtCorner
+                topBoundary = min(topBoundary1, topBoundary2)
+                botBoundary = self.getXYTop('Mux1', 'MuxHalf1', 'TristateInv3','NMOS', '_Met1Layer')[0][1] + drc._Metal1MinSpaceAtCorner + self.getWidth('Met1Path01') / 2
+                if topBoundary < botBoundary:
+                    raise NotImplementedError
+                xy3 = [self.getXYRight('Mux1', 'MuxHalf1', 'VDDRail')[0][0] + unitPitch / 2, topBoundary]
+                xy4 = [self.getXY('Mux1', 'MuxHalf1', 'TristateInv3')[0][0], topBoundary]
+                XYList = [[xy1, xy2, xy3, xy4]]
+            self._DesignParameter['Met1Path01']['_XYCoordinates'] = XYList
+
+
+            #
+            self._DesignParameter['VSSRail1'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VSSRail1In{}'.format(_Name)))[0]
+            self._DesignParameter['VDDRail1'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='VDDRail1In{}'.format(_Name)))[0]
+            self._DesignParameter['VSSRail1']['_DesignObj']._CalculateDesignParameter(
+                **dict(NumPitch=1, UnitPitch=(GateSpacing + ChannelLength),
+                       Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True, deleteViaAndMet1=True))
+            self._DesignParameter['VDDRail1']['_DesignObj']._CalculateDesignParameter(
+                **dict(NumPitch=1, UnitPitch=(ChannelLength + GateSpacing),
+                       Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=False, deleteViaAndMet1=True))
+            rightBoundary = self.getXYLeft('Inv0', 'PbodyContact', '_ODLayer')[0][0]
+            leftBoundary = self.getXYRight('Mux1', 'MuxHalf1', 'TristateInv3', 'VSSRail', '_ODLayer')[0][0]
+            self._DesignParameter['VSSRail1']['_XYCoordinates'] = [
+                [(rightBoundary + leftBoundary) / 2, _CellHeight * 0],
+                [(rightBoundary + leftBoundary) / 2, _CellHeight * 2],
+                [(rightBoundary + leftBoundary) / 2, _CellHeight * 4]
+            ]
+            self._DesignParameter['VDDRail1']['_XYCoordinates'] = [
+                [(rightBoundary + leftBoundary) / 2, _CellHeight * 1],
+                [(rightBoundary + leftBoundary) / 2, _CellHeight * 3]
+            ]
+
+
+            self._DesignParameter['XVTLayer'] = self._BoundaryElementDeclaration(
+                _Layer=DesignParameters._LayerMapping[XVT][0],
+                _Datatype=DesignParameters._LayerMapping[XVT][1],
+                _XWidth=rightBoundary - leftBoundary,
+                _YWidth=_CellHeight * 4,
+                _XYCoordinates=[
+                    [(rightBoundary + leftBoundary) / 2, _CellHeight * 2]
+                ]
+            )
+
             pass
         elif TristateInv2_Finger == 2:
             rightBoundary = self.getXYRight('Inv0', 'InputMet1')[0][0]
@@ -320,6 +421,189 @@ class PI_clk_sel_8p_s(StickDiagram._StickDiagram):
             ]
         )
 
+        # pin
+        xy1 = CoordCalc.Add(self.getXY('Mux1', 'MuxHalf1')[0], self._DesignParameter['Mux1']['_DesignObj']._DesignParameter['MuxHalf1']['_DesignObj']._DesignParameter['Met3Route_temp01']['_XYCoordinates'][0][0])
+        xy2 = CoordCalc.Add(self.getXY('Mux1', 'MuxHalf1')[0], self._DesignParameter['Mux1']['_DesignObj']._DesignParameter['MuxHalf1']['_DesignObj']._DesignParameter['Met3Route_temp01']['_XYCoordinates'][1][0])
+        self._DesignParameter['PIN_clk_selnb0'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL3PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL3PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_selnb<0>',
+            _XYCoordinates=[xy1]
+        )
+        self._DesignParameter['PIN_clk_seln0'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL3PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL3PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_seln<0>',
+            _XYCoordinates=[xy2]
+        )
+        self._DesignParameter['PIN_clk_selnb1'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL3PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL3PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_selnb<1>',
+            _XYCoordinates=[self.getXY('Mux1', 'MuxHalf1', 'Via2_temp05')[0]]
+        )
+        self._DesignParameter['PIN_clk_seln1'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL3PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL3PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_seln<1>',
+            _XYCoordinates=[self.getXY('Mux1', 'MuxHalf1', 'Via2_temp05')[1]]
+        )
+
+        #
+        # ['qwerqwer[0]', 'Mux2[0]', 'MuxHalf1[0]', 'Met3Route_temp01[0][0]']
+        # ['qwer[0]', 'Mux2[0]', 'MuxHalf1[0]', 'Via2_temp00[0]']
+        # ['qwerqwer[0]', 'Mux2[0]', 'MuxHalf1[0]', 'Via2_temp05[0]']
+        # ['qwerqwer[0]', 'Mux2[0]', 'MuxHalf1[0]', 'Met3Route_temp06[0][0]']
+        xy1 = CoordCalc.Add(self.getXY('Mux2', 'MuxHalf1')[0], self._DesignParameter['Mux2']['_DesignObj']._DesignParameter['MuxHalf1']['_DesignObj']._DesignParameter['Met3Route_temp01']['_XYCoordinates'][0][0])
+        xy2 = CoordCalc.Add(self.getXY('Mux2', 'MuxHalf1')[0], self._DesignParameter['Mux2']['_DesignObj']._DesignParameter['MuxHalf1']['_DesignObj']._DesignParameter['Met3Route_temp01']['_XYCoordinates'][1][0])
+        self._DesignParameter['PIN_clk_selpb0'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL3PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL3PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_selpb<0>',
+            _XYCoordinates=[self.getXY('Mux2', 'MuxHalf1', 'Via2_temp00')[0]]
+        )
+        self._DesignParameter['PIN_clk_selp0'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL3PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL3PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_selp<0>',
+            _XYCoordinates=[self.getXY('Mux2', 'MuxHalf1', 'Via2_temp00')[1]]
+        )
+        self._DesignParameter['PIN_clk_selpb1'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL3PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL3PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_selpb<1>',
+            _XYCoordinates=[self.getXY('Mux2', 'MuxHalf1', 'Via2_temp05')[0]]
+        )
+        self._DesignParameter['PIN_clk_selp1'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL3PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL3PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_selp<1>',
+            _XYCoordinates=[self.getXY('Mux2', 'MuxHalf1', 'Via2_temp05')[1]]
+        )
+
+        #
+        self._DesignParameter['PIN_clkn'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clkn',
+            _XYCoordinates=[self.getXY('Mux1', 'MuxHalf2', 'Inv0', 'PIN_Y')[0]]
+        )
+        self._DesignParameter['PIN_clkp'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clkp',
+            _XYCoordinates=[self.getXY('Mux2', 'MuxHalf2', 'Inv0', 'PIN_Y')[0]]
+        )
+        # out
+        self._DesignParameter['PIN_clkb_odd'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clkb_odd',
+            _XYCoordinates=[self.getXY('Inv0', 'PIN_Y')[0]]
+        )
+        self._DesignParameter['PIN_clk_odd'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_odd',
+            _XYCoordinates=[self.getXY('Inv1', 'PIN_Y')[0]]
+        )
+        self._DesignParameter['PIN_clk_even'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_even',
+            _XYCoordinates=[self.getXY('Inv2', 'PIN_Y')[0]]
+        )
+        self._DesignParameter['PIN_clkb_even'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clkb_even',
+            _XYCoordinates=[self.getXY('Inv3', 'PIN_Y')[0]]
+        )
+        # 5 7 3 1 0 2 6 4
+        #['qwer[0]', 'Mux1[0]', 'MuxHalf1[0]', 'Met2Route_temp8[0][0]']
+        # ['qwer[0]', 'Mux1[0]', 'MuxHalf2[0]', 'Met2Route_temp8[0][0]']
+        # ['qwer[0]', 'Mux2[0]', 'MuxHalf2[0]', 'Met2Route_temp8[0][0]']
+        # ['qwer[0]', 'Mux2[0]', 'MuxHalf1[0]', 'Met2Route_temp8[0][0]']
+        xy1 = CoordCalc.Add(self.getXY('Mux1', 'MuxHalf1')[0],  self._DesignParameter['Mux1']['_DesignObj']._DesignParameter['MuxHalf1']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][0][-1])
+        xy2 = CoordCalc.Add(self.getXY('Mux1', 'MuxHalf1')[0],  self._DesignParameter['Mux1']['_DesignObj']._DesignParameter['MuxHalf1']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][1][-1])
+        xy3 = CoordCalc.Add(self.getXY('Mux1', 'MuxHalf2')[0],  [self._DesignParameter['Mux1']['_DesignObj']._DesignParameter['MuxHalf2']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][1][-1][0], -self._DesignParameter['Mux1']['_DesignObj']._DesignParameter['MuxHalf2']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][1][-1][1]])
+        xy4 = CoordCalc.Add(self.getXY('Mux1', 'MuxHalf2')[0],  [self._DesignParameter['Mux1']['_DesignObj']._DesignParameter['MuxHalf2']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][0][-1][0], -self._DesignParameter['Mux1']['_DesignObj']._DesignParameter['MuxHalf2']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][0][-1][1]])
+
+        self._DesignParameter['PIN_clk_in5'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_in<5>',
+            _XYCoordinates=[xy1]
+        )
+        self._DesignParameter['PIN_clk_in7'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_in<7>',
+            _XYCoordinates=[xy2]
+        )
+        self._DesignParameter['PIN_clk_in3'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_in<3>',
+            _XYCoordinates=[xy3]
+        )
+        self._DesignParameter['PIN_clk_in1'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_in<1>',
+            _XYCoordinates=[xy4]
+        )
+
+        xy8 = CoordCalc.Add(self.getXY('Mux2', 'MuxHalf1')[0],
+                            [self._DesignParameter['Mux2']['_DesignObj']._DesignParameter['MuxHalf1']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][0][-1][0],
+                             -self._DesignParameter['Mux2']['_DesignObj']._DesignParameter['MuxHalf1']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][0][-1][1]])
+        xy7 = CoordCalc.Add(self.getXY('Mux2', 'MuxHalf1')[0],
+                            [self._DesignParameter['Mux2']['_DesignObj']._DesignParameter['MuxHalf1']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][1][-1][0],
+                             -self._DesignParameter['Mux2']['_DesignObj']._DesignParameter['MuxHalf1']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][1][-1][1]])
+        xy6 = CoordCalc.Add(self.getXY('Mux2', 'MuxHalf2')[0], [
+            self._DesignParameter['Mux2']['_DesignObj']._DesignParameter['MuxHalf2']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][1][-1][0], +
+            self._DesignParameter['Mux2']['_DesignObj']._DesignParameter['MuxHalf2']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][1][-1][1]])
+        xy5 = CoordCalc.Add(self.getXY('Mux2', 'MuxHalf2')[0], [
+            self._DesignParameter['Mux2']['_DesignObj']._DesignParameter['MuxHalf2']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][0][-1][0], +
+            self._DesignParameter['Mux2']['_DesignObj']._DesignParameter['MuxHalf2']['_DesignObj']._DesignParameter['Met2Route_temp8']['_XYCoordinates'][0][-1][1]])
+
+        self._DesignParameter['PIN_clk_in0'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_in<0>',
+            _XYCoordinates=[xy5]
+        )
+        self._DesignParameter['PIN_clk_in2'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_in<2>',
+            _XYCoordinates=[xy6]
+        )
+        self._DesignParameter['PIN_clk_in6'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_in<6>',
+            _XYCoordinates=[xy7]
+        )
+        self._DesignParameter['PIN_clk_in4'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='clk_in<4>',
+            _XYCoordinates=[xy8]
+        )
+        #
+        self._DesignParameter['PIN_VSS'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='VSS',
+            _XYCoordinates=[[0, 0], [0, 2 * _CellHeight], [0, 4 * _CellHeight]]
+        )
+        self._DesignParameter['PIN_VDD'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _Mag=0.01, _Angle=0, _TEXT='VDD',
+            _XYCoordinates=[[0, _CellHeight], [0, 3 * _CellHeight]]
+        )
 
         ''' -------------------------------------------------------------------------------------------------------- '''
         print(''.center(105, '#'))
@@ -343,17 +627,17 @@ if __name__ == '__main__':
     ''' Input Parameters for Layout Object '''
 
     InputParams = dict(
-        TristateInv1_Finger=9,
-        TristateInv1_PMOSWidth=620,
-        TristateInv1_NMOSWidth=860,
+        TristateInv1_Finger=1,
+        TristateInv1_PMOSWidth=400,
+        TristateInv1_NMOSWidth=200,
         TristateInv1_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
         TristateInv1_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
         TristateInv1_YCoordOfInputA=None,  # Optional
         TristateInv1_YCoordOfInputEN=None,  # Optional
         TristateInv1_YCoordOfInputENb=None,  # Optional
 
-        TristateInv2_Finger=5,
-        TristateInv2_PMOSWidth=240,
+        TristateInv2_Finger=2,
+        TristateInv2_PMOSWidth=400,
         TristateInv2_NMOSWidth=200,
         TristateInv2_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
         TristateInv2_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
@@ -361,16 +645,16 @@ if __name__ == '__main__':
         TristateInv2_YCoordOfInputEN=None,  # Optional
         TristateInv2_YCoordOfInputENb=None,  # Optional
 
-        Inv_Finger=8,
-        Inv_PMOSWidth=680,
-        Inv_NMOSWidth=780,
+        Inv_Finger=1,
+        Inv_PMOSWidth=400,
+        Inv_NMOSWidth=200,
         Inv_VDD2PMOS=None,  # Optional
         Inv_VSS2NMOS=None,  # Optional
         Inv_YCoordOfInOut=None,  # Optional
 
-        Inv2_Finger=1,
-        Inv2_PMOSWidth=280,
-        Inv2_NMOSWidth=960,
+        Inv2_Finger=2,     # 10
+        Inv2_PMOSWidth=400,
+        Inv2_NMOSWidth=200,
         Inv2_VDD2PMOS=None,  # Optional
         Inv2_VSS2NMOS=None,  # Optional
         Inv2_YCoordOfInOut=None,  # Optional
@@ -393,7 +677,7 @@ if __name__ == '__main__':
     )
 
     Mode_DRCCheck = True  # True | False
-    Num_DRCCheck = 100
+    Num_DRCCheck = 50
 
     if Mode_DRCCheck:
         ErrCount = 0            # DRC error
@@ -413,14 +697,25 @@ if __name__ == '__main__':
                     InputParams['Inv_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
                     InputParams['Inv2_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
 
-                    InputParams['TristateInv1_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
                     InputParams['TristateInv1_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['TristateInv2_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['TristateInv1_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['TristateInv1_NMOSWidth'],
+                                                                                   stop=min(3*InputParams['TristateInv1_NMOSWidth'],1000),
+                                                                                   step=20)
+
                     InputParams['TristateInv2_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['Inv_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['TristateInv2_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['TristateInv2_NMOSWidth'],
+                                                                                   stop=min(3*InputParams['TristateInv2_NMOSWidth'],1000),
+                                                                                   step=20)
+
                     InputParams['Inv_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['Inv2_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['Inv_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['Inv_NMOSWidth'],
+                                                                          stop=min(3*InputParams['Inv_NMOSWidth'],1000),
+                                                                          step=20)
+
                     InputParams['Inv2_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['Inv2_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['Inv2_NMOSWidth'],
+                                                                           stop=min(3*InputParams['Inv2_NMOSWidth'],1000),
+                                                                           step=20)
 
                     print("   Last Layout Object's Input Parameters are   ".center(105, '='))
                     inputParamStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
