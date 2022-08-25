@@ -28,6 +28,44 @@ class _Inverter(StickDiagram._StickDiagram):
             self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name),
                                          _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 
+    def _CalculateDesignParameter(self,
+                                  NumFinger=1,
+                                  PMOSWidth=400,
+                                  NMOSWidth=200,
+
+                                  CellHeight=1800,
+                                  VDD2PMOS=None,
+                                  VSS2NMOS=None,
+                                  YCoordOfInput=None,
+
+                                  ChannelLength=30,
+                                  GateSpacing=100,
+                                  XVT='SLVT',
+                                  SDWidth=66,
+                                  SupplyRailType=1
+                                  ):
+
+        InputParameters = dict(
+            _Finger=NumFinger,
+            _ChannelWidth=NMOSWidth,
+            _ChannelLength=ChannelLength,
+            _NPRatio=(PMOSWidth / NMOSWidth),
+
+            _VDD2VSSHeight=CellHeight,
+            _VDD2PMOSHeight=VDD2PMOS,
+            _VSS2NMOSHeight=VSS2NMOS,
+            _YCoordOfInput=YCoordOfInput,
+
+            _Dummy=True,                        #
+            _XVT=XVT,
+            _GateSpacing=GateSpacing,
+            _SDWidth=SDWidth,
+            _SupplyRailType=SupplyRailType
+        )
+
+        self._CalculateDesignParameter_v3(**InputParameters)
+
+
     def _CalculateDesignParameter_v3(self,
                                      _Finger=1,
                                      _ChannelWidth=200,
@@ -149,11 +187,13 @@ class _Inverter(StickDiagram._StickDiagram):
 
         VIAPMOSMet12 = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
         VIAPMOSMet12['_ViaMet12Met2NumberOfCOX'] = 1
-        VIAPMOSMet12['_ViaMet12Met2NumberOfCOY'] = NumViaYPMOS if (NumViaYPMOS > 2) else 2
+        #VIAPMOSMet12['_ViaMet12Met2NumberOfCOY'] = NumViaYPMOS if (NumViaYPMOS > 2) else 2
+        VIAPMOSMet12['_ViaMet12Met2NumberOfCOY'] = 2
 
         self._DesignParameter['_ViaMet12Met2OnPMOSOutput'] = self._SrefElementDeclaration(
             _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='ViaMet12Met2OnPMOSOutputIn{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2OnPMOSOutput']['_DesignObj']._CalculateDesignParameterSameEnclosure(**VIAPMOSMet12)
+        self._DesignParameter['_ViaMet12Met2OnPMOSOutput']['_XYCoordinates'] = [[0, 0]]  # temporal setting
 
         # 1-1) Metal1 YWidth re-calculation
         self._DesignParameter['_ViaMet12Met2OnPMOSOutput']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] \
@@ -176,11 +216,13 @@ class _Inverter(StickDiagram._StickDiagram):
 
         VIANMOSMet12 = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
         VIANMOSMet12['_ViaMet12Met2NumberOfCOX'] = 1
-        VIANMOSMet12['_ViaMet12Met2NumberOfCOY'] = NumViaYNMOS if (NumViaYNMOS > 2) else 2
+        # VIANMOSMet12['_ViaMet12Met2NumberOfCOY'] = NumViaYNMOS if (NumViaYNMOS > 2) else 2
+        VIANMOSMet12['_ViaMet12Met2NumberOfCOY'] = 2
 
         self._DesignParameter['_ViaMet12Met2OnNMOSOutput'] = self._SrefElementDeclaration(
             _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='ViaMet12Met2OnNMOSOutputIn{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_DesignObj']._CalculateDesignParameterSameEnclosure(**VIANMOSMet12)
+        self._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = [[0,0]]  # temporal setting
 
         # 2-1) Metal1 YWidth re-calculation
         self._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] \
@@ -258,16 +300,30 @@ class _Inverter(StickDiagram._StickDiagram):
         else:
             DistanceBtwVDD2PMOS = _VDD2PMOSHeight
 
-
+        tmpDRC_ODandPoly = 31
         # 2) Calculate Distance between 'MOSFET' and 'Input gate Contact'
         if _Finger not in (1, 2):
-            DistanceBtwNMOS2PolyInput = \
+            DistanceBtwNMOS2PolyInput_byMet1 = \
                 0.5 * max(self.getYWidth('_NMOS', '_Met1Layer'), self.getYWidth('_ViaMet12Met2OnNMOSOutput', '_Met1Layer')) \
                 + 0.5 * WidthOfInputXM1 + _DRCObj._Metal1MinSpaceAtCorner
+            DistanceBtwNMOS2PolyInput_byODandPoly = \
+                0.5 * self.getYWidth('_NMOS', '_ODLayer') \
+                + 0.5 * (_DRCObj._CoMinWidth + 2 * _DRCObj._CoMinEnclosureByPOAtLeastTwoSide) + tmpDRC_ODandPoly
 
-            DistanceBtwPMOS2PolyInput = \
+            topVia1Center_2_NMOS = CoordCalc.getXYCoords_MaxY(self.getXY('_ViaMet12Met2OnNMOSOutput', '_COLayer'))[0][1] - self.getXY('_ViaMet12Met2OnNMOSOutput')[0][1]    # calc by temporally set Via coordinates =[[0,0]]
+            distanceBtwNMOS2PolyInput_byVia1Contact = topVia1Center_2_NMOS + (_DRCObj._VIAxMinSpace2 + _DRCObj._VIAxMinWidth)        ##
+            DistanceBtwNMOS2PolyInput = max(DistanceBtwNMOS2PolyInput_byMet1, DistanceBtwNMOS2PolyInput_byODandPoly, distanceBtwNMOS2PolyInput_byVia1Contact)
+
+            DistanceBtwPMOS2PolyInput_byMet1 = \
                 0.5 * max(self.getYWidth('_PMOS', '_Met1Layer'), self.getYWidth('_ViaMet12Met2OnPMOSOutput', '_Met1Layer')) \
                 + 0.5 * WidthOfInputXM1 + _DRCObj._Metal1MinSpaceAtCorner
+            DistanceBtwPMOS2PolyInput_byODandPoly = \
+                0.5 * self.getYWidth('_PMOS', '_ODLayer') \
+                + 0.5 * (_DRCObj._CoMinWidth + 2 * _DRCObj._CoMinEnclosureByPOAtLeastTwoSide) + tmpDRC_ODandPoly
+            #
+            botVia1Center_2_PMOS = self.getXY('_ViaMet12Met2OnPMOSOutput')[0][1] - CoordCalc.getXYCoords_MinY(self.getXY('_ViaMet12Met2OnPMOSOutput', '_COLayer'))[0][1]    # calc by temporally set Via coordinates =[[0,0]]
+            distanceBtwPMOS2PolyInput_byVia1Contact = botVia1Center_2_PMOS + (_DRCObj._VIAxMinSpace2 + _DRCObj._VIAxMinWidth)  ##
+            DistanceBtwPMOS2PolyInput = max(DistanceBtwPMOS2PolyInput_byMet1, DistanceBtwPMOS2PolyInput_byODandPoly, distanceBtwPMOS2PolyInput_byVia1Contact)
 
         else:  # Finger == 1, 2
             XCoordinateOfViaF1 = self._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_XYCoordinatePMOSSupplyRouting']['_XYCoordinates'][0][0] + (_ChannelLength + _GateSpacing) - self._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2 - 60 - self.getXWidth('_VIAPoly2Met1_F1', '_Met1Layer') / 2
@@ -390,6 +446,15 @@ class _Inverter(StickDiagram._StickDiagram):
             YCoordOfInputVia = YCoordOfInputVia_byCenterOfPO if _YCoordOfInput == None else _YCoordOfInput
 
             self._DesignParameter['_VIAPoly2Met1_F1']['_XYCoordinates'] = [[XCoordinateOfViaF1, YCoordOfInputVia]]
+
+            # error check
+            xDistance = self.getXYLeft('_VIAPoly2Met1_F1', '_POLayer')[0][0] - self.getXYRight('_NMOS', '_PODummyLayer')[0][0]
+            yDistance1 = abs(self.getXYTop('_VIAPoly2Met1_F1', '_POLayer')[0][1] - self.getXYBot('_PMOS', '_PODummyLayer')[0][1])
+            yDistance2 = abs(self.getXYBot('_VIAPoly2Met1_F1', '_POLayer')[0][1] - self.getXYTop('_NMOS', '_PODummyLayer')[0][1])
+            yDistance = min(yDistance1, yDistance2)
+            if yDistance1 < 0 or yDistance2 < 0 or (xDistance ** 2 + yDistance ** 2) < _DRCObj._PolygateMinSpace ** 2:
+                raise NotImplementedError
+            # _YGapPolyDummy2InputViaPoly = math.ceil(math.sqrt(_DRCObj._PolygateMinSpaceAtCorner ** 2 - _XGapPolyDummyEdge2PolyEdge ** 2))
 
         elif (_Finger == 1) and (DesignParameters._Technology == 'TSMC65nm'):
             raise NotImplementedError
@@ -673,16 +738,20 @@ class _Inverter(StickDiagram._StickDiagram):
         Strategy : Route Input M1 on the same YCoordinates as the SupplyRouting M1
                    (Supply M1 outside the poly gate route is ignored)
         '''
+        self._DesignParameter['_InputRouting'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1])
+        self._DesignParameter['_InputRouting']['_Width'] = _DRCObj._VIAxMinWidth + 2 * _DRCObj._Metal1MinEnclosureVia3
+
         tmpInputRouting = []
         if '_VIAMOSPoly2Met1LeftMost' in self._DesignParameter:
-            tmpInputRouting.append(self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'])
+            # tmpInputRouting.append(self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'])
+            tmpInputRouting.append([
+                [self.getXYLeft('_VIAMOSPoly2Met1LeftMost', '_Met1Layer')[0][0] + self.getWidth('_InputRouting') / 2, self.getXY('_VIAMOSPoly2Met1LeftMost')[0][1]],
+                [self.getXYLeft('_VIAMOSPoly2Met1LeftMost', '_Met1Layer')[1][0] + self.getWidth('_InputRouting') / 2, self.getXY('_VIAMOSPoly2Met1LeftMost')[1][1]],
+            ])
         if '_VIANMOSPoly2Met1' in self._DesignParameter:
             for i in range(0, len(self._DesignParameter['_VIANMOSPoly2Met1']['_XYCoordinates'])):
                 tmpInputRouting.append([self._DesignParameter['_VIANMOSPoly2Met1']['_XYCoordinates'][i],
                                         self._DesignParameter['_VIAPMOSPoly2Met1']['_XYCoordinates'][i]])
-
-        self._DesignParameter['_InputRouting'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1])
-        self._DesignParameter['_InputRouting']['_Width'] = _DRCObj._VIAxMinWidth + 2 * _DRCObj._Metal1MinEnclosureVia3
         self._DesignParameter['_InputRouting']['_XYCoordinates'] = tmpInputRouting
 
         ################################################################################################################
@@ -706,19 +775,41 @@ class _Inverter(StickDiagram._StickDiagram):
             _NumViaInputM12_LeftMost = int((_LengthM1_VIAPMOSPoly2Met1_LeftMost - _DRCObj._VIAxMinWidth - 2 * _DRCObj._VIAxMinEnclosureByMetxTwoOppositeSide)
                                             // (_DRCObj._VIAxMinWidth + _DRCObj._VIAxMinSpace)) + 1
 
+            if _NumViaInputM12_LeftMost == 1:
+                NumViaInputM12_LeftMost = 2
+            else:
+                NumViaInputM12_LeftMost = _NumViaInputM12_LeftMost
+
             _ViaMet12Met2forInput2 = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
-            _ViaMet12Met2forInput2['_ViaMet12Met2NumberOfCOX'] = _NumViaInputM12_LeftMost
+            _ViaMet12Met2forInput2['_ViaMet12Met2NumberOfCOX'] = NumViaInputM12_LeftMost
             _ViaMet12Met2forInput2['_ViaMet12Met2NumberOfCOY'] = 1
             self._DesignParameter['_ViaMet12Met2forInput2'] = self._SrefElementDeclaration(
                 _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='ViaMet12Met2forInput2In{}'.format(_Name)))[0]
             self._DesignParameter['_ViaMet12Met2forInput2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**_ViaMet12Met2forInput2)
-            self._DesignParameter['_ViaMet12Met2forInput2']['_XYCoordinates'] = \
-                [[self._DesignParameter['_PMOS']['_XYCoordinates'][0][0] + self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'][0][0],
-                  self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'][0][1]]]
-                # [[self._DesignParameter['_PMOS']['_XYCoordinates'][0][0] + self._DesignParameter['_VIAPMOSPoly2Met1']['_XYCoordinates'][0][0],
-                #   self._DesignParameter['_VIAPMOSPoly2Met1']['_XYCoordinates'][0][1]]]
-                # [[self._DesignParameter['_PMOS']['_XYCoordinates'][0][0] + self._DesignParameter['_VIAMOSPoly2Met1RightMost']['_XYCoordinates'][0][0],
-                #   self._DesignParameter['_VIAPMOSPoly2Met1']['_XYCoordinates'][0][1]]]
+
+            if _NumViaInputM12_LeftMost == 1:
+                self._DesignParameter['_ViaMet12Met2forInput2']['_XYCoordinates'] = \
+                    [[self.getXYRight('_VIAMOSPoly2Met1LeftMost', '_Met1Layer')[0][0] - self.getXWidth('_ViaMet12Met2forInput2', '_Met1Layer') / 2,
+                      self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'][0][1]]]
+
+                leftBoundary = min(self.getXYLeft('_ViaMet12Met2forInput2', '_Met1Layer')[0][0], self.getXYLeft('_VIAMOSPoly2Met1LeftMost', '_Met1Layer')[0][0])
+                rightBoundary = max(self.getXYRight('_ViaMet12Met2forInput2', '_Met1Layer')[0][0], self.getXYRight('_VIAMOSPoly2Met1LeftMost', '_Met1Layer')[0][0])
+                self._DesignParameter['Met1Boundarytmp'] = self._BoundaryElementDeclaration(
+                    _Layer=DesignParameters._LayerMapping['METAL1'][0],
+                    _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                    _XWidth=(rightBoundary-leftBoundary),
+                    _YWidth=max(self.getYWidth('_ViaMet12Met2forInput2', '_Met1Layer'), self.getYWidth('_VIAMOSPoly2Met1LeftMost', '_Met1Layer')),
+                    _XYCoordinates=[[(rightBoundary+leftBoundary) / 2, self.getXY('_ViaMet12Met2forInput2')[0][1]]]
+                )
+
+            else:
+                self._DesignParameter['_ViaMet12Met2forInput2']['_XYCoordinates'] = \
+                    [[self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'][0][0],
+                      self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'][0][1]]]
+
+            # self._DesignParameter['_ViaMet12Met2forInput2']['_XYCoordinates'] = \
+            #     [[self._DesignParameter['_PMOS']['_XYCoordinates'][0][0] + self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'][0][0],
+            #       self._DesignParameter['_VIAMOSPoly2Met1LeftMost']['_XYCoordinates'][0][1]]]
 
             # (2) Normal width
             if '_VIAPMOSPoly2Met1' in self._DesignParameter:
@@ -789,10 +880,10 @@ class _Inverter(StickDiagram._StickDiagram):
                                               [0, -self._DesignParameter['_PMOS']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth'] / 2 - _DRCObj._NwMinEnclosurePactive])
         YWidth_NWLayer = abs(XYCoordinatesOfNW_top[1] - XYCoordinatesOfNW_bot[1])
 
-        if (XWidth_NWLayer * YWidth_NWLayer) < _DRCObj._NwMinArea:
-            XWidth_NWLayer = self.CeilMinSnapSpacing(_DRCObj._NwMinArea / YWidth_NWLayer, 2 * MinSnapSpacing)
-        else:
-            pass
+        # if (XWidth_NWLayer * YWidth_NWLayer) < _DRCObj._NwMinArea:
+        #     XWidth_NWLayer = self.CeilMinSnapSpacing(_DRCObj._NwMinArea / YWidth_NWLayer, 2 * MinSnapSpacing)
+        # else:
+        #     pass
 
         self._DesignParameter['_NWLayer'] = self._PathElementDeclaration(
             _Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1])
@@ -918,6 +1009,7 @@ class _Inverter(StickDiagram._StickDiagram):
         print('     {} Calculation End     '.format(_Name).center(105, '#'))
         print(''.center(105, '#'))
 
+
     def _CalcMinHeight(self,
                        _Finger=1,
                        _ChannelWidth=200,
@@ -959,104 +1051,129 @@ if __name__ == '__main__':
     My = Myinfo.USER(DesignParameters._Technology)
     Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
 
-    libname = 'TEST_InverterOne'
-    cellname = 'InverterOne'
+
+    libname = 'TEST_INV'
+    cellname = 'Inverter'
     _fileName = cellname + '.gds'
 
     ''' Input Parameters for Layout Object '''
+
     InputParams = dict(
-        _Finger=6,
-        _ChannelWidth=680,
-        _ChannelLength=30,
-        _NPRatio=1,
+        NumFinger=12,
+        PMOSWidth=200,
+        NMOSWidth=400,
 
-        _VDD2VSSHeight=None,    # 1800
-        _VDD2PMOSHeight=None,
-        _VSS2NMOSHeight=None,
+        CellHeight=None,
+        VDD2PMOS=None,
+        VSS2NMOS=None,
+        YCoordOfInput=None,
 
-        _Dummy=True,
-        _XVT='SLVT',
-        _GateSpacing=100,     # 100 -> 고정?
-        _SDWidth=None,        # 66
-
+        ChannelLength=30,
+        GateSpacing=100,
+        XVT='SLVT',
+        SDWidth=66,
+        SupplyRailType=1
     )
 
-    _YCoordOfInput = None,
-
-
-
     Mode_DRCCheck = True  # True | False
-    Num_DRCCheck = 10
-    start_time = time.time()
+    Num_DRCCheck = 100
 
-    for ii in range(0, Num_DRCCheck if Mode_DRCCheck else 1):
-        if Mode_DRCCheck:
-            ''' Random Parameters for Layout Object '''
-            InputParams['_Finger'] = DRCchecker.RandomParam(start=1, stop=20, step=1)
-            InputParams['_ChannelWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-            # InputParams['_NPRatio'] = DRCchecker.RandomParam(start=1, stop=4, step=0.1)
-            # InputParams['_VDD2VSSHeight'] = DRCchecker.RandomParam(start=2, stop=5, step=1)
-        else:
-            pass
-        print("=============================   Last Layout Object's Input Parameters are   ==========================")
-        tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
-        print(tmpStr)
-        print("======================================================================================================")
+    Checker = DRCchecker.DRCchecker(
+        username=My.ID,
+        password=My.PW,
+        WorkDir=My.Dir_Work,
+        DRCrunDir=My.Dir_DRCrun,
+        GDSDir=My.Dir_GDS,
+        libname=libname,
+        cellname=cellname,
+    )
 
-        ''' Generate Layout Object '''
-        LayoutObj = _Inverter(_Name=cellname)
-        LayoutObj._CalculateDesignParameter_v3(**InputParams)
-        LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
-        testStreamFile = open('./{}'.format(_fileName), 'wb')
-        tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
-        tmp.write_binary_gds_stream(testStreamFile)
-        testStreamFile.close()
 
-        print('#################################      Sending to FTP Server...      #################################')
-        Checker = DRCchecker.DRCchecker(
-            username=My.ID,
-            password=My.PW,
-            WorkDir=My.Dir_Work,
-            DRCrunDir=My.Dir_DRCrun,
-            GDSDir=My.Dir_GDS,
-            libname=libname,
-            cellname=cellname,
-        )
-        Checker.Upload2FTP()
+    if Mode_DRCCheck:
+        ErrCount = 0            # DRC error
+        knownErrorCount = 0     # failed to generate design. NotImplementedError
 
-        Checker.StreamIn(tech=DesignParameters._Technology)
+        start_time = time.time()
+        for ii in range(0, Num_DRCCheck):
+            if ii == 0:
+                Bot.send2Bot(f'Start DRC checker...\nCellName: {cellname}\nTotal # of Run: {Num_DRCCheck}')
 
-        if Mode_DRCCheck:
-            print('###############      DRC checking... {0}/{1}      ##################'.format(ii + 1, Num_DRCCheck))
-            # Bot.send2Bot(f'Start DRCChecker...\nTotal Number Of Run : {Num_DRCCheck}')
+            forLoopCntMax = 10
+            for iii in range(0, forLoopCntMax):
+                try:
+                    ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
+                    InputParams['NumFinger'] = DRCchecker.RandomParam(start=1, stop=20, step=1)
+                    InputParams['NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['SupplyRailType'] = DRCchecker.RandomParam(start=1, stop=2, step=1)
+
+                    print("   Last Layout Object's Input Parameters are   ".center(105, '='))
+                    tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+                    print(tmpStr)
+                    print("".center(105, '='))
+
+                    ''' ---------------------------------- Generate Layout Object -------------------------------------------'''
+                    LayoutObj = _Inverter(_Name=cellname)
+                    LayoutObj._CalculateDesignParameter(**InputParams)
+                    LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+                    with open(f'./{_fileName}', 'wb') as testStreamFile:
+                        tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+                        tmp.write_binary_gds_stream(testStreamFile)
+                except NotImplementedError:  # something known error !
+                    print(f"forLoopCnt = {iii + 1}")
+                    if iii + 1 == forLoopCntMax:
+                        raise NotImplementedError
+                else:
+                    knownErrorCount = knownErrorCount + iii
+                    # Bot.send2Bot(f"NotImplementedError...\nknownErrorCount = {knownErrorCount}")
+                    break
+            # end of for loop
+
+            print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+            Checker.Upload2FTP()
+            Checker.StreamIn(tech=DesignParameters._Technology)
+
+            print(f'   DRC checking... {ii + 1}/{Num_DRCCheck}   '.center(105, '#'))
             try:
                 Checker.DRCchecker()
-            except Exception as e:
+            except Exception as e:      # something error
+                ErrCount = ErrCount + 1
                 print('Error Occurred: ', e)
-                print("=============================   Last Layout Object's Input Parameters are   =============================")
-                tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+                print("   Last Layout Object's Input Parameters are   ".center(105, '='))
                 print(tmpStr)
-                print("=========================================================================================================")
+                print("".center(105, '='))
                 m, s = divmod(time.time() - start_time, 60)
                 h, m = divmod(m, 60)
                 Bot.send2Bot(f'Error Occurred During Checking DRC({ii + 1}/{Num_DRCCheck})...\n'
+                             f'CellName : {cellname}\n'
                              f'ErrMsg : {e}\n'
-                             f'============================='
-                             f'**InputParameters:\n'
+                             f'============================\n'
+                             f'** InputParameters:\n'
                              f'{tmpStr}\n'
-                             f'============================='
-                             f'Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
-            else:
-                if (ii + 1) == Num_DRCCheck:
-                    pass
-                    elapsed_time = time.time() - start_time
-                    m, s = divmod(elapsed_time, 60)
-                    h, m = divmod(m, 60)
-                    Bot.send2Bot(f'Checking DRC Finished.\nTotal Number of Run: {Num_DRCCheck}\n'
-                                 f'Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
-                else:
-                    pass
-        else:
-            Checker.StreamIn(tech=DesignParameters._Technology)
+                             f'============================\n'
+                             f'** Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
 
-    print('########################################      Finished       ###########################################')
+            if (ii + 1) == Num_DRCCheck:
+                elapsed_time = time.time() - start_time
+                m, s = divmod(elapsed_time, 60)
+                h, m = divmod(m, 60)
+                Bot.send2Bot(f'DRC Checker Finished.\n'
+                             f'CellName: {cellname}\n'
+                             f'Total # of known Err: {knownErrorCount}\n'
+                             f'Total # of DRC Err: {ErrCount}\n'
+                             f'Total # of Run: {Num_DRCCheck}\n'
+                             f'Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
+    else:
+        ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
+        LayoutObj = _Inverter(_Name=cellname)
+        LayoutObj._CalculateDesignParameter(**InputParams)
+        LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+        with open(f'./{_fileName}', 'wb') as testStreamFile:
+            tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+            tmp.write_binary_gds_stream(testStreamFile)
+
+        print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+        Checker.Upload2FTP()
+        Checker.StreamIn(tech=DesignParameters._Technology)
+
+    print('      Finished       '.center(105, '#'))

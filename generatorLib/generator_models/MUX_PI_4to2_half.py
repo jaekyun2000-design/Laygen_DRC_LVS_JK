@@ -6,7 +6,7 @@ import time
 from generatorLib import DRC
 from generatorLib import CoordinateCalc as CoordCalc
 from generatorLib.generator_models import TristateInverter
-from generatorLib.generator_models import Inverter_onesemicon
+from generatorLib.generator_models import Inverter
 from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import ViaMet22Met3
 
@@ -1164,6 +1164,7 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
         drc = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
 
+
         UnitPitch = ChannelLength + GateSpacing
 
         Parameters1_TristateInv01 = dict(
@@ -1578,6 +1579,61 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
 
         # end of ...
 
+
+
+
+
+
+        ''' ----------------------------------------------- Inverter ----------------------------------------------- '''
+        self._DesignParameter['Inv0'] = self._SrefElementDeclaration(
+            _DesignObj=Inverter._Inverter(_Name='Inv0In{}'.format(_Name)))[0]
+        self._DesignParameter['Inv0']['_DesignObj']._CalculateDesignParameter_v3(**Parameters2_Inv)
+        self._DesignParameter['Inv0']['_XYCoordinates'] = [
+            [self.getXY('TristateInv1')[0][0] + self._DesignParameter['TristateInv1']['_DesignObj'].CellXWidth / 2 + self._DesignParameter['Inv0']['_DesignObj'].CellXWidth / 2, 0]
+        ]
+        self._DesignParameter['Inv1'] = self._SrefElementDeclaration(
+            _DesignObj=Inverter._Inverter(_Name='Inv1In{}'.format(_Name)))[0]
+        self._DesignParameter['Inv1']['_DesignObj']._CalculateDesignParameter_v3(**Parameters2_Inv)
+        self._DesignParameter['Inv1']['_XYCoordinates'] = [
+            [self.getXY('Inv0')[0][0] + self._DesignParameter['Inv0']['_DesignObj'].CellXWidth / 2 + self._DesignParameter['Inv1']['_DesignObj'].CellXWidth / 2, 0]
+        ]
+
+        # error check
+        if TristateInv1_Finger == 1:        # possible condition
+            xDistance = self.getXYLeft('Inv0', '_NMOS', '_PODummyLayer')[0][0] - self.getXYRight('TristateInv1', 'InputVia_A', '_POLayer')[0][0]
+            yDistancePMOS = self.getXYBot('Inv0', '_PMOS', '_PODummyLayer')[0][1] - self.getXYTop('TristateInv1', 'InputVia_A', '_POLayer')[0][1]
+            yDistanceNMOS = self.getXYBot('TristateInv1', 'InputVia_A', '_POLayer')[0][1] - self.getXYTop('Inv0', '_PMOS', '_PODummyLayer')[0][1]
+            if xDistance ** 2 + min(yDistancePMOS, yDistanceNMOS) ** 2 < drc._PolygateMinSpace ** 2 or yDistancePMOS < 0 or yDistanceNMOS < 0:
+                yDistance_min_byDRC = self.CeilMinSnapSpacing(math.sqrt(drc._PolygateMinSpace ** 2 - xDistance ** 2), drc._MinSnapSpacing)
+                yMax = min(self.getXYBot('Inv0', '_PMOS', '_PODummyLayer')[0][1], self.getXYBot('TristateInv1', 'PMOS', '_PODummyLayer')[0][1]) - yDistance_min_byDRC
+                yMin = max(self.getXYTop('Inv0', '_NMOS', '_PODummyLayer')[0][1], self.getXYTop('TristateInv1', 'NMOS', '_PODummyLayer')[0][1]) + yDistance_min_byDRC
+                if yMax - yMin < self.getYWidth('TristateInv1', 'InputVia_A', '_POLayer'):
+                    raise NotImplementedError
+                else:                    # re-calc
+                    del self._DesignParameter['TristateInv0']
+                    del self._DesignParameter['TristateInv1']
+                    Parameters1_TristateInv01['YCoordOfInputA'] = (yMax + yMin) / 2
+
+                    self._DesignParameter['TristateInv0'] = self._SrefElementDeclaration(
+                        _Reflect=[1, 0, 0], _Angle=180,
+                        _DesignObj=TristateInverter.TristateInverter(_Name='TristateInv0In{}'.format(_Name)))[0]
+                    self._DesignParameter['TristateInv0']['_DesignObj']._CalculateDesignParameter(
+                        **Parameters1_TristateInv01)
+                    self._DesignParameter['TristateInv0']['_XYCoordinates'] = [
+                        [self._DesignParameter['TristateInv0']['_DesignObj'].CellXWidth / 2, 0]
+                    ]
+                    self._DesignParameter['TristateInv1'] = self._SrefElementDeclaration(
+                        _Reflect=[0, 0, 0], _Angle=0,
+                        _DesignObj=TristateInverter.TristateInverter(_Name='TristateInv1In{}'.format(_Name)))[0]
+                    self._DesignParameter['TristateInv1']['_DesignObj']._CalculateDesignParameter(
+                        **Parameters1_TristateInv01)
+                    self._DesignParameter['TristateInv1']['_XYCoordinates'] = [
+                        [self._DesignParameter['TristateInv0']['_DesignObj'].CellXWidth * 3 / 2 + 2 * UnitPitch, 0]
+                    ]
+
+
+
+        ''' Input of TSINV'''
         if TristateInv1_Finger in (1,2):
             tempword = 'InputVia_A'
             tempCOX = 1
@@ -1587,7 +1643,8 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             tempCOX = 2
             tempCOY = 1
 
-        ''' Input '''
+
+        ''' Inverter again '''
         self._DesignParameter['Via1_temp6'] = self._SrefElementDeclaration(
             _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1temp6In{}'.format(_Name)))[0]
         self._DesignParameter['Via1_temp6']['_DesignObj']._CalculateDesignParameterSameEnclosure(
@@ -1609,24 +1666,46 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
             _Width=66
         )
+        # ['qwer[0]', 'MuxHalf1[0]', 'Met2Route_temp8[0][0]']
+        # TSINV1 polydummy - INV (finger 1 or 2) input poly distance
+        if Parameters2_Inv['_Finger'] in (1, 2):
+            tmpStrPMOS = 'PMOS' if Parameters1_TristateInv01['NumFinger'] in (1, 2) else 'PM2'
+            tmpStrNMOS = 'NMOS' if Parameters1_TristateInv01['NumFinger'] in (1, 2) else 'NM2'
+            xDistance = self.getXYLeft('Inv0', '_VIAPoly2Met1_F1', '_POLayer')[0][0] - CoordCalc.getXYCoords_MaxX(self.getXYRight('TristateInv1', tmpStrPMOS, '_PODummyLayer'))[0][0]
+            yDistancePMOS = self.getXYBot('TristateInv1', tmpStrPMOS, '_PODummyLayer')[0][1] - self.getXYTop('Inv0', '_VIAPoly2Met1_F1', '_POLayer')[0][1]
+            yDistanceNMOS = self.getXYBot('Inv0', '_VIAPoly2Met1_F1', '_POLayer')[0][1] - self.getXYTop('TristateInv1', tmpStrNMOS, '_PODummyLayer')[0][1]
+            if xDistance ** 2 + min(yDistancePMOS, yDistanceNMOS) ** 2 < drc._PolygateMinSpace ** 2 or yDistancePMOS < 0 or yDistanceNMOS < 0:
+                yDistance_min_byDRC = self.CeilMinSnapSpacing(math.sqrt(drc._PolygateMinSpace ** 2 - xDistance ** 2), drc._MinSnapSpacing)
+                yMax = min(self.getXYBot('TristateInv1', tmpStrPMOS, '_PODummyLayer')[0][1], self.getXYBot('Inv0', '_PMOS', '_PODummyLayer')[0][1]) - yDistance_min_byDRC
+                yMin = max(self.getXYTop('TristateInv1', tmpStrNMOS, '_PODummyLayer')[0][1], self.getXYTop('Inv0', '_NMOS', '_PODummyLayer')[0][1]) + yDistance_min_byDRC
+                if yMax - yMin < self.getYWidth('Inv0', '_VIAPoly2Met1_F1', '_POLayer'):
+                    raise NotImplementedError
+                else:
+                    # re calculate Inverter
+                    del self._DesignParameter['Inv0']
+                    del self._DesignParameter['Inv1']
+                    Parameters2_Inv['_YCoordOfInput'] = (yMax + yMin) / 2
+                    self._DesignParameter['Inv0'] = self._SrefElementDeclaration(
+                        _DesignObj=Inverter._Inverter(_Name='Inv0In{}'.format(_Name)))[0]
+                    self._DesignParameter['Inv0']['_DesignObj']._CalculateDesignParameter_v3(**Parameters2_Inv)
+                    self._DesignParameter['Inv0']['_XYCoordinates'] = [
+                        [self.getXY('TristateInv1')[0][0] + self._DesignParameter['TristateInv1']['_DesignObj'].CellXWidth / 2 + self._DesignParameter['Inv0']['_DesignObj'].CellXWidth / 2,
+                         0]
+                    ]
+                    self._DesignParameter['Inv1'] = self._SrefElementDeclaration(
+                        _DesignObj=Inverter._Inverter(_Name='Inv1In{}'.format(_Name)))[0]
+                    self._DesignParameter['Inv1']['_DesignObj']._CalculateDesignParameter_v3(**Parameters2_Inv)
+                    self._DesignParameter['Inv1']['_XYCoordinates'] = [
+                        [self.getXY('Inv0')[0][0] + self._DesignParameter['Inv0']['_DesignObj'].CellXWidth / 2 +
+                         self._DesignParameter['Inv1']['_DesignObj'].CellXWidth / 2, 0]
+                    ]
+
+            else:   # No DRC Error
+                pass
 
 
-
-
-
-        ''' ----------------------------------------------- Inverter ----------------------------------------------- '''
-        self._DesignParameter['Inv0'] = self._SrefElementDeclaration(
-            _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv0In{}'.format(_Name)))[0]
-        self._DesignParameter['Inv0']['_DesignObj']._CalculateDesignParameter_v3(**Parameters2_Inv)
-        self._DesignParameter['Inv0']['_XYCoordinates'] = [
-            [self.getXY('TristateInv1')[0][0] + self._DesignParameter['TristateInv1']['_DesignObj'].CellXWidth / 2 + self._DesignParameter['Inv0']['_DesignObj'].CellXWidth / 2, 0]
-        ]
-        self._DesignParameter['Inv1'] = self._SrefElementDeclaration(
-            _DesignObj=Inverter_onesemicon._Inverter(_Name='Inv1In{}'.format(_Name)))[0]
-        self._DesignParameter['Inv1']['_DesignObj']._CalculateDesignParameter_v3(**Parameters2_Inv)
-        self._DesignParameter['Inv1']['_XYCoordinates'] = [
-            [self.getXY('Inv0')[0][0] + self._DesignParameter['Inv0']['_DesignObj'].CellXWidth / 2 + self._DesignParameter['Inv1']['_DesignObj'].CellXWidth / 2, 0]
-        ]
+        # ['qwrwqerwqrw[0]', 'MuxHalf1[0]', 'Inv0[0]', '_VIAPoly2Met1_F1[0]']
+        # ['qwrwqerwqrw[0]', 'MuxHalf1[0]', 'TristateInv1[0]', 'NMOS[0]', '_PODummyLayer[0]']
 
         # Input Via1 For Inverters -> Finger 많을 때 이미 Via1이 존재할 수도 있음... 추후 수정
         NumViaX, NumViaY = ViaMet12Met2._ViaMet12Met2.CalcNumViaSameEnclosure(
@@ -1637,7 +1716,12 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             NumViaX = 2
         if NumViaY > 2:
             NumViaY = 2
-        assert NumViaX * NumViaY >= 2, 'Inverter Input Via(M1V1M2) 개수가 적음.'
+
+        if NumViaX * NumViaY < 2:
+            pass
+            # raise NotImplementedError(f"NumViaX:{NumViaX}, NumViaY:{NumViaY}\n"
+            #                           f"self.getXWidth('Inv0', 'InputMet1') = {self.getXWidth('Inv0', 'InputMet1')}\n"
+            #                           f"self.getYWidth('Inv0', 'InputMet1') = {self.getYWidth('Inv0', 'InputMet1')}")
 
         self._DesignParameter['Via1ForInv'] = self._SrefElementDeclaration(
             _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1ForInvIn{}'.format(_Name)))[0]
@@ -1648,6 +1732,8 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             self.getXY('Inv0', 'InputMet1')[0],
             self.getXY('Inv1', 'InputMet1')[0]
         ]
+        if '_ViaMet12Met2forInput2' in self._DesignParameter['Inv0']['_DesignObj']._DesignParameter:
+            self._DesignParameter['Via1ForInv']['_Ignore'] = True
 
 
         # re-calc for via distance (when TSI1_finger=1 and Inv_finger=1)
@@ -1698,10 +1784,10 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
                 pass
         else:
             pass
-
         YCoordOfIN1 = 1033      ## 추후 입력으로 계산할 수 있도록??
         if TristateInv1_Finger == 1:
-            YCoordOfIN1 = self.getXYTop('Via1_temp3', '_Met2Layer')[0][1] + drc._MetalxMinSpaceAtCorner + self.getWidth('Met2Route_temp8') / 2
+            # YCoordOfIN1 = self.getXYTop('Via1_temp3', '_Met2Layer')[0][1] + drc._MetalxMinSpaceAtCorner + self.getWidth('Met2Route_temp8') / 2
+            YCoordOfIN1 = max(self.getXYTop('Via1_temp3', '_Met2Layer')[0][1], self.getXYTop('Via1_temp6', '_Met2Layer')[0][1]) + drc._MetalxMinSpaceAtCorner + self.getWidth('Met2Route_temp8') / 2
         else:    # TristateInv1_Finger == 2 or 3
             YCoordOfIN1 = max(self.getXYTop('Via1_temp023', '_Met2Layer')[0][1], self.getXYTop('Via1_temp6', '_Met2Layer')[0][1]) + drc._MetalxMinSpaceAtCorner + self.getWidth('Met2Route_temp8') / 2
 
@@ -1725,6 +1811,9 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
              self.getXY('Via1ForInv', '_Met2Layer')[0][1]]
         ]
 
+
+
+        ##
         # Metal1 from TristateInverters' Output to Inverter's Input
         self._DesignParameter['Met1From3SInvtoInv'] = self._PathElementDeclaration(
             _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
@@ -1732,38 +1821,118 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
         )
 
         if TristateInv1_Finger == 1:
-            TopBoundary1ForUpperRoute_3SInvMet1 = self.getXY('TristateInv1', 'PMOS', '_Met1Layer')[0][1] - self.getYWidth('TristateInv1', 'PMOS', '_Met1Layer') / 2
-            TopBoundary2ForUpperRoute_InvMet1 = self.getXY('Inv1', '_PMOS', '_Met1Layer')[0][1] - self.getYWidth('Inv1', '_PMOS', '_Met1Layer') / 2
-            TopBoundaryForUpperRoute = min(TopBoundary1ForUpperRoute_3SInvMet1, TopBoundary2ForUpperRoute_InvMet1)
-            BotBoundaryForUpperRoute = self.getXY('TristateInv1', 'InputVia_A', '_Met1Layer')[0][1] + self.getYWidth('TristateInv1', 'InputVia_A', '_Met1Layer') / 2
-            GapForUpperRoute = TopBoundaryForUpperRoute - BotBoundaryForUpperRoute
+            self._DesignParameter['Met2From3SInvtoInv'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL2'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+                _Width=66
+            )
+            self._DesignParameter['Via1ForTSIInv'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1ForTSIInvIn{}'.format(_Name)))[0]
+            self._DesignParameter['Via1ForTSIInv']['_DesignObj']._CalculateDesignParameterSameEnclosure(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2)
 
-            BotBoundary1ForLowerRoute_3SInvMet1 = self.getXY('TristateInv1', 'NMOS', '_Met1Layer')[0][1] + self.getYWidth('TristateInv1', 'NMOS', '_Met1Layer') / 2
-            BotBoundary2ForLowerRoute_InvMet1 = self.getXY('Inv1', '_NMOS', '_Met1Layer')[0][1] + self.getYWidth('Inv1', '_NMOS', '_Met1Layer') / 2
-            BotBoundaryForLowerRoute = min(BotBoundary1ForLowerRoute_3SInvMet1, BotBoundary2ForLowerRoute_InvMet1)
-            TopBoundaryForLowerRoute = self.getXY('TristateInv1', 'InputVia_A', '_Met1Layer')[0][1] - self.getYWidth('TristateInv1', 'InputVia_A', '_Met1Layer') / 2
-            GapForLowerRoute = TopBoundaryForLowerRoute - BotBoundaryForLowerRoute
-
-            if min(GapForUpperRoute, GapForLowerRoute) < 2*drc._Metal1MinSpaceAtCorner:
-                raise NotImplementedError
+            # Via center Coordinate's boundary
+            topBoundary_3SInvMet2 = self.getXYBot('Via1_temp7', '_Met2Layer')[0][1] - drc._MetalxMinSpaceAtCorner - self.getWidth('Met2From3SInvtoInv') / 2
+            topBoundary_3SInvMet1 = self.getXYBot('TristateInv1', 'PMOS', '_Met1Layer')[0][1] + self.getWidth('TristateInv1', 'OutputRouting') - self.getYWidth('Via1ForTSIInv', '_Met1Layer') / 2
+            botBoundary_3SInvMet1 = self.getXYTop('TristateInv1', 'NMOS', '_Met1Layer')[0][1] - self.getWidth('TristateInv1', 'OutputRouting') + self.getYWidth('Via1ForTSIInv', '_Met1Layer') / 2
+            if '_ViaMet12Met2OnNMOSOutput' in self._DesignParameter['Inv1']['_DesignObj']._DesignParameter:
+                botBoundary_InvMet2 = self.getXYTop('Inv1', '_ViaMet12Met2OnNMOSOutput', '_Met2Layer')[0][1] + drc._MetalxMinSpaceAtCorner + self.getWidth('Met2From3SInvtoInv') / 2
             else:
-                if GapForUpperRoute > GapForLowerRoute:
-                    self._DesignParameter['Met1From3SInvtoInv']['_XYCoordinates']=[
-                        [self.getXY('Via1ForInv')[0],
-                         [self.getXY('Via1ForInv')[0][0], (TopBoundaryForUpperRoute + BotBoundaryForUpperRoute) / 2],
-                         [self.getXY('TristateInv1')[0][0], (TopBoundaryForUpperRoute + BotBoundaryForUpperRoute) / 2]]
-                    ]
+                botBoundary_InvMet2 = 0
+            topBoundary = min(topBoundary_3SInvMet2, topBoundary_3SInvMet1)
+            botBoundary = max(botBoundary_3SInvMet1, botBoundary_InvMet2)
+            if topBoundary >= botBoundary:   # Met2Routing
+
+                self._DesignParameter['Via1ForTSIInv']['_XYCoordinates'] = [[self.getXY('TristateInv1')[0][0], (topBoundary + botBoundary) / 2]]
+
+                # Via1_temp5 distance..
+                drcTmpCO = 141
+                xDistance = self.getXY('Via1ForTSIInv', '_COLayer')[0][0] - self.getXY('Via1_temp5', '_COLayer')[0][0]
+                yDistance00 = abs(self.getXY('Via1ForTSIInv', '_COLayer')[0][1] - self.getXY('Via1_temp5', '_COLayer')[0][1])
+                yDistance01 = abs(self.getXY('Via1ForTSIInv', '_COLayer')[0][1] - self.getXY('Via1_temp5', '_COLayer')[1][1])
+                yDistance10 = abs(self.getXY('Via1ForTSIInv', '_COLayer')[1][1] - self.getXY('Via1_temp5', '_COLayer')[0][1])
+                yDistance = min(yDistance00, yDistance01, yDistance10)
+                if xDistance ** 2 + yDistance ** 2 < drcTmpCO ** 2:  # error
+                    unitDistance = abs(self.getXY('Via1_temp5', '_COLayer')[0][1] - self.getXY('Via1_temp5', '_COLayer')[1][1]) / 2
+                    if self.getXY('Via1_temp5', '_COLayer')[0][1] > self.getXY('Via1ForTSIInv', '_COLayer')[1][1]:  # case1
+                        yCoordOfVia1ForTSIInv = self.getXY('Via1_temp5', '_COLayer')[0][1] - 2 * unitDistance
+                    elif self.getXY('Via1_temp5', '_COLayer')[0][1] <= self.getXY('Via1ForTSIInv', '_COLayer')[1][1] < self.getXY('Via1_temp5', '_COLayer')[1][1]:  # case2
+                        yCoordOfVia1ForTSIInv = self.getXY('Via1_temp5', '_COLayer')[0][1]
+                    elif self.getXY('Via1ForTSIInv', '_COLayer')[0][1] <= self.getXY('Via1_temp5', '_COLayer')[1][1] < self.getXY('Via1ForTSIInv', '_COLayer')[1][1]:
+                        yCoordOfVia1ForTSIInv = self.getXY('Via1_temp5', '_COLayer')[1][1]
+                    elif self.getXY('Via1_temp5', '_COLayer')[1][1] < self.getXY('Via1ForTSIInv', '_COLayer')[0][1]:
+                        yCoordOfVia1ForTSIInv = self.getXY('Via1_temp5', '_COLayer')[1][1] + 2 * unitDistance
+                    else:
+                        raise NotImplementedError  # is it possible??
+
+                    if topBoundary < yCoordOfVia1ForTSIInv or yCoordOfVia1ForTSIInv < botBoundary:  # recheck
+                        raise NotImplementedError
+                    else:
+                        self._DesignParameter['Via1ForTSIInv']['_XYCoordinates'] = [[self.getXY('TristateInv1')[0][0], yCoordOfVia1ForTSIInv]]
+
                 else:
-                    self._DesignParameter['Met1From3SInvtoInv']['_XYCoordinates'] = [
-                        [self.getXY('Via1ForInv')[0],
-                         [self.getXY('Via1ForInv')[0][0], (TopBoundaryForLowerRoute + BotBoundaryForLowerRoute) / 2],
-                         [self.getXY('TristateInv1')[0][0], (TopBoundaryForLowerRoute + BotBoundaryForLowerRoute) / 2]]
-                    ]
+                    pass
+
+
+                self._DesignParameter['Met2From3SInvtoInv']['_XYCoordinates'] = [
+                    [[self.getXY('Via1ForTSIInv')[0][0], self.getXY('Via1ForTSIInv')[0][1]],
+                     [self.getXYLeft('Via1ForInv', '_Met2Layer')[0][0] + self.getWidth('Met2From3SInvtoInv') / 2, self.getXY('Via1ForTSIInv')[0][1]],
+                     [self.getXYLeft('Via1ForInv', '_Met2Layer')[0][0] + self.getWidth('Met2From3SInvtoInv') / 2, self.getXY('Via1ForInv')[0][1]]]
+                ]
+            else:
+
+                # route by met1
+                TopBoundary1ForUpperRoute_3SInvMet1 = self.getXYBot('TristateInv1', 'PMOS', '_Met1Layer')[0][1]
+                TopBoundary2ForUpperRoute_InvMet1 = self.getXYBot('Inv1', '_PMOS', '_Met1Layer')[0][1]
+                TopBoundaryForUpperRoute = min(TopBoundary1ForUpperRoute_3SInvMet1, TopBoundary2ForUpperRoute_InvMet1)
+                BotBoundaryForUpperRoute = self.getXYTop('TristateInv1', 'InputVia_A', '_Met1Layer')[0][1]
+                GapForUpperRoute = TopBoundaryForUpperRoute - BotBoundaryForUpperRoute
+
+                BotBoundary1ForLowerRoute_3SInvMet1 = self.getXYTop('TristateInv1', 'NMOS', '_Met1Layer')[0][1]
+                BotBoundary2ForLowerRoute_InvMet1 = self.getXYTop('Inv1', '_NMOS', '_Met1Layer')[0][1]
+                BotBoundaryForLowerRoute = max(BotBoundary1ForLowerRoute_3SInvMet1, BotBoundary2ForLowerRoute_InvMet1)
+                TopBoundaryForLowerRoute = self.getXYBot('TristateInv1', 'InputVia_A', '_Met1Layer')[0][1]
+                GapForLowerRoute = TopBoundaryForLowerRoute - BotBoundaryForLowerRoute
+
+                if min(GapForUpperRoute, GapForLowerRoute) < 2 * drc._Metal1MinSpaceAtCorner:
+                    raise NotImplementedError
+                else:
+                    if GapForUpperRoute > GapForLowerRoute:
+                        self._DesignParameter['Met1From3SInvtoInv']['_XYCoordinates']=[
+                            [self.getXY('Via1ForInv')[0],
+                             [self.getXY('Via1ForInv')[0][0], (TopBoundaryForUpperRoute + BotBoundaryForUpperRoute) / 2],
+                             [self.getXY('TristateInv1')[0][0], (TopBoundaryForUpperRoute + BotBoundaryForUpperRoute) / 2]]
+                        ]
+                    else:
+                        self._DesignParameter['Met1From3SInvtoInv']['_XYCoordinates'] = [
+                            [self.getXY('Via1ForInv')[0],
+                             [self.getXY('Via1ForInv')[0][0], (TopBoundaryForLowerRoute + BotBoundaryForLowerRoute) / 2],
+                             [self.getXY('TristateInv1')[0][0], (TopBoundaryForLowerRoute + BotBoundaryForLowerRoute) / 2]]
+                        ]
+
+
         elif TristateInv1_Finger == 2:
-            self._DesignParameter['Met1From3SInvtoInv']['_XYCoordinates'] = [
-                [self.getXY('Via1ForInv')[0],
-                 [self.getXY('TristateInv1', 'met1_output_5')[0][0], self.getXY('Via1ForInv')[0][1]]]
-            ]
+            # ['qwer[0]', 'MuxHalf1[0]', 'TristateInv1[0]', 'met1_output_5[0]']
+            topBoundary = self.getXYTop('TristateInv1', 'met1_output_5')[0][1] - self.getWidth('Met1From3SInvtoInv') / 2
+            botBoundary = self.getXYBot('TristateInv1', 'met1_output_5')[0][1] + self.getWidth('Met1From3SInvtoInv') / 2
+            if botBoundary <= self.getXY('Via1ForInv')[0][1] <= topBoundary:
+                self._DesignParameter['Met1From3SInvtoInv']['_XYCoordinates'] = [
+                    [self.getXY('Via1ForInv')[0],
+                     [self.getXY('TristateInv1', 'met1_output_5')[0][0], self.getXY('Via1ForInv')[0][1]]]
+                ]
+            else:
+                self._DesignParameter['Met2From3SInvtoInv'] = self._PathElementDeclaration(
+                    _Layer=DesignParameters._LayerMapping['METAL2'][0],
+                    _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+                    _Width=66,
+                    _XYCoordinates=[
+                        [self.getXY('Via1ForInv')[0],
+                         [self.getXY('TristateInv1', 'met1_output_5')[0][0], self.getXY('Via1ForInv')[0][1]],
+                         self.getXY('TristateInv1', 'met1_output_5')[0]]]
+                )
+                self._DesignParameter['Via1For3SInvtoInv'] = self._SrefElementDeclaration(
+                    _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1For3SInvtoInvIn{}'.format(_Name)))[0]
+                self._DesignParameter['Via1For3SInvtoInv']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                    _ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2)
+                self._DesignParameter['Via1For3SInvtoInv']['_XYCoordinates'] = [self.getXY('TristateInv1', 'met1_output_5')[0]]
 
         else:
             self._DesignParameter['Met1From3SInvtoInv']['_XYCoordinates'] = [
@@ -1771,6 +1940,9 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
                  [self.getXY('TristateInv1', 'Met1RouteY_Out')[0][0], self.getXY('Via1ForInv')[0][1]]]
             ]
 
+        #
+        # if '_ViaMet12Met2forInput2' in self._DesignParameter['Inv0']['_DesignObj']._DesignParameter:
+        #     self._DesignParameter['Via1ForInv']['_XYCoordinates'] = []
 
 
 
@@ -2090,16 +2262,29 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             self._DesignParameter['Via1_temp23']['_DesignObj']._CalculateDesignParameterSameEnclosure(
                 _ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2
             )
-            self._DesignParameter['Via1_temp23']['_XYCoordinates'] = [
-                [self.getXY('TristateInv2', 'NM1', '_Met1Layer')[0][0] + UnitPitch,
-                 self.getXYTop('TristateInv2', 'polyInputENb', '_Met1Layer')[0][1] - self.getYWidth('Via1_temp23', '_Met1Layer') / 2]
-            ]
-
             self._DesignParameter['Met2Route_temp24'] = self._PathElementDeclaration(
                 _Layer=DesignParameters._LayerMapping['METAL2'][0],
                 _Datatype=DesignParameters._LayerMapping['METAL2'][1],
                 _Width=66
             )
+
+            minBoundary = self.getXYTop('TristateInv2', 'polyInputEN', '_Met1Layer')[0][1] + drc._Metal1MinSpaceAtCorner
+            maxBoundary1 = self.getXYTop('TristateInv2', 'polyInputENb', '_Met1Layer')[0][1]
+            maxBoundary2 = self.getXYBot('TristateInv2', 'via1ForPM1', '_Met2Layer')[0][1] - drc._Metal1MinSpaceAtCorner - self.getWidth('Met2Route_temp24') - drc._Metal1MinSpaceAtCorner
+            maxBoundary = min(maxBoundary1, maxBoundary2)
+
+            if maxBoundary - minBoundary < self.getYWidth('Via1_temp23', '_Met2Layer'):
+                raise NotImplementedError
+            else:
+                YcoordOfVia1_temp23 = (maxBoundary + minBoundary) / 2
+
+            self._DesignParameter['Via1_temp23']['_XYCoordinates'] = [
+                [self.getXY('TristateInv2', 'NM1', '_Met1Layer')[0][0] + UnitPitch,
+                 YcoordOfVia1_temp23]
+                 # self.getXYTop('TristateInv2', 'polyInputENb', '_Met1Layer')[0][1] - self.getYWidth('Via1_temp23', '_Met1Layer') / 2]
+            ]
+            self._DesignParameter['Met1Route_temp22']['_XYCoordinates'][0].append(self.getXY('Via1_temp23')[0])
+
             self._DesignParameter['Met2Route_temp24']['_XYCoordinates'] = [[
                 [self.getXY('Via1_temp23')[0][0], self.getXY('Via1_temp23')[0][1]],
                 [self.getXY('Via1_temp23')[0][0], self.getXY('TristateInv3', 'polyInputEN')[0][1]],
@@ -2340,7 +2525,7 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             _DesignObj=TristateInverter.TristateInverter(_Name='TSINV23_CellheightCalcIn{}'.format(_Name)))[0]
         MinHeight_TSINV23 = self._DesignParameter['TSINV23_CellheightCalc']['_DesignObj']._CalcMinHeight(**Parameters3_TristateInv23)
         self._DesignParameter['INV_CellheightCalc'] = self._SrefElementDeclaration(
-            _DesignObj=Inverter_onesemicon._Inverter(_Name='INV_CellheightCalcIn{}'.format(_Name)))[0]
+            _DesignObj=Inverter._Inverter(_Name='INV_CellheightCalcIn{}'.format(_Name)))[0]
         MinHeight_INV = self._DesignParameter['INV_CellheightCalc']['_DesignObj']._CalcMinHeight(**Parameters2_Inv)
 
         minHeight = max(MinHeight_TSINV01, MinHeight_TSINV23, MinHeight_INV)

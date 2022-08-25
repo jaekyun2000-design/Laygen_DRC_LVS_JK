@@ -6,17 +6,20 @@ import numpy as np
 if 'DL_DETECTION' in user_setup.__dir__() and user_setup.DL_DETECTION and True:
     #add path
     project_path = '/Users/sun/Library/CloudStorage/GoogleDrive-sun9uu@gmail.com/내 드라이브/object_detection_data'
+    model_dir = f'{project_path}/model/new_class_modi'
     sys.path.append(project_path)
-    import laytina_py
+    import laytina_py2 as laytina_py
     import pickle
     import tensorflow as tf
 
-    with open(f'{project_path}/class_list.bin', 'rb') as f:
+    with open(f'{model_dir}/class_list.bin', 'rb') as f:
         class_list = pickle.load(f)
-    layer_list = ['METAL1', 'METAL2', 'METAL3', 'METAL4', 'METAL5', 'METAL6', 'CONT', 'DIFF', 'POLY', 'PIMP']
+    with open(f'{model_dir}/layer_list.bin', 'rb') as f:
+        layer_list = pickle.load(f)
+    # layer_list = ['METAL1', 'METAL2', 'METAL3', 'METAL4', 'METAL5', 'METAL6', 'METAL7', 'NWELL', 'DIFF', 'POLY', 'PRES',
+    #               'CONT', 'VIA12', 'VIA23', 'VIA34', 'VIA45', 'VIA56', 'VIA67', 'PIMP', 'OP']
 
-    model_dir = './model/laytinanet_2nd_training'
-    backbone = laytina_py.get_backbone()
+    backbone = laytina_py.get_backbone(layer_list)
     model = laytina_py.RetinaNet(len(class_list), backbone)
 
     latest_checkpoint = tf.train.latest_checkpoint(model_dir)
@@ -32,7 +35,7 @@ def transform_to_inf(matrix_reader):
     stacked_matrix = None
     dat = matrix_reader.matrix_by_layer
     shape = list(dat.values())[0].shape
-    layer_list = ['METAL1', 'METAL2', 'METAL3', 'METAL4', 'METAL5', 'METAL6', 'CONT', 'DIFF', 'POLY', 'PIMP']
+    # layer_list = ['METAL1', 'METAL2', 'METAL3', 'METAL4', 'METAL5', 'METAL6', 'CONT', 'DIFF', 'POLY', 'PIMP']
     for layer in layer_list:
         layer = layer.decode('ascii') if type(layer) == bytes else layer
         layer_mat = dat[layer] if layer in list(dat.keys()) else np.zeros(shape)

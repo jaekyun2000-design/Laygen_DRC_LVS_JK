@@ -35,52 +35,40 @@ class DRCchecker:
 
 
     def DRCchecker(self):
-
-        if DesignParameters._Technology == 'SS28nm' :
+        if DesignParameters._Technology == 'SS28nm':
             DRCfile = '_cmos28lp.drc.cal_'
             Techlib = 'cmos28lp'
-        if DesignParameters._Technology == '065nm' :
+        elif DesignParameters._Technology == '065nm':
             DRCfile = '_calibre.drc_'
             Techlib = 'tsmcN65'
-        if DesignParameters._Technology == '045nm' :
+        elif DesignParameters._Technology == '045nm':
             DRCfile = '_calibre.drc_'
             Techlib = 'tsmcN45'
-        if DesignParameters._Technology == '090nm':
+        elif DesignParameters._Technology == '090nm':
             DRCfile = '_calibre.drc_'
             Techlib = 'tsmcN90rf'
+        else:
+            raise NotImplemented
 
         print('   Connecting to Server by SSH...   '.center(105, '#'))
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(self.server, port=self.port, username=self.username, password=self.password)
 
-
-        # commandlines1 = "cd {0}; source setup.cshrc; strmin -library '{1}' -strmFile '{3}/{2}.gds' -attachTechFileOfLib '{4}' -logFile 'strmIn.log'"
-        # print(f"commandlines1: {commandlines1.format(self.WorkDir, self.libname, self.cellname, self.GDSDir, Techlib)}")
-        # stdin, stdout, stderr = ssh.exec_command(commandlines1.format(self.WorkDir, self.libname, self.cellname, self.GDSDir, Techlib))
-        # result1 = stdout.read().decode('utf-8')
-        # print('print after commandlines1 : ')
-        # print(result1)
-        # if (result1.split()[-6]) != "'0'":
-        #     raise Exception("Library name already Existing or XStream ERROR!!")
-
-        if DesignParameters._Technology == 'SS28nm' :
-            commandlines2 = "cd {0}; source setup.cshrc; strmout -library '{1}' -strmFile '{3}/{2}.calibre.db' -topCell '{2}' -view layout -runDir '{3}' -logFile 'PIPO.LOG.{1}' -layerMap '/home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp_tech_7U1x_2T8x_LB/cmos28lp_tech.layermap' -objectMap '/home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp_tech_7U1x_2T8x_LB/cmos28lp_tech.objectmap' -case 'Preserve' -convertDot 'node' -noWarn '156 246 269 270 315 333'"
-            stdin, stdout, stderr = ssh.exec_command(commandlines2.format(self.WorkDir, self.libname, self.cellname, self.DRCrunDir))
-            result2 = stdout.read().decode('utf-8')
-        if DesignParameters._Technology == '065nm' :
-            commandlines2 = "cd {0}; strmout -library '{1}' -strmFile '{3}/{2}.calibre.db' -topCell '{2}' -view layout -runDir '{3}' -logFile 'PIPO.LOG.{1}' -layerMap '/home/PDK/tsmc65/tsmcN65/tsmcN65.layermap' -case 'Preserve' -convertDot 'node'"
-            stdin, stdout, stderr = ssh.exec_command(commandlines2.format(self.WorkDir, self.libname, self.cellname, self.DRCrunDir))
-            result2 = stdout.read().decode('utf-8')
-        if DesignParameters._Technology == '045nm':
-            commandlines2 = "cd {0}; strmout -library '{1}' -strmFile '{3}/{2}.calibre.db' -topCell '{2}' -view layout -runDir '{3}' -logFile 'PIPO.LOG.{1}' -layerMap '/home/PDK/tsmc40/tsmcN45/tsmcN45.layermap' -case 'Preserve' -convertDot 'node'"
-            stdin, stdout, stderr = ssh.exec_command(commandlines2.format(self.WorkDir, self.libname, self.cellname, self.DRCrunDir))
-            result2 = stdout.read().decode('utf-8')
-        if DesignParameters._Technology == '090nm':
-            commandlines2 = "cd {0}; strmout -library '{1}' -strmFile '{3}/{2}.calibre.db' -topCell '{2}' -view layout -runDir '{3}' -logFile 'PIPO.LOG.{1}' -layerMap '/home/PDK/tsmc90/tsmcN90rf/tsmcN90rf.layermap' -case 'Preserve' -convertDot 'node'"
-            stdin, stdout, stderr = ssh.exec_command(commandlines2.format(self.WorkDir, self.libname, self.cellname, self.DRCrunDir))
-            result2 = stdout.read().decode('utf-8')
-
+        if DesignParameters._Technology == 'SS28nm':
+            commandlines2 = f" s28; strmout -library '{self.libname}'" \
+                            f" -strmFile '{self.DRCrunDir}/{self.cellname}.calibre.db'" \
+                            f" -topCell '{self.cellname}'" \
+                            f" -view layout" \
+                            f" -runDir '{self.DRCrunDir}'" \
+                            f" -logFile 'PIPO.LOG.{self.libname}'" \
+                            f" -layerMap '/home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp_tech_7U1x_2T8x_LB/cmos28lp_tech.layermap'" \
+                            f" -objectMap '/home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp_tech_7U1x_2T8x_LB/cmos28lp_tech.objectmap'" \
+                            f" -case 'Preserve'" \
+                            f" -convertDot 'node'" \
+                            f" -noWarn '156 246 269 270 315 333'"
+        stdin, stdout, stderr = ssh.exec_command(commandlines2)
+        result2 = stdout.read().decode('utf-8')
 
         print(f'print after commandlines2 :')
         print(result2)
@@ -89,13 +77,16 @@ class DRCchecker:
 
         ''' drc run directory에 rule file ? 존재해야힘/ DRCfile... '''
         # commandlines3 = "cd {0}; sed -i '9s,.*,LAYOUT PATH  \"{0}/{1}.calibre.db\",' {2}; sed -i '10s,.*,LAYOUT PRIMARY \"{1}\",' {2}; sed -i '13s,.*,DRC RESULTS DATABASE \"{1}.drc.results\" ASCII,' {2}; sed -i '18s,.*,DRC SUMMARY REPORT \"{1}.drc.summary\" REPLACE HIER,' {2}"
-        commandlines3 = "cd {0}; sed -i '9s,.*,LAYOUT PATH  \"{1}.calibre.db\",' {2}; sed -i '10s,.*,LAYOUT PRIMARY \"{1}\",' {2}; sed -i '13s,.*,DRC RESULTS DATABASE \"{1}.drc.results\" ASCII,' {2}; sed -i '18s,.*,DRC SUMMARY REPORT \"{1}.drc.summary\" REPLACE HIER,' {2}"
-        stdin, stdout, stderr = ssh.exec_command(commandlines3.format(self.DRCrunDir, self.cellname, DRCfile))
+        commandlines3 = f"cd {self.DRCrunDir};" \
+                        f" sed -i '9s,.*,LAYOUT PATH  \"{self.cellname}.calibre.db\",' {DRCfile};" \
+                        f" sed -i '10s,.*,LAYOUT PRIMARY \"{self.cellname}\",' {DRCfile};" \
+                        f" sed -i '13s,.*,DRC RESULTS DATABASE \"{self.cellname}.drc.results\" ASCII,' {DRCfile};" \
+                        f" sed -i '18s,.*,DRC SUMMARY REPORT \"{self.cellname}.drc.summary\" REPLACE HIER,' {DRCfile}"
+        stdin, stdout, stderr = ssh.exec_command(commandlines3)
         print(f'print after commandlines3 :')
         print(f"stdout: {stdout.read().decode('utf-8')}")
         print(f"stderr: {stderr.read().decode('utf-8')}")
 
-        #commandlines33 = f"cd {self.WorkDir}; rm {self.cellname}.drc.summary"        # delete previous summary file
         commandlines33 = f"cd {self.DRCrunDir}; rm {self.cellname}.drc.summary"        # delete previous summary file
         stdin, stdout, stderr = ssh.exec_command(commandlines33)
         print(f'print after commandlines33 :')
@@ -103,9 +94,8 @@ class DRCchecker:
         print(f"stderr: {stderr.read().decode('utf-8')}")
 
         # commandlines4 = "cd {0}; source setup.cshrc; calibre -drc -hier -turbo -turbo_litho -nowait {1}/{2}"
-        commandlines4 = "cd {0}; source setup.cshrc; calibre -drc -hier -nowait {1}/{2}"
-        stdin, stdout, stderr = ssh.exec_command(commandlines4.format(self.WorkDir, self.DRCrunDir, DRCfile))
-        # stdin, __, stderr = ssh.exec_command(commandlines4.format(self.WorkDir, self.DRCrunDir, DRCfile))
+        commandlines4 = f"s28; cd {self.DRCrunDir}; calibre -drc -hier -nowait {self.DRCrunDir}/{DRCfile}"
+        stdin, stdout, stderr = ssh.exec_command(commandlines4)
         print(f'print after commandlines4 :')
         # stdout.read().decode('utf8')        # 24s 1:53s no print
         # stdout.read().decode('utf-8')         # 1:58s
@@ -117,16 +107,14 @@ class DRCchecker:
                 break
             for line in lines:
                 print(line, end="")
-                # print(line)
 
         # for line in iter(stdout.readline, ""):              # 1:01s print
         #     print(line, end="")
 
         readfile = ssh.open_sftp()
-        # file = readfile.open('{0}/{1}.drc.summary'.format(self.WorkDir, self.cellname))
-        file = readfile.open('{0}/{1}.drc.summary'.format(self.DRCrunDir, self.cellname))
-        print(f"Reading '{self.WorkDir}/{self.cellname}.drc.summary' for check DRC Error......")
-        if DesignParameters._Technology == 'SS28nm' :
+        file = readfile.open(f'{self.DRCrunDir}/{self.cellname}.drc.summary')
+        print(f"Reading DRC Summary File for check DRC Error......")
+        if DesignParameters._Technology == 'SS28nm':
             for line in (file.readlines()[-2:-1]):        # 'TOTAL DRC Results Generated:   656 (656)\n'
                 print(line)
                 if line.split()[4] != '0':
@@ -142,7 +130,7 @@ class DRCchecker:
                     stdin, stdout, stderr = ssh.exec_command(commandlines5.format(self.WorkDir, self.libname))
                     print('No DRC ERROR for this case, deleting library...')
 
-        if DesignParameters._Technology == '065nm' :
+        if DesignParameters._Technology == '065nm':
             line = (file.readlines()[-1])        # 'TOTAL DRC Results Generated:   656 (656)\n'
             print(line)
             if line.split()[4] != '0':
@@ -174,24 +162,6 @@ class DRCchecker:
         print(''.center(105, '#'))
 
 
-    # def DRCchecker_PrintInputParams(self, InputParams:dict):
-    #
-    #     try:
-    #         self.DRCchecker()
-    #     except Exception as e:
-    #         print('Error Occurred', e)
-    #         print("=============================   Last Layout Object's Input Parameters are   =============================")
-    #         for key, value in InputParams.items():
-    #             print(f'{key} : {value}')
-    #         print("=========================================================================================================")
-    #         raise Exception("Something ERROR with DRCchecker !!!")
-    #     else:
-    #         print("=============================   Last Layout Object's Input Parameters are   =============================")
-    #         for key, value in InputParams.items():
-    #             print(f'{key} : {value}')
-    #         print("=========================================================================================================")
-
-
     def Upload2FTP(self):
         """
         Upload GDS file to Working Directory
@@ -202,18 +172,15 @@ class DRCchecker:
         ftp = ftplib.FTP(self.server)
         ftp.login(self.username, self.password)
         ftp.cwd(self.GDSDir)
-        myFile = open(filename, 'rb')
-        ftp.storbinary('STOR ' + filename, myFile)
-        myFile.close()
+        with open(filename, 'rb') as myFile:
+            ftp.storbinary('STOR ' + filename, myFile)
         ftp.quit()
         print(''.center(105, '#'))
 
 
-    def StreamIn(self, tech:str = 'SS28nm'):
+    def StreamIn(self, tech: str = 'SS28nm'):
         """
-        Only StreamIn
 
-        :param tech:  'SS28nm' | '065nm'
         """
 
         print('   Connecting to Server by SSH...   '.center(105, '#'))
@@ -232,15 +199,14 @@ class DRCchecker:
             raise NotImplemented
 
         if tech in ('SS28nm', None):
-            CommandLine_ChangeDir = f"cd {self.WorkDir}; source setup.cshrc;"
+            CommandLine_ChangeDir = f"s28; "
         elif tech == 'SS65nm':
-            CommandLine_ChangeDir = f"s65;"
+            CommandLine_ChangeDir = f"s65; "
         else:
             raise NotImplemented
         CommandLine_StreamIn = f"strmin -library '{self.libname}' -strmFile '{self.GDSDir}/{self.cellname}.gds' -attachTechFileOfLib {TechFile} -logFile 'strmIn.log'"
         commandlines1 = CommandLine_ChangeDir + CommandLine_StreamIn
-        commandlines1 = commandlines1 + " -noDetectVias"                # Option. To identify Via Objects' Names (For Debugging) | option 활성화하면 streamIn 속도 조금 느려짐.
-        # commandlines1 = commandlines1 + " -writeMode 'noOverwrite'"                # Option. test
+        # commandlines1 = commandlines1 + " -noDetectVias"                # Option. To identify Via Objects' Names (For Debugging) | option 활성화하면 streamIn 속도 조금 느려짐.
         print(f"commandline1: {commandlines1}")
         stdin, stdout, stderr = ssh.exec_command(commandlines1)         # 이전 라이브러리 존재하면 streamin 느려짐. 없을때 0.5 ~ 1s, 있을떄 3 ~ 6s
 

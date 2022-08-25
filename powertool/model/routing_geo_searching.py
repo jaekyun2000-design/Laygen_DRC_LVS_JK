@@ -167,8 +167,10 @@ class GeometricField:
     def design_parameter_projection(self, dp, structure_hierarchy=[], reflect=tf_matrix.reflect_off,
                                     angle=tf_matrix.rotate_0, base_xy=[0, 0]):
         # for _, dp in _DesignParameter.items():
-        if '_XYCoordinatesProjection' in dp:
-            del dp['_XYCoordinatesProjection']
+        # if '_XYCoordinatesProjection' in dp:
+        #     warnings.warn('_XYCoordinatesProjection is already exist')
+        #     return None
+            # del dp['_XYCoordinatesProjection']
         if dp['_DesignParametertype'] == 1:
             for idx, xy_pair in enumerate(dp['_XYCoordinates']):
                 five_point_xy = self.stick_diagram.CenterCoordinateAndWidth2XYCoordinate(xy_pair, dp['_XWidth'],

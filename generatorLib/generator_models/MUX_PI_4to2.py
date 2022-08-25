@@ -18,10 +18,10 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
             self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
         self._DesignParameter['_Name']['Name'] = _Name
 
-    def _CalculateDesignParamter_v2(self,
+    def _CalculateDesignParameter_v2(self,
                                     TristateInv1_Finger=1,
-                                    TristateInv1_PMOSWidth=400,
-                                    TristateInv1_NMOSWidth=200,
+                                    TristateInv1_PMOSWidth=500,
+                                    TristateInv1_NMOSWidth=250,
                                     TristateInv1_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
                                     TristateInv1_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
                                     TristateInv1_YCoordOfInputA=None,  # Optional
@@ -38,16 +38,16 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
                                     TristateInv2_YCoordOfInputENb=None,  # Optional
 
                                     Inv_Finger=1,
-                                    Inv_NMOSWidth=200,
                                     Inv_PMOSWidth=400,
+                                    Inv_NMOSWidth=200,
                                     Inv_VDD2PMOS=None,  # Optional
                                     Inv_VSS2NMOS=None,  # Optional
                                     Inv_YCoordOfInOut=None,  # Optional
 
+                                    CellHeight=1800,
                                     ChannelLength=30,
                                     GateSpacing=100,
                                     XVT='SLVT',
-                                    CellHeight=1800,
                                     SupplyRailType=1,
                                     ):
         """
@@ -206,8 +206,16 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
         else:
             # YCoordOftempRoute1 = 1066
             # YCoordOftempRoute2 = 2534
-            YCoordOftempRoute1 = max(self.getXYTop('MuxHalf1', 'Via1_temp23', '_Met2Layer')[0][1], self.getXYTop('MuxHalf1', 'Via1_TSINV2_A', '_Met2Layer')[0][1]) + drc._MetalxMinSpaceAtCorner + self.getWidth('Met2Path2') / 2
-            YCoordOftempRoute2 = min(self.getXYBot('MuxHalf2', 'Via1_temp23', '_Met2Layer')[0][1], self.getXYBot('MuxHalf2', 'Via1_TSINV2_A', '_Met2Layer')[0][1]) - drc._MetalxMinSpaceAtCorner - self.getWidth('Met2Path4') / 2
+            YCoordOftempRoute1 = max(self.getXYTop('MuxHalf1', 'Via1_temp23', '_Met2Layer')[0][1],
+                                     self.getXYTop('MuxHalf1', 'Via1_TSINV2_A', '_Met2Layer')[0][1],
+                                     self.getXYBot('MuxHalf1', 'Via1_TSINV2_A', '_Met2Layer')[0][1] + self.getYWidth('MuxHalf1', 'Via1_temp23', '_Met2Layer')) \
+                                 + drc._MetalxMinSpaceAtCorner + self.getWidth('Met2Path2') / 2
+            if self.getXYBot('MuxHalf1', 'TristateInv2', 'via1ForPM1', '_Met2Layer')[0][1] - (YCoordOftempRoute1 + self.getWidth('Met2Path2') / 2) < drc._MetalxMinSpaceAtCorner:
+                raise NotImplementedError
+            YCoordOftempRoute2 = min(self.getXYBot('MuxHalf2', 'Via1_temp23', '_Met2Layer')[0][1],
+                                     self.getXYBot('MuxHalf2', 'Via1_TSINV2_A', '_Met2Layer')[0][1],
+                                     self.getXYTop('MuxHalf2', 'Via1_TSINV2_A', '_Met2Layer')[0][1] - self.getYWidth('MuxHalf1', 'Via1_temp23', '_Met2Layer')) \
+                                 - drc._MetalxMinSpaceAtCorner - self.getWidth('Met2Path4') / 2
             self._DesignParameter['Met2Path1']['_XYCoordinates'] = [
                 [[self.getXY('MuxHalf1', 'Via1_TSINV2_A')[0][0], self.getXYBot('MuxHalf1', 'Via1_TSINV2_A', '_Met2Layer')[0][1] + self.getWidth('Met2Path1') / 2],
                  [self.getXY('MuxHalf1', 'TristateInv2', 'NM2', '_Met1Layer')[-1][0] - 2 * UnitPitch, self.getXYBot('MuxHalf1', 'Via1_TSINV2_A', '_Met2Layer')[0][1] + self.getWidth('Met2Path1') / 2]]
@@ -295,8 +303,23 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
             _XWidth=self.getXWidth('Met1Boundary7'),
             _YWidth=self.getYWidth('Met1Boundary7')
         )
+
+        yCoord = self.getXYTop('Via1ForPath1', '_Met1Layer')[0][1] - self.getYWidth('Met1Boundary7') / 2        # prev.
+
+        # calc.  boundary = centerCoord
+        topBoundary_via1Met1 = self.getXYTop('Via1ForPath1', '_Met1Layer')[0][1] - self.getYWidth('Met1Boundary7') / 2
+        botBoundary_via1Met1 = self.getXYBot('Via1ForPath1', '_Met1Layer')[0][1] + self.getYWidth('Met1Boundary7') / 2
+        topBoundary_invPmos = self.getXYBot('MuxHalf1', 'Inv1', '_PMOS', '_Met1Layer')[0][1] - drc._Metal1MinSpaceAtCorner - self.getYWidth('Met1Boundary7') / 2
+        botBoundary_invNmos = self.getXYTop('MuxHalf1', 'Inv1', '_NMOS', '_Met1Layer')[0][1] + drc._Metal1MinSpaceAtCorner + self.getYWidth('Met1Boundary7') / 2
+        topBoundary = min(topBoundary_via1Met1, topBoundary_invPmos)
+        botBoundary = max(botBoundary_via1Met1, botBoundary_invNmos)
+        if topBoundary < botBoundary:
+            raise NotImplementedError
+        else:
+            yCoord = (topBoundary + botBoundary) / 2
+
         self._DesignParameter['Met1Boundary7']['_XYCoordinates'] = [
-            [(rightBoundary + leftBoundary) / 2, self.getXYTop('Via1ForPath1', '_Met1Layer')[0][1] - self.getYWidth('Met1Boundary7') / 2]
+            [(rightBoundary + leftBoundary) / 2, yCoord]
         ]
         self._DesignParameter['Met1Boundary8']['_XYCoordinates'] = [
             [(rightBoundary + leftBoundary) / 2, _CellHeight * 2 - self.getXY('Met1Boundary7')[0][1]]
@@ -645,7 +668,7 @@ if __name__ == '__main__':
     ''' Input Parameters for Layout Object '''
     InputParams = dict(
         TristateInv1_Finger=1,
-        TristateInv1_PMOSWidth=400,
+        TristateInv1_PMOSWidth=500,
         TristateInv1_NMOSWidth=250,
         TristateInv1_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
         TristateInv1_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
@@ -662,9 +685,9 @@ if __name__ == '__main__':
         TristateInv2_YCoordOfInputEN=None,  # Optional
         TristateInv2_YCoordOfInputENb=None,  # Optional
 
-        Inv_Finger=7,
-        Inv_NMOSWidth=200,
+        Inv_Finger=1,
         Inv_PMOSWidth=400,
+        Inv_NMOSWidth=200,
         Inv_VDD2PMOS=None,  # Optional
         Inv_VSS2NMOS=None,  # Optional
         Inv_YCoordOfInOut=None,  # Optional
@@ -673,8 +696,42 @@ if __name__ == '__main__':
         GateSpacing=100,
         XVT='SLVT',
         CellHeight=None,            #
-        SupplyRailType=1,
+        SupplyRailType=2,
     )
+
+    # drc check
+    # InputParams = dict(
+    #     TristateInv1_Finger=7,
+    #     TristateInv1_PMOSWidth=200,
+    #     TristateInv1_NMOSWidth=240,
+    #     TristateInv1_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
+    #     TristateInv1_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
+    #     TristateInv1_YCoordOfInputA=None,  # Optional
+    #     TristateInv1_YCoordOfInputEN=None,  # Optional
+    #     TristateInv1_YCoordOfInputENb=None,  # Optional
+    #
+    #     TristateInv2_Finger=10,
+    #     TristateInv2_PMOSWidth=480,
+    #     TristateInv2_NMOSWidth=520,
+    #     TristateInv2_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
+    #     TristateInv2_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
+    #     TristateInv2_YCoordOfInputA=None,  # Optional
+    #     TristateInv2_YCoordOfInputEN=None,  # Optional
+    #     TristateInv2_YCoordOfInputENb=None,  # Optional
+    #
+    #     Inv_Finger=10,
+    #     Inv_PMOSWidth=640,
+    #     Inv_NMOSWidth=720,
+    #     Inv_VDD2PMOS=None,  # Optional
+    #     Inv_VSS2NMOS=None,  # Optional
+    #     Inv_YCoordOfInOut=None,  # Optional
+    #
+    #     ChannelLength=30,
+    #     GateSpacing=100,
+    #     XVT='SLVT',
+    #     CellHeight=None,            #
+    #     SupplyRailType=1,
+    # )
 
     Checker = DRCchecker.DRCchecker(
         username=My.ID,
@@ -689,47 +746,66 @@ if __name__ == '__main__':
     Mode_DRCCheck = False  # True | False
     Num_DRCCheck = 10
 
-    start_time = time.time()
-    for ii in range(0, Num_DRCCheck if Mode_DRCCheck else 1):
-        if Mode_DRCCheck:
-            ''' Random Parameters for Layout Object '''
-            InputParams['TristateInv1_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
-            InputParams['TristateInv2_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
-            InputParams['Inv_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
+    if Mode_DRCCheck:
+        ErrCount = 0            # DRC error
+        knownErrorCount = 0     # failed to generate design. NotImplementedError
+
+        start_time = time.time()
+        for ii in range(0, Num_DRCCheck):
             if ii == 0:
-                Bot.send2Bot(f'Start DRC checker...\n'
-                             f'CellName: {cellname}\n'
-                             f'Total # of Run: {Num_DRCCheck}')
-        else:
-            pass
-        print("=============================   Last Layout Object's Input Parameters are   ==========================")
-        tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
-        print(tmpStr)
-        print("======================================================================================================")
+                Bot.send2Bot(f'Start DRC checker...\nCellName: {cellname}\nTotal # of Run: {Num_DRCCheck}')
 
-        ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
-        LayoutObj = MUX_PI_4to2(_Name=cellname)
-        LayoutObj._CalculateDesignParamter_v2(**InputParams)
-        LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
-        testStreamFile = open('./{}'.format(_fileName), 'wb')
-        tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
-        tmp.write_binary_gds_stream(testStreamFile)
-        testStreamFile.close()
+            forLoopCntMax = 10
+            for iii in range(0, forLoopCntMax):
+                try:
+                    ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
+                    InputParams['TristateInv1_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
+                    InputParams['TristateInv2_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
+                    InputParams['Inv_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
 
-        print('###########################      Sending to FTP Server & StreamIn...      #############################')
-        Checker.Upload2FTP()
-        Checker.StreamIn(tech=DesignParameters._Technology)
+                    InputParams['TristateInv1_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['TristateInv1_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['TristateInv2_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['TristateInv2_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['Inv_PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['Inv_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
 
-        if Mode_DRCCheck:
-            print(f'###################      DRC checking... {ii + 1}/{Num_DRCCheck}      ######################')
+                    print("   Last Layout Object's Input Parameters are   ".center(105, '='))
+                    tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+                    print(tmpStr)
+                    print("".center(105, '='))
+
+                    ''' ---------------------------------- Generate Layout Object -------------------------------------------'''
+                    LayoutObj = MUX_PI_4to2(_Name=cellname)
+                    LayoutObj._CalculateDesignParameter_v2(**InputParams)
+                    LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+                    testStreamFile = open('./{}'.format(_fileName), 'wb')
+                    tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+                    tmp.write_binary_gds_stream(testStreamFile)
+                    testStreamFile.close()
+                except NotImplementedError:  # something known error !
+                    print(f"forLoopCnt = {iii + 1}")
+                    if iii + 1 == forLoopCntMax:
+                        raise NotImplementedError
+                else:
+                    knownErrorCount = knownErrorCount + iii
+                    # Bot.send2Bot(f"NotImplementedError...\nknownErrorCount = {knownErrorCount}")
+                    break
+            # end of for loop
+
+            print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+            Checker.Upload2FTP()
+            Checker.StreamIn(tech=DesignParameters._Technology)
+
+            print(f'   DRC checking... {ii + 1}/{Num_DRCCheck}   '.center(105, '#'))
             try:
                 Checker.DRCchecker()
             except Exception as e:      # something error
+                ErrCount = ErrCount + 1
                 print('Error Occurred: ', e)
-                print("=============================   Last Layout Object's Input Parameters are   =============================")
-                tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+                print("   Last Layout Object's Input Parameters are   ".center(105, '='))
                 print(tmpStr)
-                print("=========================================================================================================")
+                print("".center(105, '='))
                 m, s = divmod(time.time() - start_time, 60)
                 h, m = divmod(m, 60)
                 Bot.send2Bot(f'Error Occurred During Checking DRC({ii + 1}/{Num_DRCCheck})...\n'
@@ -739,14 +815,29 @@ if __name__ == '__main__':
                              f'{tmpStr}\n'
                              f'============================\n'
                              f'** Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
-            else:   # no error
-                if (ii + 1) == Num_DRCCheck:
-                    elapsed_time = time.time() - start_time
-                    m, s = divmod(elapsed_time, 60)
-                    h, m = divmod(m, 60)
-                    Bot.send2Bot(f'DRC Checker Finished.\n'
-                                 f'CellName: {cellname}\n'
-                                 f'Total # of Run: {Num_DRCCheck}\n'
-                                 f'Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
 
-    print('########################################      Finished       ###########################################')
+            if (ii + 1) == Num_DRCCheck:
+                elapsed_time = time.time() - start_time
+                m, s = divmod(elapsed_time, 60)
+                h, m = divmod(m, 60)
+                Bot.send2Bot(f'DRC Checker Finished.\n'
+                             f'CellName: {cellname}\n'
+                             f'Total # of known Err: {knownErrorCount}\n'
+                             f'Total # of DRC Err: {ErrCount}\n'
+                             f'Total # of Run: {Num_DRCCheck}\n'
+                             f'Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
+    else:
+        ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
+        LayoutObj = MUX_PI_4to2(_Name=cellname)
+        LayoutObj._CalculateDesignParameter_v2(**InputParams)
+        LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+        testStreamFile = open('./{}'.format(_fileName), 'wb')
+        tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+        tmp.write_binary_gds_stream(testStreamFile)
+        testStreamFile.close()
+
+        print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+        Checker.Upload2FTP()
+        Checker.StreamIn(tech=DesignParameters._Technology)
+
+    print('      Finished       '.center(105, '#'))

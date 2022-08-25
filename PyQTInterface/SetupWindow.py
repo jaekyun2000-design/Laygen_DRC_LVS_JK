@@ -921,6 +921,7 @@ class _LoadSRefWindow(QWidget):
         if self.purpose == 'main_load':
             self.XY = QLabel("XY")
         self.cal_fcn = QLabel("calculate_fcn")
+        # self.upside_down = QLabel("upside_down")
 
         self.pars = QLabel("\nPARAMETERS")
 
@@ -932,6 +933,7 @@ class _LoadSRefWindow(QWidget):
         if self.purpose == 'main_load':
             self.XY_input = QLineEdit()
         self.cal_fcn_input = QComboBox()
+        # self.upside_down_input = QCheckBox()
 
         self.library_input.addItems(generator_model_api.class_dict.keys())
         self.class_name_input.setText(generator_model_api.class_name_dict[self.library_input.currentText()])
@@ -964,6 +966,7 @@ class _LoadSRefWindow(QWidget):
         if self.purpose == 'main_load':
             self.setupVboxColumn1.addWidget(self.XY)
         self.setupVboxColumn1.addWidget(self.cal_fcn)
+        # self.setupVboxColumn1.addWidget(self.upside_down)
 
         if self.purpose == 'main_load':
             self.setupVboxColumn2.addWidget(self.name_input)
@@ -972,6 +975,7 @@ class _LoadSRefWindow(QWidget):
         if self.purpose == 'main_load':
             self.setupVboxColumn2.addWidget(self.XY_input)
         self.setupVboxColumn2.addWidget(self.cal_fcn_input)
+        # self.setupVboxColumn2.addWidget(self.upside_down_input)
 
         self.parVBox1 = QVBoxLayout()
         self.parVBox2 = QVBoxLayout()
@@ -1137,6 +1141,11 @@ class _LoadSRefWindow(QWidget):
             elif key == 'parameters':
                 tmpAST.__dict__[key] = self.paramDict
                 tmpAST.parameter_fields = list(self.paramDict.keys())
+            # elif key == 'reflect':
+            #     if self.upside_down_input.isChecked():
+            #         tmpAST.__dict__[key] = [1, 0, 0]
+            #     else:
+            #         tmpAST.__dict__[key] = [0, 0, 0]
 
         if not self.create:
             tmpAST._id = self._DesignParameter['_id']

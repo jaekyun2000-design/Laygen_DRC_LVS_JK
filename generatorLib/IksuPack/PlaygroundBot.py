@@ -2,11 +2,11 @@ import telegram
 
 
 class PGBot:
-    def __init__(self, token:str, chat_id:int):
+    def __init__(self, token: str, chat_id: int):
         self.BotObj = telegram.Bot(token=token)
         self.chat_id = chat_id
 
-    def send2Bot(self, text:str):
+    def send2Bot(self, text: str):
         self.BotObj.sendMessage(chat_id=self.chat_id, text=text)
 
 
@@ -24,4 +24,8 @@ if __name__ == '__main__':
 reference : https://kminito.tistory.com/24
 pip install python-telegram-bot --upgrade
 pip install -U pytest
+
+
+conda info --env
+conda install -c conda-forge python-telegram-bot
 '''
