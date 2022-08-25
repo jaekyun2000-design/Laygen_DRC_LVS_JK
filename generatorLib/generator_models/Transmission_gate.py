@@ -10,7 +10,7 @@ from generatorLib.generator_models import NMOSWithDummy
 from generatorLib.generator_models import PMOSWithDummy
 from generatorLib.generator_models import Z_PWR_CNT
 
-class _Transmission_gate(StickDiagram._StickDiagram):
+class Transmission_gate(StickDiagram._StickDiagram):
 	def __init__(self, _DesignParameter=None, _Name='Transmission_gate'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
@@ -18,7 +18,7 @@ class _Transmission_gate(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,nmos_gate=3,pmos_gate=3,nmos_width=320,pmos_width=584,length=30,XVT='SLVT',vss2nmos=350,vdd2pmos=433,gate_y=860,vss2vdd_height=1800,gate_spacing=100,sdwidth=66,power_xdistance=130):
+	def _CalculateDesignParameter(self,nmos_gate=1,pmos_gate=1,nmos_width=200,pmos_width=400,length=30,XVT='SLVT',vss2nmos=None,vdd2pmos=None,gate_y=None,vss2vdd_height=None,gate_spacing=100,sdwidth=66,power_xdistance=130):
 
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -46,20 +46,34 @@ class _Transmission_gate(StickDiagram._StickDiagram):
 
 		self._DesignParameter['vss'] = self._SrefElementDeclaration(_DesignObj=Z_PWR_CNT.Z_PWR_CNT(_Name='vssIn{}'.format(_Name)))[0]
 		self._DesignParameter['vss']['_DesignObj']._CalculateDesignParameter(**dict(_Xnum=(nmos_gate + 1), _Xdistance=power_xdistance))
-		self._DesignParameter['vss']['_XYCoordinates'] = [[0, 0]]
 		self._DesignParameter['vdd'] = self._SrefElementDeclaration(_DesignObj=Z_PWR_CNT.Z_PWR_CNT(_Name='vddIn{}'.format(_Name)))[0]
 		self._DesignParameter['vdd']['_DesignObj']._CalculateDesignParameter(**dict(_Xnum=(pmos_gate + 1), _Xdistance=power_xdistance))
-		self._DesignParameter['vdd']['_XYCoordinates'] = [[0, vss2vdd_height]]
+		self._DesignParameter['gate_input'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_inputIn{}'.format(_Name)))[0]
+		self._DesignParameter['gate_input']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(**dict(_ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2))
 
 		if vss2nmos == None :
-			vss2nmos=self._DesignParameter['vss']['_XYCoordinates'][0][1]+max(self._DesignParameter['vss']['_DesignObj']._DesignParameter['METAL1_boundary_0']['_YWidth'], self._DesignParameter['vss']['_DesignObj']._DesignParameter['METAL1_boundary_1']['_YWidth'])/2+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
-
-		self._DesignParameter['nmos']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], vss2nmos]]
+			vss2nmos=max(self._DesignParameter['vss']['_DesignObj']._DesignParameter['METAL1_boundary_0']['_YWidth'], self._DesignParameter['vss']['_DesignObj']._DesignParameter['METAL1_boundary_1']['_YWidth'])/2+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
 
 		if vdd2pmos == None :
 			vdd2pmos=max(self._DesignParameter['vss']['_DesignObj']._DesignParameter['METAL1_boundary_0']['_YWidth'],self._DesignParameter['vdd']['_DesignObj']._DesignParameter['METAL1_boundary_1']['_YWidth'])/2+self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
 
+		vdd2vss_min_height=vss2nmos+vdd2pmos+max(self.getYWidth('nmos','_Met1Layer')/2+self.getYWidth('pmos','_Met1Layer')/2+self.getYWidth('gate_input','_Met1Layer')+2*drc._Metal1MinSpace3, self.getYWidth('nmos','_PODummyLayer')/2+self.getYWidth('pmos','_PODummyLayer')/2+self.getYWidth('gate_input','_POLayer')+drc._PolygateMinWidth*5/3+2*drc._PolygateMinSpace)
+		if self.getYWidth('nmos','_PODummyLayer')/2+self.getYWidth('pmos','_PODummyLayer')/2+self.getYWidth('gate_input','_POLayer')+drc._PolygateMinWidth*5/3+2*drc._PolygateMinSpace >= self.getYWidth('nmos','_Met1Layer')/2+self.getYWidth('pmos','_Met1Layer')/2+self.getYWidth('gate_input','_Met1Layer')+2*drc._Metal1MinSpace3:
+			vdd2vss_po=1
+		elif self.getYWidth('nmos','_PODummyLayer')/2+self.getYWidth('pmos','_PODummyLayer')/2+self.getYWidth('gate_input','_POLayer')+drc._PolygateMinWidth*5/3+2*drc._PolygateMinSpace < self.getYWidth('nmos','_Met1Layer')/2+self.getYWidth('pmos','_Met1Layer')/2+self.getYWidth('gate_input','_Met1Layer')+2*drc._Metal1MinSpace3:
+			vdd2vss_po=0
+
+		if vss2vdd_height == None :
+			vss2vdd_height = vdd2vss_min_height
+		else :
+			if vss2vdd_height < vdd2vss_min_height:
+				raise NotImplementedError('Cell height should be set larger.')
+
+		self._DesignParameter['vss']['_XYCoordinates'] = [[0, 0]]
+		self._DesignParameter['vdd']['_XYCoordinates'] = [[0, vss2vdd_height]]
+		self._DesignParameter['nmos']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], vss2nmos]]
 		self._DesignParameter['pmos']['_XYCoordinates'] = [[self._DesignParameter['vdd']['_XYCoordinates'][0][0], (vss2vdd_height - vdd2pmos)]]
+
 		self._DesignParameter['pmos_second_podummy'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=length, _YWidth=self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'])
 		self._DesignParameter['pmos_second_podummy']['_XYCoordinates'] = [[((((self._DesignParameter['pmos']['_XYCoordinates'][0][0] + self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) + (self._DesignParameter['pmos_second_podummy']['_XWidth'] / 2)) + gate_spacing), self._DesignParameter['pmos']['_XYCoordinates'][0][1]], [((((self._DesignParameter['pmos']['_XYCoordinates'][0][0] + self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]) - (self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth'] / 2)) - (self._DesignParameter['pmos_second_podummy']['_XWidth'] / 2)) - gate_spacing), self._DesignParameter['pmos']['_XYCoordinates'][0][1]]]
 		self._DesignParameter['nmos_second_podummy'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _XWidth=length, _YWidth=self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'])
@@ -72,11 +86,14 @@ class _Transmission_gate(StickDiagram._StickDiagram):
 		self._DesignParameter['vdd_odlayer']['_XYCoordinates'] = [[self._DesignParameter['vss_odlayer']['_XYCoordinates'][0][0], self._DesignParameter['vdd']['_XYCoordinates'][0][1]]]
 		self._DesignParameter['vdd_supply_m2_y'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _XWidth=self._DesignParameter['vdd_odlayer']['_XWidth'], _YWidth=6*drc._MetalxMinWidth)
 		self._DesignParameter['vdd_supply_m2_y']['_XYCoordinates'] = [[(+ self._DesignParameter['vdd_odlayer']['_XYCoordinates'][0][0]), (+ self._DesignParameter['vdd_odlayer']['_XYCoordinates'][0][1])]]
-		self._DesignParameter['gate_input'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_inputIn{}'.format(_Name)))[0]
-		self._DesignParameter['gate_input']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(**dict(_ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2))
 
 		if gate_y == None :
-			gate_y=((self._DesignParameter['pmos_second_podummy']['_XYCoordinates'][0][1]-self._DesignParameter['pmos_second_podummy']['_YWidth']/2)+(self._DesignParameter['nmos_second_podummy']['_XYCoordinates'][0][1]+self._DesignParameter['nmos_second_podummy']['_YWidth']/2))/2
+			if vdd2vss_po == 1 :
+				gate_y=((((self._DesignParameter['pmos']['_XYCoordinates'][0][1] + self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2)) + ((self._DesignParameter['nmos']['_XYCoordinates'][0][1] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][1]) + (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] / 2))) / 2)
+			elif vdd2vss_po == 0 :
+				gate_y=((((self._DesignParameter['pmos']['_XYCoordinates'][0][1] + self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) + ((self._DesignParameter['nmos']['_XYCoordinates'][0][1] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) + (self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2))) / 2)
+
+			#gate_y=((self._DesignParameter['pmos_second_podummy']['_XYCoordinates'][0][1]-self._DesignParameter['pmos_second_podummy']['_YWidth']/2)+(self._DesignParameter['nmos_second_podummy']['_XYCoordinates'][0][1]+self._DesignParameter['nmos_second_podummy']['_YWidth']/2))/2
 
 		self._DesignParameter['gate_input']['_XYCoordinates'] = [[(min((self._DesignParameter['nmos_second_podummy']['_XYCoordinates'][0][0] + (self._DesignParameter['nmos']['_XYCoordinates'][0][0] + self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0])), (self._DesignParameter['pmos_second_podummy']['_XYCoordinates'][(- 1)][0] + (self._DesignParameter['pmos']['_XYCoordinates'][0][0] + self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0]))) / 2), gate_y]]
 		self._DesignParameter['gate_output'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_outputIn{}'.format(_Name)))[0]
@@ -213,7 +230,7 @@ class _Transmission_gate(StickDiagram._StickDiagram):
 		self._DesignParameter['XVT_boundary_1']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], ((self._DesignParameter['vdd']['_XYCoordinates'][0][1] + self._DesignParameter['vss']['_XYCoordinates'][0][1]) / 2)]]
 		##end of modification
 
-		self._DesignParameter['NWELL_boundary_0'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1], _XWidth=(max(self._DesignParameter['vdd_odlayer']['_XWidth'], self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_ODLayer']['_XWidth']) + (2 * drc._NwMinEnclosurePactive)), _YWidth=(((self._DesignParameter['vdd_odlayer']['_XYCoordinates'][0][1] + (self._DesignParameter['vdd_odlayer']['_YWidth'] / 2)) + 2*drc._NwMinEnclosurePactive2) - ((self._DesignParameter['gate_input']['_XYCoordinates'][0][1] + self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))))
+		self._DesignParameter['NWELL_boundary_0'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1], _XWidth=(max(self._DesignParameter['vdd_odlayer']['_XWidth'], self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_ODLayer']['_XWidth']) + (2 * drc._NwMinEnclosurePactive)), _YWidth=(((self._DesignParameter['vdd_odlayer']['_XYCoordinates'][0][1] + (self._DesignParameter['vdd_odlayer']['_YWidth'] / 2)) + 2*drc._NwMinEnclosurePactive2) - ((self._DesignParameter['gate_input']['_XYCoordinates'][0][1] + self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2)) + drc._NwMinEnclosurePactive2))
 		self._DesignParameter['NWELL_boundary_0']['_XYCoordinates'] = [[self._DesignParameter['vss']['_XYCoordinates'][0][0], ((((self._DesignParameter['vdd_odlayer']['_XYCoordinates'][0][1] + (self._DesignParameter['vdd_odlayer']['_YWidth'] / 2)) + 2*drc._NwMinEnclosurePactive2) + ((self._DesignParameter['gate_input']['_XYCoordinates'][0][1] + self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1]) - (self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / 2))) / 2)]]
 		self._DesignParameter['vss_pplayer'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PIMP'][0], _Datatype=DesignParameters._LayerMapping['PIMP'][1], _XWidth=(self._DesignParameter['vss_odlayer']['_XWidth'] + (2 * drc._PpMinExtensiononPactive)), _YWidth=(self._DesignParameter['vss_odlayer']['_YWidth'] + (2 * drc._PpMinExtensiononPactive)))
 		self._DesignParameter['vss_pplayer']['_XYCoordinates'] = [[(+ self._DesignParameter['vss_odlayer']['_XYCoordinates'][0][0]), (+ self._DesignParameter['vss_odlayer']['_XYCoordinates'][0][1])]]
@@ -388,7 +405,8 @@ class _Transmission_gate(StickDiagram._StickDiagram):
 		self._DesignParameter['_ENbpin']['_XYCoordinates']=self._DesignParameter['gate_input']['_XYCoordinates']
 		self._DesignParameter['_Apin']['_XYCoordinates']=[[self._DesignParameter['m1_source_routing_y']['_XYCoordinates'][0][0][0], (self._DesignParameter['m1_source_routing_y']['_XYCoordinates'][0][0][1]+self._DesignParameter['m1_source_routing_y']['_XYCoordinates'][0][1][1])/2]]
 		self._DesignParameter['_Ypin']['_XYCoordinates']=[[self._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][0][0][0], (self._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][0][0][1]+self._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][0][1][1])/2]]
-
+		self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']=drc._Metal1MinArea / self._DesignParameter['gate_input']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] + 2
+		self._DesignParameter['gate_output']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']=drc._Metal1MinArea / self._DesignParameter['gate_output']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] + 2
 	def _CalculateDesignParameter_v2(self, nmgateY=None, pmgateY=None, nmos_gate=3, pmos_gate=3, nmos_width=320, pmos_width=584, length=30, XVT='SLVT', vss2nmos=350, vdd2pmos=433, gate_y=860, vss2vdd_height=1800, gate_spacing=100, sdwidth=66, power_xdistance=130, out_even_up_mode=True):
 
 		drc = DRC.DRC()
@@ -546,4 +564,3 @@ class _Transmission_gate(StickDiagram._StickDiagram):
 			for XY in self._DesignParameter[DesignObj]['_XYCoordinates']:
 				tmpXYs.append(CoordCalc.Add(XY, [0, OffsetY]))
 			self._DesignParameter[DesignObj]['_XYCoordinates'] = tmpXYs
-
