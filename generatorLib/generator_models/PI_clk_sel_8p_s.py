@@ -23,42 +23,42 @@ class PI_clk_sel_8p_s(StickDiagram._StickDiagram):
 
     def _CalculateDesignParameter_v2(self,
                                      TristateInv1_Finger=1,
-                                     TristateInv1_PMOSWidth=400,
-                                     TristateInv1_NMOSWidth=200,
-                                     TristateInv1_VDD2PMOS=None,            # Optional (Not work when finger >= 3)
-                                     TristateInv1_VSS2NMOS=None,            # Optional (Not work when finger >= 3)
-                                     TristateInv1_YCoordOfInputA=None,      # Optional
-                                     TristateInv1_YCoordOfInputEN=None,     # Optional
-                                     TristateInv1_YCoordOfInputENb=None,    # Optional
+                                     TristateInv1_PMOSWidth=500,
+                                     TristateInv1_NMOSWidth=250,
+                                     TristateInv1_VDD2PMOS=None,            # Option (Not work when finger >= 3)
+                                     TristateInv1_VSS2NMOS=None,            # Option (Not work when finger >= 3)
+                                     TristateInv1_YCoordOfInputA=None,      # Option
+                                     TristateInv1_YCoordOfInputEN=None,     # Option
+                                     TristateInv1_YCoordOfInputENb=None,    # Option
 
                                      TristateInv2_Finger=2,
                                      TristateInv2_PMOSWidth=400,
                                      TristateInv2_NMOSWidth=200,
-                                     TristateInv2_VDD2PMOS=None,            # Optional (Not work when finger >= 3)
-                                     TristateInv2_VSS2NMOS=None,            # Optional (Not work when finger >= 3)
-                                     TristateInv2_YCoordOfInputA=None,      # Optional
-                                     TristateInv2_YCoordOfInputEN=None,     # Optional
-                                     TristateInv2_YCoordOfInputENb=None,    # Optional
+                                     TristateInv2_VDD2PMOS=None,            # Option (Not work when finger >= 3)
+                                     TristateInv2_VSS2NMOS=None,            # Option (Not work when finger >= 3)
+                                     TristateInv2_YCoordOfInputA=None,      # Option
+                                     TristateInv2_YCoordOfInputEN=None,     # Option
+                                     TristateInv2_YCoordOfInputENb=None,    # Option
 
                                      Inv_Finger=1,
                                      Inv_PMOSWidth=400,
                                      Inv_NMOSWidth=200,
-                                     Inv_VDD2PMOS=None,                     # Optional
-                                     Inv_VSS2NMOS=None,                     # Optional
-                                     Inv_YCoordOfInOut=None,                # Optional
+                                     Inv_VDD2PMOS=None,                     # Option
+                                     Inv_VSS2NMOS=None,                     # Option
+                                     Inv_YCoordOfInOut=None,                # Option
 
                                      Inv2_Finger=1,
                                      Inv2_PMOSWidth=400,
                                      Inv2_NMOSWidth=200,
-                                     Inv2_VDD2PMOS=None,                    # Optional
-                                     Inv2_VSS2NMOS=None,                    # Optional
-                                     Inv2_YCoordOfInOut=None,               # Optional
+                                     Inv2_VDD2PMOS=None,                    # Option
+                                     Inv2_VSS2NMOS=None,                    # Option
+                                     Inv2_YCoordOfInOut=None,               # Option
 
                                      ChannelLength=30,
                                      GateSpacing=100,
                                      XVT='SLVT',
-                                     CellHeight=1800,
-                                     SupplyRailType=1,
+                                     CellHeight=1800,   # option
+                                     SupplyRailType=2
                                      ):
 
         """
@@ -628,43 +628,83 @@ if __name__ == '__main__':
 
     InputParams = dict(
         TristateInv1_Finger=1,
-        TristateInv1_PMOSWidth=400,
-        TristateInv1_NMOSWidth=200,
-        TristateInv1_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
-        TristateInv1_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
-        TristateInv1_YCoordOfInputA=None,  # Optional
-        TristateInv1_YCoordOfInputEN=None,  # Optional
-        TristateInv1_YCoordOfInputENb=None,  # Optional
+        TristateInv1_PMOSWidth=500,
+        TristateInv1_NMOSWidth=250,
+        TristateInv1_VDD2PMOS=None,             # Option (Not work when finger >= 3)
+        TristateInv1_VSS2NMOS=None,             # Option (Not work when finger >= 3)
+        TristateInv1_YCoordOfInputA=None,       # Option
+        TristateInv1_YCoordOfInputEN=None,      # Option
+        TristateInv1_YCoordOfInputENb=None,     # Option
 
         TristateInv2_Finger=2,
         TristateInv2_PMOSWidth=400,
         TristateInv2_NMOSWidth=200,
-        TristateInv2_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
-        TristateInv2_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
-        TristateInv2_YCoordOfInputA=None,  # Optional
-        TristateInv2_YCoordOfInputEN=None,  # Optional
-        TristateInv2_YCoordOfInputENb=None,  # Optional
+        TristateInv2_VDD2PMOS=None,             # Optional (Not work when finger >= 3)
+        TristateInv2_VSS2NMOS=None,             # Optional (Not work when finger >= 3)
+        TristateInv2_YCoordOfInputA=None,       # Optional
+        TristateInv2_YCoordOfInputEN=None,      # Optional
+        TristateInv2_YCoordOfInputENb=None,     # Optional
 
         Inv_Finger=1,
         Inv_PMOSWidth=400,
         Inv_NMOSWidth=200,
-        Inv_VDD2PMOS=None,  # Optional
-        Inv_VSS2NMOS=None,  # Optional
-        Inv_YCoordOfInOut=None,  # Optional
+        Inv_VDD2PMOS=None,                      # Option
+        Inv_VSS2NMOS=None,                      # Option
+        Inv_YCoordOfInOut=None,                 # Option
 
-        Inv2_Finger=2,     # 10
+        Inv2_Finger=2,
         Inv2_PMOSWidth=400,
         Inv2_NMOSWidth=200,
-        Inv2_VDD2PMOS=None,  # Optional
-        Inv2_VSS2NMOS=None,  # Optional
-        Inv2_YCoordOfInOut=None,  # Optional
+        Inv2_VDD2PMOS=None,                     # Optional
+        Inv2_VSS2NMOS=None,                     # Optional
+        Inv2_YCoordOfInOut=None,                # Optional
 
         ChannelLength=30,
         GateSpacing=100,
         XVT='SLVT',
-        CellHeight=None,            #
-        SupplyRailType=1,
+        CellHeight=1800,                        # option
+        SupplyRailType=2
     )
+
+    # InputParams = dict(
+    #     TristateInv1_Finger=10,
+    #     TristateInv1_PMOSWidth=640,
+    #     TristateInv1_NMOSWidth=260,
+    #     TristateInv1_VDD2PMOS=None,  # Option (Not work when finger >= 3)
+    #     TristateInv1_VSS2NMOS=None,  # Option (Not work when finger >= 3)
+    #     TristateInv1_YCoordOfInputA=None,  # Option
+    #     TristateInv1_YCoordOfInputEN=None,  # Option
+    #     TristateInv1_YCoordOfInputENb=None,  # Option
+    #
+    #     TristateInv2_Finger=6,
+    #     TristateInv2_PMOSWidth=760,
+    #     TristateInv2_NMOSWidth=640,
+    #     TristateInv2_VDD2PMOS=None,  # Optional (Not work when finger >= 3)
+    #     TristateInv2_VSS2NMOS=None,  # Optional (Not work when finger >= 3)
+    #     TristateInv2_YCoordOfInputA=None,  # Optional
+    #     TristateInv2_YCoordOfInputEN=None,  # Optional
+    #     TristateInv2_YCoordOfInputENb=None,  # Optional
+    #
+    #     Inv_Finger=4,
+    #     Inv_PMOSWidth=980,
+    #     Inv_NMOSWidth=680,
+    #     Inv_VDD2PMOS=None,  # Option
+    #     Inv_VSS2NMOS=None,  # Option
+    #     Inv_YCoordOfInOut=None,  # Option
+    #
+    #     Inv2_Finger=1,
+    #     Inv2_PMOSWidth=520,
+    #     Inv2_NMOSWidth=240,
+    #     Inv2_VDD2PMOS=None,  # Optional
+    #     Inv2_VSS2NMOS=None,  # Optional
+    #     Inv2_YCoordOfInOut=None,  # Optional
+    #
+    #     ChannelLength=30,
+    #     GateSpacing=100,
+    #     XVT='SLVT',
+    #     CellHeight=None,  # option
+    #     SupplyRailType=2
+    # )
 
     Checker = DRCchecker.DRCchecker(
         username=My.ID,
@@ -677,7 +717,7 @@ if __name__ == '__main__':
     )
 
     Mode_DRCCheck = True  # True | False
-    Num_DRCCheck = 50
+    Num_DRCCheck = 2
 
     if Mode_DRCCheck:
         ErrCount = 0            # DRC error
@@ -692,30 +732,30 @@ if __name__ == '__main__':
             for iii in range(0, forLoopCntMax):
                 try:
                     ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
-                    InputParams['TristateInv1_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
-                    InputParams['TristateInv2_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
-                    InputParams['Inv_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
-                    InputParams['Inv2_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
-
-                    InputParams['TristateInv1_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['TristateInv1_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['TristateInv1_NMOSWidth'],
-                                                                                   stop=min(3*InputParams['TristateInv1_NMOSWidth'],1000),
-                                                                                   step=20)
-
-                    InputParams['TristateInv2_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['TristateInv2_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['TristateInv2_NMOSWidth'],
-                                                                                   stop=min(3*InputParams['TristateInv2_NMOSWidth'],1000),
-                                                                                   step=20)
-
-                    InputParams['Inv_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['Inv_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['Inv_NMOSWidth'],
-                                                                          stop=min(3*InputParams['Inv_NMOSWidth'],1000),
-                                                                          step=20)
-
-                    InputParams['Inv2_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    InputParams['Inv2_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['Inv2_NMOSWidth'],
-                                                                           stop=min(3*InputParams['Inv2_NMOSWidth'],1000),
-                                                                           step=20)
+                    # InputParams['TristateInv1_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
+                    # InputParams['TristateInv2_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
+                    # InputParams['Inv_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
+                    # InputParams['Inv2_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
+                    #
+                    # InputParams['TristateInv1_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['TristateInv1_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['TristateInv1_NMOSWidth'],
+                    #                                                                stop=min(3*InputParams['TristateInv1_NMOSWidth'],1000),
+                    #                                                                step=20)
+                    #
+                    # InputParams['TristateInv2_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['TristateInv2_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['TristateInv2_NMOSWidth'],
+                    #                                                                stop=min(3*InputParams['TristateInv2_NMOSWidth'],1000),
+                    #                                                                step=20)
+                    #
+                    # InputParams['Inv_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['Inv_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['Inv_NMOSWidth'],
+                    #                                                       stop=min(3*InputParams['Inv_NMOSWidth'],1000),
+                    #                                                       step=20)
+                    #
+                    # InputParams['Inv2_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    # InputParams['Inv2_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['Inv2_NMOSWidth'],
+                    #                                                        stop=min(3*InputParams['Inv2_NMOSWidth'],1000),
+                    #                                                        step=20)
 
                     print("   Last Layout Object's Input Parameters are   ".center(105, '='))
                     inputParamStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
