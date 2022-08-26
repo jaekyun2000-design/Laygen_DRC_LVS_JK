@@ -37,7 +37,7 @@ class INVERTER_SEL(StickDiagram._StickDiagram):
                                   gap_bw_mos_gates=None,
                                   supply_num_coy=None, supply_num_cox=None,
                                   distance_to_vdd=None, distance_to_vss=None, space_bw_gate_nmos = None,
-                                  space_bw_gate_pmos=None
+                                  space_bw_gate_pmos=None, output_routing_option = None
                                   ):
 
         drc = DRC.DRC()
@@ -166,13 +166,20 @@ class INVERTER_SEL(StickDiagram._StickDiagram):
             _Layer=DesignParameters._LayerMapping['METAL2'][0],
             _Datatype=DesignParameters._LayerMapping['METAL2'][1],
             _Width=drc._MetalxMinWidth)
-        tmp1 = self.getXY('pmos_output_via','_Met2Layer')[-1][0]
-        tmp2= self.getXY('nmos_output_via', '_Met2Layer')[-1][0]
-
-        x_value = min(tmp1,tmp2)
         source_y = self._DesignParameter['pmos_output_routing']['_XYCoordinates'][0][-1][1]
-        target_y= self._DesignParameter['nmos_output_routing']['_XYCoordinates'][0][-1][1]
-        output_path =[[tmp1, source_y], [x_value, source_y],[x_value, target_y],[tmp2, target_y]]
+        target_y = self._DesignParameter['nmos_output_routing']['_XYCoordinates'][0][-1][1]
+
+        if output_routing_option == 'center':
+            output_path = [[0, source_y], [0, target_y]]
+            x_value = 0
+        else:
+            tmp1 = self.getXY('pmos_output_via','_Met2Layer')[-1][0]
+            tmp2= self.getXY('nmos_output_via', '_Met2Layer')[-1][0]
+
+            x_value = min(tmp1,tmp2)
+
+            output_path =[[tmp1, source_y], [x_value, source_y],[x_value, target_y],[tmp2, target_y]]
+
         self._DesignParameter['output_routing']['_XYCoordinates'] = [output_path]
         x_value_output = x_value
         self.x_value_output = x_value_output
