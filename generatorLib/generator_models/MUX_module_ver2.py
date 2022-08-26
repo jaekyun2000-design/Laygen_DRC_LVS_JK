@@ -18,7 +18,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,INV_nmos_width=200,INV_finger=1,VDD2PMOS=380,gate_length=30,gate_spacing=100,XVT='RVT',NMOS_y=420,Cell_height=1800,TG_pmos_width=600,TG_nmos_width=300,TG_poly_y=800,NANDIN_y=900,TG_finger=3,MUX_module_num=1,Input_offset=0):
+	def _CalculateDesignParameter(self,INV_nmos_width=200,INV_finger=1,VDD2PMOS=380,gate_length=30,gate_spacing=100,XVT='RVT',NMOS_y=420,Cell_height=1800,TG_pmos_width=400,TG_nmos_width=200,TG_poly_y=800,NANDIN_y=900,TG_finger=3,MUX_module_num=1,Input_offset=0):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -343,7 +343,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter['INc_via3_1']['_XYCoordinates'] = [[(+ self._DesignParameter['INc_m1']['_XYCoordinates'][0][0][0] + drc.DRCVIAxMinSpace(2,1)/2 + drc._VIAxMinWidth/2), (+ self._DesignParameter['INc_m1']['_XYCoordinates'][0][0][1])]]
 
 		self._DesignParameter['OUTvia1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='OUTvia1In{}'.format(_Name)))[0]
-		self._DesignParameter['OUTvia1']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=max(2, int(self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / (drc._VIAxMinWidth + drc._VIAxMinSpace)))))
+		self._DesignParameter['OUTvia1']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=max(1, int(self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / (drc._VIAxMinWidth + drc._VIAxMinSpace)))))
 		self._DesignParameter['OUTvia1']['_XYCoordinates'] = [[(+ ((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos']['_XYCoordinates'][0][0]) - self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['output_nm']['_XYCoordinates'][-1][0])), (+ ((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['output_nm']['_XYCoordinates'][0][1])))]]
 		self._DesignParameter['OUTvia2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='OUTvia2In{}'.format(_Name)))[0]
 		self._DesignParameter['OUTvia2']['_DesignObj']._CalculateViaMet22Met3DesignParameterMinimumEnclosureX(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
