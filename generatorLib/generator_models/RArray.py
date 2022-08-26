@@ -14,7 +14,7 @@ class RArray(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,R_X_width=1500,R_Y_length=1000,CONT_X_num=None,CONT_Y_num=1,NUMofX=5,NUMofY=4,R_guard_flag=1,Vref_routing_flag=1,First_vref_point=4,Vref_step=2,Vref_num=5):
+	def _CalculateDesignParameter(self,R_X_width=1500,R_Y_length=1000,CONT_X_num=None,CONT_Y_num=1,NUMofX=20,NUMofY=10,R_guard_flag=1,Vref_routing_flag=1,First_vref_point=4,Vref_step=2,Vref_num=5):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']

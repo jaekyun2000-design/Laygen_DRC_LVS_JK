@@ -14,7 +14,7 @@ class Three2TwentyEight_MUX(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,INPUT_num=28,Cell_height=1800,INV_nmos_width= 180, INV_finger= 1, VDD2PMOS= 410, gate_length= 30, gate_spacing= 100, XVT= '\'RVT\'', NMOS_y= 375, TG_pmos_width= 600, TG_nmos_width= 300, TG_poly_y= 760, TG_finger=3, NANDIN_y= 860):
+	def _CalculateDesignParameter(self,INPUT_num=28,Cell_height=1800,INV_nmos_width= 200, INV_finger= 1, VDD2PMOS= 380, gate_length= 30, gate_spacing= 100, XVT= '\'RVT\'', NMOS_y= 420, TG_pmos_width= 600, TG_nmos_width= 300, TG_poly_y= 800, TG_finger=3, NANDIN_y= 900):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
