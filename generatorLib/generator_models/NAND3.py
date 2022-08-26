@@ -107,217 +107,217 @@ class NAND3(StickDiagram._StickDiagram):
 		XYList = []
 		xy_offset = (0, (- vss2nmos3))
 		for i in range(len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		    if ((i % 2) == 0):
-		        xy = (self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0] if (type(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])
-		        XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][1])], xy, xy_offset)])
+			if ((i % 2) == 0):
+				xy = (self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0] if (type(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])
+				XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][1])], xy, xy_offset)])
 
 		self._DesignParameter['vss']['_XYCoordinates'] = XYList
 		XYList = []
 		xy_offset = (0, vdd2pmos3)
 		for i in range(len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		    if ((i % 2) == 0):
-		        xy = (self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0] if (type(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])
-		        XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][1])], xy, xy_offset)])
+			if ((i % 2) == 0):
+				xy = (self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0] if (type(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])
+				XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][1])], xy, xy_offset)])
 
 		self._DesignParameter['vdd']['_XYCoordinates'] = XYList
 		XYList = []
 		xy_offset = (0, vdd2pmos1)
 		for i in range(len(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		    if ((i % 2) == 0):
-		        xy = (self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0] if (type(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])
-		        XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][1])], xy, xy_offset)])
+			if ((i % 2) == 0):
+				xy = (self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0] if (type(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])
+				XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][1])], xy, xy_offset)])
 		self._DesignParameter['extra_vdd'] = self._SrefElementDeclaration(_DesignObj=Z_PWR_CNT.Z_PWR_CNT(_Name='extra_vddIn{}'.format(_Name)))[0]
 		self._DesignParameter['extra_vdd']['_DesignObj']._CalculateDesignParameter(**dict(_Xnum=1, _Xdistance=0))
 		self._DesignParameter['extra_vdd']['_XYCoordinates'] = XYList
 		XYList = []
 		xy_offset = (0, vdd2pmos2)
 		for i in range(len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		    if ((i % 2) == 0):
-		        xy = (self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0] if (type(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])
-		        XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][1])], xy, xy_offset)])
+			if ((i % 2) == 0):
+				xy = (self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0] if (type(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])
+				XYList.append([((x + y) + z) for (x, y, z) in zip([(0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][1])], xy, xy_offset)])
 		self._DesignParameter['pmos1_vdd'] = self._SrefElementDeclaration(_DesignObj=Z_PWR_CNT.Z_PWR_CNT(_Name='pmos1_vddIn{}'.format(_Name)))[0]
 		self._DesignParameter['pmos1_vdd']['_DesignObj']._CalculateDesignParameter(**dict(_Xnum=1, _Xdistance=0))
 		self._DesignParameter['pmos1_vdd']['_XYCoordinates'] = XYList
 		path_list = []
 		if (len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['vdd']['_XYCoordinates'][0][1])
-		    for i in range(len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][1])], self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['vdd']['_XYCoordinates'][0][1])
+			for i in range(len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 0):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][1])], self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['vdd']['_XYCoordinates'][0][0])
-		    for i in range(len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][1])], self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			xy_with_offset = []
+			target_x_value = (0 + self._DesignParameter['vdd']['_XYCoordinates'][0][0])
+			for i in range(len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 0):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][1])], self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['m1_vdd_routing'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_vdd_routing']['_XYCoordinates'] = path_list
 		path_list = []
 		if (len(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['extra_vdd']['_XYCoordinates'][0][1])
-		    for i in range(len(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][1])], self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['extra_vdd']['_XYCoordinates'][0][1])
+			for i in range(len(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 0):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][1])], self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['extra_vdd']['_XYCoordinates'][0][0])
-		    for i in range(len(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][1])], self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			xy_with_offset = []
+			target_x_value = (0 + self._DesignParameter['extra_vdd']['_XYCoordinates'][0][0])
+			for i in range(len(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 0):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][1])], self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['m1_extra_vdd_routing'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_extra_vdd_routing']['_XYCoordinates'] = path_list
 		self._DesignParameter['m1_pmos_parallel_routing_x'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=drc._Metal1MinWidth)
 		self._DesignParameter['m1_pmos_parallel_routing_x']['_XYCoordinates'] = [[[((self._DesignParameter['pmos3']['_XYCoordinates'][0][0] + self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][0][0]) - (self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((min(((self._DesignParameter['pmos3']['_XYCoordinates'][0][1] + self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)), ((self._DesignParameter['pmos1']['_XYCoordinates'][0][1] + self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)), ((self._DesignParameter['pmos2']['_XYCoordinates'][0][1] + self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2))) - (self._DesignParameter['m1_pmos_parallel_routing_x']['_Width'] / 2)) - drc._Metal1MinSpace2)], [((self._DesignParameter['pmos1']['_XYCoordinates'][0][0] + self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), ((min(((self._DesignParameter['pmos1']['_XYCoordinates'][0][1] + self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)), ((self._DesignParameter['pmos3']['_XYCoordinates'][0][1] + self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)), ((self._DesignParameter['pmos2']['_XYCoordinates'][0][1] + self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1]) - (self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2))) - (self._DesignParameter['m1_pmos_parallel_routing_x']['_Width'] / 2)) - drc._Metal1MinSpace2)]]]
 		path_list = []
 		if (len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['pmos1_vdd']['_XYCoordinates'][0][1])
-		    for i in range(len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][1])], self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['pmos1_vdd']['_XYCoordinates'][0][1])
+			for i in range(len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 0):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][1])], self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['pmos1_vdd']['_XYCoordinates'][0][0])
-		    for i in range(len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][1])], self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			xy_with_offset = []
+			target_x_value = (0 + self._DesignParameter['pmos1_vdd']['_XYCoordinates'][0][0])
+			for i in range(len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 0):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][1])], self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['m1_pmos2_vdd_routing'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_pmos2_vdd_routing']['_XYCoordinates'] = path_list
 		path_list = []
 		if (len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['m1_pmos_parallel_routing_x']['_XYCoordinates'][0][0][1])
-		    for i in range(len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][1])], self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['m1_pmos_parallel_routing_x']['_XYCoordinates'][0][0][1])
+			for i in range(len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 1):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][1])], self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['m1_pmos_parallel_routing_x']['_XYCoordinates'][0][0][0])
-		    for i in range(len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][1])], self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			xy_with_offset = []
+			target_x_value = (0 + self._DesignParameter['m1_pmos_parallel_routing_x']['_XYCoordinates'][0][0][0])
+			for i in range(len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 1):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][1])], self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['m1_pmos3_out_routing'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_pmos3_out_routing']['_XYCoordinates'] = path_list
 		path_list = []
 		if (len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['m1_pmos_parallel_routing_x']['_XYCoordinates'][0][0][1])
-		    for i in range(len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][1])], self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['m1_pmos_parallel_routing_x']['_XYCoordinates'][0][0][1])
+			for i in range(len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 1):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][1])], self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['m1_pmos_parallel_routing_x']['_XYCoordinates'][0][0][0])
-		    for i in range(len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][1])], self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			xy_with_offset = []
+			target_x_value = (0 + self._DesignParameter['m1_pmos_parallel_routing_x']['_XYCoordinates'][0][0][0])
+			for i in range(len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 1):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][1])], self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['m1_pmos2_out_routing'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_pmos2_out_routing']['_XYCoordinates'] = path_list
 		path_list = []
 		if (len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][1])
-		    for i in range(len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][1])], self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][1])
+			for i in range(len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 1):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][1])], self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][0])
-		    for i in range(len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][1])], self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			xy_with_offset = []
+			target_x_value = (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][0])
+			for i in range(len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 1):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][1])], self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['m1_nmos3_out'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_nmos3_out']['_XYCoordinates'] = path_list
 
@@ -365,172 +365,172 @@ class NAND3(StickDiagram._StickDiagram):
 
 		path_list = []
 		if (len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		elif (self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0] == self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		elif (self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1] == self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['gate_3']['_XYCoordinates'][0][1])
-		    for i in range(len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
-		        xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][1])], self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['gate_3']['_XYCoordinates'][0][1])
+			for i in range(len(self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+				xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos3']['_XYCoordinates'][0][1])], self._DesignParameter['pmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		self._DesignParameter['poly_pmos_routing_y'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _Width=_width)
 		self._DesignParameter['poly_pmos_routing_y']['_XYCoordinates'] = path_list
 		path_list = []
 		if (len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		elif (self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0] == self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		elif (self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1] == self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['gate_3']['_XYCoordinates'][0][1])
-		    for i in range(len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
-		        xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][1])], self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['gate_3']['_XYCoordinates'][0][1])
+			for i in range(len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+				xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][1])], self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		self._DesignParameter['poly_nmos_input_a'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _Width=_width)
 		self._DesignParameter['poly_nmos_input_a']['_XYCoordinates'] = path_list
 		path_list = []
 		if (len(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		elif (self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0] == self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		elif (self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1] == self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['poly_input_c']['_XYCoordinates'][(- 1)][0][1])
-		    for i in range(len(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
-		        xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][1])], self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['poly_input_c']['_XYCoordinates'][(- 1)][0][1])
+			for i in range(len(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+				xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][1])], self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['poly_input_c']['_XYCoordinates'][(- 1)][0][0])
-		    for i in range(len(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
-		        xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][1])], self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			xy_with_offset = []
+			target_x_value = (0 + self._DesignParameter['poly_input_c']['_XYCoordinates'][(- 1)][0][0])
+			for i in range(len(self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+				xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos1']['_XYCoordinates'][0][1])], self._DesignParameter['pmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['poly_pmos_c_routing_y'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _Width=_width)
 		self._DesignParameter['poly_pmos_c_routing_y']['_XYCoordinates'] = path_list
 		path_list = []
 		if (len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		elif (self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0] == self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		elif (self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1] == self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['poly_input_c']['_XYCoordinates'][0][0][1])
-		    for i in range(len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
-		        xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][1])], self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['poly_input_c']['_XYCoordinates'][0][0][1])
+			for i in range(len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+				xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][1])], self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['poly_input_c']['_XYCoordinates'][0][0][0])
-		    for i in range(len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
-		        xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][1])], self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			xy_with_offset = []
+			target_x_value = (0 + self._DesignParameter['poly_input_c']['_XYCoordinates'][0][0][0])
+			for i in range(len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+				xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][1])], self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['poly_nmos_c_routing_y'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _Width=_width)
 		self._DesignParameter['poly_nmos_c_routing_y']['_XYCoordinates'] = path_list
 		path_list = []
 		if (len(self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		elif (self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0] == self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		elif (self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1] == self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['gate_2']['_XYCoordinates'][0][1])
-		    for i in range(len(self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
-		        xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][1])], self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['gate_2']['_XYCoordinates'][0][1])
+			for i in range(len(self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+				xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][1])], self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		self._DesignParameter['poly_nmos_routing_y'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _Width=_width)
 		self._DesignParameter['poly_nmos_routing_y']['_XYCoordinates'] = path_list
 		path_list = []
 		if (len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		elif (self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0] == self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		elif (self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][1] == self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['gate_2']['_XYCoordinates'][0][1])
-		    for i in range(len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
-		        xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][1])], self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['gate_2']['_XYCoordinates'][0][1])
+			for i in range(len(self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'])):
+				xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['pmos2']['_XYCoordinates'][0][1])], self._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		self._DesignParameter['poly_pmos2_input'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['POLY'][0], _Datatype=DesignParameters._LayerMapping['POLY'][1], _Width=_width)
 		self._DesignParameter['poly_pmos2_input']['_XYCoordinates'] = path_list
 		path_list = []
 		if (len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['vss']['_XYCoordinates'][0][1])
-		    for i in range(len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][1])], self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['vss']['_XYCoordinates'][0][1])
+			for i in range(len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 0):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][1])], self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['vss']['_XYCoordinates'][0][0])
-		    for i in range(len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][1])], self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			xy_with_offset = []
+			target_x_value = (0 + self._DesignParameter['vss']['_XYCoordinates'][0][0])
+			for i in range(len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 0):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][1])], self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['nmos3_vss_routing'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['nmos3_vss_routing']['_XYCoordinates'] = path_list
 		self._DesignParameter['supply_od'] = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['DIFF'][0], _Datatype=DesignParameters._LayerMapping['DIFF'][1], _XWidth=((self._DesignParameter['nmos1']['_XYCoordinates'][0][0] + self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][(- 1)][0]) - (self._DesignParameter['nmos3']['_XYCoordinates'][0][0] + self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_PODummyLayer']['_XYCoordinates'][0][0])), _YWidth=(self._DesignParameter['vss']['_DesignObj']._DesignParameter['CONT_boundary_0']['_YWidth'] + (2 * drc._CoMinEnclosureByODAtLeastTwoSide)))
@@ -553,122 +553,122 @@ class NAND3(StickDiagram._StickDiagram):
 		self._DesignParameter['m1_series_nmos1_routing_x']['_XYCoordinates'] = [[[((self._DesignParameter['nmos2']['_XYCoordinates'][0][0] + self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'][0][0]) - (self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), min((self._DesignParameter['nmos2']['_XYCoordinates'][0][1] + self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] - self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2),(self._DesignParameter['nmos1']['_XYCoordinates'][0][1] + self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] - self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) - self._DesignParameter['m1_series_nmos1_routing_x']['_Width'] / 2 - drc._Metal1MinSpace2], [((self._DesignParameter['nmos1']['_XYCoordinates'][0][0] + self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][(- 1)][0]) + (self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth'] / 2)), min((self._DesignParameter['nmos2']['_XYCoordinates'][0][1] + self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] - self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2),(self._DesignParameter['nmos1']['_XYCoordinates'][0][1] + self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] - self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2)) - self._DesignParameter['m1_series_nmos1_routing_x']['_Width'] / 2 - drc._Metal1MinSpace2]]]
 		path_list = []
 		if (len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['m1_series_routing_x']['_XYCoordinates'][0][0][1])
-		    for i in range(len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][1])], self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['m1_series_routing_x']['_XYCoordinates'][0][0][1])
+			for i in range(len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 1):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][1])], self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['m1_series_routing_x']['_XYCoordinates'][0][0][0])
-		    for i in range(len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][1])], self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			xy_with_offset = []
+			target_x_value = (0 + self._DesignParameter['m1_series_routing_x']['_XYCoordinates'][0][0][0])
+			for i in range(len(self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 1):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos3']['_XYCoordinates'][0][1])], self._DesignParameter['nmos3']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['m1_nmos3_routing_y'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_nmos3_routing_y']['_XYCoordinates'] = path_list
 		path_list = []
 		if (len(self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['m1_series_routing_x']['_XYCoordinates'][0][0][1])
-		    for i in range(len(self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][1])], self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['m1_series_routing_x']['_XYCoordinates'][0][0][1])
+			for i in range(len(self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 0):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][1])], self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['m1_series_routing_x']['_XYCoordinates'][0][0][0])
-		    for i in range(len(self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][1])], self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			xy_with_offset = []
+			target_x_value = (0 + self._DesignParameter['m1_series_routing_x']['_XYCoordinates'][0][0][0])
+			for i in range(len(self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 0):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][1])], self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['m1_nmos2_routing_y'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_nmos2_routing_y']['_XYCoordinates'] = path_list
 		path_list = []
 		if (len(self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['m1_series_nmos1_routing_x']['_XYCoordinates'][0][0][1])
-		    for i in range(len(self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][1])], self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['m1_series_nmos1_routing_x']['_XYCoordinates'][0][0][1])
+			for i in range(len(self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 1):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][1])], self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['m1_series_nmos1_routing_x']['_XYCoordinates'][0][0][0])
-		    for i in range(len(self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 1):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][1])], self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			xy_with_offset = []
+			target_x_value = (0 + self._DesignParameter['m1_series_nmos1_routing_x']['_XYCoordinates'][0][0][0])
+			for i in range(len(self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 1):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos2']['_XYCoordinates'][0][1])], self._DesignParameter['nmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['m1_nmos2_Out_routing_y'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_nmos2_Out_routing_y']['_XYCoordinates'] = path_list
 		path_list = []
 		if (len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates']) == 1):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][0] == self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][0]):
-		    mode = 'horizontal'
-		    _width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'horizontal'
+			_width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		elif (self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][0][1] == self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][(- 1)][1]):
-		    mode = 'vertical'
-		    _width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
+			mode = 'vertical'
+			_width = self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XWidth']
 		else:
-		    print('Invalid Target Input')
+			print('Invalid Target Input')
 		if (mode == 'vertical'):
-		    xy_with_offset = []
-		    target_y_value = (0 + self._DesignParameter['m1_series_nmos1_routing_x']['_XYCoordinates'][0][0][1])
-		    for i in range(len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][1])], self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
+			xy_with_offset = []
+			target_y_value = (0 + self._DesignParameter['m1_series_nmos1_routing_x']['_XYCoordinates'][0][0][1])
+			for i in range(len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 0):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][1])], self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [xy_with_offset[i][0], target_y_value]])
 		elif (mode == 'horizontal'):
-		    xy_with_offset = []
-		    target_x_value = (0 + self._DesignParameter['m1_series_nmos1_routing_x']['_XYCoordinates'][0][0][0])
-		    for i in range(len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		        if ((i % 2) == 0):
-		            xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][1])], self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
-		    for i in range(len(xy_with_offset)):
-		        path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
+			xy_with_offset = []
+			target_x_value = (0 + self._DesignParameter['m1_series_nmos1_routing_x']['_XYCoordinates'][0][0][0])
+			for i in range(len(self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
+				if ((i % 2) == 0):
+					xy_with_offset.append([(x + y) for (x, y) in zip([(0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][0]), (0 + self._DesignParameter['nmos1']['_XYCoordinates'][0][1])], self._DesignParameter['nmos1']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])])
+			for i in range(len(xy_with_offset)):
+				path_list.append([xy_with_offset[i], [target_x_value, xy_with_offset[i][1]]])
 		self._DesignParameter['m1_nmos1_routing_y'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1], _Width=_width)
 		self._DesignParameter['m1_nmos1_routing_y']['_XYCoordinates'] = path_list
 
