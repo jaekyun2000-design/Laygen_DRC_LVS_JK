@@ -142,5 +142,5 @@ class functions():
 
         code = code + option_code + \
              f"self._DesignParameter[\'{path_name}\']['_XYCoordinates'] = routing_points\n"
-        print(code)
+
         return code

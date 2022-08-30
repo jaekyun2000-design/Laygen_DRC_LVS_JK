@@ -149,28 +149,15 @@ class MOSCAP_FINE_FULL(StickDiagram._StickDiagram):
         self._DesignParameter['moscap_fine_array1']['_XYCoordinates'] = [[0, 0]]
         self._DesignParameter['moscap_fine_array2']['_XYCoordinates'] = [[0, 0]]
 
-        cell_width = (self._DesignParameter['inv_chain1']['_DesignObj'].cell_width + \
-                     self._DesignParameter['moscap_fine_array1']['_DesignObj'].cell_width) * 2 + \
-                     3 * drc._PolygateMinSpace
+        # cell_width = (self._DesignParameter['inv_chain1']['_DesignObj'].cell_width + \
+        #              self._DesignParameter['moscap_fine_array1']['_DesignObj'].cell_width) * 2 + \
+        #              3 * drc._PolygateMinSpace
 
         inv_chain_x = abs(self._DesignParameter['inv_chain1']['_DesignObj'].rightmost_poly_edge) + \
-                      drc._PolygateMinSpace / 2 + channel_length / 2
-        moscap_fine_x = self._DesignParameter['inv_chain1']['_DesignObj'].cell_width + drc._PolygateMinSpace - channel_length / 2 + \
+                      drc._PolygateMinSpace / 2
+        moscap_fine_x = inv_chain_x + drc._PolygateMinSpace + \
+                        abs(self._DesignParameter['inv_chain1']['_DesignObj'].leftmost_poly_edge) + \
                     abs(self._DesignParameter['moscap_fine_array1']['_DesignObj'].leftmost_poly_edge)
-
-        # moscap_fine1_x = 0 - cell_width / 2 + abs(self._DesignParameter['moscap_fine_array1']['_DesignObj'].rightmost_poly_edge)
-        #
-        # inv_chain1_x = moscap_fine1_x + drc._PolygateMinSpace - channel_length / 2 + \
-        #                abs(self._DesignParameter['moscap_fine_array1']['_DesignObj'].leftmost_poly_edge) + \
-        #                abs(self._DesignParameter['inv_chain1']['_DesignObj'].leftmost_poly_edge)
-        #
-        # inv_chain2_x = inv_chain1_x + drc._PolygateMinSpace - channel_length / 2 + \
-        #                abs(self._DesignParameter['inv_chain1']['_DesignObj'].rightmost_poly_edge) + \
-        #                abs(self._DesignParameter['inv_chain2']['_DesignObj'].rightmost_poly_edge)
-        #
-        # moscap_fine2_x = inv_chain2_x + drc._PolygateMinSpace - channel_length / 2 + \
-        #                abs(self._DesignParameter['inv_chain2']['_DesignObj'].leftmost_poly_edge) + \
-        #                abs(self._DesignParameter['moscap_fine_array2']['_DesignObj'].leftmost_poly_edge)
 
 
         self._DesignParameter['inv_chain1']['_XYCoordinates'] = [[-inv_chain_x, 0]]
@@ -260,6 +247,42 @@ class MOSCAP_FINE_FULL(StickDiagram._StickDiagram):
 
         via_xy = [[x_value1, y_value1], [x_value2, y_value2]]
         self._DesignParameter['via_12_array']['_XYCoordinates'] = via_xy
+
+        """
+        Via 23 for moscap fine load
+        """
+
+        self._DesignParameter['via_23_input'] = \
+        self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(
+            _Name='via_23_input_in_{}'.format(_Name)))[0]
+        via_inputs = copy.deepcopy(ViaMet22Met3._ViaMet22Met3._ParametersForDesignCalculation)
+        via_inputs['_ViaMet22Met3NumberOfCOX'] = 1
+        via_inputs['_ViaMet22Met3NumberOfCOY'] = 2
+        self._DesignParameter['via_23_input']['_DesignObj']._CalculateViaMet22Met3DesignParameterMinimumEnclosureX(
+            **via_inputs)
+
+        xy_value1 = [-(self.getXY("inv_chain1", 'inv1', 'nmos_output_via', '_Met2Layer')[0][0]),
+                    self.getXY("inv_chain1", 'inv1', 'nmos_output_via', '_Met2Layer')[0][1]]
+        xy_value2 =self.getXY("inv_chain1", 'inv1', 'nmos_output_via', '_Met2Layer')[0]
+        self._DesignParameter['via_23_input']['_XYCoordinates'] = [xy_value1, xy_value2]
+
+        """"
+        Met3 Routing for moscap fine load
+        """
+        self._DesignParameter['moscap_fine_routing'] = self._PathElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL3'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL3'][1],
+            _Width=drc._MetalxMinWidth)
+
+        target_xy1 = self.getXY('moscap_fine_array2', 'via_for_input')[0]
+        target_xy2 = [-self.getXY('moscap_fine_array2', 'via_for_input')[0][0],
+                     self.getXY('moscap_fine_array2', 'via_for_input')[0][1]]
+        path_xy = [[xy_value1, [target_xy1[0], xy_value1[1]], target_xy1],
+                   [xy_value2, [target_xy2[0], xy_value2[1]], target_xy2]
+                   ]
+
+        self._DesignParameter['moscap_fine_routing']['_XYCoordinates'] = path_xy
+
         """
         Routing for Latch connection
         """
@@ -435,12 +458,22 @@ class MOSCAP_FINE_FULL(StickDiagram._StickDiagram):
         self._DesignParameter['additional_nwell_layer']['_XWidth'] = 2 * nw_hor_edge
         self._DesignParameter['additional_nwell_layer']['_YWidth'] = (nw_top - xvt_bot_p)
 
+        self.distance_to_vdd = self.getXY('moscap_fine_array2', 'moscap_1', 'moscap_on', 'vdd','_Met1Layer')[0][1]
+        self.distance_to_vss = abs(self.getXY('moscap_fine_array2', 'moscap_1', 'moscap_on', 'vss','_Met1Layer')[0][1])
+        self.cell_width = max(self.getXY('moscap_fine_array2', f'moscap_{array_dimension}', 'moscap_on',
+                                     'pmos2','pmos','_PODummyLayer')[-1][0],
+                              self.getXY('moscap_fine_array2', f'moscap_{array_dimension}', 'moscap_on',
+                                         'nmos2', 'nmos', '_PODummyLayer')[-1][0]) * 2
+        self.via23_point = [self.getXY("inv_chain1", 'via_for_moscap_coarse', '_Met3Layer')[0],
+                            [-self.getXY("inv_chain1", 'via_for_moscap_coarse', '_Met3Layer')[0][0],
+            self.getXY("inv_chain1", 'via_for_moscap_coarse', '_Met3Layer')[0][1]]]
+
 if __name__ == '__main__':
     Obj = MOSCAP_FINE_FULL()
     import random
     import time
     cnt = 1
-    for i in range(0,1):
+    for i in range(0,20):
         print("Generating Random Input Variables...")
         time.sleep(5)
 
@@ -533,12 +566,12 @@ if __name__ == '__main__':
         myfile.close()
         ftp.close()
 
-        # import DRCchecker
-        #
-        # _DRC = DRCchecker.DRCchecker('kms95','dosel545','/mnt/sdb/kms95/OPUS/ss28','/mnt/sdb/kms95/OPUS/ss28/DRC/run',
-        #                              'MS_moscap_fine_full','MS_moscap_fine_full')
-        # print(f"Count of Loop : {cnt}")
-        # _DRC.DRCchecker()
+        import DRCchecker
+
+        _DRC = DRCchecker.DRCchecker('kms95','dosel545','/mnt/sdb/kms95/OPUS/ss28','/mnt/sdb/kms95/OPUS/ss28/DRC/run',
+                                     'MS_moscap_fine_full','MS_moscap_fine_full')
+        print(f"Count of Loop : {cnt}")
+        _DRC.DRCchecker()
 
         print("Waiting For 10 seconds before another loop....")
         cnt = cnt + 1
