@@ -125,7 +125,7 @@ class MOSCAP_COARSE_FULL(StickDiagram._StickDiagram):
                                     [[-via_offset_x1, via_offset_y1],[-via_offset_x1, -via_offset_y1]],
                                     [[-via_offset_x2, via_offset_y1],[-via_offset_x2, -via_offset_y1]]
         ]
-        self.met3_routing_y_value = via_offset_y1
+        self.met3_routing_y_value = -via_offset_y1
 
         """
         Additional Layers : Met1 & RX for Rails, SLVT Layer, BP Layer,
@@ -248,6 +248,13 @@ class MOSCAP_COARSE_FULL(StickDiagram._StickDiagram):
         self._DesignParameter['additional_nwell_layer']['_XWidth'] = 2 * nw_hor_edge
         self._DesignParameter['additional_nwell_layer']['_YWidth'] = (nw_top - xvt_bot_p)
 
+        self.distance_to_vdd = self.getXY('moscap_coarse_full2', 'moscap_1', 'moscap_on', 'vdd','_Met1Layer')[0][1]
+        self.distance_to_vss = abs(self.getXY('moscap_coarse_full2', 'moscap_1', 'moscap_on', 'vss','_Met1Layer')[0][1])
+        self.rail_to_rail_distance = self.distance_to_vdd + self.distance_to_vss
+
+        self.cell_width = max(
+            self.getXY('moscap_coarse_full2', f'moscap_{array_dimension}', 'moscap_on', 'pmos2','pmos','_PODummyLayer')[-1][0],
+            self.getXY('moscap_coarse_full2', f'moscap_{array_dimension}', 'moscap_on', 'nmos2', 'nmos', '_PODummyLayer')[-1][0]) * 2
 
 
 

@@ -118,6 +118,8 @@ class MOSCAP_ARRAY(StickDiagram._StickDiagram):
         via_inputs['_ViaMet22Met3NumberOfCOY'] = 2
         self._DesignParameter['via_for_input']['_DesignObj']._CalculateViaMet22Met3DesignParameterMinimumEnclosureX(
             **via_inputs)
+
+        calibre_y_value = self.getYWidth('via_for_input', '_Met3Layer') / 2 - drc._MetalxMinWidth / 2
         via_points = []
         if target_cell == 'fine':
             for i in range(array_dimension):
@@ -127,7 +129,13 @@ class MOSCAP_ARRAY(StickDiagram._StickDiagram):
             for i in range(array_dimension):
                 via_points.append([self.getXY(f'moscap_{i+1}', 'moscap_on', 'pmos1', 'pmos', '_Met1Layer')[0][0], 0])
 
-        self._DesignParameter['via_for_input']['_XYCoordinates'] = via_points
+        calibre_via_points = copy.deepcopy(via_points)
+        for i in range(len(via_points)):
+            calibre_via_points[i][1] = via_points[i][1] - calibre_y_value
+
+        self._DesignParameter['via_for_input']['_XYCoordinates'] = calibre_via_points
+
+
         self._DesignParameter['input_routing'] = self._PathElementDeclaration(
             _Layer=DesignParameters._LayerMapping['METAL3'][0],
             _Datatype=DesignParameters._LayerMapping['METAL3'][1],
