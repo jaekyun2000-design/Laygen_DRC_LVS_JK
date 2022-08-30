@@ -19,7 +19,21 @@ class LayerToMatrix:
         self.bounding_box=dict(matrix=np.empty((0,4)), label=np.array([]))
         self.generator_list = generator_list
 
+    def load_qt_parameters(self, qt_parameters):
+        reader = gds2generator.LayoutReader()
+        reader.load_qt_design_parameters(qt_parameters)
+        self.y_step_size = (reader.y_max - reader.y_min) / self.matrix_size[0]
+        self.x_step_size = (reader.x_max - reader.x_min) / self.matrix_size[1]
+        self.offset = (-reader.x_min, -reader.y_min)
+        self.cell_width = reader.x_max - reader.x_min
+        self.cell_height = reader.y_max - reader.y_min
+        for layer_name, node_list in reader.layer_elements.items():
+            if layer_name not in self.matrix_by_layer:
+                self.matrix_by_layer[layer_name] = np.zeros(self.matrix_size)
 
+            for node in node_list:
+                col_idx, row_idx = self.calculate_row_col(node)
+                self.matrix_by_layer[layer_name][row_idx[0]:row_idx[1], col_idx[0]:col_idx[1]] = 1
     def load_gds(self, gds_name, cell_name):
         reader = gds2generator.LayoutReader()
         reader.load_gds(gds_name, cell_name)
