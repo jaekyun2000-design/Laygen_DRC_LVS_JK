@@ -1734,6 +1734,9 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
         ]
         if '_ViaMet12Met2forInput2' in self._DesignParameter['Inv0']['_DesignObj']._DesignParameter:
             self._DesignParameter['Via1ForInv']['_Ignore'] = True
+        if '_ViaMet12Met2forInput' in self._DesignParameter['Inv0']['_DesignObj']._DesignParameter:
+            self._DesignParameter['Via1ForInv']['_Ignore'] = True
+
 
 
         # re-calc for via distance (when TSI1_finger=1 and Inv_finger=1)
@@ -2418,7 +2421,7 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             topBoundary1 = self.getXYTop('TristateInv0', 'PMOS', '_PPLayer')[0][1]
             botBoundary1 = self.getXYBot('TristateInv0', 'PMOS', '_PPLayer')[0][1]
         else:
-            leftBoundary = self.getXYLeft('TristateInv0', 'PM1', '_PPLayer')[0][0]
+            leftBoundary = self.getXYLeft('TristateInv0', 'PM2', '_PPLayer')[0][0]
             topBoundary1 = self.getXYTop('TristateInv0', 'PM1', '_PPLayer')[0][1]
             botBoundary1 = self.getXYBot('TristateInv0', 'PM1', '_PPLayer')[0][1]
 

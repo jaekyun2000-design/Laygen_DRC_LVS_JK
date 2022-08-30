@@ -18,7 +18,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
 
-	def _CalculateDesignParameter(self,INV_nmos_width=200,INV_finger=1,VDD2PMOS=380,gate_length=30,gate_spacing=100,XVT='RVT',NMOS_y=420,Cell_height=1800,TG_pmos_width=600,TG_nmos_width=300,TG_poly_y=800,NANDIN_y=900,TG_finger=3,MUX_module_num=1,Input_offset=0):
+	def _CalculateDesignParameter(self,INV_nmos_width=200,INV_finger=1,VDD2PMOS=380,gate_length=30,gate_spacing=100,XVT='RVT',NMOS_y=420,Cell_height=1800,TG_pmos_width=400,TG_nmos_width=200,TG_poly_y=800,NANDIN_y=900,TG_finger=3,MUX_module_num=1,Input_offset=0):
 	
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -125,9 +125,9 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		XYList = []
 		xy_offset = (0, (self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_YWidth'] / 2  + drc.DRCVIAxMinSpace(2,1)/2 + drc._VIAxMinWidth/2))
 		for i in range(len(self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'])):
-		    if ((i % 2) == 1):
-		        xy = (self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0] if (type(self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])
-		        XYList.append([((x + y) + z) for (x, y, z) in zip([(self._DesignParameter['NAND']['_XYCoordinates'][0][0] + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (self._DesignParameter['NAND']['_XYCoordinates'][0][1] + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_XYCoordinates'][0][1])], xy, xy_offset)])
+			if ((i % 2) == 1):
+				xy = (self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0] if (type(self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i][0]) == list) else self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_DesignObj']._DesignParameter['_METAL1PINDrawing']['_XYCoordinates'][i])
+				XYList.append([((x + y) + z) for (x, y, z) in zip([(self._DesignParameter['NAND']['_XYCoordinates'][0][0] + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_XYCoordinates'][0][0]), (self._DesignParameter['NAND']['_XYCoordinates'][0][1] + self._DesignParameter['NAND']['_DesignObj']._DesignParameter['pmos2']['_XYCoordinates'][0][1])], xy, xy_offset)])
 		self._DesignParameter['NAND2TG_via1']['_XYCoordinates'] = XYList
 
 		self._DesignParameter['NAND2TG_via2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='NAND2TG_via2In{}'.format(_Name)))[0]
@@ -158,7 +158,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 		# self._DesignParameter['TR_GATE'] = self._SrefElementDeclaration(_DesignObj=TG_2X_CRIT_SLVT_v1.TG_2X_CRIT_SLVT_v1(_Name='TR_GATEIn{}'.format(_Name)))[0]
 		# self._DesignParameter['TR_GATE']['_DesignObj']._CalculateDesignParameter(**dict(nmos_gate=TG_finger, pmos_gate=TG_finger, nmos_width=TG_nmos_width, pmos_width=TG_pmos_width, length=gate_length, XVT=XVT, nmos_y=NMOS_y, pmos_y=TG_PMOS_y, gate_y=TG_poly_y, vss2vdd_height=Cell_height, gate_spacing=gate_spacing, sdwidth=66, power_xnum=2, power_xdistance=130, out_even_up_mode=True))
 		# self._DesignParameter['TR_GATE']['_XYCoordinates'] = [[((((self._DesignParameter['INV']['_DesignObj']._DesignParameter['XVTLayer']['_XWidth'] / 2) + (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['XVT_boundary_1']['_XWidth'] / 2)) + gate_length) + gate_spacing), self._DesignParameter['INV']['_XYCoordinates'][0][1]]]
-		self._DesignParameter['TR_GATE'] = self._SrefElementDeclaration(_DesignObj=Transmission_gate._Transmission_gate(_Name='TR_GATEIn{}'.format(_Name)))[0]
+		self._DesignParameter['TR_GATE'] = self._SrefElementDeclaration(_DesignObj=Transmission_gate.Transmission_gate(_Name='TR_GATEIn{}'.format(_Name)))[0]
 		self._DesignParameter['TR_GATE']['_DesignObj']._CalculateDesignParameter(**dict(nmos_gate=TG_finger, pmos_gate=TG_finger, nmos_width=TG_nmos_width, pmos_width=TG_pmos_width, length=gate_length, XVT=XVT, vss2nmos=NMOS_y, vdd2pmos=TG_PMOS_y, gate_y=TG_poly_y, vss2vdd_height=Cell_height, gate_spacing=gate_spacing, sdwidth=66, power_xdistance=130))
 		self._DesignParameter['TR_GATE']['_XYCoordinates'] = [[((((self._DesignParameter['INV']['_DesignObj']._DesignParameter['XVTLayer']['_XWidth'] / 2) + (self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['XVT_boundary_1']['_XWidth'] / 2)) + gate_length) + gate_spacing), self._DesignParameter['INV']['_XYCoordinates'][0][1]]]
 		self._DesignParameter['TR_GATE']['_Reflect'] = [1, 0, 0]
@@ -343,7 +343,7 @@ class EasyDebugModule(StickDiagram._StickDiagram):
 			self._DesignParameter['INc_via3_1']['_XYCoordinates'] = [[(+ self._DesignParameter['INc_m1']['_XYCoordinates'][0][0][0] + drc.DRCVIAxMinSpace(2,1)/2 + drc._VIAxMinWidth/2), (+ self._DesignParameter['INc_m1']['_XYCoordinates'][0][0][1])]]
 
 		self._DesignParameter['OUTvia1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='OUTvia1In{}'.format(_Name)))[0]
-		self._DesignParameter['OUTvia1']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=max(2, int(self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / (drc._VIAxMinWidth + drc._VIAxMinSpace)))))
+		self._DesignParameter['OUTvia1']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=max(1, int(self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] / (drc._VIAxMinWidth + drc._VIAxMinSpace)))))
 		self._DesignParameter['OUTvia1']['_XYCoordinates'] = [[(+ ((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][0] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['nmos']['_XYCoordinates'][0][0]) - self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['output_nm']['_XYCoordinates'][-1][0])), (+ ((self._DesignParameter['TR_GATE']['_XYCoordinates'][0][1] + self._DesignParameter['TR_GATE']['_DesignObj']._DesignParameter['output_nm']['_XYCoordinates'][0][1])))]]
 		self._DesignParameter['OUTvia2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='OUTvia2In{}'.format(_Name)))[0]
 		self._DesignParameter['OUTvia2']['_DesignObj']._CalculateViaMet22Met3DesignParameterMinimumEnclosureX(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=2))
