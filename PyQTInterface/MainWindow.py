@@ -343,6 +343,9 @@ class _MainWindow(QMainWindow):
         create_sub_module_action = QAction("create sub module from sref", self)
         count_array_number = QAction("Count Total Arrays", self)
         automatic_bounding_box = QAction("Automatic Bounding Box", self)
+        export_bounding_box = QAction("Export Bounding Box", self)
+        export_object_detection_action = QAction("Export Object Detection", self)
+
 
         trace_memory_action.setShortcut('Ctrl+5')
         trace_memory_action.triggered.connect(trace_memeory)
@@ -368,6 +371,10 @@ class _MainWindow(QMainWindow):
         automatic_bounding_box.setShortcut('Ctrl+7')
         automatic_bounding_box.triggered.connect(self.automatic_bounding_box)
 
+        export_bounding_box.setShortcut('Ctrl+8')
+        export_bounding_box.triggered.connect(self.export_bounding_box)
+
+
         automation_menu = menubar.addMenu("&Automation")
         automation_menu.setObjectName("top_menu_widget")
         automation_menu.addAction(trace_memory_action)
@@ -378,6 +385,7 @@ class _MainWindow(QMainWindow):
         automation_menu.addAction(count_array_number)
         automation_menu.addAction(automate_path_xy_action)
         automation_menu.addAction(automatic_bounding_box)
+        automation_menu.addAction(export_bounding_box)
 
         # automation_menu.setStyleSheet("background-color: rgb(178, 41, 100)")
         # self.setStyleSheet("background-color: rgb(178, 41, 100)")
@@ -1503,13 +1511,20 @@ class _MainWindow(QMainWindow):
 
     def automatic_bounding_box(self):
         search_list = list(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].values())
-        # search_list = [qt_dp._DesignParameter for qt_dp in search_list]
+
         while search_list:
             qt_dp = search_list.pop(0)
             if qt_dp._type == 3:
                 search_list.extend(list(qt_dp._DesignParameter['_ModelStructure'].values()))
                 sref_type = self.design_delegator.build_layer_matrix_by_dps(qt_dp._DesignParameter['_ModelStructure'])
-                print(sref_type)
+                # qt_dp._DesignParameter['object_label'] = sref_type
+                self._QTObj._qtProject.add_bounding_box(qt_dp, sref_type)
+
+    def export_bounding_box(self):
+        lm = topAPI.layer_to_matrix.LayerToMatrix()
+        lm.load_qt_parameters(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        self._QTObj._qtProject.export_bounding_box(lm)
+
         # self._QTObj._qtProject.get_bounding_box()
 
     def show_automate_path_widget(self, path_item):

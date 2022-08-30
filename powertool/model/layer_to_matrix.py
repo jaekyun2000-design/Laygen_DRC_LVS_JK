@@ -19,7 +19,7 @@ class LayerToMatrix:
         self.bounding_box=dict(matrix=np.empty((0,4)), label=np.array([]))
         self.generator_list = generator_list
 
-    def load_qt_parameters(self, qt_parameters):
+    def load_qt_parameters(self, qt_parameters, minimum_step_size = None, matrix_size = None, bb =False):
         reader = gds2generator.LayoutReader()
         reader.load_qt_design_parameters(qt_parameters)
         self.y_step_size = (reader.y_max - reader.y_min) / self.matrix_size[0]
@@ -178,6 +178,15 @@ class LayerToMatrix:
                 yield tmp_dictionary
                 # yield matrix[x_step*x_div:x_step*(x_div+1), y_step*y_div:y_step*(y_div+1), :]
         yield self.matrix_by_layer
+
+    def convert_coordinate(self, original_xy, sref_xy):
+        original_xy = [a + b for a, b in zip(original_xy, sref_xy)]
+        shifted_xy = [a + b for a, b in zip(original_xy, self.offset)]
+        x_idx = int(shifted_xy[0] / self.x_step_size)
+        y_idx = int(shifted_xy[1] / self.y_step_size)
+        x = x_idx / self.matrix_size[1]
+        y = y_idx / self.matrix_size[0]
+        return x, y
 
 if __name__ == '__main__':
     # reader = gds2generator.LayoutReader()

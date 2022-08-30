@@ -32,6 +32,9 @@ if 'DL_DETECTION' in user_setup.__dir__() and user_setup.DL_DETECTION and True:
     inference_model = tf.keras.Model(inputs=image, outputs=detections)
 
     # laytina_py.inf(inference_model, 10)
+def prepare_image(image):
+    image, _, ratio = laytina_py.resize_and_pad_image(image, jitter=None)
+    return tf.expand_dims(image, 0), ratio
 
 def transform_to_inf(matrix_reader=None, dat=None):
     stacked_matrix = None
