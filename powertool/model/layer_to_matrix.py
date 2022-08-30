@@ -138,7 +138,32 @@ class LayerToMatrix:
                 # self.calculate_bounding_box(dp)
                 self.calculate_bounding_box_ratio(dp)
 
+    def divide_matrix(self, ratio):
+        '''
+        Args:
+            # matrix: matrix to be divided
+            ratio: ratio of division
+        Returns:
+            divided matrix
+        '''
+        # self.matrix_by_layer
+        # shape = list(self.matrix_by_layer.values())[0].shape
+        x_shape = self.matrix_size[0]
+        y_shape = self.matrix_size[1]
+        x_step = int(x_shape / ratio)
+        y_step = int(y_shape / ratio)
 
+        x_divided_iter = round(x_shape / x_step + 0.5) #ceil
+        y_divided_iter = round(y_shape / y_step + 0.5) #ceil
+        print(x_divided_iter, y_divided_iter)
+
+
+        for x_div in range(x_divided_iter):
+            for y_div in range(y_divided_iter):
+                tmp_dictionary = {layer: matrix[x_div*x_step:x_div*x_step+x_step, y_div*y_step:y_div*y_step+y_step] for layer, matrix in self.matrix_by_layer.items()}
+                yield tmp_dictionary
+                # yield matrix[x_step*x_div:x_step*(x_div+1), y_step*y_div:y_step*(y_div+1), :]
+        yield self.matrix_by_layer
 
 if __name__ == '__main__':
     # reader = gds2generator.LayoutReader()

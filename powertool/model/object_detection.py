@@ -6,9 +6,11 @@ import numpy as np
 if 'DL_DETECTION' in user_setup.__dir__() and user_setup.DL_DETECTION and True:
     #add path
     project_path = '/Users/sun/Library/CloudStorage/GoogleDrive-sun9uu@gmail.com/내 드라이브/object_detection_data'
-    model_dir = f'{project_path}/model/new_class_modi'
+    model_dir = f'{project_path}/model/class3a_mid_laytina2'
     sys.path.append(project_path)
+    # import laytina_py2 as laytina_py
     import laytina_py2 as laytina_py
+    # import laytina_py3 as laytina_py
     import pickle
     import tensorflow as tf
 
@@ -31,9 +33,11 @@ if 'DL_DETECTION' in user_setup.__dir__() and user_setup.DL_DETECTION and True:
 
     # laytina_py.inf(inference_model, 10)
 
-def transform_to_inf(matrix_reader):
+def transform_to_inf(matrix_reader=None, dat=None):
     stacked_matrix = None
-    dat = matrix_reader.matrix_by_layer
+    if dat == None:
+        dat = matrix_reader.matrix_by_layer
+
     shape = list(dat.values())[0].shape
     # layer_list = ['METAL1', 'METAL2', 'METAL3', 'METAL4', 'METAL5', 'METAL6', 'CONT', 'DIFF', 'POLY', 'PIMP']
     for layer in layer_list:
@@ -47,9 +51,18 @@ def transform_to_inf(matrix_reader):
     # label = dat.item()['label']
     stacked_matrix, image_shape, ratio = laytina_py.resize_and_pad_image(stacked_matrix)
     return stacked_matrix, image_shape, ratio
+#
+# def transform_to_inf_by_proprocessing(matrix_reader, divider_factor=2):
+#     stacked_matrix = None
+#     dat = matrix_reader.matrix_by_layer
+#     for dat in matrix_reader.divide_matrix(divider_factor):
+#         transform_to_inf(dat=dat)
+#
 
-def inference(matrix_reader):
-    stacked_matrix, image_shape, ratio = transform_to_inf(matrix_reader)
+def inference(matrix_reader=None, stacked_matrix=None, image_shape=None, ratio=None):
+    if matrix_reader:
+        stacked_matrix, image_shape, ratio = transform_to_inf(matrix_reader)
+
     input_image, ratio = laytina_py.prepare_image(stacked_matrix)
     detections = inference_model.predict(input_image)
     num_detections = detections.valid_detections[0]
@@ -62,3 +75,11 @@ def inference(matrix_reader):
         class_names,
         detections.nmsed_scores[0][:num_detections],
     )
+
+def inference_by_proprocessing(matrix_reader):
+    for dat in matrix_reader.divide_matrix(2):
+        # print(dat)
+        stacked_matrix, image_shape, ratio =transform_to_inf(dat=dat)
+        inference(stacked_matrix=stacked_matrix, image_shape=image_shape, ratio=ratio)
+
+

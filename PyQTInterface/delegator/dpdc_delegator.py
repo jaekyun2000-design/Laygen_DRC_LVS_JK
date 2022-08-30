@@ -564,3 +564,14 @@ class DesignDelegator(delegator.Delegator):
         lm.load_dp(top_dp, user_setup.min_step_size,bb=False)
         topAPI.object_detection.inference(lm)
 
+    def object_detection_by_proprocessing(self, cell_list):
+        #translate cell_list as normal dp
+        top_dp = dict()
+        for cell in cell_list:
+            top_dp[cell._ElementName] = cell._DesignParameter
+        # lr = topAPI.gds2generator.LayoutReader()
+        # lr.load_dp(top_dp)
+        lm = topAPI.layer_to_matrix.LayerToMatrix()
+        lm.load_dp(top_dp, user_setup.min_step_size,bb=False)
+        topAPI.object_detection.inference_by_proprocessing(lm)
+
