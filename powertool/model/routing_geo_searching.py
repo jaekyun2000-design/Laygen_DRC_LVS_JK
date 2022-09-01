@@ -181,9 +181,9 @@ class GeometricField:
             del dp['_XYCoordinatesProjection']
             del dp['_Hierarchy']
 
-            if dp['_DesignParametertype'] == 3:
-                for name, sub_dp in dp['_DesignObj']._DesignParameter.items():
-                    self.clear_design_parameter_projection(sub_dp)
+        if dp['_DesignParametertype'] == 3:
+            for name, sub_dp in dp['_DesignObj']._DesignParameter.items():
+                self.clear_design_parameter_projection(sub_dp)
 
     def design_parameter_projection(self, dp, structure_hierarchy=[], reflect=tf_matrix.reflect_off,
                                     angle=tf_matrix.rotate_0, base_xy=[0, 0]):
