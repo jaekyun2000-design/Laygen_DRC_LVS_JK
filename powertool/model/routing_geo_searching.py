@@ -161,8 +161,20 @@ class GeometricField:
                         warnings.warn('No design Obj')
 
     def xy_projection_to_main_coordinates_system(self, designParameter):
+        ###before xy_projection, the XY projection should be cleared.
+        for name, dp in designParameter.items():
+            self.clear_design_parameter_projection(dp)
+
         for name, dp in designParameter.items():
             self.design_parameter_projection(dp, [name])
+
+    def clear_design_parameter_projection(self, dp):
+        if '_XYCoordinatesProjection' in dp:
+            del dp['_XYCoordinatesProjection']
+
+            if dp['_DesignParametertype'] == 3:
+                for name, sub_dp in dp['_DesignObj']._DesignParameter.items():
+                    self.clear_design_parameter_projection(sub_dp)
 
     def design_parameter_projection(self, dp, structure_hierarchy=[], reflect=tf_matrix.reflect_off,
                                     angle=tf_matrix.rotate_0, base_xy=[0, 0]):

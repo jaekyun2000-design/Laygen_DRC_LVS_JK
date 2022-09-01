@@ -543,6 +543,15 @@ class QtProject:
         #                 _Ignore=None, _ElementName=dict(_id=7, _DesignParametertype=5, _Name='NMOS'), ),
         # )
 
+    def get_pure_dp(self, module_name):
+        if module_name not in self._DesignParameter:
+            Exception(f"module_name ({module_name}) is invalid")
+        tmp_dp = DummyDesignParameter()
+        for dp_name, qt_dp in self._DesignParameter[module_name].items():
+            tmp_dp.restore_dp(dp_name, qt_dp)
+            # qtdp.get_pure_dp()
+        return tmp_dp
+
     def add_bounding_box(self, qt_dp, object_type):
         from powertool.topAPI import object_detection
         if object_type in object_detection.class_list:
@@ -595,9 +604,8 @@ class QtProject:
         '''
         from powertool.topAPI import object_detection
         import numpy as np
-        layer_list = object_detection.layer_list
         shape = list(layer_to_mat.matrix_by_layer.values())[0].shape
-        file = open('bounding_box.txt', 'w')
+        file = open('./object_detection/gt/0.txt', 'w')
         for i, qt_dp in enumerate(self.bounding_box['qt_dp']):
             # bb_lr = topAPI.gds2generator.LayoutReader()
             # bb_lr.load_dp(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
@@ -609,8 +617,11 @@ class QtProject:
             sref_xy = qt_dp._DesignParameter['_XYCoordinates'][0]
             x_start, y_start = layer_to_mat.convert_coordinate(lb_xy, sref_xy)
             x_end, y_end = layer_to_mat.convert_coordinate(rt_xy, sref_xy)
+            x_start, y_start = x_start * shape[1], y_start * shape[0]
+            x_end, y_end = x_end * shape[1], y_end * shape[0]
             self.bounding_box['matrix'].append([x_start, y_start, x_end, y_end])
-            file.write(f'{self.bounding_box["label"][i]} {x_start} {y_start} {x_end} {y_end}\n')
+            file.write(f'{object_detection.class_list[int(self.bounding_box["label"][i])]} {x_start} {y_start} {x_end} {y_end}\n')
+        print(shape)
         file.close()
 
         # size = list(layer_to_mat.matrix_by_layer.values())[0].size
@@ -2753,5 +2764,5 @@ class DummyDesignParameter(StickDiagram._StickDiagram):
         self._DesignParameter = dict()
 
     def restore_dp(self, key, qt_dp):
-        self._DesignParameter[key] = qt_dp._DesignParameter
+        self._DesignParameter[key] = lab_feature.deepish_copy(qt_dp._DesignParameter)
 

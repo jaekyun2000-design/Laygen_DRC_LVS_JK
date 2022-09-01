@@ -372,7 +372,7 @@ class _MainWindow(QMainWindow):
         automatic_bounding_box.triggered.connect(self.automatic_bounding_box)
 
         export_bounding_box.setShortcut('Ctrl+8')
-        export_bounding_box.triggered.connect(self.export_bounding_box)
+        export_bounding_box.triggered.connect(self.export_predict_bounding_box)
 
 
         automation_menu = menubar.addMenu("&Automation")
@@ -1517,15 +1517,23 @@ class _MainWindow(QMainWindow):
             if qt_dp._type == 3:
                 search_list.extend(list(qt_dp._DesignParameter['_ModelStructure'].values()))
                 sref_type = self.design_delegator.build_layer_matrix_by_dps(qt_dp._DesignParameter['_ModelStructure'])
-                # qt_dp._DesignParameter['object_label'] = sref_type
                 self._QTObj._qtProject.add_bounding_box(qt_dp, sref_type)
+        self.export_bounding_box()
 
     def export_bounding_box(self):
         lm = topAPI.layer_to_matrix.LayerToMatrix()
-        lm.load_qt_parameters(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
+        lm.load_dp(self._QTObj._qtProject.get_pure_dp(self._CurrentModuleName)._DesignParameter, minimum_step_size=user_setup.min_step_size, bb=False)
+        # lm.load_dp(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].get_pure_dp())
+        # lm.load_qt_parameters(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName])
         self._QTObj._qtProject.export_bounding_box(lm)
 
         # self._QTObj._qtProject.get_bounding_box()
+
+    def export_predict_bounding_box(self):
+        lm = topAPI.layer_to_matrix.LayerToMatrix()
+        lm.load_dp(self._QTObj._qtProject.get_pure_dp(self._CurrentModuleName)._DesignParameter,
+                   minimum_step_size=user_setup.min_step_size, bb=False)
+        topAPI.object_detection.inference(lm)
 
     def show_automate_path_widget(self, path_item):
         self.dockContentWidget3_2.get_dp_highlight_dc([path_item.text()],None)

@@ -2,6 +2,12 @@ import user_setup
 import sys, os
 import numpy as np
 
+import sys
+
+sys.path.append('../mAP/mAP')
+ground_truth_path = './object_detection/gt'
+prediction_path = './object_detection/prediction'
+
 
 if 'DL_DETECTION' in user_setup.__dir__() and user_setup.DL_DETECTION and True:
     #add path
@@ -63,9 +69,12 @@ def transform_to_inf(matrix_reader=None, dat=None):
 #
 
 def inference(matrix_reader=None, stacked_matrix=None, image_shape=None, ratio=None):
+    print(list(matrix_reader.matrix_by_layer.values())[0].shape)
+
     if matrix_reader:
         stacked_matrix, image_shape, ratio = transform_to_inf(matrix_reader)
-
+    print(stacked_matrix.shape)
+    print(stacked_matrix.shape[0]/ratio, stacked_matrix.shape[1]/ratio)
     input_image, ratio = laytina_py.prepare_image(stacked_matrix)
     detections = inference_model.predict(input_image)
     num_detections = detections.valid_detections[0]
@@ -78,6 +87,8 @@ def inference(matrix_reader=None, stacked_matrix=None, image_shape=None, ratio=N
         class_names,
         detections.nmsed_scores[0][:num_detections],
     )
+    export_inference(detections, num_detections, ratio)
+    oneshot_mAP()
 
 def inference_by_proprocessing(matrix_reader):
     for dat in matrix_reader.divide_matrix(2):
@@ -85,4 +96,17 @@ def inference_by_proprocessing(matrix_reader):
         stacked_matrix, image_shape, ratio =transform_to_inf(dat=dat)
         inference(stacked_matrix=stacked_matrix, image_shape=image_shape, ratio=ratio)
 
+def export_inference(detections, num_detections, ratio):
+    prediction_boxes = detections.nmsed_boxes[0][:num_detections]
+    prediction_scores = detections.nmsed_scores[0][:num_detections]
+    class_names = [class_list[int(x)] for x in detections.nmsed_classes[0][:num_detections]]
+    file = open(f'{prediction_path}/0.txt', 'w')
+    for i, box in enumerate(prediction_boxes):
+        if prediction_scores[i] >= 0.5:
+            print(box)
+            print(ratio)
+            file.write(f'{class_names[i]} {prediction_scores[i]} {box[0]/ratio} {box[1]/ratio} {box[2]/ratio} {box[3]/ratio}\n')
+    file.close()
 
+def oneshot_mAP():
+    os.system(f'python ../mAP/mAP/main_mAP.py "{os.path.abspath(prediction_path)}" "{os.path.abspath(ground_truth_path)}"')

@@ -20,6 +20,9 @@ class LayerToMatrix:
         self.generator_list = generator_list
 
     def load_qt_parameters(self, qt_parameters, minimum_step_size = None, matrix_size = None, bb =False):
+        '''
+        This is for legacy function for just classification purpose
+        '''
         reader = gds2generator.LayoutReader()
         reader.load_qt_design_parameters(qt_parameters)
         self.y_step_size = (reader.y_max - reader.y_min) / self.matrix_size[0]
@@ -180,10 +183,10 @@ class LayerToMatrix:
         yield self.matrix_by_layer
 
     def convert_coordinate(self, original_xy, sref_xy):
-        original_xy = [a + b for a, b in zip(original_xy, sref_xy)]
-        shifted_xy = [a + b for a, b in zip(original_xy, self.offset)]
-        x_idx = int(shifted_xy[0] / self.x_step_size)
-        y_idx = int(shifted_xy[1] / self.y_step_size)
+        sref_shifted_xy = [a + b for a, b in zip(original_xy, sref_xy)]
+        offset_shifted_xy = [a + b for a, b in zip(sref_shifted_xy, self.offset)]
+        x_idx = int(offset_shifted_xy[0] / self.x_step_size)
+        y_idx = int(offset_shifted_xy[1] / self.y_step_size)
         x = x_idx / self.matrix_size[1]
         y = y_idx / self.matrix_size[0]
         return x, y
