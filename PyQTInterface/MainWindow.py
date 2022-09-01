@@ -1511,7 +1511,7 @@ class _MainWindow(QMainWindow):
 
     def automatic_bounding_box(self):
         search_list = list(self._QTObj._qtProject._DesignParameter[self._CurrentModuleName].values())
-
+        self._QTObj._qtProject.bounding_box = dict(matrix=[], label=[], qt_dp=[], solo_bound=[])
         while search_list:
             qt_dp = search_list.pop(0)
             if qt_dp._type == 3:

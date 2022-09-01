@@ -171,6 +171,7 @@ class GeometricField:
     def clear_design_parameter_projection(self, dp):
         if '_XYCoordinatesProjection' in dp:
             del dp['_XYCoordinatesProjection']
+            del dp['_Hierarchy']
 
             if dp['_DesignParametertype'] == 3:
                 for name, sub_dp in dp['_DesignObj']._DesignParameter.items():
@@ -250,6 +251,7 @@ class GeometricField:
                 sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect)
                 sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle)
                 if type(dp['_DesignObj']) == dict:
+                    warnings.warn('Receive QT_DP object as input, it may contaminate original value.')
                     for name, sub_qtdp in dp['_DesignObj'].items():
                         sub_dp = sub_qtdp._DesignParameter
                         if sub_dp['_DesignParametertype'] in [1,2,3]:

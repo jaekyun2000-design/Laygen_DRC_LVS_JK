@@ -63,14 +63,18 @@ class QtDesignParameter:
         copy_obj.__dict__ = copy_dict
         return copy_obj
 
-    def restore_design_obj_from_model_structure(self):
+    def restore_design_obj(self):
         if self._type == 3:
             if type(self._DesignParameter['_DesignObj']) != dict:
                 warnings.warn('Restore is not required')
                 return
+            og_design_obj = self._DesignParameter['_DesignObj']
             self._DesignParameter['_DesignObj'] = DummyDesignParameter()
-            for key, value in self._DesignParameter['_ModelStructure'].items():
-                self._DesignParameter['_DesignObj'].restore_dp(key, value)
+            try:
+                for key, value in og_design_obj.items():
+                    self._DesignParameter['_DesignObj'].restore_dp(key, value)
+            except:
+                print('a')
     def update_unified_expression(self):
         try:
             if self._type == 8 and self._DesignParameter['_Layer']==None:
@@ -585,7 +589,7 @@ class QtProject:
 
         bb_lr = topAPI.gds2generator.LayoutReader()
         if type(qt_dp._DesignParameter['_DesignObj']) == dict:
-            qt_dp.restore_design_obj_from_model_structure()
+            qt_dp.restore_design_obj()
         #     bb_lr.load_dp(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
         # else:
         #     bb_lr.load_dp(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
@@ -620,11 +624,10 @@ class QtProject:
             sref_xy = qt_dp._DesignParameter['_XYCoordinates'][0]
             x_start, y_start = layer_to_mat.convert_coordinate(lb_xy, sref_xy)
             x_end, y_end = layer_to_mat.convert_coordinate(rt_xy, sref_xy)
-            x_start, y_start = x_start * shape[1], y_start * shape[0]
-            x_end, y_end = x_end * shape[1], y_end * shape[0]
+            x_start, y_start = x_start * shape[1] *user_setup.min_step_size, y_start * shape[0]*user_setup.min_step_size
+            x_end, y_end = x_end * shape[1]*user_setup.min_step_size, y_end * shape[0]*user_setup.min_step_size
             self.bounding_box['matrix'].append([x_start, y_start, x_end, y_end])
             file.write(f'{object_detection.class_list[int(self.bounding_box["label"][i])]} {x_start} {y_start} {x_end} {y_end}\n')
-        print(shape)
         file.close()
 
         # size = list(layer_to_mat.matrix_by_layer.values())[0].size
@@ -2767,5 +2770,8 @@ class DummyDesignParameter(StickDiagram._StickDiagram):
         self._DesignParameter = dict()
 
     def restore_dp(self, key, qt_dp):
+        # qt_dp.restore_design_obj_from_model_structure()
+        if qt_dp._type == 3:
+            qt_dp.restore_design_obj()
         self._DesignParameter[key] = lab_feature.deepish_copy(qt_dp._DesignParameter)
 

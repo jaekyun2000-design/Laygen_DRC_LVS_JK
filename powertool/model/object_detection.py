@@ -73,9 +73,12 @@ def inference(matrix_reader=None, stacked_matrix=None, image_shape=None, ratio=N
 
     if matrix_reader:
         stacked_matrix, image_shape, ratio = transform_to_inf(matrix_reader)
-    print(stacked_matrix.shape)
-    print(stacked_matrix.shape[0]/ratio, stacked_matrix.shape[1]/ratio)
-    input_image, ratio = laytina_py.prepare_image(stacked_matrix)
+    # print(stacked_matrix.shape)
+    # print(image_shape)
+    # print(stacked_matrix.shape[0]/ratio, stacked_matrix.shape[1]/ratio)
+    # print(image_shape[0]/ratio, image_shape[1]/ratio)
+    # input_image, ratio = laytina_py.prepare_image(stacked_matrix)
+    input_image = tf.expand_dims(stacked_matrix, axis=0)
     detections = inference_model.predict(input_image)
     num_detections = detections.valid_detections[0]
     class_names = [
@@ -83,11 +86,12 @@ def inference(matrix_reader=None, stacked_matrix=None, image_shape=None, ratio=N
     ]
     laytina_py.visualize_detections(
         stacked_matrix,
-        detections.nmsed_boxes[0][:num_detections] / ratio,
+        detections.nmsed_boxes[0][:num_detections] ,
         class_names,
         detections.nmsed_scores[0][:num_detections],
     )
-    export_inference(detections, num_detections, ratio)
+    final_shape = input_image.shape
+    export_inference(detections, num_detections, ratio, image_shape, final_shape)
     oneshot_mAP()
 
 def inference_by_proprocessing(matrix_reader):
@@ -96,16 +100,23 @@ def inference_by_proprocessing(matrix_reader):
         stacked_matrix, image_shape, ratio =transform_to_inf(dat=dat)
         inference(stacked_matrix=stacked_matrix, image_shape=image_shape, ratio=ratio)
 
-def export_inference(detections, num_detections, ratio):
+def export_inference(detections, num_detections, ratio, image_shape, final_shape):
+    # x_ratio = final_shape[1]/image_shape[0] * ratio
+    # y_ratio = final_shape[2]/image_shape[1] * ratio
     prediction_boxes = detections.nmsed_boxes[0][:num_detections]
     prediction_scores = detections.nmsed_scores[0][:num_detections]
     class_names = [class_list[int(x)] for x in detections.nmsed_classes[0][:num_detections]]
+    # prediction_boxes = prediction_boxes[:image_shape[0], :image_shape[1],:]/ratio
     file = open(f'{prediction_path}/0.txt', 'w')
     for i, box in enumerate(prediction_boxes):
         if prediction_scores[i] >= 0.5:
             print(box)
             print(ratio)
-            file.write(f'{class_names[i]} {prediction_scores[i]} {box[0]/ratio} {box[1]/ratio} {box[2]/ratio} {box[3]/ratio}\n')
+            file.write(f'{class_names[i]} {prediction_scores[i]}'
+                       f' {box[0]/ratio*user_setup.min_step_size}'
+                       f' {box[1]/ratio*user_setup.min_step_size}'
+                       f' {box[2]/ratio*user_setup.min_step_size}'
+                       f' {box[3]/ratio*user_setup.min_step_size}\n')
     file.close()
 
 def oneshot_mAP():
