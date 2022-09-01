@@ -594,7 +594,7 @@ class QtProject:
         # else:
         #     bb_lr.load_dp(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
 
-        deepish_dp = lab_feature.deepish_copy(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
+        deepish_dp = copy.deepcopy(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
         bb_lr.load_dp(deepish_dp)
         self.bounding_box['solo_bound'].append(bb_lr.get_bounding_box())
         self.bounding_box['label'].append(label_idx)
