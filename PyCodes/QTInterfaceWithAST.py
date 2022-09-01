@@ -586,9 +586,12 @@ class QtProject:
         bb_lr = topAPI.gds2generator.LayoutReader()
         if type(qt_dp._DesignParameter['_DesignObj']) == dict:
             qt_dp.restore_design_obj_from_model_structure()
-            bb_lr.load_dp(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
-        else:
-            bb_lr.load_dp(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
+        #     bb_lr.load_dp(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
+        # else:
+        #     bb_lr.load_dp(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
+
+        deepish_dp = lab_feature.deepish_copy(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
+        bb_lr.load_dp(deepish_dp)
         self.bounding_box['solo_bound'].append(bb_lr.get_bounding_box())
         self.bounding_box['label'].append(label_idx)
         # self.bounding_box['solo_bound'].append(None)

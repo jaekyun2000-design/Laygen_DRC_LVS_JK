@@ -491,8 +491,8 @@ class DesignDelegator(delegator.Delegator):
         # lay_mat.load_qt_parameters(qt_dp_dict)
         lay_mat.load_dp(dummy_dp._DesignParameter,minimum_step_size=None,matrix_size=(user_setup.matrix_x_step,user_setup.matrix_y_step),bb=False)
         #
-        # cell_size = lay_mat.get_cell_size()
-        # return self.detect_cell(lay_mat.matrix_by_layer, cell_size)
+        cell_size = lay_mat.get_cell_size()
+        return self.detect_cell(lay_mat.matrix_by_layer, cell_size)
 
     def detect_cell(self, matrix_by_layer, cell_size=None):
         stacked_matrix = None
