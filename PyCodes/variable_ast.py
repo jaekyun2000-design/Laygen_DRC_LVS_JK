@@ -1238,6 +1238,10 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         super(CustomFunctionTransformer, self).__init__()
         self.flag = flag
 
+    def get_fcn_list(self):
+        fcn_list = [fcn[10:] for fcn in dir(self) if fcn[:10] == 'transform_']
+        return fcn_list
+
     def generic_visit(self, node):
         if 'func' in node.__dict__ and node.func and 'id' in node.func.__dict__:
             method = 'transform_' + node.func.id

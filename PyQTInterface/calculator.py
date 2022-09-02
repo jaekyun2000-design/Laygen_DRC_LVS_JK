@@ -237,6 +237,9 @@ class ExpressionCalculator(QWidget):
         self.custom_index_button = QPushButton()
         self.custom_index_button.setText('custom')
         self.custom_index_button.clicked.connect(self.manage_index)
+        self.special_fcn_buttom = QPushButton()
+        self.special_fcn_buttom.setText('Fcn')
+        self.special_fcn_buttom.clicked.connect(self.show_special_fcn)
 
         self.index_layout = QVBoxLayout()
 
@@ -244,6 +247,7 @@ class ExpressionCalculator(QWidget):
         self.index_button_layout.addWidget(self.first_index_button)
         self.index_button_layout.addWidget(self.last_index_button)
         self.index_button_layout.addWidget(self.custom_index_button)
+        self.index_button_layout.addWidget(self.special_fcn_buttom)
 
         self.index_input = QLineEdit()
         self.index_input.textChanged.connect(self.store_index_input)
@@ -836,7 +840,10 @@ class ExpressionCalculator(QWidget):
             clicked_button = clicked
         else:
             clicked_button = self.sender()
-        geo_text = clicked_button.objectName()
+        try:
+            geo_text = clicked_button.objectName()
+        except:
+            geo_text = clicked_button.text()
         hierarchy_list = self.parsing_clipboard()
         display = str()
 
@@ -1252,6 +1259,14 @@ class ExpressionCalculator(QWidget):
             self.pw.create_row(qt_dc._ast, qt_dc._id)
         elif self.purpose in ['height', 'width']:
             pass
+
+    def show_special_fcn(self):
+        self.sfw = QListWidget()
+        fcn_list = variable_ast.CustomFunctionTransformer().get_fcn_list()
+        self.sfw.addItems(fcn_list)
+        self.sfw.itemDoubleClicked.connect(self.geo_clicked)
+        self.sfw.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.sfw.show()
 
     def clear(self):
         self.XWindow.clear()
