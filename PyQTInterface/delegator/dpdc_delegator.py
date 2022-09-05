@@ -4,9 +4,12 @@ import astunparse
 import copy
 import re
 
+import matplotlib.pyplot as plt
+
 from PyQTInterface.delegator import delegator
 from PyQTInterface import VisualizationItem
 from PyQTInterface import undo_frame
+from PyCodes import QTInterfaceWithAST
 from PyCodes import variable_ast
 from powertool import topAPI
 import traceback
@@ -481,7 +484,13 @@ class DesignDelegator(delegator.Delegator):
         output: cell type prediction result str
         """
         lay_mat = topAPI.layer_to_matrix.LayerToMatrix(user_setup.matrix_x_step, user_setup.matrix_y_step, user_setup.layer_list)
-        lay_mat.load_qt_parameters(qt_dp_dict)
+        dummy_dp = QTInterfaceWithAST.DummyDesignParameter()
+        for name, qt_dp in qt_dp_dict.items():
+            dummy_dp.restore_dp(name,qt_dp)
+
+        # lay_mat.load_qt_parameters(qt_dp_dict)
+        lay_mat.load_dp(dummy_dp._DesignParameter,minimum_step_size=None,matrix_size=(user_setup.matrix_x_step,user_setup.matrix_y_step),bb=False)
+        #
         cell_size = lay_mat.get_cell_size()
         return self.detect_cell(lay_mat.matrix_by_layer, cell_size)
 
@@ -555,11 +564,14 @@ class DesignDelegator(delegator.Delegator):
 
     def object_detection(self, cell_list):
         #translate cell_list as normal dp
-        top_dp = dict()
+        # top_dp = dict()
+        tmp_dp = QTInterfaceWithAST.DummyDesignParameter()
         for cell in cell_list:
-            top_dp[cell._ElementName] = cell._DesignParameter
+            tmp_dp.restore_dp(cell._ElementName, cell)
+            # top_dp[cell._ElementName] = cell._DesignParameter
         # lr = topAPI.gds2generator.LayoutReader()
         # lr.load_dp(top_dp)
+        top_dp = tmp_dp._DesignParameter
         lm = topAPI.layer_to_matrix.LayerToMatrix()
         lm.load_dp(top_dp, user_setup.min_step_size,bb=False)
         topAPI.object_detection.inference(lm)

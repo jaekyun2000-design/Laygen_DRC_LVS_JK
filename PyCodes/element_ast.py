@@ -363,6 +363,9 @@ class ElementTransformer(ast.NodeTransformer):
                 parameter_sentence = ",".join([f'{key} = {value}' for key, value in node.parameters.items()])
         elif type(node.parameters) == list and isinstance(node.parameters[0], variable_ast.Dictionary):
             parameter_sentence = astunparse.unparse(variable_ast.IrregularTransformer().visit_Dictionary(node.parameters[0], False))
+        elif type(node.parameters) == list and isinstance(node.parameters[0], ast.AST):
+            tf_ast = run_transformer(node.parameters)
+            parameter_sentence = astunparse.unparse(tf_ast)
         elif type(node.parameters) == str:
             parameter_sentence = f"**{node.parameters}"
         else:

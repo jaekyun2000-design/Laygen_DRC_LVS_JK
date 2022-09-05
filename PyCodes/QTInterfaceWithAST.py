@@ -14,6 +14,7 @@ from PyCodes import ASTmodule
 from PyQTInterface.layermap import LayerReader
 from DesignManager.ElementManager import element_manager
 from powertool import topAPI
+from generatorLib import StickDiagram
 import ast, astunparse
 import pickle
 import gzip
@@ -62,6 +63,18 @@ class QtDesignParameter:
         copy_obj.__dict__ = copy_dict
         return copy_obj
 
+    def restore_design_obj(self):
+        if self._type == 3:
+            if type(self._DesignParameter['_DesignObj']) != dict:
+                warnings.warn('Restore is not required')
+                return
+            og_design_obj = self._DesignParameter['_DesignObj']
+            self._DesignParameter['_DesignObj'] = DummyDesignParameter()
+            try:
+                for key, value in og_design_obj.items():
+                    self._DesignParameter['_DesignObj'].restore_dp(key, value)
+            except:
+                print('a')
     def update_unified_expression(self):
         try:
             if self._type == 8 and self._DesignParameter['_Layer']==None:
@@ -520,7 +533,7 @@ class QtProject:
 
         self._DesignConstraint_topology_dict = dict()
         self._ElementManager_topology_dict = dict()
-
+        self.bounding_box = dict(matrix=[], label=[], qt_dp =[], solo_bound=[])
         # designParameter Definition
         # self._DesignParameter["designParameterName"]  = dict(
         #     _ODLayer=dict(_id=0, _DesignParametertype=1, _Layer=None, _Datatype=1, _XYCoordinates=[], _XWidth=400,
@@ -533,6 +546,100 @@ class QtProject:
         #     _Sref0=dict(_DesignParametertype=3, _DesignObj=None, _XYCoordinates=[], _Reflect=None, _Angle=None, _id=6,
         #                 _Ignore=None, _ElementName=dict(_id=7, _DesignParametertype=5, _Name='NMOS'), ),
         # )
+
+    def get_pure_dp(self, module_name):
+        if module_name not in self._DesignParameter:
+            Exception(f"module_name ({module_name}) is invalid")
+        tmp_dp = DummyDesignParameter()
+        for dp_name, qt_dp in self._DesignParameter[module_name].items():
+            tmp_dp.restore_dp(dp_name, qt_dp)
+            # qtdp.get_pure_dp()
+        return tmp_dp
+
+    def add_bounding_box(self, qt_dp, object_type):
+        from powertool.topAPI import object_detection
+        if object_type in object_detection.class_list:
+            label_idx = object_detection.class_list.index(object_type)
+        else:
+            if object_type == 'NMOSWithDummy':
+                label_idx = object_detection.class_list.index('_NMOS')
+            elif object_type == 'PMOSWithDummy':
+                label_idx = object_detection.class_list.index('_PMOS')
+            elif object_type == 'NbodyContact':
+                label_idx = object_detection.class_list.index('_NbodyContact')
+            elif object_type == 'PbodyContact':
+                label_idx = object_detection.class_list.index('_PbodyContact')
+            elif object_type == 'ViaPoly2Met1':
+                label_idx = object_detection.class_list.index('_ViaStack_0_1')
+            elif object_type == 'ViaMet12Met2':
+                label_idx = object_detection.class_list.index('_ViaStack_1_2')
+            elif object_type == 'ViaMet22Met3':
+                label_idx = object_detection.class_list.index('_ViaStack_2_3')
+            elif object_type == 'ViaMet32Met4':
+                label_idx = object_detection.class_list.index('_ViaStack_3_4')
+            elif object_type == 'ViaMet42Met5':
+                label_idx = object_detection.class_list.index('_ViaStack_4_5')
+            elif object_type == 'ViaMet52Met6':
+                label_idx = object_detection.class_list.index('_ViaStack_5_6')
+            elif object_type == 'ViaMet62Met7':
+                label_idx = object_detection.class_list.index('_ViaStack_6_7')
+            else:
+                warnings.warn(f'object_type: {object_type}is not in class_list')
+                return
+
+        bb_lr = topAPI.gds2generator.LayoutReader()
+        if type(qt_dp._DesignParameter['_DesignObj']) == dict:
+            qt_dp.restore_design_obj()
+        #     bb_lr.load_dp(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
+        # else:
+        #     bb_lr.load_dp(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
+
+        deepish_dp = copy.deepcopy( qt_dp._DesignParameter['_DesignObj']._DesignParameter)
+        bb_lr.load_dp(deepish_dp)
+        self.bounding_box['solo_bound'].append(bb_lr.get_bounding_box())
+        self.bounding_box['label'].append(label_idx)
+        # self.bounding_box['solo_bound'].append(None)
+        self.bounding_box['qt_dp'].append(qt_dp)
+
+
+    def export_bounding_box(self, layer_to_mat):
+        '''
+        $$$$ ONLY works for no array XY coordinate objects $$$$
+        - Use this function before you manipulate loaded pure GDS file
+        :param layer_to_mat: top level translated layer_to_matrix obejct
+        :return:
+        '''
+        from powertool.topAPI import object_detection
+        import numpy as np
+        shape = list(layer_to_mat.matrix_by_layer.values())[0].shape
+        file = open('./object_detection/gt/0.txt', 'w')
+        for i, qt_dp in enumerate(self.bounding_box['qt_dp']):
+            # bb_lr = topAPI.gds2generator.LayoutReader()
+            # bb_lr.load_dp(qt_dp._DesignParameter['_DesignObj']._DesignParameter)
+            # self.bounding_box['matrix'][i] = bb_lr.get_bounding_box()
+            # bb_lr.load_dp()
+            lb_xy = [self.bounding_box['solo_bound'][i][0], self.bounding_box['solo_bound'][i][1]]
+            rt_xy = [self.bounding_box['solo_bound'][i][2], self.bounding_box['solo_bound'][i][3]]
+
+            sref_xy = qt_dp._DesignParameter['_XYCoordinates'][0]
+            x_start, y_start = layer_to_mat.convert_coordinate(lb_xy, sref_xy)
+            x_end, y_end = layer_to_mat.convert_coordinate(rt_xy, sref_xy)
+            x_start, y_start = x_start * shape[1] *user_setup.min_step_size, y_start * shape[0]*user_setup.min_step_size
+            x_end, y_end = x_end * shape[1]*user_setup.min_step_size, y_end * shape[0]*user_setup.min_step_size
+            self.bounding_box['matrix'].append([x_start, y_start, x_end, y_end])
+            file.write(f'{object_detection.class_list[int(self.bounding_box["label"][i])]} {x_start} {y_start} {x_end} {y_end}\n')
+        file.close()
+
+        # size = list(layer_to_mat.matrix_by_layer.values())[0].size
+        # for layer in layer_list:
+        #     layer = layer.decode('ascii') if type(layer) == bytes else layer
+        #     layer_mat = layer_to_mat.matrix_by_layer[layer] if layer in layer_to_mat.matrix_by_layer else np.zeros(shape)
+        #     if type(stacked_matrix) == np.ndarray:
+        #         stacked_matrix = np.append(stacked_matrix, np.expand_dims(layer_mat, 2), axis=2)
+        #     else:
+        #         stacked_matrix = np.expand_dims(layer_mat, 2)
+        #
+
 
     def _saveDesignConstraintAsPickle(self, _file=None):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
@@ -2610,7 +2717,10 @@ class QtProject:
             except:
                 return userDefineExceptions._UnkownError
 
-
+    def get_bounding_box(self):
+        for dp_name, dp in self._DesignParameter.items():
+            if dp._DesignParameter['_DesignParametertype'] == 3:
+                return dp._DesignParameter['_BoundingBox']
 class QtInterFace:
     def __init__(self):
         self._qtProject = None
@@ -2653,3 +2763,15 @@ class QtInterFace:
     def _closeProject(self):
         del self._qtProject
         self._qtProject = None
+
+class DummyDesignParameter(StickDiagram._StickDiagram):
+    def __init__(self):
+        super(DummyDesignParameter, self).__init__()
+        self._DesignParameter = dict()
+
+    def restore_dp(self, key, qt_dp):
+        # qt_dp.restore_design_obj_from_model_structure()
+        if qt_dp._type == 3:
+            qt_dp.restore_design_obj()
+        self._DesignParameter[key] = lab_feature.deepish_copy(qt_dp._DesignParameter)
+

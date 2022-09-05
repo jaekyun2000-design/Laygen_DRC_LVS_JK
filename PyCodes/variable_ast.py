@@ -1238,6 +1238,10 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         super(CustomFunctionTransformer, self).__init__()
         self.flag = flag
 
+    def get_fcn_list(self):
+        fcn_list = [fcn[10:] for fcn in dir(self) if fcn[:10] == 'transform_']
+        return fcn_list
+
     def generic_visit(self, node):
         if 'func' in node.__dict__ and node.func and 'id' in node.func.__dict__:
             method = 'transform_' + node.func.id
@@ -1617,6 +1621,21 @@ class CustomFunctionTransformer(ast.NodeTransformer):
         base_xy_string_tuple = self.extract_xy_hierarchy_string(arg_names, arg_indexes)
 
         return f"{base_element_string}['_Reflect'] = {reflection}"
+
+    def transform_cont(self, node):
+        arg_names, arg_indexes = self.parse_args_info(node.args)
+        arg_names.append('_POLayer')
+        poly_last_arg_indexes = ['[0]', '[-1]']
+        poly_first_arg_indexes = ['[0]', '[0]']
+        base_element_string = self.translate_base_string(arg_names)
+        base_xy_right_string_tuple = self.extract_xy_hierarchy_string(arg_names, poly_last_arg_indexes, True)
+        base_xy_left_string_tuple = self.extract_xy_hierarchy_string(arg_names, poly_first_arg_indexes, True)
+
+        output_x = f"{base_xy_right_string_tuple[0]} - {base_xy_left_string_tuple[0]} + {base_element_string}['_XWidth']"
+        output_x = f"max(1, 1+round( ({output_x} -drc._CoMinWidth - 2 * drc._CoMinEnclosureByPOAtLeastTwoSide )/  ( drc._CoMinWidth + drc._CoMinSpace ) ) )"
+        output_y = f"2 if {output_x} == 1 else 1"
+        return f"dict(_ViaPoly2Met1NumberOfCOX = {output_x}, _ViaPoly2Met1NumberOfCOY = {output_y})"
+        # return f"max(1, 1+int( ({target_width} -drc._CoMinSpace - 2 * drc._CoMinEnclosureByPO )/  ( drc._CoMinWidth + drc._CoMinSpace ) ) )"
 
     # def transform_len(self, node):
     #     arg_names, arg_indexes = self.parse_args_info(node.args)
