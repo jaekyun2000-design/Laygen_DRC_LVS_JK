@@ -1068,10 +1068,10 @@ def run_for_process_update():
         _LayerMapping.update({'NCAP': _LayerMappingTmp[('NCAP', 'drawing')]})
 
     if _Technology == 'SS28nm':
-        _LayerMapping.update({'LVS_D1': _LayerMappingTmp[('LVS', 'drawing1')]})
-        _LayerMapping.update({'LVS_D2': _LayerMappingTmp[('LVS', 'drawing2')]})
-        _LayerMapping.update({'LVS_D3': _LayerMappingTmp[('LVS', 'drawing3')]})
-        _LayerMapping.update({'LVS_D4': _LayerMappingTmp[('LVS', 'drawing4')]})
+        _LayerMapping.update({'LVS_dr1': _LayerMappingTmp[('LVS_dr1', 'drawing1')]})
+        _LayerMapping.update({'LVS_dr2': _LayerMappingTmp[('LVS_dr2', 'drawing2')]})
+        _LayerMapping.update({'LVS_dr3': _LayerMappingTmp[('LVS_dr3', 'drawing3')]})
+        _LayerMapping.update({'LVS_dr4': _LayerMappingTmp[('LVS_dr4', 'drawing4')]})
 
     _LayerMapFile.close()
     ########################################################################################
