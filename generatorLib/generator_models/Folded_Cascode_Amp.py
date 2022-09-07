@@ -1374,7 +1374,7 @@ class _Folded_Cascode_Amp(StickDiagram._StickDiagram):
 
 		self._DesignParameter['m1_pdn_single_sw_vss_x']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[], _Width=None)
 		self._DesignParameter['m1_pdn_single_sw_vss_x']['_Width']=2*drc._Metal1MinSpace
-		self._DesignParameter['m1_pdn_single_sw_vss_x']['_XYCoordinates']=[[[self.getXY('nguardring1','left')[0][0], self._DesignParameter['nmos_pdn_sw']['_XYCoordinates'][0][1]+self.getYWidth('nmos_pdn_sw','_Met1Layer')/2+self._DesignParameter['m1_pdn_single_sw_vss_x']['_Width']/2+drc._Metal1MinSpace2], \
+		self._DesignParameter['m1_pdn_single_sw_vss_x']['_XYCoordinates']=[[[self.getXY('nguardring2','left')[0][0], self._DesignParameter['nmos_pdn_sw']['_XYCoordinates'][0][1]+self.getYWidth('nmos_pdn_sw','_Met1Layer')/2+self._DesignParameter['m1_pdn_single_sw_vss_x']['_Width']/2+drc._Metal1MinSpace2], \
 																			[self._DesignParameter['nmos_pdn_sw']['_XYCoordinates'][0][0]+self._DesignParameter['nmos_pdn_sw']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][1][0], self._DesignParameter['nmos_pdn_sw']['_XYCoordinates'][0][1]+self.getYWidth('nmos_pdn_sw','_Met1Layer')/2+self._DesignParameter['m1_pdn_single_sw_vss_x']['_Width']/2+drc._Metal1MinSpace2]]]
 
 		self._DesignParameter['m1_pdn_single_sw_vss_y']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[], _Width=None)
