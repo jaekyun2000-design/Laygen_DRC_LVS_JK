@@ -1,5 +1,5 @@
 import user_setup
-if user_setup.DL_FEATURE:
+if user_setup.DL_FEATURE or user_setup.DDL_FEATURE:
     from powertool.model.layer_to_matrix import LayerToMatrix
     from keras import models, layers
     import numpy as np
