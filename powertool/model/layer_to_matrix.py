@@ -178,9 +178,9 @@ class LayerToMatrix:
         for x_div in range(x_divided_iter):
             for y_div in range(y_divided_iter):
                 tmp_dictionary = {layer: matrix[x_div*x_step:x_div*x_step+x_step, y_div*y_step:y_div*y_step+y_step] for layer, matrix in self.matrix_by_layer.items()}
-                yield tmp_dictionary
+                yield tmp_dictionary, (x_div*x_step, y_div*y_step)
                 # yield matrix[x_step*x_div:x_step*(x_div+1), y_step*y_div:y_step*(y_div+1), :]
-        yield self.matrix_by_layer
+        yield self.matrix_by_layer, (0, 0)
 
     def convert_coordinate(self, original_xy, sref_xy):
         sref_shifted_xy = [a + b for a, b in zip(original_xy, sref_xy)]
