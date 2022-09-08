@@ -8,6 +8,8 @@ from generatorLib.generator_models import ViaPoly2Met1
 from generatorLib.generator_models import PSubRing
 
 class _NCap(StickDiagram._StickDiagram):
+	_ParametersForDesignCalculation = dict(_XWidth=None, _YWidth=None, _NumofGates=None, NumOfCOX=None, NumOfCOY=None,
+										   Guardring=True, guardring_height=None, guardring_width=None, guardring_right=None, guardring_left=None, guardring_top=None, guardring_bot=None)
 	def __init__(self, _DesignParameter=None, _Name='NCap'):
 		if _DesignParameter != None:
 			self._DesignParameter = _DesignParameter
