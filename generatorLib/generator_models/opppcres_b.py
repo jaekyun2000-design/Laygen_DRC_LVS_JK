@@ -87,14 +87,14 @@ class _Opppcres(StickDiagram._StickDiagram) :
         _CONUMXmax = int((self._DesignParameter['_POLayer']['_XWidth'] - _DRCObj._CoMinEnclosureByPO2 * 2 - _DRCObj._CoMinWidth) // (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)) + 1
         _CONUMYmax = int((int((self._DesignParameter['_POLayer']['_YWidth'] - self._DesignParameter['_OPLayer']['_YWidth'] - 2*_DRCObj._CoMinSpace2OP - 2*_DRCObj._CoMinEnclosureByPO2) // (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)) + 1) // 2)
 
-        if DesignParameters._Technology != '028nm' :
+        if DesignParameters._Technology != 'SS28nm' :
             _CONUMYmax = 3
 
         if _CONUMX == None :
             _CONUMX = _CONUMXmax
         if _CONUMY == None :
             _CONUMY = _CONUMYmax
-            if DesignParameters._Technology != '028nm' :
+            if DesignParameters._Technology != 'SS28nm' :
                 _CONUMY = 1
         
         if _CONUMY > 1 :
@@ -321,45 +321,10 @@ class _Opppcres(StickDiagram._StickDiagram) :
             self._DesignParameter['_Met1Layer']['_YWidth'] = (_CONUMY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) + _DRCObj._CoMinWidth + _DRCObj._Metal1MinEnclosureCO3 * 2
             self._DesignParameter['_Met1Layer']['_XYCoordinates'] = [self._DesignParameter['_XYCoordinatePort1Routing']['_XYCoordinates'][0], self._DesignParameter['_XYCoordinatePort2Routing']['_XYCoordinates'][0]]
 
-        print ('     Layer Modification for TSMC Layout      '.center(105,'#'))
-        if DesignParameters._Technology != '028nm' :
+        if DesignParameters._Technology != 'SS28nm' :
+        	print ('     Layer Modification for TSMC Layout      '.center(105,'#'))
             self._DesignParameter['_POLayer']['_YWidth'] += self._DesignParameter['_Met1Layer']['_YWidth'] * 2 + _DRCObj._CoMinEnclosureByPO * 2
             self._DesignParameter['_PPLayer']['_XWidth'] = self._DesignParameter['_POLayer']['_XWidth'] + 2 * _DRCObj._PpMinEnclosureOfPo
             self._DesignParameter['_PPLayer']['_YWidth'] = self._DesignParameter['_POLayer']['_YWidth'] + 2 * _DRCObj._PpMinEnclosureOfPo
             #self._DesignParameter['_RHLayer']['_YWidth'] = self._DesignParameter['_PPLayer']['_YWidth']
-        
-        print ('test')
 
-if __name__ == '__main__' :
-    import random
-    #for i in range (0,100) :
-    _ResWidth = 1200
-    _ResLength = 2220
-    _CONUMX = None
-    _CONUMY = 1
-    #_Silicide = True
-
-    #DesignParameters._Technology = '065nm'
-    #    print 'Technology Process', DesignParameters._Technology
-    OpppcresObj = _Opppcres(_DesignParameter=None, _Name='Opppcres_b')
-    OpppcresObj._CalculateOpppcresDesignParameter(_ResWidth = _ResWidth, _ResLength = _ResLength, _CONUMX = _CONUMX, _CONUMY = _CONUMY)
-    OpppcresObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=OpppcresObj._DesignParameter)
-    testStreamFile = open('./Opppcres_b.gds', 'wb')
-    tmp = OpppcresObj._CreateGDSStream(OpppcresObj._DesignParameter['_GDSFile']['_GDSFile'])
-    tmp.write_binary_gds_stream(testStreamFile)
-    testStreamFile.close()
-
-    print ('###############################    Transporting to FTP server    ########################################')
-    ftp = ftplib.FTP('141.223.22.156')
-    ftp.login('junung', 'chlwnsdnd1!')
-    ftp.cwd('/mnt/sdc/junung/OPUS/TSMC65n')
-    #ftp.cwd('/mnt/sdc/junung/OPUS/Samsung28n')
-    myfile = open('Opppcres_b.gds', 'rb')
-    ftp.storbinary('STOR Opppcres_b.gds', myfile)
-    myfile.close()
-    ftp.close()
-    # print ('     tries... {}/100      '.format(i+1).center(105,'#'))
-    # #a = DRCchecker.DRCchecker('junung','chlwnsdnd1!','/mnt/sdc/junung/OPUS/TSMC65n','/mnt/sdc/junung/OPUS/TSMC65n/DRC/DRC_run','Opppcres_test','Opppcres_b', None)
-    # a = DRCchecker.DRCchecker('junung','chlwnsdnd1!','/mnt/sdc/junung/OPUS/Samsung28n','/mnt/sdc/junung/OPUS/Samsung28n/DRC/run','Opppcres_test','Opppcres_b', None)
-    # a.DRCchecker()
-        
