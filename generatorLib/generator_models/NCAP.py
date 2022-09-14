@@ -94,7 +94,7 @@ class _NCap(StickDiagram._StickDiagram):
 		_XYCoordinatesofNcap = [[0, 0]]
 
 		print('#############################     POLY Layer Calculation    ##############################################')
-		_DRCgatemaxarea = 38661000 # not in DRC.py
+		_DRCgatemaxarea = _DRCObj._PolygateMaxArea
 		ODExtensionOnPO = (_DRCObj._OdMinSpace + _DRCObj._CoMinWidth + 2 * _DRCObj._CoMinEnclosureByPOAtLeastTwoSide) * 2 # 80 + 40 + 20
 
 		self._DesignParameter['_POLayer']['_XWidth'] = _XWidth
