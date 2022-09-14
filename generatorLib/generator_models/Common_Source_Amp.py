@@ -26,9 +26,9 @@ class _Common_Source_Amp(StickDiagram._StickDiagram):
 										psubring_param={'height':None, 'width':None, 'contact_bottom':2, 'contact_top':2, 'contact_left':2, 'contact_right':2}, \
 										R_drain={'_ResWidth':800, '_ResLength':4628, '_CONUMX':None, '_CONUMY':1}, \
 										R_feedback={'_ResWidth':800, '_ResLength':1068, '_CONUMX':None, '_CONUMY':1}, \
-										cap1_param={'_XWidth':2763, '_YWidth':3000, '_NumofGates':10, 'NumOfCOX':None, 'NumOfCOY':1, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
-										cap2_param={'_XWidth':3459, '_YWidth':2997, '_NumofGates':12, 'NumOfCOX':None, 'NumOfCOY':1, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
-										RC_feedback=True) :
+										cap1_param={'_XWidth':2763, '_YWidth':3000, '_NumofGates':10, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
+										cap2_param={'_XWidth':3459, '_YWidth':2997, '_NumofGates':12, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
+										) :
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
 		MinSnapSpacing=drc._MinSnapSpacing
@@ -97,14 +97,64 @@ class _Common_Source_Amp(StickDiagram._StickDiagram):
 			tmp.append([self._DesignParameter['nmos']['_XYCoordinates'][0][0]+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'][i][0], self._DesignParameter['nmos']['_XYCoordinates'][0][1]])
 		self._DesignParameter['via12_drain']['_XYCoordinates']=tmp
 		del tmp
+
+		self._DesignParameter['via23_drain']=self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='via23_drainIn{}'.format(_Name)))[0]
+		self._DesignParameter['via23_drain']['_DesignObj']._CalculateViaMet22Met3DesignParameterMinimumEnclosureX(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=ViaNumY)
+		self._DesignParameter['via23_drain']['_XYCoordinates']=self._DesignParameter['via12_drain']['_XYCoordinates']
+
+		self._DesignParameter['via34_drain']=self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='via34_drainIn{}'.format(_Name)))[0]
+		self._DesignParameter['via34_drain']['_DesignObj']._CalculateViaMet32Met4DesignParameterMinimumEnclosureX(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=ViaNumY)
+		self._DesignParameter['via34_drain']['_XYCoordinates']=self._DesignParameter['via12_drain']['_XYCoordinates']
 		del ViaNumY
 
 		ViaNumX=max(1,int(self.getXWidth('gate','_Met1Layer')/(drc._VIAxMinWidth+drc._VIAxMinSpace)))
 		self._DesignParameter['via12_gate']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='via12_gateIn{}'.format(_Name)))[0]
 		self._DesignParameter['via12_gate']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureY(_ViaMet12Met2NumberOfCOX=ViaNumX, _ViaMet12Met2NumberOfCOY=1)
 		self._DesignParameter['via12_gate']['_XYCoordinates']=self.getXY('gate')
+		del ViaNumX
 
 		self._DesignParameter['m2_gate']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0],_Datatype=DesignParameters._LayerMapping['METAL2'][1], _XYCoordinates=[], _Width=None)
 		self._DesignParameter['m2_gate']['_Width']=self.getYWidth('via12_gate','_Met2Layer')
 		self._DesignParameter['m2_gate']['_XYCoordinates']=[[[self._DesignParameter['nmos']['_XYCoordinates'][0][0]+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0], self.getXY('via12_gate')[0][1]], [self._DesignParameter['nmos']['_XYCoordinates'][0][0]+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][-1][0], self.getXY('via12_gate')[0][1]]], \
 															[[self._DesignParameter['nmos']['_XYCoordinates'][0][0]+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][0][0], self.getXY('via12_gate')[-1][1]], [self._DesignParameter['nmos']['_XYCoordinates'][0][0]+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_POLayer']['_XYCoordinates'][-1][0], self.getXY('via12_gate')[-1][1]]]]
+
+		self._DesignParameter['R_feedback']['_XYCoordinates']=[[max(self.getXY('guardring','right')[0][0]+self.getXWidth('guardring','right','_PPLayer')/2+self.getXWidth('R_feedback','_PRESLayer')/2+drc._PpMinSpacetoPRES, self.getXY('guardring','right')[0][0]+self.getXWidth('guardring','right','_ODLayer')/2+self.getXWidth('R_feedback','_PRESLayer')/2+drc._RXMinSpacetoPRES), \
+																min(self.getXY('guardring','top')[0][1]-self.getYWidth('guardring','top','_PPLayer')/2-self.getYWidth('R_feedback','_PRESLayer')/2-drc._PpMinSpacetoPRES, self.getXY('guardring','top')[0][1]-self.getYWidth('guardring','top','_ODLayer')/2-self.getYWidth('R_feedback','_PRESLayer')/2-drc._RXMinSpacetoPRES)]]
+
+		self._DesignParameter['R_drain']['_XYCoordinates']=[[self.getXY('R_feedback','_OPLayer')[0][0]+self.getXWidth('R_feedback','_OPLayer')/2+self.getXWidth('R_drain','_OPLayer')/2+drc._OPMinspace, min(self.getXY('guardring','top')[0][1]-self.getYWidth('guardring','top','_PPLayer')/2-self.getYWidth('R_drain','_PRESLayer')/2-drc._PpMinSpacetoPRES, self.getXY('guardring','top')[0][1]-self.getYWidth('guardring','top','_ODLayer')/2-self.getYWidth('R_drain','_PRESLayer')/2-drc._RXMinSpacetoPRES)]]
+
+		ViaNumX=max(1,int(self.getXWidth('R_drain','_Met1Layer')/(drc._VIAxMinWidth+drc._VIAxMinSpace)))
+		self._DesignParameter['via12_R_drain']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='via12_R_drainIn{}'.format(_Name)))[0]
+		self._DesignParameter['via12_R_drain']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureY(_ViaMet12Met2NumberOfCOX=ViaNumX, _ViaMet12Met2NumberOfCOY=1)
+		self._DesignParameter['via12_R_drain']['_XYCoordinates']=[[self.getXY('R_drain','_Met1Layer')[1][0], self.getXY('R_drain','_Met1Layer')[1][1]]]
+
+		self._DesignParameter['via23_R_drain']=self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='via23_R_drainIn{}'.format(_Name)))[0]
+		self._DesignParameter['via23_R_drain']['_DesignObj']._CalculateViaMet22Met3DesignParameterMinimumEnclosureY(_ViaMet22Met3NumberOfCOX=ViaNumX, _ViaMet22Met3NumberOfCOY=1)
+		self._DesignParameter['via23_R_drain']['_XYCoordinates']=self._DesignParameter['via12_R_drain']['_XYCoordinates']
+
+		self._DesignParameter['via34_R_drain']=self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='via34_R_drainIn{}'.format(_Name)))[0]
+		self._DesignParameter['via34_R_drain']['_DesignObj']._CalculateViaMet32Met4DesignParameterMinimumEnclosureY(_ViaMet32Met4NumberOfCOX=ViaNumX, _ViaMet32Met4NumberOfCOY=1)
+		self._DesignParameter['via34_R_drain']['_XYCoordinates']=self._DesignParameter['via12_R_drain']['_XYCoordinates']
+		del ViaNumX
+
+		ViaNumX=max(1,int(self.getXWidth('R_feedback','_Met1Layer')/(drc._VIAxMinWidth+drc._VIAxMinSpace)))
+		self._DesignParameter['via12_R_feedback']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='via12_R_feedbackIn{}'.format(_Name)))[0]
+		self._DesignParameter['via12_R_feedback']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureY(_ViaMet12Met2NumberOfCOX=ViaNumX, _ViaMet12Met2NumberOfCOY=1)
+		self._DesignParameter['via12_R_feedback']['_XYCoordinates']=[[self.getXY('R_feedback','_Met1Layer')[0][0], self.getXY('R_feedback','_Met1Layer')[0][1]], [self.getXY('R_feedback','_Met1Layer')[1][0], self.getXY('R_feedback','_Met1Layer')[1][1]]]
+
+		self._DesignParameter['via23_R_feedback']=self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='via23_R_feedbackIn{}'.format(_Name)))[0]
+		self._DesignParameter['via23_R_feedback']['_DesignObj']._CalculateViaMet22Met3DesignParameterMinimumEnclosureY(_ViaMet22Met3NumberOfCOX=ViaNumX, _ViaMet22Met3NumberOfCOY=1)
+		self._DesignParameter['via23_R_feedback']['_XYCoordinates']=self._DesignParameter['via12_R_feedback']['_XYCoordinates']
+
+		self._DesignParameter['via34_R_feedback']=self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='via34_R_feedbackIn{}'.format(_Name)))[0]
+		self._DesignParameter['via34_R_feedback']['_DesignObj']._CalculateViaMet32Met4DesignParameterMinimumEnclosureY(_ViaMet32Met4NumberOfCOX=ViaNumX, _ViaMet32Met4NumberOfCOY=1)
+		self._DesignParameter['via34_R_feedback']['_XYCoordinates']=[self._DesignParameter['via12_R_feedback']['_XYCoordinates'][0]]
+		del ViaNumX
+
+		self._DesignParameter['cap1']=self._SrefElementDeclaration(_DesignObj=NCAP._NCap(_Name='cap1In{}'.format(_Name)))[0]
+		self._DesignParameter['cap1']['_DesignObj']._CalculateNCapDesignParameter(**cap1_param)
+		self._DesignParameter['cap2']=self._SrefElementDeclaration(_DesignObj=NCAP._NCap(_Name='cap2In{}'.format(_Name)))[0]
+		self._DesignParameter['cap2']['_DesignObj']._CalculateNCapDesignParameter(**cap2_param)
+
+		self._DesignParameter['cap1']['_XYCoordinates']=[[0, 5000]]
+		self._DesignParameter['cap2']['_XYCoordinates']=[[0, 10000]]

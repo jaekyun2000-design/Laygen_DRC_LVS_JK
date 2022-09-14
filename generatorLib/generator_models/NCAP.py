@@ -128,11 +128,11 @@ class _NCap(StickDiagram._StickDiagram):
 		self._DesignParameter['_COLayer']['_XWidth'] = _DRCObj._CoMinWidth
 		self._DesignParameter['_COLayer']['_YWidth'] = _DRCObj._CoMinWidth
 
-		_CONUMXOnPO = int(_DRCObj.DRCCOFillAtPoly2Met1(XWidth=_XWidth, YWidth=ODExtensionOnPO, NumOfCOX=NumOfCOX, NumOfCOY=NumOfCOY)[0])
+		_CONUMXOnPO = max(1, int(_DRCObj.DRCCOFillAtPoly2Met1(XWidth=_XWidth, YWidth=ODExtensionOnPO, NumOfCOX=NumOfCOX, NumOfCOY=NumOfCOY)[0]))
 		_CONUMYOnPO = 1
 		_CONUMXOnOD = 1
 		# CONUMYOnOD값이 정확하지 않다면 새로 결정(1.067um에서는 10개, 1.068um에선 11개 (1.068일떄 OD와 CO 사이의 거리는 0.014))
-		_CONUMYOnOD = int(_DRCObj.DRCCOFillAtOD2Met1(XWidth = ODExtensionOnPO,  YWidth = _YWidth, NumOfCOX = NumOfCOX, NumOfCOY=NumOfCOY)[1])
+		_CONUMYOnOD = max(1, int(_DRCObj.DRCCOFillAtOD2Met1(XWidth = ODExtensionOnPO,  YWidth = _YWidth, NumOfCOX = NumOfCOX, NumOfCOY=NumOfCOY)[1]))
 
 		print("_CONUMXOnPO = %s\n", _CONUMXOnPO)
 		print("_CONUMYOnOD = %s\n", _CONUMYOnOD)
