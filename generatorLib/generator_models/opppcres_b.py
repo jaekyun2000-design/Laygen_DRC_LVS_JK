@@ -308,8 +308,6 @@ class _Opppcres(StickDiagram._StickDiagram) :
         self._DesignParameter['_XYCoordinatePort2Routing']['_XYCoordinates'] = tmp
         del tmp
 
-        #Upward
-
         print ('#############################     Metal1 Layer Calculation    #############################################')
         if _CONUMY == 1 :
             self._DesignParameter['_Met1Layer']['_XWidth'] = (_CONUMX - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + _DRCObj._CoMinWidth + _DRCObj._Metal1MinEnclosureCO3 * 2
@@ -322,7 +320,6 @@ class _Opppcres(StickDiagram._StickDiagram) :
             self._DesignParameter['_Met1Layer']['_XYCoordinates'] = [self._DesignParameter['_XYCoordinatePort1Routing']['_XYCoordinates'][0], self._DesignParameter['_XYCoordinatePort2Routing']['_XYCoordinates'][0]]
 
         if DesignParameters._Technology != 'SS28nm' :
-        	print ('     Layer Modification for TSMC Layout      '.center(105,'#'))
             self._DesignParameter['_POLayer']['_YWidth'] += self._DesignParameter['_Met1Layer']['_YWidth'] * 2 + _DRCObj._CoMinEnclosureByPO * 2
             self._DesignParameter['_PPLayer']['_XWidth'] = self._DesignParameter['_POLayer']['_XWidth'] + 2 * _DRCObj._PpMinEnclosureOfPo
             self._DesignParameter['_PPLayer']['_YWidth'] = self._DesignParameter['_POLayer']['_YWidth'] + 2 * _DRCObj._PpMinEnclosureOfPo
