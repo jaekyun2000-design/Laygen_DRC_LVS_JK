@@ -156,5 +156,10 @@ class _Common_Source_Amp(StickDiagram._StickDiagram):
 		self._DesignParameter['cap2']=self._SrefElementDeclaration(_DesignObj=NCAP._NCap(_Name='cap2In{}'.format(_Name)))[0]
 		self._DesignParameter['cap2']['_DesignObj']._CalculateNCapDesignParameter(**cap2_param)
 
-		self._DesignParameter['cap1']['_XYCoordinates']=[[0, 5000]]
-		self._DesignParameter['cap2']['_XYCoordinates']=[[0, 10000]]
+		self._DesignParameter['cap1']['_XYCoordinates']=[[self.getXY('nmos')[0][0], self.getXY('guardring','top','_PPLayer')[0][1]+self.getYWidth('guardring','top','_PPLayer')/2+self.getYWidth('cap1','NWELL')/2+drc._NwMinEnclosurePactive2]]
+		self._DesignParameter['cap2']['_XYCoordinates']=[[self.getXY('nmos')[0][0], self.getXY('cap1')[0][1]+self.getYWidth('cap1','NWELL')/2+self.getYWidth('cap2','NWELL')/2+2*drc._NwMinSpace]]
+
+		self._DesignParameter['pres']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['PRES'][0],_Datatype=DesignParameters._LayerMapping['PRES'][1], _XYCoordinates=[], _Width=None)
+		self._DesignParameter['pres']['_Width']=self.getXY('R_drain')[0][0]+self.getXWidth('R_drain','_PRESLayer')/2-(self.getXY('R_feedback')[0][0]-self.getXWidth('R_feedback','_PRESLayer')/2)
+		self._DesignParameter['pres']['_XYCoordinates']=[[[(self.getXY('R_drain')[0][0]+self.getXWidth('R_drain','_PRESLayer')/2+(self.getXY('R_feedback')[0][0]-self.getXWidth('R_feedback','_PRESLayer')/2))/2, self.getXY('R_drain')[0][1]+self.getYWidth('R_drain','_PRESLayer')/2], \
+														  [(self.getXY('R_drain')[0][0]+self.getXWidth('R_drain','_PRESLayer')/2+(self.getXY('R_feedback')[0][0]-self.getXWidth('R_feedback','_PRESLayer')/2))/2, max(self.getXY('R_drain')[0][1]-self.getYWidth('R_drain','_PRESLayer')/2, self.getXY('R_feedback')[0][1]-self.getYWidth('R_feedback','_PRESLayer')/2)]]]
