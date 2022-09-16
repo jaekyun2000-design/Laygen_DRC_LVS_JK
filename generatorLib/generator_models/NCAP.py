@@ -94,7 +94,7 @@ class _NCap(StickDiagram._StickDiagram):
 		_XYCoordinatesofNcap = [[0, 0]]
 
 		print('#############################     POLY Layer Calculation    ##############################################')
-		_DRCgatemaxarea = 38661000 # not in DRC.py
+		_DRCgatemaxarea = _DRCObj._PolygateMaxArea
 		ODExtensionOnPO = (_DRCObj._OdMinSpace + _DRCObj._CoMinWidth + 2 * _DRCObj._CoMinEnclosureByPOAtLeastTwoSide) * 2 # 80 + 40 + 20
 
 		self._DesignParameter['_POLayer']['_XWidth'] = _XWidth
@@ -128,11 +128,11 @@ class _NCap(StickDiagram._StickDiagram):
 		self._DesignParameter['_COLayer']['_XWidth'] = _DRCObj._CoMinWidth
 		self._DesignParameter['_COLayer']['_YWidth'] = _DRCObj._CoMinWidth
 
-		_CONUMXOnPO = int(_DRCObj.DRCCOFillAtPoly2Met1(XWidth=_XWidth, YWidth=ODExtensionOnPO, NumOfCOX=NumOfCOX, NumOfCOY=NumOfCOY)[0])
+		_CONUMXOnPO = max(1, int(_DRCObj.DRCCOFillAtPoly2Met1(XWidth=_XWidth, YWidth=ODExtensionOnPO, NumOfCOX=NumOfCOX, NumOfCOY=NumOfCOY)[0])-1)
 		_CONUMYOnPO = 1
 		_CONUMXOnOD = 1
 		# CONUMYOnOD값이 정확하지 않다면 새로 결정(1.067um에서는 10개, 1.068um에선 11개 (1.068일떄 OD와 CO 사이의 거리는 0.014))
-		_CONUMYOnOD = int(_DRCObj.DRCCOFillAtOD2Met1(XWidth = ODExtensionOnPO,  YWidth = _YWidth, NumOfCOX = NumOfCOX, NumOfCOY=NumOfCOY)[1])
+		_CONUMYOnOD = max(1, int(_DRCObj.DRCCOFillAtOD2Met1(XWidth = ODExtensionOnPO,  YWidth = _YWidth, NumOfCOX = NumOfCOX, NumOfCOY=NumOfCOY)[1])-1)
 
 		print("_CONUMXOnPO = %s\n", _CONUMXOnPO)
 		print("_CONUMYOnOD = %s\n", _CONUMYOnOD)

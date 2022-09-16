@@ -262,6 +262,7 @@ class DRCPOLYGATE:
             self._PCCRITMinLengthofPOLayer = 35  #### ADDED(by JiCho) !
             self._PODummyMinArea = 11000  ### ADDED(by JiCho)!
             self._PoDummyLengthToMove = 50  ### ADDED(by JiCho)!
+            self._PolygateMaxArea = 38661000 ### ADDED(by smlim)
 
         if user_setup._Technology == 'SS65nm':
             self._PolygateMinWidth = 80                     # 8.a.1
