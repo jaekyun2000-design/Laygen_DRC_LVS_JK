@@ -65,10 +65,10 @@ class _Summer_middle(StickDiagram._StickDiagram):
 
 
     def _CalculateDesignParameter(self,
-                                  # _Finger1=12,_Finger2=8,_Finger3=14,_ChannelWidth=500,_NPRatio=1,_ChannelLength=30,_Dummy=None,_XVT='LVT',
-                                  #     _GateSpacing=None,_SDWidth=None,_SupplyRailType=1,_SupplyMet1XWidth=None,_SupplyMet1YWidth=None
-        _Finger1=12,_Finger2=8,_Finger3=14,_Finger4=8,_Finger5 =16,_Finger6= 6,_ChannelWidth=500,_NPRatio=1,_ChannelLength=30,_NumberOfPbodyCOY=3,_Dummy=None,_XVT='LVT',
-                                      _GateSpacing=None,_SDWidth=None,_SupplyRailType=1,_SupplyMet1XWidth=None,_SupplyMet1YWidth=None
+                _Finger1=None,_Finger2=None,_Finger3=None,_Finger4=None,_Finger5 =None,_Finger6= None,_ChannelWidth=None,_NPRatio=None,_ChannelLength=None,_NumberOfPbodyCOY=None,_Dummy=None,_XVT=None,
+                    _GateSpacing=None,_SDWidth=None,_SupplyRailType=None,_SupplyMet1XWidth=None,_SupplyMet1YWidth=None
+        # _Finger1=None,_Finger2=8,_Finger3=None,_Finger4=8,_Finger5 =16,_Finger6= 6,_ChannelWidth=500,_NPRatio=1,_ChannelLength=30,_NumberOfPbodyCOY=3,_Dummy=None,_XVT='LVT',
+        #                               _GateSpacing=None,_SDWidth=None,_SupplyRailType=1,_SupplyMet1XWidth=None,_SupplyMet1YWidth=None
                                       ):
 
         _DRCObj = DRC.DRC()
@@ -76,20 +76,19 @@ class _Summer_middle(StickDiagram._StickDiagram):
         MinSnapSpacing = _DRCObj._MinSnapSpacing
         _LengthPMOSBtwPO = _DRCObj.DRCPolygateMinSpace(_DRCObj.DRCPolyMinSpace(_Width=_ChannelWidth, _ParallelLength=_ChannelLength)) + _ChannelLength
 
-        ################################### NMOS Genteration #########################################################
+        ################################### _Finger number caluation #########################################################
+        if _Finger4+_Finger5> _Finger1+_Finger2:
+            _Finger6 = 6
+            _Finger3 = 2 * (_Finger4 + _Finger5-_Finger1-_Finger2) + _Finger6
 
-        # NMOSparameters1 = copy.deepcopy(NMOSWithDummy._NMOS._ParametersForDesignCalculation)
-        # NMOSparameters1['_NMOSNumberofGate'] = _Finger1
-        # NMOSparameters1['_NMOSChannelWidth'] = round(_ChannelWidth * _NPRatio)
-        # NMOSparameters1['_NMOSChannellength'] = _ChannelLength
-        # NMOSparameters1['_NMOSDummy'] = _Dummy
-        # NMOSparameters1['_XVT'] = _XVT
-        # NMOSparameters1['_GateSpacing'] = _GateSpacing
-        # NMOSparameters1['_SDWidth'] = _SDWidth
-        #
-        # self._DesignParameter['_NMOS1'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='_NMOS1In{}'.format(_Name)))[0]
-        # self._DesignParameter['_NMOS1']['_DesignObj']._CalculateNMOSDesignParameter(**NMOSparameters1)
-        # self._DesignParameter['_NMOS1']['_XYCoordinates'] = [[0, 0]]
+        elif _Finger4+_Finger5< _Finger1+_Finger2:
+            _Finger3 = 6
+            _Finger6 = 2 * (_Finger2 + _Finger1 - _Finger4 - _Finger5) + _Finger3
+        else :
+            _Finger6 = 6
+            _Finger3 = 6
+
+        ################################### PMOS Genteration #########################################################
 
         PMOSparameters1 = copy.deepcopy(PMOSWithDummy._PMOS._ParametersForDesignCalculation)
         PMOSparameters1['_PMOSNumberofGate'] = _Finger1
@@ -129,8 +128,7 @@ class _Summer_middle(StickDiagram._StickDiagram):
         PMOSparameters3['_GateSpacing'] = _GateSpacing
         PMOSparameters3['_SDWidth'] = _SDWidth
 
-        self._DesignParameter['_PMOS3'] = \
-            self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='_PMOS3In{}'.format(_Name)))[0]
+        self._DesignParameter['_PMOS3'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='_PMOS3In{}'.format(_Name)))[0]
         self._DesignParameter['_PMOS3']['_DesignObj']._CalculatePMOSDesignParameter(**PMOSparameters3)
         self._DesignParameter['_PMOS3']['_XYCoordinates'] = [[0, 0]]
 
@@ -162,6 +160,7 @@ class _Summer_middle(StickDiagram._StickDiagram):
             self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='_PMOS5In{}'.format(_Name)))[0]
         self._DesignParameter['_PMOS5']['_DesignObj']._CalculatePMOSDesignParameter(**PMOSparameters5)
         self._DesignParameter['_PMOS5']['_XYCoordinates'] = [[_LengthPMOSBtwPO * ((_Finger1 + _Finger3) / 2 + 1) + _LengthPMOSBtwPO * (_Finger2 + 1), 0]]
+
 
         ################################### BPLayer Delete #########################################################
 
@@ -329,15 +328,40 @@ class _Summer_middle(StickDiagram._StickDiagram):
                                                                         (self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_POLayer']['_YWidth']/2+self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2)],\
                                                                       [self._DesignParameter['_PMOS4']['_XYCoordinates'][0][0],\
                                                                           (self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_POLayer']['_YWidth']/2+self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2)]]
+        ################################################ Summer_upper ##################################
+
+        _Summer_upper = copy.deepcopy(Summer_upper._Summer_upper._ParametersForDesignCalculation)
+        _Summer_upper['_Finger1'] = _Finger4
+        _Summer_upper['_Finger2'] = _Finger5
+        _Summer_upper['_Finger3'] = _Finger6
+        _Summer_upper['_ChannelWidth'] = _ChannelWidth
+        _Summer_upper['_NPRatio'] = _NPRatio
+        _Summer_upper['_ChannelLength'] = _ChannelLength
+        _Summer_upper['_Dummy'] = _Dummy
+        _Summer_upper['_XVT'] = _XVT
+        _Summer_upper['_GateSpacing'] = _GateSpacing
+        _Summer_upper['_SDWidth'] = _SDWidth
+        _Summer_upper['_SupplyRailType'] = _SupplyRailType
+        _Summer_upper['_SupplyMet1XWidth'] = _SupplyMet1XWidth
+        _Summer_upper['_SupplyMet1YWidth'] = _SupplyMet1YWidth
+        _Summer_upper['_NumberOfPbodyCOY'] = _NumberOfPbodyCOY
+
+
+        self._DesignParameter['Summer_upper'] = self._SrefElementDeclaration(_DesignObj=Summer_upper._Summer_upper(_Name='_Summer_upperIn{}'.format(_Name)))[0]
+        self._DesignParameter['Summer_upper']['_DesignObj']._CalculateDesignParameter(**_Summer_upper)
+        self._DesignParameter['Summer_upper']['_XYCoordinates']=[[self._DesignParameter['_PMOS3']['_XYCoordinates'][0][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),\
+                                                                  self._DesignParameter['PbodyContact1']['_XYCoordinates'][0][1]+self._DesignParameter['PbodyContact1']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth']/2+\
+                                                                  self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_NWVSS']['_YWidth']/2-\
+                                                                  self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['PbodyContact2']['_XYCoordinates'][0][1]]]
 
         ############################################# Metal 2 Routing ########################################################
 
         self._DesignParameter['_Met2Routing'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],_XYCoordinates=[], _Width=None)
         self._DesignParameter['_Met2Routing']['_Width'] =  self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
-        self._DesignParameter['_Met2Routing']['_XYCoordinates'] = [[[self._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][0][0],0],\
+        self._DesignParameter['_Met2Routing']['_XYCoordinates'] = [[[self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][0][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2))- self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2,0],\
                                                                   [self._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][_Finger2//2][0],0]],\
                                                                  [[self._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][_Finger2//2+1][0],0],\
-                                                                  [self._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][-1][0],0]]]
+                                                                  [self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][-1][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2))+ self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2,0]]]
 
         ##################################################### POLayer Pin Delete, Generation & Coordinates  ####################################################
 
@@ -385,58 +409,33 @@ class _Summer_middle(StickDiagram._StickDiagram):
                     _XYCoordinates=self._DesignParameter['_PMOS3']['_XYCoordinates']
                 )
 
-        ################################################ Summer_upper ##################################
-
-        _Summer_upper = copy.deepcopy(Summer_upper._Summer_upper._ParametersForDesignCalculation)
-        _Summer_upper['_Finger1'] = _Finger4
-        _Summer_upper['_Finger2'] = _Finger5
-        _Summer_upper['_Finger3'] = _Finger6
-        _Summer_upper['_ChannelWidth'] = _ChannelWidth
-        _Summer_upper['_NPRatio'] = _NPRatio
-        _Summer_upper['_ChannelLength'] = _ChannelLength
-        _Summer_upper['_Dummy'] = _Dummy
-        _Summer_upper['_XVT'] = _XVT
-        _Summer_upper['_GateSpacing'] = _GateSpacing
-        _Summer_upper['_SDWidth'] = _SDWidth
-        _Summer_upper['_SupplyRailType'] = _SupplyRailType
-        _Summer_upper['_SupplyMet1XWidth'] = _SupplyMet1XWidth
-        _Summer_upper['_SupplyMet1YWidth'] = _SupplyMet1YWidth
-        _Summer_upper['_NumberOfPbodyCOY'] = _NumberOfPbodyCOY
-
-
-        self._DesignParameter['Summer_upper'] = self._SrefElementDeclaration(_DesignObj=Summer_upper._Summer_upper(_Name='_Summer_upperIn{}'.format(_Name)))[0]
-        self._DesignParameter['Summer_upper']['_DesignObj']._CalculateDesignParameter(**_Summer_upper)
-        self._DesignParameter['Summer_upper']['_XYCoordinates']=[[self._DesignParameter['_PMOS3']['_XYCoordinates'][0][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),\
-                                                                  self._DesignParameter['PbodyContact1']['_XYCoordinates'][0][1]+self._DesignParameter['PbodyContact1']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth']/2+\
-                                                                  self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_NWVSS']['_YWidth']/2-\
-                                                                  self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['PbodyContact2']['_XYCoordinates'][0][1]]]
 
         ##################################### Metal 2 Routing Between Summer_upper and middle  ##################################
         #왼쪽부터 순서대로 2개의 Met2 Routing
         self._DesignParameter['Met2Routing_1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],_XYCoordinates=[], _Width=None)
         self._DesignParameter['Met2Routing_1']['_Width'] =  self._DesignParameter['_PMOS2']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
-        self._DesignParameter['Met2Routing_1']['_XYCoordinates'] = [[[self._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][0][0],0],\
-                                                                  [self._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][0][0],\
+        self._DesignParameter['Met2Routing_1']['_XYCoordinates'] = [[[self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][0][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),0],\
+                                                                  [self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][0][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),\
                                                                    self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]]]]
 
-        self._DesignParameter['Met2Routing_4'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],_XYCoordinates=[], _Width=None)
-        self._DesignParameter['Met2Routing_4']['_Width'] =  self._DesignParameter['_PMOS2']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
-        self._DesignParameter['Met2Routing_4']['_XYCoordinates'] = [[[self._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][-1][0],0],\
-                                                                  [self._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][-1][0],\
+        self._DesignParameter['Met2Routing_2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],_XYCoordinates=[], _Width=None)
+        self._DesignParameter['Met2Routing_2']['_Width'] =  self._DesignParameter['_PMOS2']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
+        self._DesignParameter['Met2Routing_2']['_XYCoordinates'] = [[[self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][-1][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),0],\
+                                                                  [self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][-1][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),\
                                                                    self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]]]]
-        self._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates']
+
         ########################################### Metal3 Routing ###############################################
 
         self._DesignParameter['_Met3Routing'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1],_XYCoordinates=[], _Width=None)
         self._DesignParameter['_Met3Routing']['_Width'] =  self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
         self._DesignParameter['_Met3Routing']['_XYCoordinates'] = [[[self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet22Met3_1']['_XYCoordinates'][0][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),\
                                                                     self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet22Met3_1']['_XYCoordinates'][0][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]],\
-                                                                    [self._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][-1][0],\
+                                                                    [self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][-1][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),\
                                                                     self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet22Met3_1']['_XYCoordinates'][0][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]]],\
 
                                                                    [[self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet22Met3_1']['_XYCoordinates'][1][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),\
                                                                     self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet22Met3_1']['_XYCoordinates'][1][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]],\
-                                                                    [self._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][0][0],\
+                                                                    [self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][0][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),\
                                                                     self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet22Met3_1']['_XYCoordinates'][1][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]]]]
 
 
@@ -449,9 +448,9 @@ class _Summer_middle(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet22Met3_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_DesignParameter=None, _Name='_ViaMet22Met3_1{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet22Met3_1']['_DesignObj']._CalculateViaMet22Met3DesignParameterMinimumEnclosureX(**_ViaMet22Met3_1)
 
-        self._DesignParameter['_ViaMet22Met3_1']['_XYCoordinates'] =[[self._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][-1][0],\
+        self._DesignParameter['_ViaMet22Met3_1']['_XYCoordinates'] =[[self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][-1][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),\
                                                                     self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet22Met3_1']['_XYCoordinates'][0][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]],\
-                                                                     [self._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][0][0],\
+                                                                     [self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][0][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),\
                                                                     self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet22Met3_1']['_XYCoordinates'][1][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]]]
 
 
@@ -459,27 +458,32 @@ class _Summer_middle(StickDiagram._StickDiagram):
 #'C:\\Users\\ljw95\\PycharmProjects\\LayGenGUI'
 
 if __name__ == '__main__':
-    #for i in range(0,100):
+    for i in range(0,100):
         import ftplib
         import random
 
-        # _Finger3 = random.randint(2, 20)
-        # _Finger2 = random.randint(2, 20)
-        # _Finger1 = random.randint(2, 20)
-        # _Finger4=random.randint(2, 20)
-        # _Finger5=random.randint(2, 20)
-        # _Finger6=random.randint(2, 20)
-        # _ChannelWidth = random.randrange(300, 500, 2)
-        # _ChannelLength = random.randrange(30, 48, 2)
+        _Finger1 = random.randint(2, 30)
+        _Finger2 = random.randint(2, 30)
+        _Finger4=random.randint(2, 30)
+        _Finger5=random.randint(2, 30)
+        _ChannelWidth = random.randrange(300, 500, 2)
+        _ChannelLength = random.randrange(30, 48, 2)
 
-        _Finger1 = 12
-        _Finger2 = 8
-        _Finger3 = 14
-        _Finger4=8
-        _Finger5=16
-        _Finger6=6
-        _ChannelWidth = 500
-        _ChannelLength = 30
+
+
+        # _Finger1 = 12
+        # _Finger2 = 8
+        # _Finger3 = 14
+
+        # _Finger2 = 8
+        # _Finger4 = 8
+        # _Finger5 = 16
+        # _Finger6 = 6
+        # _ChannelWidth = 500
+        # _ChannelLength = 30
+        _Finger6 = None
+        _Finger3 = None
+
 
         _NPRatio = 1
         _NumberOfPbodyCOY=3
@@ -536,10 +540,10 @@ if __name__ == '__main__':
         myfile.close()
         ftp.close()
 
-        # import DRCchecker
-        #
-        # a = DRCchecker.DRCchecker('ljw95', 'dlwodn123', '/mnt/sdc/ljw95/OPUS/ss28', '/mnt/sdc/ljw95/OPUS/ss28/DRC/run',
-        #                           '_Summer_middle', '_Summer_middle', None)
-        # a.DRCchecker()
-        #
-        # print("DRC Clean!!!")
+        import DRCchecker
+
+        a = DRCchecker.DRCchecker('ljw95', 'dlwodn123', '/mnt/sdc/ljw95/OPUS/ss28', '/mnt/sdc/ljw95/OPUS/ss28/DRC/run',
+                                  '_Summer_middle', '_Summer_middle', None)
+        a.DRCchecker()
+
+        print("DRC Clean!!!")
