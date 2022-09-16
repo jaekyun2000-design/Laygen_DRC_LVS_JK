@@ -246,7 +246,8 @@ class _SummerBottom(StickDiagram._StickDiagram):
 		# self._DesignParameter['_Resistor']['_XYCoordinates'] = [[_XYCoordinatesofNMOS[0][0], self._DesignParameter['_NCAP']['_XYCoordinates'][0][1]]]
 
 
-		self._DesignParameter['_PbodyContact1']['_DesignObj']._CalculatePbodyContactDesignParameter(**dict(_NumberOfPbodyCOX=int(((_XYCoordinatesofNMOS[0][0] - self._DesignParameter['_NMOS4']['_XYCoordinates'][0][0] + _spacebtwnmos4 + _NMOSChannellength1) // (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)) * 2),
+		self._DesignParameter['_PbodyContact1']['_DesignObj']._CalculatePbodyContactDesignParameter(**dict(_NumberOfPbodyCOX=max(int(((_XYCoordinatesofNMOS[0][0] - self._DesignParameter['_NMOS4']['_XYCoordinates'][0][0] + _spacebtwnmos4 + _NMOSChannellength1) // (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)) * 2),
+																																 int((self._DesignParameter['_Resistor']['_DesignObj']._DesignParameter['_PRESLayer']['_YWidth'] + self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['NWELL']['_YWidth'] * 2) // (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace))),
 																										   _NumberOfPbodyCOY=_NumberOfPbodyCOY, _Met1XWidth=_Met1XWidth, _Met1YWidth=_Met1YWidth))
 
 		self._DesignParameter['_PbodyContact1']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] = self._DesignParameter['_PbodyContact1']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] + _DRCObj._PpMinEnclosureOfPactiveY * 2
@@ -267,7 +268,8 @@ class _SummerBottom(StickDiagram._StickDiagram):
 
 		################################# PbodyContact2 generation #################################
 		self._DesignParameter['_PbodyContact2'] = self._SrefElementDeclaration(_DesignObj=PbodyContact._PbodyContact(_Name='PbodyContact2In{}'.format(_Name)))[0]
-		self._DesignParameter['_PbodyContact2']['_DesignObj']._CalculatePbodyContactDesignParameter(**dict(_NumberOfPbodyCOX=int(((_XYCoordinatesofNMOS[0][0] - self._DesignParameter['_NMOS4']['_XYCoordinates'][0][0] + _spacebtwnmos4 + _NMOSChannellength1) // (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)) * 2),
+		self._DesignParameter['_PbodyContact2']['_DesignObj']._CalculatePbodyContactDesignParameter(**dict(_NumberOfPbodyCOX=max(int(((_XYCoordinatesofNMOS[0][0] - self._DesignParameter['_NMOS4']['_XYCoordinates'][0][0] + _spacebtwnmos4 + _NMOSChannellength1) // (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)) * 2),
+																																 int((self._DesignParameter['_Resistor']['_DesignObj']._DesignParameter['_PRESLayer']['_YWidth'] + self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['NWELL']['_YWidth'] * 2) // (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace))),
 																										   _NumberOfPbodyCOY=_NumberOfPbodyCOY, _Met1XWidth=_Met1XWidth, _Met1YWidth=_Met1YWidth))
 		self._DesignParameter['_PbodyContact2']['_XYCoordinates'] = [[_XYCoordinatesofNMOS[0][0],
 																	  self._DesignParameter['_NCAP']['_XYCoordinates'][0][1] - self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['NWELL']['_XWidth'] // 2 - self._DesignParameter['_PbodyContact1']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth'] // 2]]
@@ -818,26 +820,26 @@ class _SummerBottom(StickDiagram._StickDiagram):
 
 ################################# DRC Check #################################
 if __name__ == '__main__':
-	for i in range(0,100):
-		length=random.randrange(30,48,2)
-		_NMOSNumberofGate1 = random.randint(2,23)
-		_NMOSChannelWidth1 = random.randrange(300,500,2)
-		_NMOSChannellength1 = length
-		_NMOSNumberofGate2 = random.randint(6,40)
-		_NMOSChannellength2 = length
-		_NMOSNumberofGate3 = random.randint(2,40)
-		_NMOSChannellength3 = length
-		_NMOSNumberofGate4 = random.randint(2,40)
-		_NMOSChannellength4 = length
-		# _NMOSNumberofGate1 = 24		# change
-		# _NMOSChannelWidth1 = 474	# change
-		# _NMOSChannellength1 = 40	# change
-		# _NMOSNumberofGate2 = 5	# change
-		# _NMOSChannellength2 = None	# change
-		# _NMOSNumberofGate3 = 39	# change
-		# _NMOSChannellength3 = None	# change
-		# _NMOSNumberofGate4 = 14	# change
-		# _NMOSChannellength4 = None	# change
+	# for i in range(0,100):
+	# 	length=random.randrange(30,48,2)
+	# 	_NMOSNumberofGate1 = random.randint(2,23)
+	# 	_NMOSChannelWidth1 = random.randrange(300,500,2)
+	# 	_NMOSChannellength1 = length
+	# 	_NMOSNumberofGate2 = random.randint(6,40)
+	# 	_NMOSChannellength2 = length
+	# 	_NMOSNumberofGate3 = random.randint(2,40)
+	# 	_NMOSChannellength3 = length
+	# 	_NMOSNumberofGate4 = random.randint(2,40)
+	# 	_NMOSChannellength4 = length
+		_NMOSNumberofGate1 = 14		# change
+		_NMOSChannelWidth1 = 500	# change
+		_NMOSChannellength1 = 30	# change
+		_NMOSNumberofGate2 = 8	# change
+		_NMOSChannellength2 = None	# change
+		_NMOSNumberofGate3 = 4	# change
+		_NMOSChannellength3 = None	# change
+		_NMOSNumberofGate4 = 7	# change
+		_NMOSChannellength4 = None	# change
 		# _NMOSNumberofGate1 = 12		# change
 		# _NMOSChannelWidth1 = 476	# change
 		# _NMOSChannellength1 = 36	# change
