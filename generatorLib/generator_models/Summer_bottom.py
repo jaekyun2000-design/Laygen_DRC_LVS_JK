@@ -928,7 +928,7 @@ if __name__ == '__main__':
 		tmp.write_binary_gds_stream(testStreamFile)
 		testStreamFile.close()
 
-		print('#############################      Sending to FTP Server...      #############################')
+		print('#############################      Sending to FTP Server...      ##############################')
 
 		import ftplib
 
