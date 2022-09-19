@@ -16,10 +16,12 @@ from generatorLib.generator_models import ViaMet22Met3
 from generatorLib.generator_models import SupplyRails
 from generatorLib.generator_models import Z_PWR_CNT
 from generatorLib.generator_models import Summer_upper
-
+from generatorLib.generator_models import Summer_bottom
 class _Summer_middle(StickDiagram._StickDiagram):
-    _ParametersForDesignCalculation = dict(_Finger1=None,_Finger2=None,_Finger3=None,_Finger4=None,_Finger5 =None,_Finger6 =None,_ChannelWidth=None,_NPRatio=None,_ChannelLength=None,_Dummy=None,_XVT=None,
-                                      _NumberOfPbodyCOY=None,_GateSpacing=None,_SDWidth=None,_SupplyRailType=1,_SupplyMet1XWidth=None,_SupplyMet1YWidth=None)
+    _ParametersForDesignCalculation = dict(_Finger1=None,_Finger2=None,_Finger3=None,_Finger4=None,_Finger5 =None,_Finger6 =None,_Finger7=None,_Finger8 = None,
+                                _Finger9 = None,_Finger10 = None,_ChannelWidth=None,_NPRatio=None,_ChannelLength=None,_Dummy=None,_XVT=None,_PCCrit=None,
+                                      _NumberOfPbodyCOY=None,_GateSpacing=None,_SDWidth=None,_SupplyRailType=1,_SupplyMet1XWidth=None,_SupplyMet1YWidth=None, _ResWidth = None,
+		    _ResLength = None,_CONUMY = None,_XWidth = None,_YWidth = None,_NumofGates = None,guardring_right = None,guardring_left = None,guardring_top = None,guardring_bot = None,Guardring=None)
 
     def __init__(self, _DesignParameter=None, _Name='Summer_middle'):
         if _DesignParameter != None:
@@ -65,8 +67,11 @@ class _Summer_middle(StickDiagram._StickDiagram):
 
 
     def _CalculateDesignParameter(self,
-                _Finger1=None,_Finger2=None,_Finger3=None,_Finger4=None,_Finger5 =None,_Finger6= None,_ChannelWidth=None,_NPRatio=None,_ChannelLength=None,_NumberOfPbodyCOY=None,_Dummy=None,_XVT=None,
-                    _GateSpacing=None,_SDWidth=None,_SupplyRailType=None,_SupplyMet1XWidth=None,_SupplyMet1YWidth=None
+                _Finger1=None,_Finger2=None,_Finger3=None,_Finger4=None,_Finger5 =None,_Finger6= None,_Finger7=None,_Finger8 = None,
+                                _Finger9 = None,_Finger10 = None,_ChannelWidth=None,_NPRatio=None,_ChannelLength=None,_NumberOfPbodyCOY=None,_Dummy=None,_XVT=None,_PCCrit=None,
+                    _GateSpacing=None,_SDWidth=None,_SupplyRailType=None,_SupplyMet1XWidth=None,_SupplyMet1YWidth=None,_ResWidth = None,
+		    _ResLength = None,_CONUMY = None,_XWidth = None,_YWidth = None,_NumofGates = None, guardring_right = None,guardring_left = None,guardring_top = None,guardring_bot = None,Guardring=None
+
         # _Finger1=None,_Finger2=8,_Finger3=None,_Finger4=8,_Finger5 =16,_Finger6= 6,_ChannelWidth=500,_NPRatio=1,_ChannelLength=30,_NumberOfPbodyCOY=3,_Dummy=None,_XVT='LVT',
         #                               _GateSpacing=None,_SDWidth=None,_SupplyRailType=1,_SupplyMet1XWidth=None,_SupplyMet1YWidth=None
                                       ):
@@ -77,16 +82,30 @@ class _Summer_middle(StickDiagram._StickDiagram):
         _LengthPMOSBtwPO = _DRCObj.DRCPolygateMinSpace(_DRCObj.DRCPolyMinSpace(_Width=_ChannelWidth, _ParallelLength=_ChannelLength)) + _ChannelLength
 
         ################################### _Finger number caluation #########################################################
-        if _Finger4+_Finger5> _Finger1+_Finger2:
-            _Finger6 = 6
-            _Finger3 = 2 * (_Finger4 + _Finger5-_Finger1-_Finger2) + _Finger6
 
-        elif _Finger4+_Finger5< _Finger1+_Finger2:
-            _Finger3 = 6
-            _Finger6 = 2 * (_Finger2 + _Finger1 - _Finger4 - _Finger5) + _Finger3
-        else :
+
+        if 2*(_Finger4+_Finger5)> 2*(_Finger2)+_Finger3:
             _Finger6 = 6
-            _Finger3 = 6
+            _Finger1 =  _Finger4 + _Finger5-_Finger3//2-_Finger2 + _Finger6//2
+
+        elif 2*(_Finger4+_Finger5)< 2*(_Finger2)+_Finger3:
+            _Finger1=12
+            _Finger6 = 2 * (_Finger2 + _Finger1 - _Finger4 - _Finger5) + _Finger3
+
+        else :
+            _Finger6 = 24
+            _Finger1 = 12
+
+        if _Finger1 <= _Finger9 + 4:
+            _Finger1 = 12
+            _Finger9 = 4
+            _Finger10 = 7
+        else:
+            _Finger10 = _Finger1 - _Finger9 - 1
+
+        _Finger7 = _Finger3
+        _Finger8 = _Finger2
+
 
         ################################### PMOS Genteration #########################################################
 
@@ -251,17 +270,17 @@ class _Summer_middle(StickDiagram._StickDiagram):
         _ViaPoly2Met1['_ViaPoly2Met1NumberOfCOX'] = _Finger1-1
         _ViaPoly2Met1['_ViaPoly2Met1NumberOfCOY'] = 1
 
-        self._DesignParameter['_ViaPoly2Met1OnGate1'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_DesignParameter=None, _Name='_ViaPoly2Met1{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaPoly2Met1OnGate1'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_DesignParameter=None, _Name='_ViaPoly2Met1In{}'.format(_Name)))[0]
         self._DesignParameter['_ViaPoly2Met1OnGate1']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureY(**_ViaPoly2Met1)
         self._DesignParameter['_ViaPoly2Met1OnGate1']['_XYCoordinates'] = [[self._DesignParameter['_PMOS1']['_XYCoordinates'][0][0],self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_POLayer']['_YWidth']/2+self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2], \
                                                                        [self._DesignParameter['_PMOS5']['_XYCoordinates'][0][0],\
                                                                          self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2 + self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2]]
         # PMOS2,PMOS4
         _ViaPoly2Met2 = copy.deepcopy(ViaPoly2Met1._ViaPoly2Met1._ParametersForDesignCalculation)
-        _ViaPoly2Met2['_ViaPoly2Met1NumberOfCOX'] = _Finger2-2
+        _ViaPoly2Met2['_ViaPoly2Met1NumberOfCOX'] = _Finger2-1
         _ViaPoly2Met2['_ViaPoly2Met1NumberOfCOY'] = 1
 
-        self._DesignParameter['_ViaPoly2Met1OnGate2'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_DesignParameter=None, _Name='_ViaPoly2Met2{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaPoly2Met1OnGate2'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_DesignParameter=None, _Name='_ViaPoly2Met2In{}'.format(_Name)))[0]
         self._DesignParameter['_ViaPoly2Met1OnGate2']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureY(**_ViaPoly2Met2)
         self._DesignParameter['_ViaPoly2Met1OnGate2']['_XYCoordinates'] = [[self._DesignParameter['_PMOS2']['_XYCoordinates'][0][0],\
                                                                        self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2 +self._DesignParameter['_PMOS2']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2],\
@@ -275,7 +294,7 @@ class _Summer_middle(StickDiagram._StickDiagram):
         _ViaPoly2Met3['_ViaPoly2Met1NumberOfCOX'] = _Finger3 - 1
         _ViaPoly2Met3['_ViaPoly2Met1NumberOfCOY'] = 1
 
-        self._DesignParameter['_ViaPoly2Met1OnGate3'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_DesignParameter=None, _Name='_ViaPoly2Met3{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaPoly2Met1OnGate3'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_DesignParameter=None, _Name='_ViaPoly2Met3In{}'.format(_Name)))[0]
         self._DesignParameter['_ViaPoly2Met1OnGate3']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureY(**_ViaPoly2Met3)
         self._DesignParameter['_ViaPoly2Met1OnGate3']['_XYCoordinates'] = [[self._DesignParameter['_PMOS3']['_XYCoordinates'][0][0], \
             self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] / 2 +self._DesignParameter['_PMOS3']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] / 2]]
@@ -286,7 +305,7 @@ class _Summer_middle(StickDiagram._StickDiagram):
         _ViaMet12Met2_1['_ViaMet12Met2NumberOfCOX'] = 1
         _ViaMet12Met2_1['_ViaMet12Met2NumberOfCOY'] = 2
 
-        self._DesignParameter['_ViaMet12Met2_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_DesignParameter=None, _Name='_ViaMet12Met2_1{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2_1'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_DesignParameter=None, _Name='_ViaMet12Met2_1In{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2_1']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**_ViaMet12Met2_1)
 
         tmp = []
@@ -302,7 +321,7 @@ class _Summer_middle(StickDiagram._StickDiagram):
         _ViaMet12Met2_2['_ViaMet12Met2NumberOfCOX'] = 2
         _ViaMet12Met2_2['_ViaMet12Met2NumberOfCOY'] = 1
 
-        self._DesignParameter['_ViaMet12Met2_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_DesignParameter=None, _Name='_ViaMet12Met2_2{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_DesignParameter=None, _Name='_ViaMet12Met2_2In{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2_2']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureY(**_ViaMet12Met2_2)
 
         tmp=[]
@@ -319,7 +338,7 @@ class _Summer_middle(StickDiagram._StickDiagram):
         _ViaMet22Met3['_ViaMet22Met3NumberOfCOX'] = 2
         _ViaMet22Met3['_ViaMet22Met3NumberOfCOY'] = 1
 
-        self._DesignParameter['_ViaMet22Met3'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_DesignParameter=None, _Name='_ViaMet22Met3{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet22Met3'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_DesignParameter=None, _Name='_ViaMet22Met3In{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet22Met3']['_DesignObj']._CalculateViaMet22Met3DesignParameterMinimumEnclosureY(**_ViaMet22Met3)
         # tmp=[]
         #
@@ -453,19 +472,202 @@ class _Summer_middle(StickDiagram._StickDiagram):
                                                                      [self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][0][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),\
                                                                     self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet22Met3_1']['_XYCoordinates'][1][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]]]
 
+        ############################################ Via2 Placing #########################################################
 
+        _Summer_bottom = copy.deepcopy(Summer_bottom._SummerBottom._ParametersForDesignCalculation)
+        _Summer_bottom['_NMOSNumberofGate1'] = _Finger7
+        _Summer_bottom['_NMOSChannelWidth1'] = _ChannelWidth
+        _Summer_bottom['_NMOSChannellength1'] = _ChannelLength
+        _Summer_bottom['_NMOSDummy1'] = False
+        _Summer_bottom['_GateSpacing1'] = _GateSpacing
+        _Summer_bottom['_SDWidth1'] = _SDWidth
+        _Summer_bottom['_XVT'] = _XVT
+        _Summer_bottom['_PCCrit'] = _PCCrit
+        _Summer_bottom['_NMOSNumberofGate2'] = _Finger8
+        _Summer_bottom['_NMOSChannelWidth2'] = _ChannelWidth
+        _Summer_bottom['_NMOSChannellength2'] = _ChannelLength
+        _Summer_bottom['_NMOSDummy2'] = True
+        _Summer_bottom['_GateSpacing2'] = _GateSpacing
+        _Summer_bottom['_SDWidth2'] = _SDWidth
+        _Summer_bottom['_NMOSNumberofGate3'] = _Finger9
+        _Summer_bottom['_NMOSChannelWidth3'] = _ChannelWidth
+        _Summer_bottom['_NMOSChannellength3'] = _ChannelLength
+        _Summer_bottom['_NMOSDummy3'] = False
+        _Summer_bottom['_GateSpacing3'] = _GateSpacing
+        _Summer_bottom['_SDWidth3'] = _SDWidth
+        _Summer_bottom['_NMOSNumberofGate4'] = _Finger10
+        _Summer_bottom['_NMOSChannelWidth4'] = _ChannelWidth
+        _Summer_bottom['_NMOSChannellength4'] = _ChannelLength
+        _Summer_bottom['_NMOSDummy4'] = True
+        _Summer_bottom['_GateSpacing4'] = _GateSpacing
+        _Summer_bottom['_SDWidth4'] = _SDWidth
+
+        _Summer_bottom['_ResWidth'] = _ResWidth
+        _Summer_bottom['_ResLength'] = _ResLength
+       # _Summer_bottom['_CONUMX'] = _CONUMX
+        _Summer_bottom['_CONUMY'] = _CONUMY
+        _Summer_bottom['_XWidth'] = _XWidth
+        _Summer_bottom['_YWidth'] = _YWidth
+        _Summer_bottom['_NumofGates'] = _NumofGates
+        # _Summer_bottom['NumOfCOX'] = NumOfCOX
+        # _Summer_bottom['NumOfCOY'] = NumOfCOY
+        _Summer_bottom['Guardring'] = _ChannelLength
+        # _Summer_bottom['guardring_height'] = guardring_height
+        # _Summer_bottom['guardring_width'] = guardring_width
+        _Summer_bottom['guardring_right'] = guardring_right
+        _Summer_bottom['guardring_left'] = guardring_left
+        _Summer_bottom['guardring_top'] = guardring_top
+        _Summer_bottom['guardring_bot'] = guardring_bot
+        #_Summer_bottom['_NumberOfPbodyCOX'] = _NumberOfPbodyCOX
+        _Summer_bottom['_NumberOfPbodyCOY'] = _NumberOfPbodyCOY
+        # _Summer_bottom['_Met1XWidth'] = _Met1XWidth
+        # _Summer_bottom['_Met1YWidth'] = _Met1YWidth
+        # _Summer_bottom['_ViaPoly2Met1NumberOfCOX'] = _ViaPoly2Met1NumberOfCOX
+        # _Summer_bottom['_ViaPoly2Met1NumberOfCOY'] = _ViaPoly2Met1NumberOfCOY
+        # _Summer_bottom['_ViaMet12Met2NumberOfCOX'] = _ViaMet12Met2NumberOfCOX
+        # _Summer_bottom['_ViaMet12Met2NumberOfCOY'] = _ViaMet12Met2NumberOfCOY
+        # _Summer_bottom['_ViaMet22Met3NumberOfCOX'] = _ViaMet22Met3NumberOfCOX
+        # _Summer_bottom['_ViaMet22Met3NumberOfCOY'] = _ViaMet22Met3NumberOfCOY
+
+        self._DesignParameter['_Summer_bottom'] = self._SrefElementDeclaration(_DesignObj=Summer_bottom._SummerBottom(_Name='_Summer_bottomIn{}'.format(_Name)))[0]
+        self._DesignParameter['_Summer_bottom']['_DesignObj']._CalculateSummerBottomDesignParameter(**_Summer_bottom)
+        self._DesignParameter['_Summer_bottom']['_XYCoordinates']=[[0,0]]
+
+        ############################################ Met2 Routing Between upper, bottom #########################################################
+
+        self._DesignParameter['Met2Btwupbtm'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],_XYCoordinates=[], _Width=None)
+        self._DesignParameter['Met2Btwupbtm']['_Width'] =  self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
+        self._DesignParameter['Met2Btwupbtm']['_XYCoordinates'] = [[[-_LengthPMOSBtwPO,self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_PbodyContact1']['_XYCoordinates'][0][1]],  #left Metal2
+                                                                  [-_LengthPMOSBtwPO,\
+                                                                   self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['PbodyContact1']['_XYCoordinates'][0][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]-\
+                                                                   self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['PbodyContact1']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2]], \
+                                                                   [[_LengthPMOSBtwPO,self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_PbodyContact1']['_XYCoordinates'][0][1]],  #right Metal2
+                                                                   [_LengthPMOSBtwPO,\
+                                                                    self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['PbodyContact1']['_XYCoordinates'][0][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]-\
+                                                                   self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['PbodyContact1']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2]]]
+
+
+        ############################################ Via2 Between upper, bottom #########################################################
+
+        _ViaMet22Met3_2 = copy.deepcopy(ViaMet22Met3._ViaMet22Met3._ParametersForDesignCalculation)
+        _ViaMet22Met3_2['_ViaMet22Met3NumberOfCOX'] = 2
+        _ViaMet22Met3_2['_ViaMet22Met3NumberOfCOY'] = 1
+
+        self._DesignParameter['_ViaMet22Met3_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_DesignParameter=None, _Name='_ViaMet22Met3_2{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet22Met3_2']['_DesignObj']._CalculateViaMet22Met3DesignParameterMinimumEnclosureY(**_ViaMet22Met3_2)
+        self._DesignParameter['_ViaMet22Met3_2']['_XYCoordinates']=[[-_LengthPMOSBtwPO,self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_VIANMOS2Met22Met3']['_XYCoordinates'][0][1]],\
+                                                                    [_LengthPMOSBtwPO,self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_PbodyContact1']['_XYCoordinates'][0][1]],\
+                                                                    [-_LengthPMOSBtwPO,self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_Met3Routing']['_XYCoordinates'][0][0][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]]]
+
+        ############################################ Metal 1 Between middle, bottom #########################################################
+        #vertical pmos2,4
+        self._DesignParameter['Met1Btwupbtm'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],_XYCoordinates=[], _Width=None)
+        self._DesignParameter['Met1Btwupbtm']['_Width'] = self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
+        tmp=[]
+
+        for i in range(0,len(self._DesignParameter['_PMOS2']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'])):
+            tmp.append([[self._DesignParameter['_PMOS2']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][i][0]+self._DesignParameter['_PMOS2']['_XYCoordinates'][0][0],-self._DesignParameter['_PMOS2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2],\
+                        [self._DesignParameter['_PMOS2']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][i][0]+self._DesignParameter['_PMOS2']['_XYCoordinates'][0][0],\
+                        -(_ChannelWidth + 2 * _DRCObj.DRCPolygateMinExtensionOnOD(_ChannelLength)+_DRCObj._OPlayeroverPoly)\
+                         +self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2]])
+            tmp.append([[self._DesignParameter['_PMOS4']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][i][0]+self._DesignParameter['_PMOS4']['_XYCoordinates'][0][0],-self._DesignParameter['_PMOS4']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2],\
+                        [self._DesignParameter['_PMOS4']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][i][0]+self._DesignParameter['_PMOS4']['_XYCoordinates'][0][0],\
+                        -(_ChannelWidth + 2 * _DRCObj.DRCPolygateMinExtensionOnOD(_ChannelLength)+_DRCObj._OPlayeroverPoly)\
+                         +self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2]])
+
+
+        self._DesignParameter['Met1Btwupbtm']['_XYCoordinates'] = tmp
+
+        #horizental pmos2,4
+        self._DesignParameter['Met1Btwupbtm_1'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],_XYCoordinates=[], _Width=None)
+        self._DesignParameter['Met1Btwupbtm_1']['_Width'] = self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
+
+
+        self._DesignParameter['Met1Btwupbtm_1']['_XYCoordinates']=[[[self._DesignParameter['_PMOS2']['_XYCoordinates'][0][0]+self._DesignParameter['_PMOS2']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][0][0],\
+                                                                     -(_ChannelWidth + 2 * _DRCObj.DRCPolygateMinExtensionOnOD(_ChannelLength)+_DRCObj._OPlayeroverPoly)/2],\
+                   [self._DesignParameter['_PMOS2']['_XYCoordinates'][0][0]+self._DesignParameter['_PMOS2']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][-1][0],\
+                    -(_ChannelWidth + 2 * _DRCObj.DRCPolygateMinExtensionOnOD(_ChannelLength)+_DRCObj._OPlayeroverPoly)/2]],\
+                   [[self._DesignParameter['_PMOS4']['_XYCoordinates'][0][0]+self._DesignParameter['_PMOS4']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][0][0],\
+                     -(_ChannelWidth + 2 * _DRCObj.DRCPolygateMinExtensionOnOD(_ChannelLength)+_DRCObj._OPlayeroverPoly)/2],\
+                   [self._DesignParameter['_PMOS4']['_XYCoordinates'][0][0]+self._DesignParameter['_PMOS4']['_DesignObj']._DesignParameter['_XYCoordinatePMOSOutputRouting']['_XYCoordinates'][-1][0],\
+                    -(_ChannelWidth + 2 * _DRCObj.DRCPolygateMinExtensionOnOD(_ChannelLength)+_DRCObj._OPlayeroverPoly)/2]]]
+
+        #vertical pmos1,5
+        self._DesignParameter['Met1Btwupbtm_2'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],_XYCoordinates=[], _Width=None)
+        self._DesignParameter['Met1Btwupbtm_2']['_Width'] = self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
+        tmp=[]
+
+        for i in range(0,len(self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS3']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'])):
+            tmp.append([[self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS3']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][i][0]+self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS3']['_XYCoordinates'][0][0],\
+                         -self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2],\
+                        [self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS3']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][i][0]+self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS3']['_XYCoordinates'][0][0],\
+                        -(_ChannelWidth + 2 * _DRCObj.DRCPolygateMinExtensionOnOD(_ChannelLength)+_DRCObj._OPlayeroverPoly)\
+                         +self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS3']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2]])
+            tmp.append([[self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS3']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][i][0]+self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS3']['_XYCoordinates'][-1][0],\
+                         -self._DesignParameter['_PMOS5']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2],\
+                        [self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS3']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][i][0]+self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS3']['_XYCoordinates'][-1][0],\
+                        -(_ChannelWidth + 2 * _DRCObj.DRCPolygateMinExtensionOnOD(_ChannelLength)+_DRCObj._OPlayeroverPoly)\
+                         +self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS3']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2]])
+
+        self._DesignParameter['Met1Btwupbtm_2']['_XYCoordinates']=tmp
+
+        ############################################ Metal 2 Between resistor, bottom #########################################################
+
+        self._DesignParameter['Met2Btwresbtm'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],_XYCoordinates=[], _Width=None)
+        self._DesignParameter['Met2Btwresbtm']['_Width'] = self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']
+
+        self._DesignParameter['Met2Btwresbtm']['_XYCoordinates'] =[[[self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1],\
+                                                                     self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_XYCoordinates'][0][1]],\
+                                                                    [self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1],\
+                                                                     self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]/2+ self._DesignParameter['Met2Btwresbtm']['_Width']/2]],\
+                                                                   [[self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][1][1],\
+                                                                    self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_XYCoordinates'][0][1]],\
+                                                                   [self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][1][1],\
+                                                                    self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]/2+ self._DesignParameter['Met2Btwresbtm']['_Width']/2]],\
+                                                                   [[self._DesignParameter['_PMOS2']['_XYCoordinates'][0][0],self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]/2],\
+                                                                   [self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1],\
+                                                                    self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]/2]],\
+                                                                   [[self._DesignParameter['_PMOS4']['_XYCoordinates'][0][0],self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]/2],\
+                                                                   [self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][1][1],\
+                                                                    self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]/2]]]
+
+        ############################################ Via 1 Between resistor, bottom #########################################################
+
+        _ViaMet12Met2_2 = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+        _ViaMet12Met2_2['_ViaMet12Met2NumberOfCOX'] = 2
+        _ViaMet12Met2_2['_ViaMet12Met2NumberOfCOY'] = 1
+
+        self._DesignParameter['_ViaMet12Met2_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_DesignParameter=None, _Name='_ViaMet12Met2_2In{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2_2']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureY(**_ViaMet12Met2_2)
+
+
+        self._DesignParameter['_ViaMet12Met2_2']['_XYCoordinates'] = [[self._DesignParameter['_PMOS2']['_XYCoordinates'][0][0],self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]/2],\
+                                                                      [self._DesignParameter['_PMOS4']['_XYCoordinates'][0][0],self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]/2]]
+
+        _ViaMet12Met2_3 = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+        _ViaMet12Met2_3['_ViaMet12Met2NumberOfCOX'] = 1
+        _ViaMet12Met2_3['_ViaMet12Met2NumberOfCOY'] = 4
+
+        self._DesignParameter['_ViaMet12Met2_3'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_DesignParameter=None, _Name='_ViaMet12Met2_3In{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2_3']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**_ViaMet12Met2_3)
+
+        self._DesignParameter['_ViaMet12Met2_3']['_XYCoordinates'] = [[self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][1],\
+                                                                       self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_XYCoordinates'][0][1]],\
+                                                                      [self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][1][1],\
+                                                                       self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_XYCoordinates'][0][1]]]
 
 #'C:\\Users\\ljw95\\PycharmProjects\\LayGenGUI'
 
 if __name__ == '__main__':
-    for i in range(0,100):
+     for i in range(0,100):
         import ftplib
         import random
 
-        _Finger1 = random.randint(2, 30)
-        _Finger2 = random.randint(2, 30)
+
+        _Finger2 = random.randint(6, 30)
         _Finger4=random.randint(2, 30)
         _Finger5=random.randint(2, 30)
+        _Finger9=random.randint(2, 30)
         _ChannelWidth = random.randrange(300, 500, 2)
         _ChannelLength = random.randrange(30, 48, 2)
 
@@ -473,27 +675,43 @@ if __name__ == '__main__':
 
         # _Finger1 = 12
         # _Finger2 = 8
-        # _Finger3 = 14
-
-        # _Finger2 = 8
         # _Finger4 = 8
         # _Finger5 = 16
-        # _Finger6 = 6
+        # _Finger9=4
+
         # _ChannelWidth = 500
         # _ChannelLength = 30
+        _Finger1 = None
         _Finger6 = None
-        _Finger3 = None
-
+        _Finger3 = 14
+        _Finger7 = 14
+        _Finger8 = None
+        _Finger10 = None
 
         _NPRatio = 1
         _NumberOfPbodyCOY=3
         _Dummy = None
         _XVT = 'LVT'
+        _PCCrit=None
         _GateSpacing = None
         _SDWidth = None
         _SupplyRailType=1
         _SupplyMet1XWidth = None
         _SupplyMet1YWidth = None
+
+        _ResWidth = 938
+        _ResLength = 580
+        _CONUMY = 1
+        _XWidth = 838
+        _YWidth = 1874
+        Guardring = False
+        _NumofGates = 1
+        guardring_right = 3
+        guardring_left = 3
+        guardring_top = 3
+        guardring_bot = 3
+
+
         #from Private import MyInfo
          #import DRCchecker
 
@@ -508,17 +726,33 @@ if __name__ == '__main__':
             _Finger4=_Finger4,
             _Finger5 =_Finger5,
             _Finger6 =_Finger6,
+            _Finger7=_Finger7,
+            _Finger8 = _Finger8,
+            _Finger9 = _Finger9,
+            _Finger10 = _Finger10,
             _NumberOfPbodyCOY=_NumberOfPbodyCOY,
             _ChannelWidth=_ChannelWidth,
             _NPRatio=_NPRatio,
             _ChannelLength=_ChannelLength,
             _Dummy=_Dummy,
             _XVT=_XVT,
+            _PCCrit=_PCCrit,
             _GateSpacing=_GateSpacing,
             _SDWidth=_SDWidth,
             _SupplyRailType = _SupplyRailType,
             _SupplyMet1XWidth = _SupplyMet1XWidth,
-            _SupplyMet1YWidth = _SupplyMet1YWidth
+            _SupplyMet1YWidth = _SupplyMet1YWidth,
+            _ResWidth = _ResWidth,
+		    _ResLength = _ResLength,
+		    _CONUMY = _CONUMY  ,
+		    _XWidth = _XWidth,
+		    _YWidth = _YWidth,
+		    _NumofGates = _NumofGates,
+		    guardring_right = guardring_right,
+		    guardring_left = guardring_left,
+		    guardring_top = guardring_top,
+		    guardring_bot = guardring_bot,
+            Guardring=Guardring
         )
 
 

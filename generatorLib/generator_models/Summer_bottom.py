@@ -61,7 +61,7 @@ class _SummerBottom(StickDiagram._StickDiagram):
 
 		_DRCObj = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
-		_XYCoordinatesofNMOS = [[0,0]]
+		_XYCoordinatesofNMOS = [[0,-(_NMOSChannelWidth1 + 2 * _DRCObj.DRCPolygateMinExtensionOnOD(_NMOSChannellength1)+_DRCObj._OPlayeroverPoly)]]
 		_MinSnapSpacing = _DRCObj._MinSnapSpacing
 
 
@@ -713,7 +713,7 @@ class _SummerBottom(StickDiagram._StickDiagram):
 			tmpNMOS2OutputRouting.append([self._DesignParameter['_NMOS2']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][i][0] + self._DesignParameter['_NMOS2']['_XYCoordinates'][0][0], # leftside
 										 self._DesignParameter['_NMOS2']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][i][1] + self._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]])
 			tmpNMOS2OutputRouting.append([-self._DesignParameter['_NMOS2']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][i][0] - self._DesignParameter['_NMOS2']['_XYCoordinates'][0][0], # right side
-										  -self._DesignParameter['_NMOS2']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][i][1] - self._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]])
+										  self._DesignParameter['_NMOS2']['_DesignObj']._DesignParameter['_XYCoordinateNMOSSupplyRouting']['_XYCoordinates'][i][1] + self._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]])
 
 		self._DesignParameter['_VIANMOS2OutputMet12Met2']['_XYCoordinates'] = tmpNMOS2OutputRouting
 
@@ -742,7 +742,7 @@ class _SummerBottom(StickDiagram._StickDiagram):
 			tmpNMOS3OutputRouting.append([-self._DesignParameter['_NMOS3']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'][i][0] + self._DesignParameter['_NMOS3']['_XYCoordinates'][0][0],
 										 -self._DesignParameter['_NMOS3']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'][i][1] + self._DesignParameter['_NMOS3']['_XYCoordinates'][0][1]])
 			tmpNMOS3OutputRouting.append([self._DesignParameter['_NMOS3']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'][i][0] - self._DesignParameter['_NMOS3']['_XYCoordinates'][0][0],
-										  self._DesignParameter['_NMOS3']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'][i][1] - self._DesignParameter['_NMOS3']['_XYCoordinates'][0][1]])
+										  -self._DesignParameter['_NMOS3']['_DesignObj']._DesignParameter['_XYCoordinateNMOSOutputRouting']['_XYCoordinates'][i][1] + self._DesignParameter['_NMOS3']['_XYCoordinates'][0][1]])
 
 		self._DesignParameter['_VIANMOS3OutputMet12Met2']['_XYCoordinates'] = tmpNMOS3OutputRouting
 
@@ -825,7 +825,7 @@ if __name__ == '__main__':
 	# 	_NMOSNumberofGate1 = random.randint(2,23)
 	# 	_NMOSChannelWidth1 = random.randrange(300,500,2)
 	# 	_NMOSChannellength1 = length
-	# 	_NMOSNumberofGate2 = random.randint(6,40)
+	# 	_NMOSNumberofGate2 = random.randit(6,40)n
 	# 	_NMOSChannellength2 = length
 	# 	_NMOSNumberofGate3 = random.randint(2,40)
 	# 	_NMOSChannellength3 = length
@@ -939,8 +939,8 @@ if __name__ == '__main__':
 		ftp.storbinary('STOR _SummerBottom.gds', myfile)
 		myfile.close()
 
-		import DRCchecker
-		a = DRCchecker.DRCchecker('smlim96','min753531','/mnt/sdc/smlim96/OPUS/ss28','/mnt/sdc/smlim96/OPUS/ss28/DRC/run','_SummerBottom','_SummerBottom',None)
-		a.DRCchecker()
-
-		print ("DRC Clean!!!")
+		# import DRCchecker
+		# a = DRCchecker.DRCchecker('smlim96','min753531','/mnt/sdc/smlim96/OPUS/ss28','/mnt/sdc/smlim96/OPUS/ss28/DRC/run','_SummerBottom','_SummerBottom',None)
+		# a.DRCchecker()
+		#
+		# print ("DRC Clean!!!")
