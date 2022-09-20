@@ -966,6 +966,9 @@ def run_for_process_update():
         _LayerMapping.update({'NCAP': _LayerMappingTmp[('NCAP', 'drawing')]})
 
     if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS': _LayerMappingTmp[('LVS', 'drawing')]})
+
+    if _Technology == 'SS28nm':
         _LayerMapping.update({'M1PIN': _LayerMappingTmp[('M1', 'pin')]})
 
     if _Technology == 'SS28nm':
