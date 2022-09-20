@@ -67,14 +67,15 @@ class _Summer_middle(StickDiagram._StickDiagram):
 
 
     def _CalculateDesignParameter(self,
-                _Finger1=None,_Finger2=None,_Finger3=None,_Finger4=None,_Finger5 =None,_Finger6= None,_Finger7=None,_Finger8 = None,
-                                _Finger9 = None,_Finger10 = None,_ChannelWidth=None,_NPRatio=None,_ChannelLength=None,_NumberOfPbodyCOY=None,_Dummy=None,_XVT=None,_PCCrit=None,
-                    _GateSpacing=None,_SDWidth=None,_SupplyRailType=None,_SupplyMet1XWidth=None,_SupplyMet1YWidth=None,_ResWidth = None,
-		    _ResLength = None,_CONUMY = None,_XWidth = None,_YWidth = None,_NumofGates = None, guardring_right = None,guardring_left = None,guardring_top = None,guardring_bot = None,Guardring=None
+            #     _Finger1=None,_Finger2=None,_Finger3=None,_Finger4=None,_Finger5 =None,_Finger6= None,_Finger7=None,_Finger8 = None,
+            #                     _Finger9 = None,_Finger10 = None,_ChannelWidth=None,_NPRatio=None,_ChannelLength=None,_NumberOfPbodyCOY=None,_Dummy=None,_XVT=None,_PCCrit=None,
+            #         _GateSpacing=None,_SDWidth=None,_SupplyRailType=None,_SupplyMet1XWidth=None,_SupplyMet1YWidth=None,_ResWidth = None,
+		    # _ResLength = None,_CONUMY = None,_XWidth = None,_YWidth = None,_NumofGates = None, guardring_right = None,guardring_left = None,guardring_top = None,guardring_bot = None,Guardring=None
 
-        # _Finger1=None,_Finger2=8,_Finger3=None,_Finger4=8,_Finger5 =16,_Finger6= 6,_ChannelWidth=500,_NPRatio=1,_ChannelLength=30,_NumberOfPbodyCOY=3,_Dummy=None,_XVT='LVT',
-        #                               _GateSpacing=None,_SDWidth=None,_SupplyRailType=1,_SupplyMet1XWidth=None,_SupplyMet1YWidth=None
-                                      ):
+            _Finger1 = None,_Finger2 = 8,_Finger4 = 8,_Finger5 = 16,_Finger9=4,_ChannelWidth = 500,_ChannelLength = 30
+            ,_Finger6 = None,_Finger3 = 14,_Finger7 = 14,_Finger8 = None,_Finger10 = None,_NPRatio = 1,_NumberOfPbodyCOY = 3,_Dummy = None,_XVT = 'LVT',_PCCrit = None,_GateSpacing = None,_SDWidth = None,_SupplyRailType = 1
+            , _SupplyMet1XWidth = None,_SupplyMet1YWidth = None,_ResWidth = 938,_ResLength = 580,_CONUMY = 1,_XWidth = 838,_YWidth = 1874,Guardring = False,_NumofGates = 1,guardring_right = 3,guardring_left = 3,guardring_top = 3,guardring_bot = 3
+    ):
 
         _DRCObj = DRC.DRC()
         _Name = self._DesignParameter['_Name']['_Name']
@@ -659,28 +660,28 @@ class _Summer_middle(StickDiagram._StickDiagram):
 #'C:\\Users\\ljw95\\PycharmProjects\\LayGenGUI'
 
 if __name__ == '__main__':
-     for i in range(0,100):
+   #  for i in range(0,100):
         import ftplib
         import random
 
 
-        _Finger2 = random.randint(6, 30)
-        _Finger4=random.randint(2, 30)
-        _Finger5=random.randint(2, 30)
-        _Finger9=random.randint(2, 30)
-        _ChannelWidth = random.randrange(300, 500, 2)
-        _ChannelLength = random.randrange(30, 48, 2)
+        # _Finger2 = random.randint(6, 30)
+        # _Finger4=random.randint(2, 30)
+        # _Finger5=random.randint(2, 30)
+        # _Finger9=random.randint(2, 30)
+        # _ChannelWidth = random.randrange(300, 500, 2)
+        # _ChannelLength = random.randrange(30, 48, 2)
 
 
 
-        # _Finger1 = 12
-        # _Finger2 = 8
-        # _Finger4 = 8
-        # _Finger5 = 16
-        # _Finger9=4
 
-        # _ChannelWidth = 500
-        # _ChannelLength = 30
+        _Finger2 = 8
+        _Finger4 = 8
+        _Finger5 = 16
+        _Finger9=4
+
+        _ChannelWidth = 500
+        _ChannelLength = 30
         _Finger1 = None
         _Finger6 = None
         _Finger3 = 14
@@ -774,10 +775,10 @@ if __name__ == '__main__':
         myfile.close()
         ftp.close()
 
-        import DRCchecker
-
-        a = DRCchecker.DRCchecker('ljw95', 'dlwodn123', '/mnt/sdc/ljw95/OPUS/ss28', '/mnt/sdc/ljw95/OPUS/ss28/DRC/run',
-                                  '_Summer_middle', '_Summer_middle', None)
-        a.DRCchecker()
-
-        print("DRC Clean!!!")
+        # import DRCchecker
+        #
+        # a = DRCchecker.DRCchecker('ljw95', 'dlwodn123', '/mnt/sdc/ljw95/OPUS/ss28', '/mnt/sdc/ljw95/OPUS/ss28/DRC/run',
+        #                           '_Summer_middle', '_Summer_middle', None)
+        # a.DRCchecker()
+        #
+        # print("DRC Clean!!!")
