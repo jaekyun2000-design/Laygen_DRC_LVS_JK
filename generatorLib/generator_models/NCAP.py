@@ -8,7 +8,7 @@ from generatorLib.generator_models import ViaPoly2Met1
 from generatorLib.generator_models import PSubRing
 
 class _NCap(StickDiagram._StickDiagram):
-	_ParametersForDesignCalculation = dict(_XWidth=None, _YWidth=None, _NumofGates=None, NumOfCOX=None, NumOfCOY=None,
+	_ParametersForDesignCalculation = dict(_XWidth=None, _YWidth=None, _NumofGates=None, _NumofOD=None, NumOfCOX=None, NumOfCOY=None,
 										   Guardring=True, guardring_height=None, guardring_width=None, guardring_right=None, guardring_left=None, guardring_top=None, guardring_bot=None)
 	def __init__(self, _DesignParameter=None, _Name='NCap'):
 		if _DesignParameter != None:
@@ -84,7 +84,7 @@ class _NCap(StickDiagram._StickDiagram):
 		#
 		# self._DesignParameter['poly']['_XYCoordinates']=tmp
 		# del tmp
-	def _CalculateNCapDesignParameter(self, _XWidth=1000, _YWidth=1000, _NumofGates=1, NumOfCOX=None, NumOfCOY=None, Guardring=True, guardring_height=None, guardring_width=None, guardring_right=2, guardring_left=2, guardring_top=2, guardring_bot=2):
+	def _CalculateNCapDesignParameter(self, _XWidth=1000, _YWidth=1000, _NumofGates=1, _NumofOD=10, NumOfCOX=None, NumOfCOY=None, Guardring=True, guardring_height=None, guardring_width=None, guardring_right=2, guardring_left=2, guardring_top=2, guardring_bot=2):
 		print('#########################################################################################################')
 		print('                                    {}  ncap_b Calculation Start                                       '.format(self._DesignParameter['_Name']['_Name']))
 		print('#########################################################################################################')
@@ -99,17 +99,19 @@ class _NCap(StickDiagram._StickDiagram):
 
 		self._DesignParameter['_POLayer']['_XWidth'] = _XWidth
 		# min XWidth = 30nm
-		if _XWidth < _DRCObj._PolygateMinWidth:
-			raise NotImplementedError("Xwidth should be longer than 30nm")
+		if DesignParameters == 'SS28nm':
+			if _XWidth < _DRCObj._PolygateMinWidth:
+				raise NotImplementedError("Xwidth should be longer than 30nm")
 
 		self._DesignParameter['_POLayer']['_YWidth'] = _YWidth + ODExtensionOnPO
 
-		if _XWidth * _YWidth > _DRCgatemaxarea:
-			raise NotImplementedError("poly max area should be less than 38.661um2")
+		if DesignParameters == 'SS28nm':
+			if _XWidth * _YWidth > _DRCgatemaxarea:
+				raise NotImplementedError("poly max area should be less than 38.661um2")
 
 		tmp = []
 		for i in range(_NumofGates):
-			tmp.append([_XYCoordinatesofNcap[0][0] + i * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD), _XYCoordinatesofNcap[0][1]])
+			tmp.append([_XYCoordinatesofNcap[0][0] - (_NumofGates-1)/2 * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD) + i * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD), _XYCoordinatesofNcap[0][1]])
 		self._DesignParameter['_POLayer']['_XYCoordinates'] = tmp
 		del tmp
 
@@ -118,8 +120,9 @@ class _NCap(StickDiagram._StickDiagram):
 		self._DesignParameter['_ODLayer']['_XWidth'] = _XWidth + ODExtensionOnPO
 		self._DesignParameter['_ODLayer']['_YWidth'] = _YWidth
 		# min YWidth = 80nm
-		if _YWidth < _DRCObj._OdMinWidth:
-			raise NotImplementedError("Ywidth should be longer than 80nm")
+		if DesignParameters._Technology == 'SS28nm':
+			if _YWidth < _DRCObj._OdMinWidth:
+				raise NotImplementedError("Ywidth should be longer than 80nm")
 
 		self._DesignParameter['_ODLayer']['_XYCoordinates'] = self._DesignParameter['_POLayer']['_XYCoordinates']
 
@@ -142,20 +145,24 @@ class _NCap(StickDiagram._StickDiagram):
 			for i in range(_CONUMXOnPO):
 				for j in range(_CONUMYOnPO):
 					if (_CONUMXOnPO % 2 == 0):
-						tmp_cont.append([_XYCoordinatesofNcap[0][0] - (_CONUMXOnPO // 2 - 0.5) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
+						tmp_cont.append([_XYCoordinatesofNcap[0][0] - (_NumofGates-1)/2 * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD)
+						 - (_CONUMXOnPO // 2 - 0.5) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
 									+ i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + k * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
 									_XYCoordinatesofNcap[0][1] - self._DesignParameter['_POLayer']['_YWidth'] // 2 + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
 																  + 0.5 * _DRCObj._CoMinWidth + j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)])
-						tmp_cont.append([_XYCoordinatesofNcap[0][0] - (_CONUMXOnPO // 2 - 0.5) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
+						tmp_cont.append([_XYCoordinatesofNcap[0][0] - (_NumofGates-1)/2 * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD)
+						 - (_CONUMXOnPO // 2 - 0.5) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
 									+ i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + k * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
 									_XYCoordinatesofNcap[0][1] + self._DesignParameter['_POLayer']['_YWidth'] // 2 - _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
 																  - 0.5 * _DRCObj._CoMinWidth - j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)])
 					else:
-						tmp_cont.append([_XYCoordinatesofNcap[0][0] - (_CONUMXOnPO // 2) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
+						tmp_cont.append([_XYCoordinatesofNcap[0][0] - (_NumofGates-1)/2 * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD)
+						 - (_CONUMXOnPO // 2) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
 									+ i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + k * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
 									_XYCoordinatesofNcap[0][1] - self._DesignParameter['_POLayer']['_YWidth'] // 2 + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
 																  + 0.5 * _DRCObj._CoMinWidth + j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)])
-						tmp_cont.append([_XYCoordinatesofNcap[0][0] - (_CONUMXOnPO // 2) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
+						tmp_cont.append([_XYCoordinatesofNcap[0][0] - (_NumofGates-1)/2 * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD)
+						 - (_CONUMXOnPO // 2) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
 									+ i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + k * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
 									_XYCoordinatesofNcap[0][1] + self._DesignParameter['_POLayer']['_YWidth'] // 2 - _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
 																  - 0.5 * _DRCObj._CoMinWidth - j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)])
@@ -163,23 +170,27 @@ class _NCap(StickDiagram._StickDiagram):
 			for i in range(_CONUMXOnOD):
 				for j in range(_CONUMYOnOD):
 					if (_CONUMYOnOD % 2 == 0):
-						tmp_cont.append([_XYCoordinatesofNcap[0][0] - self._DesignParameter['_POLayer']['_XWidth'] // 2 - _DRCObj._CoMinSpace
+						tmp_cont.append([_XYCoordinatesofNcap[0][0] - (_NumofGates-1)/2 * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD)
+						 - self._DesignParameter['_POLayer']['_XWidth'] // 2 - _DRCObj._CoMinSpace
 									- 0.5 * _DRCObj._CoMinWidth + i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + k * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
 									_XYCoordinatesofNcap[0][1] - (_CONUMYOnOD // 2 - 0.5) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
 									+ j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)])
-						tmp_cont.append([_XYCoordinatesofNcap[0][0] + self._DesignParameter['_POLayer']['_XWidth'] // 2 + _DRCObj._CoMinSpace
-									+ 0.5 * _DRCObj._CoMinWidth - i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + k * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
-									_XYCoordinatesofNcap[0][1] - (_CONUMYOnOD // 2 - 0.5) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
-									+ j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)])
+						# tmp_cont.append([_XYCoordinatesofNcap[0][0] - (_NumofGates-1)/2 * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD)
+						#  + self._DesignParameter['_POLayer']['_XWidth'] // 2 + _DRCObj._CoMinSpace
+						# 			+ 0.5 * _DRCObj._CoMinWidth - i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + k * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
+						# 			_XYCoordinatesofNcap[0][1] - (_CONUMYOnOD // 2 - 0.5) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
+						# 			+ j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)])
 					else:
-						tmp_cont.append([_XYCoordinatesofNcap[0][0] - self._DesignParameter['_POLayer']['_XWidth'] // 2 - _DRCObj._CoMinSpace
+						tmp_cont.append([_XYCoordinatesofNcap[0][0] - (_NumofGates-1)/2 * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD)
+						 - self._DesignParameter['_POLayer']['_XWidth'] // 2 - _DRCObj._CoMinSpace
 									- 0.5 * _DRCObj._CoMinWidth + i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + k * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
 									_XYCoordinatesofNcap[0][1] - (_CONUMYOnOD // 2) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
 									+ j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)])
-						tmp_cont.append([_XYCoordinatesofNcap[0][0] + self._DesignParameter['_POLayer']['_XWidth'] // 2 + _DRCObj._CoMinSpace
-									+ 0.5 * _DRCObj._CoMinWidth - i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + k * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
-									_XYCoordinatesofNcap[0][1] - (_CONUMYOnOD // 2) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
-									+ j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)])
+						# tmp_cont.append([_XYCoordinatesofNcap[0][0] - (_NumofGates-1)/2 * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD)
+						#  + self._DesignParameter['_POLayer']['_XWidth'] // 2 + _DRCObj._CoMinSpace
+						# 			+ 0.5 * _DRCObj._CoMinWidth - i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + k * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
+						# 			_XYCoordinatesofNcap[0][1] - (_CONUMYOnOD // 2) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)
+						# 			+ j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)])
 
 		self._DesignParameter['_COLayer']['_XYCoordinates'] = tmp_cont
 		del tmp_cont
@@ -188,10 +199,12 @@ class _NCap(StickDiagram._StickDiagram):
 		print('#########################     METAL1 in poly Coordinates Calculation    ####################################')
 		tmp_m1poly = []
 		for i in range(_NumofGates):
-			tmp_m1poly.append([_XYCoordinatesofNcap[0][0] + i * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
+			tmp_m1poly.append([_XYCoordinatesofNcap[0][0] - (_NumofGates-1)/2 * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD)
+			 + i * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
 							   _XYCoordinatesofNcap[0][1] - self._DesignParameter['_POLayer']['_YWidth'] // 2 + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
 							   + 0.5 * _DRCObj._CoMinWidth + (_CONUMYOnPO - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) // 2])
-			tmp_m1poly.append([_XYCoordinatesofNcap[0][0] + i * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
+			tmp_m1poly.append([_XYCoordinatesofNcap[0][0] - (_NumofGates-1)/2 * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD)
+			 + i * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
 							   _XYCoordinatesofNcap[0][1] + self._DesignParameter['_POLayer']['_YWidth'] // 2 - _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
 							   - 0.5 * _DRCObj._CoMinWidth - (_CONUMYOnPO - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) // 2])
 
@@ -202,11 +215,13 @@ class _NCap(StickDiagram._StickDiagram):
 		print('#########################     METAL1 in OD Coordinates Calculation    ####################################')
 		tmp_m1od = []
 		for i in range(_NumofGates):
-			tmp_m1od.append([_XYCoordinatesofNcap[0][0] - self._DesignParameter['_POLayer']['_XWidth'] // 2 - _DRCObj._CoMinSpace
+			tmp_m1od.append([_XYCoordinatesofNcap[0][0] - (_NumofGates-1)/2 * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD)
+			 - self._DesignParameter['_POLayer']['_XWidth'] // 2 - _DRCObj._CoMinSpace
 								- 0.5 * _DRCObj._CoMinWidth - (_CONUMXOnOD - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2
 								+ i * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
 							   _XYCoordinatesofNcap[0][1]])
-			tmp_m1od.append([_XYCoordinatesofNcap[0][0] + self._DesignParameter['_POLayer']['_XWidth'] // 2 + _DRCObj._CoMinSpace
+			tmp_m1od.append([_XYCoordinatesofNcap[0][0] - (_NumofGates-1)/2 * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD)
+			 + self._DesignParameter['_POLayer']['_XWidth'] // 2 + _DRCObj._CoMinSpace
 								+ 0.5 * _DRCObj._CoMinWidth - (_CONUMXOnOD - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2
 								+ i * (self._DesignParameter['_POLayer']['_XWidth'] + ODExtensionOnPO // 2 + _DRCObj._PolygateMinSpace2OD),
 							   _XYCoordinatesofNcap[0][1]])
@@ -232,15 +247,14 @@ class _NCap(StickDiagram._StickDiagram):
 		# LVS만 수정하면 됨
 		self._DesignParameter['LVSLayer']=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['LVS_dr4'][0],
 																			_Datatype=DesignParameters._LayerMapping['LVS_dr4'][1],
-																			_XWidth=self._DesignParameter['_ODLayer']['_XYCoordinates'][_NumofGates-1][0] - _XYCoordinatesofNcap[0][0] + self._DesignParameter['_ODLayer']['_XWidth'] + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide * 2,
+																			_XWidth=self._DesignParameter['_ODLayer']['_XYCoordinates'][_NumofGates-1][0] - self._DesignParameter['_ODLayer']['_XYCoordinates'][0][0] + self._DesignParameter['_ODLayer']['_XWidth'] + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide * 2,
 																			_YWidth=self._DesignParameter['_POLayer']['_YWidth'] + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide * 2)
-		self._DesignParameter['LVSLayer']['_XYCoordinates'] = [[_XYCoordinatesofNcap[0][0] + (self._DesignParameter['_POLayer']['_XYCoordinates'][_NumofGates-1][0] - _XYCoordinatesofNcap[0][0]) // 2,
-															   _XYCoordinatesofNcap[0][1]]]
+		self._DesignParameter['LVSLayer']['_XYCoordinates'] = [[_XYCoordinatesofNcap[0][0], _XYCoordinatesofNcap[0][1]]]
 
 
 
 		self._DesignParameter['NWELL']=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1],
-																		_XWidth=self._DesignParameter['_POLayer']['_XYCoordinates'][_NumofGates-1][0] - _XYCoordinatesofNcap[0][0] + self._DesignParameter['_POLayer']['_XWidth'] + 2*_DRCObj._PolygateMinEnclosureByNcap,
+																		_XWidth=self._DesignParameter['_POLayer']['_XYCoordinates'][_NumofGates-1][0] - self._DesignParameter['_POLayer']['_XYCoordinates'][0][0] + self._DesignParameter['_POLayer']['_XWidth'] + 2*_DRCObj._PolygateMinEnclosureByNcap,
 																		_YWidth=self._DesignParameter['_ODLayer']['_YWidth']+2*_DRCObj._PolygateMinEnclosureByNcap)
 		self._DesignParameter['NWELL']['_XYCoordinates'] = self._DesignParameter['LVSLayer']['_XYCoordinates']
 
