@@ -820,26 +820,26 @@ class _SummerBottom(StickDiagram._StickDiagram):
 
 ################################# DRC Check #################################
 if __name__ == '__main__':
-	# for i in range(0,100):
-	# 	length=random.randrange(30,48,2)
-	# 	_NMOSNumberofGate1 = random.randint(2,23)
-	# 	_NMOSChannelWidth1 = random.randrange(300,500,2)
-	# 	_NMOSChannellength1 = length
-	# 	_NMOSNumberofGate2 = random.randint(6,40)
-	# 	_NMOSChannellength2 = length
-	# 	_NMOSNumberofGate3 = random.randint(2,40)
-	# 	_NMOSChannellength3 = length
-	# 	_NMOSNumberofGate4 = random.randint(2,40)
-	# 	_NMOSChannellength4 = length
-		_NMOSNumberofGate1 = 14		# change
-		_NMOSChannelWidth1 = 500	# change
-		_NMOSChannellength1 = 30	# change
-		_NMOSNumberofGate2 = 8	# change
-		_NMOSChannellength2 = None	# change
-		_NMOSNumberofGate3 = 4	# change
-		_NMOSChannellength3 = None	# change
-		_NMOSNumberofGate4 = 7	# change
-		_NMOSChannellength4 = None	# change
+	for i in range(0,100):
+		length=random.randrange(30,48,2)
+		_NMOSNumberofGate1 = random.randint(2,23)
+		_NMOSChannelWidth1 = random.randrange(300,500,2)
+		_NMOSChannellength1 = length
+		_NMOSNumberofGate2 = random.randint(6,40)
+		_NMOSChannellength2 = length
+		_NMOSNumberofGate3 = random.randint(2,40)
+		_NMOSChannellength3 = length
+		_NMOSNumberofGate4 = random.randint(2,40)
+		_NMOSChannellength4 = length
+	# 	_NMOSNumberofGate1 = 14		# change
+	# 	_NMOSChannelWidth1 = 500	# change
+	# 	_NMOSChannellength1 = 30	# change
+	# 	_NMOSNumberofGate2 = 8	# change
+	# 	_NMOSChannellength2 = None	# change
+	# 	_NMOSNumberofGate3 = 4	# change
+	# 	_NMOSChannellength3 = None	# change
+	# 	_NMOSNumberofGate4 = 7	# change
+	# 	_NMOSChannellength4 = None	# change
 		# _NMOSNumberofGate1 = 12		# change
 		# _NMOSChannelWidth1 = 476	# change
 		# _NMOSChannellength1 = 36	# change
@@ -868,10 +868,13 @@ if __name__ == '__main__':
 		_SDWidth4 = None
 		_ResWidth = 938
 		_ResLength = 580
+		_ResLength = random.randrange(500,800,2)
 		_CONUMX = None
 		_CONUMY = 1  # opppcres_b
-		_XWidth = 838
-		_YWidth = 1874
+		# _XWidth = 838
+		# _YWidth = 1874
+		_XWidth = random.randrange(838,1000,2)
+		_YWidth = random.randrange(1000,2000,2)
 		_NumofGates = 1
 		NumOfCOX = None
 		NumOfCOY = None
@@ -893,6 +896,7 @@ if __name__ == '__main__':
 		_ViaMet22Met3NumberOfCOX = None
 		_ViaMet22Met3NumberOfCOY = None
 
+		print('Num of DRC check=', i)
 		print('_NMOSNumberofGate1=',_NMOSNumberofGate1)
 		print('_NMOSChannelWidth1=',_NMOSChannelWidth1)
 		print('_NMOSChannellength1=',_NMOSChannellength1)
