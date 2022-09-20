@@ -32,6 +32,7 @@ class _Common_Source_Amp(StickDiagram._StickDiagram):
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
 		MinSnapSpacing=drc._MinSnapSpacing
+		_OriginXY=[[0,0]]
 
 		self._DesignParameter['nmos']=self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='nmosIn{}'.format(_Name)))[0]
 		self._DesignParameter['nmos']['_DesignObj']._CalculateNMOSDesignParameter(**nmos_param)
@@ -46,7 +47,7 @@ class _Common_Source_Amp(StickDiagram._StickDiagram):
 		self._DesignParameter['guardring']=self._SrefElementDeclaration(_DesignObj=PSubRing.PSubRing(_Name='guardringIn{}'.format(_Name)))[0]
 		self._DesignParameter['guardring']['_DesignObj']._CalculateDesignParameter(height=5000,width=3000,contact_bottom=psubring_param['contact_bottom'],contact_top=psubring_param['contact_top'],contact_left=psubring_param['contact_left'],contact_right=psubring_param['contact_right'])
 
-		self._DesignParameter['nmos']['_XYCoordinates']=[[0, 0]]
+		self._DesignParameter['nmos']['_XYCoordinates']=_OriginXY
 
 		CoNumX=max(1,int(self.getXWidth('nmos','_POLayer')/(drc._CoMinWidth+drc._CoMinSpace)-1))
 		self._DesignParameter['gate']=self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gateIn{}'.format(_Name)))[0]
