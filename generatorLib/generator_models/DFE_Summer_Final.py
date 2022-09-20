@@ -325,9 +325,6 @@ class _Summer_middle(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_DesignParameter=None, _Name='_ViaMet12Met2_2In{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2_2']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureY(**_ViaMet12Met2_2)
 
-        tmp=[]
-
-        tmp.append([0,self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_POLayer']['_YWidth']/2+self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2])
         self._DesignParameter['_ViaMet12Met2_2']['_XYCoordinates'] = [[self._DesignParameter['_PMOS2']['_XYCoordinates'][0][0],\
                                                                         (self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_POLayer']['_YWidth']/2+self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2)],\
                                                                       [self._DesignParameter['_PMOS4']['_XYCoordinates'][0][0],\
@@ -634,15 +631,15 @@ class _Summer_middle(StickDiagram._StickDiagram):
 
         ############################################ Via 1 Between resistor, bottom #########################################################
 
-        _ViaMet12Met2_2 = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
-        _ViaMet12Met2_2['_ViaMet12Met2NumberOfCOX'] = 2
-        _ViaMet12Met2_2['_ViaMet12Met2NumberOfCOY'] = 1
+        _ViaMet12Met2_4 = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+        _ViaMet12Met2_4['_ViaMet12Met2NumberOfCOX'] = 2
+        _ViaMet12Met2_4['_ViaMet12Met2NumberOfCOY'] = 1
 
-        self._DesignParameter['_ViaMet12Met2_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_DesignParameter=None, _Name='_ViaMet12Met2_2In{}'.format(_Name)))[0]
-        self._DesignParameter['_ViaMet12Met2_2']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureY(**_ViaMet12Met2_2)
+        self._DesignParameter['_ViaMet12Met2_4'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_DesignParameter=None, _Name='_ViaMet12Met2_4In{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2_4']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureY(**_ViaMet12Met2_4)
 
 
-        self._DesignParameter['_ViaMet12Met2_2']['_XYCoordinates'] = [[self._DesignParameter['_PMOS2']['_XYCoordinates'][0][0],self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]/2],\
+        self._DesignParameter['_ViaMet12Met2_4']['_XYCoordinates'] = [[self._DesignParameter['_PMOS2']['_XYCoordinates'][0][0],self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]/2],\
                                                                       [self._DesignParameter['_PMOS4']['_XYCoordinates'][0][0],self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_NMOS2']['_XYCoordinates'][0][1]/2]]
 
         _ViaMet12Met2_3 = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
@@ -656,6 +653,48 @@ class _Summer_middle(StickDiagram._StickDiagram):
                                                                        self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_XYCoordinates'][0][1]],\
                                                                       [self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][1][1],\
                                                                        self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_XYCoordinates'][0][1]]]
+
+        ############################################ Pin Generation #########################################################
+
+        self._DesignParameter['vdd'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+                                                                           _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='vdd')
+        self._DesignParameter['vdd']['_XYCoordinates'] = [[self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['PbodyContact1']['_XYCoordinates'][0][0]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][0],\
+                                                           self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['PbodyContact1']['_XYCoordinates'][0][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]],\
+                                                          [self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['PbodyContact2']['_XYCoordinates'][0][0]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][0],\
+                                                           self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['PbodyContact2']['_XYCoordinates'][0][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]]]
+
+        self._DesignParameter['vss'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+                                                                           _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='vss')
+        self._DesignParameter['vss']['_XYCoordinates'] = [self._DesignParameter['PbodyContact1']['_XYCoordinates'][0],\
+                                                          self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_PbodyContact1']['_XYCoordinates'][0]]
+
+        self._DesignParameter['clk'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+                                                                           _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='clk')
+        self._DesignParameter['clk']['_XYCoordinates'] = [[-_LengthPMOSBtwPO,self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_Met3Routing']['_XYCoordinates'][0][0][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]]]
+
+        self._DesignParameter['clkb'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+                                                                           _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='clkb')
+        self._DesignParameter['clkb']['_XYCoordinates'] = [[_LengthPMOSBtwPO,self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_Met3Routing']['_XYCoordinates'][0][0][1]+self._DesignParameter['Summer_upper']['_XYCoordinates'][0][1]]]
+
+        self._DesignParameter['inp'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+                                                                           _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='inp')
+        self._DesignParameter['inp']['_XYCoordinates'] = [[self._DesignParameter['_PMOS2']['_XYCoordinates'][0][0],\
+                                                        (self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_POLayer']['_YWidth']/2+self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2)]]
+
+        self._DesignParameter['inn'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+                                                                           _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='inn')
+        self._DesignParameter['inn']['_XYCoordinates'] = [[self._DesignParameter['_PMOS4']['_XYCoordinates'][0][0],\
+                                                        (self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_POLayer']['_YWidth']/2+self._DesignParameter['_PMOS1']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth']/2) ]]
+
+        self._DesignParameter['outp'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+                                                                           _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='outp')
+        self._DesignParameter['outp']['_XYCoordinates'] = [[self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][0][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),\
+                                                            self._DesignParameter['PbodyContact1']['_XYCoordinates'][0][1]]]
+
+        self._DesignParameter['outn'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1],
+                                                                           _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],_XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='outn')
+        self._DesignParameter['outn']['_XYCoordinates'] = [[self._DesignParameter['Summer_upper']['_DesignObj']._DesignParameter['_ViaMet12Met2_1']['_XYCoordinates'][-1][0]-(_LengthPMOSBtwPO*((_Finger4+_Finger6)//2+_Finger5+2)),\
+                                                            self._DesignParameter['PbodyContact1']['_XYCoordinates'][0][1]]]
 
 #'C:\\Users\\ljw95\\PycharmProjects\\LayGenGUI'
 
