@@ -28,7 +28,8 @@ class _SummerBottom(StickDiagram._StickDiagram):
 										   _NumberOfPbodyCOX=None, _NumberOfPbodyCOY=None, _Met1XWidth=None, _Met1YWidth=None,
 										   _ViaPoly2Met1NumberOfCOX=None, _ViaPoly2Met1NumberOfCOY=None,
 										   _ViaMet12Met2NumberOfCOX=None, _ViaMet12Met2NumberOfCOY=None,
-										   _ViaMet22Met3NumberOfCOX=None, _ViaMet22Met3NumberOfCOY=None)
+										   _ViaMet22Met3NumberOfCOX=None, _ViaMet22Met3NumberOfCOY=None,
+										   _NumofOD=None, _ViaPoly2Met1NumberOfCOX_CAP=None, _ViaPoly2Met1NumberOfCOY_CAP=1)
 
 	def __init__(self, _DesignParameter=None, _Name='SummerBottom'):
 		if _DesignParameter != None:
@@ -53,7 +54,8 @@ class _SummerBottom(StickDiagram._StickDiagram):
 											  _NumberOfPbodyCOX=None, _NumberOfPbodyCOY=3, _Met1XWidth=None, _Met1YWidth=None, # PbodyContact
 											  _ViaPoly2Met1NumberOfCOX=None, _ViaPoly2Met1NumberOfCOY=None, # ViaPoly2Met1
 											  _ViaMet12Met2NumberOfCOX=None, _ViaMet12Met2NumberOfCOY=None, # ViaMet12Met2
-											  _ViaMet22Met3NumberOfCOX=None, _ViaMet22Met3NumberOfCOY=None # ViaMet22Met3
+											  _ViaMet22Met3NumberOfCOX=None, _ViaMet22Met3NumberOfCOY=None, # ViaMet22Met3
+											  _NumofOD=1, _ViaPoly2Met1NumberOfCOX_CAP=None, _ViaPoly2Met1NumberOfCOY_CAP=1
 											  ):
 		print('#########################################################################################################')
 		print('                                    {}  SummerBottom Calculation Start                                       '.format(self._DesignParameter['_Name']['_Name']))
@@ -233,6 +235,10 @@ class _SummerBottom(StickDiagram._StickDiagram):
 		NCAPinputs['guardring_left'] = guardring_left
 		NCAPinputs['guardring_top'] = guardring_top
 		NCAPinputs['guardring_bot'] = guardring_bot
+		NCAPinputs['_NumofOD'] = _NumofOD
+		NCAPinputs['_ViaPoly2Met1NumberOfCOX'] = _ViaPoly2Met1NumberOfCOX_CAP
+		NCAPinputs['_ViaPoly2Met1NumberOfCOY'] = _ViaPoly2Met1NumberOfCOY_CAP
+
 
 		self._DesignParameter['_NCAP'] = self._SrefElementDeclaration(_Reflect = [1,0,0], _Angle=90, _DesignObj=NCAP._NCap(_Name='NCAPIn{}'.format(_Name)))[0]
 		self._DesignParameter['_NCAP']['_DesignObj']._CalculateNCapDesignParameter(**NCAPinputs)
@@ -765,17 +771,17 @@ class _SummerBottom(StickDiagram._StickDiagram):
 		self._DesignParameter['_VIANCAPMet12Met2']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**_VIANCAPMet12Met2)
 		del _ViaNum
 
-		self._DesignParameter['_VIANCAPMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] = self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['_Met1Layer1']['_YWidth']
+		self._DesignParameter['_VIANCAPMet12Met2']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] = self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['Viapoly2Met1H']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']
 
 		tmpNCAPRouting = []
-		tmpNCAPRouting.append([self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['_Met1Layer1']['_XYCoordinates'][0][1] + self._DesignParameter['_NCAP']['_XYCoordinates'][0][0],
-								self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['_Met1Layer1']['_XYCoordinates'][0][0] + self._DesignParameter['_NCAP']['_XYCoordinates'][0][1]]) # left NCAP left side
-		tmpNCAPRouting.append([-self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['_Met1Layer1']['_XYCoordinates'][0][1] + self._DesignParameter['_NCAP']['_XYCoordinates'][1][0],
-								self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['_Met1Layer1']['_XYCoordinates'][0][0] + self._DesignParameter['_NCAP']['_XYCoordinates'][1][1]]) # right NCAP right side
-		tmpNCAPRouting.append([self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['_Met1Layer1']['_XYCoordinates'][0][1] - self._DesignParameter['_NCAP']['_XYCoordinates'][0][0],
-								self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['_Met1Layer1']['_XYCoordinates'][0][0] + self._DesignParameter['_NCAP']['_XYCoordinates'][0][1]]) # right NCAP left side
-		tmpNCAPRouting.append([-self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['_Met1Layer1']['_XYCoordinates'][0][1] - self._DesignParameter['_NCAP']['_XYCoordinates'][1][0],
-								self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['_Met1Layer1']['_XYCoordinates'][0][0] + self._DesignParameter['_NCAP']['_XYCoordinates'][1][1]]) # left NCAP right side
+		tmpNCAPRouting.append([self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['Viapoly2Met1H']['_XYCoordinates'][0][1] + self._DesignParameter['_NCAP']['_XYCoordinates'][0][0],
+								self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['Viapoly2Met1H']['_XYCoordinates'][0][0] + self._DesignParameter['_NCAP']['_XYCoordinates'][0][1]]) # left NCAP left side
+		tmpNCAPRouting.append([-self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['Viapoly2Met1H']['_XYCoordinates'][0][1] + self._DesignParameter['_NCAP']['_XYCoordinates'][1][0],
+								self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['Viapoly2Met1H']['_XYCoordinates'][0][0] + self._DesignParameter['_NCAP']['_XYCoordinates'][1][1]]) # right NCAP right side
+		tmpNCAPRouting.append([self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['Viapoly2Met1H']['_XYCoordinates'][0][1] - self._DesignParameter['_NCAP']['_XYCoordinates'][0][0],
+								self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['Viapoly2Met1H']['_XYCoordinates'][0][0] + self._DesignParameter['_NCAP']['_XYCoordinates'][0][1]]) # right NCAP left side
+		tmpNCAPRouting.append([-self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['Viapoly2Met1H']['_XYCoordinates'][0][1] - self._DesignParameter['_NCAP']['_XYCoordinates'][1][0],
+								self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['Viapoly2Met1H']['_XYCoordinates'][0][0] + self._DesignParameter['_NCAP']['_XYCoordinates'][1][1]]) # left NCAP right side
 
 		self._DesignParameter['_VIANCAPMet12Met2']['_XYCoordinates'] = tmpNCAPRouting
 
@@ -892,6 +898,9 @@ if __name__ == '__main__':
 		_ViaMet12Met2NumberOfCOY = None  # ViaMet12Met2
 		_ViaMet22Met3NumberOfCOX = None
 		_ViaMet22Met3NumberOfCOY = None
+		_NumofOD = 1
+		_ViaPoly2Met1NumberOfCOX_CAP = None
+		_ViaPoly2Met1NumberOfCOY_CAP = 1
 
 		print('_NMOSNumberofGate1=',_NMOSNumberofGate1)
 		print('_NMOSChannelWidth1=',_NMOSChannelWidth1)
@@ -921,7 +930,8 @@ if __name__ == '__main__':
 														_NumberOfPbodyCOX=_NumberOfPbodyCOX, _NumberOfPbodyCOY=_NumberOfPbodyCOY, _Met1XWidth=_Met1XWidth, _Met1YWidth=_Met1YWidth,
 														_ViaPoly2Met1NumberOfCOX=_ViaPoly2Met1NumberOfCOX, _ViaPoly2Met1NumberOfCOY=_ViaPoly2Met1NumberOfCOY,
 														_ViaMet12Met2NumberOfCOX=_ViaMet12Met2NumberOfCOX, _ViaMet12Met2NumberOfCOY=_ViaMet12Met2NumberOfCOY,
-														_ViaMet22Met3NumberOfCOX=_ViaMet22Met3NumberOfCOX, _ViaMet22Met3NumberOfCOY=_ViaMet22Met3NumberOfCOY)
+														_ViaMet22Met3NumberOfCOX=_ViaMet22Met3NumberOfCOX, _ViaMet22Met3NumberOfCOY=_ViaMet22Met3NumberOfCOY,
+													 	_NumofOD = _NumofOD, _ViaPoly2Met1NumberOfCOX_CAP = _ViaPoly2Met1NumberOfCOX_CAP, _ViaPoly2Met1NumberOfCOY_CAP = _ViaPoly2Met1NumberOfCOY_CAP)
 		TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
 		testStreamFile = open('./_SummerBottom.gds', 'wb')
 		tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
@@ -939,8 +949,8 @@ if __name__ == '__main__':
 		ftp.storbinary('STOR _SummerBottom.gds', myfile)
 		myfile.close()
 
-		# import DRCchecker
-		# a = DRCchecker.DRCchecker('smlim96','min753531','/mnt/sdc/smlim96/OPUS/ss28','/mnt/sdc/smlim96/OPUS/ss28/DRC/run','_SummerBottom','_SummerBottom',None)
-		# a.DRCchecker()
-		#
-		# print ("DRC Clean!!!")
+		import DRCchecker
+		a = DRCchecker.DRCchecker('smlim96','min753531','/mnt/sdc/smlim96/OPUS/ss28','/mnt/sdc/smlim96/OPUS/ss28/DRC/run','_SummerBottom','_SummerBottom',None)
+		a.DRCchecker()
+
+		print ("DRC Clean!!!")
