@@ -149,7 +149,7 @@ class _NCap(StickDiagram._StickDiagram):
                                  + 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
                                  self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + j * (_YWidth + _DRCObj._OdSpace_ncap)])
 
-        tmp_m1od = list(set(map(tuple, tmp_m1od)))
+        # tmp_m1od = list(set(map(tuple, tmp_m1od)))
         self._DesignParameter['Viapoly2Met1V']['_XYCoordinates'] = tmp_m1od
         del tmp_m1od
 
@@ -201,55 +201,55 @@ class _NCap(StickDiagram._StickDiagram):
             if guardring_Yheight < self._DesignParameter['NWELL']['_YWidth']+self._DesignParameter['guardring']['_DesignObj']._DesignParameter['top']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth']/2+self._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth']/2+2*_DRCObj._NwMinSpacetoRX :
                 raise NotImplementedError
 
-# if __name__ == '__main__':
-#     import random
-#     for i in range(100):
-#         _XWidth=random.randrange(40,2000, 2)
-#         _YWidth=random.randrange(80,2000, 2)
-#         _NumofGates=random.randint(1,20)
-#         _NumofOD=random.randint(1,20)
-#         print('num of drc=',i)
-#         print('_XWidth=', _XWidth)
-#         print('_YWidth=', _YWidth)
-#         print('_NumofGates=', _NumofGates)
-#         print('_NumofOD=', _NumofOD)
-#
-#         NumOfCOX=None
-#         NumOfCOY=None
-#         Guardring=True
-#         guardring_height=None
-#         guardring_width=None
-#         guardring_right=2
-#         guardring_left=2
-#         guardring_top=2
-#         guardring_bot=2
-#         _ViaPoly2Met1NumberOfCOX = None
-#         _ViaPoly2Met1NumberOfCOY = 1
-#
-#         DesignParameters._Technology = 'SS28nm'
-#         TopObj = _NCap(_DesignParameter=None, _Name='_NCap')
-#         TopObj._CalculateNCapDesignParameter(_XWidth=_XWidth, _YWidth=_YWidth, _NumofGates=_NumofGates, NumOfCOX=NumOfCOX, NumOfCOY=NumOfCOY,
-#                                              Guardring=Guardring, guardring_height=guardring_height, guardring_width=guardring_width, guardring_right=guardring_right, guardring_left=guardring_left, guardring_top=guardring_top, guardring_bot=guardring_bot,
-#                                              _NumofOD=_NumofOD, _ViaPoly2Met1NumberOfCOX=_ViaPoly2Met1NumberOfCOX, _ViaPoly2Met1NumberOfCOY=_ViaPoly2Met1NumberOfCOY)
-#         TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
-#         testStreamFile = open('./_NCap.gds', 'wb')
-#         tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
-#         tmp.write_binary_gds_stream(testStreamFile)
-#         testStreamFile.close()
-#
-#         print('#############################      Sending to FTP Server...      ##############################')
-#
-#         import ftplib
-#
-#         ftp = ftplib.FTP('141.223.29.62')
-#         ftp.login('smlim96', 'min753531')
-#         ftp.cwd('/mnt/sdc/smlim96/OPUS/ss28')
-#         myfile = open('_NCap.gds', 'rb')
-#         ftp.storbinary('STOR _NCap.gds', myfile)
-#         myfile.close()
+if __name__ == '__main__':
+    import random
+    # for i in range(1):
+    _XWidth=1000#random.randrange(40,2000, 2)
+    _YWidth=1000#random.randrange(80,2000, 2)
+    _NumofGates=3#random.randint(1,20)
+    _NumofOD=3#random.randint(1,20)
+    # print('num of drc=',i)
+    # print('_XWidth=', _XWidth)
+    # print('_YWidth=', _YWidth)
+    # print('_NumofGates=', _NumofGates)
+    # print('_NumofOD=', _NumofOD)
 
-    #     import DRCchecker
-    #     a = DRCchecker.DRCchecker('smlim96','min753531','/mnt/sdc/smlim96/OPUS/ss28','/mnt/sdc/smlim96/OPUS/ss28/DRC/run','_SummerBottom','_SummerBottom',None)
-    #     a.DRCchecker()
-	#
-    # print ("DRC Clean!!!")
+    NumOfCOX=None
+    NumOfCOY=None
+    Guardring=True
+    guardring_height=None
+    guardring_width=None
+    guardring_right=2
+    guardring_left=2
+    guardring_top=2
+    guardring_bot=2
+    _ViaPoly2Met1NumberOfCOX = None
+    _ViaPoly2Met1NumberOfCOY = 1
+
+    DesignParameters._Technology = 'SS28nm'
+    TopObj = _NCap(_DesignParameter=None, _Name='_NCap')
+    TopObj._CalculateNCapDesignParameter(_XWidth=_XWidth, _YWidth=_YWidth, _NumofGates=_NumofGates, NumOfCOX=NumOfCOX, NumOfCOY=NumOfCOY,
+                                         Guardring=Guardring, guardring_height=guardring_height, guardring_width=guardring_width, guardring_right=guardring_right, guardring_left=guardring_left, guardring_top=guardring_top, guardring_bot=guardring_bot,
+                                         _NumofOD=_NumofOD, _ViaPoly2Met1NumberOfCOX=_ViaPoly2Met1NumberOfCOX, _ViaPoly2Met1NumberOfCOY=_ViaPoly2Met1NumberOfCOY)
+    TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
+    testStreamFile = open('./_NCap.gds', 'wb')
+    tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
+    tmp.write_binary_gds_stream(testStreamFile)
+    testStreamFile.close()
+
+    print('#############################      Sending to FTP Server...      ##############################')
+
+    import ftplib
+
+    ftp = ftplib.FTP('141.223.29.62')
+    ftp.login('smlim96', 'min753531')
+    ftp.cwd('/mnt/sdc/smlim96/OPUS/ss28')
+    myfile = open('_NCap.gds', 'rb')
+    ftp.storbinary('STOR _NCap.gds', myfile)
+    myfile.close()
+
+    import DRCchecker
+    a = DRCchecker.DRCchecker('smlim96','min753531','/mnt/sdc/smlim96/OPUS/ss28','/mnt/sdc/smlim96/OPUS/ss28/DRC/run','_SummerBottom','_SummerBottom',None)
+    a.DRCchecker()
+
+    print ("DRC Clean!!!")
