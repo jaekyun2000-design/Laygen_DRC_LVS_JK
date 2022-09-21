@@ -145,6 +145,9 @@ class _NCap(StickDiagram._StickDiagram):
                 tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] - self._DesignParameter['_POLayer']['_XWidth'] // 2 - _DRCObj._CoMinSpace
                                  - 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
                                  self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+                if i >= 1:
+                    if tmp_m1od[-1] == tmp_m1od[-2]:
+                        tmp_m1od.pop()
                 tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] + self._DesignParameter['_POLayer']['_XWidth'] // 2 + _DRCObj._CoMinSpace
                                  + 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
                                  self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + j * (_YWidth + _DRCObj._OdSpace_ncap)])
