@@ -43,8 +43,8 @@ class _Folded_OP_Amp(StickDiagram._StickDiagram):
 																'psubring_param':{'height':None, 'width':None, 'contact_bottom':2, 'contact_top':2, 'contact_left':2, 'contact_right':2}, \
 																'R_drain':{'_ResWidth':800, '_ResLength':4628, '_CONUMX':None, '_CONUMY':1}, \
 																'R_feedback':{'_ResWidth':800, '_ResLength':1068, '_CONUMX':None, '_CONUMY':1}, \
-																'cap1_param':{'_XWidth':2763, '_YWidth':3000, '_NumofGates':10, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
-																'cap2_param':{'_XWidth':3459, '_YWidth':2997, '_NumofGates':12, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}}, \
+																'cap1_param':{'_XWidth':2763, '_YWidth':3000, '_NumofGates':10, '_NumofOD':1, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
+																'cap2_param':{'_XWidth':3459, '_YWidth':2997, '_NumofGates':12, '_NumofOD':1, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}}, \
 								) :
 
 		drc = DRC.DRC()
