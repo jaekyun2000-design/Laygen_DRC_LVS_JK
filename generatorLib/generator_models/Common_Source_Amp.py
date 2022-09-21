@@ -26,8 +26,8 @@ class _Common_Source_Amp(StickDiagram._StickDiagram):
 										psubring_param={'height':None, 'width':None, 'contact_bottom':2, 'contact_top':2, 'contact_left':2, 'contact_right':2}, \
 										R_drain={'_ResWidth':800, '_ResLength':4628, '_CONUMX':None, '_CONUMY':1}, \
 										R_feedback={'_ResWidth':800, '_ResLength':1068, '_CONUMX':None, '_CONUMY':1}, \
-										cap1_param={'_XWidth':2763, '_YWidth':3000, '_NumofGates':10, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
-										cap2_param={'_XWidth':3459, '_YWidth':2997, '_NumofGates':12, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
+										cap1_param={'_XWidth':2763, '_YWidth':3000, '_NumofGates':10, '_NumofOD':1, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
+										cap2_param={'_XWidth':3459, '_YWidth':2997, '_NumofGates':12, '_NumofOD':1, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
 										) :
 		drc = DRC.DRC()
 		_Name = self._DesignParameter['_Name']['_Name']
@@ -171,20 +171,20 @@ class _Common_Source_Amp(StickDiagram._StickDiagram):
 														  [(self.getXY('R_drain')[0][0]+self.getXWidth('R_drain','_PPLayer')/2+(self.getXY('R_feedback')[0][0]-self.getXWidth('R_feedback','_PPLayer')/2))/2, max(self.getXY('R_drain')[0][1]-self.getYWidth('R_drain','_PPLayer')/2, self.getXY('R_feedback')[0][1]-self.getYWidth('R_feedback','_PPLayer')/2)]]]
 
 		self._DesignParameter['m1_cap1_po']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[], _Width=None)
-		self._DesignParameter['m1_cap1_po']['_Width']=self.getYWidth('cap1','_Met1Layer1')
-		self._DesignParameter['m1_cap1_po']['_XYCoordinates']=[[self.getXY('cap1','_XYCoordinateM1inPO')[0], self.getXY('cap1','_XYCoordinateM1inPO')[-2]], [self.getXY('cap1','_XYCoordinateM1inPO')[1], self.getXY('cap1','_XYCoordinateM1inPO')[-1]]]
+		self._DesignParameter['m1_cap1_po']['_Width']=self.getYWidth('cap1','Viapoly2Met1H','_Met1Layer')
+		self._DesignParameter['m1_cap1_po']['_XYCoordinates']=[[self.getXY('cap1','Viapoly2Met1H')[0], self.getXY('cap1','Viapoly2Met1H')[-2]], [self.getXY('cap1','Viapoly2Met1H')[1], self.getXY('cap1','Viapoly2Met1H')[-1]]]
 
 		self._DesignParameter['m1_cap2_po']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[], _Width=None)
-		self._DesignParameter['m1_cap2_po']['_Width']=self.getYWidth('cap2','_Met1Layer1')
-		self._DesignParameter['m1_cap2_po']['_XYCoordinates']=[[self.getXY('cap2','_XYCoordinateM1inPO')[0], self.getXY('cap2','_XYCoordinateM1inPO')[-2]], [self.getXY('cap2','_XYCoordinateM1inPO')[1], self.getXY('cap2','_XYCoordinateM1inPO')[-1]]]
+		self._DesignParameter['m1_cap2_po']['_Width']=self.getYWidth('cap2','Viapoly2Met1H','_Met1Layer')
+		self._DesignParameter['m1_cap2_po']['_XYCoordinates']=[[self.getXY('cap2','Viapoly2Met1H')[0], self.getXY('cap2','Viapoly2Met1H')[-2]], [self.getXY('cap2','Viapoly2Met1H')[1], self.getXY('cap2','Viapoly2Met1H')[-1]]]
 
 		self._DesignParameter['m1_cap1_od']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[], _Width=None)
 		self._DesignParameter['m1_cap1_od']['_Width']=10*drc._Metal1MinWidth
-		self._DesignParameter['m1_cap1_od']['_XYCoordinates']=[[self.getXY('cap1','_Met1Layer2')[0], self.getXY('cap1','_Met1Layer2')[-1]]]
+		self._DesignParameter['m1_cap1_od']['_XYCoordinates']=[[self.getXY('cap1','Viapoly2Met1V')[0], self.getXY('cap1','Viapoly2Met1V')[-1]]]
 
 		self._DesignParameter['m1_cap2_od']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[], _Width=None)
 		self._DesignParameter['m1_cap2_od']['_Width']=10*drc._Metal1MinWidth
-		self._DesignParameter['m1_cap2_od']['_XYCoordinates']=[[self.getXY('cap2','_Met1Layer2')[0], self.getXY('cap2','_Met1Layer2')[-1]]]
+		self._DesignParameter['m1_cap2_od']['_XYCoordinates']=[[self.getXY('cap2','Viapoly2Met1V')[0], self.getXY('cap2','Viapoly2Met1V')[-1]]]
 
 		self._DesignParameter['m4_mos_R_drain']=self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4'][0],_Datatype=DesignParameters._LayerMapping['METAL4'][1], _XYCoordinates=[], _Width=None)
 		self._DesignParameter['m4_mos_R_drain']['_Width']=self.getYWidth('via34_R_drain','_Met4Layer')

@@ -503,6 +503,12 @@ class _Folded_Cascode_Amp(StickDiagram._StickDiagram):
 		self._DesignParameter['nmos_n0']=self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='nmos_n0In{}'.format(_Name)))[0]
 		self._DesignParameter['nmos_n0']['_DesignObj']._CalculateNMOSDesignParameter(**dict(**nset_param['nmos_current_pair2_param']))
 
+		self._DesignParameter['pguardring1']=self._SrefElementDeclaration(_DesignObj=PSubRing.PSubRing(_Name='pguardring1In{}'.format(_Name)))[0]
+		self._DesignParameter['pguardring1']['_DesignObj']._CalculateDesignParameter(height=5000,width=3000,contact_bottom=nset_param['nmos_guardring_co_top'],contact_top=nset_param['nmos_guardring_co_top'],contact_left=nset_param['nmos_guardring_co_left'],contact_right=nset_param['nmos_guardring_co_top'])
+
+		self._DesignParameter['pguardring2']=self._SrefElementDeclaration(_DesignObj=PSubRing.PSubRing(_Name='pguardring2In{}'.format(_Name)))[0]
+		self._DesignParameter['pguardring2']['_DesignObj']._CalculateDesignParameter(height=5000,width=3000,contact_bottom=nset_param['nmos_guardring_co_bot'],contact_top=nset_param['nmos_guardring_co_bot'],contact_left=nset_param['nmos_guardring_co_bot'],contact_right=nset_param['nmos_guardring_co_right'])
+
 		self._DesignParameter['gate_ninputn']=self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_ninputnIn{}'.format(_Name)))[0]
 		CoNumX=max(1,int(self.getXWidth('nmos_input','_POLayer')/(drc._CoMinWidth+drc._CoMinSpace)-1))
 		self._DesignParameter['gate_ninputn']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(_ViaPoly2Met1NumberOfCOX=CoNumX, _ViaPoly2Met1NumberOfCOY=1)
@@ -519,11 +525,11 @@ class _Folded_Cascode_Amp(StickDiagram._StickDiagram):
 		CoNumX=max(1,int(self.getXWidth('nmos_n0','_POLayer')/(drc._CoMinWidth+drc._CoMinSpace)-1))
 		self._DesignParameter['gate_n0']['_DesignObj']._CalculateViaPoly2Met1DesignParameter(_ViaPoly2Met1NumberOfCOX=CoNumX, _ViaPoly2Met1NumberOfCOY=1)
 
-		self._DesignParameter['nmos_input']['_XYCoordinates']=[[self.getXY('pmos_input')[0][0], self.getXY('nguardring1','top')[0][1]+self.getYWidth('nguardring1','top','_Met1Layer')*3/2+drc._Metal1MinSpace3*2+self.getYWidth('nmos_input','_POLayer')/2+self.getYWidth('gate_ninputn','_Met1Layer')/2], [self.getXY('pmos_input')[0][0], self.getXY('nguardring1','top')[0][1]+self.getYWidth('nguardring1','top','_Met1Layer')*3/2+drc._Metal1MinSpace3*2+self.getYWidth('nmos_input','_POLayer')/2+self.getYWidth('gate_ninputn','_Met1Layer')/2+self.getYWidth('nmos_input','_Met1Layer')+19*drc._Metal1MinSpace]]
+		self._DesignParameter['nmos_input']['_XYCoordinates']=[[self.getXY('pmos_input')[0][0], self.getXY('nguardring1','top')[0][1]+self.getYWidth('nguardring1','top','_Met1Layer')/2+self.getYWidth('pguardring1','bot','_Met1Layer')+drc._Metal1MinSpace3*2+self.getYWidth('nmos_input','_POLayer')/2+self.getYWidth('gate_ninputn','_Met1Layer')/2], [self.getXY('pmos_input')[0][0], self.getXY('nguardring1','top')[0][1]+self.getYWidth('nguardring1','top','_Met1Layer')*3/2+drc._Metal1MinSpace3*2+self.getYWidth('nmos_input','_POLayer')/2+self.getYWidth('gate_ninputn','_Met1Layer')/2+self.getYWidth('nmos_input','_Met1Layer')+19*drc._Metal1MinSpace]]
 		self._DesignParameter['nmos_vb1']['_XYCoordinates']=[[self.getXY('nmos_input')[0][0], self.getXY('nmos_input')[1][1]+self.getYWidth('nmos_input','_Met1Layer')/2+self.getYWidth('nmos_vb1','_Met1Layer')/2+19*drc._Metal1MinSpace]]
 
 		_Lengthbtwmet1=self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][1][0]-self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][0][0]
-		self._DesignParameter['nmos_vbn1']['_XYCoordinates']=[[_OriginXY[0][0]-_Lengthbtwmet1*(len(self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])-1)/2-drc._Metal1MinSpace*5.2, self.getXY('nguardring2','top')[0][1]+self.getYWidth('nguardring2','top','_ODLayer')*3/2+drc._Metal1MinSpace3*2+self.getYWidth('nmos_vbn1','_POLayer')/2+self.getYWidth('gate_vbn1','_Met1Layer')/2], [_OriginXY[0][0]+_Lengthbtwmet1*(len(self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])-1)/2+drc._Metal1MinSpace*5.2, self.getXY('nguardring2','top')[0][1]+self.getYWidth('nguardring2','top','_ODLayer')*3/2+drc._Metal1MinSpace3*2+self.getYWidth('nmos_vbn1','_POLayer')/2+self.getYWidth('gate_vbn1','_Met1Layer')/2]]
+		self._DesignParameter['nmos_vbn1']['_XYCoordinates']=[[_OriginXY[0][0]-_Lengthbtwmet1*(len(self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])-1)/2-drc._Metal1MinSpace*5.2, self.getXY('nguardring2','top')[0][1]+self.getYWidth('nguardring2','top','_ODLayer')/2+self.getYWidth('pguardring2','bot','_ODLayer')+drc._Metal1MinSpace3*2+self.getYWidth('nmos_vbn1','_POLayer')/2+self.getYWidth('gate_vbn1','_Met1Layer')/2], [_OriginXY[0][0]+_Lengthbtwmet1*(len(self._DesignParameter['nmos_vbn1']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'])-1)/2+drc._Metal1MinSpace*5.2, self.getXY('nguardring2','top')[0][1]+self.getYWidth('nguardring2','top','_ODLayer')/2+self.getYWidth('pguardring2','bot','_ODLayer')+drc._Metal1MinSpace3*2+self.getYWidth('nmos_vbn1','_POLayer')/2+self.getYWidth('gate_vbn1','_Met1Layer')/2]]
 		self._DesignParameter['nmos_n0']['_XYCoordinates']=[[self._DesignParameter['nmos_vbn1']['_XYCoordinates'][0][0], self.getXY('nmos_vbn1')[0][1]+self.getYWidth('nmos_vbn1','_Met1Layer')/2+self.getYWidth('nmos_n0','_Met1Layer')/2+19*drc._Metal1MinSpace], [self._DesignParameter['nmos_vbn1']['_XYCoordinates'][1][0], self.getXY('nmos_vbn1')[0][1]+self.getYWidth('nmos_vbn1','_Met1Layer')/2+self.getYWidth('nmos_n0','_Met1Layer')/2+19*drc._Metal1MinSpace]]
 
 
@@ -733,8 +739,8 @@ class _Folded_Cascode_Amp(StickDiagram._StickDiagram):
 		self._DesignParameter['poly_ninput']['_XYCoordinates']=tmp
 		del tmp
 
-		self._DesignParameter['pguardring1']=self._SrefElementDeclaration(_DesignObj=PSubRing.PSubRing(_Name='pguardring1In{}'.format(_Name)))[0]
-		self._DesignParameter['pguardring1']['_DesignObj']._CalculateDesignParameter(height=5000,width=3000,contact_bottom=nset_param['nmos_guardring_co_top'],contact_top=nset_param['nmos_guardring_co_top'],contact_left=nset_param['nmos_guardring_co_left'],contact_right=nset_param['nmos_guardring_co_top'])
+		# self._DesignParameter['pguardring1']=self._SrefElementDeclaration(_DesignObj=PSubRing.PSubRing(_Name='pguardring1In{}'.format(_Name)))[0]
+		# self._DesignParameter['pguardring1']['_DesignObj']._CalculateDesignParameter(height=5000,width=3000,contact_bottom=nset_param['nmos_guardring_co_top'],contact_top=nset_param['nmos_guardring_co_top'],contact_left=nset_param['nmos_guardring_co_left'],contact_right=nset_param['nmos_guardring_co_top'])
 		if nset_param['nmos_guardring_height1'] != None :
 			pguardring_yheight1=nset_param['nmos_guardring_height1']
 		elif nset_param['nmos_guardring_height1'] == None :
