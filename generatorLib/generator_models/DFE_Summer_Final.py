@@ -21,7 +21,9 @@ class _Summer_middle(StickDiagram._StickDiagram):
     _ParametersForDesignCalculation = dict(_Finger1=None,_Finger2=None,_Finger3=None,_Finger4=None,_Finger5 =None,_Finger6 =None,_Finger7=None,_Finger8 = None,
                                 _Finger9 = None,_Finger10 = None,_ChannelWidth=None,_NPRatio=None,_ChannelLength=None,_Dummy=None,_XVT=None,_PCCrit=None,
                                       _NumberOfPbodyCOY=None,_GateSpacing=None,_SDWidth=None,_SupplyRailType=1,_SupplyMet1XWidth=None,_SupplyMet1YWidth=None, _ResWidth = None,
-		    _ResLength = None,_CONUMY = None,_XWidth = None,_YWidth = None,_NumofGates = None,guardring_right = None,guardring_left = None,guardring_top = None,guardring_bot = None,Guardring=None)
+		    _ResLength = None,_CONUMY = None,_XWidth = None,_YWidth = None,_NumofGates = None,guardring_right = None,guardring_left = None,guardring_top = None,guardring_bot = None,Guardring=None
+    ,_NumofOD = None, _ViaPoly2Met1NumberOfCOX_CAP = None, _ViaPoly2Met1NumberOfCOY_CAP = None
+                                           )
 
     def __init__(self, _DesignParameter=None, _Name='Summer_middle'):
         if _DesignParameter != None:
@@ -75,6 +77,7 @@ class _Summer_middle(StickDiagram._StickDiagram):
             _Finger1 = None,_Finger2 = 8,_Finger4 = 8,_Finger5 = 16,_Finger9=4,_ChannelWidth = 500,_ChannelLength = 30
             ,_Finger6 = None,_Finger3 = 14,_Finger7 = 14,_Finger8 = None,_Finger10 = None,_NPRatio = 1,_NumberOfPbodyCOY = 3,_Dummy = None,_XVT = 'LVT',_PCCrit = None,_GateSpacing = None,_SDWidth = None,_SupplyRailType = 1
             , _SupplyMet1XWidth = None,_SupplyMet1YWidth = None,_ResWidth = 938,_ResLength = 580,_CONUMY = 1,_XWidth = 838,_YWidth = 1874,Guardring = False,_NumofGates = 1,guardring_right = 3,guardring_left = 3,guardring_top = 3,guardring_bot = 3
+        ,_NumofOD = 1, _ViaPoly2Met1NumberOfCOX_CAP = None, _ViaPoly2Met1NumberOfCOY_CAP = 1 #added
     ):
 
         _DRCObj = DRC.DRC()
@@ -518,6 +521,11 @@ class _Summer_middle(StickDiagram._StickDiagram):
         _Summer_bottom['guardring_bot'] = guardring_bot
         #_Summer_bottom['_NumberOfPbodyCOX'] = _NumberOfPbodyCOX
         _Summer_bottom['_NumberOfPbodyCOY'] = _NumberOfPbodyCOY
+
+        _Summer_bottom['_NumofOD'] = _NumofOD
+        _Summer_bottom['_ViaPoly2Met1NumberOfCOX_CAP'] = _ViaPoly2Met1NumberOfCOX_CAP
+        _Summer_bottom['_ViaPoly2Met1NumberOfCOY_CAP'] = _ViaPoly2Met1NumberOfCOY_CAP
+
         # _Summer_bottom['_Met1XWidth'] = _Met1XWidth
         # _Summer_bottom['_Met1YWidth'] = _Met1YWidth
         # _Summer_bottom['_ViaPoly2Met1NumberOfCOX'] = _ViaPoly2Met1NumberOfCOX
@@ -750,7 +758,9 @@ if __name__ == '__main__':
         guardring_left = 3
         guardring_top = 3
         guardring_bot = 3
-
+        _NumofOD = None
+        _ViaPoly2Met1NumberOfCOX_CAP = None
+        _ViaPoly2Met1NumberOfCOY_CAP = None
 
         #from Private import MyInfo
          #import DRCchecker
