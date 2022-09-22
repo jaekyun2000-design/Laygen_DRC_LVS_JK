@@ -129,12 +129,37 @@ class _NCap(StickDiagram._StickDiagram):
         tmp_m1poly = []
         for j in range(_NumofOD):
             for i in range(_NumofGates):
-                tmp_m1poly.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0],
-                                   self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] - self._DesignParameter['_POLayer']['_YWidth'] // 2 + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
-                                   + 0.5 * _DRCObj._CoMinWidth + (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) // 2 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
-                tmp_m1poly.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0],
-                                   self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + self._DesignParameter['_POLayer']['_YWidth'] // 2 - _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
-                                   - 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) // 2 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+                if _XWidth % 2 == 0 and _YWidth % 2 == 0:
+                    tmp_m1poly.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0],
+                                       self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] - self._DesignParameter['_POLayer']['_YWidth'] // 2 + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
+                                       + 0.5 * _DRCObj._CoMinWidth + (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) // 2 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+                    tmp_m1poly.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0],
+                                       self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + self._DesignParameter['_POLayer']['_YWidth'] // 2 - _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
+                                       - 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) // 2 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+
+                if _XWidth % 2 == 0 and _YWidth % 2 == 1:
+                    tmp_m1poly.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0],
+                                       self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] - MinSnapSpacing/2.0 - self._DesignParameter['_POLayer']['_YWidth'] // 2 + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
+                                       + 0.5 * _DRCObj._CoMinWidth + (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) // 2 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+                    tmp_m1poly.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0],
+                                       self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + MinSnapSpacing/2.0 + self._DesignParameter['_POLayer']['_YWidth'] // 2 - _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
+                                       - 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) // 2 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+
+                if _XWidth % 2 == 1 and _YWidth % 2 == 0:
+                    tmp_m1poly.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] - MinSnapSpacing/2.0,
+                                       self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] - self._DesignParameter['_POLayer']['_YWidth'] // 2 + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
+                                       + 0.5 * _DRCObj._CoMinWidth + (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) // 2 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+                    tmp_m1poly.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] - MinSnapSpacing/2.0,
+                                       self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + self._DesignParameter['_POLayer']['_YWidth'] // 2 - _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
+                                       - 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) // 2 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+
+                if _XWidth % 2 == 1 and _YWidth % 2 == 1:
+                    tmp_m1poly.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] - MinSnapSpacing/2.0,
+                                       self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] - MinSnapSpacing/2.0 - self._DesignParameter['_POLayer']['_YWidth'] // 2 + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
+                                       + 0.5 * _DRCObj._CoMinWidth + (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) // 2 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+                    tmp_m1poly.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] - MinSnapSpacing/2.0,
+                                       self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + MinSnapSpacing/2.0 + self._DesignParameter['_POLayer']['_YWidth'] // 2 - _DRCObj._CoMinEnclosureByPOAtLeastTwoSide
+                                       - 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) // 2 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
 
         self._DesignParameter['Viapoly2Met1H']['_XYCoordinates'] = tmp_m1poly
         del tmp_m1poly
@@ -142,15 +167,42 @@ class _NCap(StickDiagram._StickDiagram):
         tmp_m1od = []
         for j in range(_NumofOD):
             for i in range(_NumofGates):
-                tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] - self._DesignParameter['_POLayer']['_XWidth'] // 2 - _DRCObj._CoMinSpace
-                                 - 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
-                                 self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + j * (_YWidth + _DRCObj._OdSpace_ncap)])
-                if i >= 1:
-                    if tmp_m1od[-1] == tmp_m1od[-2]:
-                        tmp_m1od.pop()
-                tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] + self._DesignParameter['_POLayer']['_XWidth'] // 2 + _DRCObj._CoMinSpace
-                                 + 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
-                                 self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+                if _XWidth % 2 == 0 and _YWidth % 2 == 0:
+                    tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] - self._DesignParameter['_POLayer']['_XWidth'] // 2 - _DRCObj._CoMinSpace
+                                     - 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
+                                     self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+                    # # modify minsnapspacing error
+                    # if i >= 1:
+                    #     if (tmp_m1od[-1][0] >= (tmp_m1od[-2][0] - MinSnapSpacing) and tmp_m1od[-1][0] <= (tmp_m1od[-2][0] + MinSnapSpacing)) and (tmp_m1od[-1][1] >= (tmp_m1od[-2][1] - MinSnapSpacing) and tmp_m1od[-1][1] <= (tmp_m1od[-2][1] + MinSnapSpacing)):
+                    #                 tmp_m1od.pop()
+                    tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] + self._DesignParameter['_POLayer']['_XWidth'] // 2 + _DRCObj._CoMinSpace
+                                     + 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
+                                     self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+
+                if _XWidth % 2 == 0 and _YWidth % 2 == 1:
+                    tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] - self._DesignParameter['_POLayer']['_XWidth'] // 2 - _DRCObj._CoMinSpace
+                                     - 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
+                                     self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] - MinSnapSpacing/2.0 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+                    tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] + self._DesignParameter['_POLayer']['_XWidth'] // 2 + _DRCObj._CoMinSpace
+                                     + 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
+                                     self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] - MinSnapSpacing/2.0 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+
+                if _XWidth % 2 == 1 and _YWidth % 2 == 0:
+                    tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] - MinSnapSpacing/2.0 - self._DesignParameter['_POLayer']['_XWidth'] // 2 - _DRCObj._CoMinSpace
+                                     - 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
+                                     self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+                    tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] + MinSnapSpacing/2.0 + self._DesignParameter['_POLayer']['_XWidth'] // 2 + _DRCObj._CoMinSpace
+                                     + 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
+                                     self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+
+                if _XWidth % 2 == 1 and _YWidth % 2 == 1:
+                    tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] - MinSnapSpacing/2.0 - self._DesignParameter['_POLayer']['_XWidth'] // 2 - _DRCObj._CoMinSpace
+                                     - 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
+                                     self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] - MinSnapSpacing/2.0 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+                    tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] + MinSnapSpacing/2.0 + self._DesignParameter['_POLayer']['_XWidth'] // 2 + _DRCObj._CoMinSpace
+                                     + 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
+                                     self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] - MinSnapSpacing/2.0 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
+
 
         # tmp_m1od = list(set(map(tuple, tmp_m1od)))
         self._DesignParameter['Viapoly2Met1V']['_XYCoordinates'] = tmp_m1od
@@ -158,7 +210,7 @@ class _NCap(StickDiagram._StickDiagram):
 
 
 
-        # LVS만 수정하면 됨
+
         self._DesignParameter['LVSLayer']=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['LVS_dr4'][0],
                                                                     _Datatype=DesignParameters._LayerMapping['LVS_dr4'][1],
                                                                     _XWidth=self._DesignParameter['_ODLayer']['_XYCoordinates'][-1][0] - self._DesignParameter['_ODLayer']['_XYCoordinates'][0][0] + self._DesignParameter['_ODLayer']['_XWidth'] + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide * 2,
@@ -206,53 +258,57 @@ class _NCap(StickDiagram._StickDiagram):
 
 if __name__ == '__main__':
     import random
-    # for i in range(1):
-    _XWidth=1000#random.randrange(40,2000, 2)
-    _YWidth=1000#random.randrange(80,2000, 2)
-    _NumofGates=3#random.randint(1,20)
-    _NumofOD=3#random.randint(1,20)
-    # print('num of drc=',i)
-    # print('_XWidth=', _XWidth)
-    # print('_YWidth=', _YWidth)
-    # print('_NumofGates=', _NumofGates)
-    # print('_NumofOD=', _NumofOD)
+    for i in range(1):
+        # _XWidth=random.randrange(1000,3000)
+        # _YWidth=random.randrange(1000,3000)
+        # _NumofGates=random.randint(1,5)
+        # _NumofOD=random.randint(1,5)
+        _XWidth = 1000
+        _YWidth = 1000
+        _NumofGates = 1
+        _NumofOD = 1
+        # print('num of drc=',i)
+        # print('_XWidth=', _XWidth)
+        # print('_YWidth=', _YWidth)
+        # print('_NumofGates=', _NumofGates)
+        # print('_NumofOD=', _NumofOD)
 
-    NumOfCOX=None
-    NumOfCOY=None
-    Guardring=True
-    guardring_height=None
-    guardring_width=None
-    guardring_right=2
-    guardring_left=2
-    guardring_top=2
-    guardring_bot=2
-    _ViaPoly2Met1NumberOfCOX = None
-    _ViaPoly2Met1NumberOfCOY = 1
+        NumOfCOX=None
+        NumOfCOY=None
+        Guardring=True
+        guardring_height=None
+        guardring_width=None
+        guardring_right=2
+        guardring_left=2
+        guardring_top=2
+        guardring_bot=2
+        _ViaPoly2Met1NumberOfCOX = None
+        _ViaPoly2Met1NumberOfCOY = 1
 
-    DesignParameters._Technology = 'SS28nm'
-    TopObj = _NCap(_DesignParameter=None, _Name='_NCap')
-    TopObj._CalculateNCapDesignParameter(_XWidth=_XWidth, _YWidth=_YWidth, _NumofGates=_NumofGates, NumOfCOX=NumOfCOX, NumOfCOY=NumOfCOY,
-                                         Guardring=Guardring, guardring_height=guardring_height, guardring_width=guardring_width, guardring_right=guardring_right, guardring_left=guardring_left, guardring_top=guardring_top, guardring_bot=guardring_bot,
-                                         _NumofOD=_NumofOD, _ViaPoly2Met1NumberOfCOX=_ViaPoly2Met1NumberOfCOX, _ViaPoly2Met1NumberOfCOY=_ViaPoly2Met1NumberOfCOY)
-    TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
-    testStreamFile = open('./_NCap.gds', 'wb')
-    tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
-    tmp.write_binary_gds_stream(testStreamFile)
-    testStreamFile.close()
+        DesignParameters._Technology = 'SS28nm'
+        TopObj = _NCap(_DesignParameter=None, _Name='_NCap')
+        TopObj._CalculateNCapDesignParameter(_XWidth=_XWidth, _YWidth=_YWidth, _NumofGates=_NumofGates, NumOfCOX=NumOfCOX, NumOfCOY=NumOfCOY,
+                                             Guardring=Guardring, guardring_height=guardring_height, guardring_width=guardring_width, guardring_right=guardring_right, guardring_left=guardring_left, guardring_top=guardring_top, guardring_bot=guardring_bot,
+                                             _NumofOD=_NumofOD, _ViaPoly2Met1NumberOfCOX=_ViaPoly2Met1NumberOfCOX, _ViaPoly2Met1NumberOfCOY=_ViaPoly2Met1NumberOfCOY)
+        TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
+        testStreamFile = open('./_NCap.gds', 'wb')
+        tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
+        tmp.write_binary_gds_stream(testStreamFile)
+        testStreamFile.close()
 
-    print('#############################      Sending to FTP Server...      ##############################')
+        print('#############################      Sending to FTP Server...      ##############################')
 
-    import ftplib
+        import ftplib
 
-    ftp = ftplib.FTP('141.223.29.62')
-    ftp.login('smlim96', 'min753531')
-    ftp.cwd('/mnt/sdc/smlim96/OPUS/ss28')
-    myfile = open('_NCap.gds', 'rb')
-    ftp.storbinary('STOR _NCap.gds', myfile)
-    myfile.close()
+        ftp = ftplib.FTP('141.223.29.62')
+        ftp.login('smlim96', 'min753531')
+        ftp.cwd('/mnt/sdc/smlim96/OPUS/ss28')
+        myfile = open('_NCap.gds', 'rb')
+        ftp.storbinary('STOR _NCap.gds', myfile)
+        myfile.close()
 
-    import DRCchecker
-    a = DRCchecker.DRCchecker('smlim96','min753531','/mnt/sdc/smlim96/OPUS/ss28','/mnt/sdc/smlim96/OPUS/ss28/DRC/run','_SummerBottom','_SummerBottom',None)
-    a.DRCchecker()
-
-    print ("DRC Clean!!!")
+    #     import DRCchecker
+    #     a = DRCchecker.DRCchecker('smlim96','min753531','/mnt/sdc/smlim96/OPUS/ss28','/mnt/sdc/smlim96/OPUS/ss28/DRC/run','_NCap','_NCap',None)
+    #     a.DRCchecker()
+    #
+    # print ("DRC Clean!!!")
