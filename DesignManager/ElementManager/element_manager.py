@@ -121,7 +121,10 @@ class ElementManager:
                     if dp_dict['_LayerUnifiedName'] == 'text':
                         tmpAST.__dict__[key] = dp_dict['_LayerUnifiedName']
                     else:
-                        tmpAST.__dict__[key] = dp_dict['_LayerUnifiedName'] + 'PIN'
+                        if 'PIN' in dp_dict['_LayerUnifiedName']:
+                            tmpAST.__dict__[key] = dp_dict['_LayerUnifiedName']
+                        else:
+                            tmpAST.__dict__[key] = dp_dict['_LayerUnifiedName'] + 'PIN'
                 elif key == 'XY':
                     tmpAST.__dict__[key] = dp_dict['_XYCoordinates']
                 elif key == 'pres':

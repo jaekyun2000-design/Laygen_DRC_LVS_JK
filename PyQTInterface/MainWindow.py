@@ -2056,6 +2056,7 @@ class _MainWindow(QMainWindow):
                 updated_dp_name_list = list(filter(lambda dp_name: dp_name  in current_dpdict, list(dp_dict.keys())))
                 for dp_name in updated_dp_name_list:
                     current_dpdict[dp_name].update_unified_expression()
+                    self.scene.remove_bounding_rect_dict(self.visualItemDict[dp_name])
                     for key, value in dp_dict[dp_name].items():
                         current_dpdict[dp_name]._DesignParameter[key] = value
                     if current_dpdict[dp_name]._DesignParameter['_DesignParametertype'] == 3:
@@ -2071,6 +2072,7 @@ class _MainWindow(QMainWindow):
                         self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
                     else:
                         self.updateDesignParameter(current_dpdict[dp_name]._DesignParameter, False)
+                    self.scene.modify_bounding_rect_dict(self.visualItemDict[dp_name])
 
                 new_dp_name_list = list(filter(lambda dp_name: dp_name not in current_dpdict, list(dp_dict.keys())))
                 for dp_name in new_dp_name_list:
@@ -4333,6 +4335,11 @@ class _CustomScene(QGraphicsScene):
         if 'bounding_rect_dict' in item.__dict__:
             for key in item.bounding_rect_dict:
                 self.fit_in_view_dict[key].append(item.bounding_rect_dict[key])
+
+    def remove_bounding_rect_dict(self, item):
+        if 'bounding_rect_dict' in item.__dict__:
+            for key in item.bounding_rect_dict:
+                self.fit_in_view_dict[key].remove(item.bounding_rect_dict[key])
 
     def removeItem(self, QGraphicsItem):
         super(_CustomScene, self).removeItem(QGraphicsItem)
