@@ -1,7 +1,5 @@
 from generatorLib import StickDiagram
 from generatorLib import DesignParameters
-import copy
-import math
 from generatorLib import DRC
 from generatorLib.generator_models import ViaPoly2Met1
 from generatorLib.generator_models import PSubRing
@@ -21,18 +19,7 @@ class _NCap(StickDiagram._StickDiagram):
                 _ODLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['DIFF'][0],
                                                           _Datatype=DesignParameters._LayerMapping['DIFF'][1],
                                                           _XYCoordinates=[], _XWidth=400, _YWidth=400),
-                _Met1Layer1=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],
-                                                             _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-                                                             _XYCoordinates=[], _XWidth=400, _YWidth=400),
-                _Met1Layer2=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],
-                                                             _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-                                                             _XYCoordinates=[], _XWidth=400, _YWidth=400),
-                _COLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['CONT'][0],
-                                                          _Datatype=DesignParameters._LayerMapping['CONT'][1],
-                                                          _XYCoordinates=[], _XWidth=400, _YWidth=400),
-                _Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None),
-                _XYCoordinateM1inPO=dict(_DesignParametertype=7, _XYCoordinates=[]),
-                _XYCoordinateM1inOD=dict(_DesignParametertype=7, _XYCoordinates=[]))
+                _Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 
         if _Name != None:
             self._DesignParameter['_Name']['Name'] = _Name
@@ -55,6 +42,8 @@ class _NCap(StickDiagram._StickDiagram):
             _XYCoordinatesofNcap = [[MinSnapSpacing/2.0,0]]
         elif _XWidth % 2 == 1 and _YWidth % 2 == 1 :
             _XYCoordinatesofNcap = [[MinSnapSpacing/2.0,MinSnapSpacing/2.0]]
+
+
 
         print('#############################     POLY Layer Calculation    ##############################################')
         _DRCgatemaxarea = _DRCObj._PolygateMaxArea
@@ -98,6 +87,7 @@ class _NCap(StickDiagram._StickDiagram):
         del tmp
 
 
+
         print('#############################     OD Layer Calculation    ################################################')
 
         self._DesignParameter['_ODLayer']['_XWidth'] = _XWidth + ODExtensionOnPO
@@ -108,6 +98,7 @@ class _NCap(StickDiagram._StickDiagram):
                 raise NotImplementedError("Ywidth should be longer than 80nm")
 
         self._DesignParameter['_ODLayer']['_XYCoordinates'] = self._DesignParameter['_POLayer']['_XYCoordinates']
+
 
 
         print('#############################     CONT Layer Calculation    ##############################################')
@@ -125,6 +116,7 @@ class _NCap(StickDiagram._StickDiagram):
 
         self._DesignParameter['Viapoly2Met1V']['_DesignObj']._DesignParameter['_POLayer']['_XWidth'] = 0
         self._DesignParameter['Viapoly2Met1V']['_DesignObj']._DesignParameter['_POLayer']['_YWidth'] = 0
+
 
         tmp_m1poly = []
         for j in range(_NumofOD):
@@ -164,6 +156,7 @@ class _NCap(StickDiagram._StickDiagram):
         self._DesignParameter['Viapoly2Met1H']['_XYCoordinates'] = tmp_m1poly
         del tmp_m1poly
 
+
         tmp_m1od = []
         for j in range(_NumofOD):
             for i in range(_NumofGates):
@@ -171,10 +164,6 @@ class _NCap(StickDiagram._StickDiagram):
                     tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] - self._DesignParameter['_POLayer']['_XWidth'] // 2 - _DRCObj._CoMinSpace
                                      - 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
                                      self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + j * (_YWidth + _DRCObj._OdSpace_ncap)])
-                    # # modify minsnapspacing error
-                    # if i >= 1:
-                    #     if (tmp_m1od[-1][0] >= (tmp_m1od[-2][0] - MinSnapSpacing) and tmp_m1od[-1][0] <= (tmp_m1od[-2][0] + MinSnapSpacing)) and (tmp_m1od[-1][1] >= (tmp_m1od[-2][1] - MinSnapSpacing) and tmp_m1od[-1][1] <= (tmp_m1od[-2][1] + MinSnapSpacing)):
-                    #                 tmp_m1od.pop()
                     tmp_m1od.append([self._DesignParameter['_POLayer']['_XYCoordinates'][i][0] + self._DesignParameter['_POLayer']['_XWidth'] // 2 + _DRCObj._CoMinSpace
                                      + 0.5 * _DRCObj._CoMinWidth - (_ViaPoly2Met1NumberOfCOY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2,
                                      self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + j * (_YWidth + _DRCObj._OdSpace_ncap)])
@@ -204,13 +193,12 @@ class _NCap(StickDiagram._StickDiagram):
                                      self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] - MinSnapSpacing/2.0 + j * (_YWidth + _DRCObj._OdSpace_ncap)])
 
 
-        # tmp_m1od = list(set(map(tuple, tmp_m1od)))
         self._DesignParameter['Viapoly2Met1V']['_XYCoordinates'] = tmp_m1od
         del tmp_m1od
 
 
 
-
+        print('#############################     LVS Layer Calculation    ##############################################')
         self._DesignParameter['LVSLayer']=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['LVS_dr4'][0],
                                                                     _Datatype=DesignParameters._LayerMapping['LVS_dr4'][1],
                                                                     _XWidth=self._DesignParameter['_ODLayer']['_XYCoordinates'][-1][0] - self._DesignParameter['_ODLayer']['_XYCoordinates'][0][0] + self._DesignParameter['_ODLayer']['_XWidth'] + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide * 2,
@@ -219,6 +207,7 @@ class _NCap(StickDiagram._StickDiagram):
 
 
 
+        print('#############################     NWELL Layer Calculation    ##############################################')
         self._DesignParameter['NWELL']=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1],
                                                                 _XWidth=self._DesignParameter['_POLayer']['_XYCoordinates'][-1][0] - self._DesignParameter['_POLayer']['_XYCoordinates'][0][0] + self._DesignParameter['_POLayer']['_XWidth'] + 2 * _DRCObj._PolygateMinEnclosureByNcap,
                                                                 _YWidth=self._DesignParameter['_POLayer']['_XYCoordinates'][-1][1] - self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + self._DesignParameter['_ODLayer']['_YWidth'] + 2 * _DRCObj._PolygateMinEnclosureByNcap)
@@ -226,12 +215,14 @@ class _NCap(StickDiagram._StickDiagram):
 
 
 
+        print('#############################     NCAP Layer Calculation    ##############################################')
         self._DesignParameter['NCAPLayer']=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['NCAP'][0], _Datatype=DesignParameters._LayerMapping['NCAP'][1],
                                                                     _XWidth=self._DesignParameter['NWELL']['_XWidth'], _YWidth=self._DesignParameter['NWELL']['_YWidth'])
         self._DesignParameter['NCAPLayer']['_XYCoordinates'] = self._DesignParameter['LVSLayer']['_XYCoordinates']
 
 
 
+        print('#############################     Guardring Calculation    ##############################################')
         if Guardring == True :
             self._DesignParameter['guardring']=self._SrefElementDeclaration(_DesignObj=PSubRing.PSubRing(_Name='PSubRingIn{}'.format(_Name)))[0]
             self._DesignParameter['guardring']['_DesignObj']._CalculateDesignParameter(**dict(height=5000, width=3000, contact_bottom=guardring_left, contact_top=guardring_top, contact_left=guardring_left, contact_right=guardring_right))
@@ -255,60 +246,3 @@ class _NCap(StickDiagram._StickDiagram):
                 raise NotImplementedError
             if guardring_Yheight < self._DesignParameter['NWELL']['_YWidth']+self._DesignParameter['guardring']['_DesignObj']._DesignParameter['top']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth']/2+self._DesignParameter['guardring']['_DesignObj']._DesignParameter['bot']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth']/2+2*_DRCObj._NwMinSpacetoRX :
                 raise NotImplementedError
-
-if __name__ == '__main__':
-    import random
-    for i in range(1):
-        # _XWidth=random.randrange(1000,3000)
-        # _YWidth=random.randrange(1000,3000)
-        # _NumofGates=random.randint(1,5)
-        # _NumofOD=random.randint(1,5)
-        _XWidth = 1000
-        _YWidth = 1000
-        _NumofGates = 1
-        _NumofOD = 1
-        # print('num of drc=',i)
-        # print('_XWidth=', _XWidth)
-        # print('_YWidth=', _YWidth)
-        # print('_NumofGates=', _NumofGates)
-        # print('_NumofOD=', _NumofOD)
-
-        NumOfCOX=None
-        NumOfCOY=None
-        Guardring=True
-        guardring_height=None
-        guardring_width=None
-        guardring_right=2
-        guardring_left=2
-        guardring_top=2
-        guardring_bot=2
-        _ViaPoly2Met1NumberOfCOX = None
-        _ViaPoly2Met1NumberOfCOY = 1
-
-        DesignParameters._Technology = 'SS28nm'
-        TopObj = _NCap(_DesignParameter=None, _Name='_NCap')
-        TopObj._CalculateNCapDesignParameter(_XWidth=_XWidth, _YWidth=_YWidth, _NumofGates=_NumofGates, NumOfCOX=NumOfCOX, NumOfCOY=NumOfCOY,
-                                             Guardring=Guardring, guardring_height=guardring_height, guardring_width=guardring_width, guardring_right=guardring_right, guardring_left=guardring_left, guardring_top=guardring_top, guardring_bot=guardring_bot,
-                                             _NumofOD=_NumofOD, _ViaPoly2Met1NumberOfCOX=_ViaPoly2Met1NumberOfCOX, _ViaPoly2Met1NumberOfCOY=_ViaPoly2Met1NumberOfCOY)
-        TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
-        testStreamFile = open('./_NCap.gds', 'wb')
-        tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
-        tmp.write_binary_gds_stream(testStreamFile)
-        testStreamFile.close()
-
-        print('#############################      Sending to FTP Server...      ##############################')
-
-        import ftplib
-
-        ftp = ftplib.FTP('141.223.29.62')
-        ftp.login('smlim96', 'min753531')
-        ftp.cwd('/mnt/sdc/smlim96/OPUS/ss28')
-        myfile = open('_NCap.gds', 'rb')
-        ftp.storbinary('STOR _NCap.gds', myfile)
-        myfile.close()
-
-    #     import DRCchecker
-    #     a = DRCchecker.DRCchecker('smlim96','min753531','/mnt/sdc/smlim96/OPUS/ss28','/mnt/sdc/smlim96/OPUS/ss28/DRC/run','_NCap','_NCap',None)
-    #     a.DRCchecker()
-    #
-    # print ("DRC Clean!!!")
