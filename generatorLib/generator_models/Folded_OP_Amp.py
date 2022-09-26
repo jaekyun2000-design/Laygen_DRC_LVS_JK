@@ -44,8 +44,8 @@ class _Folded_OP_Amp(StickDiagram._StickDiagram):
 																'psubring_param':{'height':None, 'width':None, 'contact_bottom':2, 'contact_top':2, 'contact_left':2, 'contact_right':2}, \
 																'R_drain':{'_ResWidth':800, '_ResLength':4628, '_CONUMX':None, '_CONUMY':1}, \
 																'R_feedback':{'_ResWidth':800, '_ResLength':1068, '_CONUMX':None, '_CONUMY':1}, \
-																'cap1_param':{'_XWidth':2763, '_YWidth':3000, '_NumofGates':10, '_NumofOD':1, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
-																'cap2_param':{'_XWidth':3459, '_YWidth':2997, '_NumofGates':12, '_NumofOD':1, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}}, \
+																'cap1_param':{'_XWidth':2997, '_YWidth':3459, '_NumofGates':10, '_NumofOD':1, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
+																'cap2_param':{'_XWidth':3000, '_YWidth':2763, '_NumofGates':12, '_NumofOD':1, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}}, \
 								) :
 
 		drc = DRC.DRC()
@@ -89,7 +89,7 @@ class _Folded_OP_Amp(StickDiagram._StickDiagram):
 		self._DesignParameter['vbp2'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[], _Mag=0.2, _Angle=0, _TEXT='vbp2')
 		self._DesignParameter['vbn1'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[], _Mag=0.2, _Angle=0, _TEXT='vbn1')
 		self._DesignParameter['vpdn'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL4PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[], _Mag=0.2, _Angle=0, _TEXT='vpdn')
-		self._DesignParameter['VOUT'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL3PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[], _Mag=0.2, _Angle=0, _TEXT='VOUT')
+		self._DesignParameter['VOUT'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL4PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[], _Mag=0.2, _Angle=0, _TEXT='VOUT')
 
 		self._DesignParameter['VDD']['_XYCoordinates']=[[self.getXY('Folded_Cascode_AMP','nguardring2','bot')[0][0],self.getXY('Folded_Cascode_AMP','nguardring2','bot')[0][1]], self.getXY('Common_Source_AMP','R_drain','_Met1Layer')[0]]
 		self._DesignParameter['VSS']['_XYCoordinates']=[[self.getXY('Folded_Cascode_AMP','pguardring1','top')[0][0],self.getXY('Folded_Cascode_AMP','pguardring1','top')[0][1]]]
@@ -101,4 +101,11 @@ class _Folded_OP_Amp(StickDiagram._StickDiagram):
 		self._DesignParameter['vbp2']['_XYCoordinates']=[[self._DesignParameter['Folded_Cascode_AMP']['_XYCoordinates'][0][0]+(self._DesignParameter['Folded_Cascode_AMP']['_DesignObj']._DesignParameter['m2_gate_vbp2']['_XYCoordinates'][0][0][0]+self._DesignParameter['Folded_Cascode_AMP']['_DesignObj']._DesignParameter['m2_gate_vbp2']['_XYCoordinates'][0][1][0])/2, self._DesignParameter['Folded_Cascode_AMP']['_XYCoordinates'][0][1]+self._DesignParameter['Folded_Cascode_AMP']['_DesignObj']._DesignParameter['m2_gate_vbp2']['_XYCoordinates'][1][0][1]]]
 		self._DesignParameter['vbn1']['_XYCoordinates']=[[self._DesignParameter['Folded_Cascode_AMP']['_XYCoordinates'][0][0]+(self._DesignParameter['Folded_Cascode_AMP']['_DesignObj']._DesignParameter['m2_gate_vbn1']['_XYCoordinates'][0][0][0]+self._DesignParameter['Folded_Cascode_AMP']['_DesignObj']._DesignParameter['m2_gate_vbn1']['_XYCoordinates'][0][1][0])/2, self._DesignParameter['Folded_Cascode_AMP']['_XYCoordinates'][0][1]+self._DesignParameter['Folded_Cascode_AMP']['_DesignObj']._DesignParameter['m2_gate_vbn1']['_XYCoordinates'][1][0][1]]]
 		self._DesignParameter['vpdn']['_XYCoordinates']=[[self._DesignParameter['Folded_Cascode_AMP']['_XYCoordinates'][0][0]+(self._DesignParameter['Folded_Cascode_AMP']['_DesignObj']._DesignParameter['m4_pdn_single_sw']['_XYCoordinates'][0][0][0]+self._DesignParameter['Folded_Cascode_AMP']['_DesignObj']._DesignParameter['m4_pdn_single_sw']['_XYCoordinates'][0][1][0])/2, self._DesignParameter['Folded_Cascode_AMP']['_XYCoordinates'][0][1]+self._DesignParameter['Folded_Cascode_AMP']['_DesignObj']._DesignParameter['m4_pdn_single_sw']['_XYCoordinates'][0][0][1]]]
-		self._DesignParameter['VOUT']['_XYCoordinates']=[self.getXY('Common_Source_AMP','via23_R_feedback')[0]]
+		self._DesignParameter['VOUT']['_XYCoordinates']=[self.getXY('Common_Source_AMP','via34_R_drain')[0]]
+
+		###### Constarints #####
+		if ((Common_param['cap1_param']['_NumofOD'] != 1) or (Common_param['cap2_param']['_NumofOD'] != 1)) == True :
+			raise NotImplementedError('The number of RX or OD in NCAP should be 1')
+
+		if (self.getXY('Common_Source_AMP','guardring','bot')[0][1]-self.getYWidth('Common_Source_AMP','guardring','bot','_Met1Layer')/2)-(self.getXY('Folded_Cascode_AMP','gate_n0')[0][1]+self.getYWidth('Folded_Cascode_AMP','gate_n0','_Met1Layer')/2):
+			raise NotImplementedError
