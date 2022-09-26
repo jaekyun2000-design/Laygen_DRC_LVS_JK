@@ -190,8 +190,8 @@ class _Common_Source_Amp(StickDiagram._StickDiagram):
 		self._DesignParameter['m4_mos_R_drain']['_Width']=self.getYWidth('via34_R_drain','_Met4Layer')
 		self._DesignParameter['m4_mos_R_drain']['_XYCoordinates']=[[self.getXY('via34_R_drain')[0], [self.getXY('via34_drain')[0][0], self.getXY('via34_R_drain')[0][1]]]]
 
-		self._DesignParameter['via34_mos_cap']=self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='via34_mos_capIn{}'.format(_Name)))[0]
-		self._DesignParameter['via34_mos_cap']['_DesignObj']._CalculateViaMet22Met3DesignParameterMinimumEnclosureY(_ViaMet22Met3NumberOfCOX=2, _ViaMet22Met3NumberOfCOY=1)
+		self._DesignParameter['via34_mos_cap']=self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='via34_mos_capIn{}'.format(_Name)))[0]
+		self._DesignParameter['via34_mos_cap']['_DesignObj']._CalculateViaMet32Met4DesignParameterMinimumEnclosureY(_ViaMet32Met4NumberOfCOX=2, _ViaMet32Met4NumberOfCOY=1)
 		self._DesignParameter['via34_mos_cap']['_XYCoordinates']=[[self.getXY('nmos')[0][0], self.getXY('via34_R_drain')[0][1]]]
 
 		self._DesignParameter['via12_mos_R_feedback']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='via12_mos_R_feedbackIn{}'.format(_Name)))[0]
@@ -248,10 +248,10 @@ class _Common_Source_Amp(StickDiagram._StickDiagram):
 
 		self._DesignParameter['VDD'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[], _Mag=0.2, _Angle=0, _TEXT='VDD')
 		self._DesignParameter['VSS'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[], _Mag=0.2, _Angle=0, _TEXT='VSS')
-		self._DesignParameter['VOUT'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL3PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[], _Mag=0.2, _Angle=0, _TEXT='VOUT')
+		self._DesignParameter['VOUT'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL4PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL4PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[], _Mag=0.2, _Angle=0, _TEXT='VOUT')
 		self._DesignParameter['VIN'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[], _Mag=0.2, _Angle=0, _TEXT='VIN')
 
 		self._DesignParameter['VDD']['_XYCoordinates']=[self.getXY('R_drain','_Met1Layer')[0]]
 		self._DesignParameter['VSS']['_XYCoordinates']=[self.getXY('guardring','bot')[0]]
-		self._DesignParameter['VOUT']['_XYCoordinates']=[self.getXY('via23_R_feedback')[0]]
+		self._DesignParameter['VOUT']['_XYCoordinates']=[self.getXY('via34_R_drain')[0]]
 		self._DesignParameter['VIN']['_XYCoordinates']=[[self.getXY('nmos')[0][0], self.getXY('via12_gate')[-1][1]]]
