@@ -756,7 +756,7 @@ class _SummerBottom(StickDiagram._StickDiagram):
 		################################# NCAP Via Generation #################################
 		_ViaNum = _ViaMet12Met2NumberOfCOY
 		if _ViaNum == None:
-			_ViaNum = int(self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['_Met1Layer1']['_XWidth'] // (_DRCObj._VIAxMinWidth + _DRCObj._VIAxMinSpace)) // 2
+			_ViaNum = int(self._DesignParameter['_NCAP']['_DesignObj']._DesignParameter['Viapoly2Met1H']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] // (_DRCObj._VIAxMinWidth + _DRCObj._VIAxMinSpace)) // 2
 		if _ViaNum < 2:
 			_ViaNum = 2
 
