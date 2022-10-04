@@ -889,6 +889,7 @@ class _LoadSRefWindow(QWidget):
     send_array_signal = pyqtSignal("PyQt_PyObject")
     send_destroy_signal = pyqtSignal(str)
     send_exported_sref_signal = pyqtSignal(str, dict)
+    send_variable_wo_post_ast = pyqtSignal("PyQt_PyObject")
     send_name_duplication_check_signal =pyqtSignal(str)
 
     def __init__(self, purpose = None, SRefElement = None):
@@ -1121,7 +1122,8 @@ class _LoadSRefWindow(QWidget):
             self.warning.show()
             return None
         for idx in range(len(self.par_valueForLineEdit)):
-            self.paramDict[self.par_name[idx]] = self.par_valueForLineEdit[idx].text()
+            if not self.par_valueForLineEdit[idx].isReadOnly():
+                self.paramDict[self.par_name[idx]] = self.par_valueForLineEdit[idx].text()
 
         tmpAST = element_ast.Sref()
         for key in element_ast.Sref._fields:
@@ -1180,17 +1182,20 @@ class _LoadSRefWindow(QWidget):
         self.cal_idx = self.par_button_for_cal.index(sender)
 
         self.cal = calculator.ExpressionCalculator(clipboard=QGuiApplication.clipboard(),purpose='sref')
-        self.cal.send_expression_signal.connect(self.exported_text)
+        # self.cal.send_expression_signal.connect(self.exported_text)
+        self.cal.send_variable_wo_post_ast.connect(self.send_variable_wo_post_ast)
         self.cal.send_dummyconstraints_signal.connect(self.cal.storePreset)
         self.cal.set_preset_window()
         self.cal.show()
 
     def exported_text(self, text, purpose, output_dict):
         self.output_dict = output_dict
-        self.send_exported_sref_signal.emit('LogicExpressionD_sref', output_dict)
+
+        # self.send_exported_sref_signal.emit('LogicExpressionD_sref', output_dict)
 
     def get_param_value_ast(self, _id, _ast):
         self.par_valueForLineEdit[self.cal_idx].setText(_id)
+        self.par_valueForLineEdit[self.cal_idx].setReadOnly(True)
 
     def get_runtime_info(self, status):
         if status == 'error':
@@ -1198,6 +1203,13 @@ class _LoadSRefWindow(QWidget):
             self.warning.setText("Invalid Parameter!")
             self.warning.show()
             self.option = False
+
+    def receive_constraint_result(self, qt_dc):
+        # purpose = 'sref'
+        # self.exported_text(text=qt_dc._id, purpose=purpose, output_dict = qt_dc._ast.info_dict)
+        self.par_valueForLineEdit[self.cal_idx].setText(qt_dc._id)
+        self.par_valueForLineEdit[self.cal_idx].setReadOnly(True)
+        self.paramDict[self.par_name[self.cal_idx]] = qt_dc._ast
 
 class _MacroCellWindow(QWidget):
     send_DesignConstraint_signal = pyqtSignal("PyQt_PyObject")
@@ -2864,6 +2876,7 @@ class _SelectedDesignListWidget(QListWidget):
     send_parameterIDList_signal = pyqtSignal(list,int)
     send_deleteItem_signal = pyqtSignal(str)
     send_request_visual_item = pyqtSignal(str)
+    send_sref_expression_assistance_signal = pyqtSignal("PyQt_PyObject")
     # send_Up
 
     def __init__(self):
@@ -2965,6 +2978,7 @@ class _SelectedDesignListWidget(QListWidget):
                 self.sw = _LoadSRefWindow(purpose='main_load', SRefElement=modifyingObject)
                 self.sw.show()
                 self.sw.send_DesignConstraint_signal.connect(self.send_UpdateDesignAST_signal)
+                # self.sw.send_exported_sref_signal.connect(self.createDummyConstraint)
                 self.sw.send_exported_sref_signal.connect(self.createDummyConstraint)
                 self.sw.send_destroy_signal.connect(self.sw.close)
             except:
