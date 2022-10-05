@@ -62,6 +62,8 @@ class WidgetDelegator(delegator.Delegator):
         self.main_window.ls.send_DesignConstraint_signal.connect(self.main_window.design_delegator.create_qt_constraint)
         self.main_window.scene.send_xy_signal.connect(self.main_window.ls.DetermineCoordinateWithMouse)
         self.main_window.ls.send_destroy_signal.connect(self.main_window.delete_obj)
+        self.main_window.ls.send_exported_sref_signal.connect(self.main_window.createDummyConstraint)
+        self.main_window.ls.send_variable_wo_post_ast.connect(lambda target_ast: self.main_window.design_delegator.create_qt_constraint(target_ast, sender=self.main_window.ls))
         self.main_window.ls.send_name_duplication_check_signal.connect(lambda name:
                                                                        self.main_window.ls.set_name_check(
                                                                            self.check_name_duplication(name)))

@@ -1049,7 +1049,6 @@ class ExpressionCalculator(QWidget):
                 self.send_variable_wo_post_ast.emit(tmp_ast)
             if export_type != 'PathXY_row':
                 self.hide()
-            # self.send_expression_signal.emit(self.display.toPlainText(), self.purpose, output)
 
         # self.send_variable_ast.emit()
 

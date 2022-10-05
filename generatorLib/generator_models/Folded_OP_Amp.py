@@ -25,27 +25,27 @@ class _Folded_OP_Amp(StickDiagram._StickDiagram):
 
 	def _CalculateDesignParameter(self, Folded_param = {\
 													'pset_param':\
-																{'pmos_pdn_single_sw_param':{'_PMOSNumberofGate':4, '_PMOSChannelWidth':2000, '_PMOSChannellength':30, '_PMOSDummy':True, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None}, \
-																'pmos_pdn_pair_sw_param':{'_PMOSNumberofGate':32, '_PMOSChannelWidth':250, '_PMOSChannellength':30, '_PMOSDummy':True, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None}, \
-																'pmos_current_pair1_param':{'_PMOSNumberofGate':8, '_PMOSChannelWidth':5000, '_PMOSChannellength':1000, '_PMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None}, \
-																'pmos_current_pair2_param':{'_PMOSNumberofGate':8, '_PMOSChannelWidth':5000, '_PMOSChannellength':1000, '_PMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None},\
-																'pmos_current_single_param':{'_PMOSNumberofGate':8, '_PMOSChannelWidth':5000, '_PMOSChannellength':1000, '_PMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None},\
-																'pmos_input_param':{'_PMOSNumberofGate':8, '_PMOSChannelWidth':5000, '_PMOSChannellength':1000, '_PMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None}, \
+																{'pmos_pdn_single_sw_param':{'_PMOSNumberofGate':2, '_PMOSChannelWidth':500, '_PMOSChannellength':30, '_PMOSDummy':True, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None}, \
+																'pmos_pdn_pair_sw_param':{'_PMOSNumberofGate':16, '_PMOSChannelWidth':250, '_PMOSChannellength':30, '_PMOSDummy':True, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None}, \
+																'pmos_current_pair1_param':{'_PMOSNumberofGate':4, '_PMOSChannelWidth':2500, '_PMOSChannellength':1000, '_PMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None}, \
+																'pmos_current_pair2_param':{'_PMOSNumberofGate':4, '_PMOSChannelWidth':2500, '_PMOSChannellength':1000, '_PMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None},\
+																'pmos_current_single_param':{'_PMOSNumberofGate':4, '_PMOSChannelWidth':2500, '_PMOSChannellength':1000, '_PMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None},\
+																'pmos_input_param':{'_PMOSNumberofGate':4, '_PMOSChannelWidth':2500, '_PMOSChannellength':1000, '_PMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'LVT', '_PCCrit':None}, \
 																'pmos_guardring_co_left':1,'pmos_guardring_co_right':1, 'pmos_guardring_co_top':1, 'pmos_guardring_co_bot':2, 'pmos_guardring_height1':None, 'pmos_guardring_width1':None, 'pmos_guardring_width2':None, 'pmos_guardring_height2':None},\
 													'nset_param':\
-																{'nmos_pdn_sw_param':{'_NMOSNumberofGate':2, '_NMOSChannelWidth':2000, '_NMOSChannellength':30, '_NMOSDummy':True, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None}, \
-																'nmos_current_pair1_param':{'_NMOSNumberofGate':4, '_NMOSChannelWidth':5000, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None}, \
-																'nmos_current_pair2_param':{'_NMOSNumberofGate':4, '_NMOSChannelWidth':5000, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None},\
-																'nmos_current_single_param':{'_NMOSNumberofGate':4, '_NMOSChannelWidth':5000, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None},\
-																'nmos_input_param':{'_NMOSNumberofGate':8, '_NMOSChannelWidth':2500, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None}, \
+																{'nmos_pdn_sw_param':{'_NMOSNumberofGate':2, '_NMOSChannelWidth':500, '_NMOSChannellength':30, '_NMOSDummy':True, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None}, \
+																'nmos_current_pair1_param':{'_NMOSNumberofGate':2, '_NMOSChannelWidth':2500, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None}, \
+																'nmos_current_pair2_param':{'_NMOSNumberofGate':2, '_NMOSChannelWidth':2500, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None},\
+																'nmos_current_single_param':{'_NMOSNumberofGate':2, '_NMOSChannelWidth':2500, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None},\
+																'nmos_input_param':{'_NMOSNumberofGate':4, '_NMOSChannelWidth':1500, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None}, \
 																'nmos_guardring_co_left':1,'nmos_guardring_co_right':1, 'nmos_guardring_co_top':2, 'nmos_guardring_co_bot':1, 'nmos_guardring_height1':None, 'nmos_guardring_width1':None, 'nmos_guardring_width2':None, 'nmos_guardring_height2':None}}, \
 										Common_param = {\
-																'nmos_param':{'_NMOSNumberofGate':3, '_NMOSChannelWidth':5000, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None},\
+																'nmos_param':{'_NMOSNumberofGate':2, '_NMOSChannelWidth':2500, '_NMOSChannellength':1000, '_NMOSDummy':False, '_GateSpacing':None, '_SDWidth':None, '_XVT':'RVT', '_PCCrit':None},\
 																'psubring_param':{'height':None, 'width':None, 'contact_bottom':2, 'contact_top':2, 'contact_left':2, 'contact_right':2}, \
 																'R_drain':{'_ResWidth':800, '_ResLength':4628, '_CONUMX':None, '_CONUMY':1}, \
 																'R_feedback':{'_ResWidth':800, '_ResLength':1068, '_CONUMX':None, '_CONUMY':1}, \
-																'cap1_param':{'_XWidth':2997, '_YWidth':3459, '_NumofGates':10, '_NumofOD':1, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
-																'cap2_param':{'_XWidth':3000, '_YWidth':2763, '_NumofGates':12, '_NumofOD':1, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}}, \
+																'cap1_param':{'_XWidth':1200, '_YWidth':2500, '_NumofGates':8, '_NumofOD':1, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}, \
+																'cap2_param':{'_XWidth':1200, '_YWidth':1500, '_NumofGates':6, '_NumofOD':1, 'NumOfCOX':None, 'NumOfCOY':None, 'Guardring':False, 'guardring_height':None, 'guardring_width':None, 'guardring_right':None, 'guardring_left':None, 'guardring_top':None, 'guardring_bot':None}}, \
 								) :
 
 		drc = DRC.DRC()
@@ -107,5 +107,5 @@ class _Folded_OP_Amp(StickDiagram._StickDiagram):
 		if ((Common_param['cap1_param']['_NumofOD'] != 1) or (Common_param['cap2_param']['_NumofOD'] != 1)) == True :
 			raise NotImplementedError('The number of RX or OD in NCAP should be 1')
 
-		if (self.getXY('Common_Source_AMP','guardring','bot')[0][1]-self.getYWidth('Common_Source_AMP','guardring','bot','_Met1Layer')/2)-(self.getXY('Folded_Cascode_AMP','gate_n0')[0][1]+self.getYWidth('Folded_Cascode_AMP','gate_n0','_Met1Layer')/2):
+		if (self.getXY('Common_Source_AMP','guardring','bot')[0][1]-self.getYWidth('Common_Source_AMP','guardring','bot','_Met1Layer')/2)-(self.getXY('Folded_Cascode_AMP','gate_n0')[0][1]+self.getYWidth('Folded_Cascode_AMP','gate_n0','_Met1Layer')/2) < drc._Metal1MinSpace3:
 			raise NotImplementedError

@@ -587,6 +587,7 @@ class _MainWindow(QMainWindow):
         self.dockContentWidget2.send_UpdateDesignAST_signal.connect(self.srefUpdate)
         self.dockContentWidget2.send_parameterIDList_signal.connect(self.parameterToTemplateHandler)
         self.dockContentWidget2.send_deleteItem_signal.connect(self.deleteDesignParameter)
+        self.dockContentWidget2.send_sref_expression_assistance_signal.connect(self.createDummyConstraint)
         self.scene.send_parameterIDList_signal.connect(self.dockContentWidget2.ModifyingDesign)
 
         self.dockContentWidget2.createDummyConstraint = self.createDummyConstraint
@@ -2055,24 +2056,25 @@ class _MainWindow(QMainWindow):
 
                 updated_dp_name_list = list(filter(lambda dp_name: dp_name  in current_dpdict, list(dp_dict.keys())))
                 for dp_name in updated_dp_name_list:
-                    current_dpdict[dp_name].update_unified_expression()
-                    self.scene.remove_bounding_rect_dict(self.visualItemDict[dp_name])
-                    for key, value in dp_dict[dp_name].items():
-                        current_dpdict[dp_name]._DesignParameter[key] = value
-                    if current_dpdict[dp_name]._DesignParameter['_DesignParametertype'] == 3:
-                        #TODO dp에는 있지만, vsitem은 없는경우 예외처리가 안되어 있음 (사실상 가정하지 않는 케이스 이기 때문)
-                        sref_vi = self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']]
-                        remove_vi_items = sref_vi.updateDesignParameter(current_dpdict[dp_name])
-                        for rm_vi in remove_vi_items:
-                            self.scene.removeItem(rm_vi)
-                        # self.scene.addItem(sref_vi)
-                        # self.scene.removeItem(self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']])
-                        # self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']] = sref_vi
-                        self._layerItem = sref_vi.returnLayerDict()
-                        self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
-                    else:
-                        self.updateDesignParameter(current_dpdict[dp_name]._DesignParameter, False)
-                    self.scene.modify_bounding_rect_dict(self.visualItemDict[dp_name])
+                    if dp_name in self.visualItemDict:
+                        current_dpdict[dp_name].update_unified_expression()
+                        self.scene.remove_bounding_rect_dict(self.visualItemDict[dp_name])
+                        for key, value in dp_dict[dp_name].items():
+                            current_dpdict[dp_name]._DesignParameter[key] = value
+                        if current_dpdict[dp_name]._DesignParameter['_DesignParametertype'] == 3:
+                            #TODO dp에는 있지만, vsitem은 없는경우 예외처리가 안되어 있음 (사실상 가정하지 않는 케이스 이기 때문)
+                            sref_vi = self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']]
+                            remove_vi_items = sref_vi.updateDesignParameter(current_dpdict[dp_name])
+                            for rm_vi in remove_vi_items:
+                                self.scene.removeItem(rm_vi)
+                            # self.scene.addItem(sref_vi)
+                            # self.scene.removeItem(self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']])
+                            # self.visualItemDict[current_dpdict[dp_name]._DesignParameter['_id']] = sref_vi
+                            self._layerItem = sref_vi.returnLayerDict()
+                            self.dockContentWidget1_2.layer_table_widget.updateLayerList(self._layerItem)
+                        else:
+                            self.updateDesignParameter(current_dpdict[dp_name]._DesignParameter, False)
+                        self.scene.modify_bounding_rect_dict(self.visualItemDict[dp_name])
 
                 new_dp_name_list = list(filter(lambda dp_name: dp_name not in current_dpdict, list(dp_dict.keys())))
                 for dp_name in new_dp_name_list:
