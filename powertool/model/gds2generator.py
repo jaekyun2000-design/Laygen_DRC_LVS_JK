@@ -62,7 +62,7 @@ class GDS2Generator():
             [f'{variable_dict["DV"]}={variable_dict["value"] if variable_dict["value"] != "" else None}' for
              variable_dict in self.user_variables])
         self.code = user_variable_sentence
-        self.code = self.code + '\ndrc=DRC.DRC()\n' + ref_code if ref_code else self.code
+        self.code = self.code + '\nfrom generatorLib import DRC\ndrc=DRC.DRC()\n' + ref_code if ref_code else self.code
         self.code += f'\n_Name="{target_cell_name}"\n'
         target_ast = element_ast.ElementTransformer().visit(target_ast)
         self.code += astunparse.unparse(target_ast)
