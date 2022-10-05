@@ -748,9 +748,6 @@ if __name__ == '__main__':
         # _ChannelWidth = random.randrange(300, 500, 2)
         # _ChannelLength = random.randrange(30, 48, 2)
 
-
-
-
         _Finger2 = 8
         _Finger4 = 8
         _Finger5 = 16
