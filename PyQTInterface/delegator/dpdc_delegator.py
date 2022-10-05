@@ -81,10 +81,13 @@ class DesignDelegator(delegator.Delegator):
 
                     dp_from_gen = gds2gen.code_generation_for_subcell(constraint_ast)
                     if not dp_from_gen:
-                        traceback.print_exc()
-                        warnings.warn('Invalid Parameters.')
-                        self.sender().get_runtime_info('error')
-                        return
+                        ref_code = self.main_window.encodeConstraint()
+                        dp_from_gen = gds2gen.code_generation_for_subcell(constraint_ast, ref_code)
+                        if not dp_from_gen:
+                            traceback.print_exc()
+                            warnings.warn('Invalid Parameters.')
+                            # self.sender().get_runtime_info('error')
+                            return
 
                     if design_dict['parameter']:
                         design_dict['parameter']._DesignParameter['_DesignObj'] = dp_from_gen['_DesignObj']

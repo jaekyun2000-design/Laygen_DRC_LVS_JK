@@ -49,28 +49,8 @@ class GDS2Generator():
         with open(file_name, 'wb') as f:
             pickle.dump(self,f)
 
-    def code_generation_for_subcell(self, _ast=None):
+    def code_generation_for_subcell(self, _ast=None, ref_code=None):
         from PyCodes import element_ast
-        # debug_sref_ast = element_ast.Sref()
-        # debug_sref_ast.name = 'testcell'
-        # debug_sref_ast.library = 'NMOSWithDummy'
-        # debug_sref_ast.className = '_NMOS'
-        # debug_sref_ast.XY = [[0,0]]
-        # debug_sref_ast.calculate_fcn = '_CalculateNMOSDesignParameter'
-        # debug_sref_ast.parameters = dict(
-        #     _NMOSNumberofGate=3, _NMOSChannelWidth=400, _NMOSChannellength=60, _NMOSDummy=False
-        # )
-        # debug_sref_ast = element_ast.Sref()
-        # debug_sref_ast.name = 'inv'
-        # debug_sref_ast.library = 'Inverter'
-        # debug_sref_ast.className = '_Inverter'
-        # debug_sref_ast.XY = [[0,0]]
-        # debug_sref_ast.calculate_fcn = '_CalculateDesignParameter'
-        # debug_sref_ast.parameters = dict(
-        #     _Finger=5, _ChannelWidth=400, _ChannelLength=60,
-        #     _NPRatio=2, _VDD2VSSHeight=None, _Dummy=False
-        # )
-
 
         # target_ast = debug_sref_ast
         target_ast = _ast
@@ -82,6 +62,7 @@ class GDS2Generator():
             [f'{variable_dict["DV"]}={variable_dict["value"] if variable_dict["value"] != "" else None}' for
              variable_dict in self.user_variables])
         self.code = user_variable_sentence
+        self.code = self.code + '\ndrc=DRC.DRC()\n' + ref_code if ref_code else self.code
         self.code += f'\n_Name="{target_cell_name}"\n'
         target_ast = element_ast.ElementTransformer().visit(target_ast)
         self.code += astunparse.unparse(target_ast)
@@ -90,6 +71,9 @@ class GDS2Generator():
         self.root_cell._DesignParameter['_Name'] = StickDiagram._StickDiagram()._NameDeclaration(target_cell_name)
         self.root_cell._DesignParameter['_GDSFile'] = StickDiagram._StickDiagram()._GDSObjDeclaration()
         try:
+            # code = 'for name in self.libraries.class_name_dict:\n' \
+            #         '\tglobals()[name] = self.libraries.libraries[name]\n'
+            # exec(code, globals(), locals())
             self.root_cell.exec_pass(self.code,generator_model_api)
             # self.root_cell._UpdateDesignParameter2GDSStructure(self.root_cell._DesignParameter)
         except:
