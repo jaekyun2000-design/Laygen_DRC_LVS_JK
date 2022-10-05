@@ -475,10 +475,10 @@ OJ         outlin          54    92
 OJ         berg            54    112
 JQ         drawing         58    0
 JQ         bar             58    1
-JQ         exclude         58    2         
+JQ         exclude         58    2
 JQ         net             58    19
 JQ         pin             58    32
-JQ         obs             58    34   
+JQ         obs             58    34
 JQ         hole            58    37
 JQ         esdf            58    62
 JQ         ing             58    84
@@ -554,7 +554,7 @@ LB         lvsres          69    22
 LB         pin             69    32
 LB         obs             69    34
 LB         fill            69    35
-LB         trans           69    51 
+LB         trans           69    51
 LB         esd             69    60
 LBESD_FINGER drawing       69    62
 VV         drawing         70    0      cut     CUTSIZE:3:3
@@ -679,7 +679,7 @@ KERFEXCL   drawing         101   250
 NEGMKS     drawing         102   4
 POSMKS     drawing         102   5
 ALPHA      name            102   6
-OUTLINE    outlin          102   7 
+OUTLINE    outlin          102   7
 PADNUM     drawing         102   8
 FRAME      drawing         102   10
 OUTLINE    kerf            102   11
@@ -805,19 +805,19 @@ C1         drawing         187   0
 A1         drawing         188   0
 YV         drawing         192   0
 YV         bar             192   1
-YV         exclude         192   2         
+YV         exclude         192   2
 YV         net             192   19
 YV         pin             192   32
-YV         obs             192   34   
+YV         obs             192   34
 YV         hole            192   37
 YV         esdf            192   62
 YV         ing             192   84
 YW         drawing         193   0
 YW         bar             193   1
-YW         exclude         193   2         
+YW         exclude         193   2
 YW         net             193   19
 YW         pin             193   32
-YW         obs             193   34   
+YW         obs             193   34
 YW         hole            193   37
 YW         esdf            193   62
 YW         ing             193   84
@@ -836,7 +836,7 @@ BMBALG     drawing         200   24
 ERCWAIVE   drawing         200   25
 IPMARK     drawing         200   26
 IODENWAIVE drawing         200   27
-ERCWAIVEIS drawing         200   28    
+ERCWAIVEIS drawing         200   28
 MXVDD3V3   drawing	   200   30
 MXVDD5V0   drawing 	   200   31
 LD5SEC     drawing         200   32
@@ -845,7 +845,7 @@ BM1CFILL   CFILL           200   36
 DLY        drawing         200   40
 LMC4B      drawing         200   41
 SRAMLVT    drawing         200   42
-ISPLVT     drawing         200   43  
+ISPLVT     drawing         200   43
 BMB	   bmp		   200	 44
 SRAM       dpcell2         200   46
 SRAM       dpcell1         200   47

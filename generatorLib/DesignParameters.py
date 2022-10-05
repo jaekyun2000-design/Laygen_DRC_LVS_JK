@@ -40,7 +40,7 @@ def run_for_process_update():
     _LayerMappingTmp = None
     _Technology = user_setup._Technology
     if _Technology == 'SS28nm':
-        _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/SS28nm/cmos28lp_tech.layermap')
+        _LayerMapFile = open('C:\\Users\\ljw95\\PycharmProjects\\LayGenGUI' + '/PyQTInterface/layermap/SS28nm/cmos28lp_tech.layermap')
         _LayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
     elif _Technology == 'SS65nm':
         _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/SS65nm/lf6s_tech.layermap')
