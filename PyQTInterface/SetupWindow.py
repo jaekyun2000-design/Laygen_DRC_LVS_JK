@@ -3143,9 +3143,11 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     def initUI(self,type):
         self.model = _ConstraintModel()
         if type == "Generator":
-            self.model.setHeaderData(0,Qt.Horizontal,"Constraint Container (Generator)")
+            # self.model.setHeaderData(0,Qt.Horizontal,"Constraint Container (Generator)")
+            self.model.setHeaderData(0,Qt.Horizontal,"Description Tree View")
         else:
-            self.model.setHeaderData(0,Qt.Horizontal,"Constraint Container (Candidate)")
+            # self.model.setHeaderData(0,Qt.Horizontal,"Constraint Container (Candidate)")
+            self.model.setHeaderData(0,Qt.Horizontal,"Working Node View")
         self.model.setHeaderData(1,Qt.Horizontal,"Constraint ID")
         self.model.setHeaderData(2,Qt.Horizontal,"Constraint Type")
         self.model.setHeaderData(3,Qt.Horizontal,"Value")

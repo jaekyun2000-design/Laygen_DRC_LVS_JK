@@ -629,7 +629,8 @@ class _MainWindow(QMainWindow):
             self.bottom_dock_tab_widget.setStyleSheet('background-color:rgb(240,240,240);')
         self.bottom_dock_tab_widget.currentChanged.connect(self.bottom_dock_tab_changed)
 
-        dockWidget3 = QDockWidget("Design Constraint")
+        # dockWidget3 = QDockWidget("Design Constraint")
+        dockWidget3 = QDockWidget("Generator View")
         layoutWidget = QWidget()
         self.dockContentWidget3 = SetupWindow._ConstraintTreeViewWidgetAST("Generator")
         self.dockContentWidget3_2 = SetupWindow._ConstraintTreeViewWidgetAST("Candidate")
@@ -718,7 +719,7 @@ class _MainWindow(QMainWindow):
         # self.parsetreeEasyRun = QPushButton("easyRun")
         self.dictionary_button = QPushButton("Dictionary")
         self.variableCallButton = QPushButton("variableCall")
-        self.calculatorButton = QPushButton("XYCalculator")
+        self.calculatorButton = QPushButton("Expression Assistant")
         self.condition_expression_button = QPushButton("condition exp debug")
         self.conditional_stmt_button = QPushButton("Condition Statement")
         self.add_constraint_view_button = QPushButton("add constraint view")

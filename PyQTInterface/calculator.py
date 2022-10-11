@@ -369,7 +369,7 @@ class ExpressionCalculator(QWidget):
         top_DRC_layout.addLayout(V_layout1)
 
         self.setLayout(top_DRC_layout)
-        self.setWindowTitle('Expression Calculator')
+        self.setWindowTitle('Expression Assistant')
         # self.show()
 
     # def ExtendDRCWidget(self):
