@@ -91,26 +91,42 @@ class _Summer_middle(StickDiagram._StickDiagram):
         if 2*(_Finger4+_Finger5)> 2*(_Finger2)+_Finger3:
             _Finger6 = 6
             _Finger1 =  _Finger4 + _Finger5-_Finger3//2-_Finger2 + _Finger6//2
+            if _Finger1 <= _Finger9 + 4:
+                _Finger1 = 12
+                _Finger10 = 7
+                _Finger9 = 4
+                _Finger6=   2 * (_Finger2 + _Finger1 - _Finger4 - _Finger5) + _Finger3
+            else:
+                _Finger10 = _Finger1 - _Finger9 - 1
 
         elif 2*(_Finger4+_Finger5)< 2*(_Finger2)+_Finger3:
             _Finger1=12
             _Finger6 = 2 * (_Finger2 + _Finger1 - _Finger4 - _Finger5) + _Finger3
+            if _Finger1 <= _Finger9 + 4:
+                _Finger1 = 12
+                _Finger10 = 7
+                _Finger9 = 4
+            else:
+                _Finger10 = _Finger1 - _Finger9 - 1
 
         else :
             _Finger6 = 24
             _Finger1 = 12
+            if _Finger1 <= _Finger9 + 4:
+                _Finger1 = 12
+                _Finger10 = 7
+                _Finger9 = 4
+            else:
+                _Finger10 = _Finger1 - _Finger9 - 1
 
-        if _Finger1 <= _Finger9 + 4:
-            _Finger1 = 12
-            _Finger9 = 4
-            _Finger10 = 7
-        else:
-            _Finger10 = _Finger1 - _Finger9 - 1
+
+        if 2*(_Finger1+_Finger2)+_Finger3<54:
+            _Finger3=54-2*(_Finger1+_Finger2)
+            _Finger6=54-2*(_Finger4+_Finger5)
 
         _Finger7 = _Finger3
         _Finger8 = _Finger2
-
-
+        print(_Finger1,_Finger2,_Finger3,_Finger4,_Finger5,_Finger6,_Finger7,_Finger8,_Finger9,_Finger10)
         ################################### PMOS Genteration #########################################################
 
         PMOSparameters1 = copy.deepcopy(PMOSWithDummy._PMOS._ParametersForDesignCalculation)
@@ -539,6 +555,17 @@ class _Summer_middle(StickDiagram._StickDiagram):
         self._DesignParameter['_Summer_bottom']['_DesignObj']._CalculateSummerBottomDesignParameter(**_Summer_bottom)
         self._DesignParameter['_Summer_bottom']['_XYCoordinates']=[[0,0]]
 
+        ############################################ Ncap resizing #########################################################
+
+        # _YWidth=self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_PbodyContact1']['_DesignObj']._DesignParameter['_PPLayer']['_XWidth']/2-\
+        #      self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth']/2- 2*_DRCObj._PolygateMinEnclosureByNcap
+        #
+        # _Summer_bottom['_YWidth'] = _YWidth
+        #
+        # self._DesignParameter['_Summer_bottom'] = self._SrefElementDeclaration(_DesignObj=DFE_Summer_bottom._SummerBottom(_Name='_Summer_bottomIn{}'.format(_Name)))[0]
+        # self._DesignParameter['_Summer_bottom']['_DesignObj']._CalculateSummerBottomDesignParameter(**_Summer_bottom)
+        # self._DesignParameter['_Summer_bottom']['_XYCoordinates']=[[0,0]]
+
         ############################################ Met2 Routing Between upper, bottom #########################################################
 
         self._DesignParameter['Met2Btwupbtm'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],_XYCoordinates=[], _Width=None)
@@ -662,6 +689,8 @@ class _Summer_middle(StickDiagram._StickDiagram):
                                                                       [self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_DesignObj']._DesignParameter['_Met1Layer']['_XYCoordinates'][1][1],\
                                                                        self._DesignParameter['_Summer_bottom']['_DesignObj']._DesignParameter['_Resistor']['_XYCoordinates'][0][1]]]
 
+
+
         ############################################ Pin Generation #########################################################
 
         self._DesignParameter['vdd'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
@@ -711,7 +740,6 @@ if __name__ == '__main__':
         import ftplib
         import random
 
-
         # _Finger2 = random.randint(6, 30)
         # _Finger4=random.randint(2, 30)
         # _Finger5=random.randint(2, 30)
@@ -719,16 +747,14 @@ if __name__ == '__main__':
         # _ChannelWidth = random.randrange(300, 500, 2)
         # _ChannelLength = random.randrange(30, 48, 2)
 
-
-
-
         _Finger2 = 8
         _Finger4 = 8
         _Finger5 = 16
-        _Finger9=4
+        _Finger9 = 8
 
         _ChannelWidth = 500
         _ChannelLength = 30
+
         _Finger1 = None
         _Finger6 = None
         _Finger3 = 14
@@ -752,6 +778,7 @@ if __name__ == '__main__':
         _CONUMY = 1
         _XWidth = 838
         _YWidth = 1874
+        #_YWidth = 1874
         Guardring = False
         _NumofGates = 1
         guardring_right = 3
