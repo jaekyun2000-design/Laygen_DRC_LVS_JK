@@ -963,17 +963,18 @@ class _MainWindow(QMainWindow):
                 self.module_name_list.append(tmp_module_name)
                 self.module_dict[tmp_module_name] = _MainWindow()
                 new_project = self.module_dict[tmp_module_name]
-                selected_qt_dp = copy.deepcopy(
-                    self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][tmp_module_name])
-                new_project._QTObj._qtProject._DesignParameter = {tmp_module_name:selected_qt_dp._DesignParameter['_ModelStructure']}
-
+                # selected_qt_dp = copy.deepcopy(
+                #     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][tmp_module_name])
+                # new_project._QTObj._qtProject._DesignParameter = {tmp_module_name:selected_qt_dp._DesignParameter['_ModelStructure']}
+                new_project._QTObj._qtProject._DesignParameter = copy.deepcopy(self._QTObj._qtProject._DesignParameter)
+                top_cell_name= new_project._QTObj._qtProject._DesignParameter[self._CurrentModuleName][tmp_module_name]._DesignParameter['_DesignObj_Name']
 
                 self.module_dict[tmp_module_name].set_module_name(tmp_module_name)
                 # self.module_dict[tmp_module_name].show()
                 self.module_dict[tmp_module_name].module_dict = self.module_dict
                 self.module_dict[tmp_module_name].module_name_list = self.module_name_list
 
-                hierarchy_key = selected_qt_dp._DesignParameter['_DesignObj_Name'] + '/' + tmp_module_name
+                hierarchy_key = top_cell_name + '/' + tmp_module_name
                 if len(self.entireHierarchy) == 0:
                     """
                     case when sref load is used (not load gds!)
@@ -986,8 +987,11 @@ class _MainWindow(QMainWindow):
                     else:
                         hierarchy = {tmp_module_name : self.entireHierarchy[self._CurrentModuleName][hierarchy_key]}
 
+
                 self.remove_module(self._CurrentModuleName)
-                new_project.create_dc_vi_from_top_dp(hierarchy, test)
+                del new_project._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
+
+                new_project.create_dc_vi_from_top_dp(hierarchy, test, topCellName=top_cell_name)
                 self.hide()
 
     def add_constraint_view(self):
@@ -1726,7 +1730,7 @@ class _MainWindow(QMainWindow):
 
 
 
-    def srefModulization(self,_flattenStatusDict, _sref = None):
+    def srefModulization(self,_flattenStatusDict, _sref = None, topCellName=None):
         """
         :param _flattenStatusDict:
                _sref param not needed: this param exists only for recursive call
@@ -1736,7 +1740,7 @@ class _MainWindow(QMainWindow):
         if _sref == None:
             ########################################## 1. Initial Condition ############################################
             addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
-            topCellName = addedModulelist[-1]
+            topCellName = addedModulelist[-1] if topCellName == None else topCellName
             number_of_cells = len(self._QTObj._qtProject._DesignParameter[topCellName].values())
             # numberOfCells = int(re.findall('\d+', lastSrefName)[0])
             tmpDict = dict()
@@ -1981,6 +1985,8 @@ class _MainWindow(QMainWindow):
         self.send_visibleGenState_signal.emit(state, viList)
 
     def runConstraint(self):
+        import time
+        start_time = time.time()
         try:
             if user_setup.GDS2GEN is False:
                 return
@@ -2029,6 +2035,8 @@ class _MainWindow(QMainWindow):
         except:
             traceback.print_exc()
             print("Run fail")
+        end_time = time.time()
+        print(f'--- {end_time - start_time} seconds ---')
 
 
     def runConstraint_for_update(self, code=None):
@@ -2036,6 +2044,8 @@ class _MainWindow(QMainWindow):
         run generator constraint and update visual object by updated designs.
         stop_point is introduced to support line by line execution.
         '''
+        import time
+        start_time = time.time()
         try:
             gds2gen = topAPI.gds2generator.GDS2Generator(False)
             gds2gen.load_qt_project(self)
@@ -2044,7 +2054,9 @@ class _MainWindow(QMainWindow):
                 gds2gen.load_qt_design_constraints_code(code)
             else:
                 gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
-            dp_dict = gds2gen.get_updated_designParameters()                                    # New Info
+            dp_dict = gds2gen.get_updated_designParameters()
+            dp_update_time = time.time()
+            # New Info
             for dp in dp_dict.values():
                 if '_ModelStructure' in dp:
                     for qt_dp in dp['_ModelStructure'].values():
@@ -2135,7 +2147,10 @@ class _MainWindow(QMainWindow):
             if working_code:
                 self.runConstraint_for_update(working_code)
             traceback.print_exc()
+        end_time = time.time()
 
+        print(f"Run time : {end_time - start_time}")
+        print(f"cod time : {dp_update_time-start_time}")
 
     def checkNameDuplication(self,checkItem):
         name = checkItem._ItemTraits['_ElementName']
@@ -2346,7 +2361,7 @@ class _MainWindow(QMainWindow):
         self.module_dict[updateModule].module_name_list = self.module_name_list
         self.hide()
 
-    def remove_module(self, delete_module_name):
+    def  remove_module(self, delete_module_name):
         self.module_name_list.pop(self.module_name_list.index(delete_module_name))
         self.module_dict.pop(delete_module_name)
 
@@ -2578,7 +2593,7 @@ class _MainWindow(QMainWindow):
 
             self.create_dc_vi_from_top_dp(self.entireHierarchy, test=test)
 
-    def create_dc_vi_from_top_dp(self, hierarchy, test=None):
+    def create_dc_vi_from_top_dp(self, hierarchy, test=None, topCellName=None):
         import time
         time_start = time.time()
         self.fc = SetupWindow._FlatteningCell(hierarchy, self._QTObj._qtProject._DesignParameter)
@@ -2595,10 +2610,10 @@ class _MainWindow(QMainWindow):
         print("############################ Cell DP, DC, VISUALITEM CREATION START ###############################")
         visual_item_list = []
         addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
-        topCellName = addedModulelist[-1]
+        topCellName = addedModulelist[-1] if topCellName == None else topCellName
         # self._CurrentModuleName = topCellName       # Necessary For adding elements inside the cell
         self.set_module_name(topCellName)
-        ProcessedModuleDict = self.srefModulization(flattening_dict)            # Reconstruct imported GDS
+        ProcessedModuleDict = self.srefModulization(flattening_dict, topCellName=topCellName)            # Reconstruct imported GDS
         self._QTObj._qtProject._DesignParameter[topCellName].clear()            # discard original top cell info
         topcell = self._QTObj._qtProject._DesignParameter[topCellName]
         for _id, _element in ProcessedModuleDict.items():
