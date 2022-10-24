@@ -2531,8 +2531,14 @@ class QtProject:
             element_name, element = target[0], target[1]
             # key = key_list.pop(0)
             if element._DesignParameter['_DesignParametertype'] == 3:
-                sub_sref_cell = filter(lambda element_tuple: element_tuple[1]._DesignParameter['_DesignParametertype'] == 3,
-                                       list(element._DesignParameter['_DesignObj'].items()))
+                if isinstance(element._DesignParameter['_DesignObj'], DummyDesignParameter):
+                    sub_sref_cell = filter(
+                        lambda element_tuple: element_tuple[1]['_DesignParametertype'] == 3,
+                        list(element._DesignParameter['_DesignObj']._DesignParameter.items()))
+
+                else:
+                    sub_sref_cell = filter(lambda element_tuple: element_tuple[1]._DesignParameter['_DesignParametertype'] == 3,
+                                           list(element._DesignParameter['_DesignObj'].items()))
                 sub_sref_cell = list(sub_sref_cell)
                 key_element_name = f'{element._DesignParameter["_DesignObj_Name"]}/{element._DesignParameter["_ElementName"]}'
                 if sub_sref_cell:

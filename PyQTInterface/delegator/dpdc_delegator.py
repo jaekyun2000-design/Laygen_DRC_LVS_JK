@@ -538,6 +538,10 @@ class DesignDelegator(delegator.Delegator):
         dl_inference_time += time_elapsed
         dl_count += 1
         idx = np.argmax(result)
+        positive_check = np.nonzero(np.greater(result, user_setup.DL_threshold))
+        if positive_check[0].size == 0:
+            ##### 성공!!!! #####
+            warnings.warn('No cell type is detected.')
 
         print(dl_inference_time, dl_count, dl_inference_time/dl_count)
 
