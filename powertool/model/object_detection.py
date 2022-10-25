@@ -13,12 +13,13 @@ prediction_path = './object_detection/prediction'
 if 'DL_DETECTION' in user_setup.__dir__() and user_setup.DL_DETECTION and True:
     #add path
     project_path = '/Users/sun/Library/CloudStorage/GoogleDrive-sun9uu@gmail.com/내 드라이브/object_detection_data'
-    model_dir = f'{project_path}/model/class4a_hydra_array_mid'
-    hydra = True if 'hydra' in model_dir else False
+    model_dir = f'{project_path}/model/Hydra3head_10k'
+    hydra = 2
     sys.path.append(project_path)
     # import laytina_py2 as laytina_py
     # import laytina_py2 as laytina_py
-    import hydra_laytina_py2 as laytina_py
+    # import hydra_laytina_py2 as laytina_py
+    import hydra2nd_laytina_py2 as laytina_py
     # import laytina_py3 as laytina_py
     import pickle
     import tensorflow as tf
@@ -27,24 +28,46 @@ if 'DL_DETECTION' in user_setup.__dir__() and user_setup.DL_DETECTION and True:
         class_list = pickle.load(f)
     with open(f'{model_dir}/layer_list.bin', 'rb') as f:
         layer_list = pickle.load(f)
+    if hydra >=2:
+        with open(f'{model_dir}/via_class_list.bin', 'rb') as f:
+            via_class_list = pickle.load(f)
+        n3 = len(via_class_list)
+    n1 = len(class_list)
+    n2 = 1
+
     # layer_list = ['METAL1', 'METAL2', 'METAL3', 'METAL4', 'METAL5', 'METAL6', 'METAL7', 'NWELL', 'DIFF', 'POLY', 'PRES',
     #               'CONT', 'VIA12', 'VIA23', 'VIA34', 'VIA45', 'VIA56', 'VIA67', 'PIMP', 'OP']
 
     backbone = laytina_py.get_backbone(layer_list)
-    model = laytina_py.RetinaNet(len(class_list), backbone)
+    if hydra <= 1:
+        model = laytina_py.RetinaNet(len(class_list), backbone)
+    elif hydra >= 2:
+        model = laytina_py.RetinaNet(len(class_list), num_via_classes=len(via_class_list), backbone= backbone)
 
     latest_checkpoint = tf.train.latest_checkpoint(model_dir)
     model.load_weights(latest_checkpoint)
     image = tf.keras.Input(shape=[None, None, len(layer_list)], name='image')
     predictions = model(image, training=False)
-    if hydra:
-        detections_array = laytina_py.DecodePredictions(confidence_threshold=0.5)(image, predictions[:, :, -5:])
-        inference_model_array = tf.keras.Model(inputs=image, outputs=detections_array)
-        predictions = predictions[:, :, :-5]
-    detections = laytina_py.DecodePredictions(confidence_threshold=0.5)(image, predictions)
+    # if hydra >=1:
+    #     detections_array = laytina_py.DecodePredictions(confidence_threshold=0.5)(image, predictions[:, :, -5:])
+    #     inference_model_array = tf.keras.Model(inputs=image, outputs=detections_array)
+    #     predictions = predictions[:, :, :-5]
+    # detections = laytina_py.DecodePredictions(confidence_threshold=0.5)(image, predictions)
+    # inference_model = tf.keras.Model(inputs=image, outputs=detections)
+    predictions_1st = predictions[:, :, :4 + n1]
+    detections = laytina_py.DecodePredictions(confidence_threshold=0.5, num_classes=len(class_list))(image,
+                                                                                                     predictions_1st)
     inference_model = tf.keras.Model(inputs=image, outputs=detections)
-
-
+    if hydra >= 1:
+        predictions_2nd = predictions[:, :, 4 + n1: 8 + n1 + n2]
+        detections_2nd = laytina_py.DecodePredictions(confidence_threshold=0.5, num_classes=1)(image, predictions_2nd)
+        inference_model_2nd = tf.keras.Model(inputs=image, outputs=detections_2nd)
+    if hydra >= 2:
+        # predictions_3rd = predictions[:,:,8+n1+n2: 12+n1+n2+n3]
+        predictions_3rd = predictions[:, :, 8 + n1 + n2:]
+        detections_3rd = laytina_py.DecodePredictions(confidence_threshold=0.5, num_classes=len(via_class_list))(image,
+                                                                                                                 predictions_3rd)
+        inference_model_3rd = tf.keras.Model(inputs=image, outputs=detections_3rd)
 
     # laytina_py.inf(inference_model, 10)
 def prepare_image(image):
@@ -91,20 +114,26 @@ def inference(matrix_reader=None, input_image=None, image_shape=None, ratio=None
     detections = inference_model.predict(input_image)
     num_detections = detections.valid_detections[0]
     class_names = [
-        laytina_py.int2str(int(x)) for x in detections.nmsed_classes[0][:num_detections]
+        laytina_py.int2str(int(x), class_list) for x in detections.nmsed_classes[0][:num_detections]
     ]
 
     prediction_boxes = detections.nmsed_boxes[0][:num_detections]
     prediction_scores = detections.nmsed_scores[0][:num_detections]
 
-    if hydra:
-        detections_array = inference_model_array.predict(input_image)
+    if hydra >=1:
+        detections_array = inference_model_2nd.predict(input_image)
         num_detections_array = detections_array.valid_detections[0]
 
         class_names.extend(['boundary_array']*num_detections_array)
         prediction_boxes = tf.concat([prediction_boxes, detections_array.nmsed_boxes[0][:num_detections_array]], axis=0)
         prediction_scores = tf.concat([prediction_scores, detections_array.nmsed_scores[0][:num_detections_array]], axis=0)
         num_detections += num_detections_array
+    if hydra >=2:
+        via_detections = inference_model_3rd.predict(input_image)
+        num_detections = via_detections.valid_detections[0]
+        class_names.extend([via_class_list[int(x)] for x in via_detections.nmsed_classes[0][:num_detections]])
+        prediction_boxes = tf.concat([prediction_boxes, via_detections.nmsed_boxes[0][:num_detections]], axis=0)
+        prediction_scores = tf.concat([prediction_scores, via_detections.nmsed_scores[0][:num_detections]], axis=0)
 
 
     laytina_py.visualize_detections(

@@ -542,6 +542,7 @@ class DesignDelegator(delegator.Delegator):
         if positive_check[0].size == 0:
             ##### 성공!!!! #####
             warnings.warn('No cell type is detected.')
+            return 'Negative'
 
         print(dl_inference_time, dl_count, dl_inference_time/dl_count)
 

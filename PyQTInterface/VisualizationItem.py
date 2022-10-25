@@ -56,8 +56,14 @@ class ElementBlock:
                 print("ERROR: Unvalid Height")
                 return None
             self.block_traits['_Height'] = int(self.block_traits['_Height'])
+        if self.block_traits['_LayerUnifiedName'] == 'BoundingBox':
+            self.block_traits["_Outline"] = Qt.white
+            self.block_traits["_LinePattern"] = [1,3,1,3,1,3]
+            self.block_traits["_LineSize"] = 1
+            self.block_traits["_Color"] = QColor(Qt.white)
+            self.block_traits['_Pattern'] = 'X'
 
-        if self.block_traits["_Pattern"] not in ['X', 'blank']:
+        elif self.block_traits["_Pattern"] not in ['X', 'blank']:
             color_name = \
             DisplayReader._DisplayDict[self.block_traits['_LayerName'] + self.block_traits['_DatatypeName']][
                 'Fill'].name
@@ -209,6 +215,10 @@ class _RectBlock(QGraphicsRectItem):
             self.element_info.brush.setColor(self.element_info.block_traits["_Color"])
         painter.setPen(self.element_info.pen)
 
+            # self.element_info.block_traits["_Outline"] = Qt.white
+            # self.element_info.block_traits["_LinePattern"] = [1,3,1,3,1,3]
+            # self.element_info.block_traits["_LineSize"] = 1
+            # self.element_info.block_traits["_Color"] = QColor(Qt.white)
         if self.element_info.block_traits["_Pattern"] not in ['X', 'blank']:
             if self.element_info.block_traits['_LayerName']+self.element_info.block_traits['_DatatypeName'] not in DisplayReader._DisplayDict or\
                 self.element_info.block_traits["_Pattern"] not in DisplayReader._PatternDict:
@@ -217,8 +227,12 @@ class _RectBlock(QGraphicsRectItem):
                 return
             else:
                 self.show()
+
         if self.element_info.block_traits['_LayerName'] + self.element_info.block_traits['_DatatypeName'] not in DisplayReader._DisplayDict:
-            return
+            if self.element_info.block_traits['_LayerUnifiedName'] == 'BoundingBox':
+                pass
+            else:
+                return
         color_name = DisplayReader._DisplayDict[self.element_info.block_traits['_LayerName']+self.element_info.block_traits['_DatatypeName']]['Fill'].name
         color_patt_name =color_name+self.element_info.block_traits["_Pattern"]
 
@@ -1218,7 +1232,8 @@ class _VisualizationItem(QGraphicsItemGroup):
                                            right=self.boundingRect().right())
 
         else:
-            print("WARNING1: Unvalid DataType Detected!")
+            # print("WARNING1: Unvalid DataType Detected!")
+            pass
 
         for block in self.block:
             if type(block) == _RectBlock:

@@ -23,7 +23,7 @@ def run_for_process_update():
     global _LayDatNumToName
     global _LayerExtendedMapping
     global _ExtendLayerMappingTmp
-    _LayerMapping = dict()
+    _LayerMapping = dict(BoundingBox=(None,None,None))
     _LayerMapFile = None
     _LayerMappingTmp = None
     _LayerNameTmp = None
