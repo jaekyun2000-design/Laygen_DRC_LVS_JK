@@ -4825,7 +4825,7 @@ class _FlatteningCell(QWidget):
     send_flattendict_signal = pyqtSignal(dict)
     # send_ok_signal = pyqtSignal()
 
-    def __init__(self,  _hierarchydict, dp):
+    def __init__(self,  _hierarchydict, dp, top_cell_name):
         self.grouping = False
         try:
             if user_setup.DL_FEATURE:
@@ -4838,12 +4838,13 @@ class _FlatteningCell(QWidget):
             import traceback
             traceback.print_exc()
         super().__init__()
+        self.top_cell_name = top_cell_name
         self.loop_obj = QEventLoop()
         self._hdict = _hierarchydict
         self.model = QTreeWidget()
         self.model.setColumnCount(5)
         self.model.setHeaderLabels(['Design Object', 'Cell Name', 'Flatten Option', 'Macro Cell', 'Generator Name'])
-        self.dp = dp
+        self.dp = dp[top_cell_name]
         self.itemlist = list()
         self.combolist = list(generator_model_api.class_dict.keys())
         self.initUI()
@@ -4956,11 +4957,12 @@ class _FlatteningCell(QWidget):
         if self.grouping and is_top:
             import lab_feature
             if user_setup.DL_FEATURE:
-                # test = item.text(0)
+                # text = item.text(0)
                 text = item.text(0) if item.text(0) in self.dp else f'{item.text(0)}_0'
-                tmp_dp = lab_feature.deepish_copy(self.dp[text])
+                # tmp_dp = lab_feature.deepish_copy(self.dp[text])
+                tmp_dp = self.dp[text]
                 tmp_delegator = dpdc_delegator.DesignDelegator(None)
-                library_name = tmp_delegator.build_layer_matrix_by_dps(tmp_dp)
+                library_name = tmp_delegator.build_layer_matrix_by_dps(tmp_dp._DesignParameter['_DesignObj'])
                 text_inference = topAPI.gds2generator.CellInspector().convert_pcell_name_to_generator_name(item.text(0))
                 if library_name != text_inference:
                     cnn_inference_data.append((library_name, text_inference, item.text(0)))

@@ -1157,7 +1157,7 @@ class QtProject:
                                 sref_name_count[sref_name] = 0
                             else:
                                 sref_name_count[sref_name] += 1
-                            _tmpId = f'{sref_name}{sref_name_count[sref_name]}'
+                            _tmpId = f'{sref_name}_{sref_name_count[sref_name]}'
                             self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName,
                                                            _ElementName=f'{sref_name}_{sref_name_count[sref_name]}')
                         # print('     monitor for debug: ', _tmpElement._ELEMENTS._SNAME.sname.decode())
