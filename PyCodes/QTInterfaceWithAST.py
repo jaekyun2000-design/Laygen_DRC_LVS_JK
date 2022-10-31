@@ -1157,7 +1157,7 @@ class QtProject:
                                 sref_name_count[sref_name] = 0
                             else:
                                 sref_name_count[sref_name] += 1
-                            _tmpId = f'{sref_name}{sref_name_count[sref_name]}'
+                            _tmpId = f'{sref_name}_{sref_name_count[sref_name]}'
                             self._createNewDesignParameter(_id=_tmpId, _type=3, _ParentName=_tmpStructureName,
                                                            _ElementName=f'{sref_name}_{sref_name_count[sref_name]}')
                         # print('     monitor for debug: ', _tmpElement._ELEMENTS._SNAME.sname.decode())
@@ -2531,8 +2531,14 @@ class QtProject:
             element_name, element = target[0], target[1]
             # key = key_list.pop(0)
             if element._DesignParameter['_DesignParametertype'] == 3:
-                sub_sref_cell = filter(lambda element_tuple: element_tuple[1]._DesignParameter['_DesignParametertype'] == 3,
-                                       list(element._DesignParameter['_DesignObj'].items()))
+                if isinstance(element._DesignParameter['_DesignObj'], DummyDesignParameter):
+                    sub_sref_cell = filter(
+                        lambda element_tuple: element_tuple[1]['_DesignParametertype'] == 3,
+                        list(element._DesignParameter['_DesignObj']._DesignParameter.items()))
+
+                else:
+                    sub_sref_cell = filter(lambda element_tuple: element_tuple[1]._DesignParameter['_DesignParametertype'] == 3,
+                                           list(element._DesignParameter['_DesignObj'].items()))
                 sub_sref_cell = list(sub_sref_cell)
                 key_element_name = f'{element._DesignParameter["_DesignObj_Name"]}/{element._DesignParameter["_ElementName"]}'
                 if sub_sref_cell:

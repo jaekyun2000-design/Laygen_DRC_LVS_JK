@@ -20,6 +20,9 @@ import time
 dl_inference_time = 0
 dl_count = 0
 
+if user_setup.DL_FEATURE:
+    from powertool.model import element_predictor
+
 class DesignDelegator(delegator.Delegator):
     def __init__(self, main_window):
         super(DesignDelegator, self).__init__(main_window)
@@ -486,13 +489,13 @@ class DesignDelegator(delegator.Delegator):
         input: dp_dictionary
         output: cell type prediction result str
         """
-        lay_mat = topAPI.layer_to_matrix.LayerToMatrix(user_setup.matrix_x_step, user_setup.matrix_y_step, user_setup.layer_list)
+        lay_mat = topAPI.layer_to_matrix.LayerToMatrix(element_predictor.matrix_x_step, element_predictor.matrix_y_step, element_predictor.layer_list)
         dummy_dp = QTInterfaceWithAST.DummyDesignParameter()
         for name, qt_dp in qt_dp_dict.items():
             dummy_dp.restore_dp(name,qt_dp)
 
         # lay_mat.load_qt_parameters(qt_dp_dict)
-        lay_mat.load_dp(dummy_dp._DesignParameter,minimum_step_size=None,matrix_size=(user_setup.matrix_x_step,user_setup.matrix_y_step),bb=False)
+        lay_mat.load_dp(dummy_dp._DesignParameter,minimum_step_size=None,matrix_size=(element_predictor.matrix_x_step,element_predictor.matrix_y_step),bb=False)
         #
         cell_size = lay_mat.get_cell_size()
         return self.detect_cell(lay_mat.matrix_by_layer, cell_size)
@@ -500,7 +503,7 @@ class DesignDelegator(delegator.Delegator):
     def detect_cell(self, matrix_by_layer, cell_size=None):
         stacked_matrix = None
         cell_data = None
-        for layer in user_setup.layer_list:
+        for layer in element_predictor.layer_list:
             if type(stacked_matrix) == np.ndarray:
                 stacked_matrix = np.append(stacked_matrix, np.expand_dims(np.array(matrix_by_layer[layer]),2), axis=2)
             else:
@@ -538,13 +541,18 @@ class DesignDelegator(delegator.Delegator):
         dl_inference_time += time_elapsed
         dl_count += 1
         idx = np.argmax(result)
+        positive_check = np.nonzero(np.greater(result, user_setup.DL_threshold))
+        if positive_check[0].size == 0:
+            ##### 성공!!!! #####
+            warnings.warn('No cell type is detected.')
+            return 'Negative'
 
         print(dl_inference_time, dl_count, dl_inference_time/dl_count)
 
-        prediction_cell_type = user_setup.data_type_list[idx-1]
+        prediction_cell_type = element_predictor.data_type_list[idx-1]
         if prediction_cell_type in ['NMOSWithDummy','PMOSWithDummy'] and user_setup.DL_Parameter:
              self.detect_parameters_nmos_debug(cell_data, cell_size)
-        return user_setup.data_type_list[idx - 1]
+        return element_predictor.data_type_list[idx - 1]
 
 
     def detect_parameters_nmos_debug(self, cell_data, cell_size=None):

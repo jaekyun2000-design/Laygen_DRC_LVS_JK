@@ -61,6 +61,44 @@ class ExpressionCalculator(QWidget):
         self.hierarchy_list = list()
         self.returnedLayer = None
 
+        self.fcn_dict = dict(
+            XY = 'format: XY(cell)\nreturns center coordinates of the reference cell in terms of [[X,Y]] or [[[X,Y]]]',
+            XYnum = 'format: XYnum(array)\nreturns the number of items in the reference array',
+            bot = 'format: bot(boundary)\nreturns the coordinates of a bottom edge of the reference boundary cell',
+            bottom = 'format: bottom(boundary)\nreturns the coordinates of a bottom edge of the reference boundary cell',
+            center = 'format: center(cell)\nreturns the coordinates of a center of the reference cell',
+            cont = 'format: cont(MOSFET)\nreturns the proper number of a contact layer for a body contact cell using a CoMinSpace DRC rule',
+            cont_cal = 'format: cont_cal(distance)\nreturns the proper number of a contact layer for a body contact cell using a CoMinSpace DRC rule',
+            cont_cal2 = 'format: cont_cal2(distance)\nreturns the proper number of a contact layer for a body contact cell using a CoMinSpace2 DRC rule',
+            distance = 'format: \n WIP',
+            do = 'format: do(cell)\nreturns the name of the reference cell',
+            drc_diagonal = 'format: \n?',
+            drc_distance = 'format: \n?',
+            height = 'format: height(boundary)\nreturns the height of the reference boundary cell',
+            ignore = 'format: ignore(cell)\nThe refenece cell will be ignored in a generator',
+            internal = 'format: internal(coordinates of a cell\'s edge or corner)\nreturns a vector from a center of the reference cell to the input point',
+            lb = 'format: lb(boundary)\nreturns the coordinates of a left bottom corner of the reference boundary cell',
+            left = 'format: left(boundary)\nreturns the coordinates of a left edge of the reference boundary cell',
+            lt = 'format: lt(boundary)\nreturns the coordinates of a left top edge of the reference boundary cell',
+            pwidth = 'format: pwidth(path)\nreturns the width of the reference path',
+            rb = 'format: rb(boundary)\nreturns the coordinates of a right bottom edge of the reference boundary cell',
+            reflect = 'format: reflect(cell,[1,0,0])\nflips the refenece cell vertically',
+            right = 'format: right(boundary)\nreturns the coordinates of a right edge of the reference boundary cell',
+            rotate = 'format: rotate(cell,angle), angle can only be 0, 90, 180 and 270\nrotates the reference cell clockwise',
+            rt = 'format: rt(boundary)\nreturns the coordinates of a right top edge of the reference boundary cell',
+            top = 'format: top(boundary)\nreturns the coordinates of a top edge of the reference boundary cell',
+            top_via_cal = 'format: \n?',
+            via_cal = 'format: via_cal(distance)\nreturns the proper number of a contact layer for a via cell using a VIAxMinSpace DRC rule',
+            via_cal2 = 'format: via_cal2(distance)\nreturns the proper number of a contact layer for a via cell using a VIAxMinSpace2 DRC rule',
+            via_down = 'format: \n1/2만큼 via 살짝 내리기',
+            via_enc = 'format: \n?',
+            via_enc2 = 'format: \n?',
+            via_min_enc = 'format: \n?',
+            via_min_enc2 = 'format: \n?',
+            via_up = 'format: \n1/2만큼 via 살짝 올리기',
+            width = 'format: width(boundary)\nreturns the width of the reference boundary cell'
+        )
+
         # self.setFixedSize(786,800)
         self.setMinimumSize(790,800)
 
@@ -331,7 +369,7 @@ class ExpressionCalculator(QWidget):
         top_DRC_layout.addLayout(V_layout1)
 
         self.setLayout(top_DRC_layout)
-        self.setWindowTitle('Expression Calculator')
+        self.setWindowTitle('Expression Assistant')
         # self.show()
 
     # def ExtendDRCWidget(self):
@@ -886,6 +924,48 @@ class ExpressionCalculator(QWidget):
             if layer != self.returnedLayer:
                 self.DRCWindow.addTopLevelItem(self.DRCTreeItemDict[layer])
 
+    def fcn_clicked(self, clicked):
+        self.tmp_fcn_widget = QWidget()
+        tmp_fcn_layout = QVBoxLayout()
+
+        display_layout = QHBoxLayout()
+        button_layout = QHBoxLayout()
+
+        self.clicked_fcn = QLabel(clicked.text())
+        dummy1 = QLabel('(')
+        self.fcn_display = QTextEdit(self.display.toPlainText())
+        dummy2 = QLabel(')')
+
+        display_layout.addWidget(self.clicked_fcn)
+        display_layout.addWidget(dummy1)
+        display_layout.addWidget(self.fcn_display)
+        display_layout.addWidget(dummy2)
+
+        OK_button = QPushButton('OK')
+        cancel_button = QPushButton('cancel')
+        OK_button.clicked.connect(self.fcn_confirmed)
+        cancel_button.clicked.connect(self.fcn_canceled)
+
+        button_layout.addStretch(5)
+        button_layout.addWidget(OK_button)
+        button_layout.addWidget(cancel_button)
+
+        tmp_fcn_layout.addLayout(display_layout)
+        tmp_fcn_layout.addLayout(button_layout)
+
+        self.tmp_fcn_widget.setLayout(tmp_fcn_layout)
+        self.tmp_fcn_widget.setWindowFlag(Qt.WindowStaysOnTopHint)
+        self.tmp_fcn_widget.show()
+
+    def fcn_confirmed(self):
+        replace_text = self.clicked_fcn.text() + '(' + self.fcn_display.toPlainText() + ')'
+        self.display.setText(self.display.toPlainText().replace(self.fcn_display.toPlainText(), replace_text))
+
+        self.sfw.close()
+        self.tmp_fcn_widget.close()
+
+    def fcn_canceled(self):
+        self.tmp_fcn_widget.close()
 
     def xy_reference_clicked(self):
         pass
@@ -1263,9 +1343,15 @@ class ExpressionCalculator(QWidget):
         self.sfw = QListWidget()
         fcn_list = variable_ast.CustomFunctionTransformer().get_fcn_list()
         self.sfw.addItems(fcn_list)
-        self.sfw.itemDoubleClicked.connect(self.geo_clicked)
+        self.set_tooltip_text(fcn_list)
+        # self.sfw.itemDoubleClicked.connect(self.geo_clicked)
+        self.sfw.itemDoubleClicked.connect(self.fcn_clicked)
         self.sfw.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.sfw.show()
+
+    def set_tooltip_text(self, fcn_list):
+        for fcn_item in fcn_list:
+            self.sfw.findItems(fcn_item,Qt.MatchExactly)[0].setToolTip(self.fcn_dict[fcn_item])
 
     def clear(self):
         self.XWindow.clear()

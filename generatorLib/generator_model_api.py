@@ -1,5 +1,7 @@
 import glob, os, sys, platform, user_setup
+import random
 import sys, inspect
+import warnings
 
 dir_check=os.getcwd()
 if 'generator_model_path' in user_setup.__dict__ and user_setup.generator_model_path:
@@ -24,7 +26,6 @@ class Parm:
                 return
             else:
                 self.default = f"\'{self.default}\'"
-
 print("*********Generator Library Loading Start")
 
 generator_list = []
@@ -38,7 +39,11 @@ for generator in glob.iglob(f'{generator_model_path}/*.py'):
     else:
         generator_class_name = generator.split('\\')[1][:-3]
     generator_list.append(generator_class_name)
-    tmp = __import__(generator_class_name)
+    try:
+        tmp = __import__(generator_class_name)
+    except:
+        warnings.warn(f"Failed to import {generator_class_name}")
+        continue
     for name,obj in inspect.getmembers(tmp):
         if inspect.isclass(obj):
             # class_dict[generator_class_name] = dict(name=name,object=obj)

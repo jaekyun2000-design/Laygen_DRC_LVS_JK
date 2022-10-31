@@ -33,6 +33,8 @@ from PyQTInterface.delegator import dpdc_delegator
 
 debugFlag = True
 cnn_inference_data = []
+cnn_inf_dict_data = dict()
+
 class _BoundarySetupWindow(QWidget):
 
     send_BoundarySetup_signal = pyqtSignal(VisualizationItem._VisualizationItem)
@@ -92,6 +94,9 @@ class _BoundarySetupWindow(QWidget):
         self.layer_input = QComboBox()
         self.XYdictForLineEdit.append(QLineEdit())
 
+
+        if user_setup.DL_DETECTION:
+            self.layer_input.addItem('BoundingBox')
         _Layer = LayerReader._LayerMapping
         for LayerName in _Layer:
             if _Layer[LayerName][1] != None:       ## Layer is drawing
@@ -3143,9 +3148,11 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
     def initUI(self,type):
         self.model = _ConstraintModel()
         if type == "Generator":
-            self.model.setHeaderData(0,Qt.Horizontal,"Constraint Container (Generator)")
+            # self.model.setHeaderData(0,Qt.Horizontal,"Constraint Container (Generator)")
+            self.model.setHeaderData(0,Qt.Horizontal,"Description Tree View")
         else:
-            self.model.setHeaderData(0,Qt.Horizontal,"Constraint Container (Candidate)")
+            # self.model.setHeaderData(0,Qt.Horizontal,"Constraint Container (Candidate)")
+            self.model.setHeaderData(0,Qt.Horizontal,"Working Node View")
         self.model.setHeaderData(1,Qt.Horizontal,"Constraint ID")
         self.model.setHeaderData(2,Qt.Horizontal,"Constraint Type")
         self.model.setHeaderData(3,Qt.Horizontal,"Value")
@@ -4818,7 +4825,7 @@ class _FlatteningCell(QWidget):
     send_flattendict_signal = pyqtSignal(dict)
     # send_ok_signal = pyqtSignal()
 
-    def __init__(self,  _hierarchydict, dp):
+    def __init__(self,  _hierarchydict, dp, top_cell_name):
         self.grouping = False
         try:
             if user_setup.DL_FEATURE:
@@ -4831,12 +4838,13 @@ class _FlatteningCell(QWidget):
             import traceback
             traceback.print_exc()
         super().__init__()
+        self.top_cell_name = top_cell_name
         self.loop_obj = QEventLoop()
         self._hdict = _hierarchydict
         self.model = QTreeWidget()
         self.model.setColumnCount(5)
         self.model.setHeaderLabels(['Design Object', 'Cell Name', 'Flatten Option', 'Macro Cell', 'Generator Name'])
-        self.dp = dp
+        self.dp = dp[top_cell_name]
         self.itemlist = list()
         self.combolist = list(generator_model_api.class_dict.keys())
         self.initUI()
@@ -4867,13 +4875,21 @@ class _FlatteningCell(QWidget):
         self.show()
 
     def ok_button_accepted(self, test=None):
+        global cnn_inference_data
+        global cnn_inf_dict_data
+
         with open('result.csv','w',newline='') as f:
-            global cnn_inference_data
             print(f'len: {len(cnn_inference_data)}')
+            print(f'len: {len(cnn_inf_dict_data)}')
             import csv
             write = csv.writer(f)
             write.writerow(['CNN name','Text name','Real Element Name'])
             write.writerows(cnn_inference_data)
+        with open('result_dict.csv','w',newline='') as f:
+            write = csv.writer(f)
+            write.writerow(['key', 'count'])
+            new_list = [(key, value) for key, value in cnn_inf_dict_data.items()]
+            write.writerows(new_list)
 
 
         if test:
@@ -4921,6 +4937,8 @@ class _FlatteningCell(QWidget):
 
     def modifyBraches(self, item, cn, is_top=False):
         global cnn_inference_data
+        global cnn_inf_dict_data
+
         cell_name = QLabel(cn)
 
         flattenCheck = QCheckBox()
@@ -4937,13 +4955,22 @@ class _FlatteningCell(QWidget):
         combo.setEnabled(True)
 
         if self.grouping and is_top:
+            import lab_feature
             if user_setup.DL_FEATURE:
-                tmp_dp = self.dp[item.text(0)]
+                # text = item.text(0)
+                text = item.text(0) if item.text(0) in self.dp else f'{item.text(0)}_0'
+                # tmp_dp = lab_feature.deepish_copy(self.dp[text])
+                tmp_dp = self.dp[text]
                 tmp_delegator = dpdc_delegator.DesignDelegator(None)
-                library_name = tmp_delegator.build_layer_matrix_by_dps(tmp_dp)
+                library_name = tmp_delegator.build_layer_matrix_by_dps(tmp_dp._DesignParameter['_DesignObj'])
                 text_inference = topAPI.gds2generator.CellInspector().convert_pcell_name_to_generator_name(item.text(0))
                 if library_name != text_inference:
                     cnn_inference_data.append((library_name, text_inference, item.text(0)))
+                if library_name in cnn_inf_dict_data:
+                    cnn_inf_dict_data[library_name] = cnn_inf_dict_data[library_name] + 1
+                else:
+                    cnn_inf_dict_data[library_name] = 1
+
                 module_index = combo.findText(library_name)
                 if module_index != -1:
                     combo.setCurrentIndex(module_index)
