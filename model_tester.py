@@ -176,7 +176,7 @@ def read_matrix_data(sub_cell_list):
         yield stacked_matrix
 
 
-def result_check(result, dbg=None):
+def result_check(result, csv_file=None):
     positive_list = [True if p == l else False for p, l in zip(result[0], result[1]) if p != 'Negative'] #
     negative_list = [True if p == l else False for p, l in zip(result[0], result[1]) if p == 'Negative'] #
     tp = positive_list.count(True)
@@ -185,14 +185,13 @@ def result_check(result, dbg=None):
     fn = len(negative_list) - tn
     print(f'TP: {tp}, TN: {tn}, FP: {fp}, FN: {fn}')
 
-    if dbg:
-        file_name = f'{dbg}.csv'
+    if csv_file:
+        file_name = f'{csv_file}.csv'
         with open(file_name, 'w', newline='') as f:
             import csv
             writer = csv.writer(f)
-            writer.writerow(['prediction', 'label'])
+            writer.writerow(['prediction', 'label', 'sub_cell_name'])
             writer.writerows(zip(result[0], result[1], result[2]))
-
 
 
     return positive_list, negative_list, (tp, tn, fp, fn)
@@ -243,6 +242,9 @@ if __name__ == '__main__':
     # gds_list = get_file_list('./PyQTInterface/GDSFile/ms_tx')
     gds_list = ['./PyQTInterface/GDSFile/ms_rx/comparator_strongArm_cms_TSMCN65TX2016_REV2.gds']
 
+    '''
+    Test each model for each gds file
+    '''
     for model_dir in model_list:
         user_setup.model_dir = model_dir
         start_time = time.time()
@@ -252,9 +254,11 @@ if __name__ == '__main__':
             result_list.append(result)
         for result in result_list:
             '''
-                If you want to save the result, you can use result_check function with dbg parameter
+                If you want to save the result in csv format,
+                you can use result_check function with csv_file parameter
+                example: csv_file = f'{model_dir.split('/')[-1]}_{gds_path.split('/')[-1]}'
             '''
-            result_check(result, dbg=None)
+            result_check(result, csv_file = f'{model_dir.split("/")[-1]}_{gds_path.split("/")[-1]}')
         elapsed_time = time.time() - start_time
         print(elapsed_time)
         del topAPI.element_predictor.model
