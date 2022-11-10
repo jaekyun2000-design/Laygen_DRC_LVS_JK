@@ -821,7 +821,7 @@ class CellInspector:
             return 'ViaPoly2Met1'
         elif any(list(filter(lambda via: via in pcell_name, ['M1_POD','extStacked', 'Pbody']))):
             return 'PbodyContact'
-        elif any(list(filter(lambda via: via in pcell_name, ['M1_NOD', 'Nbody']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M1_NOD', 'Nbody', 'M1_OD']))):
             return 'NbodyContact'
         elif any(list(filter(lambda name: name in pcell_name, ['Oppcres','Opppcres']))):
             return 'PolyResistor'
