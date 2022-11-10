@@ -7,6 +7,8 @@ if user_setup.DL_FEATURE or user_setup.DDL_FEATURE:
     import numpy as np
     import os
     import tensorflow as tf
+    from generatorLib import generator_model_api
+    class_name_to_model = dict([(value, key) for key, value in generator_model_api.class_name_dict.items()])
 
 
 
@@ -52,22 +54,34 @@ if user_setup.DL_FEATURE:
             matrix_size = pickle.load(f)
         with open(f'{model_dir}/layer_list.bin', 'rb') as f:
             layer_list = pickle.load(f)
-        return create_model(class_list, matrix_size, layer_list, model_dir)
+        return tf.keras.models.load_model(f'{model_dir}/model')
+        # return create_model(class_list, matrix_size, layer_list, model_dir)
 
-    def create_model(class_list, matrix_size, layer_list, model_dir):
-        model = tf.keras.models.Sequential()
-        model.add(tf.keras.layers.Conv2D(8, (1, 1), activation='relu', input_shape=(matrix_size[0], matrix_size[1], len(layer_list))))
-        model.add(tf.keras.layers.Conv2D(16, (3, 3), activation='relu'))
-        model.add(tf.keras.layers.MaxPooling2D((2, 2)))
-        model.add(tf.keras.layers.Conv2D(32, (3, 3), activation='relu'))
-        model.add(tf.keras.layers.MaxPooling2D((2, 2)))
-        model.add(tf.keras.layers.Conv2D(16, (1, 1), activation='relu'))
-        model.add(tf.keras.layers.Dropout(0.4))
-        model.add(tf.keras.layers.Flatten())
-        model.add(tf.keras.layers.Dense(len(class_list), activation='sigmoid'))
-        latest_checkpoint = tf.train.latest_checkpoint(model_dir)
-        model.load_weights(latest_checkpoint)
-        return model
+    # def create_model(class_list, matrix_size, layer_list, model_dir):
+    #     # #
+    #     # model = tf.keras.models.Sequential()
+    #     # model.add(tf.keras.layers.Conv2D(16, (3, 3), activation='relu', input_shape=(matrix_size[0], matrix_size[1], len(layer_list))))
+    #     # model.add(tf.keras.layers.MaxPooling2D((2, 2)))
+    #     # model.add(tf.keras.layers.Conv2D(32, (3, 3), activation='relu'))
+    #     # model.add(tf.keras.layers.MaxPooling2D((2, 2)))
+    #     # model.add(tf.keras.layers.Dropout(0.4))
+    #     # model.add(tf.keras.layers.Flatten())
+    #     # model.add(tf.keras.layers.Dense(256, activation='relu'))
+    #     # model.add(tf.keras.layers.Dense(len(class_list), activation='softmax'))
+    #
+    #     model = tf.keras.models.Sequential()
+    #     model.add(tf.keras.layers.Conv2D(8, (1, 1), activation='relu', input_shape=(matrix_size[0], matrix_size[1], len(layer_list))))
+    #     model.add(tf.keras.layers.Conv2D(16, (3, 3), activation='relu'))
+    #     model.add(tf.keras.layers.MaxPooling2D((2, 2)))
+    #     model.add(tf.keras.layers.Conv2D(32, (3, 3), activation='relu'))
+    #     model.add(tf.keras.layers.MaxPooling2D((2, 2)))
+    #     model.add(tf.keras.layers.Conv2D(16, (1, 1), activation='relu'))
+    #     model.add(tf.keras.layers.Dropout(0.4))
+    #     model.add(tf.keras.layers.Flatten())
+    #     model.add(tf.keras.layers.Dense(len(class_list), activation='sigmoid'))
+    #     latest_checkpoint = tf.train.latest_checkpoint(model_dir)
+    #     model.load_weights(latest_checkpoint)
+    #     return model
 
 
     model = None
@@ -87,3 +101,20 @@ elif user_setup.DDL_FEATURE:
     model = layCNN_model.get_model(matrix_size, layer_list, len(class_list))
 
     # latest_checkpoint =
+
+
+def generator_name_mapping(name, viastack=True):
+    if name in class_name_to_model:
+        return class_name_to_model[name]
+    elif 'Via' in name:
+        nums = name.split('_')
+        num_start, num_end = int(nums[-2]), int(nums[-1])
+        if num_start + 1 == num_end or viastack==False:
+            if num_start == 0:
+                return 'ViaPoly2Met1'
+            else:
+                return f'ViaMet{num_start}2Met{num_end}'
+        else:
+            return 'ViaStack'
+    else:
+        return name

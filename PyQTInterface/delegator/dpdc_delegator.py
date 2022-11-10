@@ -498,7 +498,8 @@ class DesignDelegator(delegator.Delegator):
         lay_mat.load_dp(dummy_dp._DesignParameter,minimum_step_size=None,matrix_size=(element_predictor.matrix_x_step,element_predictor.matrix_y_step),bb=False)
         #
         cell_size = lay_mat.get_cell_size()
-        return self.detect_cell(lay_mat.matrix_by_layer, cell_size)
+        detection = self.detect_cell(lay_mat.matrix_by_layer, cell_size)
+        return element_predictor.generator_name_mapping(detection)
 
     def detect_cell(self, matrix_by_layer, cell_size=None):
         stacked_matrix = None
@@ -526,7 +527,7 @@ class DesignDelegator(delegator.Delegator):
         #     plt.show()
         # cell_data = cell_data.reshape((1, user_setup.matrix_y_step,user_setup.matrix_y_step, len(user_setup.layer_list)))
         if not topAPI.element_predictor.model:
-            topAPI.element_predictor.model = topAPI.element_predictor.create_element_detector_model()
+            topAPI.element_predictor.model = topAPI.element_predictor.create_element_detector_model(user_setup.model_dir)
         # if 'model' not in self.__dict__:
         #     self.model = topAPI.element_predictor.create_element_detector_model()
         # result = self.model.predict(cell_data)
@@ -549,10 +550,10 @@ class DesignDelegator(delegator.Delegator):
 
         print(dl_inference_time, dl_count, dl_inference_time/dl_count)
 
-        prediction_cell_type = element_predictor.data_type_list[idx-1]
+        prediction_cell_type = element_predictor.data_type_list[idx]
         if prediction_cell_type in ['NMOSWithDummy','PMOSWithDummy'] and user_setup.DL_Parameter:
              self.detect_parameters_nmos_debug(cell_data, cell_size)
-        return element_predictor.data_type_list[idx - 1]
+        return element_predictor.data_type_list[idx]
 
 
     def detect_parameters_nmos_debug(self, cell_data, cell_size=None):

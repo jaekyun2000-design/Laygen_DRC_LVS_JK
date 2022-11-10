@@ -224,24 +224,24 @@ class GDS2Generator():
         pass
 
 
-    def load_qt_design_parameters(self, QtDesignParameter, top_module):
+    def load_qt_design_parameters(self, QtDesignParameter, top_module, xy_reset=True):
         for structure_name, structure in QtDesignParameter.items():
             self.convert_qt_structure(structure,structure_name)
             self.cell_dp_dict[structure_name] = StickDiagram._StickDiagram()
             for qt_dp in structure:
-                self.convert_qt_structure(structure,structure_name)
+                self.convert_qt_structure(structure,structure_name, xy_reset)
 
 
-    def convert_qt_structure(self, structure, structure_name):
+    def convert_qt_structure(self, structure, structure_name, xy_reset=True):
         self.cell_dp_dict[structure_name] = StickDiagram._StickDiagram()
         self.cell_dp_dict[structure_name]._DesignParameter = dict()
         self.cell_dp_dict[structure_name]._DesignParameter['_Name'] = StickDiagram._StickDiagram()._NameDeclaration(structure_name)
         self.cell_dp_dict[structure_name]._DesignParameter['_GDSFile'] = StickDiagram._StickDiagram()._GDSObjDeclaration()
         for _, qt_dp in structure.items():
-            self.convert_qt_element(qt_dp, self.cell_dp_dict[structure_name])
+            self.convert_qt_element(qt_dp, self.cell_dp_dict[structure_name], xy_reset)
 
 
-    def convert_qt_element(self, element, structure):
+    def convert_qt_element(self, element, structure, xy_reset=True):
         """
         :param element:
         :param structure:
@@ -264,13 +264,24 @@ class GDS2Generator():
                 _GDSFile = StickDiagram._StickDiagram()._GDSObjDeclaration()
             )
             try:
-                for _,sub_qt_element in element._DesignParameter['_ModelStructure'].items():
-                    self.convert_qt_element(sub_qt_element, structure._DesignParameter[element_name]['_DesignObj'])
+                if isinstance(element._DesignParameter['_DesignObj'], dict):
+                    for _,sub_qt_element in element._DesignParameter['_DesignObj'].items():
+                        self.convert_qt_element(sub_qt_element, structure._DesignParameter[element_name]['_DesignObj'], xy_reset)
+                else:
+                    structure._DesignParameter[element_name]['_DesignObj']._DesignParameter.update(element._DesignParameter['_DesignObj']._DesignParameter)
+                # else:
+                #     for _,sub_qt_element in element._DesignParameter['_ModelStructure'].items():
+                #         self.convert_qt_element(sub_qt_element, structure._DesignParameter[element_name]['_DesignObj'])
             except:
+                traceback.print_exc()
                 print('contaminated')
         else:
-            structure._DesignParameter[element_name] = lab_feature.deepish_copy(element._DesignParameter)
-            structure._DesignParameter[element_name]['_XYCoordinates'] = []
+            if xy_reset:
+                structure._DesignParameter[element_name] = lab_feature.deepish_copy(element._DesignParameter)
+                structure._DesignParameter[element_name]['_XYCoordinates'] = []
+            else:
+                element.update_unified_expression()
+                structure._DesignParameter[element_name] = element._DesignParameter
 
     def load_qt_design_constraints_ast(self, top_ast):
         self.code = astunparse.unparse(top_ast)
@@ -783,7 +794,8 @@ class CellInspector:
         inspector = getattr(self, method)
         return inspector(structure)
 
-    def convert_pcell_name_to_generator_name(self, pcell_name):
+    @staticmethod
+    def convert_pcell_name_to_generator_name(pcell_name):
         pcell_name = pcell_name[:15]
         if any(list(filter(lambda name: name in pcell_name, ['NMOSSubring','TotalSubring','GuardringInN','GuardringInSli']))):
             return 'PSubRing'
@@ -826,7 +838,7 @@ class CellInspector:
         elif any(list(filter(lambda name: name in pcell_name, ['SRLatch']))):
             return 'SRLatch'
         else:
-            return None
+            return 'Negative'
 
 
     def convert_pcell_name_to_common_name(self, pcell_name):
@@ -909,6 +921,19 @@ class CellInspector:
         _NumberOfBodyCOY = len(list(set(via_y_list)))
 
         return dict(_NumberOfBodyCOX=_NumberOfBodyCOX, _NumberOfBodyCOY=_NumberOfBodyCOY, _Met1XWidth=_Met1XWidth, _Met1YWidth=_Met1YWidth)
+
+    @staticmethod
+    def inspect_via_stack(structure, stack=True):
+        qtdps = list(structure._DesignParameter['_DesignObj'].values())
+        layer_list = [qtdp._DesignParameter['_LayerUnifiedName'] for qtdp in qtdps if '_LayerUnifiedName' in qtdp._DesignParameter]
+        layer_num = [int(name[-1]) for name in layer_list if 'METAL' in name ]
+        if len(layer_num) >=3 and stack:
+            return 'ViaStack'
+        else:
+            num_start = min(layer_num)
+            num_end = max(layer_num)
+            return f'ViaMet{num_start}2Met{num_end}'
+
 
 class LayoutReader:
     def __init__(self):
