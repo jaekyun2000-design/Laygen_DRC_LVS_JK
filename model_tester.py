@@ -17,6 +17,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import traceback
 import warnings
 import tensorflow as tf
+import matplotlib.pyplot as plt
 
 try:
     sys.path.append('./powertool')
@@ -65,8 +66,6 @@ def loadGDS( filename=None, false_class=False):
 
     entireHierarchy = qtproject._getEntireHierarchy()
 
-    # create_dc_vi_from_top_dp(entireHierarchy, dp=qtproject._DesignParameter)
-
 
     top_cell_name, sub_cell_dict = list(entireHierarchy.items())[0]
     sub_cell_list = [qtproject._DesignParameter[top_cell_name][sub_cell_name.split('/')[-1]]._DesignParameter['_DesignObj'] for sub_cell_name in sub_cell_dict.keys()]
@@ -84,7 +83,7 @@ def loadGDS( filename=None, false_class=False):
 
     positive_check = np.nonzero(np.greater(result, user_setup.DL_threshold))
     for i in range(len(sub_cell_list)):
-        if i not in positive_check[0] and false_class==False:
+        if i not in positive_check[0]: # and false_class==False:
             inference_list[i] = 'Negative'
         else:
             # idx = np.where(positive_check[0] == i)[0]
@@ -104,6 +103,39 @@ def loadGDS( filename=None, false_class=False):
                       for sub_cell_name in sub_cell_name_list]
 
     return inference_list, text_inference, sub_cell_name_list
+
+
+
+def loadGDS_for_debug( filename=None):
+    qtproject = QTInterfaceWithAST.QtProject(_name='project')
+
+
+    _moduleName = filename.replace(".gds", "")
+    _moduleName = _moduleName.split('/')[-1]
+    print(f"file load: {filename}")
+    try:
+        qtproject._loadDesignsFromGDSlegacy(_file=filename, _topModuleName=_moduleName, ignore_non_element=True)
+    except:
+        import collections
+        qtproject._DesignParameter = collections.OrderedDict()
+        qtproject._loadDesignsFromGDSlegacy(_file=filename, _topModuleName=_moduleName, _reverse=True, ignore_non_element=True)
+
+    entireHierarchy = qtproject._getEntireHierarchy()
+
+
+    top_cell_name, sub_cell_dict = list(entireHierarchy.items())[0]
+    # sub_cell_list = [qtproject._DesignParameter[top_cell_name][sub_cell_name.split('/')[-1]]._DesignParameter['_DesignObj'] for sub_cell_name in sub_cell_dict.keys()]
+    # sub_cell_for_debug = qtproject._DesignParameter[top_cell_name]['pch_lvt_CDNS_667720465882_0']._DesignParameter['_DesignObj']
+    # mat=cell_to_matrix_visualize(sub_cell_for_debug)
+    if not topAPI.element_predictor.model:
+        topAPI.element_predictor.model = topAPI.element_predictor.create_element_detector_model(user_setup.model_dir)
+    # print(topAPI.element_predictor.model.predict(np.array([mat])))
+
+    sub_cell_for_debug = qtproject._DesignParameter[top_cell_name]['M3_M2_CDNS_667720465881_0']._DesignParameter[
+        '_DesignObj']
+    mat=cell_to_matrix_visualize(sub_cell_for_debug)
+    print(topAPI.element_predictor.model.predict(np.array([mat])))
+
 
 def build_layer_matrix_by_dps(qt_dp_dict):
     """
@@ -171,6 +203,31 @@ def cell_to_matrix(cell):
             stacked_matrix[:, :, i] = matrix_by_layer[layer]
     return stacked_matrix
 
+def cell_to_matrix_visualize(cell):
+    lay_mat = topAPI.layer_to_matrix.LayerToMatrix(element_predictor.matrix_x_step, element_predictor.matrix_y_step,
+                                                   element_predictor.layer_list)
+    dummy_dp = QTInterfaceWithAST.DummyDesignParameter()
+    for name, qt_dp in cell.items():
+        dummy_dp.restore_dp(name, qt_dp)
+
+    lay_mat.load_dp(dummy_dp._DesignParameter, minimum_step_size=None,
+                    matrix_size=(element_predictor.matrix_x_step, element_predictor.matrix_y_step), bb=False)
+    matrix_by_layer = lay_mat.matrix_by_layer
+
+    #visualization#
+    for layer in matrix_by_layer.keys():
+        plt.imshow(matrix_by_layer[layer], origin='lower')
+        plt.title(layer)
+        plt.axis('off')
+        plt.show()
+    ###############
+
+    stacked_matrix = np.zeros(
+        (element_predictor.matrix_x_step, element_predictor.matrix_y_step, len(element_predictor.layer_list)))
+    for i, layer in enumerate(element_predictor.layer_list):
+        if layer in matrix_by_layer.keys():
+            stacked_matrix[:, :, i] = matrix_by_layer[layer]
+    return stacked_matrix
 def read_matrix_data(sub_cell_list):
     for stacked_matrix in sub_cell_list:
         yield stacked_matrix
@@ -205,6 +262,8 @@ def get_file_list(folder):
     return file_list
 
 
+# if __name__ == '__main__':
+#     loadGDS_for_debug('./PyQTInterface/GDSFile/ms_rx/comparator_strongArm_cms_TSMCN65TX2016_REV2.gds')
 
 if __name__ == '__main__':
 
@@ -221,10 +280,15 @@ if __name__ == '__main__':
     # model_list.append('./powertool/dl_models/ss28/c1_wof_sigmoid')
     # model_list.append('./powertool/dl_models/ss28/c1_f_sigmoid')
     # model_list.append('./powertool/dl_models/ss28/c1_wof_1kernel_sigmoid')
-    model_list.append('./powertool/dl_models/ss28/c1_f_1kernel_sigmoid')
+    # model_list.append('./powertool/dl_models/ss28/c1_f_1kernel_sigmoid')
     # model_list.append('./powertool/dl_models/ss28/c1_wof_1kernel_sigmoid_first8')
-    # model_list.append('./powertool/dl_models/ss28/c1_f_1kernel_sigmoid_first8')
-    # model_list.append('./powertool/dl_models/ss28/c1_f_1kernel_sigmoid_noise2')
+    # model_list.append('./powertool/dl_models/s s28/c1_f_1kernel_sigmoid_first8')
+    # model_list.append('./powertool/dl_models/ss28/c1_f_1kernel_sigmoid_loss_fclass')
+    model_list.append('./powertool/dl_models/ss28/c1_fnoise_1kernel_sigmoid_loss_fclass')
+    # model_list.append('./powertool/dl_models/ss28/c2_fnoise_1kernel_sigmoid_loss_fclass')
+    # c2_fnoise_1kernel_sigmoid_loss_fclass
+
+    # c1_f_1kernel_sigmoid_wovia
 
 
     # model_list.append('./powertool/dl_models/ss28/c1_wof_softmax_fclass')
@@ -238,9 +302,9 @@ if __name__ == '__main__':
     '''
     # gds_list = get_file_list('./PyQTInterface/GDSFile/jy_tx')
     # gds_list = get_file_list('./PyQTInterface/GDSFile/jy_rx')
-    # gds_list = get_file_list('./PyQTInterface/GDSFile/ms_rx')
+    gds_list = get_file_list('./PyQTInterface/GDSFile/ms_rx')
     # gds_list = get_file_list('./PyQTInterface/GDSFile/ms_tx')
-    gds_list = ['./PyQTInterface/GDSFile/ms_rx/comparator_strongArm_cms_TSMCN65TX2016_REV2.gds']
+    # gds_list = ['./PyQTInterface/GDSFile/ms_rx/receiver_resistor_bank_v2_cms.gds']
 
     '''
     Test each model for each gds file
@@ -250,15 +314,15 @@ if __name__ == '__main__':
         start_time = time.time()
         result_list = []
         for gds_path in gds_list:
-            result = loadGDS(filename=gds_path, false_class=False)
+            result = loadGDS(filename=gds_path, false_class=True)
             result_list.append(result)
-        for result in result_list:
+        for i, result in enumerate(result_list):
             '''
                 If you want to save the result in csv format,
                 you can use result_check function with csv_file parameter
                 example: csv_file = f'{model_dir.split('/')[-1]}_{gds_path.split('/')[-1]}'
             '''
-            result_check(result, csv_file = f'{model_dir.split("/")[-1]}_{gds_path.split("/")[-1]}')
+            result_check(result, csv_file = f'{model_dir.split("/")[-1]}_{gds_list[i].split("/")[-1]}')
         elapsed_time = time.time() - start_time
         print(elapsed_time)
         del topAPI.element_predictor.model
@@ -272,3 +336,4 @@ if __name__ == '__main__':
     # with open(f'./model_test_dat/{file_name}', 'wb') as f:
     #     result_dict = dict(result_list=result_list, gds_list = gds_list)
     #     pickle.dump(result_dict, f)
+

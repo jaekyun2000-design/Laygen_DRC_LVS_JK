@@ -823,7 +823,7 @@ class CellInspector:
             return 'PbodyContact'
         elif any(list(filter(lambda via: via in pcell_name, ['M1_NOD', 'Nbody', 'M1_OD']))):
             return 'NbodyContact'
-        elif any(list(filter(lambda name: name in pcell_name, ['Oppcres','Opppcres']))):
+        elif any(list(filter(lambda name: name in pcell_name, ['Oppcres','Opppcres', 'rppoly']))):
             return 'PolyResistor'
         elif any(list(filter(lambda name: name in pcell_name, ['Transmission']))):
             return 'TransmissionGate'
