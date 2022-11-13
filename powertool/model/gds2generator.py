@@ -797,11 +797,11 @@ class CellInspector:
     @staticmethod
     def convert_pcell_name_to_generator_name(pcell_name):
         pcell_name = pcell_name[:15]
-        if any(list(filter(lambda name: name in pcell_name, ['NMOSSubring','TotalSubring','GuardringInN','GuardringInSli']))):
-            return 'PSubRing'
-        elif any(list(filter(lambda name: name in pcell_name, ['PMOSSubring','GuardringInP']))):
-            return 'NSubRing'
-        elif any(list(filter(lambda pch: pch in pcell_name, ['pch','pmos','PMOS','pfet']))):
+        # if any(list(filter(lambda name: name in pcell_name, ['NMOSSubring','TotalSubring','GuardringInN','GuardringInSli']))):
+        #     return 'PSubRing'
+        # elif any(list(filter(lambda name: name in pcell_name, ['PMOSSubring','GuardringInP']))):
+        #     return 'NSubRing'
+        if any(list(filter(lambda pch: pch in pcell_name, ['pch','pmos','PMOS','pfet']))):
             return 'PMOSWithDummy'
         elif any(list(filter(lambda nch: nch in pcell_name, ['nch','nmos','NMOS','nfet']))):
             return 'NMOSWithDummy'
@@ -831,10 +831,12 @@ class CellInspector:
             return 'StrongArmLatch'
         elif any(list(filter(lambda name: name in pcell_name, ['SlicerWith']))):
             return 'Slicer'
-        elif any(list(filter(lambda name: name in pcell_name, ['Inverter']))):
+        elif any(list(filter(lambda name: name in pcell_name, ['Inverter', 'driver_pre_tap']))):
             return 'Inverter'
         elif any(list(filter(lambda name: name in pcell_name, ['SRLatch']))):
             return 'SRLatch'
+        elif any(list(filter(lambda name: name in pcell_name, ['ResistorBankIn']))):
+            return 'ResistorBankUnit'
         else:
             return 'Negative'
     @staticmethod
@@ -980,6 +982,8 @@ class CellInspector:
             if num_start == num_end and num_start == 1:
                 if 'DIFF' in layer_list:
                     return 'PbodyContact'
+                elif 'POLY' in layer_list:
+                    return 'ViaPoly2Met1'
                 else:
                     return 'Negative'
             return f'ViaMet{num_start}2Met{num_end}'

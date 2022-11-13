@@ -550,10 +550,10 @@ class DesignDelegator(delegator.Delegator):
 
         print(dl_inference_time, dl_count, dl_inference_time/dl_count)
 
-        prediction_cell_type = element_predictor.data_type_list[idx]
+        prediction_cell_type = element_predictor.data_type_list[idx] if idx < len(element_predictor.data_type_list) else 'Negative'
         if prediction_cell_type in ['NMOSWithDummy','PMOSWithDummy'] and user_setup.DL_Parameter:
              self.detect_parameters_nmos_debug(cell_data, cell_size)
-        return element_predictor.data_type_list[idx]
+        return prediction_cell_type
 
 
     def detect_parameters_nmos_debug(self, cell_data, cell_size=None):
