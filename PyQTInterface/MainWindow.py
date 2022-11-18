@@ -229,6 +229,8 @@ class _MainWindow(QMainWindow):
         undoAction = QAction("Undo", self)
         save_svg_action = QAction("Save SVG", self)
         save_scene = QAction("Save PDF_scene", self)
+        saveCurrentGDSAction = QAction("Save Current status as GDS",self)
+
 
         # newAction.setShortcut('Ctrl+N')
         # newAction.triggered.connect(self.newProject)
@@ -247,6 +249,9 @@ class _MainWindow(QMainWindow):
 
         RunGDSAction.setShortcut('Ctrl+R')
         RunGDSAction.triggered.connect(self.runConstraint)
+
+        saveCurrentGDSAction.setShortcut('Ctrl+T')
+        saveCurrentGDSAction.triggered.connect(self.snapshot_gds)
 
         UpdateGDSAction.setShortcut('Ctrl+U')
         UpdateGDSAction.triggered.connect(self.runConstraint_for_update)
@@ -286,6 +291,7 @@ class _MainWindow(QMainWindow):
         fileMenu.addAction(DebugAction)
         fileMenu.addAction(EncodeAction)
         fileMenu.addAction(RunGDSAction)
+        # fileMenu.addAction(saveCurrentGDSAction)
         fileMenu.addAction(UpdateGDSAction)
         fileMenu.addAction(setup_action)
         fileMenu.addAction(fixAction)
@@ -964,18 +970,18 @@ class _MainWindow(QMainWindow):
                 self.module_name_list.append(tmp_module_name)
                 self.module_dict[tmp_module_name] = _MainWindow()
                 new_project = self.module_dict[tmp_module_name]
-                # selected_qt_dp = copy.deepcopy(
-                #     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][tmp_module_name])
-                # new_project._QTObj._qtProject._DesignParameter = {tmp_module_name:selected_qt_dp._DesignParameter['_ModelStructure']}
-                new_project._QTObj._qtProject._DesignParameter = copy.deepcopy(self._QTObj._qtProject._DesignParameter)
-                top_cell_name= new_project._QTObj._qtProject._DesignParameter[self._CurrentModuleName][tmp_module_name]._DesignParameter['_DesignObj_Name']
+                selected_qt_dp = copy.deepcopy(
+                    self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][tmp_module_name])
+                new_project._QTObj._qtProject._DesignParameter = {tmp_module_name:selected_qt_dp._DesignParameter['_ModelStructure']}
+                # new_project._QTObj._qtProject._DesignParameter = copy.deepcopy(self._QTObj._qtProject._DesignParameter)
+                # top_cell_name= new_project._QTObj._qtProject._DesignParameter[self._CurrentModuleName][tmp_module_name]._DesignParameter['_DesignObj_Name']
 
                 self.module_dict[tmp_module_name].set_module_name(tmp_module_name)
                 # self.module_dict[tmp_module_name].show()
                 self.module_dict[tmp_module_name].module_dict = self.module_dict
                 self.module_dict[tmp_module_name].module_name_list = self.module_name_list
 
-                hierarchy_key = top_cell_name + '/' + tmp_module_name
+                hierarchy_key = selected_qt_dp._DesignParameter['_DesignObj_Name'] + '/' + tmp_module_name
                 if len(self.entireHierarchy) == 0:
                     """
                     case when sref load is used (not load gds!)
@@ -990,9 +996,8 @@ class _MainWindow(QMainWindow):
 
 
                 self.remove_module(self._CurrentModuleName)
-                del new_project._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
+                new_project.create_dc_vi_from_top_dp(hierarchy, test)
 
-                new_project.create_dc_vi_from_top_dp(hierarchy, test, topCellName=top_cell_name)
                 self.hide()
 
     def add_constraint_view(self):
@@ -2039,6 +2044,19 @@ class _MainWindow(QMainWindow):
         end_time = time.time()
         print(f'--- {end_time - start_time} seconds ---')
 
+    def snapshot_gds(self):
+        self.gds2gen = topAPI.gds2generator.GDS2Generator(True)
+        self.gds2gen.load_qt_project(self)
+        self.gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter, self._CurrentModuleName, xy_reset=False)
+        # self.gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
+        self.gds2gen.set_root_cell(self._CurrentModuleName)
+        # self.gds2gen.run_qt_constraint_ast()
+
+        stream_data = self.gds2gen.ready_for_top_cell()
+        self.gds2gen.set_topcell_name('topcell')
+        file = open('./topcell.gds', 'wb')
+        stream_data.write_binary_gds_stream(file)
+        file.close()
 
     def runConstraint_for_update(self, code=None):
         '''
@@ -2311,6 +2329,7 @@ class _MainWindow(QMainWindow):
 
             # fileName=_fileName.split('/')[-1]
             # self.updateXYCoordinatesForDisplay()
+            self._QTObj._qtProject.tmp_save_file = PyCodes.file_save.FileSaveFormat()
             self._QTObj._qtProject.tmp_save_file = PyCodes.file_save.FileSaveFormat()
             self._QTObj._qtProject.tmp_save_file.save_from_qt_interface(self)
             self._QTObj._saveProject(_name=_fileName)
@@ -2597,14 +2616,14 @@ class _MainWindow(QMainWindow):
     def create_dc_vi_from_top_dp(self, hierarchy, test=None, topCellName=None):
         import time
         time_start = time.time()
-        self.fc = SetupWindow._FlatteningCell(hierarchy, self._QTObj._qtProject._DesignParameter)
+        self.fc = SetupWindow._FlatteningCell(hierarchy, self._QTObj._qtProject._DesignParameter, self._CurrentModuleName)
         self.fc.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.fc.show()
-
+        inf_time = time.time() - time_start
         flattening_dict = self.fc.ok_button_accepted(test)
         if user_setup.exp_data:
             time_widget = QMessageBox(self)
-            time_widget.setText(f"Flattening Cell: {time.time()-time_start}")
+            time_widget.setText(f"Flattening Cell: {inf_time}")
             time_widget.show()
         self.fc.destroy()
 

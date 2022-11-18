@@ -34,6 +34,7 @@ from PyQTInterface.delegator import dpdc_delegator
 debugFlag = True
 cnn_inference_data = []
 cnn_inf_dict_data = dict()
+cnn_tf_data = dict(tp=0, tn=0, fp=0, fn=0)
 
 class _BoundarySetupWindow(QWidget):
 
@@ -4825,12 +4826,12 @@ class _FlatteningCell(QWidget):
     send_flattendict_signal = pyqtSignal(dict)
     # send_ok_signal = pyqtSignal()
 
-    def __init__(self,  _hierarchydict, dp, top_cell_name):
+    def __init__(self,  _hierarchydict, dp, top_cell_name, test=None):
         self.grouping = False
         try:
             if user_setup.DL_FEATURE:
                 if not topAPI.element_predictor.model:
-                    topAPI.element_predictor.model = topAPI.element_predictor.create_element_detector_model()
+                    topAPI.element_predictor.model = topAPI.element_predictor.create_element_detector_model(user_setup.model_dir)
             else:
                 self.inspector = topAPI.gds2generator.CellInspector()
             self.grouping = True
@@ -4847,6 +4848,7 @@ class _FlatteningCell(QWidget):
         self.dp = dp[top_cell_name]
         self.itemlist = list()
         self.combolist = list(generator_model_api.class_dict.keys())
+        self.test = test
         self.initUI()
 
     def initUI(self):
@@ -4877,14 +4879,18 @@ class _FlatteningCell(QWidget):
     def ok_button_accepted(self, test=None):
         global cnn_inference_data
         global cnn_inf_dict_data
+        global cnn_tf_data
 
-        with open('result.csv','w',newline='') as f:
+        file_name = 'result.csv' if self.test == None else self.test
+        with open(file_name,'w',newline='') as f:
             print(f'len: {len(cnn_inference_data)}')
             print(f'len: {len(cnn_inf_dict_data)}')
             import csv
             write = csv.writer(f)
             write.writerow(['CNN name','Text name','Real Element Name'])
             write.writerows(cnn_inference_data)
+            new_list = [(key, value) for key, value in cnn_tf_data.items()]
+            write.writerows(new_list)
         with open('result_dict.csv','w',newline='') as f:
             write = csv.writer(f)
             write.writerow(['key', 'count'])
@@ -4893,6 +4899,7 @@ class _FlatteningCell(QWidget):
 
 
         if test:
+            self.loop_obj.exec_()
             pass
         else:
             self.loop_obj.exec_()
@@ -4938,7 +4945,7 @@ class _FlatteningCell(QWidget):
     def modifyBraches(self, item, cn, is_top=False):
         global cnn_inference_data
         global cnn_inf_dict_data
-
+        global cnn_tf_data
         cell_name = QLabel(cn)
 
         flattenCheck = QCheckBox()
@@ -4958,14 +4965,34 @@ class _FlatteningCell(QWidget):
             import lab_feature
             if user_setup.DL_FEATURE:
                 # text = item.text(0)
-                text = item.text(0) if item.text(0) in self.dp else f'{item.text(0)}_0'
                 # tmp_dp = lab_feature.deepish_copy(self.dp[text])
-                tmp_dp = self.dp[text]
+                id_check = 0
+                while id_check<50:
+                    try:
+                        text = item.text(0) if item.text(0) in self.dp else f'{item.text(0)}_{id_check}'
+                        tmp_dp = self.dp[text]
+                        break
+                    except:
+                        id_check += 1
+
                 tmp_delegator = dpdc_delegator.DesignDelegator(None)
                 library_name = tmp_delegator.build_layer_matrix_by_dps(tmp_dp._DesignParameter['_DesignObj'])
-                text_inference = topAPI.gds2generator.CellInspector().convert_pcell_name_to_generator_name(item.text(0))
-                if library_name != text_inference:
-                    cnn_inference_data.append((library_name, text_inference, item.text(0)))
+                text_test = False
+                if text_test:
+                    text_inference = topAPI.gds2generator.CellInspector().convert_pcell_name_to_generator_name(item.text(0))
+                    if 'extStacked' in item.text(0):
+                        text_inference = topAPI.gds2generator.CellInspector.inspect_via_stack(self.dp[text])
+                    if library_name != text_inference and not (library_name == 'Negative' and text_inference ==None):
+                        cnn_inference_data.append((library_name, text_inference, item.text(0)))
+                        if library_name == 'Negative':
+                            cnn_tf_data['fn'] += 1
+                        else:
+                            cnn_tf_data['fp'] += 1
+                    else:
+                        if library_name == 'Negative' and text_inference == None:
+                            cnn_tf_data['tn'] += 1
+                        else:
+                            cnn_tf_data['tp'] += 1
                 if library_name in cnn_inf_dict_data:
                     cnn_inf_dict_data[library_name] = cnn_inf_dict_data[library_name] + 1
                 else:

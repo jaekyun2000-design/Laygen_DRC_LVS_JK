@@ -99,6 +99,9 @@ class QtDesignParameter:
                     self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
                     self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
 
+            if '_Datatype' in self._DesignParameter and self._DesignParameter['_Datatype'] == None:
+                self._DesignParameter['_Datatype'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][1]
+
         except:
             traceback.print_exc()
             print(f'debug: layer_number={layer_number}, data_number={data_number}')
@@ -1026,7 +1029,7 @@ class QtProject:
 
             return dp_dict_list
 
-    def _loadDesignsFromGDSlegacy(self, _file=None, _topModuleName=None, _reverse=False):
+    def _loadDesignsFromGDSlegacy(self, _file=None, _topModuleName=None, _reverse=False, ignore_non_element=False):
         if (EnvForClientSetUp.DebuggingMode == 1) or (EnvForClientSetUp.DebuggingModeForQtInterface == 1):
             print("_loadDesignsFromGDS Run.")
         if _file == None or _topModuleName == None:
@@ -1100,6 +1103,7 @@ class QtProject:
                             except:
                                 traceback.print_exc()
                                 warnings.warn(f'LayerReader does not have info about Layer: {_tmpElement._ELEMENTS._LAYER.layer} and Dtype: {_tmpElement._ELEMENTS._DATATYPE.datatype}. ')
+                                continue
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                             "_Layer"] = _tmpElement._ELEMENTS._LAYER.layer
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
@@ -1136,6 +1140,7 @@ class QtProject:
                                 self._createNewDesignParameter(_id=_tmpId, _type=2, _ParentName=_tmpStructureName, _ElementName=tmp_element_name)
                             except:
                                 warnings.warn(f'LayerReader does not have info about Layer: {_tmpElement._ELEMENTS._LAYER.layer} and Dtype: {_tmpElement._ELEMENTS._DATATYPE.datatype}. ')
+                                continue
 
 
 
@@ -1183,6 +1188,8 @@ class QtProject:
                                 self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                                     "_Angle"] = _tmpElement._ELEMENTS._STRANS._ANGLE.angle
                     elif "_TEXT" in vars(_tmpElement._ELEMENTS):
+                        if ignore_non_element:
+                            continue
                         try:
                             if _tmpId:
                                 # _tmpId = _tmpElement._GDS_ELEMENT_NAME
