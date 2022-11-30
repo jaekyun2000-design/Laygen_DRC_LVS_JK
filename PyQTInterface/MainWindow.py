@@ -2619,11 +2619,11 @@ class _MainWindow(QMainWindow):
         self.fc = SetupWindow._FlatteningCell(hierarchy, self._QTObj._qtProject._DesignParameter, self._CurrentModuleName)
         self.fc.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.fc.show()
-
+        inf_time = time.time() - time_start
         flattening_dict = self.fc.ok_button_accepted(test)
         if user_setup.exp_data:
             time_widget = QMessageBox(self)
-            time_widget.setText(f"Flattening Cell: {time.time()-time_start}")
+            time_widget.setText(f"Flattening Cell: {inf_time}")
             time_widget.show()
         self.fc.destroy()
 
