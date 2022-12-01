@@ -119,7 +119,7 @@ class LayerToMatrix:
     def get_cell_size(self):
         return dict(width=self.cell_width, height=self.cell_height)
 
-    def load_dp(self, dp, minimum_step_size = None, matrix_size = None, bb=True):
+    def load_dp(self, dp, minimum_step_size=None, matrix_size=None, bb=True, oneshot_bb: dict = None, projection=True, input_region=None):
         '''
         Args:
             dp: DesignParameter from generator
@@ -128,11 +128,12 @@ class LayerToMatrix:
             output : not fixed matrix size
         '''
         reader = gds2generator.LayoutReader()
-        reader.load_dp(dp)
+        reader.load_dp(dp, oneshot_bb, projection=projection)
         if minimum_step_size:
             self.y_step_size = minimum_step_size
             self.x_step_size = minimum_step_size
-            self.matrix_size = (math.ceil((reader.y_max - reader.y_min)/self.y_step_size), math.ceil((reader.x_max - reader.x_min)/self.x_step_size))
+            self.matrix_size = (math.ceil((reader.y_max - reader.y_min) / self.y_step_size),
+                                math.ceil((reader.x_max - reader.x_min) / self.x_step_size))
         elif matrix_size:
             self.matrix_size = matrix_size
             self.y_step_size = (reader.y_max - reader.y_min) / self.matrix_size[0]
@@ -142,18 +143,22 @@ class LayerToMatrix:
         self.cell_height = reader.y_max - reader.y_min
         for layer_name, node_list in reader.layer_elements.items():
             if layer_name not in self.matrix_by_layer:
-                self.matrix_by_layer[layer_name] = np.zeros(self.matrix_size)
+                self.matrix_by_layer[layer_name] = np.zeros(self.matrix_size, dtype=bool)
 
             for node in node_list:
                 col_idx, row_idx = self.calculate_row_col(node)
-                self.matrix_by_layer[layer_name][row_idx[0]:row_idx[1],col_idx[0]:col_idx[1]] = 1
+                if node.remove_flag:
+                    ### oneshot bb process
+                    self.calculate_oneshot_bb_ratio(node)
+                else:
+                    self.matrix_by_layer[layer_name][row_idx[0]:row_idx[1], col_idx[0]:col_idx[1]] = 1
 
         if bb:
-            for dp in dp.values():
+            for dp_name, dp in dp.items():
                 if dp['_DesignParametertype'] != 3:
                     continue
                 # self.calculate_bounding_box(dp)
-                self.calculate_bounding_box_ratio(dp)
+                self.calculate_bounding_box_ratio(dp, dp_name, hierarchy=False)
 
     def divide_matrix(self, ratio):
         '''
