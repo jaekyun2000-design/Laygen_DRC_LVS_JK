@@ -4376,7 +4376,10 @@ class _CustomScene(QGraphicsScene):
     def remove_bounding_rect_dict(self, item):
         if 'bounding_rect_dict' in item.__dict__:
             for key in item.bounding_rect_dict:
-                self.fit_in_view_dict[key].remove(item.bounding_rect_dict[key])
+                try:
+                    self.fit_in_view_dict[key].remove(item.bounding_rect_dict[key])
+                except:
+                    print('this code seems not work well')
 
     def removeItem(self, QGraphicsItem):
         super(_CustomScene, self).removeItem(QGraphicsItem)
