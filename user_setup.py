@@ -20,17 +20,16 @@ project_file_path = None # If none, default path will be set.
 
 #########################################################
 # for cell detector model setup #
-DL_FEATURE = True
-DL_threshold = 0.98
+DL_FEATURE = False
+DL_threshold = 0.95
 DDL_FEATURE = False
 DL_Parameter = False
 DL_DETECTION = False
 min_step_size = 10
 
-model_dir = './powertool/dl_models/ss28/128b_class3a'
+model_dir = './powertool/dl_models/ss28/c5_sigmoid_wf'
 
 exp_data = False
-
 
 
 def update_user_setup(key, value):
@@ -39,3 +38,12 @@ def update_user_setup(key, value):
         if value in ["True", "False"] or value.isdigit() or (value[0] == '[' and value[-1] == ']'):
             value = eval(value)
         glo[key] = value
+
+def import_user_setup_from_template():
+    import user_setup_template
+    glo = globals()
+    for key in user_setup_template.__dict__:
+        if key not in glo:
+            glo[key] = user_setup_template.__dict__[key]
+
+import_user_setup_from_template()
