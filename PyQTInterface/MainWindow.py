@@ -141,6 +141,7 @@ class _MainWindow(QMainWindow):
         self.variable_store_list = list()
         self.test = True
         self.send_init_signal.emit()
+        self.model_verification = False
 
         # self._QTObj._qtProject._ElementManager.signal.dp_name_update_signal.connect(
         #     self.design_delegator.update_vs_item_dict
@@ -2626,6 +2627,19 @@ class _MainWindow(QMainWindow):
             time_widget.setText(f"Flattening Cell: {inf_time}")
             time_widget.show()
         self.fc.destroy()
+
+        # pip install opencv-python
+        if self.model_verification:
+            import MS_test as verification
+            ver_obj = verification.parameterPrediction()
+            for key, value in flattening_dict.items():
+                if value == 'NMOSWithDummy':
+                    dp_name = key.split('/')[0]
+                    ver_obj.nmos_checker(self._QTObj._qtProject._DesignParameter[dp_name])
+                elif re.search("ViaMet", value):
+                    dp_name = key.split('/')[0]
+                    ver_obj.via_checker(self._QTObj._qtProject._DesignParameter[dp_name], value)
+
 
         print("############################ Cell DP, DC, VISUALITEM CREATION START ###############################")
         visual_item_list = []
