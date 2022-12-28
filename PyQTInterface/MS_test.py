@@ -1,8 +1,17 @@
 import os
 import sys
-import re
 
+import re
+import numpy as np
+import cv2
+import argparse
+import imutils
+# from skimage.measure import compare_ssim
+
+import warnings
+from PyQTInterface.layermap import LayerReader
 from generatorLib.generator_models import NMOSWithDummy
+from generatorLib.generator_models import PMOSWithDummy
 from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import ViaMet22Met3
 from generatorLib.generator_models import ViaMet32Met4
@@ -20,6 +29,7 @@ class parameterPrediction():
         expected_dummy = False
         expected_pccrit = False
         poly_cnt = 0
+        parent_name = None
 
         cont_x_list = []
         cont_y_list = []
@@ -40,6 +50,7 @@ class parameterPrediction():
                         expected_length = qt_dp._DesignParameter['_XWidth']
                 elif (qt_dp._DesignParameter['_DatatypeName'] == '_crit'):
                     expected_pccrit = True
+            parent_name = qt_dp._ParentName
         expected_finger = len(cont_x_list) - 1
         expected_dummy = True if expected_finger == poly_cnt - 2 else expected_dummy
         print( expected_width, expected_length, poly_cnt, expected_dummy, expected_pccrit)
@@ -52,8 +63,9 @@ class parameterPrediction():
                                        _PCCrit = expected_pccrit)
 
         ### Checking Algorithm
+        self.dp_verification(gds_dp = cell_dp_dict, generator_dp = nmos_obj._DesignParameter,
+                             parent_name = parent_name)
 
-        print("test")
 
 
     def via_checker(self, cell_dp_dict = None, class_name = None):
@@ -156,55 +168,143 @@ class parameterPrediction():
             code = f"via_obj._Calculate{target_class}DesignParameter{enclosure_code}(_{target_class}NumberOfCOX = len(via_x_list), " \
                    f"_{target_class}NumberOfCOY = len(via_y_list))"
             exec(code)
-        self.dp_verification()
 
-    def dp_verification(self, gds_dp = None, generator_dp = None):
-        import numpy as np
-        import cv2
+        # self.dp_verification(gds_dp = cell_dp_dict, generator_dp = via_obj._DesignParameter)
 
-        zeros = np.zeros((240,320), dtype=np.uint8)
-        cv2.imshow('black', zeros)
-        print(zeros)
+    def dp_verification(self, gds_dp = None, generator_dp = None, parent_name = None):
 
-    def gds_to_image(self,dp):
-        diff_list_1 = []
-        poly_list_1 = []
-        m1_list_1 = []
-        m2_list_1 = []
-        m3_list_1 = []
-        m4_list_1 = []
-        m5_list_1 = []
-        m6_list_1 =[]
-        m7_list_1 = []
-        via12_list_1 = []
-        via23_list_1 = []
-        via34_list_1 = []
-        via45_list_1 = []
-        via56_list_1 = []
-        nwell_list_1 = []
+        image1 = self.gds_layer_to_image_gds(dp = gds_dp, layer = 'METAL1')
+        image2 = self.gds_layer_to_image_generator(dp = generator_dp, layer = 'METAL1')
+        cv2.imshow(f"gds_{parent_name}",image1)
+        cv2.imshow(f"generator_{parent_name}",image2)
 
-        diff_list_2 = []
-        poly_list_2 = []
-        m1_list_2 = []
-        m2_list_2 = []
-        m3_list_2 = []
-        m4_list_2 = []
-        m5_list_2 = []
-        m6_list_2 =[]
-        m7_list_2 = []
-        via12_list_2 = []
-        via23_list_2 = []
-        via34_list_2 = []
-        via45_list_2 = []
-        via56_list_2 = []
-        nwell_list_2 = []
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+        # (score, diff) = compare_ssim(image1, image2, full=True)
+        # diff = (diff*255).astype("uint8")
+        # print(f"SSIM: {score}")
+
+    def gds_layer_to_image_gds(self,dp = None, layer = None):
+        if layer == None:
+            warnings.warn("No Layer Information")
+            return
+        layer_XY_list = []
+        min_xy = []
+        max_xy = []
 
         for key, qt_dp in dp.items():
             layer_name = qt_dp._DesignParameter['_LayerUnifiedName']
+            if layer_name == layer:
+                for i in range(len(qt_dp._DesignParameter['_XYCoordinates'])):
+                    layer_min_x = qt_dp._DesignParameter['_XYCoordinates'][i][0] - qt_dp._DesignParameter['_XWidth'] / 2
+                    layer_min_y = qt_dp._DesignParameter['_XYCoordinates'][i][1] - qt_dp._DesignParameter['_YWidth'] / 2
+                    layer_max_x = qt_dp._DesignParameter['_XYCoordinates'][i][0] + qt_dp._DesignParameter['_XWidth'] / 2
+                    layer_max_y = qt_dp._DesignParameter['_XYCoordinates'][i][1] + qt_dp._DesignParameter['_YWidth'] / 2
 
+                    if len(layer_XY_list) == 0:
+                        min_xy.append([layer_min_x, layer_min_y])
+                        max_xy.append([layer_max_x, layer_max_y])
+                    else:
+                        if layer_min_x < min_xy[0][0]:
+                            min_xy[0][0] = layer_min_x
 
+                        if layer_min_y < min_xy[0][1]:
+                            min_xy[0][1] = layer_min_y
 
-#
+                        if layer_max_x > max_xy[0][0]:
+                            max_xy[0][0] = layer_max_x
+
+                        if layer_max_y > max_xy[0][1]:
+                            max_xy[0][1] = layer_max_y
+
+                    layer_XY_list.append([[layer_min_x, layer_min_y], [layer_max_x, layer_max_y]])
+
+        offset_x = - min_xy[0][0]
+        offset_y = - min_xy[0][1]
+
+        width = int(max_xy[0][0] - min_xy[0][0])
+        height = int(max_xy[0][1] - min_xy[0][1])
+
+        """
+        blue : (255, 0, 0)
+        green : (0, 255, 0)
+        red : (0, 0, 255)
+        white : (255, 255, 255)
+        yellow : (0,255,255)
+        """
+
+        layer_image = np.zeros((height,width,3), np.uint8)
+        for i in range(len(layer_XY_list)):
+            starting_pt = (int(layer_XY_list[i][0][0] + offset_x), int(layer_XY_list[i][0][1] + offset_y))
+            end_pt = ((int(layer_XY_list[i][1][0] + offset_x), int(layer_XY_list[i][1][1] + offset_y)))
+            cv2.rectangle(layer_image, starting_pt, end_pt, (0,255,255), -1)
+
+        return(layer_image)
+
+    def gds_layer_to_image_generator(self,dp = None, layer = None):
+        if layer == None:
+            warnings.warn("No Layer Information")
+            return
+
+        _Layer = LayerReader._LayerMapping
+        layernum2name = LayerReader._LayDatNum2LayDatName(LayerReader._LayerMapping)
+
+        layer_XY_list = []
+        min_xy = []
+        max_xy = []
+
+        for boundary_name, info in dp.items():
+            if info['_DesignParametertype'] == 1:
+                layer_name = layernum2name[str(info['_Layer'])]
+                layer_name = layer_name[str(info['_Datatype'])]
+                if layer_name == layer:
+                    for i in range(len(info['_XYCoordinates'])):
+                        layer_min_x = info['_XYCoordinates'][i][0] - info['_XWidth'] / 2
+                        layer_min_y = info['_XYCoordinates'][i][1] - info['_YWidth'] / 2
+                        layer_max_x = info['_XYCoordinates'][i][0] + info['_XWidth'] / 2
+                        layer_max_y = info['_XYCoordinates'][i][1] + info['_YWidth'] / 2
+
+                        if len(layer_XY_list) == 0:
+                            min_xy.append([layer_min_x, layer_min_y])
+                            max_xy.append([layer_max_x, layer_max_y])
+                        else:
+                            if layer_min_x < min_xy[0][0]:
+                                min_xy[0][0] = layer_min_x
+
+                            if layer_min_y < min_xy[0][1]:
+                                min_xy[0][1] = layer_min_y
+
+                            if layer_max_x > max_xy[0][0]:
+                                max_xy[0][0] = layer_max_x
+
+                            if layer_max_y > max_xy[0][1]:
+                                max_xy[0][1] = layer_max_y
+
+                        layer_XY_list.append([[layer_min_x, layer_min_y], [layer_max_x, layer_max_y]])
+
+        offset_x = - min_xy[0][0]
+        offset_y = - min_xy[0][1]
+
+        width = int(max_xy[0][0] - min_xy[0][0])
+        height = int(max_xy[0][1] - min_xy[0][1])
+
+        """
+        blue : (255, 0, 0)
+        green : (0, 255, 0)
+        red : (0, 0, 255)
+        white : (255, 255, 255)
+        yellow : (0,255,255)
+        """
+
+        layer_image = np.zeros((height,width,3), np.uint8)
+        for i in range(len(layer_XY_list)):
+            starting_pt = (int(layer_XY_list[i][0][0] + offset_x), int(layer_XY_list[i][0][1] + offset_y))
+            end_pt = ((int(layer_XY_list[i][1][0] + offset_x), int(layer_XY_list[i][1][1] + offset_y)))
+            cv2.rectangle(layer_image, starting_pt, end_pt, (0,255,255), -1)
+
+        return(layer_image)
+
 # if __name__ == '__main__':
 #
 #     tmp_obj = parameterPrediction()
