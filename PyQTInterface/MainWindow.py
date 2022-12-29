@@ -2629,6 +2629,7 @@ class _MainWindow(QMainWindow):
         self.fc.destroy()
 
         # pip install opencv-python
+        # pip install imutils
         if self.model_verification:
             import MS_test as verification
             ver_obj = verification.parameterPrediction()
