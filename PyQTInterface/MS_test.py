@@ -172,18 +172,60 @@ class parameterPrediction():
         # self.dp_verification(gds_dp = cell_dp_dict, generator_dp = via_obj._DesignParameter)
 
     def dp_verification(self, gds_dp = None, generator_dp = None, parent_name = None):
+        gen_layer_dict = self.layer_classification_gen(generator_dp)
+        gds_layer_dict = self.layer_classification_gds(gds_dp)
 
-        image1 = self.gds_layer_to_image_gds(dp = gds_dp, layer = 'METAL1')
-        image2 = self.gds_layer_to_image_generator(dp = generator_dp, layer = 'METAL1')
-        cv2.imshow(f"gds_{parent_name}",image1)
-        cv2.imshow(f"generator_{parent_name}",image2)
+        print("A")
 
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+
+
+        # image1 = self.gds_layer_to_image_gds(dp = gds_dp, layer = 'METAL1')
+        # image2 = self.gds_layer_to_image_generator(dp = generator_dp, layer = 'METAL1')
+        # cv2.imshow(f"gds_{parent_name}",image1)
+        # cv2.imshow(f"generator_{parent_name}",image2)
+        #
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
 
         # (score, diff) = compare_ssim(image1, image2, full=True)
         # diff = (diff*255).astype("uint8")
         # print(f"SSIM: {score}")
+
+    def layer_classification_gen(self, dp = None):
+        classified_dict = dict()
+        _Layer = LayerReader._LayerMapping
+        layernum2name = LayerReader._LayDatNum2LayDatName(LayerReader._LayerMapping)
+        for dp_name, info in dp.items():
+            if info['_DesignParametertype'] == 1:
+                layer_name = layernum2name[str(info['_Layer'])]
+                layer_name = layer_name[str(info['_Datatype'])]
+                if re.search("PIN", layer_name):
+                    layer_name = layer_name[:re.search("PIN", layer_name).start()]
+
+                if layer_name not in classified_dict.keys():
+                    classified_dict[f'{layer_name}'] = []
+                    classified_dict[f'{layer_name}'].append(dp_name)
+                else:
+                    classified_dict[f'{layer_name}'].append(dp_name)
+
+        return classified_dict
+
+    def layer_classification_gds(self, dp = None):
+        classified_dict = dict()
+        for dp_name, qt_dp in dp.items():
+            layer_name = qt_dp._DesignParameter['_LayerUnifiedName']
+            if (qt_dp._DesignParameter['_XWidth'] == 0) or (qt_dp._DesignParameter['_YWidth'] == 0):
+                continue
+
+            if layer_name not in classified_dict.keys():
+                classified_dict[f'{layer_name}'] = []
+                classified_dict[f'{layer_name}'].append(dp_name)
+            else:
+                classified_dict[f'{layer_name}'].append(dp_name)
+
+        return classified_dict
+
+
 
     def gds_layer_to_image_gds(self,dp = None, layer = None):
         if layer == None:
@@ -304,6 +346,27 @@ class parameterPrediction():
             cv2.rectangle(layer_image, starting_pt, end_pt, (0,255,255), -1)
 
         return(layer_image)
+
+    def center_width_to_polygon(self, center = list, xwidth = None, ywidth = None):
+
+        """
+        center type : single list
+        """
+
+        if (int(xwidth) % 2 == 1) or (int(ywidth) % 2 == 1):
+            warnings.warn("MinSnapSpacing Issue during verfication")
+
+        left_x = center[0] - xwidth / 2
+        right_x = center[0] + xwidth / 2
+        top_y = center[1] + ywidth / 2
+        bottom_y = center[1] - ywidth / 2
+
+        """
+        return : four coordinates from bottom left, counterclockwise
+        """
+
+        return [[left_x, bottom_y],[right_x, bottom_y], [right_x, top_y], [left_x, top_y]]
+
 
 # if __name__ == '__main__':
 #
