@@ -18,8 +18,8 @@ class _Opppcres(StickDiagram._StickDiagram) :
                                                     _OPLayer = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['OP'][0],_Datatype=DesignParameters._LayerMapping['OP'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
                                                     _PRESLayer = self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PRES'][0],_Datatype=DesignParameters._LayerMapping['PRES'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
                                                     _PPLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['PIMP'][0],_Datatype=DesignParameters._LayerMapping['PIMP'][1],_XYCoordinates=[], _XWidth=400, _YWidth=400),
-                                                    _RPOLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RPO'][0],_Datatype=DesignParameters._LayerMapping['RPO'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
-                                                    _RHLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RH'][0],_Datatype=DesignParameters._LayerMapping['RH'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
+                                                    #_RPOLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RPO'][0],_Datatype=DesignParameters._LayerMapping['RPO'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
+                                                    #_RHLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['RH'][0],_Datatype=DesignParameters._LayerMapping['RH'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
                                                     _Met1Layer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1'][0],_Datatype=DesignParameters._LayerMapping['METAL1'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
                                                     _COLayer=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['CONT'][0],_Datatype=DesignParameters._LayerMapping['CONT'][1], _XYCoordinates=[],_XWidth=400, _YWidth=400),
                                                     _Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None),
@@ -38,7 +38,7 @@ class _Opppcres(StickDiagram._StickDiagram) :
 
         _DRCObj = DRC.DRC()
         MinSnapSpacing = _DRCObj._MinSnapSpacing
-        
+
         if _ResWidth % 2 == 0 and _ResLength % 2 == 0 :
             _XYCoordinateOfOPRES = [[0,0]]
         elif _ResWidth % 2 == 0 and _ResLength % 2 == 1 :
@@ -55,7 +55,7 @@ class _Opppcres(StickDiagram._StickDiagram) :
         flag_EvenChannelWidth = True if (_NMOSChannelWidth % 2 == 0) else False
         _XYCoordinateOfNMOS = [[0, 0]] if flag_EvenChannelWidth else [[0, MinSnapSpacing/2.0]]
         '''
-        
+
         print ('#############################     OP Layer Calculation    ################################################')
         self._DesignParameter['_OPLayer']['_XWidth'] = _ResWidth + _DRCObj._OPlayeroverPoly * 2
         self._DesignParameter['_OPLayer']['_YWidth'] = _ResLength
@@ -68,7 +68,7 @@ class _Opppcres(StickDiagram._StickDiagram) :
         self._DesignParameter['_POLayer']['_YWidth'] = _ResLength + _DRCObj._PolyoverOPlayer * 2
         self._DesignParameter['_POLayer']['_XYCoordinates'] = _XYCoordinateOfOPRES
 
-        
+
         print ('#############################     PRES Layer Calculation    ##############################################') ## for ss28nm
         self._DesignParameter['_PRESLayer']['_XWidth'] = _ResWidth + _DRCObj._PRESlayeroverPoly * 2
         self._DesignParameter['_PRESLayer']['_YWidth'] = self._DesignParameter['_POLayer']['_YWidth'] + _DRCObj._PRESlayeroverPoly * 2
@@ -96,10 +96,10 @@ class _Opppcres(StickDiagram._StickDiagram) :
             _CONUMY = _CONUMYmax
             if DesignParameters._Technology != 'SS28nm' :
                 _CONUMY = 1
-        
+
         if _CONUMY > 1 :
             _CONUMX = int((self._DesignParameter['_POLayer']['_XWidth'] - _DRCObj._CoMinEnclosureByPO2 * 2 - _DRCObj._CoMinWidth) // (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)) + 1
-        
+
 
         if _CONUMX > _CONUMXmax or _CONUMY > _CONUMYmax :
             raise NotImplementedError
@@ -132,7 +132,7 @@ class _Opppcres(StickDiagram._StickDiagram) :
                                         _XYCoordinateOfOPRES[0][1] - MinSnapSpacing/2.0 - (self._DesignParameter['_OPLayer']['_YWidth'] // 2 + _DRCObj._CoMinSpace2OP + 0.5 * _DRCObj._CoMinWidth) - j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)])
                             tmp.append([_XYCoordinateOfOPRES[0][0] - (_CONUMX // 2) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace),
                                         _XYCoordinateOfOPRES[0][1] + MinSnapSpacing/2.0 + (self._DesignParameter['_OPLayer']['_YWidth'] // 2 + _DRCObj._CoMinSpace2OP + 0.5 * _DRCObj._CoMinWidth) + j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)])
-            
+
             elif _ResWidth % 2 == 1 and _ResLength % 2 == 0 :
                 for i in range (0, _CONUMX) :
                     for j in range (0, _CONUMY) :
@@ -146,7 +146,7 @@ class _Opppcres(StickDiagram._StickDiagram) :
                                         _XYCoordinateOfOPRES[0][1] - (self._DesignParameter['_OPLayer']['_YWidth'] // 2 + _DRCObj._CoMinSpace2OP + 0.5 * _DRCObj._CoMinWidth) - j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)])
                             tmp.append([_XYCoordinateOfOPRES[0][0] + MinSnapSpacing/2.0 - (_CONUMX // 2) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace),
                                         _XYCoordinateOfOPRES[0][1] + (self._DesignParameter['_OPLayer']['_YWidth'] // 2 + _DRCObj._CoMinSpace2OP + 0.5 * _DRCObj._CoMinWidth) + j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)])
-            
+
             elif _ResWidth % 2 == 1 and _ResLength % 2 == 1 :
                 for i in range (0, _CONUMX) :
                     for j in range (0, _CONUMY) :
@@ -160,7 +160,7 @@ class _Opppcres(StickDiagram._StickDiagram) :
                                         _XYCoordinateOfOPRES[0][1] - self.CeilMinSnapSpacing((self._DesignParameter['_OPLayer']['_YWidth'] / 2 + _DRCObj._CoMinSpace2OP + 0.5 * _DRCObj._CoMinWidth), MinSnapSpacing / 2) - j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)])
                             tmp.append([_XYCoordinateOfOPRES[0][0] + MinSnapSpacing/2.0 - (_CONUMX // 2) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) + i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace),
                                         _XYCoordinateOfOPRES[0][1] + self.CeilMinSnapSpacing((self._DesignParameter['_OPLayer']['_YWidth'] / 2 + _DRCObj._CoMinSpace2OP + 0.5 * _DRCObj._CoMinWidth), MinSnapSpacing / 2) + j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)])
-        
+
         else :
             if _ResWidth % 2 == 0 and _ResLength % 2 == 0 :
                 for i in range (0, _CONUMX) :
@@ -189,7 +189,7 @@ class _Opppcres(StickDiagram._StickDiagram) :
                                         _XYCoordinateOfOPRES[0][1] - 0.5 - (self._DesignParameter['_OPLayer']['_YWidth'] // 2 + _DRCObj._CoMinSpace2OP + 0.5 * _DRCObj._CoMinWidth) - j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)])
                             tmp.append([_XYCoordinateOfOPRES[0][0] - (_CONUMX // 2) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) + i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2),
                                         _XYCoordinateOfOPRES[0][1] + 0.5 + (self._DesignParameter['_OPLayer']['_YWidth'] // 2 + _DRCObj._CoMinSpace2OP + 0.5 * _DRCObj._CoMinWidth) + j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)])
-            
+
             elif _ResWidth % 2 == 1 and _ResLength % 2 == 0 :
                 for i in range (0, _CONUMX) :
                     for j in range (0, _CONUMY) :
@@ -203,7 +203,7 @@ class _Opppcres(StickDiagram._StickDiagram) :
                                         _XYCoordinateOfOPRES[0][1] - (self._DesignParameter['_OPLayer']['_YWidth'] // 2 + _DRCObj._CoMinSpace2OP + 0.5 * _DRCObj._CoMinWidth) - j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)])
                             tmp.append([_XYCoordinateOfOPRES[0][0] + 0.5 - (_CONUMX // 2) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) + i * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2),
                                         _XYCoordinateOfOPRES[0][1] + (self._DesignParameter['_OPLayer']['_YWidth'] // 2 + _DRCObj._CoMinSpace2OP + 0.5 * _DRCObj._CoMinWidth) + j * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)])
-            
+
             elif _ResWidth % 2 == 1 and _ResLength % 2 == 1 :
                 for i in range (0, _CONUMX) :
                     for j in range (0, _CONUMY) :
@@ -231,11 +231,11 @@ class _Opppcres(StickDiagram._StickDiagram) :
             if _ResWidth % 2 == 0 and _ResLength % 2 == 0 :
                 tmp.append([_XYCoordinateOfOPRES[0][0], _XYCoordinateOfOPRES[0][1] - (self._DesignParameter['_OPLayer']['_YWidth']//2 + _DRCObj._CoMinSpace2OP +
                                                                                 (_CONUMY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)//2 + _DRCObj._CoMinWidth//2)])
-                                                                                
+
             if _ResWidth % 2 == 0 and _ResLength % 2 == 1 :
                 tmp.append([_XYCoordinateOfOPRES[0][0], _XYCoordinateOfOPRES[0][1] - 0.5 - (self._DesignParameter['_OPLayer']['_YWidth']//2 + _DRCObj._CoMinSpace2OP +
                                                                                 (_CONUMY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)//2 + _DRCObj._CoMinWidth//2)])
-            
+
             if _ResWidth % 2 == 1 and _ResLength % 2 == 0 :
                 tmp.append([_XYCoordinateOfOPRES[0][0], _XYCoordinateOfOPRES[0][1] - (self._DesignParameter['_OPLayer']['_YWidth']//2 + _DRCObj._CoMinSpace2OP +
                                                                                 (_CONUMY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)//2 + _DRCObj._CoMinWidth//2)])
@@ -243,16 +243,16 @@ class _Opppcres(StickDiagram._StickDiagram) :
             if _ResWidth % 2 == 1 and _ResLength % 2 == 1 :
                 tmp.append([_XYCoordinateOfOPRES[0][0], _XYCoordinateOfOPRES[0][1] - 0.5 - (self._DesignParameter['_OPLayer']['_YWidth']//2 + _DRCObj._CoMinSpace2OP +
                                                                                 (_CONUMY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace)//2 + _DRCObj._CoMinWidth//2)])
-        
+
         else :
             if _ResWidth % 2 == 0 and _ResLength % 2 == 0 :
                 tmp.append([_XYCoordinateOfOPRES[0][0], _XYCoordinateOfOPRES[0][1] - (self._DesignParameter['_OPLayer']['_YWidth']//2 + _DRCObj._CoMinSpace2OP +
                                                                               (_CONUMY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)//2 + _DRCObj._CoMinWidth//2)])
-                                                                              
+
             if _ResWidth % 2 == 0 and _ResLength % 2 == 1 :
                 tmp.append([_XYCoordinateOfOPRES[0][0], _XYCoordinateOfOPRES[0][1] - 0.5 - (self._DesignParameter['_OPLayer']['_YWidth']//2 + _DRCObj._CoMinSpace2OP +
                                                                                 (_CONUMY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)//2 + _DRCObj._CoMinWidth//2)])
-            
+
             if _ResWidth % 2 == 1 and _ResLength % 2 == 0 :
                 tmp.append([_XYCoordinateOfOPRES[0][0], _XYCoordinateOfOPRES[0][1] - (self._DesignParameter['_OPLayer']['_YWidth']//2 + _DRCObj._CoMinSpace2OP +
                                                                                 (_CONUMY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)//2 + _DRCObj._CoMinWidth//2)])
@@ -260,8 +260,8 @@ class _Opppcres(StickDiagram._StickDiagram) :
             if _ResWidth % 2 == 1 and _ResLength % 2 == 1 :
                 tmp.append([_XYCoordinateOfOPRES[0][0], _XYCoordinateOfOPRES[0][1] - 0.5 - (self._DesignParameter['_OPLayer']['_YWidth']//2 + _DRCObj._CoMinSpace2OP +
                                                                                 (_CONUMY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2)//2 + _DRCObj._CoMinWidth//2)])
-        
-        
+
+
         self._DesignParameter['_XYCoordinatePort1Routing']['_XYCoordinates'] = tmp
         del tmp
 
@@ -287,7 +287,7 @@ class _Opppcres(StickDiagram._StickDiagram) :
             if _ResWidth % 2 == 1 and _ResLength % 2 == 1 :
                 tmp.append([_XYCoordinateOfOPRES[0][0] , _XYCoordinateOfOPRES[0][1] + 0.5 + (self._DesignParameter['_OPLayer']['_YWidth'] // 2 + _DRCObj._CoMinSpace2OP +
                         (_CONUMY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace) // 2 + _DRCObj._CoMinWidth // 2)])
-        
+
         else :
             if _ResWidth % 2 == 0 and _ResLength % 2 == 0 :
                 tmp.append([_XYCoordinateOfOPRES[0][0], _XYCoordinateOfOPRES[0][1] + (self._DesignParameter['_OPLayer']['_YWidth'] // 2 + _DRCObj._CoMinSpace2OP +
@@ -304,7 +304,7 @@ class _Opppcres(StickDiagram._StickDiagram) :
             if _ResWidth % 2 == 1 and _ResLength % 2 == 1 :
                 tmp.append([_XYCoordinateOfOPRES[0][0] , _XYCoordinateOfOPRES[0][1] + 0.5 + (self._DesignParameter['_OPLayer']['_YWidth'] // 2 + _DRCObj._CoMinSpace2OP +
                         (_CONUMY - 1) * (_DRCObj._CoMinWidth + _DRCObj._CoMinSpace2) // 2 + _DRCObj._CoMinWidth // 2)])
-        
+
         self._DesignParameter['_XYCoordinatePort2Routing']['_XYCoordinates'] = tmp
         del tmp
 
@@ -324,4 +324,3 @@ class _Opppcres(StickDiagram._StickDiagram) :
             self._DesignParameter['_PPLayer']['_XWidth'] = self._DesignParameter['_POLayer']['_XWidth'] + 2 * _DRCObj._PpMinEnclosureOfPo
             self._DesignParameter['_PPLayer']['_YWidth'] = self._DesignParameter['_POLayer']['_YWidth'] + 2 * _DRCObj._PpMinEnclosureOfPo
             #self._DesignParameter['_RHLayer']['_YWidth'] = self._DesignParameter['_PPLayer']['_YWidth']
-

@@ -13,7 +13,6 @@ if 'generatorLib' in dir_check or 'PyQTInterface' in dir_check:
     os.chdir('..')
 # sys.path.append('./generatorLib/generator_models')
 sys.path.append(generator_model_path)
-
 class Parm:
     def __init__(self, name, default):
         self.name = name
