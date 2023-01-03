@@ -175,6 +175,12 @@ class parameterPrediction():
         gen_layer_dict = self.layer_classification_gen(generator_dp)
         gds_layer_dict = self.layer_classification_gds(gds_dp)
 
+        """
+        Layer verification : 'DIFF','POLY','CONT','METAL','VIA'
+        """
+
+        for layer, dp_name in gen_layer_dict.items():
+            generator_dp[dp_name]
         print("A")
 
 
@@ -190,6 +196,17 @@ class parameterPrediction():
         # (score, diff) = compare_ssim(image1, image2, full=True)
         # diff = (diff*255).astype("uint8")
         # print(f"SSIM: {score}")
+
+    def create_polygon_gen(self,gen_layer_dict = None, generator_dp = None):
+        min_x = None
+
+        for layer, dp_name in gen_layer_dict.items():
+            for i in range(len(generator_dp[dp_name]['_XYCoordinates'])):
+                polygon_coordinate_list = self.center_width_to_polygon(generator_dp[dp_name]['_XYCoordinates'][i],
+                                             generator_dp[dp_name]['_XWidth'],
+                                             generator_dp[dp_name]['_YWidth'])
+
+        pass
 
     def layer_classification_gen(self, dp = None):
         classified_dict = dict()
