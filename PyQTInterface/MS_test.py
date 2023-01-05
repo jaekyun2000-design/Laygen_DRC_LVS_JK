@@ -179,34 +179,30 @@ class parameterPrediction():
         Layer verification : 'DIFF','POLY','CONT','METAL','VIA'
         """
 
-        for layer, dp_name in gen_layer_dict.items():
-            generator_dp[dp_name]
-        print("A")
+        # for layer, dp_name in gen_layer_dict.items():
+        #     generator_dp[dp_name]
+        # print("A")
 
 
 
-        # image1 = self.gds_layer_to_image_gds(dp = gds_dp, layer = 'METAL1')
-        # image2 = self.gds_layer_to_image_generator(dp = generator_dp, layer = 'METAL1')
-        # cv2.imshow(f"gds_{parent_name}",image1)
-        # cv2.imshow(f"generator_{parent_name}",image2)
-        #
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
+        image1 = self.gds_layer_to_image_gds(dp = gds_dp, layer = 'DIFF')
+        image2 = self.gds_layer_to_image_generator(dp = generator_dp, layer = 'DIFF')
+        test = (image1 == image2)
+        cv2.imshow(f"gds_{parent_name}",image1)
+        cv2.imshow(f"generator_{parent_name}",image2)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+        if (image1.all == image2.all):
+            print("Verified!")
+        else:
+            print("Not verified!")
+
+
 
         # (score, diff) = compare_ssim(image1, image2, full=True)
         # diff = (diff*255).astype("uint8")
         # print(f"SSIM: {score}")
-
-    def create_polygon_gen(self,gen_layer_dict = None, generator_dp = None):
-        min_x = None
-
-        for layer, dp_name in gen_layer_dict.items():
-            for i in range(len(generator_dp[dp_name]['_XYCoordinates'])):
-                polygon_coordinate_list = self.center_width_to_polygon(generator_dp[dp_name]['_XYCoordinates'][i],
-                                             generator_dp[dp_name]['_XWidth'],
-                                             generator_dp[dp_name]['_YWidth'])
-
-        pass
 
     def layer_classification_gen(self, dp = None):
         classified_dict = dict()
@@ -298,7 +294,7 @@ class parameterPrediction():
             starting_pt = (int(layer_XY_list[i][0][0] + offset_x), int(layer_XY_list[i][0][1] + offset_y))
             end_pt = ((int(layer_XY_list[i][1][0] + offset_x), int(layer_XY_list[i][1][1] + offset_y)))
             cv2.rectangle(layer_image, starting_pt, end_pt, (0,255,255), -1)
-
+        print(f"Image Size : {sys.getsizeof(layer_image)}")
         return(layer_image)
 
     def gds_layer_to_image_generator(self,dp = None, layer = None):
@@ -361,7 +357,7 @@ class parameterPrediction():
             starting_pt = (int(layer_XY_list[i][0][0] + offset_x), int(layer_XY_list[i][0][1] + offset_y))
             end_pt = ((int(layer_XY_list[i][1][0] + offset_x), int(layer_XY_list[i][1][1] + offset_y)))
             cv2.rectangle(layer_image, starting_pt, end_pt, (0,255,255), -1)
-
+        print(f"Image Size : {sys.getsizeof(layer_image)}")
         return(layer_image)
 
     def center_width_to_polygon(self, center = list, xwidth = None, ywidth = None):
