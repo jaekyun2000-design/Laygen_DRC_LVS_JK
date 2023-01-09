@@ -229,7 +229,8 @@ class parameterPrediction():
             layer_name = qt_dp._DesignParameter['_LayerUnifiedName']
             if (qt_dp._DesignParameter['_XWidth'] == 0) or (qt_dp._DesignParameter['_YWidth'] == 0):
                 continue
-
+            if (qt_dp._DesignParameter['_DatatypeName'] == '_crit'):
+                continue
             if layer_name not in classified_dict.keys():
                 classified_dict[f'{layer_name}'] = []
                 classified_dict[f'{layer_name}'].append(dp_name)
@@ -375,7 +376,7 @@ class parameterPrediction():
         bottom_y = center[1] - ywidth / 2
 
         """
-        return : four coordinates from bottom left, counterclockwise
+        return : (list) four coordinates from bottom left, counterclockwise
         """
 
         return [[left_x, bottom_y],[right_x, bottom_y], [right_x, top_y], [left_x, top_y]]
