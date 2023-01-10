@@ -23,6 +23,50 @@ from generatorLib.generator_models import ViaMet62Met7
 class parameterPrediction():
     def __init__(self):
         super().__init__()
+    def dp_verification(self, gds_dp = None, generator_dp = None, parent_name = None):
+        # gen_layer_dict = self.layer_classification_gen(generator_dp)
+        # gds_layer_dict = self.layer_classification_gds(gds_dp)
+
+        """
+        Layer verification : 'DIFF','POLY','CONT','METAL','VIA'
+        """
+
+        layer_list = ['DIFF', 'POLY', 'CONT', 'METAL1', 'METAL2', 'METAL3', 'METAL4', 'METAL5','METAL6',
+                      'VIA12', 'VIA23', 'VIA34', 'VIA45']
+
+        for layer in layer_list:
+            image1 = self.gds_layer_to_image_gds(dp = gds_dp, layer = f'{layer}')
+            image2 = self.gds_layer_to_image_generator(dp = generator_dp, layer = f'{layer}')
+            if (image1.shape[0] == 0) & (image2.shape[0] == 0):
+                continue
+
+            h1, w1, c1 = image1.shape
+            h2, w2, c2 = image2.shape
+
+            h_size = max(h1, h2)
+            w_size = max(w1, w2)
+
+            image1_resize = np.zeros((h_size,w_size,3), np.uint8)
+            image2_resize = np.zeros((h_size,w_size,3), np.uint8)
+
+            image1_resize[0: h1, 0: w1, :] = image1
+            image2_resize[0: h2, 0: w2, :] = image2
+            del image1, image2
+
+            grayA = cv2.cvtColor(image1_resize, cv2.COLOR_BGR2GRAY)
+            grayB = cv2.cvtColor(image2_resize, cv2.COLOR_BGR2GRAY)
+
+            (score, _) = compare_ssim(grayA, grayB, full=True)
+            print(f"{layer} Layer Similarity : {round(score * 100, 2)} % \t\t "
+                  f"Image Size : {round(sys.getsizeof(grayA) / 1000000, 3)} MB ")
+
+            cv2.imshow(f"gds_{parent_name}",grayA)
+            cv2.imshow(f"generator_{parent_name}",grayB)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+        print("\n")
+
     def nmos_checker(self, cell_dp_dict = None):
         expected_width = 0
         expected_length = 0
@@ -48,14 +92,16 @@ class parameterPrediction():
             elif qt_dp._DesignParameter['_LayerUnifiedName'] == 'POLY':
                 if (qt_dp._DesignParameter['_DatatypeName'] == '_drawing'):
                     poly_cnt = poly_cnt + 1
+                    expected_length = qt_dp._DesignParameter['_XWidth']
                 elif (qt_dp._DesignParameter['_DatatypeName'] == '_crit'):
                     expected_pccrit = True
             parent_name = qt_dp._ParentName
         expected_finger = len(cont_x_list) - 1
         expected_dummy = True if expected_finger == poly_cnt - 2 else expected_dummy
-        print( expected_width, expected_length, poly_cnt, expected_dummy, expected_pccrit)
+        print(f"\n {expected_width}, {expected_length}, {poly_cnt}, {expected_dummy}, {expected_pccrit}")
 
         nmos_obj = NMOSWithDummy._NMOS()
+        nmos_obj._NameDeclaration(_Name = 'Test')
         nmos_obj._CalculateNMOSDesignParameter(_NMOSNumberofGate = expected_finger,
                                        _NMOSChannelWidth = expected_width,
                                        _NMOSChannellength = expected_length,
@@ -165,57 +211,18 @@ class parameterPrediction():
                     elif (expected_length / 2 - 1) <= via_top_edge <= (expected_length / 2 + 1):
                         enclosure_code = 'MinimumEnclosureY'
         if via_obj:
+            via_obj._NameDeclaration(_Name='Test')
             code = f"via_obj._Calculate{target_class}DesignParameter{enclosure_code}(_{target_class}NumberOfCOX = len(via_x_list), " \
                    f"_{target_class}NumberOfCOY = len(via_y_list))"
             exec(code)
 
-        # self.dp_verification(gds_dp = cell_dp_dict, generator_dp = via_obj._DesignParameter)
+        self.dp_verification(gds_dp = cell_dp_dict, generator_dp = via_obj._DesignParameter)
 
-    def dp_verification(self, gds_dp = None, generator_dp = None, parent_name = None):
-        # gen_layer_dict = self.layer_classification_gen(generator_dp)
-        # gds_layer_dict = self.layer_classification_gds(gds_dp)
-
-        """
-        Layer verification : 'DIFF','POLY','CONT','METAL','VIA'
-        """
-
-        layer_list = ['DIFF', 'POLY', 'CONT', 'METAL1', 'METAL2', 'VIA12']
-
-        for layer in layer_list:
-            image1 = self.gds_layer_to_image_gds(dp = gds_dp, layer = f'{layer}')
-            image2 = self.gds_layer_to_image_generator(dp = generator_dp, layer = f'{layer}')
-            if (image1.shape[0] == 0) & (image2.shape[0] == 0):
-                continue
-            h1, w1, c1 = image1.shape
-            h2, w2, c2 = image2.shape
-
-            h_size = max(h1, h2)
-            w_size = max(w1, w2)
-
-            image1_resize = np.zeros((h_size,w_size,3), np.uint8)
-            image2_resize = np.zeros((h_size,w_size,3), np.uint8)
-
-            image1_resize[0: h1, 0: w1, :] = image1
-            image2_resize[0: h2, 0: w2, :] = image2
-
-            grayA = cv2.cvtColor(image1_resize, cv2.COLOR_BGR2GRAY)
-            grayB = cv2.cvtColor(image2_resize, cv2.COLOR_BGR2GRAY)
-
-            (score, _) = compare_ssim(grayA, grayB, full=True)
-            print(f"{layer} Layer Similarity : {round(score * 100, 2)} % \t\t "
-                  f"Image Size : {round(sys.getsizeof(grayA) / 1000000, 3)} MB, "
-                  f"{round(sys.getsizeof(grayB) / 1000000, 3)} MB")
-
-            cv2.imshow(f"gds_{parent_name}",grayA)
-            cv2.imshow(f"generator_{parent_name}",grayB)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-
-    def parse_args(self):
-        parser = argparse.ArgumentParser()
-        parser.add_argument("original")
-        parser.add_argument("modified")
-        return parser.parse_args()
+    # def parse_args(self):
+    #     parser = argparse.ArgumentParser()
+    #     parser.add_argument("original")
+    #     parser.add_argument("modified")
+    #     return parser.parse_args()
 
     def layer_classification_gen(self, dp = None):
         classified_dict = dict()
@@ -292,8 +299,10 @@ class parameterPrediction():
                             max_xy[0][1] = layer_max_y
 
                     layer_XY_list.append([[layer_min_x, layer_min_y], [layer_max_x, layer_max_y]])
+
         if len(layer_XY_list) == 0:
             return np.zeros((0,0,3), np.uint8)
+
         offset_x = - min_xy[0][0]
         offset_y = - min_xy[0][1]
 
@@ -331,6 +340,8 @@ class parameterPrediction():
             if info['_DesignParametertype'] == 1:
                 layer_name = layernum2name[str(info['_Layer'])]
                 layer_name = layer_name[str(info['_Datatype'])]
+                if (info['_XWidth'] == 0 or info['_YWidth'] == 0):
+                    continue
                 # if (qt_dp._DesignParameter['_DatatypeName'] == '_crit'):
                 #     continue
                 if layer_name == layer:
