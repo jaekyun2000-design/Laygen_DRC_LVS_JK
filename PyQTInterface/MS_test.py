@@ -172,56 +172,25 @@ class parameterPrediction():
         # self.dp_verification(gds_dp = cell_dp_dict, generator_dp = via_obj._DesignParameter)
 
     def dp_verification(self, gds_dp = None, generator_dp = None, parent_name = None):
-        gen_layer_dict = self.layer_classification_gen(generator_dp)
-        gds_layer_dict = self.layer_classification_gds(gds_dp)
+        # gen_layer_dict = self.layer_classification_gen(generator_dp)
+        # gds_layer_dict = self.layer_classification_gds(gds_dp)
 
         """
         Layer verification : 'DIFF','POLY','CONT','METAL','VIA'
         """
 
-        # for layer, dp_name in gen_layer_dict.items():
-        #     generator_dp[dp_name]
-        # print("A")
-        layer_list = ['DIFF', 'POLY', 'CONT', 'METAL', 'VIA']
+        layer_list = ['DIFF', 'POLY', 'CONT', 'METAL1', 'METAL2', 'VIA12']
 
         for layer in layer_list:
             image1 = self.gds_layer_to_image_gds(dp = gds_dp, layer = f'{layer}')
             image2 = self.gds_layer_to_image_generator(dp = generator_dp, layer = f'{layer}')
-
+            if (image1.shape[0] == 0) & (image2.shape[0] == 0):
+                continue
             h1, w1, c1 = image1.shape
             h2, w2, c2 = image2.shape
 
             h_size = max(h1, h2)
             w_size = max(w1, w2)
-            re_size = (h_size, w_size)
-
-            # if h1 < h2 :
-            #     st_pt1 = (w1 + 1, 0)
-            #     st_pt2 = (0, h1 + 1)
-            #     if w1 < w2 :
-            #         end_pt1 = (h2, w2)
-            #         end_pt2 = end_pt1
-            #         cv2.rectangle(image1, st_pt1, end_pt1, (0, 0, 0), -1)
-            #         cv2.rectangle(image1, st_pt2, end_pt2, (0, 0, 0), -1)
-            #     else:
-            #         end_pt1 = (h2, w1)
-            #         end_pt2 = (h2, w2)
-            #         cv2.rectangle(image2, st_pt1, end_pt1, (0, 0, 0), -1)
-            #         cv2.rectangle(image1, st_pt2, end_pt2, (0, 0, 0), -1)
-            #
-            # else:
-            #     st_pt1 = (w2 + 1, 0)
-            #     st_pt2 = (0, h2 + 1)
-            #     if w1 < w2 :
-            #         end_pt1 = (h1, w2)
-            #         end_pt2 = end_pt1
-            #         cv2.rectangle(image2, st_pt1, end_pt1, (0, 0, 0), -1)
-            #         cv2.rectangle(image2, st_pt2, end_pt2, (0, 0, 0), -1)
-            #     else:
-            #         end_pt1 = (h1, w1)
-            #         end_pt2 = (h1, w2)
-            #         cv2.rectangle(image1, st_pt1, end_pt1, (0, 0, 0), -1)
-            #         cv2.rectangle(image2, st_pt2, end_pt2, (0, 0, 0), -1)
 
             image1_resize = np.zeros((h_size,w_size,3), np.uint8)
             image2_resize = np.zeros((h_size,w_size,3), np.uint8)
@@ -236,34 +205,15 @@ class parameterPrediction():
             cv2.imshow(f"generator_{parent_name}",grayB)
 
             (score, _) = compare_ssim(grayA, grayB, full=True)
-            print(f"SSIM: {score}")
+            print(f"Similarity : {score * 100} % '\t\t' Image Size : {sys.getsizeof(grayA) / 1000000} MB")
             cv2.waitKey(0)
             cv2.destroyAllWindows()
-
-            # args = self.parse_args()
-            # imageA = cv2.imread(args.original)
-            # imageB = cv2.imread(args.modified)
-            # grayA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
-            # grayB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
-
-            # (score, diff) = compare_ssim(grayA, grayB, full=True)
-            # diff = (diff * 255).astype("uint8")
-            # print(f"SSIM: {score}")
-            # cv2.waitKey(0)
-            # cv2.destroyAllWindows()
-
-        # if (image1.all == image2.all):
-        #     print("Verified!")
-        # else:
-        #     print("Not verified!")
 
     def parse_args(self):
         parser = argparse.ArgumentParser()
         parser.add_argument("original")
         parser.add_argument("modified")
         return parser.parse_args()
-
-
 
     def layer_classification_gen(self, dp = None):
         classified_dict = dict()
@@ -300,8 +250,6 @@ class parameterPrediction():
 
         return classified_dict
 
-
-
     def gds_layer_to_image_gds(self,dp = None, layer = None):
         if layer == None:
             warnings.warn("No Layer Information")
@@ -312,6 +260,12 @@ class parameterPrediction():
 
         for key, qt_dp in dp.items():
             layer_name = qt_dp._DesignParameter['_LayerUnifiedName']
+            if qt_dp._DesignParameter['_DatatypeName'] == '_crit':
+                continue
+
+            if (qt_dp._DesignParameter['_XWidth'] == 0) or (qt_dp._DesignParameter['_YWidth'] == 0):
+                continue
+
             if layer_name == layer:
                 for i in range(len(qt_dp._DesignParameter['_XYCoordinates'])):
                     layer_min_x = qt_dp._DesignParameter['_XYCoordinates'][i][0] - qt_dp._DesignParameter['_XWidth'] / 2
@@ -336,7 +290,8 @@ class parameterPrediction():
                             max_xy[0][1] = layer_max_y
 
                     layer_XY_list.append([[layer_min_x, layer_min_y], [layer_max_x, layer_max_y]])
-
+        if len(layer_XY_list) == 0:
+            return np.zeros((0,0,3), np.uint8)
         offset_x = - min_xy[0][0]
         offset_y = - min_xy[0][1]
 
@@ -356,7 +311,6 @@ class parameterPrediction():
             starting_pt = (int(layer_XY_list[i][0][0] + offset_x), int(layer_XY_list[i][0][1] + offset_y))
             end_pt = ((int(layer_XY_list[i][1][0] + offset_x), int(layer_XY_list[i][1][1] + offset_y)))
             cv2.rectangle(layer_image, starting_pt, end_pt, (0,255,255), -1)
-        print(f"Image Size : {sys.getsizeof(layer_image)}")
         return(layer_image)
 
     def gds_layer_to_image_generator(self,dp = None, layer = None):
@@ -375,6 +329,8 @@ class parameterPrediction():
             if info['_DesignParametertype'] == 1:
                 layer_name = layernum2name[str(info['_Layer'])]
                 layer_name = layer_name[str(info['_Datatype'])]
+                # if (qt_dp._DesignParameter['_DatatypeName'] == '_crit'):
+                #     continue
                 if layer_name == layer:
                     for i in range(len(info['_XYCoordinates'])):
                         layer_min_x = info['_XYCoordinates'][i][0] - info['_XWidth'] / 2
@@ -399,6 +355,8 @@ class parameterPrediction():
                                 max_xy[0][1] = layer_max_y
 
                         layer_XY_list.append([[layer_min_x, layer_min_y], [layer_max_x, layer_max_y]])
+        if len(layer_XY_list) == 0:
+            return np.zeros((0,0,3), np.uint8)
 
         offset_x = - min_xy[0][0]
         offset_y = - min_xy[0][1]
@@ -419,7 +377,6 @@ class parameterPrediction():
             starting_pt = (int(layer_XY_list[i][0][0] + offset_x), int(layer_XY_list[i][0][1] + offset_y))
             end_pt = ((int(layer_XY_list[i][1][0] + offset_x), int(layer_XY_list[i][1][1] + offset_y)))
             cv2.rectangle(layer_image, starting_pt, end_pt, (0,255,255), -1)
-        print(f"Image Size : {sys.getsizeof(layer_image)}")
         return(layer_image)
 
     def center_width_to_polygon(self, center = list, xwidth = None, ywidth = None):
