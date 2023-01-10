@@ -6,7 +6,7 @@ import numpy as np
 import cv2
 import argparse
 import imutils
-# from skimage.measure import compare_ssim
+from skimage.metrics import structural_similarity as compare_ssim
 
 import warnings
 from PyQTInterface.layermap import LayerReader
@@ -182,27 +182,88 @@ class parameterPrediction():
         # for layer, dp_name in gen_layer_dict.items():
         #     generator_dp[dp_name]
         # print("A")
+        layer_list = ['DIFF', 'POLY', 'CONT', 'METAL', 'VIA']
+
+        for layer in layer_list:
+            image1 = self.gds_layer_to_image_gds(dp = gds_dp, layer = f'{layer}')
+            image2 = self.gds_layer_to_image_generator(dp = generator_dp, layer = f'{layer}')
+
+            h1, w1, c1 = image1.shape
+            h2, w2, c2 = image2.shape
+
+            h_size = max(h1, h2)
+            w_size = max(w1, w2)
+            re_size = (h_size, w_size)
+
+            # if h1 < h2 :
+            #     st_pt1 = (w1 + 1, 0)
+            #     st_pt2 = (0, h1 + 1)
+            #     if w1 < w2 :
+            #         end_pt1 = (h2, w2)
+            #         end_pt2 = end_pt1
+            #         cv2.rectangle(image1, st_pt1, end_pt1, (0, 0, 0), -1)
+            #         cv2.rectangle(image1, st_pt2, end_pt2, (0, 0, 0), -1)
+            #     else:
+            #         end_pt1 = (h2, w1)
+            #         end_pt2 = (h2, w2)
+            #         cv2.rectangle(image2, st_pt1, end_pt1, (0, 0, 0), -1)
+            #         cv2.rectangle(image1, st_pt2, end_pt2, (0, 0, 0), -1)
+            #
+            # else:
+            #     st_pt1 = (w2 + 1, 0)
+            #     st_pt2 = (0, h2 + 1)
+            #     if w1 < w2 :
+            #         end_pt1 = (h1, w2)
+            #         end_pt2 = end_pt1
+            #         cv2.rectangle(image2, st_pt1, end_pt1, (0, 0, 0), -1)
+            #         cv2.rectangle(image2, st_pt2, end_pt2, (0, 0, 0), -1)
+            #     else:
+            #         end_pt1 = (h1, w1)
+            #         end_pt2 = (h1, w2)
+            #         cv2.rectangle(image1, st_pt1, end_pt1, (0, 0, 0), -1)
+            #         cv2.rectangle(image2, st_pt2, end_pt2, (0, 0, 0), -1)
+
+            image1_resize = np.zeros((h_size,w_size,3), np.uint8)
+            image2_resize = np.zeros((h_size,w_size,3), np.uint8)
+
+            image1_resize[0: h1, 0: w1, :] = image1
+            image2_resize[0: h2, 0: w2, :] = image2
+
+            grayA = cv2.cvtColor(image1_resize, cv2.COLOR_BGR2GRAY)
+            grayB = cv2.cvtColor(image2_resize, cv2.COLOR_BGR2GRAY)
+            # test = (image1 == image2)
+            cv2.imshow(f"gds_{parent_name}",grayA)
+            cv2.imshow(f"generator_{parent_name}",grayB)
+
+            (score, _) = compare_ssim(grayA, grayB, full=True)
+            print(f"SSIM: {score}")
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+            # args = self.parse_args()
+            # imageA = cv2.imread(args.original)
+            # imageB = cv2.imread(args.modified)
+            # grayA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
+            # grayB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
+
+            # (score, diff) = compare_ssim(grayA, grayB, full=True)
+            # diff = (diff * 255).astype("uint8")
+            # print(f"SSIM: {score}")
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
+
+        # if (image1.all == image2.all):
+        #     print("Verified!")
+        # else:
+        #     print("Not verified!")
+
+    def parse_args(self):
+        parser = argparse.ArgumentParser()
+        parser.add_argument("original")
+        parser.add_argument("modified")
+        return parser.parse_args()
 
 
-
-        image1 = self.gds_layer_to_image_gds(dp = gds_dp, layer = 'DIFF')
-        image2 = self.gds_layer_to_image_generator(dp = generator_dp, layer = 'DIFF')
-        test = (image1 == image2)
-        cv2.imshow(f"gds_{parent_name}",image1)
-        cv2.imshow(f"generator_{parent_name}",image2)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
-        if (image1.all == image2.all):
-            print("Verified!")
-        else:
-            print("Not verified!")
-
-
-
-        # (score, diff) = compare_ssim(image1, image2, full=True)
-        # diff = (diff*255).astype("uint8")
-        # print(f"SSIM: {score}")
 
     def layer_classification_gen(self, dp = None):
         classified_dict = dict()
