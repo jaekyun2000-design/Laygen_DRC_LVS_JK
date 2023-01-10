@@ -211,7 +211,7 @@ class parameterPrediction():
                     elif (expected_length / 2 - 1) <= via_top_edge <= (expected_length / 2 + 1):
                         enclosure_code = 'MinimumEnclosureY'
         if via_obj:
-            via_obj._NameDeclaration(_Name='Test')
+            via_obj._Name = 'Test'
             code = f"via_obj._Calculate{target_class}DesignParameter{enclosure_code}(_{target_class}NumberOfCOX = len(via_x_list), " \
                    f"_{target_class}NumberOfCOY = len(via_y_list))"
             exec(code)
