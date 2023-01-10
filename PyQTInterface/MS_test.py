@@ -34,6 +34,8 @@ class parameterPrediction():
         cont_x_list = []
         cont_y_list = []
         for dp_name, qt_dp in cell_dp_dict.items():
+            if (qt_dp._DesignParameter['_XWidth'] == 0) or (qt_dp._DesignParameter['_YWidth'] == 0):
+                continue
             if qt_dp._DesignParameter['_LayerUnifiedName'] == 'DIFF':
                 if (qt_dp._DesignParameter['_XYCoordinates'][0][0] == 0) and \
                         (qt_dp._DesignParameter['_XYCoordinates'][0][1] == 0):
@@ -46,8 +48,6 @@ class parameterPrediction():
             elif qt_dp._DesignParameter['_LayerUnifiedName'] == 'POLY':
                 if (qt_dp._DesignParameter['_DatatypeName'] == '_drawing'):
                     poly_cnt = poly_cnt + 1
-                    if qt_dp._DesignParameter['_XWidth'] != 0:
-                        expected_length = qt_dp._DesignParameter['_XWidth']
                 elif (qt_dp._DesignParameter['_DatatypeName'] == '_crit'):
                     expected_pccrit = True
             parent_name = qt_dp._ParentName
@@ -200,12 +200,14 @@ class parameterPrediction():
 
             grayA = cv2.cvtColor(image1_resize, cv2.COLOR_BGR2GRAY)
             grayB = cv2.cvtColor(image2_resize, cv2.COLOR_BGR2GRAY)
-            # test = (image1 == image2)
-            cv2.imshow(f"gds_{parent_name}",grayA)
-            cv2.imshow(f"generator_{parent_name}",grayB)
 
             (score, _) = compare_ssim(grayA, grayB, full=True)
-            print(f"Similarity : {score * 100} % '\t\t' Image Size : {sys.getsizeof(grayA) / 1000000} MB")
+            print(f"{layer} Layer Similarity : {round(score * 100, 2)} % \t\t "
+                  f"Image Size : {round(sys.getsizeof(grayA) / 1000000, 3)} MB, "
+                  f"{round(sys.getsizeof(grayB) / 1000000, 3)} MB")
+
+            cv2.imshow(f"gds_{parent_name}",grayA)
+            cv2.imshow(f"generator_{parent_name}",grayB)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
 
