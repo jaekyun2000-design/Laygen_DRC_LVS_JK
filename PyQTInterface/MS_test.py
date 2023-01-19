@@ -97,8 +97,12 @@ class parameterPrediction():
                 for j in range(height_cnt):
                     comp_1 = np.zeros((unit_size, unit_size, 3), np.uint8)
                     comp_2 = np.zeros((unit_size, unit_size, 3), np.uint8)
-                    if len(grid_matrix_1[i][j]) == 0:
+                    if (len(grid_matrix_1[i][j]) == 0) & (len(grid_matrix_1[i][j]) == 0):
                         continue
+
+                    for z in range(len(grid_matrix_1[i][j])):
+                        # IDEA : grid 내부에 있는 점을 찾아 겹치는 부분 찾기
+                        pass
 
 
 
