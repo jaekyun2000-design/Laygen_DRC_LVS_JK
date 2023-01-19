@@ -50,6 +50,25 @@ class parameterPrediction():
             if len(layer_XY_list1) == 0 or  len(layer_XY_list2) == 0:
                 continue
 
+
+            unit_size = 100
+
+            width = max(width1, width2)
+            height = max(height1, height2)
+
+            width_cnt = width // unit_size + 1
+            height_cnt = height // unit_size + 1
+
+            for i in range(width_cnt):
+                for j in range(height_cnt):
+                    comp_1 = np.zeros((unit_size, unit_size, 3), np.uint8)
+                    comp_2 = np.zeros((unit_size, unit_size, 3), np.uint8)
+
+
+            # IDEA : Grid Generation -> Grid Assignment for each layers -> list classification for each grid
+
+
+
             layer_image1 = np.zeros((height1,width1,3), np.uint8)
             layer_image2 = np.zeros((height2,width2,3), np.uint8)
             for i in range(len(layer_XY_list1)):
