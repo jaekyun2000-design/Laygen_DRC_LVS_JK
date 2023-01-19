@@ -50,22 +50,62 @@ class parameterPrediction():
             if len(layer_XY_list1) == 0 or  len(layer_XY_list2) == 0:
                 continue
 
-
             unit_size = 100
-
             width = max(width1, width2)
             height = max(height1, height2)
-
             width_cnt = width // unit_size + 1
             height_cnt = height // unit_size + 1
+
+        # IDEA : Grid Generation -> Grid Assignment for each layers -> list classification for each grid
+            grid_matrix_1 = [[[] for col in range(height_cnt)] for row in range(width_cnt)]
+            grid_matrix_2 = [[[] for col in range(height_cnt)] for row in range(width_cnt)]
+
+            for layers in layer_XY_list1:       # layers : [ [ ,] , [ , ] ]
+                layers[0][0] = layers[0][0] + offset_x1
+                layers[1][0] = layers[1][0] + offset_x1
+                layers[0][1] = layers[0][1] + offset_y1
+                layers[1][1] = layers[1][1] + offset_y1
+
+                bottom_x_grid = int(layers[0][0] // unit_size)
+                bottom_y_grid = int(layers[0][1] // unit_size)
+
+                top_x_grid = int(layers[1][0] // unit_size)
+                top_y_grid = int(layers[1][1] // unit_size)
+
+                for i in range(top_x_grid - bottom_x_grid + 1):
+                    for j in range(top_y_grid - bottom_y_grid + 1):
+                        grid_matrix_1[bottom_x_grid + i][bottom_y_grid + j].append(layers)
+
+            for layers in layer_XY_list2:       # layers : [ [ ,] , [ , ] ]
+                layers[0][0] = layers[0][0] + offset_x2
+                layers[1][0] = layers[1][0] + offset_x2
+                layers[0][1] = layers[0][1] + offset_y2
+                layers[1][1] = layers[1][1] + offset_y2
+
+                bottom_x_grid = int(layers[0][0] // unit_size)
+                bottom_y_grid = int(layers[0][1] // unit_size)
+
+                top_x_grid = int(layers[1][0] // unit_size)
+                top_y_grid = int(layers[1][1] // unit_size)
+
+                for i in range(top_x_grid - bottom_x_grid + 1):
+                    for j in range(top_y_grid - bottom_y_grid + 1):
+                        grid_matrix_2[bottom_x_grid + i][bottom_y_grid + j].append(layers)
+
 
             for i in range(width_cnt):
                 for j in range(height_cnt):
                     comp_1 = np.zeros((unit_size, unit_size, 3), np.uint8)
                     comp_2 = np.zeros((unit_size, unit_size, 3), np.uint8)
+                    if len(grid_matrix_1[i][j]) == 0:
+                        continue
 
 
-            # IDEA : Grid Generation -> Grid Assignment for each layers -> list classification for each grid
+
+
+
+
+
 
 
 
