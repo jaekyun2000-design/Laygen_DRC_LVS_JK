@@ -66,6 +66,7 @@ class parameterPrediction():
                 layers[0][1] = layers[0][1] + offset_y1
                 layers[1][1] = layers[1][1] + offset_y1
 
+
                 bottom_x_grid = int(layers[0][0] // unit_size)
                 bottom_y_grid = int(layers[0][1] // unit_size)
 
