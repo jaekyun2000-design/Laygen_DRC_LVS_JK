@@ -57,7 +57,7 @@ class PI_clk_sel_8p_s(StickDiagram._StickDiagram):
                                      ChannelLength=30,
                                      GateSpacing=100,
                                      XVT='SLVT',
-                                     CellHeight=1800,   # option
+                                     CellHeight=None,   # option
                                      SupplyRailType=2
                                      ):
 
@@ -662,7 +662,7 @@ if __name__ == '__main__':
         ChannelLength=30,
         GateSpacing=100,
         XVT='SLVT',
-        CellHeight=1800,                        # option
+        CellHeight=None,                        # option
         SupplyRailType=2
     )
 
@@ -716,7 +716,7 @@ if __name__ == '__main__':
         cellname=cellname,
     )
 
-    Mode_DRCCheck = True  # True | False
+    Mode_DRCCheck = False  # True | False
     Num_DRCCheck = 2
 
     if Mode_DRCCheck:
@@ -769,6 +769,7 @@ if __name__ == '__main__':
                     with open(f'./{_fileName}', 'wb') as f:
                         tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
                         tmp.write_binary_gds_stream(f)
+
                 except NotImplementedError:  # something known error !
                     print(f"forLoopCnt = {iii + 1}")
                     if iii + 1 == forLoopCntMax:
@@ -815,12 +816,18 @@ if __name__ == '__main__':
                              f'Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
     else:
         ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
+        start_time = time.time()
         LayoutObj = PI_clk_sel_8p_s(_Name=cellname)
         LayoutObj._CalculateDesignParameter_v2(**InputParams)
         LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
         with open(f'./{_fileName}', 'wb') as f:
             tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
             tmp.write_binary_gds_stream(f)
+
+        m, s = divmod(time.time() - start_time, 60)
+        h, m = divmod(m, 60)
+        print(f'** Generation Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
+        print(s)
 
         print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
         Checker.Upload2FTP()

@@ -2531,7 +2531,7 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             _DesignObj=Inverter._Inverter(_Name='INV_CellheightCalcIn{}'.format(_Name)))[0]
         MinHeight_INV = self._DesignParameter['INV_CellheightCalc']['_DesignObj']._CalcMinHeight(**Parameters2_Inv)
 
-        minHeight = max(MinHeight_TSINV01, MinHeight_TSINV23, MinHeight_INV)
+        minHeight = max(MinHeight_TSINV01, MinHeight_TSINV23, MinHeight_INV) + 130
 
         print(f'MinHeight Calculation...\n'
               f'minHeight = {minHeight}\n'

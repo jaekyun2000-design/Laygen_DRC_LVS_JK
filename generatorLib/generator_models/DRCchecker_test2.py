@@ -23,7 +23,7 @@ from generatorLib import DesignParameters
 
 class DRCchecker:
     def __init__(self, username, password, WorkDir, DRCrunDir, libname, cellname, GDSDir=None):
-        self.server = '141.223.29.62'
+        self.server = '141.223.24.53'
         self.port = 22
         self.username = username
         self.password = password
@@ -230,7 +230,8 @@ class DRCchecker:
 
         ssh.close()
         print(''.center(105, '#'))
-
+        print('   StreamIn Finished!   '.center(105, '#'))
+        print(''.center(105, '#'))
 
 def RandomParam(start: int, stop: int, step: int = 1) -> int:
     """

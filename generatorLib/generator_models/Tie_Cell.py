@@ -2,6 +2,7 @@ from generatorLib import StickDiagram
 from generatorLib import DesignParameters
 import copy
 import math
+import time
 from generatorLib import DRC
 from generatorLib.generator_models import PMOSWithDummy
 from generatorLib.generator_models import ViaPoly2Met1
@@ -15,6 +16,47 @@ class Tie_Cell(StickDiagram._StickDiagram):
 		else:
 			self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name), _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
 		self._DesignParameter['_Name']['Name'] = _Name
+
+
+	def _CalcMinHeight_tiehigh_v1(self,vss2nmos=None,vdd2pmos=None,sd_width=66,gate_spacing=110,vdd2vss_height=1800,nmos_width=200,pmos_width=400,length=40,nmos_gate=1,pmos_gate=1,XVT='RVT'):
+
+		drc = DRC.DRC()
+		_Name = self._DesignParameter['_Name']['_Name']
+		MinSnapSpacing = drc._MinSnapSpacing
+
+		if sd_width == None :
+			sd_width=drc._Metal1MinSpace2
+		if gate_spacing == None :
+			gate_spacing=drc._PolygateMinSpace
+
+		self._DesignParameter['vss'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='vssIn{}'.format(_Name)))[0]
+		self._DesignParameter['vss']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=2, UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=True))
+		self._DesignParameter['vss']['_XYCoordinates'] = [[0.0, 0.0]]
+		self._DesignParameter['vdd'] = self._SrefElementDeclaration(_DesignObj=SupplyRails.SupplyRail(_Name='vddIn{}'.format(_Name)))[0]
+		self._DesignParameter['vdd']['_DesignObj']._CalculateDesignParameter(**dict(NumPitch=2, UnitPitch=130, Met1YWidth=80, Met2YWidth=300, PpNpYWidth=180, isPbody=False))
+		self._DesignParameter['nmos'] = self._SrefElementDeclaration(_DesignObj=NMOSWithDummy._NMOS(_Name='nmosIn{}'.format(_Name)))[0]
+		self._DesignParameter['nmos']['_DesignObj']._CalculateNMOSDesignParameter(**dict(_NMOSNumberofGate=nmos_gate, _NMOSChannelWidth=nmos_width, _NMOSChannellength=length, _NMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sd_width, _XVT=XVT))
+		self._DesignParameter['pmos'] = self._SrefElementDeclaration(_DesignObj=PMOSWithDummy._PMOS(_Name='pmosIn{}'.format(_Name)))[0]
+		self._DesignParameter['pmos']['_DesignObj']._CalculatePMOSDesignParameter(**dict(_PMOSNumberofGate=pmos_gate, _PMOSChannelWidth=pmos_width, _PMOSChannellength=length, _PMOSDummy=True, _GateSpacing=gate_spacing, _SDWidth=sd_width, _XVT=XVT))
+		self._DesignParameter['gate_input'] = self._SrefElementDeclaration(_DesignObj=ViaPoly2Met1._ViaPoly2Met1(_Name='gate_inputIn{}'.format(_Name)))[0]
+		self._DesignParameter['gate_input']['_DesignObj']._CalculateViaPoly2Met1DesignParameterMinimumEnclosureX(**dict(_ViaPoly2Met1NumberOfCOX=1, _ViaPoly2Met1NumberOfCOY=2))
+
+		if self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth']*self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] < drc._PODummyMinArea :
+			self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']=drc._PODummyMinArea//self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth']+2*MinSnapSpacing
+
+		if self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth']*self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth'] < drc._PODummyMinArea :
+			self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_YWidth']=drc._PODummyMinArea//self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_PODummyLayer']['_XWidth']+2*MinSnapSpacing
+
+		if vss2nmos == None :
+			vss2nmos=max(self._DesignParameter['vss']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3, self._DesignParameter['vss']['_DesignObj']._DesignParameter['_PPLayer']['_YWidth']/2+self._DesignParameter['nmos']['_DesignObj']._DesignParameter['_ODLayer']['_YWidth']/2+drc._OdMinSpace2Pp)
+
+		if vdd2pmos == None :
+			vdd2pmos=self._DesignParameter['vdd']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+self._DesignParameter['pmos']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth']/2+drc._Metal1MinSpace3
+
+		vdd2vss_min_height=vss2nmos+vdd2pmos+max(self.getYWidth('nmos','_Met1Layer')/2+self.getYWidth('pmos','_Met1Layer')/2+self.getYWidth('gate_input','_Met1Layer')+2*drc._Metal1MinSpace3, self.getYWidth('nmos','_PODummyLayer')/2+self.getYWidth('pmos','_PODummyLayer')/2+self.getYWidth('gate_input','_POLayer')+drc._PolygateMinWidth*5/3+2*drc._PolygateMinSpace)
+
+
+		return vdd2vss_min_height
 
 	def _CalculateDesignParameter_tiehigh_v1(self,vss2nmos=None,vdd2pmos=None,sd_width=66,gate_spacing=110,vdd2vss_height=1800,nmos_width=200,pmos_width=400,length=40,nmos_gate=1,pmos_gate=1,XVT='RVT'):
 
@@ -1000,3 +1042,127 @@ class Tie_Cell(StickDiagram._StickDiagram):
 	# 	self._DesignParameter['_VDDpin']['_XYCoordinates']=self._DesignParameter['vdd']['_XYCoordinates']
 	# 	self._DesignParameter['_VSSpin']['_XYCoordinates']=self._DesignParameter['vss']['_XYCoordinates']
 	# 	self._DesignParameter['_TIELpin']['_XYCoordinates']=[[(self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][0][0]+self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][-1][0])/2, self._DesignParameter['m1_nmos_drain_routing_x']['_XYCoordinates'][0][0][1]]]
+
+
+
+
+if __name__ == '__main__':
+    from Private import Myinfo
+    import DRCchecker_test2 as DRCchecker
+    from generatorLib.IksuPack import PlaygroundBot
+
+
+    My = Myinfo.USER(DesignParameters._Technology)
+    Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
+
+
+    libname = 'TieCell'
+    cellname = 'TieHigh'
+    _fileName = cellname + '.gds'
+
+    ''' Input Parameters for Layout Object '''
+
+    InputParams = dict(
+		vss2nmos=None,
+		vdd2pmos=None,
+		sd_width=66,
+		gate_spacing=110,
+		vdd2vss_height=1800,
+		nmos_width=200,
+		pmos_width=400,
+		length=40,
+		nmos_gate=1,
+		pmos_gate=1,
+		XVT='RVT'
+	)
+
+    Mode_DRCCheck = True  # True | False
+    Num_DRCCheck = 100
+
+    Checker = DRCchecker.DRCchecker(
+        username=My.ID,
+        password=My.PW,
+        WorkDir=My.Dir_Work,
+        DRCrunDir=My.Dir_DRCrun,
+        GDSDir=My.Dir_GDS,
+        libname=libname,
+        cellname=cellname,
+    )
+
+    if Mode_DRCCheck:
+        ErrCount = 0            # DRC error
+        knownErrorCount = 0     # failed to generate design. NotImplementedError
+
+        start_time = time.time()
+        for ii in range(0, Num_DRCCheck):
+
+            forLoopCntMax = 10
+            for iii in range(0, forLoopCntMax):
+                try:
+                    ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
+                    InputParams['nmos_gate'] = DRCchecker.RandomParam(start=1, stop=5, step=1)
+                    InputParams['pmos_gate'] = InputParams['nmos_gate']
+                    InputParams['pmos_width'] = DRCchecker.RandomParam(start=200, stop=800, step=20)
+                    InputParams['nmos_width'] = DRCchecker.RandomParam(start=200, stop=800, step=20)
+                    InputParams['length'] = DRCchecker.RandomParam(start=30, stop=50, step=10)
+                    InputParams['vdd2vss_height'] = DRCchecker.RandomParam(start=30, stop=50, step=10)
+
+                    tmpNum = DRCchecker.RandomParam(start=1, stop=4, step=1)
+                    if tmpNum == 1:
+                        InputParams['XVT'] = 'SLVT'
+                    elif tmpNum == 2:
+                        InputParams['XVT'] = 'LVT'
+                    elif tmpNum == 3:
+                        InputParams['XVT'] = 'RVT'
+                    elif tmpNum == 4:
+                        InputParams['XVT'] = 'HVT'
+
+                    LayoutObjtmp = Tie_Cell(_Name=cellname)
+                    minCellHeight = LayoutObjtmp._CalcMinHeight_tiehigh_v1(**InputParams)
+                    InputParams['vdd2vss_height'] = minCellHeight
+
+
+                    print("   Last Layout Object's Input Parameters are   ".center(105, '='))
+                    tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+                    print(tmpStr)
+                    print("".center(105, '='))
+
+                    ''' ---------------------------------- Generate Layout Object -------------------------------------------'''
+                    LayoutObj = Tie_Cell(_Name=cellname)
+                    LayoutObj._CalculateDesignParameter_tiehigh_v1(**InputParams)
+                    LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+                    testStreamFile = open('./{}'.format(_fileName), 'wb')
+                    tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+                    tmp.write_binary_gds_stream(testStreamFile)
+                    testStreamFile.close()
+                except NotImplementedError:  # something known error !
+                    print(f"forLoopCnt = {iii + 1}")
+                    if iii + 1 == forLoopCntMax:
+                        raise NotImplementedError
+                else:
+                    knownErrorCount = knownErrorCount + iii
+                    break
+            # end of for loop
+
+            print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+            Checker.Upload2FTP()
+            Checker.StreamIn(tech=DesignParameters._Technology)
+            time.sleep(0.8)
+
+    else:
+        ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
+        LayoutObj = Tie_Cell(_Name=cellname)
+        LayoutObj._CalculateDesignParameter_tiehigh_v1(**InputParams)
+        LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+        testStreamFile = open('./{}'.format(_fileName), 'wb')
+        tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+        tmp.write_binary_gds_stream(testStreamFile)
+        testStreamFile.close()
+
+        print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+        Checker.Upload2FTP()
+        Checker.StreamIn(tech=DesignParameters._Technology)
+
+    print('      Finished       '.center(105, '#'))
+
+

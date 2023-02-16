@@ -2,6 +2,7 @@ from generatorLib import StickDiagram
 from generatorLib import DesignParameters
 import copy
 import math
+import time
 from generatorLib import DRC
 from generatorLib import CoordinateCalc as CoordCalc
 from generatorLib.generator_models import ViaPoly2Met1
@@ -564,3 +565,120 @@ class Transmission_gate(StickDiagram._StickDiagram):
 			for XY in self._DesignParameter[DesignObj]['_XYCoordinates']:
 				tmpXYs.append(CoordCalc.Add(XY, [0, OffsetY]))
 			self._DesignParameter[DesignObj]['_XYCoordinates'] = tmpXYs
+
+
+if __name__ == '__main__':
+    from Private import Myinfo
+    import DRCchecker_test2 as DRCchecker
+    from generatorLib.IksuPack import PlaygroundBot
+
+
+    My = Myinfo.USER(DesignParameters._Technology)
+    Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
+
+
+    libname = 'TransmissionGate_Gen'
+    cellname = 'TransmissionGate'
+    _fileName = cellname + '.gds'
+
+    ''' Input Parameters for Layout Object '''
+
+    InputParams = dict(
+		nmos_gate=1,
+		pmos_gate=1,
+		nmos_width=200,
+		pmos_width=400,
+		length=30,
+		XVT='SLVT',
+		vss2nmos=None,
+		vdd2pmos=None,
+		gate_y=None,
+		vss2vdd_height=None,
+		gate_spacing=100,
+		sdwidth=66,
+		power_xdistance=130
+	)
+
+    Mode_DRCCheck = True  # True | False
+    Num_DRCCheck = 100
+
+    Checker = DRCchecker.DRCchecker(
+        username=My.ID,
+        password=My.PW,
+        WorkDir=My.Dir_Work,
+        DRCrunDir=My.Dir_DRCrun,
+        GDSDir=My.Dir_GDS,
+        libname=libname,
+        cellname=cellname,
+    )
+
+    if Mode_DRCCheck:
+        ErrCount = 0            # DRC error
+        knownErrorCount = 0     # failed to generate design. NotImplementedError
+
+        start_time = time.time()
+        for ii in range(0, Num_DRCCheck):
+
+            forLoopCntMax = 10
+            for iii in range(0, forLoopCntMax):
+                try:
+                    ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
+                    InputParams['nmos_gate'] = DRCchecker.RandomParam(start=1, stop=6, step=1)
+                    InputParams['pmos_gate'] = InputParams['nmos_gate']
+                    InputParams['pmos_width'] = DRCchecker.RandomParam(start=200, stop=800, step=20)
+                    InputParams['nmos_width'] = DRCchecker.RandomParam(start=200, stop=800, step=20)
+                    InputParams['length'] = DRCchecker.RandomParam(start=30, stop=50, step=10)
+                    tmpNum = DRCchecker.RandomParam(start=1, stop=3, step=1)
+                    if tmpNum == 1:
+                        InputParams['XVT'] = 'SLVT'
+                    elif tmpNum == 2:
+                        InputParams['XVT'] = 'LVT'
+                    elif tmpNum == 3:
+                        InputParams['XVT'] = 'RVT'
+                    elif tmpNum == 4:
+                        InputParams['XVT'] = 'HVT'
+
+                    print("   Last Layout Object's Input Parameters are   ".center(105, '='))
+                    tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+                    print(tmpStr)
+                    print("".center(105, '='))
+
+                    ''' ---------------------------------- Generate Layout Object -------------------------------------------'''
+                    LayoutObj = Transmission_gate(_Name=cellname)
+                    LayoutObj._CalculateDesignParameter(**InputParams)
+                    LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+                    testStreamFile = open('./{}'.format(_fileName), 'wb')
+                    tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+                    tmp.write_binary_gds_stream(testStreamFile)
+                    testStreamFile.close()
+                except NotImplementedError:  # something known error !
+                    print(f"forLoopCnt = {iii + 1}")
+                    if iii + 1 == forLoopCntMax:
+                        raise NotImplementedError
+                else:
+                    knownErrorCount = knownErrorCount + iii
+                    break
+            # end of for loop
+
+            print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+            Checker.Upload2FTP()
+            Checker.StreamIn(tech=DesignParameters._Technology)
+            time.sleep(0.8)
+
+    else:
+        ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
+        LayoutObj = Transmission_gate(_Name=cellname)
+        LayoutObj._CalculateDesignParameter(**InputParams)
+        LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+        testStreamFile = open('./{}'.format(_fileName), 'wb')
+        tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+        tmp.write_binary_gds_stream(testStreamFile)
+        testStreamFile.close()
+
+        print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+        Checker.Upload2FTP()
+        Checker.StreamIn(tech=DesignParameters._Technology)
+
+    print('      Finished       '.center(105, '#'))
+
+

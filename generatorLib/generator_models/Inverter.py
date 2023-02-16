@@ -1052,18 +1052,18 @@ if __name__ == '__main__':
     Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
 
 
-    libname = 'TEST_INV'
+    libname = 'Inverter_Gen'
     cellname = 'Inverter'
     _fileName = cellname + '.gds'
 
     ''' Input Parameters for Layout Object '''
 
     InputParams = dict(
-        NumFinger=1,
+        NumFinger=2,
         PMOSWidth=400,
         NMOSWidth=200,
 
-        CellHeight=1800,
+        CellHeight=None,
         VDD2PMOS=None,
         VSS2NMOS=None,
         YCoordOfInput=None,
@@ -1075,8 +1075,8 @@ if __name__ == '__main__':
         SupplyRailType=1
     )
 
-    Mode_DRCCheck = False  # True | False
-    Num_DRCCheck = 5
+    Mode_DRCCheck = True  # True | False
+    Num_DRCCheck = 100
 
     Checker = DRCchecker.DRCchecker(
         username=My.ID,
@@ -1095,17 +1095,47 @@ if __name__ == '__main__':
 
         start_time = time.time()
         for ii in range(0, Num_DRCCheck):
-            if ii == 0:
-                Bot.send2Bot(f'Start DRC checker...\nCellName: {cellname}\nTotal # of Run: {Num_DRCCheck}')
+            # if ii == 0:
+            #     Bot.send2Bot(f'Start DRC checker...\nCellName: {cellname}\nTotal # of Run: {Num_DRCCheck}')
 
             forLoopCntMax = 10
             for iii in range(0, forLoopCntMax):
                 try:
                     ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
-                    # InputParams['NumFinger'] = DRCchecker.RandomParam(start=1, stop=20, step=1)
-                    # InputParams['NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    # InputParams['PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
-                    # InputParams['SupplyRailType'] = DRCchecker.RandomParam(start=1, stop=2, step=1)
+                    InputParams['NumFinger'] = DRCchecker.RandomParam(start=1, stop=20, step=1)
+                    InputParams['NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['PMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['SupplyRailType'] = DRCchecker.RandomParam(start=1, stop=2, step=1)
+                    tmpNum = DRCchecker.RandomParam(start=1, stop=4, step=1)
+                    if tmpNum == 1:
+                        InputParams['XVT'] = 'SLVT'
+                    elif tmpNum == 2:
+                        InputParams['XVT'] = 'LVT'
+                    elif tmpNum == 3:
+                        InputParams['XVT'] = 'RVT'
+                    elif tmpNum == 4:
+                        InputParams['XVT'] = 'HVT'
+                    InputParams['ChannelLength'] = DRCchecker.RandomParam(start=30, stop=60, step=5)
+
+
+
+                    tmpObj = _Inverter(_Name=cellname)
+                    InputParamsTT = {}
+                    InputParamsTT['_Finger'] = InputParams['NumFinger']
+                    InputParamsTT['_ChannelWidth'] = InputParams['NMOSWidth']
+                    InputParamsTT['_ChannelLength'] = InputParams['ChannelLength']
+                    InputParamsTT['_NPRatio'] = InputParams['PMOSWidth'] / InputParams['NMOSWidth']
+                    InputParamsTT['_Dummy'] = True
+                    InputParamsTT['_XVT'] = InputParams['XVT']
+                    InputParamsTT['_GateSpacing'] = InputParams['GateSpacing']
+                    InputParamsTT['_SDWidth'] = InputParams['SDWidth']
+                    InputParamsTT['_SupplyRailType'] = InputParams['SupplyRailType']
+
+
+                    tmpCellHeigth = tmpObj._CalcMinHeight(**InputParamsTT)
+                    InputParams['CellHeight'] = DRCchecker.RandomParam(start=tmpCellHeigth, stop=tmpCellHeigth+1000, step=10)
+
+
 
                     print("   Last Layout Object's Input Parameters are   ".center(105, '='))
                     tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
@@ -1132,7 +1162,10 @@ if __name__ == '__main__':
             print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
             Checker.Upload2FTP()
             Checker.StreamIn(tech=DesignParameters._Technology)
+            time.sleep(1)
 
+
+            '''
             print(f'   DRC checking... {ii + 1}/{Num_DRCCheck}   '.center(105, '#'))
             try:
                 Checker.DRCchecker()
@@ -1163,6 +1196,8 @@ if __name__ == '__main__':
                              f'Total # of DRC Err: {ErrCount}\n'
                              f'Total # of Run: {Num_DRCCheck}\n'
                              f'Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
+            '''
+
     else:
         ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
         LayoutObj = _Inverter(_Name=cellname)
@@ -1177,3 +1212,4 @@ if __name__ == '__main__':
         Checker.StreamIn(tech=DesignParameters._Technology)
 
     print('      Finished       '.center(105, '#'))
+

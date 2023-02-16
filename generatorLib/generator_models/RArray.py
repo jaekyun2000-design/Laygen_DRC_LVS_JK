@@ -405,4 +405,114 @@ class RArray(StickDiagram._StickDiagram):
 
 
 
+if __name__ == '__main__':
+    from Private import Myinfo
+    import DRCchecker_test2 as DRCchecker
+    from generatorLib.IksuPack import PlaygroundBot
+    import time
+
+    My = Myinfo.USER(DesignParameters._Technology)
+    Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
+
+
+    libname = 'RLadder_Gen'
+    cellname = 'RLadder'
+    _fileName = cellname + '.gds'
+
+    ''' Input Parameters for Layout Object '''
+
+    InputParams = dict(
+		R_X_width=1500,
+		R_Y_length=1000,
+		CONT_X_num=None,
+		CONT_Y_num=1,
+		NUMofX=20,
+		NUMofY=10,
+		R_guard_flag=1,
+		Vref_routing_flag=0,
+		First_vref_point=4,
+		Vref_step=2,
+		Vref_num=5
+    )
+
+    Mode_DRCCheck = True  # True | False
+    Num_DRCCheck = 50
+
+    Checker = DRCchecker.DRCchecker(
+        username=My.ID,
+        password=My.PW,
+        WorkDir=My.Dir_Work,
+        DRCrunDir=My.Dir_DRCrun,
+        GDSDir=My.Dir_GDS,
+        libname=libname,
+        cellname=cellname,
+    )
+
+
+    if Mode_DRCCheck:
+        ErrCount = 0            # DRC error
+        knownErrorCount = 0     # failed to generate design. NotImplementedError
+
+        start_time = time.time()
+        for ii in range(0, Num_DRCCheck):
+            # if ii == 0:
+            #     Bot.send2Bot(f'Start DRC checker...\nCellName: {cellname}\nTotal # of Run: {Num_DRCCheck}')
+
+            forLoopCntMax = 10
+            for iii in range(0, forLoopCntMax):
+                try:
+                    ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
+                    InputParams['R_X_width'] = DRCchecker.RandomParam(start=800, stop=2000, step=20)
+                    InputParams['R_Y_length'] = DRCchecker.RandomParam(start=800, stop=2000, step=50)
+                    InputParams['NUMofX'] = DRCchecker.RandomParam(start=5, stop=15, step=1)
+                    InputParams['NUMofY'] = DRCchecker.RandomParam(start=5, stop=15, step=1)
+                    # InputParams['R_guard_flag'] = DRCchecker.RandomParam(start=0, stop=1, step=1)
+
+
+                    print("   Last Layout Object's Input Parameters are   ".center(105, '='))
+                    tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+                    print(tmpStr)
+                    print("".center(105, '='))
+
+                    ''' ---------------------------------- Generate Layout Object -------------------------------------------'''
+                    LayoutObj = RArray(_Name=cellname)
+                    LayoutObj._CalculateDesignParameter(**InputParams)
+                    LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+                    with open(f'./{_fileName}', 'wb') as testStreamFile:
+                        tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+                        tmp.write_binary_gds_stream(testStreamFile)
+                except NotImplementedError:  # something known error !
+                    print(f"forLoopCnt = {iii + 1}")
+                    if iii + 1 == forLoopCntMax:
+                        raise NotImplementedError
+                else:
+                    knownErrorCount = knownErrorCount + iii
+                    # Bot.send2Bot(f"NotImplementedError...\nknownErrorCount = {knownErrorCount}")
+                    break
+
+            # end of for loop
+
+            print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+            Checker.Upload2FTP()
+            Checker.StreamIn(tech=DesignParameters._Technology)
+            time.sleep(1.5)
+
+
+
+    else:
+        ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
+        LayoutObj = RArray(_Name=cellname)
+        LayoutObj._CalculateDesignParameter(**InputParams)
+        LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+        with open(f'./{_fileName}', 'wb') as testStreamFile:
+            tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+            tmp.write_binary_gds_stream(testStreamFile)
+
+        print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+        Checker.Upload2FTP()
+        Checker.StreamIn(tech=DesignParameters._Technology)
+
+    print('      Finished       '.center(105, '#'))
+
+
 

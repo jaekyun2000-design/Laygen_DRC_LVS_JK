@@ -44,7 +44,7 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
                                     Inv_VSS2NMOS=None,  # Optional
                                     Inv_YCoordOfInOut=None,  # Optional
 
-                                    CellHeight=1800,
+                                    CellHeight=None,
                                     ChannelLength=30,
                                     GateSpacing=100,
                                     XVT='SLVT',
@@ -661,7 +661,7 @@ if __name__ == '__main__':
     Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
 
 
-    libname = 'TEST_MUX4to2'
+    libname = 'TEST_MUX_PI_4to2'
     cellname = 'MUX4to2'
     _fileName = cellname + '.gds'
 
@@ -695,8 +695,8 @@ if __name__ == '__main__':
         ChannelLength=30,
         GateSpacing=100,
         XVT='SLVT',
-        CellHeight=1800,            #
-        SupplyRailType=2,
+        CellHeight=None,            #
+        SupplyRailType=1,
     )
 
     # drc check
@@ -828,6 +828,7 @@ if __name__ == '__main__':
                              f'Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
     else:
         ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
+        start_time = time.time()
         LayoutObj = MUX_PI_4to2(_Name=cellname)
         LayoutObj._CalculateDesignParameter_v2(**InputParams)
         LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
@@ -835,9 +836,16 @@ if __name__ == '__main__':
         tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
         tmp.write_binary_gds_stream(testStreamFile)
         testStreamFile.close()
+        m, s = divmod(time.time() - start_time, 60)
+        h, m = divmod(m, 60)
+        print(f'** Generation Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
+        print(s)
 
         print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
         Checker.Upload2FTP()
         Checker.StreamIn(tech=DesignParameters._Technology)
+
+        print(f'** Generation Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
+        print(s)
 
     print('      Finished       '.center(105, '#'))
