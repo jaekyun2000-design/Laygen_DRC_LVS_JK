@@ -99,8 +99,9 @@ class QtDesignParameter:
                     self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
                     self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
 
-            if '_Datatype' in self._DesignParameter and self._DesignParameter['_Datatype'] == None:
-                self._DesignParameter['_Datatype'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][1]
+            ## ss28nm 공정에서 nbodycontact 생성 오류로 인하여 임시 주석처리(1joon)
+            # if '_Datatype' in self._DesignParameter and self._DesignParameter['_Datatype'] == None:
+            #     self._DesignParameter['_Datatype'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][1]
 
         except:
             traceback.print_exc()
