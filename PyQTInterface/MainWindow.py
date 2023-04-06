@@ -1738,109 +1738,105 @@ class _MainWindow(QMainWindow):
 
 
     def srefModulization(self,_flattenStatusDict, _sref = None, topCellName=None):
-        """
-        :param _flattenStatusDict:
-               _sref param not needed: this param exists only for recursive call
-        :return: reconstructed cell structure according to param '_flattenStatusDict'
-        """
-        _finalModule = dict()
+        final_module = dict()
         if _sref == None:
-            ########################################## 1. Initial Condition ############################################
-            addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
-            topCellName = addedModulelist[-1] if topCellName == None else topCellName
-            number_of_cells = len(self._QTObj._qtProject._DesignParameter[topCellName].values())
-            # numberOfCells = int(re.findall('\d+', lastSrefName)[0])
-            tmpDict = dict()
-            print("             #######################################################################               ")
-            print(f"               There are '{number_of_cells}' cells inside '{topCellName}' cell                  ")
-            print("             #######################################################################               ")
-            for _id, _elements in self._QTObj._qtProject._DesignParameter[topCellName].items():
-                if _elements._DesignParameter['_DesignParametertype'] == 3:                      # Sref inside top cell
-                    _childName = _elements._DesignParameter['_DesignObj_Name']
-                    _childModule = self.srefModulization(_flattenStatusDict, _elements)          # Recursive Call
-                    for _id2, elements2 in _childModule.items():
-                        name = elements2._DesignParameter['_ElementName']
+            added_module_list = list(self._QTObj._qtProject._DesignParameter.keys())
+            top_cell_name = added_module_list[-1] if topCellName == None else topCellName
+            number_of_cells = len(self._QTObj._qtProject._DesignParameter[top_cell_name].values())
 
-                        ###### Preventing Name Overwriting #####
-                        while True:
-                            if name in list(tmpDict.keys()):
-                                newName = name + str(1)
-                                name = newName
-                            else:
-                                break
-                        #########################################
+            print("             #######################################################################               ")
+            print(f"               There are '{number_of_cells}' cells inside '{top_cell_name}' cell                  ")
+            print("             #######################################################################               ")
 
-                        tmpDict[name] = elements2
+            tmp_dict = dict()
+            for element_name, element in self._QTObj._qtProject._DesignParameter[top_cell_name].items():
+                if element._DesignParameter['_DesignParametertype'] == 3:
+                    # child_name = element._DesignParameter['_DesignObj_Name']
+                    child_module = self.srefModulization(_flattenStatusDict, element)
+                    if len(child_module) != 1:
+                        for _, element2 in child_module.items():
+                            name = str(element_name + '/' + element2._DesignParameter['_ElementName'])
+                            element2._ElementName = name
+                            element2._id = name
+                            element2._DesignParameter['_ElementName'] = name
+                            tmp_dict[name] = element2
+                    else:
+                        for _, element2 in child_module.items():
+                            name = element_name
+                            tmp_dict[name] = element2
                 else:
-                    tmpDict[_id] = _elements
-            _finalModule = tmpDict
-
+                    tmp_dict[element_name] = element
+            final_module = tmp_dict
+            print("Modulization Done")
         else:
-            ############################################# 2. Subcell Cases ############################################
-            _childName = _sref._DesignParameter['_DesignObj_Name']
-            _newChildName = f'{_childName}/{_sref._DesignParameter["_ElementName"]}'
-            _parentName = _sref._id
-            _parentXY = _sref._DesignParameter['_XYCoordinates']
-            tmpDict = dict()
-            if _childName in list(self._QTObj._qtProject._DesignParameter.keys()):
-                tmpdict = self._QTObj._qtProject._DesignParameter[_childName]
-            else:
-                tmpdict = _sref._DesignParameter['_ModelStructure']
-            for _id1, _modules1 in tmpdict.items():
-                if _modules1._DesignParameter['_DesignParametertype'] != 3:
-                    tmpDict[_modules1._id] = _modules1
-                else :                                      # If one of the subcells is SREF, Recursive call
-                    _childModule2 = self.srefModulization(_flattenStatusDict, _modules1)
-                    for _id2, elements2 in _childModule2.items():
-                        _name = elements2._DesignParameter['_ElementName']
-                        while True:
-                            if _name in list(tmpDict.keys()):
-                                newName = _name + str(1)
-                                _name = newName
-                            else:
-                                break
-                        tmpDict[_name] = elements2
+            child_name = _sref._DesignParameter['_DesignObj_Name']
+            parent_name = _sref._ElementName
 
-            for key, value in _flattenStatusDict.items():   # Check whether to flatten or not
-                findHint = _newChildName.find(key)
-                if findHint != -1:
-                    if value != None:                       # Not Flattening Condition
-                        tmpmodule = copy.deepcopy(_sref)
-                        tmpmodule._DesignParameter['_ModelStructure'] = tmpDict
-                        _finalModule[_childName] = tmpmodule
+            tmp_dict = dict()
+            if child_name in list(self._QTObj._qtProject._DesignParameter.keys()):
+                """
+                flattening 이전에 gds 자료구조는, sref정보가 내부 recursive하게 있는 것이 아니라, 
+                가장 윗단 hierarchy에 parallel하게 서술되어 있다. 우선 그 부분을 참조하고, sref 부모 xy와 zip 하여 최종 좌표 결정.
+
+                """
+                sub_element_dict = self._QTObj._qtProject._DesignParameter[child_name]
+            else:
+                """
+                이미 자료구조가 model structure로 들어가 있는 경우도 있다. (new window 등의 동작일 때)
+                """
+                sub_element_dict = _sref._DesignParameter['_ModelStructure']
+
+            for element_name, element in sub_element_dict.items():
+                if element._DesignParameter['_DesignParametertype'] != 3:
+                    tmp_dict[element._ElementName] = element
+                else:
+                    """
+                    subcell 내에 또 subcell이 있으면 recursive하게 처리후 return하여 받아올 것.
+
+                    """
+                    child_module = self.srefModulization(_flattenStatusDict, element)
+                    for _, sub2_element in child_module.items():
+                        name = str(element_name + '/' + sub2_element._DesignParameter['_ElementName'])
+                        sub2_element._ElementName = name
+                        sub2_element._id = name
+                        sub2_element._DesignParameter['_ElementName'] = name
+                        tmp_dict[name] = sub2_element
+
+            child_name_for_comp = f'{child_name}/{parent_name}'
+            parent_xy = _sref._DesignParameter['_XYCoordinates']
+            for key, value in _flattenStatusDict.items():
+                """
+                tmp_dict에 element들은 모두 담아 뒀는데, flatten 안 한다고 하면 덩어리째로, 아니라면 다 분리해서 상위에다가 
+                return
+
+                """
+                find_hint = child_name_for_comp.find(key)
+                if find_hint != -1:
+                    if value != None:  # Not Flattening Condition
+                        returning_element = copy.deepcopy(_sref)
+                        returning_element._DesignParameter['_ModelStructure'] = tmp_dict
+                        final_module[child_name] = returning_element
                         break
-                    else:                                   # Flattening Condition
-                        """                 
-                        Flattening Condition needs XY coordinate modification, and renaming process
-                        """
-                        for _id, element in tmpDict.items():
-                            tmpmodule = copy.deepcopy(element)
-                            if tmpmodule._DesignParameter['_DesignParametertype'] == 2:
-                                _XYpairs = tmpmodule._DesignParameter['_XYCoordinates'][0]  # [[a,a'],[b,b'],[c,c']]
-                                _modifiedXYpairs = []
-                                for i in range(0,len(_XYpairs)):
-                                    _newXY = [x+y for x,y in zip(_XYpairs[i], _parentXY[0])]
-                                    _modifiedXYpairs.append(_newXY)
-                                while True:
-                                    if tmpmodule._id in _finalModule:   # Preventing name overwriting
-                                        newName = tmpmodule._id + str(1)
-                                        tmpmodule._id = newName
-                                    else:
-                                        break
-                                tmpmodule._DesignParameter['_XYCoordinates'] = [_modifiedXYpairs]
-                                _finalModule[tmpmodule._id] = tmpmodule
+                    else:  # Flattening Condition
+                        for element_name, element in tmp_dict.items():
+                            returning_element = copy.deepcopy(element)
+                            if returning_element._DesignParameter['_DesignParametertype'] == 2:
+                                xy_pairs = returning_element._DesignParameter['_XYCoordinates'][
+                                    0]  # [[a,a'],[b,b'],[c,c']]
+                                modified_xy_pairs = []
+                                for i in range(0, len(xy_pairs)):
+                                    new_xy = [x + y for x, y in zip(xy_pairs[i], parent_xy[0])]
+                                    modified_xy_pairs.append(new_xy)
+
+                                returning_element._DesignParameter['_XYCoordinates'] = [modified_xy_pairs]
+                                final_module[returning_element._id] = returning_element
                             else:
-                                newXY = [[x+y for x,y in zip(tmpmodule._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
-                                tmpmodule._DesignParameter['_XYCoordinates'] = newXY
-                                while True:
-                                    if tmpmodule._id in _finalModule:   # Preventing name overwriting
-                                        newName = tmpmodule._id + str(1)
-                                        tmpmodule._id = newName
-                                    else:
-                                        break
-                                _finalModule[tmpmodule._id] = tmpmodule
+                                new_xy = [[x + y for x, y in zip(returning_element._DesignParameter['_XYCoordinates'][0]
+                                                                 , parent_xy[0])]]
+                                returning_element._DesignParameter['_XYCoordinates'] = new_xy
+                                final_module[returning_element._id] = returning_element
                         break
-        return _finalModule
+        return final_module
 
     def debug_not_defined_variables(self):
         self.dockContentWidget3.blockSignals(True)
