@@ -1060,22 +1060,57 @@ class _SingleEnded2StageOPAmp(StickDiagram._StickDiagram):
 
 
         # 1 stage out - CAP
-        OUT1NCAP_COYnum = NCAPViaPoly_COYnum
+        OUT1NCAP_COYnum = int((self.getWidth('_NCAPMet2PolyRouting') - 2 * _DRCObj._MetalxMinEnclosureCO2 - _DRCObj._VIAxMinWidth) // (_DRCObj._VIAxMinWidth + _DRCObj._VIAxMinSpace) + 1) - 1
         self._DesignParameter['OUT1NCAPVia'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='OUT1NCAPViaIn{}'.format(_Name)))[0]
         self._DesignParameter['OUT1NCAPVia']['_DesignObj']._CalculateViaMet22Met3DesignParameter(_ViaMet22Met3NumberOfCOX=2, _ViaMet22Met3NumberOfCOY=OUT1NCAP_COYnum)
         self._DesignParameter['OUT1NCAPVia']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = self.getWidth('_NCAPMet2PolyRouting')
         self._DesignParameter['OUT1NCAPVia']['_DesignObj']._DesignParameter['_Met3Layer']['_YWidth'] = self._DesignParameter['OUT1NCAPVia']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth']
 
-        self._DesignParameter['_OUTMet2Routing'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=self.getXWidth('OUT1NCAPVia', '_Met3Layer'))
-        self._DesignParameter['_OUTMet2Routing']['_XYCoordinates'] = [[[self.getXY('_P2Met3Routing')[0][1][0] + self.getWidth('_P2Met3Routing') / 2 - self.getWidth('_OUTMet2Routing') / 2, self.getXY('_P2Met3Routing')[0][1][1]],
-                                                                       [self.getXY('_P2Met3Routing'),]]]
+        self._DesignParameter['_OUT1NCAPMet3Routing'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=self.getXWidth('OUT1NCAPVia', '_Met3Layer'))
+        self._DesignParameter['_OUT1NCAPMet3Routing']['_XYCoordinates'] = [[[self.getXY('_P2Met3Routing')[0][1][0] + self.getWidth('_P2Met3Routing') / 2 - self.getWidth('_OUT1NCAPMet3Routing') / 2,
+                                                                             self.getXY('_P2Met3Routing')[0][1][1]],
+                                                                            [self.getXY('_P2Met3Routing')[0][1][0] + self.getWidth('_P2Met3Routing') / 2 - self.getWidth('_OUT1NCAPMet3Routing') / 2,
+                                                                             self.getXY('_NCAPMet2PolyRouting')[0][-1][1] - abs(self.getWidth('_NCAPMet2PolyRouting')) / 2]]]
+
+        self._DesignParameter['_OUT1NCAPMet2Routing'] = self._PathElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1], _Width=self.getWidth('_NCAPMet2PolyRouting'))
+
+        for i in range(0, NCAP_NumofGate):
+            self._DesignParameter['OUT1NCAPVia']['_XYCoordinates'].append([self.getXY('_OUT1NCAPMet3Routing')[0][0][0], self.getXY('_NCAPMet2PolyRouting')[i][-1][1]])
+            self._DesignParameter['_OUT1NCAPMet2Routing']['_XYCoordinates'].append([self.getXY('_NCAPMet2PolyRouting')[i][-1],[self.getXY('_OUT1NCAPMet3Routing')[0][0][0], self.getXY('_NCAPMet2PolyRouting')[i][-1][1]]])
 
 
 
+        print('******************************************** PIN Generation ********************************************')
+        self._DesignParameter['PIN_VSS'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT='VSS')
 
+        self._DesignParameter['PIN_VDD'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT='VDD')
 
+        self._DesignParameter['PIN_INP'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT='INP')
 
+        self._DesignParameter['PIN_INN'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT='INN')
 
+        self._DesignParameter['DRW_VB'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+            _Presentation=[0, 1, 1], _Reflect=[0, 0, 0], _XYCoordinates=[[0, 0]], _Mag=0.1, _Angle=0, _TEXT='VB')
+
+        self._DesignParameter['PIN_VSS']['_XYCoordinates'] = self.getXY('PSubRing', 'top')[0]
+        self._DesignParameter['PIN_VDD']['_XYCoordinates'] = self.getXY('NSubRing', 'top')[0]
+        self._DesignParameter['PIN_INP']['_XYCoordinates'] = self.getXY('N1PolyGate')[0]
+        self._DesignParameter['PIN_INN']['_XYCoordinates'] = self.getXY('N0PolyGate')[0]
+        self._DesignParameter['DRW_VB']['_XYCoordinates'] = self.getXY('N0PolyGate')[0]
 
 
 ################################# DRC Check #################################
@@ -1171,9 +1206,9 @@ if __name__ == '__main__':
     myfile = open('_SingleEnded2StageOPAmp.gds', 'rb')
     ftp.storbinary('STOR _SingleEnded2StageOPAmp.gds', myfile)
     myfile.close()
-#
-#         import DRCchecker
-#         a = DRCchecker.DRCchecker('smlim96','min753531','/mnt/sdc/smlim96/OPUS/ss28','/mnt/sdc/smlim96/OPUS/ss28/DRC/run','DFF','DFF',None)
-#         a.DRCchecker()
-#
-#         print ("DRC Clean!!!")
+
+    # import DRCchecker
+    # a = DRCchecker.DRCchecker('smlim96','min753531','/mnt/sdc/smlim96/OPUS/ss28','/mnt/sdc/smlim96/OPUS/ss28/DRC/run','DFF','DFF',None)
+    # a.DRCchecker()
+    #
+    # print ("DRC Clean!!!")
