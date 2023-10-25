@@ -33,9 +33,9 @@ class DFF(StickDiagram._StickDiagram):
                                   TG1_Finger=1,
                                   TG1_NMWidth=200,
                                   TG1_PMWidth=400,
-                                  TG2_Finger=1,
-                                  TG2_NMWidth=320,
-                                  TG2_PMWidth=584,
+                                  TG2_Finger=2,
+                                  TG2_NMWidth=200,
+                                  TG2_PMWidth=400,
 
                                   TSI1_Finger=1,
                                   TSI1_NMWidth=200,
@@ -44,9 +44,9 @@ class DFF(StickDiagram._StickDiagram):
                                   TSI2_NMWidth=200,
                                   TSI2_PMWidth=400,
 
-                                  INV1_Finger=4,
-                                  INV1_NMWidth=250,
-                                  INV1_PMWidth=500,
+                                  INV1_Finger=3,
+                                  INV1_NMWidth=200,
+                                  INV1_PMWidth=400,
 
                                   INV2_Finger=1,
                                   INV2_NMWidth=200,
@@ -55,13 +55,15 @@ class DFF(StickDiagram._StickDiagram):
                                   INV3_NMWidth=200,
                                   INV3_PMWidth=400,
 
-                                  INV4_Finger=1,
-                                  INV4_NMWidth=100,
-                                  INV4_PMWidth=200,
+                                  INV4_Finger=4,
+                                  INV4_NMWidth=200,
+                                  INV4_PMWidth=400,
 
                                   INV5_Finger=4,
                                   INV5_NMWidth=200,
                                   INV5_PMWidth=400,
+
+
 
                                   ChannelLength=30,
                                   GateSpacing=100,
@@ -784,24 +786,24 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2q']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
         self._DesignParameter['_ViaMet12Met2q']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
         self._DesignParameter['_ViaMet12Met2q']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
-        self._DesignParameter['_ViaMet12Met2q']['_XYCoordinates'] = [[self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0] + self.getWidth('INV4', '_OutputRouting') / 2- tmpMet2Width/2, YCoord_iclkb],[inv5input- tmpMet2Width/2, YCoord_iclkb]]
+        self._DesignParameter['_ViaMet12Met2q']['_XYCoordinates'] = [[self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0] + self.getWidth('INV4', '_OutputRouting') / 2- tmpMet2Width/2, YCoord_iclkb - tmpViaMet2Width / 2 + tmpMet2Width / 2],[inv5input- tmpMet2Width/2, YCoord_iclkb - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
 
 
-        '''clk routing(ADDED by smlim)'''
-        leftBoundary = self.getXYLeft('TG2', 'gate_output', '_Met1Layer')[0][0]
-        YCoord_clk = self.getXY('TG2', 'gate_output', '_Met1Layer')[0][1]
-        if INV2_Finger <= 2:
-            rightBoundary = self.getXYRight('INV2', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0]
-        elif INV2_Finger >= 3:
-            rightBoundary = self.getXY('INV2')[0][0] + self._DesignParameter['INV2']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0]
-
-        # TG2y to INV4in & TSI2out
-        self._DesignParameter['_Met1_clk'] = self._BoundaryElementDeclaration(
-            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
-            _XWidth=rightBoundary - leftBoundary,
-            _YWidth=tmpMet2Width,
-            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_clk]]
-        )
+        # '''clk routing(ADDED by smlim)'''
+        # leftBoundary = self.getXYLeft('TG2', 'gate_output', '_Met1Layer')[0][0]
+        # YCoord_clk = self.getXY('TG2', 'gate_output', '_Met1Layer')[0][1]
+        # if INV2_Finger <= 2:
+        #     rightBoundary = self.getXYRight('INV2', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0]
+        # elif INV2_Finger >= 3:
+        #     rightBoundary = self.getXY('INV2')[0][0] + self._DesignParameter['INV2']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0]
+        #
+        # # TG2y to INV4in & TSI2out
+        # self._DesignParameter['_Met1_clk'] = self._BoundaryElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+        #     _XWidth=rightBoundary - leftBoundary,
+        #     _YWidth=tmpMet2Width,
+        #     _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_clk]]
+        # )
 
 
         # '''iclk routing(ADDED by smlim)'''
@@ -899,6 +901,17 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
         self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2iclk2']['_XYCoordinates'] = [[self.getXYRight('TG2', 'gate_output', '_Met1Layer')[0][0]-tmpMet2Width / 2,  self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
+
+        ########################## cell width ##################
+        self.CellXWidth = self.getXY('INV5', '_PMOS', '_XYCoordinatePMOSSupplyRouting')[-1][0] + ChannelLength + GateSpacing
+        self.CellYWidth = CellHeight
+
+        ########################## YCoord ##################
+        self.rib = YCoord_rib
+        self.dib = YCoord_dib2
+        self.iclkb = YCoord_iclkb
+        self.iclk = YCoord_iclk
+
 
 
         # '''Pin generation'''

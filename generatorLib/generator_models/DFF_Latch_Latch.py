@@ -33,9 +33,9 @@ class DFF(StickDiagram._StickDiagram):
                                   TG1_Finger=1,
                                   TG1_NMWidth=200,
                                   TG1_PMWidth=400,
-                                  TG2_Finger=1,
-                                  TG2_NMWidth=320,
-                                  TG2_PMWidth=584,
+                                  TG2_Finger=2,
+                                  TG2_NMWidth=200,
+                                  TG2_PMWidth=400,
 
                                   TSI1_Finger=1,
                                   TSI1_NMWidth=200,
@@ -44,9 +44,9 @@ class DFF(StickDiagram._StickDiagram):
                                   TSI2_NMWidth=200,
                                   TSI2_PMWidth=400,
 
-                                  INV1_Finger=4,
-                                  INV1_NMWidth=250,
-                                  INV1_PMWidth=500,
+                                  INV1_Finger=3,
+                                  INV1_NMWidth=200,
+                                  INV1_PMWidth=400,
 
                                   INV2_Finger=1,
                                   INV2_NMWidth=200,
@@ -55,9 +55,10 @@ class DFF(StickDiagram._StickDiagram):
                                   INV3_NMWidth=200,
                                   INV3_PMWidth=400,
 
-                                  INV4_Finger=1,
-                                  INV4_NMWidth=100,
-                                  INV4_PMWidth=200,
+                                  INV4_Finger=4,
+                                  INV4_NMWidth=200,
+                                  INV4_PMWidth=400,
+
 
                                   TG3_Finger=1,
                                   TG3_NMWidth=200,
@@ -75,26 +76,23 @@ class DFF(StickDiagram._StickDiagram):
                                   INV6_NMWidth=200,
                                   INV6_PMWidth=400,
 
-                                  TG4_Finger=1,
-                                  TG4_NMWidth=320,
-                                  TG4_PMWidth=584,
+                                  TG4_Finger=2,
+                                  TG4_NMWidth=200,
+                                  TG4_PMWidth=400,
 
                                   TSI4_Finger=1,
                                   TSI4_NMWidth=200,
                                   TSI4_PMWidth=400,
 
                                   INV7_Finger=4,
-                                  INV7_NMWidth=250,
-                                  INV7_PMWidth=500,
-
-                                  INV8_Finger=1,
+                                  INV7_NMWidth=200,
+                                  INV7_PMWidth=400,
+                                  INV8_Finger=4,
                                   INV8_NMWidth=200,
                                   INV8_PMWidth=400,
-
-                                  INV9_Finger=4,
-                                  INV9_NMWidth=250,
-                                  INV9_PMWidth=500,
-
+                                  INV9_Finger=1,
+                                  INV9_NMWidth=200,
+                                  INV9_PMWidth=400,
                                   INV10_Finger=1,
                                   INV10_NMWidth=200,
                                   INV10_PMWidth=400,
@@ -1902,6 +1900,15 @@ class DFF(StickDiagram._StickDiagram):
                 **_ViaOnPMOSOutput)
             self._DesignParameter['inv7output']['_XYCoordinates'] = self.getXY('INV7', '_NMOS','_XYCoordinateNMOSOutputRouting')
 
+        ########################## cell width ##################
+        self.CellXWidth = self.getXY('INV10', '_PMOS', '_XYCoordinatePMOSSupplyRouting')[-1][0] + ChannelLength + GateSpacing
+        self.CellYWidth = CellHeight
+
+        ########################## YCoord ##################
+        self.rib = YCoord_rib
+        self.dib = YCoord_dib
+        self.iclkb = YCoord_iclkb
+        self.iclk = YCoord_iclk
 
 
         '''Pin generation'''

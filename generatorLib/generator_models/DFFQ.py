@@ -33,9 +33,9 @@ class DFF(StickDiagram._StickDiagram):
                                   TG1_Finger=1,
                                   TG1_NMWidth=200,
                                   TG1_PMWidth=400,
-                                  TG2_Finger=1,
-                                  TG2_NMWidth=320,
-                                  TG2_PMWidth=584,
+                                  TG2_Finger=2,
+                                  TG2_NMWidth=200,
+                                  TG2_PMWidth=400,
 
                                   TSI1_Finger=1,
                                   TSI1_NMWidth=200,
@@ -44,9 +44,9 @@ class DFF(StickDiagram._StickDiagram):
                                   TSI2_NMWidth=200,
                                   TSI2_PMWidth=400,
 
-                                  INV1_Finger=4,
-                                  INV1_NMWidth=250,
-                                  INV1_PMWidth=500,
+                                  INV1_Finger=3,
+                                  INV1_NMWidth=200,
+                                  INV1_PMWidth=400,
 
                                   INV2_Finger=1,
                                   INV2_NMWidth=200,
@@ -55,9 +55,12 @@ class DFF(StickDiagram._StickDiagram):
                                   INV3_NMWidth=200,
                                   INV3_PMWidth=400,
 
-                                  INV4_Finger=1,
-                                  INV4_NMWidth=100,
-                                  INV4_PMWidth=200,
+                                  INV4_Finger=4,
+                                  INV4_NMWidth=200,
+                                  INV4_PMWidth=400,
+
+
+
 
                                   ChannelLength=30,
                                   GateSpacing=100,
@@ -74,8 +77,8 @@ class DFF(StickDiagram._StickDiagram):
         UnitPitch = ChannelLength + GateSpacing
 
 
-        if max(TG1_NMWidth,TG2_NMWidth,TSI1_NMWidth,TSI2_NMWidth, INV1_NMWidth, INV2_NMWidth,INV3_NMWidth,INV4_NMWidth)>200:
-            CellHeight =2000
+        #if max(TG1_NMWidth,TG2_NMWidth,TSI1_NMWidth,TSI2_NMWidth, INV1_NMWidth, INV2_NMWidth,INV3_NMWidth,INV4_NMWidth)>200:
+        #    CellHeight =2000
 
 
         Parameters_TG1 = dict(
@@ -851,6 +854,19 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclk2']['_XYCoordinates'] = [[self.getXYRight('TG2', 'gate_output', '_Met1Layer')[0][0]-tmpMet2Width / 2,  self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
 
 
+        ########################## cell width ##################
+        self.CellXWidth = self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSSupplyRouting')[1][0] + ChannelLength + GateSpacing
+        self.CellYWidth = CellHeight
+
+
+        ########################## YCoord ##################
+        self.rib = YCoord_rib
+        self.dib = YCoord_dib2
+        self.iclkb = YCoord_iclkb
+        self.iclk = YCoord_iclk
+
+
+        #print("test ",self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSSupplyRouting'))
 
         '''Pin generation'''
         self._DesignParameter['_VDDpin'] = self._TextElementDeclaration(
@@ -891,15 +907,15 @@ class DFF(StickDiagram._StickDiagram):
 ################################ DRC Check #################################
 import random
 if __name__ == '__main__':
-    # for i in range(0,100):
-    #     TG1_Finger = random.randint(1,5)
-    #     TG2_Finger = random.randint(1, 5)
-    #     TSI1_Finger = random.randint(1,2)
-    #     TSI2_Finger = random.randint(1,2)
-    #     INV1_Finger = random.randint(1,5)
-    #     INV2_Finger = random.randint(1,5)
-    #     INV3_Finger = random.randint(1,5)
-    #     INV4_Finger = random.randint(1,5)
+    #for i in range(0,100):
+        # TG1_Finger = random.randint(1,5)
+        # TG2_Finger = random.randint(1, 5)
+        # TSI1_Finger = random.randint(1,2)
+        # TSI2_Finger = random.randint(1,2)
+        # INV1_Finger = random.randint(1,5)
+        # INV2_Finger = random.randint(1,5)
+        # INV3_Finger = random.randint(1,5)
+        # INV4_Finger = random.randint(1,5)
 
         npratio =2
 
