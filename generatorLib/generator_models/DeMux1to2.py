@@ -18,9 +18,9 @@ from generatorLib.generator_models import ViaMet22Met3
 
 
 
-class _1to2DeMux(StickDiagram._StickDiagram):
+class DeMux1to2(StickDiagram._StickDiagram):
 
-    def __init__(self, _DesignParameter=None, _Name='_1to2DeMux'):
+    def __init__(self, _DesignParameter=None, _Name='DeMux1to2'):
         if _DesignParameter != None:
             self._DesignParameter = _DesignParameter
         else:
@@ -74,9 +74,6 @@ class _1to2DeMux(StickDiagram._StickDiagram):
                                   INV6_Finger=1,
                                   INV6_NMWidth=200,
                                   INV6_PMWidth=400,
-
-
-                                  INV4_Finger_2=4,
 
 
                                   ChannelLength=30,
@@ -175,7 +172,7 @@ class _1to2DeMux(StickDiagram._StickDiagram):
             INV3_NMWidth=INV3_NMWidth,
             INV3_PMWidth=INV3_PMWidth,
 
-            INV4_Finger=INV4_Finger_2,
+            INV4_Finger=INV5_Finger,
             INV4_NMWidth=INV4_NMWidth,
             INV4_PMWidth=INV4_PMWidth,
 
@@ -205,6 +202,7 @@ class _1to2DeMux(StickDiagram._StickDiagram):
 
         # print("test1 ", self._DesignParameter['DFF_Latch']['_DesignObj'].CellXWidth)
         # print("test ", UnitPitch)
+
 
 
         ''' VDD Rail, VSS Rail, XVTLayer '''
@@ -364,6 +362,15 @@ class _1to2DeMux(StickDiagram._StickDiagram):
         self.clk = [self.getXY('DFF_Latch', '_clkpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].dib ]
         self.clkb = [self.getXY('DFFQ', '_clkpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].dib ]
 
+
+
+        ########################## cell width ##################
+        self.CellXWidth = self.getXY('DFFQ','INV4', '_PMOS', '_POLayer')[-1][0] + UnitPitch
+        self.CellYWidth = CellHeight
+
+
+
+
 ''' INV2&3 # of Fingers should be less than 7(6 max)
     otherwise, INV inner routing and qb routing will be overlapped'''
 ################################ DRC Check #################################
@@ -457,7 +464,7 @@ if __name__ == '__main__':
         TSI3_Finger = 1
         INV5_Finger = 4
         INV6_Finger = 4
-        INV4_Finger_2 = 4
+
 
         # print("itr = ", i)
         # print("TG1_Finger = ", TG1_Finger)
@@ -469,7 +476,7 @@ if __name__ == '__main__':
         # print("INV4_Finger = ", INV4_Finger)
 
         DesignParameters._Technology = 'SS28nm'
-        TopObj = _1to2DeMux(_DesignParameter=None, _Name='_1to2DeMux')
+        TopObj = DeMux1to2(_DesignParameter=None, _Name='DeMux1to2')
         TopObj._CalculateDesignParameter(
             TG1_Finger=TG1_Finger,
             TG1_NMWidth=TG1_NMWidth,
@@ -515,8 +522,6 @@ if __name__ == '__main__':
             INV6_NMWidth=INV6_NMWidth,
             INV6_PMWidth=INV6_PMWidth,
 
-            INV4_Finger_2=INV4_Finger_2,
-
             ChannelLength=ChannelLength,
             GateSpacing=GateSpacing,
             SDWidth=SDWidth,
@@ -525,7 +530,7 @@ if __name__ == '__main__':
             SupplyRailType=SupplyRailType)
 
         TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
-        testStreamFile = open('./_1to2DeMux.gds', 'wb')
+        testStreamFile = open('./DeMux1to2.gds', 'wb')
         tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
         tmp.write_binary_gds_stream(testStreamFile)
         testStreamFile.close()
@@ -536,12 +541,12 @@ if __name__ == '__main__':
         ftp = ftplib.FTP('141.223.24.53')
         ftp.login('ljw95', 'dlwodn123')
         ftp.cwd('/mnt/sdc/ljw95/OPUS/ss28')
-        myfile = open('_1to2DeMux.gds', 'rb')
-        ftp.storbinary('STOR _1to2DeMux.gds', myfile)
+        myfile = open('DeMux1to2.gds', 'rb')
+        ftp.storbinary('STOR DeMux1to2.gds', myfile)
         myfile.close()
 
         import DRCchecker
-        a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','_1to2DeMux','_1to2DeMux',None)
+        a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','DeMux1to2','DeMux1to2',None)
         a.DRCchecker()
 
         print ("DRC Clean!!!")

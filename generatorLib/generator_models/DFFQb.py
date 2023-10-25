@@ -903,7 +903,7 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclk2']['_XYCoordinates'] = [[self.getXYRight('TG2', 'gate_output', '_Met1Layer')[0][0]-tmpMet2Width / 2,  self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
 
         ########################## cell width ##################
-        self.CellXWidth = self.getXY('INV5', '_PMOS', '_XYCoordinatePMOSSupplyRouting')[-1][0] + ChannelLength + GateSpacing
+        self.CellXWidth = self.getXY('INV5', '_PMOS','_POLayer')[-1][0] + UnitPitch
         self.CellYWidth = CellHeight
 
         ########################## YCoord ##################

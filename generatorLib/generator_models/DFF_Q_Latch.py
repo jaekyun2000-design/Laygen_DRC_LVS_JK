@@ -1406,7 +1406,7 @@ class DFF(StickDiagram._StickDiagram):
             self._DesignParameter['inv7output']['_XYCoordinates'] = self.getXY('INV7', '_NMOS','_XYCoordinateNMOSOutputRouting')
 
         ########################## cell width ##################
-        self.CellXWidth = self.getXY('INV10', '_PMOS', '_XYCoordinatePMOSSupplyRouting')[-1][0] + ChannelLength + GateSpacing
+        self.CellXWidth = self.getXY('INV10', '_PMOS','_POLayer')[-1][0] + UnitPitch
         self.CellYWidth = CellHeight
 
         ########################## YCoord ##################

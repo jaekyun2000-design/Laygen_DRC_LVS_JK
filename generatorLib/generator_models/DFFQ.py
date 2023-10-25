@@ -855,7 +855,7 @@ class DFF(StickDiagram._StickDiagram):
 
 
         ########################## cell width ##################
-        self.CellXWidth = self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSSupplyRouting')[1][0] + ChannelLength + GateSpacing
+        self.CellXWidth = self.getXY('INV4', '_PMOS','_POLayer')[-1][0] + UnitPitch
         self.CellYWidth = CellHeight
 
 
