@@ -1325,6 +1325,17 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2iclk2']['_XYCoordinates'] = [[self.getXYRight('TG2', 'gate_output', '_Met1Layer')[0][0]-tmpMet2Width / 2,  self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
 
+        ########################### inv2 revise ###########
+        if INV2_Finger>=3:
+            self._DesignParameter['INV2']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv2output']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv2outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv2output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**_ViaOnPMOSOutput)
+            self._DesignParameter['inv2output']['_XYCoordinates']= self.getXY('INV2', '_NMOS', '_XYCoordinateNMOSOutputRouting')
 
         ########################### inv4 revise ###########
         if INV4_Finger>=3:

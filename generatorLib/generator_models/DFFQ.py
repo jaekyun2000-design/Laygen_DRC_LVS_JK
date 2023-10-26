@@ -529,6 +529,8 @@ class DFF(StickDiagram._StickDiagram):
                 _XYCoordinates=[[self.getXYRight('TSI1', 'met1_output_5')[0][0] - tmpMet2Width / 2, self.getXY('TSI1', 'met1_output_5')[0][1]]]
             )
 
+
+
         # '''iclkb routing(ADDED by smlim)'''
         leftBoundary = self.getXYLeft('TG1', 'gate_output', '_Met1Layer')[0][0]
         if TSI2_Finger == 1:
@@ -732,7 +734,7 @@ class DFF(StickDiagram._StickDiagram):
             self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'].append([self.getXYRight('TSI2', 'met1_output_5')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_qb')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
             self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'].append([self.getXYLeft('_Met2_qb_add')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_qb_add')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2])
             if INV4_Finger < 3:
-                self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'].append([self.getXYRight('_Met2_qb_add')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_qb_add')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2])
+                self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'].append([self.getXYRight('_Met2_qb_add')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_qb_add')[0][1] ])### Data out을 위한 수정
         elif TSI2_Finger >= 3:
             self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'].append([self.getXY('TSI2', 'Met1RouteY_Out')[0][0], self.getXY('_Met2_qb')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
             self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'].append([self.getXYLeft('_Met2_qb_add')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_qb_add')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2])
@@ -853,6 +855,29 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2iclk2']['_XYCoordinates'] = [[self.getXYRight('TG2', 'gate_output', '_Met1Layer')[0][0]-tmpMet2Width / 2,  self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
 
+        ########################### inv2 revise ###########
+        if INV2_Finger>=3:
+            self._DesignParameter['INV2']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv2output']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv2outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv2output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**_ViaOnPMOSOutput)
+            self._DesignParameter['inv2output']['_XYCoordinates']= self.getXY('INV2', '_NMOS', '_XYCoordinateNMOSOutputRouting')
+
+        ########################### inv4 revise ##################
+        if INV4_Finger>=3:
+            self._DesignParameter['INV4']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv4output']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv4outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv4output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**_ViaOnPMOSOutput)
+            self._DesignParameter['inv4output']['_XYCoordinates']= self.getXY('INV4', '_NMOS', '_XYCoordinateNMOSOutputRouting')
 
         ########################## cell width ##################
         self.CellXWidth = self.getXY('INV4', '_PMOS','_POLayer')[-1][0] + UnitPitch

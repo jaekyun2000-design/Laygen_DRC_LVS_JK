@@ -328,39 +328,61 @@ class DeMux1to2(StickDiagram._StickDiagram):
 
         ######################## Data output Routing ##########################
 
-        self.D2 = [self.getXY('DFFQ', '_qpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].iclk- tmpViaMet2Width / 2 + tmpMet2Width / 2]
+        self._DesignParameter['_ViaMet12Met2_data2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2_data2In{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2_data2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2_data2']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet12Met2_data2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet12Met2_data2']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+
+        self._DesignParameter['_ViaMet22Met3_data2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='_ViaMet22Met3_data2In{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet22Met3_data2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=1))
+        self._DesignParameter['_ViaMet22Met3_data2']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet22Met3_data2']['_DesignObj']._DesignParameter['_Met3Layer']['_YWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet22Met3_data2']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+
+
+
+        self._DesignParameter['_ViaMet12Met2_data2']['_XYCoordinates'] = [[self.getXY('DFF_Latch', '_qbpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].iclkb- tmpViaMet2Width / 2 + tmpMet2Width / 2 ],\
+                                                                         [self.getXY('DFFQ', '_qpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].iclkb]]#DRC 수정
+        self._DesignParameter['_ViaMet22Met3_data2']['_XYCoordinates'] = [[self.getXY('DFF_Latch', '_qbpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].iclkb- tmpViaMet2Width / 2 + tmpMet2Width / 2 ],\
+                                                                         [self.getXY('DFFQ', '_qpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].iclkb]]
+
         self.D1 = [self.getXY('DFF_Latch', '_qbpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].iclkb- tmpViaMet2Width / 2 + tmpMet2Width / 2]
+        self.D2 = [self.getXY('DFFQ', '_qpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].iclkb]
+
 
         ######################## clk Routing ##########################
-
+        revise_dib = self._DesignParameter['DFF_Latch']['_DesignObj'].iclkb - tmpViaMet2Width - tmpDRC_Met2Spacing
         self._DesignParameter['_Met1_clk'] = self._PathElementDeclaration(
             _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
             _Width=tmpMet2Width
         )
-        self._DesignParameter['_Met1_clk']['_XYCoordinates'] = [[[self.getXY('DFF_Latch', '_clkpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].dib],\
+        self._DesignParameter['_Met1_clk']['_XYCoordinates'] = [[[self.getXY('DFF_Latch', '_clkpin')[0][0],revise_dib],\
                                                                   [self.getXY('DFF_Latch', '_clkpin')[0][0],self.getXY('DFF_Latch', '_clkpin')[0][1]]],\
-                                                                [[self.getXY('DFFQ', '_clkpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].dib],\
+                                                                [[self.getXY('DFFQ', '_clkpin')[0][0],revise_dib],\
                                                                 [self.getXY('DFFQ', '_clkpin')[0][0],self.getXY('DFF_Latch', '_clkpin')[0][1]]]]
 
         self._DesignParameter['_ViaMet12Met2_clk'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2_clkIn{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2_clk']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
-        self._DesignParameter['_ViaMet12Met2_clk']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaminWidth
-        self._DesignParameter['_ViaMet12Met2_clk']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaminWidth
-        self._DesignParameter['_ViaMet12Met2_clk']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet12Met2_clk']['_DesignObj']._DesignParameter['_Met2Layer']['_XWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet12Met2_clk']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet12Met2_clk']['_DesignObj']._DesignParameter['_COLayer']['_XWidth'] = tmpVia1YWidth
 
         self._DesignParameter['_ViaMet22Met3_clk'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='_ViaMet22Met3_clkIn{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet22Met3_clk']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=1))
-        self._DesignParameter['_ViaMet22Met3_clk']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaminWidth
-        self._DesignParameter['_ViaMet22Met3_clk']['_DesignObj']._DesignParameter['_Met3Layer']['_YWidth'] = tmpViaminWidth
-        self._DesignParameter['_ViaMet22Met3_clk']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet22Met3_clk']['_DesignObj']._DesignParameter['_Met2Layer']['_XWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet22Met3_clk']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet22Met3_clk']['_DesignObj']._DesignParameter['_COLayer']['_XWidth'] = tmpVia1YWidth
 
-        self._DesignParameter['_ViaMet12Met2_clk']['_XYCoordinates'] = [[self.getXY('DFF_Latch', '_clkpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].dib ],\
-                                                                         [self.getXY('DFFQ', '_clkpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].dib ]]
-        self._DesignParameter['_ViaMet22Met3_clk']['_XYCoordinates'] = [[self.getXY('DFF_Latch', '_clkpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].dib ],\
-                                                                         [self.getXY('DFFQ', '_clkpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].dib ]]
 
-        self.clk = [self.getXY('DFF_Latch', '_clkpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].dib ]
-        self.clkb = [self.getXY('DFFQ', '_clkpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].dib ]
+
+        self._DesignParameter['_ViaMet12Met2_clk']['_XYCoordinates'] = [[self.getXY('DFF_Latch', '_clkpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,revise_dib ],\
+                                                                         [self.getXY('DFFQ', '_clkpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,revise_dib ]]
+        self._DesignParameter['_ViaMet22Met3_clk']['_XYCoordinates'] = [[self.getXY('DFF_Latch', '_clkpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,revise_dib ],\
+                                                                         [self.getXY('DFFQ', '_clkpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,revise_dib ]]
+
+        self.clk = [self.getXY('DFF_Latch', '_clkpin')[0][0],revise_dib]
+        self.clkb = [self.getXY('DFFQ', '_clkpin')[0][0],revise_dib]
 
 
 
@@ -466,7 +488,7 @@ if __name__ == '__main__':
         INV6_Finger = 4
 
 
-        # print("itr = ", i)
+        #print("itr = ", i)
         # print("TG1_Finger = ", TG1_Finger)
         # print("TSI1_Finger = ", TSI1_Finger)
         # print("TSI2_Finger = ", TSI2_Finger)

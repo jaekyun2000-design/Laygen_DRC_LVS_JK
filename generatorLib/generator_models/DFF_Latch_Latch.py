@@ -964,6 +964,7 @@ class DFF(StickDiagram._StickDiagram):
 
 
         '''dib routing (added by jwlee) latch added'''
+        size_edge_M2 = 10
         leftBoundary = self.getXY('TG4')[0][0] + self._DesignParameter['TG4']['_DesignObj']._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][-1][0][0] - self.getWidth('TG4', 'm1_drain_routing_y') / 2
         if INV7_Finger <= 2:
             YCoord_dib3 = self.getXYTop('INV7', '_NMOS', '_Met1Layer')[0][1] + tmpDRC_Met2Spacing + tmpMet2Width / 2
@@ -988,7 +989,7 @@ class DFF(StickDiagram._StickDiagram):
             _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
             _XWidth=rightBoundary2 - leftBoundary,
             _YWidth=tmpMet2Width,
-            _XYCoordinates=[[(rightBoundary2 + leftBoundary) / 2, YCoord_dib2]]################### YCoord_dib3 ???
+            _XYCoordinates=[[(rightBoundary2 + leftBoundary) / 2, YCoord_dib2+size_edge_M2]]################### YCoord_dib3 ???
         )
 
         # insert via (latch)
@@ -997,8 +998,8 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2dib_latch_latch']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
         self._DesignParameter['_ViaMet12Met2dib_latch_latch']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
         self._DesignParameter['_ViaMet12Met2dib_latch_latch']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
-        self._DesignParameter['_ViaMet12Met2dib_latch_latch']['_XYCoordinates'] = [[self.getXYLeft('_Met2_dib_latch_latch')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_dib_latch_latch')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2],
-                                                                       [self.getXYRight('_Met2_dib_latch_latch')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_dib_latch_latch')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
+        self._DesignParameter['_ViaMet12Met2dib_latch_latch']['_XYCoordinates'] = [[self.getXYLeft('_Met2_dib_latch_latch')[0][0] + tmpMet2Width / 2, YCoord_dib2+size_edge_M2 + tmpViaMet2Width / 2 - tmpMet2Width / 2],
+                                                                       [self.getXYRight('_Met2_dib_latch_latch')[0][0] - tmpMet2Width / 2, YCoord_dib2+size_edge_M2 ]]##+ tmpViaMet2Width / 2 - tmpMet2Width / 2
 
         # Additional routing(latch)
         if INV7_Finger <= 2:
@@ -1008,7 +1009,7 @@ class DFF(StickDiagram._StickDiagram):
                 _XYCoordinates=[[[self.getXY('INV7', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0], self.getXYBot('_Met2_dib_latch_latch')[0][1]],
                                  [self.getXY('INV7', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0], self.getXYTop('INV7', '_VIAPoly2Met1_F1', '_Met1Layer')[0][1]]]]
             )
-            self._DesignParameter['_ViaMet12Met2dib_latch']['_XYCoordinates'].append([self.getXY('INV7', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0], self.getXY('_Met2_dib_latch_latch')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2])
+            self._DesignParameter['_ViaMet12Met2dib_latch']['_XYCoordinates'].append([self.getXY('INV7', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0], self.getXY('_Met2_dib_latch_latch')[0][1] ])
         else:
             self._DesignParameter['_ViaMet12Met2dib_latch']['_XYCoordinates'].append([self.getXY('INV7')[0][0] + self._DesignParameter['INV7']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0], tmpViaMet2Width / 2 + (self.getXYTop('INV7', '_ViaMet12Met2OnNMOSOutput', '_Met2Layer')[0][1] - drc._MetalxMinEnclosureVia3 + drc._VIAzMinEnclosureByMetxOrMety + drc._VIAyMinSpace - (self.getXYBot('_ViaMet12Met2dib_latch', '_COLayer')[0][1] - self.getXYBot('_ViaMet12Met2dib_latch_latch', '_Met2Layer')[0][1]))])
 
@@ -1524,6 +1525,15 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_Met2_inv6']['_XYCoordinates']=[[[Boundary - tmpMet2Width, YCoord_dib4],
                                                              [TG4in + tmpMet2Width/2, YCoord_dib4]]]
 
+        self._DesignParameter['_Met1_in6'] = self._PathElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+            _Width=tmpMet2Width
+        )
+
+        if INV6_Finger <= 2:
+            self._DesignParameter['_Met1_in6']['_XYCoordinates']=[[[self.getXY('INV6', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0], self.getXY('INV6', '_VIAPoly2Met1_F1', '_Met1Layer')[0][1]],
+                                                             [self.getXY('INV6', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0], YCoord_dib4]]]
+
         #YCoord_dib4
         # insert via for q routing
         self._DesignParameter['_ViaMet12Met2q_latch'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2q_latchIn{}'.format(_Name)))[0]
@@ -1532,10 +1542,10 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2q_latch']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
         self._DesignParameter['_ViaMet12Met2q_latch']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         if TSI3_Finger ==1:
-            self._DesignParameter['_ViaMet12Met2q_latch']['_XYCoordinates'] = [[Boundary - tmpMet2Width/2, YCoord_dib4],[TG4in+self.getWidth('INV6', '_OutputRouting') / 2- tmpMet2Width/2, YCoord_dib4]]
+            self._DesignParameter['_ViaMet12Met2q_latch']['_XYCoordinates'] = [[Boundary - tmpMet2Width/2, YCoord_dib4+ tmpViaMet2Width / 2 - tmpMet2Width / 2],[TG4in+self.getWidth('INV6', '_OutputRouting') / 2- tmpMet2Width/2, YCoord_dib4]]
 
         elif TSI3_Finger==2:
-            self._DesignParameter['_ViaMet12Met2q_latch']['_XYCoordinates'] = [[TG4in+ self.getWidth('INV6', '_OutputRouting') / 2- tmpMet2Width/2, YCoord_dib4]]
+            self._DesignParameter['_ViaMet12Met2q_latch']['_XYCoordinates'] = [[Boundary - tmpMet2Width/2, YCoord_dib4+ tmpViaMet2Width / 2 - tmpMet2Width / 2],[TG4in+ self.getWidth('INV6', '_OutputRouting') / 2- tmpMet2Width/2, YCoord_dib4]]
 
 
 
@@ -1847,6 +1857,18 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2iclk2']['_XYCoordinates'] = [[self.getXYRight('TG2', 'gate_output', '_Met1Layer')[0][0]-tmpMet2Width / 2,  self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
 
+        ########################### inv2 revise ###########
+        if INV2_Finger>=3:
+            self._DesignParameter['INV2']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv2output']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv2outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv2output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**_ViaOnPMOSOutput)
+            self._DesignParameter['inv2output']['_XYCoordinates']= self.getXY('INV2', '_NMOS', '_XYCoordinateNMOSOutputRouting')
+
 
         ########################### inv4 revise ###########
         if INV4_Finger>=3:
@@ -1900,13 +1922,42 @@ class DFF(StickDiagram._StickDiagram):
                 **_ViaOnPMOSOutput)
             self._DesignParameter['inv7output']['_XYCoordinates'] = self.getXY('INV7', '_NMOS','_XYCoordinateNMOSOutputRouting')
 
+        ########################### inv8 revise ###########
+        if INV8_Finger >= 3:
+            self._DesignParameter['INV8']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv8output'] = \
+            self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv8outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv8output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(
+                **_ViaOnPMOSOutput)
+            self._DesignParameter['inv8output']['_XYCoordinates'] = self.getXY('INV8', '_NMOS','_XYCoordinateNMOSOutputRouting')
+
+        ########################### inv9 revise ###########
+        if INV9_Finger >= 3:
+            self._DesignParameter['INV9']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv9output'] = \
+            self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv9outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv9output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(
+                **_ViaOnPMOSOutput)
+            self._DesignParameter['inv9output']['_XYCoordinates'] = self.getXY('INV9', '_NMOS','_XYCoordinateNMOSOutputRouting')
+
+
         ########################## cell width ##################
         self.CellXWidth = self.getXY('INV10', '_PMOS','_POLayer')[-1][0] + UnitPitch
         self.CellYWidth = CellHeight
 
         ########################## YCoord ##################
         self.rib = YCoord_rib
-        self.dib = YCoord_dib
+        self.dib = YCoord_dib4
         self.iclkb = YCoord_iclkb
         self.iclk = YCoord_iclk
 

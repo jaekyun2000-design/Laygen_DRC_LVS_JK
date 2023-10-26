@@ -538,7 +538,7 @@ class DFF(StickDiagram._StickDiagram):
             [self.getXY('TSI4')[0][0] + self._DesignParameter['TSI4']['_DesignObj'].CellXWidth / 2  + 1 * UnitPitch + self._DesignParameter['INV8']['_DesignObj'].CellXWidth / 2, 0]
         ]
         self._DesignParameter['INV9']['_XYCoordinates'] = [
-            [self.getXY('INV8')[0][0] + self._DesignParameter['INV8']['_DesignObj'].CellXWidth / 2  + 1 * UnitPitch + self._DesignParameter['INV9']['_DesignObj'].CellXWidth / 2, 0]
+            [self.getXY('INV8')[0][0] + self._DesignParameter['INV8']['_DesignObj'].CellXWidth / 2  + 2 * UnitPitch + self._DesignParameter['INV9']['_DesignObj'].CellXWidth / 2, 0]
         ]
         self._DesignParameter['INV10']['_XYCoordinates'] = [
             [self.getXY('INV9')[0][0] + self._DesignParameter['INV9']['_DesignObj'].CellXWidth / 2  + self._DesignParameter['INV10']['_DesignObj'].CellXWidth / 2, 0]
@@ -1379,6 +1379,19 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_Met1_clk90_buffer']['_XYCoordinates']=[[[self.getXY('INV9', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0], self.getXY('INV10', 'InputMet1')[0][1]],
                                                                   [self.getXY('INV10', 'InputMet1')[0][0], self.getXY('INV10', 'InputMet1')[0][1]]]]
 
+        ########################### inv2 revise ###########
+        if INV2_Finger>=3:
+            self._DesignParameter['INV2']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv2output']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv2outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv2output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**_ViaOnPMOSOutput)
+            self._DesignParameter['inv2output']['_XYCoordinates']= self.getXY('INV2', '_NMOS', '_XYCoordinateNMOSOutputRouting')
+
+
         ########################### inv4 revise ###########
         if INV4_Finger>=3:
             self._DesignParameter['INV4']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
@@ -1404,6 +1417,34 @@ class DFF(StickDiagram._StickDiagram):
             self._DesignParameter['inv7output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(
                 **_ViaOnPMOSOutput)
             self._DesignParameter['inv7output']['_XYCoordinates'] = self.getXY('INV7', '_NMOS','_XYCoordinateNMOSOutputRouting')
+        ########################### inv8 revise ###########
+        if INV8_Finger >= 3:
+            self._DesignParameter['INV8']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv8output'] = \
+            self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv8outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv8output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(
+                **_ViaOnPMOSOutput)
+            self._DesignParameter['inv8output']['_XYCoordinates'] = self.getXY('INV8', '_NMOS','_XYCoordinateNMOSOutputRouting')
+
+        ########################### inv9 revise ###########
+        if INV9_Finger >= 3:
+            self._DesignParameter['INV9']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv9output'] = \
+            self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv9outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv9output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(
+                **_ViaOnPMOSOutput)
+            self._DesignParameter['inv9output']['_XYCoordinates'] = self.getXY('INV9', '_NMOS','_XYCoordinateNMOSOutputRouting')
+
 
         ########################## cell width ##################
         self.CellXWidth = self.getXY('INV10', '_PMOS','_POLayer')[-1][0] + UnitPitch

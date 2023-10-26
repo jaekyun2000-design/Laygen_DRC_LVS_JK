@@ -356,7 +356,7 @@ class DFF(StickDiagram._StickDiagram):
             [self.getXY('TSI2')[0][0] + self._DesignParameter['TSI2']['_DesignObj'].CellXWidth / 2 + 1 * UnitPitch + self._DesignParameter['INV4']['_DesignObj'].CellXWidth / 2, 0]
         ]
         self._DesignParameter['INV5']['_XYCoordinates'] = [
-            [self.getXY('INV4')[0][0] + self._DesignParameter['INV4']['_DesignObj'].CellXWidth / 2 + self._DesignParameter['INV5']['_DesignObj'].CellXWidth / 2, 0]
+            [self.getXY('INV4')[0][0] + self._DesignParameter['INV4']['_DesignObj'].CellXWidth / 2 + 1 * UnitPitch + self._DesignParameter['INV5']['_DesignObj'].CellXWidth / 2, 0]
         ]
 
         leftBoundary = self.getXYLeft('TG1', 'vss_supply_m2_y')[0][0]
@@ -786,7 +786,7 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2q']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
         self._DesignParameter['_ViaMet12Met2q']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
         self._DesignParameter['_ViaMet12Met2q']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
-        self._DesignParameter['_ViaMet12Met2q']['_XYCoordinates'] = [[self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0] + self.getWidth('INV4', '_OutputRouting') / 2- tmpMet2Width/2, YCoord_iclkb - tmpViaMet2Width / 2 + tmpMet2Width / 2],[inv5input- tmpMet2Width/2, YCoord_iclkb - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
+        self._DesignParameter['_ViaMet12Met2q']['_XYCoordinates'] = [[self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0] + self.getWidth('INV4', '_OutputRouting') / 2- tmpMet2Width/2, YCoord_iclkb ],[inv5input- tmpMet2Width/2, YCoord_iclkb - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
 
 
         # '''clk routing(ADDED by smlim)'''
@@ -902,8 +902,45 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2iclk2']['_XYCoordinates'] = [[self.getXYRight('TG2', 'gate_output', '_Met1Layer')[0][0]-tmpMet2Width / 2,  self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
 
+        ########################### inv2 revise ###########
+        if INV2_Finger>=3:
+            self._DesignParameter['INV2']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv2output']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv2outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv2output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**_ViaOnPMOSOutput)
+            self._DesignParameter['inv2output']['_XYCoordinates']= self.getXY('INV2', '_NMOS', '_XYCoordinateNMOSOutputRouting')
+
+        ########################### inv4 revise ###########
+        if INV4_Finger>=3:
+            self._DesignParameter['INV4']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv4output']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv4outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv4output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**_ViaOnPMOSOutput)
+            self._DesignParameter['inv4output']['_XYCoordinates']= self.getXY('INV4', '_NMOS', '_XYCoordinateNMOSOutputRouting')
+
+        ########################### inv5 revise ###########
+        if INV5_Finger>=3:
+            self._DesignParameter['INV5']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv5output']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv5outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv5output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**_ViaOnPMOSOutput)
+            self._DesignParameter['inv5output']['_XYCoordinates']= self.getXY('INV5', '_NMOS', '_XYCoordinateNMOSOutputRouting')
+
+
         ########################## cell width ##################
-        self.CellXWidth = self.getXY('INV5', '_PMOS','_POLayer')[-1][0] + UnitPitch
+        self.CellXWidth = self.getXY('INV5', '_PMOS','_POLayer')[0][0] + UnitPitch
         self.CellYWidth = CellHeight
 
         ########################## YCoord ##################
@@ -914,33 +951,7 @@ class DFF(StickDiagram._StickDiagram):
 
 
 
-        # '''Pin generation'''
-        # self._DesignParameter['_VDDpin'] = self._TextElementDeclaration(
-        #     _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
-        #     _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
-        #     _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VDD')
-        # self._DesignParameter['_VSSpin'] = self._TextElementDeclaration(
-        #     _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
-        #     _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
-        #     _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VSS')
-        # self._DesignParameter['_dpin'] = self._TextElementDeclaration(
-        #     _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
-        #     _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
-        #     _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='D')
-        # self._DesignParameter['_qpin'] = self._TextElementDeclaration(
-        #     _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
-        #     _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
-        #     _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='Q')
-        # self._DesignParameter['_clkpin'] = self._TextElementDeclaration(
-        #     _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
-        #     _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
-        #     _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='clk')
-        #
-        # self._DesignParameter['_VDDpin']['_XYCoordinates'] = self.getXY('TG1', '_VDDpin')
-        # self._DesignParameter['_VSSpin']['_XYCoordinates'] = self.getXY('TG1', '_VSSpin')
-        # self._DesignParameter['_dpin']['_XYCoordinates'] = self.getXY('TG1', '_Apin')
-        # self._DesignParameter['_qpin']['_XYCoordinates'] = [[self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0] + self.getWidth('INV4', '_OutputRouting') / 2- tmpMet2Width/2, YCoord_iclkb]]
-        # self._DesignParameter['_clkpin']['_XYCoordinates'] = self.getXY('INV2','InputMet1')
+
         '''Pin generation'''
         self._DesignParameter['_VDDpin'] = self._TextElementDeclaration(
             _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
