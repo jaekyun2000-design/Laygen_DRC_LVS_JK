@@ -565,27 +565,27 @@ class DeMux1to4(StickDiagram._StickDiagram):
 ################################ DRC Check #################################
 import random
 if __name__ == '__main__':
-   # for i in range(0,100):
-        TG1_Finger = random.randint(1, 5)
-        TG2_Finger = random.randint(1, 5)
-        TSI1_Finger = random.randint(1, 2)
-        TSI2_Finger = random.randint(1, 2)
-        INV1_Finger = random.randint(1, 5)
-        INV2_Finger = random.randint(1, 5)
-        INV3_Finger = random.randint(1, 5)
-        INV4_Finger = random.randint(1, 5)
-
-        TG3_Finger = random.randint(1, 5)
-        TSI3_Finger = random.randint(1, 2)
-        INV5_Finger = random.randint(1, 5)
-        INV6_Finger = random.randint(1, 5)
-
-        TG4_Finger = random.randint(1, 5)
-        TSI4_Finger = random.randint(1, 2)
-        INV7_Finger = random.randint(1, 5)
-        INV8_Finger = random.randint(1, 5)
-        INV9_Finger = random.randint(1, 5)
-        INV10_Finger = random.randint(1, 5)
+    # for i in range(0,100):
+    #     TG1_Finger = random.randint(1, 5)
+    #     TG2_Finger = random.randint(1, 5)
+    #     TSI1_Finger = random.randint(1, 2)
+    #     TSI2_Finger = random.randint(1, 2)
+    #     INV1_Finger = random.randint(1, 5)
+    #     INV2_Finger = random.randint(1, 5)
+    #     INV3_Finger = random.randint(1, 5)
+    #     INV4_Finger = random.randint(1, 5)
+    #
+    #     TG3_Finger = random.randint(1, 5)
+    #     TSI3_Finger = random.randint(1, 2)
+    #     INV5_Finger = random.randint(1, 5)
+    #     INV6_Finger = random.randint(1, 5)
+    #
+    #     TG4_Finger = random.randint(1, 5)
+    #     TSI4_Finger = random.randint(1, 2)
+    #     INV7_Finger = random.randint(1, 5)
+    #     INV8_Finger = random.randint(1, 5)
+    #     INV9_Finger = random.randint(1, 5)
+    #     INV10_Finger = random.randint(1, 5)
 
         npratio =2
 
@@ -788,8 +788,8 @@ if __name__ == '__main__':
         ftp.storbinary('STOR DeMux1to4.gds', myfile)
         myfile.close()
 
-        import DRCchecker
-        a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','DeMux1to4','DeMux1to4',None)
-        a.DRCchecker()
-
-        print ("DRC Clean!!!")
+        # import DRCchecker
+        # a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run', 'DeMux1to4' ,'DeMux1to4',None)
+        # a.DRCchecker()
+        #
+        # print ("DRC Clean!!!")

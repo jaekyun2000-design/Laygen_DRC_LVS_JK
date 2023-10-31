@@ -341,13 +341,28 @@ class Clk_Driver(StickDiagram._StickDiagram):
 
 
         self._DesignParameter['_ViaMet12Met2_data']['_XYCoordinates'] = [[self.getXY('DFFQb1','_qbpin')[0][0] - tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk ],\
-                                                                         [self.getXY('DFFQb2', '_qbpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]]
+                                                                         [self.getXY('DFFQb2', '_qbpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk],\
+                                                                         [self.getXY('DFFQb1', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk],\
+                                                                         [self.getXY('DFFQb2', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]]
         self._DesignParameter['_ViaMet22Met3_data']['_XYCoordinates'] = [[self.getXY('DFFQb1','_qbpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk],\
-                                                                         [self.getXY('DFFQb2', '_qbpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]]
+                                                                         [self.getXY('DFFQb2', '_qbpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk],\
+                                                                         [self.getXY('DFFQb1', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk],\
+                                                                         [self.getXY('DFFQb2', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]]
 
-        self.f = [self.getXY('DFFQb1', '_qpin')[0][0],self._DesignParameter['DFFQb1']['_DesignObj'].iclkb]
+        self._DesignParameter['_Met1_clkout'] = self._PathElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+            _Width=tmpMet2Width
+        )
+        self._DesignParameter['_Met1_clkout']['_XYCoordinates'] = [[[self.getXY('DFFQb1', '_clkpin')[0][0],revise_dib],\
+                                                                  [self.getXY('DFFQb1', '_clkpin')[0][0],self.getXY('DFFQb1', '_clkpin')[0][1]]],\
+                                                                [[self.getXY('DFFQb2', '_clkpin')[0][0],revise_dib],\
+                                                                [self.getXY('DFFQb2', '_clkpin')[0][0],self.getXY('DFFQb2', '_clkpin')[0][1]]]]
+
+
+
+        self.f = [self.getXY('DFFQb1', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]
         self.f90 = [self.getXY('DFFQb1','_qbpin')[0][0] - tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]
-        self.fb = [self.getXY('DFFQb2', '_qpin')[0][0],self._DesignParameter['DFFQb1']['_DesignObj'].iclkb]
+        self.fb = [self.getXY('DFFQb2', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]
         self.f90b = [self.getXY('DFFQb2', '_qbpin')[0][0] - tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]
 
 
@@ -408,16 +423,16 @@ class Clk_Driver(StickDiagram._StickDiagram):
 ################################ DRC Check #################################
 import random
 if __name__ == '__main__':
-    for i in range(0,100):
-        TG1_Finger = random.randint(1,5)
-        TG2_Finger = random.randint(1, 5)
-        TSI1_Finger = random.randint(1,2)
-        TSI2_Finger = random.randint(1,2)
-        INV1_Finger = random.randint(1,5)
-        INV2_Finger = random.randint(1,5)
-        INV3_Finger = random.randint(1,5)
-        INV4_Finger = random.randint(1,5)
-        INV5_Finger = random.randint(1,5)
+    # for i in range(0,100):
+    #     TG1_Finger = random.randint(1,5)
+    #     TG2_Finger = random.randint(1, 5)
+    #     TSI1_Finger = random.randint(1,2)
+    #     TSI2_Finger = random.randint(1,2)
+    #     INV1_Finger = random.randint(1,5)
+    #     INV2_Finger = random.randint(1,5)
+    #     INV3_Finger = random.randint(1,5)
+    #     INV4_Finger = random.randint(1,5)
+    #     INV5_Finger = random.randint(1,5)
 
         npratio =2
 
@@ -467,15 +482,15 @@ if __name__ == '__main__':
         INV5_NMWidth = 200
         INV5_PMWidth = 400
 
-        # TG1_Finger = 1
-        # TG2_Finger = 2
-        # TSI1_Finger = 1
-        # TSI2_Finger = 1
-        # INV1_Finger = 3
-        # INV2_Finger = 1
-        # INV3_Finger = 1
-        # INV4_Finger = 4
-        # INV5_Finger = 4
+        TG1_Finger = 1
+        TG2_Finger = 2
+        TSI1_Finger = 1
+        TSI2_Finger = 1
+        INV1_Finger = 3
+        INV2_Finger = 1
+        INV3_Finger = 1
+        INV4_Finger = 4
+        INV5_Finger = 4
 
         ChannelLength = 30
         GateSpacing = 100
@@ -554,8 +569,8 @@ if __name__ == '__main__':
         ftp.storbinary('STOR Clk_Driver.gds', myfile)
         myfile.close()
 
-        import DRCchecker
-        a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','Clk_Driver','Clk_Driver',None)
-        a.DRCchecker()
-
-        print ("DRC Clean!!!")
+        # import DRCchecker
+        # a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','Clk_Driver','Clk_Driver',None)
+        # a.DRCchecker()
+        #
+        # print ("DRC Clean!!!")

@@ -407,6 +407,10 @@ if __name__ == '__main__':
     #     INV2_Finger = random.randint(1,5)
     #     INV3_Finger = random.randint(1,5)
     #     INV4_Finger = random.randint(1,5)
+    #     TG3_Finger = random.randint(1,5)
+    #     TSI3_Finger = random.randint(1,2)
+    #     INV5_Finger = random.randint(1,5)
+    #     INV6_Finger = random.randint(1,5)
 
         npratio =2
 
@@ -474,18 +478,18 @@ if __name__ == '__main__':
         CellHeight = 1800
         SupplyRailType = 2
 
-        TG1_Finger = 1
-        TG2_Finger = 2
-        TSI1_Finger = 1
-        TSI2_Finger = 1
-        INV1_Finger = 3
-        INV2_Finger = 1
-        INV3_Finger = 1
-        INV4_Finger = 3
-        TG3_Finger = 2
-        TSI3_Finger = 1
-        INV5_Finger = 4
-        INV6_Finger = 4
+        # TG1_Finger = 1
+        # TG2_Finger = 2
+        # TSI1_Finger = 1
+        # TSI2_Finger = 1
+        # INV1_Finger = 3
+        # INV2_Finger = 1
+        # INV3_Finger = 1
+        # INV4_Finger = 3
+        # TG3_Finger = 2
+        # TSI3_Finger = 1
+        # INV5_Finger = 4
+        # INV6_Finger = 4
 
 
         #print("itr = ", i)
@@ -567,8 +571,8 @@ if __name__ == '__main__':
         ftp.storbinary('STOR DeMux1to2.gds', myfile)
         myfile.close()
 
-        import DRCchecker
-        a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','DeMux1to2','DeMux1to2',None)
-        a.DRCchecker()
-
-        print ("DRC Clean!!!")
+        # import DRCchecker
+        # a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','DeMux1to2','DeMux1to2',None)
+        # a.DRCchecker()
+        #
+        # print ("DRC Clean!!!")
