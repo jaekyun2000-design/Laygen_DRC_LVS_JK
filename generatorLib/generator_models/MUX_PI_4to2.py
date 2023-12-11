@@ -3,6 +3,7 @@ from generatorLib import DesignParameters
 import copy
 import math
 import time
+import winsound
 from generatorLib import DRC
 from generatorLib import CoordinateCalc as CoordCalc
 from generatorLib.generator_models import ViaMet12Met2
@@ -286,7 +287,7 @@ class MUX_PI_4to2(StickDiagram._StickDiagram):
         self._DesignParameter['Via1ForPath1']['_XYCoordinates'] = self.getXY('Via2ForPath1')
         self._DesignParameter['Via1ForPath3'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1ForPath3In{}'.format(_Name)))[0]
         self._DesignParameter['Via1ForPath3']['_DesignObj']._CalculateDesignParameterSameEnclosure(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2)
-        self._DesignParameter['Via1ForPath3']['_XYCoordinates'] = self.getXY('Via2ForPath1')
+        self._DesignParameter['Via1ForPath3']['_XYCoordinates'] = self.getXY('Via2ForPath3')
 
         # met1
         rightBoundary = self.getXYRight('Met3Boundary6')[0][0]
@@ -661,7 +662,7 @@ if __name__ == '__main__':
     Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
 
 
-    libname = 'TEST_MUX_PI_4to2'
+    libname = 'DEMO_MUX_PI_4to2'
     cellname = 'MUX4to2'
     _fileName = cellname + '.gds'
 
@@ -743,8 +744,8 @@ if __name__ == '__main__':
         cellname=cellname,
     )
 
-    Mode_DRCCheck = False  # True | False
-    Num_DRCCheck = 2
+    Mode_DRCCheck = True  # True | False
+    Num_DRCCheck = 100
 
     if Mode_DRCCheck:
         ErrCount = 0            # DRC error
@@ -752,13 +753,39 @@ if __name__ == '__main__':
 
         start_time = time.time()
         for ii in range(0, Num_DRCCheck):
-            if ii == 0:
-                Bot.send2Bot(f'Start DRC checker...\nCellName: {cellname}\nTotal # of Run: {Num_DRCCheck}')
+            # if ii == 0:
+            #     Bot.send2Bot(f'Start DRC checker...\nCellName: {cellname}\nTotal # of Run: {Num_DRCCheck}')
 
-            forLoopCntMax = 10
+            forLoopCntMax = 100
             for iii in range(0, forLoopCntMax):
                 try:
                     ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
+                    ''' for demo video '''
+                    InputParams['TristateInv1_Finger'] = DRCchecker.RandomParam(start=1, stop=6, step=1)
+                    InputParams['TristateInv2_Finger'] = DRCchecker.RandomParam(start=1, stop=6, step=1)
+                    InputParams['Inv_Finger'] = DRCchecker.RandomParam(start=1, stop=8, step=1)
+
+                    InputParams['TristateInv1_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['TristateInv1_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['TristateInv1_NMOSWidth'], stop=min(3 * InputParams['TristateInv1_NMOSWidth'], 1000), step=20)
+
+                    InputParams['TristateInv2_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['TristateInv2_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['TristateInv2_NMOSWidth'], stop=min(3 * InputParams['TristateInv2_NMOSWidth'], 1000), step=20)
+
+                    InputParams['Inv_NMOSWidth'] = DRCchecker.RandomParam(start=200, stop=1000, step=20)
+                    InputParams['Inv_PMOSWidth'] = DRCchecker.RandomParam(start=InputParams['Inv_NMOSWidth'], stop=min(3 * InputParams['Inv_NMOSWidth'], 1000), step=20)
+
+                    tmpNum = DRCchecker.RandomParam(start=1, stop=4, step=1)
+                    if tmpNum == 1:
+                        InputParams['XVT'] = 'SLVT'
+                    elif tmpNum == 2:
+                        InputParams['XVT'] = 'LVT'
+                    elif tmpNum == 3:
+                        InputParams['XVT'] = 'RVT'
+                    elif tmpNum == 4:
+                        InputParams['XVT'] = 'HVT'
+
+
+                    ''' for drc check '''
                     # InputParams['TristateInv1_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
                     # InputParams['TristateInv2_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
                     # InputParams['Inv_Finger'] = DRCchecker.RandomParam(start=1, stop=10, step=1)
@@ -796,36 +823,40 @@ if __name__ == '__main__':
             print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
             Checker.Upload2FTP()
             Checker.StreamIn(tech=DesignParameters._Technology)
+            winsound.Beep(1000, 500)
+            print(f"i={ii + 1}")
+            time.sleep(2)
 
-            print(f'   DRC checking... {ii + 1}/{Num_DRCCheck}   '.center(105, '#'))
-            try:
-                Checker.DRCchecker()
-            except Exception as e:      # something error
-                ErrCount = ErrCount + 1
-                print('Error Occurred: ', e)
-                print("   Last Layout Object's Input Parameters are   ".center(105, '='))
-                print(tmpStr)
-                print("".center(105, '='))
-                m, s = divmod(time.time() - start_time, 60)
-                h, m = divmod(m, 60)
-                Bot.send2Bot(f'Error Occurred During Checking DRC({ii + 1}/{Num_DRCCheck})...\n'
-                             f'ErrMsg : {e}\n'
-                             f'============================\n'
-                             f'** InputParameters:\n'
-                             f'{tmpStr}\n'
-                             f'============================\n'
-                             f'** Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
-
-            if (ii + 1) == Num_DRCCheck:
-                elapsed_time = time.time() - start_time
-                m, s = divmod(elapsed_time, 60)
-                h, m = divmod(m, 60)
-                Bot.send2Bot(f'DRC Checker Finished.\n'
-                             f'CellName: {cellname}\n'
-                             f'Total # of known Err: {knownErrorCount}\n'
-                             f'Total # of DRC Err: {ErrCount}\n'
-                             f'Total # of Run: {Num_DRCCheck}\n'
-                             f'Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
+            ''' commented out for demo video '''
+            # print(f'   DRC checking... {ii + 1}/{Num_DRCCheck}   '.center(105, '#'))
+            # try:
+            #     Checker.DRCchecker()
+            # except Exception as e:      # something error
+            #     ErrCount = ErrCount + 1
+            #     print('Error Occurred: ', e)
+            #     print("   Last Layout Object's Input Parameters are   ".center(105, '='))
+            #     print(tmpStr)
+            #     print("".center(105, '='))
+            #     m, s = divmod(time.time() - start_time, 60)
+            #     h, m = divmod(m, 60)
+            #     Bot.send2Bot(f'Error Occurred During Checking DRC({ii + 1}/{Num_DRCCheck})...\n'
+            #                  f'ErrMsg : {e}\n'
+            #                  f'============================\n'
+            #                  f'** InputParameters:\n'
+            #                  f'{tmpStr}\n'
+            #                  f'============================\n'
+            #                  f'** Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
+            #
+            # if (ii + 1) == Num_DRCCheck:
+            #     elapsed_time = time.time() - start_time
+            #     m, s = divmod(elapsed_time, 60)
+            #     h, m = divmod(m, 60)
+            #     Bot.send2Bot(f'DRC Checker Finished.\n'
+            #                  f'CellName: {cellname}\n'
+            #                  f'Total # of known Err: {knownErrorCount}\n'
+            #                  f'Total # of DRC Err: {ErrCount}\n'
+            #                  f'Total # of Run: {Num_DRCCheck}\n'
+            #                  f'Elapsed Time: {int(h)}:{int(m):0>2}:{int(s):0>2}s')
     else:
         ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
         start_time = time.time()

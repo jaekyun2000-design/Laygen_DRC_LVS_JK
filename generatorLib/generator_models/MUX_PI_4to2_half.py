@@ -1293,6 +1293,12 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             )
             self._DesignParameter['Via1_temp5']['_XYCoordinates'] = self.getXY('TristateInv1', 'InputVia_EN')
 
+            self._DesignParameter['Via1_temp026'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1temp026In{}'.format(_Name)))[0]
+            self._DesignParameter['Via1_temp026']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                _ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=2
+            )
+            self._DesignParameter['Via1_temp026']['_XYCoordinates'] = self.getXY('TristateInv0', 'InputVia_EN')
 
             # #
             self._DesignParameter['Via2_temp00'] = self._SrefElementDeclaration(
@@ -2146,6 +2152,14 @@ class MUX_PI_4to2_half(StickDiagram._StickDiagram):
             self._DesignParameter['Via1_temp26']['_XYCoordinates'] = self.getXY('TristateInv2', 'InputVia_EN')
             self._DesignParameter['TristateInv2']['_DesignObj']._DesignParameter['InputVia_EN']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = self.getYWidth('Via1_temp26', '_Met1Layer')
             self._DesignParameter['TristateInv2']['_DesignObj']._DesignParameter['InputVia_ENb']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = self.getYWidth('Via1_temp26', '_Met1Layer')
+
+            self._DesignParameter['Via1_temp326'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='Via1temp326In{}'.format(_Name)))[0]
+            self._DesignParameter['Via1_temp326']['_DesignObj']._CalculateDesignParameterSameEnclosure(_ViaMet12Met2NumberOfCOX=2, _ViaMet12Met2NumberOfCOY=1)
+            self._DesignParameter['Via1_temp326']['_XYCoordinates'] = self.getXY('TristateInv3', 'InputVia_EN')
+            self._DesignParameter['TristateInv3']['_DesignObj']._DesignParameter['InputVia_EN']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = self.getYWidth('Via1_temp326', '_Met1Layer')
+            self._DesignParameter['TristateInv3']['_DesignObj']._DesignParameter['InputVia_ENb']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = self.getYWidth('Via1_temp326', '_Met1Layer')
+
 
 
             self._DesignParameter['Via2_temp24'] = self._SrefElementDeclaration(

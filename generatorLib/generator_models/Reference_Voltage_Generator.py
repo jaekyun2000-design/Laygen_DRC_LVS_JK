@@ -2,6 +2,7 @@ from generatorLib import StickDiagram
 from generatorLib import DesignParameters
 import copy
 import math
+import winsound
 from generatorLib import DRC
 from generatorLib.generator_models import Three2TwentyEight_MUX
 from generatorLib.generator_models import RArray
@@ -93,3 +94,144 @@ class Reference_Voltage_Generator(StickDiagram._StickDiagram):
 			if (self._DesignParameter[tmpname]['_XYCoordinates'][0][1][0]-self._DesignParameter[tmpname]['_XYCoordinates'][0][0][0]) >= 0 :
 				raise NotImplementedError
 			del tmpname
+
+if __name__ == '__main__':
+    from Private import Myinfo
+    import DRCchecker_test2 as DRCchecker
+    from generatorLib.IksuPack import PlaygroundBot
+    import time
+
+
+    My = Myinfo.USER(DesignParameters._Technology)
+    # Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
+
+
+    libname = 'DEMO_ReferenceVoltageGenerator'
+    cellname = 'RVG'
+    _fileName = cellname + '.gds'
+
+    ''' Input Parameters for Layout Object '''
+
+    InputParams = dict(
+      Num_of_Vref=25,
+      UNITR_X_WIDTH=1500,
+      UNITR_Y_LENGTH=1000,
+      UNITR_CONT_X_NUM=None,
+      UNITR_CONT_Y_NUM=1,
+      Rladder_X_NUM=10,
+      Rladder_Y_NUM=6,
+      First_Vref_Point=4,
+      VREF_STEP=2,
+      MUX_INV_nmos_width=200,
+      MUX_INV_finger=1,
+      MUX_VDD2PMOS=380,
+      MUX_gate_length=30,
+      MUX_gate_spacing=100,
+      MUX_XVT='RVT',
+      MUX_nmos_y=420,
+      MUX_cell_height=2000,
+      MUX_TG_pmos_width=600,
+      MUX_TG_nmos_width=300,
+      MUX_TG_poly_y=800,
+      MUX_TG_finger=3,
+      MUX_nandin_y=900
+    )
+
+    Mode_DRCCheck = True  # True | False
+    Num_DRCCheck = 30
+
+    Checker = DRCchecker.DRCchecker(
+        username=My.ID,
+        password=My.PW,
+        WorkDir=My.Dir_Work,
+        DRCrunDir=My.Dir_DRCrun,
+        GDSDir=My.Dir_GDS,
+        libname=libname,
+        cellname=cellname,
+    )
+
+    if Mode_DRCCheck:
+        ErrCount = 0            # DRC error
+        knownErrorCount = 0     # failed to generate design. NotImplementedError
+
+        start_time = time.time()
+        for ii in range(0, Num_DRCCheck):
+
+            forLoopCntMax = 30
+            for iii in range(0, forLoopCntMax):
+                try:
+                    ''' ------------------------------- Random Parameters for Layout Object -------------------------------- '''
+                    # # default setup
+                    # InputParams['Num_of_Vref'] = DRCchecker.RandomParam(start=4, stop=16, step=2)
+                    # InputParams['UNITR_X_WIDTH'] = DRCchecker.RandomParam(start=1400, stop=2000, step=100)
+                    # InputParams['UNITR_Y_LENGTH'] = DRCchecker.RandomParam(start=1000, stop=1600, step=100)
+                    #
+                    # InputParams['Rladder_X_NUM'] = DRCchecker.RandomParam(start=16, stop=24, step=2)
+                    # InputParams['Rladder_Y_NUM'] = DRCchecker.RandomParam(start=8, stop=12, step=2)
+                    # InputParams['First_Vref_Point'] = DRCchecker.RandomParam(start=8, stop=20, step=1)
+                    # InputParams['VREF_STEP'] = DRCchecker.RandomParam(start=3, stop=6, step=1)
+
+                    #
+                    InputParams['Num_of_Vref'] = DRCchecker.RandomParam(start=4, stop=16, step=2)
+                    InputParams['UNITR_X_WIDTH'] = DRCchecker.RandomParam(start=1400, stop=2000, step=100)
+                    InputParams['UNITR_Y_LENGTH'] = DRCchecker.RandomParam(start=1000, stop=1600, step=100)
+
+                    InputParams['Rladder_X_NUM'] = DRCchecker.RandomParam(start=8, stop=24, step=2)
+                    InputParams['Rladder_Y_NUM'] = DRCchecker.RandomParam(start=8, stop=12, step=2)
+                    InputParams['First_Vref_Point'] = DRCchecker.RandomParam(start=8, stop=20, step=1)
+                    InputParams['VREF_STEP'] = DRCchecker.RandomParam(start=3, stop=6, step=1)
+
+                    tmpNum = DRCchecker.RandomParam(start=1, stop=4, step=1)
+                    if tmpNum == 1:
+                        InputParams['MUX_XVT'] = 'SLVT'
+                    elif tmpNum == 2:
+                        InputParams['MUX_XVT'] = 'LVT'
+                    elif tmpNum == 3:
+                        InputParams['MUX_XVT'] = 'RVT'
+                    elif tmpNum == 4:
+                        InputParams['MUX_XVT'] = 'HVT'
+
+                    print("   Last Layout Object's Input Parameters are   ".center(105, '='))
+                    tmpStr = '\n'.join(f'{k} : {v}' for k, v in InputParams.items())
+                    print(tmpStr)
+                    print("".center(105, '='))
+
+                    ''' ---------------------------------- Generate Layout Object -------------------------------------------'''
+                    LayoutObj = Reference_Voltage_Generator(_Name=cellname)
+                    LayoutObj._CalculateDesignParameter(**InputParams)
+                    LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+                    testStreamFile = open('./{}'.format(_fileName), 'wb')
+                    tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+                    tmp.write_binary_gds_stream(testStreamFile)
+                    testStreamFile.close()
+                except NotImplementedError:  # something known error !
+                    print(f"forLoopCnt = {iii + 1}")
+                    if iii + 1 == forLoopCntMax:
+                        raise NotImplementedError
+                else:
+                    knownErrorCount = knownErrorCount + iii
+                    break
+            # end of for loop
+
+            print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+            Checker.Upload2FTP()
+            Checker.StreamIn(tech=DesignParameters._Technology)
+            print(f"i={ii+1}")
+            winsound.Beep(1000, 500)
+            time.sleep(3)
+
+    else:
+        ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
+        LayoutObj = Reference_Voltage_Generator(_Name=cellname)
+        LayoutObj._CalculateDesignParameter(**InputParams)
+        LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+        testStreamFile = open('./{}'.format(_fileName), 'wb')
+        tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+        tmp.write_binary_gds_stream(testStreamFile)
+        testStreamFile.close()
+
+        print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+        Checker.Upload2FTP()
+        Checker.StreamIn(tech=DesignParameters._Technology)
+
+    print('      Finished       '.center(105, '#'))
