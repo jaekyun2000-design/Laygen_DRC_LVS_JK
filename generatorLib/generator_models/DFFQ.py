@@ -931,63 +931,168 @@ class DFF(StickDiagram._StickDiagram):
     otherwise, INV inner routing and qb routing will be overlapped'''
 ################################ DRC Check #################################
 import random
+# if __name__ == '__main__':
+#     #for i in range(0,100):
+#         # TG1_Finger = random.randint(1,5)
+#         # TG2_Finger = random.randint(1, 5)
+#         # TSI1_Finger = random.randint(1,2)
+#         # TSI2_Finger = random.randint(1,2)
+#         # INV1_Finger = random.randint(1,5)
+#         # INV2_Finger = random.randint(1,5)
+#         # INV3_Finger = random.randint(1,5)
+#         # INV4_Finger = random.randint(1,5)
+#
+#         npratio =2
+#
+#         # TG1_NMWidth = random.randrange(200, 250, 2)
+#         # TG1_PMWidth = TG1_NMWidth * npratio
+#         # TG2_NMWidth = random.randrange(200, 250, 2)
+#         # TG2_PMWidth = TG2_NMWidth * npratio
+#         # TSI1_NMWidth = random.randrange(200, 250, 2)
+#         # TSI1_PMWidth = TSI1_NMWidth * npratio
+#         # TSI2_NMWidth = random.randrange(200, 250, 2)
+#         # TSI2_PMWidth = TSI2_NMWidth * npratio
+#         # INV1_NMWidth = random.randrange(200, 250, 2)
+#         # INV1_PMWidth = INV1_NMWidth * npratio
+#         # INV2_NMWidth = random.randrange(200, 250, 2)
+#         # INV2_PMWidth = INV2_NMWidth * npratio
+#         # INV3_NMWidth = random.randrange(200, 250, 2)
+#         # INV3_PMWidth = INV3_NMWidth * npratio
+#         # INV4_NMWidth = random.randrange(200, 250, 2)
+#         # INV4_PMWidth = INV4_NMWidth * npratio
+#
+#
+#
+#         TG1_NMWidth = 200
+#         TG1_PMWidth = 400
+#
+#         TG2_NMWidth = 200
+#         TG2_PMWidth = 400
+#
+#         TSI1_NMWidth = 200
+#         TSI1_PMWidth = 400
+#
+#         TSI2_NMWidth = 200
+#         TSI2_PMWidth = 400
+#
+#         INV1_NMWidth = 200
+#         INV1_PMWidth = 400
+#
+#         INV2_NMWidth = 200
+#         INV2_PMWidth = 400
+#
+#         INV3_NMWidth = 200
+#         INV3_PMWidth = 400
+#
+#         INV4_NMWidth = 200
+#         INV4_PMWidth = 400
+#
+#
+#
+#         ChannelLength = 30
+#         GateSpacing = 100
+#         SDWidth = 66
+#         XVT = 'SLVT'
+#         CellHeight = 1800
+#         SupplyRailType = 2
+#
+#         TG1_Finger = 1
+#         TG2_Finger = 2
+#         TSI1_Finger = 1
+#         TSI2_Finger = 1
+#         INV1_Finger = 3
+#         INV2_Finger = 1
+#         INV3_Finger = 1
+#         INV4_Finger = 4
+#
+#         # print("itr = ", i)
+#         # print("TG1_Finger = ", TG1_Finger)
+#         # print("TSI1_Finger = ", TSI1_Finger)
+#         # print("TSI2_Finger = ", TSI2_Finger)
+#         # print("INV1_Finger = ", INV1_Finger)
+#         # print("INV2_Finger = ", INV2_Finger)
+#         # print("INV3_Finger = ", INV3_Finger)
+#         # print("INV4_Finger = ", INV4_Finger)
+#
+#         DesignParameters._Technology = 'SS28nm'
+#         TopObj = DFF(_DesignParameter=None, _Name='DFF')
+#         TopObj._CalculateDesignParameter(
+#             TG1_Finger=TG1_Finger,
+#             TG1_NMWidth=TG1_NMWidth,
+#             TG1_PMWidth=TG1_PMWidth,
+#             TG2_Finger=TG2_Finger,
+#             TG2_NMWidth=TG2_NMWidth,
+#             TG2_PMWidth=TG2_PMWidth,
+#
+#             TSI1_Finger=TSI1_Finger,
+#             TSI1_NMWidth=TSI1_NMWidth,
+#             TSI1_PMWidth=TSI1_PMWidth,
+#             TSI2_Finger=TSI2_Finger,
+#             TSI2_NMWidth=TSI2_NMWidth,
+#             TSI2_PMWidth=TSI2_PMWidth,
+#
+#             INV1_Finger=INV1_Finger,
+#             INV1_NMWidth=INV1_NMWidth,
+#             INV1_PMWidth=INV1_PMWidth,
+#
+#             INV2_Finger=INV2_Finger,
+#             INV2_NMWidth=INV2_NMWidth,
+#             INV2_PMWidth=INV2_PMWidth,
+#             INV3_Finger=INV3_Finger,
+#             INV3_NMWidth=INV3_NMWidth,
+#             INV3_PMWidth=INV3_PMWidth,
+#
+#             INV4_Finger=INV4_Finger,
+#             INV4_NMWidth=INV4_NMWidth,
+#             INV4_PMWidth=INV4_PMWidth,
+#
+#
+#             ChannelLength=ChannelLength,
+#             GateSpacing=GateSpacing,
+#             SDWidth=SDWidth,
+#             XVT=XVT,
+#             CellHeight=CellHeight,
+#             SupplyRailType=SupplyRailType)
+#
+#         TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
+#         testStreamFile = open('./DFF.gds', 'wb')
+#         tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
+#         tmp.write_binary_gds_stream(testStreamFile)
+#         testStreamFile.close()
+#         print('#############################      Sending to FTP Server...      ##############################')
+#
+#         import ftplib
+#
+#         ftp = ftplib.FTP('141.223.24.53')
+#         ftp.login('ljw95', 'dlwodn123')
+#         ftp.cwd('/mnt/sdc/ljw95/OPUS/ss28')
+#         myfile = open('DFF.gds', 'rb')
+#         ftp.storbinary('STOR DFF.gds', myfile)
+#         myfile.close()
+#
+#         # import DRCchecker
+#         # a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','DFF','DFF',None)
+#         # a.DRCchecker()
+#         #
+#         # print ("DRC Clean!!!")
+import random
+import time
 if __name__ == '__main__':
-    #for i in range(0,100):
-        # TG1_Finger = random.randint(1,5)
-        # TG2_Finger = random.randint(1, 5)
-        # TSI1_Finger = random.randint(1,2)
-        # TSI2_Finger = random.randint(1,2)
-        # INV1_Finger = random.randint(1,5)
-        # INV2_Finger = random.randint(1,5)
-        # INV3_Finger = random.randint(1,5)
-        # INV4_Finger = random.randint(1,5)
+    for i in range(0, 100):
+        TG1_Finger = random.randint(1, 5)
+        TSI1_Finger = random.randint(1, 5)
+        TSI2_Finger = random.randint(1, 5)
+        INV1_Finger = random.randint(1, 5)
+        INV2_Finger = random.randint(1, 5)
+        INV3_Finger = random.randint(1, 5)
+        INV4_Finger = random.randint(1, 5)
 
-        npratio =2
-
-        # TG1_NMWidth = random.randrange(200, 250, 2)
-        # TG1_PMWidth = TG1_NMWidth * npratio
-        # TG2_NMWidth = random.randrange(200, 250, 2)
-        # TG2_PMWidth = TG2_NMWidth * npratio
-        # TSI1_NMWidth = random.randrange(200, 250, 2)
-        # TSI1_PMWidth = TSI1_NMWidth * npratio
-        # TSI2_NMWidth = random.randrange(200, 250, 2)
-        # TSI2_PMWidth = TSI2_NMWidth * npratio
-        # INV1_NMWidth = random.randrange(200, 250, 2)
-        # INV1_PMWidth = INV1_NMWidth * npratio
-        # INV2_NMWidth = random.randrange(200, 250, 2)
-        # INV2_PMWidth = INV2_NMWidth * npratio
-        # INV3_NMWidth = random.randrange(200, 250, 2)
-        # INV3_PMWidth = INV3_NMWidth * npratio
-        # INV4_NMWidth = random.randrange(200, 250, 2)
-        # INV4_PMWidth = INV4_NMWidth * npratio
-
-
-
-        TG1_NMWidth = 200
-        TG1_PMWidth = 400
-
-        TG2_NMWidth = 200
-        TG2_PMWidth = 400
-
-        TSI1_NMWidth = 200
-        TSI1_PMWidth = 400
-
-        TSI2_NMWidth = 200
-        TSI2_PMWidth = 400
-
-        INV1_NMWidth = 200
-        INV1_PMWidth = 400
-
-        INV2_NMWidth = 200
-        INV2_PMWidth = 400
-
-        INV3_NMWidth = 200
-        INV3_PMWidth = 400
-
-        INV4_NMWidth = 200
-        INV4_PMWidth = 400
-
-
+        TG2_Finger = 1
+        TG1_NMWidth = TG2_NMWidth = TSI1_NMWidth = TSI2_NMWidth = INV1_NMWidth = INV2_NMWidth = INV3_NMWidth \
+            = INV4_NMWidth = random.randrange(
+            200, 250, 10)
+        TG1_PMWidth = TG2_PMWidth = TSI1_PMWidth = TSI2_PMWidth = INV1_PMWidth = INV2_PMWidth = INV3_PMWidth \
+            = INV4_PMWidth = TG1_NMWidth * 2
 
         ChannelLength = 30
         GateSpacing = 100
@@ -996,26 +1101,8 @@ if __name__ == '__main__':
         CellHeight = 1800
         SupplyRailType = 2
 
-        TG1_Finger = 1
-        TG2_Finger = 2
-        TSI1_Finger = 1
-        TSI2_Finger = 1
-        INV1_Finger = 3
-        INV2_Finger = 1
-        INV3_Finger = 1
-        INV4_Finger = 4
-
-        # print("itr = ", i)
-        # print("TG1_Finger = ", TG1_Finger)
-        # print("TSI1_Finger = ", TSI1_Finger)
-        # print("TSI2_Finger = ", TSI2_Finger)
-        # print("INV1_Finger = ", INV1_Finger)
-        # print("INV2_Finger = ", INV2_Finger)
-        # print("INV3_Finger = ", INV3_Finger)
-        # print("INV4_Finger = ", INV4_Finger)
-
         DesignParameters._Technology = 'SS28nm'
-        TopObj = DFF(_DesignParameter=None, _Name='DFF')
+        TopObj = DFF(_DesignParameter=None, _Name='_SALatch')
         TopObj._CalculateDesignParameter(
             TG1_Finger=TG1_Finger,
             TG1_NMWidth=TG1_NMWidth,
@@ -1046,32 +1133,47 @@ if __name__ == '__main__':
             INV4_NMWidth=INV4_NMWidth,
             INV4_PMWidth=INV4_PMWidth,
 
-
             ChannelLength=ChannelLength,
             GateSpacing=GateSpacing,
             SDWidth=SDWidth,
             XVT=XVT,
             CellHeight=CellHeight,
-            SupplyRailType=SupplyRailType)
+            SupplyRailType=SupplyRailType
+        )
 
         TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
-        testStreamFile = open('./DFF.gds', 'wb')
+        testStreamFile = open('./_SALatch.gds', 'wb')
         tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
         tmp.write_binary_gds_stream(testStreamFile)
         testStreamFile.close()
         print('#############################      Sending to FTP Server...      ##############################')
-
+        i = i + 1
+        print("itr = ", i)
+        #time.sleep(3)
         import ftplib
 
         ftp = ftplib.FTP('141.223.24.53')
         ftp.login('ljw95', 'dlwodn123')
         ftp.cwd('/mnt/sdc/ljw95/OPUS/ss28')
-        myfile = open('DFF.gds', 'rb')
-        ftp.storbinary('STOR DFF.gds', myfile)
+        myfile = open('_SALatch.gds', 'rb')
+        ftp.storbinary('STOR _SALatch.gds', myfile)
         myfile.close()
 
-        # import DRCchecker
-        # a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','DFF','DFF',None)
+        import DRCchecker
+
+        a = DRCchecker.DRCchecker('ljw95', 'dlwodn123', '/mnt/sdc/ljw95/OPUS/ss28', '/mnt/sdc/ljw95/OPUS/ss28/DRC/run',
+                                  '_SALatch', '_SALatch', None)
+        print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+        a.Upload2FTP()
+        a.StreamIn(tech='028nm')
+        print("#################################### preparing ####################################")
+        print("#################################### preparing ####################################")
+        print("#################################### preparing ####################################")
+        print("#################################### preparing ####################################")
+        print("#################################### preparing ####################################")
+        print("#################################### preparing ####################################")
+
+        # time.sleep(5)
         # a.DRCchecker()
-        #
-        # print ("DRC Clean!!!")
+        print('      Finished       '.center(105, '#'))
+        print("DRC Clean!!!")

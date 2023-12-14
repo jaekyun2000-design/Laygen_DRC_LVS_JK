@@ -341,13 +341,9 @@ class Clk_Driver(StickDiagram._StickDiagram):
 
 
         self._DesignParameter['_ViaMet12Met2_data']['_XYCoordinates'] = [[self.getXY('DFFQb1','_qbpin')[0][0] - tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk ],\
-                                                                         [self.getXY('DFFQb2', '_qbpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk],\
-                                                                         [self.getXY('DFFQb1', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk],\
-                                                                         [self.getXY('DFFQb2', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]]
+                                                                         [self.getXY('DFFQb2', '_qbpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]]
         self._DesignParameter['_ViaMet22Met3_data']['_XYCoordinates'] = [[self.getXY('DFFQb1','_qbpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk],\
-                                                                         [self.getXY('DFFQb2', '_qbpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk],\
-                                                                         [self.getXY('DFFQb1', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk],\
-                                                                         [self.getXY('DFFQb2', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]]
+                                                                         [self.getXY('DFFQb2', '_qbpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]]
 
         self._DesignParameter['_Met1_clkout'] = self._PathElementDeclaration(
             _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
@@ -360,10 +356,10 @@ class Clk_Driver(StickDiagram._StickDiagram):
 
 
 
-        self.f = [self.getXY('DFFQb1', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]
-        self.f90 = [self.getXY('DFFQb1','_qbpin')[0][0] - tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]
-        self.fb = [self.getXY('DFFQb2', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]
-        self.f90b = [self.getXY('DFFQb2', '_qbpin')[0][0] - tmpViaminWidth/2+ tmpMet2Width / 2,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]
+        self.f = [self.getXY('DFFQb1', '_qpin')[-1][0],self._DesignParameter['DFFQb1']['_DesignObj'].iclkb]
+        self.fb = [self.getXY('DFFQb1','_qbpin')[0][0] ,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]
+        self.f90 = [self.getXY('DFFQb2', '_qpin')[-1][0],self._DesignParameter['DFFQb1']['_DesignObj'].iclkb]
+        self.f90b = [self.getXY('DFFQb2', '_qbpin')[0][0] ,self._DesignParameter['DFFQb1']['_DesignObj'].iclk]
 
 
 
@@ -408,11 +404,11 @@ class Clk_Driver(StickDiagram._StickDiagram):
                                                                          [self.getXY('DFFQb2', '_clkpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,revise_dib ]]
 
 
-        self.clkinput = [(self.getXY('DFFQb2', '_clkpin')[0][0]-self.getXY('DFFQb1', '_clkpin')[0][0])/2+self.getXY('DFFQb1', '_clkpin')[0][0],revise_dib]
+        self.clkinput = [self.getXY('DFFQb1', '_clkpin')[0][0],revise_dib]
 
 
         ########################## cell width ##################
-        self.CellXWidth = self.getXY('DFFQb2','INV5', '_PMOS', '_POLayer')[-1][0] + UnitPitch
+        self.CellXWidth = max(self.getXY('DFFQb2','INV5', '_PMOS', '_POLayer')[-1][0],self.getXY('DFFQb2','INV5', '_PMOS', '_POLayer')[0][0]) + UnitPitch
         self.CellYWidth = CellHeight
 
 

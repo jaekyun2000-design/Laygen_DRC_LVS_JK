@@ -488,29 +488,55 @@ class DeMux1to4(StickDiagram._StickDiagram):
 
         self._DesignParameter['_ViaMet12Met2_data2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2_data2In{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2_data2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
-        self._DesignParameter['_ViaMet12Met2_data2']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaminWidth
-        self._DesignParameter['_ViaMet12Met2_data2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaminWidth
-        self._DesignParameter['_ViaMet12Met2_data2']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet12Met2_data2']['_DesignObj']._DesignParameter['_Met2Layer']['_XWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet12Met2_data2']['_DesignObj']._DesignParameter['_Met1Layer']['_XWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet12Met2_data2']['_DesignObj']._DesignParameter['_COLayer']['_XWidth'] = tmpVia1YWidth
 
         self._DesignParameter['_ViaMet22Met3_data2'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='_ViaMet22Met3_data2In{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet22Met3_data2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=1))
-        self._DesignParameter['_ViaMet22Met3_data2']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaminWidth
-        self._DesignParameter['_ViaMet22Met3_data2']['_DesignObj']._DesignParameter['_Met3Layer']['_YWidth'] = tmpViaminWidth
-        self._DesignParameter['_ViaMet22Met3_data2']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet22Met3_data2']['_DesignObj']._DesignParameter['_Met2Layer']['_XWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet22Met3_data2']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet22Met3_data2']['_DesignObj']._DesignParameter['_COLayer']['_XWidth'] = tmpVia1YWidth
+
+        self._DesignParameter['_ViaMet12Met2_dataonly'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2_dataonlyIn{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2_dataonly']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2_dataonly']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet12Met2_dataonly']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet12Met2_dataonly']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+
+        self._DesignParameter['_ViaMet12Met2_dataonly'] = self._SrefElementDeclaration(_DesignObj=ViaMet22Met3._ViaMet22Met3(_Name='_ViaMet12Met2_dataonlyIn{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2_dataonly']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet22Met3NumberOfCOX=1, _ViaMet22Met3NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2_dataonly']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet12Met2_dataonly']['_DesignObj']._DesignParameter['_Met3Layer']['_YWidth'] = tmpViaminWidth
+        self._DesignParameter['_ViaMet12Met2_dataonly']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+
+        if(TSI2_Finger==1):
+            self._DesignParameter['_ViaMet12Met2_data2']['_XYCoordinates'] = [[self.getXY('DeMux1to2','DFF_Latch', '_qbpin')[0][0]+ tmpViaminWidth/2- tmpMet2Width / 2,revise_dib ],\
+                                                                         [self.getXY('DeMux1to2','DFFQ', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,revise_dib]]##DRC 수정
+            self._DesignParameter['_ViaMet22Met3_data2']['_XYCoordinates'] = [[self.getXY('DeMux1to2','DFF_Latch', '_qbpin')[0][0]+ tmpViaminWidth/2- tmpMet2Width / 2,revise_dib],\
+                                                                         [self.getXY('DeMux1to2','DFFQ', '_qpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,revise_dib]]
+        else:
+            self._DesignParameter['_ViaMet12Met2_data2']['_XYCoordinates'] = [[self.getXY('DeMux1to2','DFF_Latch', '_qbpin')[0][0]+ tmpViaminWidth/2- tmpMet2Width / 2,revise_dib ]]
+            self._DesignParameter['_ViaMet22Met3_data2']['_XYCoordinates'] = [[self.getXY('DeMux1to2','DFF_Latch', '_qbpin')[0][0]- tmpViaminWidth/2+ tmpMet2Width / 2,revise_dib]]
+            self._DesignParameter['_ViaMet12Met2_dataonly']['_XYCoordinates'] = [[self.getXY('DeMux1to2','DFFQ', '_qpin')[0][0],revise_dib - tmpViaminWidth/2+ tmpMet2Width / 2]]
+            self._DesignParameter['_ViaMet12Met2_dataonly']['_XYCoordinates'] = [[self.getXY('DeMux1to2','DFFQ', '_qpin')[0][0],revise_dib- tmpViaminWidth/2+ tmpMet2Width / 2]]
+
+        ######## 1:2 Demux output via delete
+
+        self._DesignParameter['DeMux1to2']['_DesignObj']._DesignParameter['_ViaMet12Met2_data2']['_XYCoordinates'] = []
+        self._DesignParameter['DeMux1to2']['_DesignObj']._DesignParameter['_ViaMet22Met3_data2']['_XYCoordinates'] = []
 
 
-        self._DesignParameter['_ViaMet12Met2_data2']['_XYCoordinates'] = [[self.getXY('DeMux1to2','DFF_Latch', '_qbpin')[0][0],self._DesignParameter['DeMux1to2']['_DesignObj']._DesignParameter['DFF_Latch']['_DesignObj'].iclkb- tmpViaMet2Width / 2 + tmpMet2Width / 2 ],\
-                                                                         [self.getXY('DeMux1to2','DFFQ', '_qpin')[0][0],self._DesignParameter['DeMux1to2']['_DesignObj']._DesignParameter['DFF_Latch']['_DesignObj'].iclkb]]##DRC 수정
-        self._DesignParameter['_ViaMet22Met3_data2']['_XYCoordinates'] = [[self.getXY('DeMux1to2','DFF_Latch', '_qbpin')[0][0],self._DesignParameter['DeMux1to2']['_DesignObj']._DesignParameter['DFF_Latch']['_DesignObj'].iclkb- tmpViaMet2Width / 2 + tmpMet2Width / 2 ],\
-                                                                         [self.getXY('DeMux1to2','DFFQ', '_qpin')[0][0],self._DesignParameter['DeMux1to2']['_DesignObj']._DesignParameter['DFF_Latch']['_DesignObj'].iclkb]]
 
-
+        ######## 1:2 Demux output via delete end
 
         self.D1 = [self.getXY('DFF_Latch_Latch','INV8', 'InputMet1')[0][0],revise_dib]
         self.D3 = [self.getXY('DFF_Q_Latch', '_qbpin')[0][0],revise_dib]
-        self.D2 = [self.getXY('DeMux1to2','DFF_Latch', '_qbpin')[0][0],self._DesignParameter['DeMux1to2']['_DesignObj']._DesignParameter['DFF_Latch']['_DesignObj'].iclkb- tmpViaMet2Width / 2 + tmpMet2Width / 2]
-        self.D4 = [self.getXY('DeMux1to2','DFFQ', '_qpin')[0][0],self._DesignParameter['DeMux1to2']['_DesignObj']._DesignParameter['DFF_Latch']['_DesignObj'].iclkb]
-
+        # self.D2 = [self.getXY('DeMux1to2','DFF_Latch', '_qbpin')[0][0],self._DesignParameter['DeMux1to2']['_DesignObj']._DesignParameter['DFF_Latch']['_DesignObj'].iclkb- tmpViaMet2Width / 2 + tmpMet2Width / 2]
+        # self.D4 = [self.getXY('DeMux1to2','DFFQ', '_qpin')[0][0],self._DesignParameter['DeMux1to2']['_DesignObj']._DesignParameter['DFF_Latch']['_DesignObj'].iclkb]
+        self.D2 = [self.getXY('DeMux1to2','DFF_Latch', '_qbpin')[0][0],revise_dib]
+        self.D4 = [self.getXY('DeMux1to2','DFFQ', '_qpin')[0][0],revise_dib]
+        #print("test",self.getXY('DFF_Latch_Latch','INV8', 'InputMet1')[0][0],self.getXY('DFF_Q_Latch', '_qbpin')[0][0])
 
         ######################## clk Routing ##########################
 
@@ -559,33 +585,35 @@ class DeMux1to4(StickDiagram._StickDiagram):
                       [self.getXY('DeMux1to2','DFF_Latch', '_clkpin')[0][0],revise_dib]]
         self.clk90b = [self.getXY('DeMux1to2','DFFQ', '_clkpin')[0][0],revise_dib]
 
+        self.CellXWidth = max(self.getXY('DeMux1to2','DFFQ','INV4', '_PMOS', '_POLayer')[0][0],self.getXY('DeMux1to2','DFFQ','INV4', '_PMOS', '_POLayer')[-1][0]) + UnitPitch
+        self.CellYWidth = CellHeight
 
 ''' INV2&3 # of Fingers should be less than 7(6 max)
     otherwise, INV inner routing and qb routing will be overlapped'''
 ################################ DRC Check #################################
 import random
 if __name__ == '__main__':
-    # for i in range(0,100):
-    #     TG1_Finger = random.randint(1, 5)
-    #     TG2_Finger = random.randint(1, 5)
-    #     TSI1_Finger = random.randint(1, 2)
-    #     TSI2_Finger = random.randint(1, 2)
-    #     INV1_Finger = random.randint(1, 5)
-    #     INV2_Finger = random.randint(1, 5)
-    #     INV3_Finger = random.randint(1, 5)
-    #     INV4_Finger = random.randint(1, 5)
-    #
-    #     TG3_Finger = random.randint(1, 5)
-    #     TSI3_Finger = random.randint(1, 2)
-    #     INV5_Finger = random.randint(1, 5)
-    #     INV6_Finger = random.randint(1, 5)
-    #
-    #     TG4_Finger = random.randint(1, 5)
-    #     TSI4_Finger = random.randint(1, 2)
-    #     INV7_Finger = random.randint(1, 5)
-    #     INV8_Finger = random.randint(1, 5)
-    #     INV9_Finger = random.randint(1, 5)
-    #     INV10_Finger = random.randint(1, 5)
+    for i in range(0,100):
+        TG1_Finger = random.randint(1, 5)
+        TG2_Finger = random.randint(1, 5)
+        TSI1_Finger = random.randint(1, 2)
+        TSI2_Finger = random.randint(1, 2)
+        INV1_Finger = random.randint(1, 5)
+        INV2_Finger = random.randint(1, 5)
+        INV3_Finger = random.randint(1, 5)
+        INV4_Finger = random.randint(1, 5)
+
+        TG3_Finger = random.randint(1, 5)
+        TSI3_Finger = random.randint(1, 2)
+        INV5_Finger = random.randint(1, 5)
+        INV6_Finger = random.randint(1, 5)
+
+        TG4_Finger = random.randint(1, 5)
+        TSI4_Finger = random.randint(1, 2)
+        INV7_Finger = random.randint(1, 5)
+        INV8_Finger = random.randint(1, 5)
+        INV9_Finger = random.randint(1, 5)
+        INV10_Finger = random.randint(1, 5)
 
         npratio =2
 
@@ -778,7 +806,8 @@ if __name__ == '__main__':
         tmp.write_binary_gds_stream(testStreamFile)
         testStreamFile.close()
         print('#############################      Sending to FTP Server...      ##############################')
-
+        i = i + 1
+        print("itr = ", i)
         import ftplib
 
         ftp = ftplib.FTP('141.223.24.53')

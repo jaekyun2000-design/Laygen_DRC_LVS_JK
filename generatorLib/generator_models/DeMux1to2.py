@@ -349,7 +349,7 @@ class DeMux1to2(StickDiagram._StickDiagram):
 
         self.D1 = [self.getXY('DFF_Latch', '_qbpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].iclkb- tmpViaMet2Width / 2 + tmpMet2Width / 2]
         self.D2 = [self.getXY('DFFQ', '_qpin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].iclkb]
-
+        self.datain=[(self.getXY('DFFQ', 'TG1', '_Apin')[0][0]-self.getXY('DFF_Latch', 'TG1', '_Apin')[0][0])/2+self.getXY('DFF_Latch', 'TG1', '_Apin')[0][0],self._DesignParameter['DFF_Latch']['_DesignObj'].rib]
 
         ######################## clk Routing ##########################
         revise_dib = self._DesignParameter['DFF_Latch']['_DesignObj'].iclkb - tmpViaMet2Width - tmpDRC_Met2Spacing
@@ -387,7 +387,10 @@ class DeMux1to2(StickDiagram._StickDiagram):
 
 
         ########################## cell width ##################
-        self.CellXWidth = self.getXY('DFFQ','INV4', '_PMOS', '_POLayer')[-1][0] + UnitPitch
+
+
+        self.CellXWidth = max(self.getXY('DFFQ','INV4', '_PMOS', '_POLayer')[0][0],self.getXY('DFFQ','INV4', '_PMOS', '_POLayer')[-1][0]) + UnitPitch
+
         self.CellYWidth = CellHeight
 
 
@@ -478,18 +481,18 @@ if __name__ == '__main__':
         CellHeight = 1800
         SupplyRailType = 2
 
-        # TG1_Finger = 1
-        # TG2_Finger = 2
-        # TSI1_Finger = 1
-        # TSI2_Finger = 1
-        # INV1_Finger = 3
-        # INV2_Finger = 1
-        # INV3_Finger = 1
-        # INV4_Finger = 3
-        # TG3_Finger = 2
-        # TSI3_Finger = 1
-        # INV5_Finger = 4
-        # INV6_Finger = 4
+        TG1_Finger = 1
+        TG2_Finger = 2
+        TSI1_Finger = 1
+        TSI2_Finger = 1
+        INV1_Finger = 3
+        INV2_Finger = 1
+        INV3_Finger = 1
+        INV4_Finger = 3
+        TG3_Finger = 2
+        TSI3_Finger = 1
+        INV5_Finger = 4
+        INV6_Finger = 4
 
 
         #print("itr = ", i)

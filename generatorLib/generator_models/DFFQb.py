@@ -531,6 +531,7 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2dib'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2dibIn{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2dib']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
         self._DesignParameter['_ViaMet12Met2dib']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2dib']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
         self._DesignParameter['_ViaMet12Met2dib']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2dib']['_XYCoordinates'] = [[self.getXYLeft('_Met2_dib')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_dib')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2],
                                                                        [self.getXYRight('_Met2_dib')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_dib')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
@@ -617,6 +618,7 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclkb'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclkbIn{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2iclkb']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
         self._DesignParameter['_ViaMet12Met2iclkb']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclkb']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
         self._DesignParameter['_ViaMet12Met2iclkb']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2iclkb']['_XYCoordinates'] = [[self.getXYLeft('_Met2_iclkb')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_iclkb')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2], # TG1 EN
                                                                          [self._DesignParameter['_Met1_iclkb']['_XYCoordinates'][2][0][0], self.getXY('_Met2_iclkb')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2], # TSI1 ENb
@@ -642,6 +644,7 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2rib'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2ribIn{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2rib']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
         self._DesignParameter['_ViaMet12Met2rib']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2rib']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
         self._DesignParameter['_ViaMet12Met2rib']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2rib']['_XYCoordinates'] = [[self.getXYLeft('_Met2_rib')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_rib')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2],
                                                                        [self.getXYRight('_Met2_rib')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_rib')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
@@ -876,6 +879,7 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclk'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclkIn{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2iclk']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
         self._DesignParameter['_ViaMet12Met2iclk']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclk']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
         self._DesignParameter['_ViaMet12Met2iclk']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2iclk']['_XYCoordinates'] = [[self.getXYLeft('_Met2_iclk')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2],
                                                                          [self.getXY('INV3')[0][0] + self._DesignParameter['INV3']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][0][0][0], self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2],
@@ -899,6 +903,7 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclk2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclk2In{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
         self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
         self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2iclk2']['_XYCoordinates'] = [[self.getXYRight('TG2', 'gate_output', '_Met1Layer')[0][0]-tmpMet2Width / 2,  self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
 
@@ -943,6 +948,7 @@ class DFF(StickDiagram._StickDiagram):
         self.CellXWidth = self.getXY('INV5', '_PMOS','_POLayer')[0][0] + UnitPitch
         self.CellYWidth = CellHeight
 
+
         ########################## YCoord ##################
         self.rib = YCoord_rib
         self.dib = YCoord_dib2
@@ -985,6 +991,12 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_qpin']['_XYCoordinates'] = self._DesignParameter['_ViaMet12Met2q']['_XYCoordinates']
         self._DesignParameter['_qbpin']['_XYCoordinates'] = [[self.getXY('INV5', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0],YCoord_iclkb]]
         self._DesignParameter['_clkpin']['_XYCoordinates'] = self.getXY('INV2','InputMet1')
+
+        self.clkinput = [self.getXY('INV2','InputMet1')[0][0], YCoord_dib2]
+
+        self.f = [self.getXY( '_qpin')[-1][0],YCoord_iclkb]
+        self.fb = [self.getXY('_qbpin')[0][0] ,YCoord_iclk]
+
 
 ''' INV2&3 # of Fingers should be less than 7(6 max)
     otherwise, INV inner routing and qb routing will be overlapped'''

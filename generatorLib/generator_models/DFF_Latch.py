@@ -672,6 +672,7 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2dib'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2dibIn{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2dib']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
         self._DesignParameter['_ViaMet12Met2dib']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2dib']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width #revised
         self._DesignParameter['_ViaMet12Met2dib']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2dib']['_XYCoordinates'] = [[self.getXYLeft('_Met2_dib')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_dib')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2],
                                                                        [self.getXYRight('_Met2_dib')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_dib')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
@@ -874,6 +875,7 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclkb_latch'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclkb_latchIn{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2iclkb_latch']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
         self._DesignParameter['_ViaMet12Met2iclkb_latch']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclkb_latch']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width ### revised
         self._DesignParameter['_ViaMet12Met2iclkb_latch']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2iclkb_latch']['_XYCoordinates']=[[self.getXYLeft('_Met2_iclkb_latch')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_iclkb_latch')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2], # TG1 EN
                                                                          [self._DesignParameter['_Met1_iclkb_latch']['_XYCoordinates'][1][0][0], self.getXY('_Met2_iclkb_latch')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2]] # TSI1 ENb
@@ -1218,7 +1220,7 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclk'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclkIn{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2iclk']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
         self._DesignParameter['_ViaMet12Met2iclk']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
-
+        self._DesignParameter['_ViaMet12Met2iclk']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width #revised_end
         self._DesignParameter['_ViaMet12Met2iclk']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2iclk']['_XYCoordinates'] = [[self.getXYLeft('_Met2_iclk')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2],
                                                                          [self.getXY('INV3')[0][0] + self._DesignParameter['INV3']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][0][0][0], self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2],
@@ -1287,7 +1289,7 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclk_latch'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclk_latchIn{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2iclk_latch']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
         self._DesignParameter['_ViaMet12Met2iclk_latch']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
-
+        self._DesignParameter['_ViaMet12Met2iclk_latch']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width #revised
         self._DesignParameter['_ViaMet12Met2iclk_latch']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2iclk_latch']['_XYCoordinates'] = [[self.getXYLeft('_Met2_iclk_latch')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_iclk_latch')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
 
@@ -1322,6 +1324,7 @@ class DFF(StickDiagram._StickDiagram):
         self._DesignParameter['_ViaMet12Met2iclk2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclk2In{}'.format(_Name)))[0]
         self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
         self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width#revised
         self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
         self._DesignParameter['_ViaMet12Met2iclk2']['_XYCoordinates'] = [[self.getXYRight('TG2', 'gate_output', '_Met1Layer')[0][0]-tmpMet2Width / 2,  self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
 
@@ -1426,167 +1429,269 @@ class DFF(StickDiagram._StickDiagram):
 
 ################################ DRC Check #################################
 import random
+# if __name__ == '__main__':
+#      for i in range(0,100):
+#         TG1_Finger = random.randint(1,5)
+#         TG2_Finger = random.randint(1, 5)
+#         TSI1_Finger = random.randint(1,2)
+#         TSI2_Finger = random.randint(1,2)
+#         INV1_Finger = random.randint(1,5)
+#         INV2_Finger = random.randint(1,5)
+#         INV3_Finger = random.randint(1,5)
+#         INV4_Finger = random.randint(1,5)
+#
+#         TG3_Finger = random.randint(1, 5)
+#         TSI3_Finger = random.randint(1, 2)
+#         INV5_Finger = random.randint(1, 5)
+#         INV6_Finger = random.randint(1, 5)
+#
+#         #TSI3_Finger = 2
+#         #TG2_Finger = 1
+#         TG1_NMWidth = 200
+#         TG1_PMWidth = 400
+#
+#         TG2_NMWidth = 200
+#         TG2_PMWidth = 400
+#
+#         TSI1_NMWidth = 200
+#         TSI1_PMWidth = 400
+#
+#         TSI2_NMWidth = 200
+#         TSI2_PMWidth = 400
+#
+#         INV1_NMWidth = 200
+#         INV1_PMWidth = 400
+#
+#         INV2_NMWidth = 200
+#         INV2_PMWidth = 400
+#
+#         INV3_NMWidth = 200
+#         INV3_PMWidth = 400
+#
+#         INV4_NMWidth = 200
+#         INV4_PMWidth = 400
+#
+#         TG3_NMWidth = 200
+#         TG3_PMWidth = 400
+#
+#         TSI3_NMWidth = 200
+#         TSI3_PMWidth = 400
+#
+#         INV5_NMWidth = 200
+#         INV5_PMWidth = 400
+#
+#         INV6_NMWidth = 200
+#         INV6_PMWidth = 400
+#
+#         ChannelLength = 30
+#         GateSpacing = 100
+#         SDWidth = 66
+#         XVT = 'SLVT'
+#         CellHeight = 1800
+#         SupplyRailType = 2
+#
+#         # TG1_Finger = 1
+#         # TG2_Finger = 2
+#         # TSI1_Finger = 1
+#         # TSI2_Finger = 1
+#         # INV1_Finger = 3
+#         # INV2_Finger = 1
+#         # INV3_Finger = 1
+#         # INV4_Finger = 3
+#         # TG3_Finger = 2
+#         # TSI3_Finger = 1
+#         # INV5_Finger = 4
+#         # INV6_Finger = 4
+#
+#
+#         # print("itr = ", i)
+#         # print("TG1_Finger = ", TG1_Finger)
+#         # print("TG2_Finger = ", TG2_Finger)
+#         # print("TG3_Finger = ", TG3_Finger)
+#         # print("TSI1_Finger = ", TSI1_Finger)
+#         # print("TSI2_Finger = ", TSI2_Finger)
+#         # print("TSI3_Finger = ", TSI3_Finger)
+#         # print("INV1_Finger = ", INV1_Finger)
+#         # print("INV2_Finger = ", INV2_Finger)
+#         # print("INV3_Finger = ", INV3_Finger)
+#         # print("INV4_Finger = ", INV4_Finger)
+#         # print("INV5_Finger = ", INV5_Finger)
+#         # print("INN6_Finger = ", INV6_Finger)
+#
+#         DesignParameters._Technology = 'SS28nm'
+#         TopObj = DFF(_DesignParameter=None, _Name='DFF')
+#         TopObj._CalculateDesignParameter(
+#             TG1_Finger=TG1_Finger,
+#             TG1_NMWidth=TG1_NMWidth,
+#             TG1_PMWidth=TG1_PMWidth,
+#             TG2_Finger=TG2_Finger,
+#             TG2_NMWidth=TG2_NMWidth,
+#             TG2_PMWidth=TG2_PMWidth,
+#
+#             TSI1_Finger=TSI1_Finger,
+#             TSI1_NMWidth=TSI1_NMWidth,
+#             TSI1_PMWidth=TSI1_PMWidth,
+#             TSI2_Finger=TSI2_Finger,
+#             TSI2_NMWidth=TSI2_NMWidth,
+#             TSI2_PMWidth=TSI2_PMWidth,
+#
+#             INV1_Finger=INV1_Finger,
+#             INV1_NMWidth=INV1_NMWidth,
+#             INV1_PMWidth=INV1_PMWidth,
+#
+#             INV2_Finger=INV2_Finger,
+#             INV2_NMWidth=INV2_NMWidth,
+#             INV2_PMWidth=INV2_PMWidth,
+#             INV3_Finger=INV3_Finger,
+#             INV3_NMWidth=INV3_NMWidth,
+#             INV3_PMWidth=INV3_PMWidth,
+#
+#             INV4_Finger=INV4_Finger,
+#             INV4_NMWidth=INV4_NMWidth,
+#             INV4_PMWidth=INV4_PMWidth,
+#
+#             TG3_Finger=TG3_Finger,
+#             TG3_NMWidth=TG3_NMWidth,
+#             TG3_PMWidth=TG3_PMWidth,
+#
+#             TSI3_Finger=TSI3_Finger,
+#             TSI3_NMWidth=TSI3_NMWidth,
+#             TSI3_PMWidth=TSI3_PMWidth,
+#
+#             INV5_Finger=INV5_Finger,
+#             INV5_NMWidth=INV5_NMWidth,
+#             INV5_PMWidth=INV5_PMWidth,
+#             INV6_Finger=INV6_Finger,
+#             INV6_NMWidth=INV6_NMWidth,
+#             INV6_PMWidth=INV6_PMWidth,
+#
+#             ChannelLength=ChannelLength,
+#             GateSpacing=GateSpacing,
+#             SDWidth=SDWidth,
+#             XVT=XVT,
+#             CellHeight=CellHeight,
+#             SupplyRailType=SupplyRailType)
+#
+#         TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
+#         testStreamFile = open('./DFF.gds', 'wb')
+#         tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
+#         tmp.write_binary_gds_stream(testStreamFile)
+#         testStreamFile.close()
+#         print('#############################      Sending to FTP Server...      ##############################')
+#
+#         import ftplib
+#
+#         ftp = ftplib.FTP('141.223.24.53')
+#         ftp.login('ljw95', 'dlwodn123')
+#         ftp.cwd('/mnt/sdc/ljw95/OPUS/ss28')
+#         myfile = open('DFF.gds', 'rb')
+#         ftp.storbinary('STOR DFF.gds', myfile)
+#         myfile.close()
+#
+#         import DRCchecker
+#         a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','DFF','DFF',None)
+#         a.DRCchecker()
+#
+#         print ("DRC Clean!!!")
+
 if __name__ == '__main__':
-     # for i in range(0,100):
-     #    TG1_Finger = random.randint(1,5)
-     #    TG2_Finger = random.randint(1, 5)
-     #    TSI1_Finger = random.randint(1,2)
-     #    TSI2_Finger = random.randint(1,2)
-     #    INV1_Finger = random.randint(1,5)
-     #    INV2_Finger = random.randint(1,5)
-     #    INV3_Finger = random.randint(1,5)
-     #    INV4_Finger = random.randint(1,5)
-     #
-     #    TG3_Finger = random.randint(1, 5)
-     #    TSI3_Finger = random.randint(1, 2)
-     #    INV5_Finger = random.randint(1, 5)
-     #    INV6_Finger = random.randint(1, 5)
+    from Private import Myinfo
+    import DRCchecker_test2 as DRCchecker
+    import time
+    from generatorLib.IksuPack import PlaygroundBot
 
-        #TSI3_Finger = 2
-        #TG2_Finger = 1
-        TG1_NMWidth = 200
-        TG1_PMWidth = 400
-
-        TG2_NMWidth = 200
-        TG2_PMWidth = 400
-
-        TSI1_NMWidth = 200
-        TSI1_PMWidth = 400
-
-        TSI2_NMWidth = 200
-        TSI2_PMWidth = 400
-
-        INV1_NMWidth = 200
-        INV1_PMWidth = 400
-
-        INV2_NMWidth = 200
-        INV2_PMWidth = 400
-
-        INV3_NMWidth = 200
-        INV3_PMWidth = 400
-
-        INV4_NMWidth = 200
-        INV4_PMWidth = 400
-
-        TG3_NMWidth = 200
-        TG3_PMWidth = 400
-
-        TSI3_NMWidth = 200
-        TSI3_PMWidth = 400
-
-        INV5_NMWidth = 200
-        INV5_PMWidth = 400
-
-        INV6_NMWidth = 200
-        INV6_PMWidth = 400
-
-        ChannelLength = 30
-        GateSpacing = 100
-        SDWidth = 66
-        XVT = 'SLVT'
-        CellHeight = 1800
-        SupplyRailType = 2
-
-        TG1_Finger = 1
-        TG2_Finger = 2
-        TSI1_Finger = 1
-        TSI2_Finger = 1
-        INV1_Finger = 3
-        INV2_Finger = 1
-        INV3_Finger = 1
-        INV4_Finger = 3
-        TG3_Finger = 2
-        TSI3_Finger = 1
-        INV5_Finger = 4
-        INV6_Finger = 4
+    My = Myinfo.USER(DesignParameters._Technology)
+    #Bot = PlaygroundBot.PGBot(token=My.BotToken, chat_id=My.ChatID)
 
 
-        # print("itr = ", i)
-        # print("TG1_Finger = ", TG1_Finger)
-        # print("TG2_Finger = ", TG2_Finger)
-        # print("TG3_Finger = ", TG3_Finger)
-        # print("TSI1_Finger = ", TSI1_Finger)
-        # print("TSI2_Finger = ", TSI2_Finger)
-        # print("TSI3_Finger = ", TSI3_Finger)
-        # print("INV1_Finger = ", INV1_Finger)
-        # print("INV2_Finger = ", INV2_Finger)
-        # print("INV3_Finger = ", INV3_Finger)
-        # print("INV4_Finger = ", INV4_Finger)
-        # print("INV5_Finger = ", INV5_Finger)
-        # print("INN6_Finger = ", INV6_Finger)
+    libname = 'DFF_test'
+    cellname = 'DFF'
+    _fileName = cellname + '.gds'
 
-        DesignParameters._Technology = 'SS28nm'
-        TopObj = DFF(_DesignParameter=None, _Name='DFF')
-        TopObj._CalculateDesignParameter(
-            TG1_Finger=TG1_Finger,
-            TG1_NMWidth=TG1_NMWidth,
-            TG1_PMWidth=TG1_PMWidth,
-            TG2_Finger=TG2_Finger,
-            TG2_NMWidth=TG2_NMWidth,
-            TG2_PMWidth=TG2_PMWidth,
+    ''' Input Parameters for Layout Object '''
 
-            TSI1_Finger=TSI1_Finger,
-            TSI1_NMWidth=TSI1_NMWidth,
-            TSI1_PMWidth=TSI1_PMWidth,
-            TSI2_Finger=TSI2_Finger,
-            TSI2_NMWidth=TSI2_NMWidth,
-            TSI2_PMWidth=TSI2_PMWidth,
+    InputParams = dict(
+        TG1_NMWidth=200,
+                TG1_PMWidth = 400,
 
-            INV1_Finger=INV1_Finger,
-            INV1_NMWidth=INV1_NMWidth,
-            INV1_PMWidth=INV1_PMWidth,
+                TG2_NMWidth = 200,
+                TG2_PMWidth = 400,
 
-            INV2_Finger=INV2_Finger,
-            INV2_NMWidth=INV2_NMWidth,
-            INV2_PMWidth=INV2_PMWidth,
-            INV3_Finger=INV3_Finger,
-            INV3_NMWidth=INV3_NMWidth,
-            INV3_PMWidth=INV3_PMWidth,
+                TSI1_NMWidth = 200,
+                TSI1_PMWidth = 400,
 
-            INV4_Finger=INV4_Finger,
-            INV4_NMWidth=INV4_NMWidth,
-            INV4_PMWidth=INV4_PMWidth,
+                TSI2_NMWidth = 200,
+                TSI2_PMWidth = 400,
 
-            TG3_Finger=TG3_Finger,
-            TG3_NMWidth=TG3_NMWidth,
-            TG3_PMWidth=TG3_PMWidth,
+                INV1_NMWidth = 200,
+                INV1_PMWidth = 400,
 
-            TSI3_Finger=TSI3_Finger,
-            TSI3_NMWidth=TSI3_NMWidth,
-            TSI3_PMWidth=TSI3_PMWidth,
+                INV2_NMWidth = 200,
+                INV2_PMWidth = 400,
 
-            INV5_Finger=INV5_Finger,
-            INV5_NMWidth=INV5_NMWidth,
-            INV5_PMWidth=INV5_PMWidth,
-            INV6_Finger=INV6_Finger,
-            INV6_NMWidth=INV6_NMWidth,
-            INV6_PMWidth=INV6_PMWidth,
+                INV3_NMWidth = 200,
+                INV3_PMWidth = 400,
 
-            ChannelLength=ChannelLength,
-            GateSpacing=GateSpacing,
-            SDWidth=SDWidth,
-            XVT=XVT,
-            CellHeight=CellHeight,
-            SupplyRailType=SupplyRailType)
+                INV4_NMWidth = 200,
+                INV4_PMWidth = 400,
 
-        TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
-        testStreamFile = open('./DFF.gds', 'wb')
-        tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
-        tmp.write_binary_gds_stream(testStreamFile)
-        testStreamFile.close()
-        print('#############################      Sending to FTP Server...      ##############################')
+                TG3_NMWidth = 200,
+                TG3_PMWidth = 400,
 
-        import ftplib
+                TSI3_NMWidth = 200,
+                TSI3_PMWidth = 400,
 
-        ftp = ftplib.FTP('141.223.24.53')
-        ftp.login('ljw95', 'dlwodn123')
-        ftp.cwd('/mnt/sdc/ljw95/OPUS/ss28')
-        myfile = open('DFF.gds', 'rb')
-        ftp.storbinary('STOR DFF.gds', myfile)
-        myfile.close()
+                INV5_NMWidth = 200,
+                INV5_PMWidth = 400,
 
-        # import DRCchecker
-        # a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','DFF','DFF',None)
-        # a.DRCchecker()
-        #
-        # print ("DRC Clean!!!")
+                INV6_NMWidth = 200,
+                INV6_PMWidth = 400,
+
+                ChannelLength = 30,
+                GateSpacing = 100,
+                SDWidth = 66,
+                XVT = 'SLVT',
+                CellHeight = 1800,
+                SupplyRailType = 2,
+
+                TG1_Finger = 1,
+                TG2_Finger = 2,
+                TSI1_Finger = 1,
+                TSI2_Finger = 1,
+                INV1_Finger = 3,
+                INV2_Finger = 1,
+                INV3_Finger = 1,
+                INV4_Finger = 3,
+                TG3_Finger = 2,
+                TSI3_Finger = 1,
+                INV5_Finger = 4,
+                INV6_Finger = 4
+    )
+
+    Mode_DRCCheck = True  # True | False
+    Num_DRCCheck = 100
+
+    Checker = DRCchecker.DRCchecker(
+        username=My.ID,
+        password=My.PW,
+        WorkDir=My.Dir_Work,
+        DRCrunDir=My.Dir_DRCrun,
+        GDSDir=My.Dir_GDS,
+        libname=libname,
+        cellname=cellname,
+    )
+
+    ''' ------------------------------------ Generate Layout Object ---------------------------------------------'''
+    LayoutObj = DFF(_Name=cellname)
+    LayoutObj._CalculateDesignParameter(**InputParams)
+    LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+    testStreamFile = open('./{}'.format(_fileName), 'wb')
+    tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+    tmp.write_binary_gds_stream(testStreamFile)
+    testStreamFile.close()
+
+    print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+    Checker.Upload2FTP()
+    Checker.StreamIn(tech=DesignParameters._Technology)
+
+    print('      Finished       '.center(105, '#'))
