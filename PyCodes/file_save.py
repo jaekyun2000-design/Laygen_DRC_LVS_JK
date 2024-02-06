@@ -63,6 +63,8 @@ class FileSaveFormat:
     def save_user_setup(self):
         variable_names = [item for item in dir(user_setup) if not item.startswith('__')]
         for variable_name in variable_names:
+            if variable_name == 'os':
+                continue
             self.user_setups[variable_name] = user_setup.__dict__[variable_name]
 
     def save_snapshot_stack(self, main_window):
