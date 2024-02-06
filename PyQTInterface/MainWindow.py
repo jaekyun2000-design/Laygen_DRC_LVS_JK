@@ -2994,10 +2994,7 @@ class _MainWindow(QMainWindow):
             self.dict_widget.show()
 
         elif 'object_detection' in _type:
-<<<<<<< HEAD
             print(_type)
-=======
->>>>>>> e1b9ce69e841f621644e36b31d98560909efeb2c
             # inf_model = topAPI.object_detection.inference_model
             dp_names = [vis_item._ItemTraits['_ElementName'] for vis_item in self.scene.selectedItems()]
 
@@ -3006,15 +3003,10 @@ class _MainWindow(QMainWindow):
             # map(lambda x: x.update_unified_expression(), poi)
             for dp in poi:
                 dp.update_unified_expression()
-<<<<<<< HEAD
             if 'divide' in _type:
                 self.design_delegator.object_detection_by_proprocessing(poi)
             else:
                 self.design_delegator.object_detection(poi)
-=======
-            self.design_delegator.object_detection(poi)
-
->>>>>>> e1b9ce69e841f621644e36b31d98560909efeb2c
 
 
     def inspect_vw_array(self, group_list):
@@ -4178,11 +4170,7 @@ class _CustomView(QGraphicsView):
         simplify_sref = QAction("Simplification", self)
         detail_sref = QAction("Detail visual", self)
         object_detection = QAction("Object detection", self)
-<<<<<<< HEAD
         object_detection_divide = QAction("Object detection divide", self)
-=======
-
->>>>>>> e1b9ce69e841f621644e36b31d98560909efeb2c
         menu = QMenu(self)
         menu.addAction(constraint_create_array)
         if self.scene().selectedItems():
@@ -4207,10 +4195,7 @@ class _CustomView(QGraphicsView):
             menu.addAction(visual_ungroup)
             if 'DL_DETECTION' in user_setup.__dir__() and user_setup.DL_DETECTION:
                 menu.addAction(object_detection)
-<<<<<<< HEAD
                 menu.addAction(object_detection_divide)
-=======
->>>>>>> e1b9ce69e841f621644e36b31d98560909efeb2c
 
         if self.scene().selectedItems():
             if self.scene().selectedItems()[0]._ItemTraits['_DesignParametertype'] == 1:
@@ -4234,10 +4219,7 @@ class _CustomView(QGraphicsView):
         simplify_sref.triggered.connect(self.scene().simplify_sref)
         detail_sref.triggered.connect(self.scene().detail_sref)
         object_detection.triggered.connect(lambda tmp: self.variable_emit('object_detection'))
-<<<<<<< HEAD
         object_detection_divide.triggered.connect(lambda tmp: self.variable_emit('object_detection_divide'))
-=======
->>>>>>> e1b9ce69e841f621644e36b31d98560909efeb2c
 
 
         menu.exec(event.globalPos())
@@ -4273,11 +4255,8 @@ class _CustomView(QGraphicsView):
             self.variable_signal.emit('copy_parms to constraints')
         elif type == 'object_detection':
             self.variable_signal.emit('object_detection')
-<<<<<<< HEAD
         elif type == 'object_detection_divide':
             self.variable_signal.emit('object_detection_divide')
-=======
->>>>>>> e1b9ce69e841f621644e36b31d98560909efeb2c
 
         # elif type == 'ungroup':
         #     self.variable_signal.emit('ungroup')
