@@ -1342,6 +1342,7 @@ class ExpressionCalculator(QWidget):
     def show_special_fcn(self):
         self.sfw = QListWidget()
         fcn_list = variable_ast.CustomFunctionTransformer().get_fcn_list()
+        fcn_list.sort()
         self.sfw.addItems(fcn_list)
         self.set_tooltip_text(fcn_list)
         # self.sfw.itemDoubleClicked.connect(self.geo_clicked)

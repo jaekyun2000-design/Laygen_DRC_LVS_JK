@@ -43,12 +43,13 @@ class VariableSetupWindow(QWidget):
     request_ast_signal = pyqtSignal(str)
     send_variable_ast = pyqtSignal("PyQt_PyObject")
     send_variable_wo_post_ast = pyqtSignal("PyQt_PyObject")
+    send_variable_wo_post_ast_for_array = pyqtSignal("PyQt_PyObject")
     send_inspection_request_signal = pyqtSignal(list)
 
 
     send_variableVisual_signal = pyqtSignal(VariableVisualItem.VariableVisualItem)
 
-    def __init__(self,variable_type,vis_items=None,variable_obj=None,group_ref_list=None,inspect_array_window_address=None):
+    def __init__(self,variable_type,vis_items=None,variable_obj=None,group_ref_list=None,inspect_array_window_address=None, main_window=None) :
         super().__init__()
         self.setWindowFlag(Qt.WindowStaysOnTopHint)
         self._edit_id = None
@@ -60,7 +61,7 @@ class VariableSetupWindow(QWidget):
         self.group_list = group_ref_list
         self.inspect_array_window_address = inspect_array_window_address
         self.itemList = list()
-        self.initUI()
+        self.initUI(main_window=main_window)
 
         if variable_obj == None:
             pass
@@ -79,7 +80,7 @@ class VariableSetupWindow(QWidget):
             sender.setIcon(QIcon(QPixmap('./image/OFF.png')))
             sender.setText("  Offset Expression  ")
 
-    def initUI(self):
+    def initUI(self, main_window=None):
         self.layout_list = []
         self.variable_type_widget = QComboBox()
         self.variable_type_widget.addItems(['boundary_array', 'path_array', 'sref_array', 'pin_array'])
@@ -133,7 +134,7 @@ class VariableSetupWindow(QWidget):
         vbox.addWidget(self.relative_or_offset_button)
         vbox.addStretch(1)
         # vbox.addLayout(self.setupBox)
-        self.variable_widget = variableContentWidget()
+        self.variable_widget = variableContentWidget(main_window)
         self.variable_widget.request_show('boundary', 'relative')
         self.variable_widget.send_variable_wo_post_ast.connect(self.send_variable_wo_post_ast)
         self.variable_widget.send_clicked_item_signal.connect(self.send_clicked_item)
@@ -408,6 +409,8 @@ class VariableSetupWindow(QWidget):
                 self.variable_widget.get_path_ast(_id=qt_dc._id, _ast=qt_dc._ast)
             else:
                 self.variable_widget.cal.pw.create_row(_id=qt_dc._id, _ast=qt_dc._ast)
+        else:
+            print('a')
         # elif purpose == 'x_offset':
         #     self.variable_widget.get_xy_offset_ast(_id=qt_dc._id, _ast=qt_dc._ast)
         # self.cal.receive_constraint_result(qt_dc)
@@ -418,8 +421,9 @@ class variableContentWidget(QWidget):
     send_exported_xy_offset_signal = pyqtSignal(str, dict)
     send_width_height_ast_signal = pyqtSignal(str, ast.AST)
     send_variable_wo_post_ast = pyqtSignal("PyQt_PyObject")
+    send_variable_wo_post_ast_for_array = pyqtSignal("PyQt_PyObject")
 
-    def __init__(self):
+    def __init__(self, main_window):
         super(variableContentWidget, self).__init__()
         self.name_list = ['boundary', 'path', 'sref', 'pin']
         self.option_list = ['offset', 'relative']
@@ -427,6 +431,7 @@ class variableContentWidget(QWidget):
         self.widget_sublayout_dictinoary = dict()
         self.vbox = QVBoxLayout()
         self.field_value_memory_dict = dict()
+        self.main_window = main_window
 
         self.initUI()
 
@@ -720,6 +725,10 @@ class variableContentWidget(QWidget):
             self.ls = SetupWindow._LoadSRefWindow(purpose='array_load')
         else:
             self.ls = SetupWindow._LoadSRefWindow(purpose='array_load', SRefElement=self.field_value_memory_dict['sref_item_dict'])
+        self.ls.send_variable_wo_post_ast.connect(lambda target_ast: self.main_window.design_delegator.create_qt_constraint(target_ast, sender=self.ls))
+        # self.ls.send_variable_wo_post_ast.connect(self.send_variable_wo_post_ast)
+        # self.send_variable_wo_post_ast_for_array
+
         self.ls.show()
         self.ls.send_array_signal.connect(self.exported_sref)
 

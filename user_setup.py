@@ -1,4 +1,6 @@
+import os
 
+_HomeDirectory = os.path.dirname(os.path.abspath(__file__))
 _Technology='SS28nm'
 _Night_mode = True
 _Snap_mode = 'orthogonal' # orthogonal or any_angle
@@ -12,7 +14,7 @@ AUTO_IMPORT = True
 
 CALCULATOR_MODE = 'Arithmetic'  # or 'Calculator'
 
-generator_model_path = generator_model_path = './generatorLib/generator_models' # If none, default path will be set.
+generator_model_path = './generatorLib/generator_models' # If none, default path will be set.
 # generator_model_path = './generatorLib/generator_models/rx_project' # If none, default path will be set.
 
 project_file_path = None # If none, default path will be set.

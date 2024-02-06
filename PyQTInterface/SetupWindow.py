@@ -3,7 +3,6 @@ import os
 import platform
 import warnings
 
-
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 # from PyQt5.QtWidgets import QApplication, QWidget, QGraphicsView, QGraphicsScene, QGraphicsItem
@@ -31,11 +30,11 @@ from powertool import topAPI
 import traceback
 import re, ast, time, sys
 from PyQTInterface.delegator import dpdc_delegator
+from collections import OrderedDict
 
 debugFlag = True
 cnn_inference_data = []
 cnn_inf_dict_data = dict()
-cnn_tf_data = dict(tp=0, tn=0, fp=0, fn=0)
 
 class _BoundarySetupWindow(QWidget):
 
@@ -942,8 +941,9 @@ class _LoadSRefWindow(QWidget):
             self.XY_input = QLineEdit()
         self.cal_fcn_input = QComboBox()
         # self.upside_down_input = QCheckBox()
-
-        self.library_input.addItems(generator_model_api.class_dict.keys())
+        generator_libraries = list(generator_model_api.class_dict.keys())
+        generator_libraries.sort()
+        self.library_input.addItems(generator_libraries)
         self.class_name_input.setText(generator_model_api.class_name_dict[self.library_input.currentText()])
         self.cal_fcn_input.addItems(generator_model_api.class_function_dict[self.library_input.currentText()])
 
@@ -1639,6 +1639,7 @@ class _PinSetupWindow(QWidget):
 
     def updateUI(self):
         self.name_input.setText(self._DesignParameter['_ElementName'])
+        # self.text_input.setText(self._DesignParameter['_TEXT'].decode('utf-8'))
         self.text_input.setText(self._DesignParameter['_TEXT'])
         self.width_input.setText(str(self._DesignParameter['_Width']))
         self.XY_input[0].setText(str(self._DesignParameter['_XYCoordinates'][0][0])+','+str(self._DesignParameter['_XYCoordinates'][0][1]))
@@ -3086,7 +3087,6 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         super().__init__()
         self._DesignConstraintFromQTobj = []
         self.initUI(type)
-        self.setAcceptDrops(True)
         self.setDropIndicatorShown(True)
         self.itemToDesignConstraintDict = dict()
         self.itemToASTDict = dict()
@@ -3095,6 +3095,17 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self._CurrentModuleName = None
         self.EditMode = False
         self.setAnimated(True)
+        # self.hoverIndex = None
+        # self.setStyleSheet("""
+        #         QTreeView::item:hover {
+        #             background: #b8d0ff;
+        #         }
+        #         """)
+
+        self.setDragEnabled(True)
+        self.setAcceptDrops(True)
+        # self.setMouseTracking(True)
+        self.setDragDropMode(self.DragDrop)
 
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -3146,6 +3157,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         # self.show()
         # self.model.appendRow([QStandardItem('aa'),QStandardItem('aa'),QStandardItem('aa')])
         # self.openPersistentEditor(self.model.index(0,4))
+        # self.installEventFilter(self)
 
     def initUI(self,type):
         self.model = _ConstraintModel()
@@ -3165,6 +3177,41 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         self.resizeColumnToContents(0)
 
         self.debugType = type
+
+    # def eventFilter(self, source, event):
+    #     if (event.type() == QEvent.HoverMove):
+    #         index = self.indexAt(event.pos())
+    #         if index != self.hoverIndex:
+    #             self.hoverIndex = index
+    #             self.update()
+    #     return super().eventFilter(source, event)
+
+    def startDrag(self, actions):
+        index = self.currentIndex()
+        drag = QDrag(self)
+        mimeData = QMimeData()
+
+        type_item = self.model.itemFromIndex(index.siblingAtColumn(0))
+        constraint_item = self.model.itemFromIndex(index.siblingAtColumn(1))
+        label=type_item.text()
+        mimeData.setText(constraint_item.text())
+        drag.setMimeData(mimeData)
+        self.checkSend(drag=True)
+        drag.exec_(Qt.MoveAction)
+
+    def dragEnterEvent(self, event):
+        event.accept()
+
+    def dragMoveEvent(self, event):
+        event.accept()
+
+    def dropEvent(self, event):
+        if event.mimeData().hasText():
+            index = self.indexAt(event.pos())
+            self.setCurrentIndex(index)
+            print(event.mimeData().text())
+            self.receiveConstraintID(event.mimeData().text())
+            self.send_ReceiveDone_signal.emit()
 
     def createNewConstraintAST(self,_id , _parentName, _DesignConstraint):
         self._DesignConstraintFromQTobj = _DesignConstraint
@@ -3475,7 +3522,7 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
 
 
 
-    def checkSend(self):
+    def checkSend(self, drag=False):
         print("check Evaluation")
         try:
             if self.currentIndex().row() == -1:
@@ -3504,7 +3551,8 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
                 selected_items_id = list(dict.fromkeys([item.text() for item in selected_items]))
                 for _id in selected_items_id:
                     self.removeFlag = True
-                    self.send_SendID_signal.emit(_id)
+                    if not drag:
+                        self.send_SendID_signal.emit(_id)
                 # selectedItem=self.model.itemFromIndex(self.currentIndex().siblingAtColumn(1))
                 # print([item.text() for item in selected_items])
                 # while selected_items:
@@ -4028,6 +4076,68 @@ class _ConstraintTreeViewWidgetAST(QTreeView):
         # else:
         #     parent_item = self.model.itemFromIndex(self.currentIndex().parent().siblingAtColumn(1))
         #     self.send_dummy_ast_id_for_xy_signal.emit(parent_item.text())
+
+    def inspect_hierarchy(self):
+        ast_counting = 0
+        argument_field = 0
+        constraint_id_list = []
+        def parsing_ast(ast_node_item):
+            nonlocal ast_counting
+            nonlocal argument_field
+            nonlocal constraint_id_list
+            tmp_dict = OrderedDict()
+            id_item = self.model.itemFromIndex(self.model.indexFromItem(ast_node_item).siblingAtColumn(1))
+            id_string = id_item.text()
+            if id_string != '':
+                ast_counting += 1
+                tmp_dict[id_string] = OrderedDict()
+                constraint_id_list.append(id_string)
+            else:
+                tmp_list = []
+
+            # idx = self.model.indexFromItem(ast_node_item)
+            # children = self.model.itemFromIndex(idx.siblingAtColumn(0)).rowCount()
+            children = ast_node_item.rowCount()
+            for child_row in range(children):
+                self.setCurrentIndex(self.model.indexFromItem(ast_node_item.child(child_row, 0)))
+                self.mouseDoubleClickEvent(None)
+                children_id_item = ast_node_item.child(child_row, 1)
+                children_type_item = ast_node_item.child(child_row, 2)
+                children_keyword_item = ast_node_item.child(child_row, 0)
+                children_value_item = ast_node_item.child(child_row, 3)
+                if children_keyword_item.hasChildren():
+                    if id_string != '':
+                        tmp_dict[id_string][children_keyword_item.text()] = parsing_ast(children_keyword_item)
+                    else:
+                        tmp_list.append(parsing_ast(children_keyword_item))
+                else:
+                    argument_field += 1
+                    if id_string != '':
+                        tmp_dict[id_string][children_keyword_item.text()] = children_value_item.text()
+                    else:
+                        tmp_list.append(children_value_item.text())
+
+            if id_string == '':
+                return tmp_list
+            else:
+                return tmp_dict
+
+        search_dictionary = OrderedDict()
+        total_row = self.model.rowCount()
+        for row in range(total_row):
+            search_dictionary.update(parsing_ast(self.model.item(row, 0)))
+            # id_item = self.model.item(row, 1)
+            # type_item = self.model.item(row, 2)
+            # keyword_item = self.model.item(row, 0)
+            # id_string = ast_node_item.text()
+            # if id_string != '':
+            #     search_dictionary[id_string] = OrderedDict()
+            #     search_dictionary[id_string][keyword_item.text()] = parsing_ast(self.model.item(row, 1))
+            # search_dictionary[id_item.text()] = type_item.text()
+        print(search_dictionary)
+        print(ast_counting)
+        print(argument_field)
+        return constraint_id_list
 
 
     def get_dp_highlight_dc(self,dp_id_list,_):
@@ -4827,12 +4937,12 @@ class _FlatteningCell(QWidget):
     send_flattendict_signal = pyqtSignal(dict)
     # send_ok_signal = pyqtSignal()
 
-    def __init__(self,  _hierarchydict, dp, top_cell_name, test=None):
+    def __init__(self,  _hierarchydict, dp):
         self.grouping = False
         try:
             if user_setup.DL_FEATURE:
                 if not topAPI.element_predictor.model:
-                    topAPI.element_predictor.model = topAPI.element_predictor.create_element_detector_model(user_setup.model_dir)
+                    topAPI.element_predictor.model = topAPI.element_predictor.create_element_detector_model()
             else:
                 self.inspector = topAPI.gds2generator.CellInspector()
             self.grouping = True
@@ -4840,16 +4950,14 @@ class _FlatteningCell(QWidget):
             import traceback
             traceback.print_exc()
         super().__init__()
-        self.top_cell_name = top_cell_name
         self.loop_obj = QEventLoop()
         self._hdict = _hierarchydict
         self.model = QTreeWidget()
         self.model.setColumnCount(5)
         self.model.setHeaderLabels(['Design Object', 'Cell Name', 'Flatten Option', 'Macro Cell', 'Generator Name'])
-        self.dp = dp[top_cell_name]
+        self.dp = dp
         self.itemlist = list()
         self.combolist = list(generator_model_api.class_dict.keys())
-        self.test = test
         self.initUI()
 
     def initUI(self):
@@ -4877,21 +4985,17 @@ class _FlatteningCell(QWidget):
         self.setGeometry(300,300,900,500)
         self.show()
 
-    def ok_button_accepted(self, test=None):
+    def ok_button_accepted(self, test=None, data_purpose=False):
         global cnn_inference_data
         global cnn_inf_dict_data
-        global cnn_tf_data
 
-        file_name = 'result.csv' if self.test == None else self.test
-        with open(file_name,'w',newline='') as f:
+        with open('result.csv','w',newline='') as f:
             print(f'len: {len(cnn_inference_data)}')
             print(f'len: {len(cnn_inf_dict_data)}')
             import csv
             write = csv.writer(f)
             write.writerow(['CNN name','Text name','Real Element Name'])
             write.writerows(cnn_inference_data)
-            new_list = [(key, value) for key, value in cnn_tf_data.items()]
-            write.writerows(new_list)
         with open('result_dict.csv','w',newline='') as f:
             write = csv.writer(f)
             write.writerow(['key', 'count'])
@@ -4900,15 +5004,17 @@ class _FlatteningCell(QWidget):
 
 
         if test:
-            self.loop_obj.exec_()
             pass
         else:
             self.loop_obj.exec_()
 
         _flatten_dict = dict()
 
+
         for item in self.itemlist:
-            if self.model.itemWidget(item, 2).checkState() == 2:
+            if data_purpose:
+                _flatten_dict[f'{item.text(0)}/{item.text(1)}'] = ''
+            elif self.model.itemWidget(item, 2).checkState() == 2:
                 _flatten_dict[f'{item.text(0)}/{item.text(1)}'] = None
             elif self.model.itemWidget(item, 3).checkState() == 2:
                 _flatten_dict[f'{item.text(0)}/{item.text(1)}'] = 'MacroCell'
@@ -4946,7 +5052,7 @@ class _FlatteningCell(QWidget):
     def modifyBraches(self, item, cn, is_top=False):
         global cnn_inference_data
         global cnn_inf_dict_data
-        global cnn_tf_data
+
         cell_name = QLabel(cn)
 
         flattenCheck = QCheckBox()
@@ -4965,35 +5071,14 @@ class _FlatteningCell(QWidget):
         if self.grouping and is_top:
             import lab_feature
             if user_setup.DL_FEATURE:
-                # text = item.text(0)
-                # tmp_dp = lab_feature.deepish_copy(self.dp[text])
-                id_check = 0
-                while id_check<50:
-                    try:
-                        text = item.text(0) if item.text(0) in self.dp else f'{item.text(0)}_{id_check}'
-                        tmp_dp = self.dp[text]
-                        break
-                    except:
-                        id_check += 1
-
+                # test = item.text(0)
+                text = item.text(0) if item.text(0) in self.dp else f'{item.text(0)}_0'
+                tmp_dp = lab_feature.deepish_copy(self.dp[text])
                 tmp_delegator = dpdc_delegator.DesignDelegator(None)
-                library_name = tmp_delegator.build_layer_matrix_by_dps(tmp_dp._DesignParameter['_DesignObj'])
-                text_test = False
-                if text_test:
-                    text_inference = topAPI.gds2generator.CellInspector().convert_pcell_name_to_generator_name(item.text(0))
-                    if 'extStacked' in item.text(0):
-                        text_inference = topAPI.gds2generator.CellInspector.inspect_via_stack(self.dp[text])
-                    if library_name != text_inference and not (library_name == 'Negative' and text_inference ==None):
-                        cnn_inference_data.append((library_name, text_inference, item.text(0)))
-                        if library_name == 'Negative':
-                            cnn_tf_data['fn'] += 1
-                        else:
-                            cnn_tf_data['fp'] += 1
-                    else:
-                        if library_name == 'Negative' and text_inference == None:
-                            cnn_tf_data['tn'] += 1
-                        else:
-                            cnn_tf_data['tp'] += 1
+                library_name = tmp_delegator.build_layer_matrix_by_dps(tmp_dp)
+                text_inference = topAPI.gds2generator.CellInspector().convert_pcell_name_to_generator_name(item.text(0))
+                if library_name != text_inference:
+                    cnn_inference_data.append((library_name, text_inference, item.text(0)))
                 if library_name in cnn_inf_dict_data:
                     cnn_inf_dict_data[library_name] = cnn_inf_dict_data[library_name] + 1
                 else:
