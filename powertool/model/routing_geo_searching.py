@@ -12,7 +12,7 @@ from intervaltree import Interval, IntervalTree
 import sys
 from PyQt5.QtWidgets import QWidget, QApplication, QGraphicsView, QGraphicsScene, QGraphicsRectItem
 from PyQt5.QtWidgets import *
-from PyCodes import QTInterfaceWithAST
+
 
 class Color(Enum):
     black = 0
@@ -161,37 +161,14 @@ class GeometricField:
                         warnings.warn('No design Obj')
 
     def xy_projection_to_main_coordinates_system(self, designParameter):
-        ###before xy_projection, the XY projection should be cleared.
-        for name, dp in designParameter.items():
-            self.clear_design_parameter_projection(dp)
-
         for name, dp in designParameter.items():
             self.design_parameter_projection(dp, [name])
-
-    def xy_projection_to_main_coordinates_system_safe(self, designParameter):
-        ###before xy_projection, the XY projection should be cleared.
-        for name, dp in designParameter.items():
-            self.clear_design_parameter_projection(dp)
-
-        for name, dp in designParameter.items():
-            return self.design_parameter_projection_safe(dp, [name])
-
-    def clear_design_parameter_projection(self, dp):
-        if '_XYCoordinatesProjection' in dp:
-            del dp['_XYCoordinatesProjection']
-            del dp['_Hierarchy']
-
-        if dp['_DesignParametertype'] == 3:
-            for name, sub_dp in dp['_DesignObj']._DesignParameter.items():
-                self.clear_design_parameter_projection(sub_dp)
 
     def design_parameter_projection(self, dp, structure_hierarchy=[], reflect=tf_matrix.reflect_off,
                                     angle=tf_matrix.rotate_0, base_xy=[0, 0]):
         # for _, dp in _DesignParameter.items():
-        # if '_XYCoordinatesProjection' in dp:
-        #     warnings.warn('_XYCoordinatesProjection is already exist')
-        #     return None
-            # del dp['_XYCoordinatesProjection']
+        if '_XYCoordinatesProjection' in dp:
+            del dp['_XYCoordinatesProjection']
         if dp['_DesignParametertype'] == 1:
             for idx, xy_pair in enumerate(dp['_XYCoordinates']):
                 five_point_xy = self.stick_diagram.CenterCoordinateAndWidth2XYCoordinate(xy_pair, dp['_XWidth'],
@@ -259,7 +236,6 @@ class GeometricField:
                 sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect)
                 sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle)
                 if type(dp['_DesignObj']) == dict:
-                    warnings.warn('Receive QT_DP object as input, it may contaminate original value.')
                     for name, sub_qtdp in dp['_DesignObj'].items():
                         sub_dp = sub_qtdp._DesignParameter
                         if sub_dp['_DesignParametertype'] in [1,2,3]:
@@ -277,98 +253,6 @@ class GeometricField:
                             self.design_parameter_projection(sub_dp, structure_hierarchy=structure_hierarchy_tmp,
                                                              reflect=sub_reflect, angle=sub_angle,
                                                              base_xy=base_xy_internal)
-    def design_parameter_projection_safe(self, dp, structure_hierarchy=[], reflect=tf_matrix.reflect_off,
-                                         angle=tf_matrix.rotate_0, base_xy=[0, 0]):
-        output_dp = dict()
-        if dp['_DesignParametertype'] == 1:
-            for idx, xy_pair in enumerate(dp['_XYCoordinates']):
-                five_point_xy = self.stick_diagram.CenterCoordinateAndWidth2XYCoordinate(xy_pair, dp['_XWidth'],
-                                                                                         dp['_YWidth'])
-                # transformed_five_point_xy = [base_xy+angle.dot(reflect).dot(xy) for xy in five_point_xy]
-                transformed_five_point_xy = [base_xy + reflect.dot(angle).dot(xy) for xy in five_point_xy]
-                transformed_five_point_xy_ordered = self.stick_diagram.MinMaxXY2XYCoordinate(
-                    self.stick_diagram.XYCoordinate2MinMaxXY(transformed_five_point_xy))
-                if '_XYCoordinatesProjection' in output_dp:
-                    output_dp['_XYCoordinatesProjection'].append(transformed_five_point_xy_ordered)
-                else:
-                    output_dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_ordered]
-                # dp['_XYCoordinatesProjection'] = transformed_five_point_xy_ordered
-                if '_Hierarchy' in dp:
-                    output_dp['_Hierarchy'].append(copy.deepcopy(structure_hierarchy))
-                    output_dp['_Hierarchy'][-1][-1] += f'[{idx}]'
-                else:
-                    output_dp['_Hierarchy'] = copy.deepcopy([structure_hierarchy])
-                    output_dp['_Hierarchy'][-1][-1] += f'[{idx}]'
-
-                # return base_xy + angle.dot(reflect).dot(xy_pair)
-        elif dp['_DesignParametertype'] == 2:
-            for idx, xy_pair_list in enumerate(dp['_XYCoordinates']):
-                transformed_five_point_xy_list = []
-                # for idx_2, xy_pair in enumerate(xy_pair_list):
-                transformed_xy_pairs = [base_xy + reflect.dot(angle).dot(xy) for xy in xy_pair_list]
-                if len(transformed_xy_pairs) < 2:
-                    warnings.warn("path object has not enough xy points.")
-                    break
-                for i in range(len(transformed_xy_pairs) - 1):
-                    if transformed_xy_pairs[i][0] == transformed_xy_pairs[i + 1][0]:
-                        x_width = dp['_Width']
-                        y_width = abs(transformed_xy_pairs[i + 1][1] - transformed_xy_pairs[i][1])
-                    else:
-                        x_width = abs(transformed_xy_pairs[i + 1][0] - transformed_xy_pairs[i][0])
-                        y_width = dp['_Width']
-                    xy_pair = [(a + b) / 2 for a, b in zip(transformed_xy_pairs[i], transformed_xy_pairs[i + 1])]
-                    five_point_xy = self.stick_diagram.CenterCoordinateAndWidth2XYCoordinate(xy_pair, x_width, y_width)
-                    # transformed_five_point_xy = [base_xy + reflect.dot(angle).dot(xy) for xy in five_point_xy]
-                    # transformed_five_point_xy_ordered = self.stick_diagram.MinMaxXY2XYCoordinate(
-                    #     self.stick_diagram.XYCoordinate2MinMaxXY(transformed_five_point_xy))
-                    transformed_five_point_xy_ordered = self.stick_diagram.MinMaxXY2XYCoordinate(
-                        self.stick_diagram.XYCoordinate2MinMaxXY(five_point_xy))
-                    transformed_five_point_xy_list.append(transformed_five_point_xy_ordered)
-                    if '_Hierarchy' not in output_dp:
-                        output_dp['_Hierarchy'] = copy.deepcopy([[structure_hierarchy]])
-                    else:
-                        if idx < len(output_dp['_Hierarchy']):
-                            output_dp['_Hierarchy'][idx].append(copy.deepcopy(structure_hierarchy))
-                        else:
-                            output_dp['_Hierarchy'].append(copy.deepcopy([structure_hierarchy]))
-                    # `if '_Hierarchy' in dp:
-                    #     dp['_Hierarchy'][-1].append(copy.deepcopy(structure_hierarchy))
-                    # else:
-                    #     dp['_Hierarchy'] = copy.deepcopy([[structure_hierarchy]])
-                    output_dp['_Hierarchy'][-1][-1][-1] += f'{[idx]}{[i]}'
-                if '_XYCoordinatesProjection' in output_dp:
-                    output_dp['_XYCoordinatesProjection'].append(transformed_five_point_xy_list)
-                else:
-                    output_dp['_XYCoordinatesProjection'] = [transformed_five_point_xy_list]
-        elif dp['_DesignParametertype'] in [3, 31]:
-            # structure_hierarchy.append(dp['_ElementName'])
-            for sref_idx in range(len(dp['_XYCoordinates'])):
-                base_xy_internal = base_xy + angle.dot(reflect).dot(dp['_XYCoordinates'][sref_idx])
-                sub_reflect = convert_reflect_to_matrix(dp['_Reflect']).dot(reflect)
-                sub_angle = convert_angle_to_matrix(dp['_Angle']).dot(angle)
-                output_dp['_DesignObj'] = QTInterfaceWithAST.DummyDesignParameter()
-                if type(dp['_DesignObj']) == dict:
-                    warnings.warn('Receive QT_DP object as input, it may contaminate original value.')
-                    for name, sub_qtdp in dp['_DesignObj'].items():
-                        sub_dp = sub_qtdp._DesignParameter
-                        if sub_dp['_DesignParametertype'] in [1,2,3]:
-                            structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
-                            structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
-                            structure_hierarchy_tmp.append(name)
-                            output_dict = self.design_parameter_projection_safe(sub_dp, structure_hierarchy=structure_hierarchy_tmp,
-                                                                reflect=sub_reflect, angle=sub_angle, base_xy=base_xy_internal)
-                            output_dp['_DesignObj']._DesignParameter['name'] = output_dict
-                else:
-                    for name, sub_dp in dp['_DesignObj']._DesignParameter.items():
-                        if sub_dp['_DesignParametertype'] in [1, 2, 3]:
-                            structure_hierarchy_tmp = copy.deepcopy(structure_hierarchy)
-                            structure_hierarchy_tmp[-1] += f'[{sref_idx}]'
-                            structure_hierarchy_tmp.append(name)
-                            output_dict = self.design_parameter_projection_safe(sub_dp, structure_hierarchy=structure_hierarchy_tmp,
-                                                             reflect=sub_reflect, angle=sub_angle,
-                                                             base_xy=base_xy_internal)
-                            output_dp['_DesignObj']._DesignParameter['name'] = output_dict
-        return output_dp
 
     def draw_by_projection_xy(self, _DesignParameter):
         fig, ax = plt.subplots()

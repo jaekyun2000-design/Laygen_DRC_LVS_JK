@@ -16,8 +16,6 @@ from generatorLib import DRC
 drc = DRC.DRC()
 import types
 import lab_feature
-from generatorLib.StickDiagram import *
-
 
 def load_pickle(file_name):
     with open(file_name, 'rb') as f:
@@ -49,8 +47,28 @@ class GDS2Generator():
         with open(file_name, 'wb') as f:
             pickle.dump(self,f)
 
-    def code_generation_for_subcell(self, _ast=None, ref_code=None):
+    def code_generation_for_subcell(self, _ast=None):
         from PyCodes import element_ast
+        # debug_sref_ast = element_ast.Sref()
+        # debug_sref_ast.name = 'testcell'
+        # debug_sref_ast.library = 'NMOSWithDummy'
+        # debug_sref_ast.className = '_NMOS'
+        # debug_sref_ast.XY = [[0,0]]
+        # debug_sref_ast.calculate_fcn = '_CalculateNMOSDesignParameter'
+        # debug_sref_ast.parameters = dict(
+        #     _NMOSNumberofGate=3, _NMOSChannelWidth=400, _NMOSChannellength=60, _NMOSDummy=False
+        # )
+        # debug_sref_ast = element_ast.Sref()
+        # debug_sref_ast.name = 'inv'
+        # debug_sref_ast.library = 'Inverter'
+        # debug_sref_ast.className = '_Inverter'
+        # debug_sref_ast.XY = [[0,0]]
+        # debug_sref_ast.calculate_fcn = '_CalculateDesignParameter'
+        # debug_sref_ast.parameters = dict(
+        #     _Finger=5, _ChannelWidth=400, _ChannelLength=60,
+        #     _NPRatio=2, _VDD2VSSHeight=None, _Dummy=False
+        # )
+
 
         # target_ast = debug_sref_ast
         target_ast = _ast
@@ -62,7 +80,6 @@ class GDS2Generator():
             [f'{variable_dict["DV"]}={variable_dict["value"] if variable_dict["value"] != "" else None}' for
              variable_dict in self.user_variables])
         self.code = user_variable_sentence
-        self.code = self.code + '\nfrom generatorLib import DRC\ndrc=DRC.DRC()\n' + ref_code if ref_code else self.code
         self.code += f'\n_Name="{target_cell_name}"\n'
         target_ast = element_ast.ElementTransformer().visit(target_ast)
         self.code += astunparse.unparse(target_ast)
@@ -71,9 +88,6 @@ class GDS2Generator():
         self.root_cell._DesignParameter['_Name'] = StickDiagram._StickDiagram()._NameDeclaration(target_cell_name)
         self.root_cell._DesignParameter['_GDSFile'] = StickDiagram._StickDiagram()._GDSObjDeclaration()
         try:
-            # code = 'for name in self.libraries.class_name_dict:\n' \
-            #         '\tglobals()[name] = self.libraries.libraries[name]\n'
-            # exec(code, globals(), locals())
             self.root_cell.exec_pass(self.code,generator_model_api)
             # self.root_cell._UpdateDesignParameter2GDSStructure(self.root_cell._DesignParameter)
         except:
@@ -224,24 +238,24 @@ class GDS2Generator():
         pass
 
 
-    def load_qt_design_parameters(self, QtDesignParameter, top_module, xy_reset=True):
+    def load_qt_design_parameters(self, QtDesignParameter, top_module):
         for structure_name, structure in QtDesignParameter.items():
             self.convert_qt_structure(structure,structure_name)
             self.cell_dp_dict[structure_name] = StickDiagram._StickDiagram()
             for qt_dp in structure:
-                self.convert_qt_structure(structure,structure_name, xy_reset)
+                self.convert_qt_structure(structure,structure_name)
 
 
-    def convert_qt_structure(self, structure, structure_name, xy_reset=True):
+    def convert_qt_structure(self, structure, structure_name):
         self.cell_dp_dict[structure_name] = StickDiagram._StickDiagram()
         self.cell_dp_dict[structure_name]._DesignParameter = dict()
         self.cell_dp_dict[structure_name]._DesignParameter['_Name'] = StickDiagram._StickDiagram()._NameDeclaration(structure_name)
         self.cell_dp_dict[structure_name]._DesignParameter['_GDSFile'] = StickDiagram._StickDiagram()._GDSObjDeclaration()
         for _, qt_dp in structure.items():
-            self.convert_qt_element(qt_dp, self.cell_dp_dict[structure_name], xy_reset)
+            self.convert_qt_element(qt_dp, self.cell_dp_dict[structure_name])
 
 
-    def convert_qt_element(self, element, structure, xy_reset=True):
+    def convert_qt_element(self, element, structure):
         """
         :param element:
         :param structure:
@@ -264,24 +278,13 @@ class GDS2Generator():
                 _GDSFile = StickDiagram._StickDiagram()._GDSObjDeclaration()
             )
             try:
-                if isinstance(element._DesignParameter['_DesignObj'], dict):
-                    for _,sub_qt_element in element._DesignParameter['_DesignObj'].items():
-                        self.convert_qt_element(sub_qt_element, structure._DesignParameter[element_name]['_DesignObj'], xy_reset)
-                else:
-                    structure._DesignParameter[element_name]['_DesignObj']._DesignParameter.update(element._DesignParameter['_DesignObj']._DesignParameter)
-                # else:
-                #     for _,sub_qt_element in element._DesignParameter['_ModelStructure'].items():
-                #         self.convert_qt_element(sub_qt_element, structure._DesignParameter[element_name]['_DesignObj'])
+                for _,sub_qt_element in element._DesignParameter['_ModelStructure'].items():
+                    self.convert_qt_element(sub_qt_element, structure._DesignParameter[element_name]['_DesignObj'])
             except:
-                traceback.print_exc()
                 print('contaminated')
         else:
-            if xy_reset:
-                structure._DesignParameter[element_name] = lab_feature.deepish_copy(element._DesignParameter)
-                structure._DesignParameter[element_name]['_XYCoordinates'] = []
-            else:
-                element.update_unified_expression()
-                structure._DesignParameter[element_name] = element._DesignParameter
+            structure._DesignParameter[element_name] = lab_feature.deepish_copy(element._DesignParameter)
+            structure._DesignParameter[element_name]['_XYCoordinates'] = []
 
     def load_qt_design_constraints_ast(self, top_ast):
         self.code = astunparse.unparse(top_ast)
@@ -300,10 +303,8 @@ class GDS2Generator():
         tmp_ast.body[0].body = tmp_sub_ast.body
         self.code = astunparse.unparse(tmp_ast)
         self.code += '\nself.root_cell._CalculateDesignParameter = types.MethodType(_CalculateDesignParameter, self.root_cell)'
-        # self.code = 'from generatorLib.StickDiagram import *\n' + self.code
         self.code = 'for name in self.libraries.class_name_dict:\n' \
                     '\tglobals()[name] = self.libraries.libraries[name]\n' + self.code
-        print(self.code)
         exec(self.code,globals(),locals())
 
         # self.root_cell._CalculateDesignParameter = types.MethodType(_CalculateDesignParameter, self.root_cell)
@@ -794,54 +795,8 @@ class CellInspector:
         inspector = getattr(self, method)
         return inspector(structure)
 
-    @staticmethod
-    def convert_pcell_name_to_generator_name(pcell_name):
+    def convert_pcell_name_to_generator_name(self, pcell_name):
         pcell_name = pcell_name[:15]
-        # if any(list(filter(lambda name: name in pcell_name, ['NMOSSubring','TotalSubring','GuardringInN','GuardringInSli']))):
-        #     return 'PSubRing'
-        # elif any(list(filter(lambda name: name in pcell_name, ['PMOSSubring','GuardringInP']))):
-        #     return 'NSubRing'
-        if any(list(filter(lambda pch: pch in pcell_name, ['pch','pmos','PMOS','pfet']))):
-            return 'PMOSWithDummy'
-        elif any(list(filter(lambda nch: nch in pcell_name, ['nch','nmos','NMOS','nfet']))):
-            return 'NMOSWithDummy'
-        elif any(list(filter(lambda via: via in pcell_name, ['M2_M1_','M1V1M2','ViaMet12Met2']))):
-            return 'ViaMet12Met2'
-        elif any(list(filter(lambda via: via in pcell_name, ['M3_M2_','M2V2M3','ViaMet22Met3']))):
-            return 'ViaMet22Met3'
-        elif any(list(filter(lambda via: via in pcell_name, ['M4_M3_','M3V3M4','ViaMet32Met4']))):
-            return 'ViaMet32Met4'
-        elif any(list(filter(lambda via: via in pcell_name, ['M5_M4_','M4V4M5','ViaMet42Met5']))):
-            return 'ViaMet42Met5'
-        elif any(list(filter(lambda via: via in pcell_name, ['M6_M5_','M5V5M6','ViaMet52Met6']))):
-            return 'ViaMet52Met6'
-        elif any(list(filter(lambda via: via in pcell_name, ['M7_M6_','M6V6M7','ViaMet62Met7']))):
-            return 'ViaMet62Met7'
-        elif any(list(filter(lambda via: via in pcell_name, ['M1_PO_','PCCAM1','ViaPoly2Met1']))):
-            return 'ViaPoly2Met1'
-        elif any(list(filter(lambda via: via in pcell_name, ['M1_POD','extStacked', 'Pbody']))):
-            return 'PbodyContact'
-        elif any(list(filter(lambda via: via in pcell_name, ['M1_NOD', 'Nbody', 'M1_OD']))):
-            return 'NbodyContact'
-        elif any(list(filter(lambda name: name in pcell_name, ['Oppcres','Opppcres', 'rppoly']))):
-            return 'PolyResistor'
-        elif any(list(filter(lambda name: name in pcell_name, ['Transmission']))):
-            return 'TransmissionGate'
-        elif any(list(filter(lambda name: name in pcell_name, ['SlicerInSlicer']))):
-            return 'StrongArmLatch'
-        elif any(list(filter(lambda name: name in pcell_name, ['SlicerWith']))):
-            return 'Slicer'
-        elif any(list(filter(lambda name: name in pcell_name, ['Inverter', 'driver_pre_tap']))):
-            return 'Inverter'
-        elif any(list(filter(lambda name: name in pcell_name, ['SRLatch']))):
-            return 'SRLatch'
-        elif any(list(filter(lambda name: name in pcell_name, ['ResistorBankIn']))):
-            return 'ResistorBankUnit'
-        else:
-            return 'Negative'
-    @staticmethod
-    def convert_pcell_name_to_generator_name_for_counting(pcell_name):
-        pcell_name = pcell_name[:30]
         if any(list(filter(lambda name: name in pcell_name, ['NMOSSubring','TotalSubring','GuardringInN','GuardringInSli']))):
             return 'PSubRing'
         elif any(list(filter(lambda name: name in pcell_name, ['PMOSSubring','GuardringInP']))):
@@ -866,26 +821,24 @@ class CellInspector:
             return 'ViaPoly2Met1'
         elif any(list(filter(lambda via: via in pcell_name, ['M1_POD','extStacked', 'Pbody']))):
             return 'PbodyContact'
-        elif any(list(filter(lambda via: via in pcell_name, ['M1_NOD', 'Nbody', 'M1_OD']))):
+        elif any(list(filter(lambda via: via in pcell_name, ['M1_NOD', 'Nbody']))):
             return 'NbodyContact'
-        elif any(list(filter(lambda name: name in pcell_name, ['Oppcres','Opppcres', 'rppoly']))):
+        elif any(list(filter(lambda name: name in pcell_name, ['Oppcres','Opppcres']))):
             return 'PolyResistor'
-        elif any(list(filter(lambda name: name in pcell_name, ['Transmission', 'switch_ring', 'switch_input']))):
+        elif any(list(filter(lambda name: name in pcell_name, ['Transmission']))):
             return 'TransmissionGate'
-        elif any(list(filter(lambda name: name in pcell_name, ['SlicerInSlicer', 'StrongArm']))):
+        elif any(list(filter(lambda name: name in pcell_name, ['SlicerInSlicer']))):
             return 'StrongArmLatch'
         elif any(list(filter(lambda name: name in pcell_name, ['SlicerWith']))):
             return 'Slicer'
-        elif any(list(filter(lambda name: name in pcell_name, ['Inverter', 'inv_cms', 'inv_input', 'inv_ring', 'inv_output', 'clkbuff_inv']))):
+        elif any(list(filter(lambda name: name in pcell_name, ['Inverter']))):
             return 'Inverter'
         elif any(list(filter(lambda name: name in pcell_name, ['ResistorBankInF']))):
             return 'ResistorBankUnit'
-        elif any(list(filter(lambda name: name in pcell_name, ['SRLatch', 'latch_cms']))):
+        elif any(list(filter(lambda name: name in pcell_name, ['SRLatch']))):
             return 'SRLatch'
-        elif any(list(filter(lambda name: name in pcell_name, ['preamp_cms']))):
-            return 'CML'
         else:
-            return 'Negative'
+            return None
 
 
     def convert_pcell_name_to_common_name(self, pcell_name):
@@ -968,26 +921,6 @@ class CellInspector:
         _NumberOfBodyCOY = len(list(set(via_y_list)))
 
         return dict(_NumberOfBodyCOX=_NumberOfBodyCOX, _NumberOfBodyCOY=_NumberOfBodyCOY, _Met1XWidth=_Met1XWidth, _Met1YWidth=_Met1YWidth)
-
-    @staticmethod
-    def inspect_via_stack(structure, stack=True):
-        qtdps = list(structure._DesignParameter['_DesignObj'].values())
-        layer_list = [qtdp._DesignParameter['_LayerUnifiedName'] for qtdp in qtdps if '_LayerUnifiedName' in qtdp._DesignParameter]
-        layer_num = [int(name[-1]) for name in layer_list if 'METAL' in name ]
-        if len(layer_num) >=3 and stack:
-            return 'ViaStack'
-        else:
-            num_start = min(layer_num)
-            num_end = max(layer_num)
-            if num_start == num_end and num_start == 1:
-                if 'DIFF' in layer_list:
-                    return 'PbodyContact'
-                elif 'POLY' in layer_list:
-                    return 'ViaPoly2Met1'
-                else:
-                    return 'Negative'
-            return f'ViaMet{num_start}2Met{num_end}'
-
 
 class LayoutReader:
     def __init__(self):
@@ -1170,11 +1103,7 @@ class LayoutReader:
                     else:
                         return idx
                 if not layer_name:
-                    # layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
-                    layer_name = LayerReader._LayDatNumToName[layer_number][data_number] if \
-                    LayerReader._LayDatNameTmp[layer_number][data_number][1] == 'drawing' else None
-                    if not layer_name:
-                        return idx
+                    layer_name = LayerReader._LayDatNumToName[layer_number][data_number]
                 if '_XYCoordinatesProjection' not in dp:
                     warnings.warn('_XYCoordinatesProjection not in dp')
                     return idx
@@ -1191,10 +1120,10 @@ class LayoutReader:
 
                     x_max = x_min + dp['_XWidth']
                     y_max = y_min + dp['_YWidth']
-                    self.x_min = min(self.x_min, x_min) if self.x_min != None else x_min
-                    self.y_min = min(self.y_min, y_min) if self.y_min != None else y_min
-                    self.x_max = max(self.x_max, x_max) if self.x_max != None else x_max
-                    self.y_max = max(self.y_max, y_max) if self.y_max != None else y_max
+                    self.x_min = min(self.x_min, x_min) if self.x_min else x_min
+                    self.y_min = min(self.y_min, y_min) if self.y_min else y_min
+                    self.x_max = max(self.x_max, x_max) if self.x_max else x_max
+                    self.y_max = max(self.y_max, y_max) if self.y_max else y_max
 
             elif dp['_DesignParametertype'] == 2:
                 for i, path_xy_points in enumerate(dp['_XYCoordinatesProjection']):
@@ -1227,10 +1156,10 @@ class LayoutReader:
                             self.layer_elements[layer_name] = []
                             self.layer_elements[layer_name].append(element_node(layer_name, x_width, y_width, lb_xy, idx))
                         idx += 1
-                        self.x_min = min(self.x_min, x_min) if self.x_min != None else x_min
-                        self.y_min = min(self.y_min, y_min) if self.y_min != None else y_min
-                        self.x_max = max(self.x_max, x_max) if self.x_max != None else x_max
-                        self.y_max = max(self.y_max, y_max) if self.y_max != None else y_max
+                        self.x_min = min(self.x_min, x_min) if self.x_min else x_min
+                        self.y_min = min(self.y_min, y_min) if self.y_min else y_min
+                        self.x_max = max(self.x_max, x_max) if self.x_max else x_max
+                        self.y_max = max(self.y_max, y_max) if self.y_max else y_max
             elif dp['_DesignParametertype'] == 3:
                 if type(dp['_DesignObj']) == dict:
                     for sub_qtdp in dp['_DesignObj'].values():
