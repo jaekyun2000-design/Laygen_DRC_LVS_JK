@@ -19,24 +19,7 @@ class LayerToMatrix:
         self.bounding_box=dict(matrix=np.empty((0,4)), label=np.array([]))
         self.generator_list = generator_list
 
-    def load_qt_parameters(self, qt_parameters, minimum_step_size = None, matrix_size = None, bb =False):
-        '''
-        This is for legacy function for just classification purpose
-        '''
-        reader = gds2generator.LayoutReader()
-        reader.load_qt_design_parameters(qt_parameters)
-        self.y_step_size = (reader.y_max - reader.y_min) / self.matrix_size[0]
-        self.x_step_size = (reader.x_max - reader.x_min) / self.matrix_size[1]
-        self.offset = (-reader.x_min, -reader.y_min)
-        self.cell_width = reader.x_max - reader.x_min
-        self.cell_height = reader.y_max - reader.y_min
-        for layer_name, node_list in reader.layer_elements.items():
-            if layer_name not in self.matrix_by_layer:
-                self.matrix_by_layer[layer_name] = np.zeros(self.matrix_size)
 
-            for node in node_list:
-                col_idx, row_idx = self.calculate_row_col(node)
-                self.matrix_by_layer[layer_name][row_idx[0]:row_idx[1], col_idx[0]:col_idx[1]] = 1
     def load_gds(self, gds_name, cell_name):
         reader = gds2generator.LayoutReader()
         reader.load_gds(gds_name, cell_name)
@@ -119,7 +102,7 @@ class LayerToMatrix:
     def get_cell_size(self):
         return dict(width=self.cell_width, height=self.cell_height)
 
-    def load_dp(self, dp, minimum_step_size=None, matrix_size=None, bb=True, oneshot_bb: dict = None, projection=True, input_region=None):
+    def load_dp(self, dp, minimum_step_size = None, matrix_size = None, bb=True):
         '''
         Args:
             dp: DesignParameter from generator
@@ -128,12 +111,11 @@ class LayerToMatrix:
             output : not fixed matrix size
         '''
         reader = gds2generator.LayoutReader()
-        reader.load_dp(dp, oneshot_bb, projection=projection)
+        reader.load_dp(dp)
         if minimum_step_size:
             self.y_step_size = minimum_step_size
             self.x_step_size = minimum_step_size
-            self.matrix_size = (math.ceil((reader.y_max - reader.y_min) / self.y_step_size),
-                                math.ceil((reader.x_max - reader.x_min) / self.x_step_size))
+            self.matrix_size = (math.ceil((reader.y_max - reader.y_min)/self.y_step_size), math.ceil((reader.x_max - reader.x_min)/self.x_step_size))
         elif matrix_size:
             self.matrix_size = matrix_size
             self.y_step_size = (reader.y_max - reader.y_min) / self.matrix_size[0]
@@ -143,58 +125,20 @@ class LayerToMatrix:
         self.cell_height = reader.y_max - reader.y_min
         for layer_name, node_list in reader.layer_elements.items():
             if layer_name not in self.matrix_by_layer:
-                self.matrix_by_layer[layer_name] = np.zeros(self.matrix_size, dtype=bool)
+                self.matrix_by_layer[layer_name] = np.zeros(self.matrix_size)
 
             for node in node_list:
                 col_idx, row_idx = self.calculate_row_col(node)
-                if node.remove_flag:
-                    ### oneshot bb process
-                    self.calculate_oneshot_bb_ratio(node)
-                else:
-                    self.matrix_by_layer[layer_name][row_idx[0]:row_idx[1], col_idx[0]:col_idx[1]] = 1
+                self.matrix_by_layer[layer_name][row_idx[0]:row_idx[1],col_idx[0]:col_idx[1]] = 1
 
         if bb:
-            for dp_name, dp in dp.items():
+            for dp in dp.values():
                 if dp['_DesignParametertype'] != 3:
                     continue
                 # self.calculate_bounding_box(dp)
-                self.calculate_bounding_box_ratio(dp, dp_name, hierarchy=False)
-
-    def divide_matrix(self, ratio):
-        '''
-        Args:
-            # matrix: matrix to be divided
-            ratio: ratio of division
-        Returns:
-            divided matrix
-        '''
-        # self.matrix_by_layer
-        # shape = list(self.matrix_by_layer.values())[0].shape
-        x_shape = self.matrix_size[0]
-        y_shape = self.matrix_size[1]
-        x_step = int(x_shape / ratio)
-        y_step = int(y_shape / ratio)
-
-        x_divided_iter = round(x_shape / x_step + 0.5) #ceil
-        y_divided_iter = round(y_shape / y_step + 0.5) #ceil
-        print(x_divided_iter, y_divided_iter)
+                self.calculate_bounding_box_ratio(dp)
 
 
-        for x_div in range(x_divided_iter):
-            for y_div in range(y_divided_iter):
-                tmp_dictionary = {layer: matrix[x_div*x_step:x_div*x_step+x_step, y_div*y_step:y_div*y_step+y_step] for layer, matrix in self.matrix_by_layer.items()}
-                yield tmp_dictionary, (x_div*x_step, y_div*y_step)
-                # yield matrix[x_step*x_div:x_step*(x_div+1), y_step*y_div:y_step*(y_div+1), :]
-        yield self.matrix_by_layer, (0, 0)
-
-    def convert_coordinate(self, original_xy, sref_xy):
-        sref_shifted_xy = [a + b for a, b in zip(original_xy, sref_xy)]
-        offset_shifted_xy = [a + b for a, b in zip(sref_shifted_xy, self.offset)]
-        x_idx = int(offset_shifted_xy[0] / self.x_step_size)
-        y_idx = int(offset_shifted_xy[1] / self.y_step_size)
-        x = x_idx / self.matrix_size[1]
-        y = y_idx / self.matrix_size[0]
-        return x, y
 
 if __name__ == '__main__':
     # reader = gds2generator.LayoutReader()

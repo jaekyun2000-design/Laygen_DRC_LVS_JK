@@ -261,6 +261,8 @@ class _RectBlock(QGraphicsRectItem):
                 x2 = self.element_info.block_traits['_Width']
                 y1 = self.element_info.block_traits['_Height']/2
                 y2 = y1
+
+            x1, y1, x2, y2 = int(x1),int(y1),int(x2),int(y2)
             painter.drawLine(x1,y1,x2,y2)
 
 
@@ -1186,7 +1188,10 @@ class _VisualizationItem(QGraphicsItemGroup):
                 fontSize = 1000 * blockTraits['_Width']
                 # else:
                 #     fontSize = blockTraits['_Width']
-                font = QFont('tmp', fontSize)
+                try:
+                    font = QFont('tmp', fontSize)
+                except:
+                    font = QFont('tmp')
                 self.text.setFont(font)
                 self.text.setPos(blockTraits['_XYCoordinates'][0][0], blockTraits['_XYCoordinates'][0][1])
                 self.text.setTransform(QTransform(1, 0, 0, -1, 0, 0))

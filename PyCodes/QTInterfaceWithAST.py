@@ -99,10 +99,6 @@ class QtDesignParameter:
                     self._DesignParameter['_Layer'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][0]
                     self._DesignParameter['_LayerName'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][2]
 
-            ## ss28nm 공정에서 nbodycontact 생성 오류로 인하여 임시 주석처리(1joon)
-            # if '_Datatype' in self._DesignParameter and self._DesignParameter['_Datatype'] == None:
-            #     self._DesignParameter['_Datatype'] = LayerReader._LayerMapping[self._DesignParameter['_LayerUnifiedName']][1]
-
         except:
             traceback.print_exc()
             print(f'debug: layer_number={layer_number}, data_number={data_number}')
@@ -1169,11 +1165,14 @@ class QtProject:
                         # print('     monitor for debug: ', _tmpElement._ELEMENTS._SNAME.sname.decode())
                         # print('     monitor for debug: ', _tmpElement._ELEMENTS._XY)
                         _tmpSname = _tmpElement._ELEMENTS._SNAME.sname.decode()
+
                         if '\x00' in _tmpSname:
                             _tmpSname = _tmpSname.split('\x00', 1)[0]
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_DesignObj_Name"] = _tmpSname
                         if _reverse and _tmpSname not in self._DesignParameter:
-                            stack_for_failed_dp.append((_tmpStructureName, _tmpId, _tmpElement, _tmpStructureName))
+                            # self._DesignParameter[_tmpSname] = dict()
+                            stack_for_failed_dp.append((_tmpSname, _tmpId, _tmpElement, _tmpStructureName))
+                            # stack_for_failed_dp.append((_tmpStructureName, _tmpId, _tmpElement, _tmpStructureName))
                             continue
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_DesignObj"] = copy.deepcopy(self._DesignParameter[_tmpSname])
                         for _tmpXYCoordinate in _tmpElement._ELEMENTS._XY.xy:
@@ -1237,11 +1236,17 @@ class QtProject:
 
 
             while stack_for_failed_dp:
-                print(len(stack_for_failed_dp))
+                warnings.warn('Cell sorting is not correct. Please check the cell hierarchy. GDS may has dummy cell data.')
+                print('fixing missed hierarchy. Number of left structure: ', len(stack_for_failed_dp))
+                print('Current Fixing cell name:', stack_for_failed_dp[0][1])
                 _tmpSname, _tmpId, _tmpElement, _tmpStructureName = stack_for_failed_dp.pop()
                 if _tmpId not in self._DesignParameter[_tmpSname]:
-                    stack_for_failed_dp.append((_tmpSname, _tmpId))
-                    continue
+                    string_limited_check = [True if _tmpSname.startswith(structure_name) else False for structure_name in self._DesignParameter.keys()]
+                    if True in string_limited_check:
+                        _tmpSname = list(self._DesignParameter.keys())[string_limited_check.index(True)]
+                    else:
+                        stack_for_failed_dp.append((_tmpSname, _tmpId))
+                        continue
                 self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter["_DesignObj"] = copy.deepcopy(
                     self._DesignParameter[_tmpSname])
                 for _tmpXYCoordinate in _tmpElement._ELEMENTS._XY.xy:
@@ -1256,7 +1261,7 @@ class QtProject:
                     if _tmpElement._ELEMENTS._STRANS._ANGLE != None:
                         self._DesignParameter[_tmpStructureName][_tmpId]._DesignParameter[
                             "_Angle"] = _tmpElement._ELEMENTS._STRANS._ANGLE.angle
-                self._DesignParameter[_tmpStructureName][_tmpId].update_unified_expression()
+                # self._DesignParameter[_tmpStructureName][_tmpId].update_unified_expression()
             # print(self._DesignParameter)
             # except:
             #     traceback.print_exc()
@@ -2306,6 +2311,8 @@ class QtProject:
                                                 _ParentName=module_name, _ast=_ast)
 
                 # send design parameter info to element manager --> return: ast info or
+                if constraintID == 'inverter16':
+                    print('a')
                 _designConstraint = self._DesignConstraint[module_name][constraintID]
                 _designParameter = None
                 _designParameter_id = None
@@ -2520,12 +2527,12 @@ class QtProject:
             except:
                 return userDefineExceptions._UnkownError
 
-    def _getEntireHierarchy(self, searchmodule = None):
+    def _getEntireHierarchy(self, searchmodule = None, top_module = None):
         """
         :param None (No input required)
         :return: entireHierarchy
         """
-        top_module = list(self._DesignParameter.items())[-1][0]
+        top_module = list(self._DesignParameter.items())[-1][0] if top_module == None else top_module
         # search_list = list(self._DesignParameter[top_module].items())
         search_list = filter(lambda element_tuple: element_tuple[1]._DesignParameter['_DesignParametertype'] == 3,
                              list(self._DesignParameter[top_module].items()))
@@ -2545,8 +2552,11 @@ class QtProject:
                         list(element._DesignParameter['_DesignObj']._DesignParameter.items()))
 
                 else:
-                    sub_sref_cell = filter(lambda element_tuple: element_tuple[1]._DesignParameter['_DesignParametertype'] == 3,
-                                           list(element._DesignParameter['_DesignObj'].items()))
+                    if element._DesignParameter['_DesignObj']:
+                        sub_sref_cell = filter(lambda element_tuple: element_tuple[1]._DesignParameter['_DesignParametertype'] == 3,
+                                               list(element._DesignParameter['_DesignObj'].items()))
+                    else:
+                        continue
                 sub_sref_cell = list(sub_sref_cell)
                 key_element_name = f'{element._DesignParameter["_DesignObj_Name"]}/{element._DesignParameter["_ElementName"]}'
                 if sub_sref_cell:
