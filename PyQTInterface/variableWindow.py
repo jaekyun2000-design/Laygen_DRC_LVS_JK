@@ -652,10 +652,15 @@ class variableContentWidget(QWidget):
                     warnings.warn(
                         f'Current Layer {LayerName} does not match any layer in current technology node.')
                     continue
-                if _Layer[LayerName][1] == 0 and type_name != 'pin':
+                # if _Layer[LayerName][1] == 0 and type_name != 'pin': # ContArray 생성 안돼서 수정
+                if not 'PIN' in LayerName and type_name != 'pin':
+                    tmp_input_widget.addItem(LayerName)
+                elif 'PINDrawing' in LayerName:
                     tmp_input_widget.addItem(LayerName)
                 elif _Layer[LayerName][1] == 20 and type_name == 'pin':
                     tmp_input_widget.addItem(LayerName)
+                # elif _Layer[LayerName][1] == 20 and type_name == 'pin':
+                #     tmp_input_widget.addItem(LayerName)
         elif name == 'index':
             tmp_input_widget.addItems(['All', 'Even', 'Odd', 'Custom'])
             tmp_input_widget.currentTextChanged.connect(self.get_index)
