@@ -1,0 +1,28 @@
+#! tvf
+namespace import tvf::*
+
+#Setup as mini TVF rule file that calls main deck
+
+VERBATIM {
+
+//Setup source information - replace appropriately - see Calibre Documentation for details on these commands
+SOURCE SYSTEM SPICE
+SOURCE PRIMARY  "Receiver"
+SOURCE PATH     "./Receiver.src.net"
+
+//setup layout information - replace appropriately - see Calibre Documentation for details on these commands
+LAYOUT SYSTEM GDSII
+LAYOUT PRIMARY "Receiver"
+LAYOUT PATH "./Receiver.calibre.db"
+
+//setup report information - replace appropriately - see Calibre Documentation for details on these commands
+LVS REPORT "lvsprt_ca.lvs"
+
+VIRTUAL CONNECT COLON NO
+//VIRTUAL CONNECT REPORT YES
+//VIRTUAL CONNECT REPORT MAXIMUM ALL
+VIRTUAL CONNECT NAME "?"
+}
+
+#call the main lvs file to be run
+source "/home/Dropbox/Dropbox/OPUS/sun/ss28/LVS/ln28lpp.lvs.cal"
