@@ -1,0 +1,78 @@
+.INCLUDE  /home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp/.resources/devices.cdl
+.GLOBAL VDD VSS
+.SUBCKT StrongArmLatch CLK INn INp SSn SSp VDD VSS
+MP5 net085 CLK VDD VDD slvtpfet w=1.668u l=0.03u nf=2.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP4 SSp CLK VDD VDD slvtpfet w=5.838u l=0.03u nf=7.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP3 net088 CLK VDD VDD slvtpfet w=1.668u l=0.03u nf=2.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP2 SSn CLK VDD VDD slvtpfet w=5.838u l=0.03u nf=7.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP1 SSn SSp VDD VDD slvtpfet w=10.008u l=0.03u nf=12.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP0 SSp SSn VDD VDD slvtpfet w=10.008u l=0.03u nf=12.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN7 net085 INn net083 VSS slvtnfet w=8.304u l=0.03u nf=12.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN2 net088 INp net083 VSS slvtnfet w=8.304u l=0.03u nf=12.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN4 SSp SSn net085 VSS slvtnfet w=2.076u l=0.03u nf=3.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN3 SSn SSp net088 VSS slvtnfet w=2.076u l=0.03u nf=3.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN1 net083 CLK VSS VSS slvtnfet w=11.816u l=0.03u nf=14.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+.ENDS
+.SUBCKT CLK_drv_inv IN OUT VDD VSS
+MN10 OUT IN VSS VSS slvtnfet w=5.018u l=0.046u nf=13.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP10 OUT IN VDD VDD slvtpfet w=15.054u l=0.046u nf=13.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+.ENDS
+.SUBCKT ResistorBankCell S SB VCM VDD VRX VSS
+RR20 VRX net13 $SUB=VSS $[opppcres] r=0.725156k w=1.852u l=2.224u pbar=1 s=1 bp=3 ncr=2
+MN20 net13 S VCM VSS slvtnfet w=0.912u l=0.056u nf=4.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP20 net13 SB VCM VDD slvtpfet w=2.736u l=0.056u nf=4.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+.ENDS
+.SUBCKT ResistorBank S<0> SB<0> S<1> SB<1> S<2> SB<2> S<3> SB<3> S<4> SB<4> S<5> SB<5> S<6> SB<6> S<7> SB<7> S<8> SB<8> S<9> SB<9> S<10> SB<10> S<11> SB<11> S<12> SB<12> S<13> SB<13> S<14> SB<14> S<15> SB<15> S<16> SB<16> S<17> SB<17> S<18> SB<18> S<19> SB<19> VCM VDD VRX VSS
+XIR<0> S<0> SB<0> VCM VDD VRX VSS / ResistorBankCell
+XIR<1> S<1> SB<1> VCM VDD VRX VSS / ResistorBankCell
+XIR<2> S<2> SB<2> VCM VDD VRX VSS / ResistorBankCell
+XIR<3> S<3> SB<3> VCM VDD VRX VSS / ResistorBankCell
+XIR<4> S<4> SB<4> VCM VDD VRX VSS / ResistorBankCell
+XIR<5> S<5> SB<5> VCM VDD VRX VSS / ResistorBankCell
+XIR<6> S<6> SB<6> VCM VDD VRX VSS / ResistorBankCell
+XIR<7> S<7> SB<7> VCM VDD VRX VSS / ResistorBankCell
+XIR<8> S<8> SB<8> VCM VDD VRX VSS / ResistorBankCell
+XIR<9> S<9> SB<9> VCM VDD VRX VSS / ResistorBankCell
+XIR<10> S<10> SB<10> VCM VDD VRX VSS / ResistorBankCell
+XIR<11> S<11> SB<11> VCM VDD VRX VSS / ResistorBankCell
+XIR<12> S<12> SB<12> VCM VDD VRX VSS / ResistorBankCell
+XIR<13> S<13> SB<13> VCM VDD VRX VSS / ResistorBankCell
+XIR<14> S<14> SB<14> VCM VDD VRX VSS / ResistorBankCell
+XIR<15> S<15> SB<15> VCM VDD VRX VSS / ResistorBankCell
+XIR<16> S<16> SB<16> VCM VDD VRX VSS / ResistorBankCell
+XIR<17> S<17> SB<17> VCM VDD VRX VSS / ResistorBankCell
+XIR<18> S<18> SB<18> VCM VDD VRX VSS / ResistorBankCell
+XIR<19> S<19> SB<19> VCM VDD VRX VSS / ResistorBankCell
+.ENDS
+.SUBCKT Inv IN OUT VDD VSS
+MN30 OUT IN VSS VSS slvtnfet w=1.776u l=0.034u nf=8.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP30 OUT IN VDD VDD slvtpfet w=3.552u l=0.034u nf=8.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+.ENDS
+.SUBCKT SRLatch IN INb OUT OUTb VDD VSS
+MN45 OUTb net26 VSS VSS slvtnfet w=1.554u l=0.034u nf=7.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN48 net38 OUTb VSS VSS slvtnfet w=3.108u l=0.034u nf=14.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN46 OUTb IN net37 VSS slvtnfet w=0.888u l=0.034u nf=4.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN42 OUT net10 VSS VSS slvtnfet w=1.554u l=0.034u nf=7.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN47 net37 OUT VSS VSS slvtnfet w=3.108u l=0.034u nf=14.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN40 OUT INb net38 VSS slvtnfet w=0.888u l=0.034u nf=4.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP45 OUT INb VDD VDD slvtpfet w=3.108u l=0.034u nf=7.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP44 OUTb IN VDD VDD slvtpfet w=3.108u l=0.034u nf=7.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP43 net33 OUT VDD VDD slvtpfet w=6.216u l=0.034u nf=14.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP42 OUTb net26 net33 VDD slvtpfet w=1.776u l=0.034u nf=4.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP41 net35 OUTb VDD VDD slvtpfet w=6.216u l=0.034u nf=14.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP40 OUT net10 net35 VDD slvtpfet w=1.776u l=0.034u nf=4.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+XI49 IN net10 VDD VSS / Inv
+XI46 INb net26 VDD VSS / Inv
+.ENDS
+.SUBCKT Receiver CK<0> OUT<0> OUTb<0> CK<1> OUT<1> OUTb<1> CK<2> OUT<2> OUTb<2> S<0> SB<0> S<1> SB<1> S<2> SB<2> S<3> SB<3> S<4> SB<4> S<5> SB<5> S<6> SB<6> S<7> SB<7> S<8> SB<8> S<9> SB<9> S<10> SB<10> S<11> SB<11> S<12> SB<12> S<13> SB<13> S<14> SB<14> S<15> SB<15> S<16> SB<16> S<17> SB<17> S<18> SB<18> S<19> SB<19> VCM VDD VRX VSS Vref
+XISA<0> CLK<0> Vref VRX ssp<0> ssn<0> VDD VSS / StrongArmLatch
+XISA<1> CLK<1> Vref VRX ssp<1> ssn<1> VDD VSS / StrongArmLatch
+XISA<2> CLK<2> Vref VRX ssp<2> ssn<2> VDD VSS / StrongArmLatch
+XIInv<0> CK<0> CLK<0> VDD VSS / CLK_drv_inv
+XIInv<1> CK<1> CLK<1> VDD VSS / CLK_drv_inv
+XIInv<2> CK<2> CLK<2> VDD VSS / CLK_drv_inv
+XISR<0> ssn<0> ssp<0> OUT<0> OUTb<0> VDD VSS / SRLatch
+XISR<1> ssn<1> ssp<1> OUT<1> OUTb<1> VDD VSS / SRLatch
+XISR<2> ssn<2> ssp<2> OUT<2> OUTb<2> VDD VSS / SRLatch
+XI58 S<0> SB<0> S<1> SB<1> S<2> SB<2> S<3> SB<3> S<4> SB<4> S<5> SB<5> S<6> SB<6> S<7> SB<7> S<8> SB<8> S<9> SB<9> S<10> SB<10> S<11> SB<11> S<12> SB<12> S<13> SB<13> S<14> SB<14> S<15> SB<15> S<16> SB<16> S<17> SB<17> S<18> SB<18> S<19> SB<19> VCM VDD VRX VSS / ResistorBank
+.ENDS

@@ -1,0 +1,6 @@
+.INCLUDE  /home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp/.resources/devices.cdl
+.SUBCKT ResistorBankCell S SB VCM VDD VRX VSS
+RR20 VRX net13 $SUB=VSS $[opppcres] r=0.725156k w=1.072u l=1.346u pbar=1 s=1 bp=3 ncr=2
+MN20 net13 S VCM VSS slvtnfet w=2.674u l=0.058u nf=7.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP20 net13 SB VCM VDD slvtpfet w=5.348u l=0.058u nf=7.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+.ENDS

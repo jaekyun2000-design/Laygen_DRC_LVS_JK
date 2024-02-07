@@ -1,0 +1,21 @@
+.INCLUDE  /home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp/.resources/devices.cdl
+.SUBCKT Inv IN OUT VDD VSS
+MN30 OUT IN VSS VSS slvtnfet w=4.446u l=0.054u nf=13.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP30 OUT IN VDD VDD slvtpfet w=8.892u l=0.054u nf=13.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+.ENDS
+.SUBCKT SRLatch IN INb OUT OUTb VDD VSS
+MN45 OUTb net26 VSS VSS slvtnfet w=4.104u l=0.054u nf=12.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN48 net38 OUTb VSS VSS slvtnfet w=4.788u l=0.054u nf=14.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN46 OUTb IN net37 VSS slvtnfet w=2.394u l=0.054u nf=7.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN42 OUT net10 VSS VSS slvtnfet w=4.104u l=0.054u nf=12.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN47 net37 OUT VSS VSS slvtnfet w=4.788u l=0.054u nf=14.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN40 OUT INb net38 VSS slvtnfet w=2.394u l=0.054u nf=7.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP45 OUT INb VDD VDD slvtpfet w=8.208u l=0.054u nf=12.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP44 OUTb IN VDD VDD slvtpfet w=8.208u l=0.054u nf=12.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP43 net33 OUT VDD VDD slvtpfet w=9.576u l=0.054u nf=14.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP42 OUTb net26 net33 VDD slvtpfet w=4.788u l=0.054u nf=7.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP41 net35 OUTb VDD VDD slvtpfet w=9.576u l=0.054u nf=14.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP40 OUT net10 net35 VDD slvtpfet w=4.788u l=0.054u nf=7.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+XI49 IN net10 VDD VSS / Inv
+XI46 INb net26 VDD VSS / Inv
+.ENDS
