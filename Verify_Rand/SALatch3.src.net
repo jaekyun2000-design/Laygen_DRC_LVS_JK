@@ -1,0 +1,14 @@
+.INCLUDE  /home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp/.resources/devices.cdl
+.SUBCKT SALatch CLK INn INp SSn SSp VDD VSS
+MP5 net085 CLK VDD VDD slvtpfet w=10.406u l=0.054u nf=11.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP4 SSp CLK VDD VDD slvtpfet w=6.622u l=0.054u nf=7.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP3 net088 CLK VDD VDD slvtpfet w=10.406u l=0.054u nf=11.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP2 SSn CLK VDD VDD slvtpfet w=6.622u l=0.054u nf=7.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP1 SSn SSp VDD VDD slvtpfet w=2.838u l=0.054u nf=3.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP0 SSp SSn VDD VDD slvtpfet w=2.838u l=0.054u nf=3.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN7 net085 INn net083 VSS slvtnfet w=4.654u l=0.054u nf=13.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN2 net088 INp net083 VSS slvtnfet w=4.654u l=0.054u nf=13.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN4 SSp SSn net085 VSS slvtnfet w=2.864u l=0.054u nf=8.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN3 SSn SSp net088 VSS slvtnfet w=2.864u l=0.054u nf=8.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN1 net083 CLK VSS VSS slvtnfet w=1.8u l=0.054u nf=6.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+.ENDS

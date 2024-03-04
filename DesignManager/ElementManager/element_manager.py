@@ -1,5 +1,6 @@
 import ast
 import re
+import traceback
 import warnings
 
 from PyCodes import element_ast, variable_ast
@@ -416,7 +417,10 @@ class ElementManager:
         :param _qtdp: input qt_designParameter object
         :return: design constraint ast format
         """
-        tmpAST, _ = self.get_dpdict_return_ast(_qtdp._DesignParameter)
+        try:
+            tmpAST, _ = self.get_dpdict_return_ast(_qtdp._DesignParameter)
+        except:
+            traceback.print_exc()
         return tmpAST
 
 

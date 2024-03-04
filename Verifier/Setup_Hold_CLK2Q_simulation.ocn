@@ -1,0 +1,72 @@
+simulator( 'spectre )
+design(  "/mnt/sdc/junung/simulation/tb_D_FF/spectre/schematic/netlist/netlist")
+resultsDir( "/mnt/sdc/junung/simulation/tb_D_FF/spectre/schematic" )
+path(  "/mnt/sdc/junung/OPUS/Samsung28n")
+modelFile( 
+    '(//mnt/sdc/junung/OPUS/Samsung28n/lib_spectre/LN28LPP_Spectre.lib/ ss)
+)
+stimulusFile( ?xlate nil
+    "/mnt/sdc/junung/PEX_run/D_FF.pex.netlist"
+)
+analysis('tran ?stop "10n"  )
+desVar(	  "VDD" 1	)
+desVar(	  "clk" 10G	)
+desVar(	  "Setuptime_step" 0.1p	)
+desVar(   "Setuptime_first_val" 5.0p  )
+desVar(	  "Holdtime_step" 0.1p	)
+desVar(   "Holdtime_first_val" -30.0p  )
+desVar(   "Num_of_steps" 600    )
+envOption(
+	'analysisOrder  list("tran") 
+)
+temp( 27 )
+
+setup_time_result = 0
+hold_time_result = 0
+break_flag_setup = 0
+break_flag_hold = 0
+i = 0
+j = 0
+tmp1 = 0
+tmp2 = 0
+break_flag = nil
+result_flag = nil
+CLK2Q_time = 0
+
+while( ((result_flag == nil) && (break_flag == nil))
+	desVar(	  "t_setup" i*evalstring( desVar( "Setuptime_step"))+evalstring( desVar( "Setuptime_first_val"))	)
+	desVar(	  "t_hold" j*evalstring( desVar( "Holdtime_step"))+evalstring( desVar( "Holdtime_first_val"))		)
+	desVar(   "Delay" 0   )
+	run()
+	tmp1 = if((delay(?wf1 vtime('tran "/CLK"), ?value1 0.5*evalstring( desVar( "VDD")), ?edge1 "rising", ?nth1 11, ?td1 0.0, ?tol1 nil, ?wf2 vtime('tran "/Q"), ?value2 0.5*evalstring( desVar( "VDD")), ?edge2 "rising", ?nth2 1, ?tol2 nil,  ?td2 nil , ?stop nil, ?multiple nil) < 1/evalstring( desVar( "clk"))) delay(?wf1 vtime('tran "/D"), ?value1 0.5*evalstring( desVar( "VDD")), ?edge1 "rising", ?nth1 1, ?td1 0.0, ?tol1 nil, ?wf2 vtime('tran "/CLK"), ?value2 0.5*evalstring( desVar( "VDD")), ?edge2 "rising", ?nth2 11, ?tol2 nil,  ?td2 nil , ?stop nil, ?multiple nil) 0)
+
+	tmp2 = if((delay(?wf1 vtime('tran "/CLK"), ?value1 0.5*evalstring( desVar( "VDD")), ?edge1 "rising", ?nth1 21, ?td1 0.0, ?tol1 nil, ?wf2 vtime('tran "/Q"), ?value2 0.5*evalstring( desVar( "VDD")), ?edge2 "falling", ?nth2 1, ?tol2 nil,  ?td2 nil , ?stop nil, ?multiple nil) > 1/evalstring( desVar( "clk"))) delay(?wf1 vtime('tran "/CLK"), ?value1 0.5*evalstring( desVar( "VDD")), ?edge1 "rising", ?nth1 21, ?td1 0.0, ?tol1 nil, ?wf2 vtime('tran "/D"), ?value2 0.5*evalstring( desVar( "VDD")), ?edge2 "falling", ?nth2 1, ?tol2 nil,  ?td2 nil , ?stop nil, ?multiple nil) 0)
+
+	setup_time_result=if(((tmp1 != 0) && (setup_time_result==0)) tmp1 setup_time_result)
+	i += if((setup_time_result==0) 1 0)
+	break_flag_setup = if((i>=evalstring( desVar( "Num_of_steps"))) t nil)
+
+	hold_time_result=if(((tmp2 != 0) && (hold_time_result==0)) tmp2 hold_time_result)
+	j += if((hold_time_result==0) 1 0)
+	break_flag_hold = if((j>=evalstring( desVar( "Num_of_steps"))) t nil)
+
+	result_flag = (setup_time_result != 0) && (hold_time_result != 0)
+	break_flag = (break_flag_setup==t) || (break_flag_hold==t)
+	
+	printf("\n%d\n",i)
+	printf("\n%d\n",j)
+	
+)
+CLK2Q_time = delay(?wf1 vtime('tran "/CLK"), ?value1 0.5*evalstring( desVar( "VDD")), ?edge1 "rising", ?nth1 31, ?td1 0.0, ?tol1 nil, ?wf2 vtime('tran "/Q"), ?value2 0.5*evalstring( desVar( "VDD")), ?edge2 "rising", ?nth2 2, ?tol2 nil,  ?td2 nil , ?stop nil, ?multiple nil)
+
+fileptr=outfile("./SimulationResult.txt","w")
+fprintf(fileptr "\n********************************************\n")
+if((break_flag_setup==t) fprintf(fileptr "Error occurred. Cannot find setup time.") fprintf(fileptr "Setup time = %e" setup_time_result))
+fprintf(fileptr "\n********************************************\n")
+if((break_flag_hold==t) fprintf(fileptr "Error occurred. Cannot find hold time.") fprintf(fileptr "Hold time = %e" hold_time_result))
+fprintf(fileptr "\n********************************************\n")
+fprintf(fileptr "CLK2Q time = %e" CLK2Q_time)
+fprintf(fileptr "\n********************************************\n")
+close(fileptr)
+exit()
+

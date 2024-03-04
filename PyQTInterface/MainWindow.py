@@ -141,7 +141,6 @@ class _MainWindow(QMainWindow):
         self.variable_store_list = list()
         self.test = True
         self.send_init_signal.emit()
-        self.model_verification = False
 
         # self._QTObj._qtProject._ElementManager.signal.dp_name_update_signal.connect(
         #     self.design_delegator.update_vs_item_dict
@@ -230,8 +229,7 @@ class _MainWindow(QMainWindow):
         undoAction = QAction("Undo", self)
         save_svg_action = QAction("Save SVG", self)
         save_scene = QAction("Save PDF_scene", self)
-        saveCurrentGDSAction = QAction("Save Current status as GDS",self)
-
+        countAction = QAction("Count SRef", self)
 
         # newAction.setShortcut('Ctrl+N')
         # newAction.triggered.connect(self.newProject)
@@ -251,8 +249,8 @@ class _MainWindow(QMainWindow):
         RunGDSAction.setShortcut('Ctrl+R')
         RunGDSAction.triggered.connect(self.runConstraint)
 
-        saveCurrentGDSAction.setShortcut('Ctrl+T')
-        saveCurrentGDSAction.triggered.connect(self.snapshot_gds)
+        countAction.setShortcut('Ctrl+T')
+        countAction.triggered.connect(self.count_sref)
 
         UpdateGDSAction.setShortcut('Ctrl+U')
         UpdateGDSAction.triggered.connect(self.runConstraint_for_update)
@@ -292,7 +290,6 @@ class _MainWindow(QMainWindow):
         fileMenu.addAction(DebugAction)
         fileMenu.addAction(EncodeAction)
         fileMenu.addAction(RunGDSAction)
-        # fileMenu.addAction(saveCurrentGDSAction)
         fileMenu.addAction(UpdateGDSAction)
         fileMenu.addAction(setup_action)
         fileMenu.addAction(fixAction)
@@ -300,6 +297,7 @@ class _MainWindow(QMainWindow):
         fileMenu.addAction(undoAction)
         fileMenu.addAction(save_svg_action)
         fileMenu.addAction(save_scene)
+        fileMenu.addAction(countAction)
         # fileMenu.addAction(undo_action)
 
         #Second Menu#
@@ -352,6 +350,7 @@ class _MainWindow(QMainWindow):
         automatic_bounding_box = QAction("Automatic Bounding Box", self)
         export_bounding_box = QAction("Export Bounding Box", self)
         export_object_detection_action = QAction("Export Object Detection", self)
+        export_tree_as_dict = QAction("Export Tree as Dict", self)
 
 
         trace_memory_action.setShortcut('Ctrl+5')
@@ -381,6 +380,9 @@ class _MainWindow(QMainWindow):
         export_bounding_box.setShortcut('Ctrl+8')
         export_bounding_box.triggered.connect(self.export_predict_bounding_box)
 
+        export_tree_as_dict.setShortcut('Shift+0')
+        export_tree_as_dict.triggered.connect(self.export_tree)
+
 
         automation_menu = menubar.addMenu("&Automation")
         automation_menu.setObjectName("top_menu_widget")
@@ -393,6 +395,7 @@ class _MainWindow(QMainWindow):
         automation_menu.addAction(automate_path_xy_action)
         automation_menu.addAction(automatic_bounding_box)
         automation_menu.addAction(export_bounding_box)
+        automation_menu.addAction(export_tree_as_dict)
 
         # automation_menu.setStyleSheet("background-color: rgb(178, 41, 100)")
         # self.setStyleSheet("background-color: rgb(178, 41, 100)")
@@ -971,18 +974,18 @@ class _MainWindow(QMainWindow):
                 self.module_name_list.append(tmp_module_name)
                 self.module_dict[tmp_module_name] = _MainWindow()
                 new_project = self.module_dict[tmp_module_name]
-                selected_qt_dp = copy.deepcopy(
-                    self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][tmp_module_name])
-                new_project._QTObj._qtProject._DesignParameter = {tmp_module_name:selected_qt_dp._DesignParameter['_ModelStructure']}
-                # new_project._QTObj._qtProject._DesignParameter = copy.deepcopy(self._QTObj._qtProject._DesignParameter)
-                # top_cell_name= new_project._QTObj._qtProject._DesignParameter[self._CurrentModuleName][tmp_module_name]._DesignParameter['_DesignObj_Name']
+                # selected_qt_dp = copy.deepcopy(
+                #     self._QTObj._qtProject._DesignParameter[self._CurrentModuleName][tmp_module_name])
+                # new_project._QTObj._qtProject._DesignParameter = {tmp_module_name:selected_qt_dp._DesignParameter['_ModelStructure']}
+                new_project._QTObj._qtProject._DesignParameter = copy.deepcopy(self._QTObj._qtProject._DesignParameter)
+                top_cell_name= new_project._QTObj._qtProject._DesignParameter[self._CurrentModuleName][tmp_module_name]._DesignParameter['_DesignObj_Name']
 
                 self.module_dict[tmp_module_name].set_module_name(tmp_module_name)
                 # self.module_dict[tmp_module_name].show()
                 self.module_dict[tmp_module_name].module_dict = self.module_dict
                 self.module_dict[tmp_module_name].module_name_list = self.module_name_list
 
-                hierarchy_key = selected_qt_dp._DesignParameter['_DesignObj_Name'] + '/' + tmp_module_name
+                hierarchy_key = top_cell_name + '/' + tmp_module_name
                 if len(self.entireHierarchy) == 0:
                     """
                     case when sref load is used (not load gds!)
@@ -997,8 +1000,9 @@ class _MainWindow(QMainWindow):
 
 
                 self.remove_module(self._CurrentModuleName)
-                new_project.create_dc_vi_from_top_dp(hierarchy, test)
+                del new_project._QTObj._qtProject._DesignParameter[self._CurrentModuleName]
 
+                new_project.create_dc_vi_from_top_dp(hierarchy, test, topCellName=top_cell_name)
                 self.hide()
 
     def add_constraint_view(self):
@@ -1547,6 +1551,62 @@ class _MainWindow(QMainWindow):
                    minimum_step_size=user_setup.min_step_size, bb=False)
         topAPI.object_detection.inference(lm)
 
+    def export_tree(self):
+        def counting_fcn(_ast):
+            addition = 0
+            if 'parameters' in _ast._fields:
+                addition += len(_ast.parameter_fields) - 1
+            if 'id' in _ast._fields:
+                addition += len([val for val in list(_ast.info_dict.values()) if val]) - 1
+
+            if isinstance(_ast, variable_ast.Array):
+                print('a')
+            return len(_ast._fields) + addition
+
+        def expand_ast(_ast):
+            tmp_out = [_ast]
+            if 'id' in _ast._fields:
+                for value in _ast.info_dict.values():
+                    if isinstance(value, ast.AST):
+                        tmp_out.append(value)
+            return tmp_out
+
+        module = self._CurrentModuleName
+        constraint_names = self.dockContentWidget3.model.findItems('', Qt.MatchContains, 1)
+        constraint_ids = [item.text() for item in constraint_names]
+        # # topAST = self.transform_constraints([self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
+        # topAST = ASTmodule.run_transformer(
+        #     [self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids])
+        # #
+        cons_id_list = self.dockContentWidget3.inspect_hierarchy()
+
+        # print(len(cons_id_list))
+        # print(len(constraint_ids))
+        asts= [self._QTObj._qtProject._DesignConstraint[module][c_id]._ast for c_id in cons_id_list]
+        # asts_expanded = [expand_ast(ast_element) for ast_element in asts]
+        import itertools
+        asts_expanded = list(itertools.chain(*[expand_ast(ast_element) for ast_element in asts]))
+        asts_set = list(set(asts_expanded))
+
+        ast_fields_counting = [counting_fcn(_ast) for _ast in asts_set]
+        ast_field_type = [_ast._type for _ast in asts_set]
+        expression_list = [_ast._type for _ast in asts_set if _ast._type in ['XYCoordinate', 'LogicExpression', 'Array']]
+        expression_list_id = [_ast._id for _ast in asts_set if _ast._type in ['XYCoordinate', 'LogicExpression', 'Array']]
+
+
+
+        # 'Block_Duty_cycle_corrector68'
+        # ast_field_type2 = [type(_ast) for _ast in asts]
+        #sum of all the fields
+        # sum(ast_fields_counting)
+        # print(sum(ast_fields_counting))
+
+        print('ast counting:',len(asts_set))
+        print('argument counting',sum(ast_fields_counting))
+        print('expression_len, ',len(expression_list))
+
+        pass
+
     def show_automate_path_widget(self, path_item):
         self.dockContentWidget3_2.get_dp_highlight_dc([path_item.text()],None)
         self.dockContentWidget3.get_dp_highlight_dc([path_item.text()],None)
@@ -1605,7 +1665,7 @@ class _MainWindow(QMainWindow):
         except:
             warnings.warn('Debug required')
 
-        self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array")
+        self.vw = variableWindow.VariableSetupWindow(variable_type="boundary_array", main_window=self)
         self.vw.send_output_dict_signal.connect(self.create_variable)
         self.vw.send_variable_ast.connect(self.design_delegator.create_qt_constraint)
 
@@ -1738,105 +1798,109 @@ class _MainWindow(QMainWindow):
 
 
     def srefModulization(self,_flattenStatusDict, _sref = None, topCellName=None):
-        final_module = dict()
+        """
+        :param _flattenStatusDict:
+               _sref param not needed: this param exists only for recursive call
+        :return: reconstructed cell structure according to param '_flattenStatusDict'
+        """
+        _finalModule = dict()
         if _sref == None:
-            added_module_list = list(self._QTObj._qtProject._DesignParameter.keys())
-            top_cell_name = added_module_list[-1] if topCellName == None else topCellName
-            number_of_cells = len(self._QTObj._qtProject._DesignParameter[top_cell_name].values())
-
+            ########################################## 1. Initial Condition ############################################
+            addedModulelist = list(self._QTObj._qtProject._DesignParameter.keys())
+            topCellName = addedModulelist[-1] if topCellName == None else topCellName
+            number_of_cells = len(self._QTObj._qtProject._DesignParameter[topCellName].values())
+            # numberOfCells = int(re.findall('\d+', lastSrefName)[0])
+            tmpDict = dict()
             print("             #######################################################################               ")
-            print(f"               There are '{number_of_cells}' cells inside '{top_cell_name}' cell                  ")
+            print(f"               There are '{number_of_cells}' cells inside '{topCellName}' cell                  ")
             print("             #######################################################################               ")
+            for _id, _elements in self._QTObj._qtProject._DesignParameter[topCellName].items():
+                if _elements._DesignParameter['_DesignParametertype'] == 3:                      # Sref inside top cell
+                    _childName = _elements._DesignParameter['_DesignObj_Name']
+                    _childModule = self.srefModulization(_flattenStatusDict, _elements)          # Recursive Call
+                    for _id2, elements2 in _childModule.items():
+                        name = elements2._DesignParameter['_ElementName']
 
-            tmp_dict = dict()
-            for element_name, element in self._QTObj._qtProject._DesignParameter[top_cell_name].items():
-                if element._DesignParameter['_DesignParametertype'] == 3:
-                    # child_name = element._DesignParameter['_DesignObj_Name']
-                    child_module = self.srefModulization(_flattenStatusDict, element)
-                    if len(child_module) != 1:
-                        for _, element2 in child_module.items():
-                            name = str(element_name + '/' + element2._DesignParameter['_ElementName'])
-                            element2._ElementName = name
-                            element2._id = name
-                            element2._DesignParameter['_ElementName'] = name
-                            tmp_dict[name] = element2
-                    else:
-                        for _, element2 in child_module.items():
-                            name = element_name
-                            tmp_dict[name] = element2
-                else:
-                    tmp_dict[element_name] = element
-            final_module = tmp_dict
-            print("Modulization Done")
-        else:
-            child_name = _sref._DesignParameter['_DesignObj_Name']
-            parent_name = _sref._ElementName
-
-            tmp_dict = dict()
-            if child_name in list(self._QTObj._qtProject._DesignParameter.keys()):
-                """
-                flattening 이전에 gds 자료구조는, sref정보가 내부 recursive하게 있는 것이 아니라, 
-                가장 윗단 hierarchy에 parallel하게 서술되어 있다. 우선 그 부분을 참조하고, sref 부모 xy와 zip 하여 최종 좌표 결정.
-
-                """
-                sub_element_dict = self._QTObj._qtProject._DesignParameter[child_name]
-            else:
-                """
-                이미 자료구조가 model structure로 들어가 있는 경우도 있다. (new window 등의 동작일 때)
-                """
-                sub_element_dict = _sref._DesignParameter['_ModelStructure']
-
-            for element_name, element in sub_element_dict.items():
-                if element._DesignParameter['_DesignParametertype'] != 3:
-                    tmp_dict[element._ElementName] = element
-                else:
-                    """
-                    subcell 내에 또 subcell이 있으면 recursive하게 처리후 return하여 받아올 것.
-
-                    """
-                    child_module = self.srefModulization(_flattenStatusDict, element)
-                    for _, sub2_element in child_module.items():
-                        name = str(element_name + '/' + sub2_element._DesignParameter['_ElementName'])
-                        sub2_element._ElementName = name
-                        sub2_element._id = name
-                        sub2_element._DesignParameter['_ElementName'] = name
-                        tmp_dict[name] = sub2_element
-
-            child_name_for_comp = f'{child_name}/{parent_name}'
-            parent_xy = _sref._DesignParameter['_XYCoordinates']
-            for key, value in _flattenStatusDict.items():
-                """
-                tmp_dict에 element들은 모두 담아 뒀는데, flatten 안 한다고 하면 덩어리째로, 아니라면 다 분리해서 상위에다가 
-                return
-
-                """
-                find_hint = child_name_for_comp.find(key)
-                if find_hint != -1:
-                    if value != None:  # Not Flattening Condition
-                        returning_element = copy.deepcopy(_sref)
-                        returning_element._DesignParameter['_ModelStructure'] = tmp_dict
-                        final_module[child_name] = returning_element
-                        break
-                    else:  # Flattening Condition
-                        for element_name, element in tmp_dict.items():
-                            returning_element = copy.deepcopy(element)
-                            if returning_element._DesignParameter['_DesignParametertype'] == 2:
-                                xy_pairs = returning_element._DesignParameter['_XYCoordinates'][
-                                    0]  # [[a,a'],[b,b'],[c,c']]
-                                modified_xy_pairs = []
-                                for i in range(0, len(xy_pairs)):
-                                    new_xy = [x + y for x, y in zip(xy_pairs[i], parent_xy[0])]
-                                    modified_xy_pairs.append(new_xy)
-
-                                returning_element._DesignParameter['_XYCoordinates'] = [modified_xy_pairs]
-                                final_module[returning_element._id] = returning_element
+                        ###### Preventing Name Overwriting #####
+                        while True:
+                            if name in list(tmpDict.keys()):
+                                newName = name + str(1)
+                                name = newName
                             else:
-                                new_xy = [[x + y for x, y in zip(returning_element._DesignParameter['_XYCoordinates'][0]
-                                                                 , parent_xy[0])]]
-                                returning_element._DesignParameter['_XYCoordinates'] = new_xy
-                                final_module[returning_element._id] = returning_element
+                                break
+                        #########################################
+
+                        tmpDict[name] = elements2
+                else:
+                    tmpDict[_id] = _elements
+            _finalModule = tmpDict
+
+        else:
+            ############################################# 2. Subcell Cases ############################################
+            _childName = _sref._DesignParameter['_DesignObj_Name']
+            _newChildName = f'{_childName}/{_sref._DesignParameter["_ElementName"]}'
+            _parentName = _sref._id
+            _parentXY = _sref._DesignParameter['_XYCoordinates']
+            tmpDict = dict()
+            if _childName in list(self._QTObj._qtProject._DesignParameter.keys()):
+                tmpdict = self._QTObj._qtProject._DesignParameter[_childName]
+            else:
+                tmpdict = _sref._DesignParameter['_ModelStructure']
+            for _id1, _modules1 in tmpdict.items():
+                if _modules1._DesignParameter['_DesignParametertype'] != 3:
+                    tmpDict[_modules1._id] = _modules1
+                else :                                      # If one of the subcells is SREF, Recursive call
+                    _childModule2 = self.srefModulization(_flattenStatusDict, _modules1)
+                    for _id2, elements2 in _childModule2.items():
+                        _name = elements2._DesignParameter['_ElementName']
+                        while True:
+                            if _name in list(tmpDict.keys()):
+                                newName = _name + str(1)
+                                _name = newName
+                            else:
+                                break
+                        tmpDict[_name] = elements2
+
+            for key, value in _flattenStatusDict.items():   # Check whether to flatten or not
+                findHint = _newChildName.find(key)
+                if findHint != -1:
+                    if value != None:                       # Not Flattening Condition
+                        tmpmodule = copy.deepcopy(_sref)
+                        tmpmodule._DesignParameter['_ModelStructure'] = tmpDict
+                        _finalModule[_childName] = tmpmodule
                         break
-        return final_module
+                    else:                                   # Flattening Condition
+                        """                 
+                        Flattening Condition needs XY coordinate modification, and renaming process
+                        """
+                        for _id, element in tmpDict.items():
+                            tmpmodule = copy.deepcopy(element)
+                            if tmpmodule._DesignParameter['_DesignParametertype'] == 2:
+                                _XYpairs = tmpmodule._DesignParameter['_XYCoordinates'][0]  # [[a,a'],[b,b'],[c,c']]
+                                _modifiedXYpairs = []
+                                for i in range(0,len(_XYpairs)):
+                                    _newXY = [x+y for x,y in zip(_XYpairs[i], _parentXY[0])]
+                                    _modifiedXYpairs.append(_newXY)
+                                while True:
+                                    if tmpmodule._id in _finalModule:   # Preventing name overwriting
+                                        newName = tmpmodule._id + str(1)
+                                        tmpmodule._id = newName
+                                    else:
+                                        break
+                                tmpmodule._DesignParameter['_XYCoordinates'] = [_modifiedXYpairs]
+                                _finalModule[tmpmodule._id] = tmpmodule
+                            else:
+                                newXY = [[x+y for x,y in zip(tmpmodule._DesignParameter['_XYCoordinates'][0], _parentXY[0])]]
+                                tmpmodule._DesignParameter['_XYCoordinates'] = newXY
+                                while True:
+                                    if tmpmodule._id in _finalModule:   # Preventing name overwriting
+                                        newName = tmpmodule._id + str(1)
+                                        tmpmodule._id = newName
+                                    else:
+                                        break
+                                _finalModule[tmpmodule._id] = tmpmodule
+                        break
+        return _finalModule
 
     def debug_not_defined_variables(self):
         self.dockContentWidget3.blockSignals(True)
@@ -1987,6 +2051,16 @@ class _MainWindow(QMainWindow):
 
         self.send_visibleGenState_signal.emit(state, viList)
 
+
+    def count_sref(self):
+        module = self._CurrentModuleName
+        constraint_names = self.dockContentWidget3_2.model.findItems('', Qt.MatchContains, 1)
+        constraint_ids = [item.text() for item in constraint_names]
+        ast_list = [self._QTObj._qtProject._DesignConstraint[module][id]._ast for id in constraint_ids]
+        ast_list = [sref_ast for sref_ast in ast_list if sref_ast._type == 'Sref']
+        print(len(ast_list))
+
+
     def runConstraint(self):
         import time
         start_time = time.time()
@@ -2041,19 +2115,6 @@ class _MainWindow(QMainWindow):
         end_time = time.time()
         print(f'--- {end_time - start_time} seconds ---')
 
-    def snapshot_gds(self):
-        self.gds2gen = topAPI.gds2generator.GDS2Generator(True)
-        self.gds2gen.load_qt_project(self)
-        self.gds2gen.load_qt_design_parameters(self._QTObj._qtProject._DesignParameter, self._CurrentModuleName, xy_reset=False)
-        # self.gds2gen.load_qt_design_constraints_code(self.encodeConstraint())
-        self.gds2gen.set_root_cell(self._CurrentModuleName)
-        # self.gds2gen.run_qt_constraint_ast()
-
-        stream_data = self.gds2gen.ready_for_top_cell()
-        self.gds2gen.set_topcell_name('topcell')
-        file = open('./topcell.gds', 'wb')
-        stream_data.write_binary_gds_stream(file)
-        file.close()
 
     def runConstraint_for_update(self, code=None):
         '''
@@ -2159,9 +2220,9 @@ class _MainWindow(QMainWindow):
 
 
         except:
-            working_code = self.debugConstraint()
-            if working_code:
-                self.runConstraint_for_update(working_code)
+            # working_code = self.debugConstraint()
+            # if working_code:
+            #     self.runConstraint_for_update(working_code)
             traceback.print_exc()
         end_time = time.time()
 
@@ -2326,7 +2387,6 @@ class _MainWindow(QMainWindow):
 
             # fileName=_fileName.split('/')[-1]
             # self.updateXYCoordinatesForDisplay()
-            self._QTObj._qtProject.tmp_save_file = PyCodes.file_save.FileSaveFormat()
             self._QTObj._qtProject.tmp_save_file = PyCodes.file_save.FileSaveFormat()
             self._QTObj._qtProject.tmp_save_file.save_from_qt_interface(self)
             self._QTObj._saveProject(_name=_fileName)
@@ -2584,60 +2644,55 @@ class _MainWindow(QMainWindow):
         print("**************************File Load From Legacy Start")
         try:
             self._QTObj._qtProject._loadDesignsFromGDSlegacy(_file = _fileName, _topModuleName = _moduleName)
+            topcell_name = list(self._QTObj._qtProject._DesignParameter.keys())[-1]
         except:
             import collections
             self._QTObj._qtProject._DesignParameter = collections.OrderedDict()
             try:
                 self._QTObj._qtProject._loadDesignsFromGDSlegacy(_file = _fileName, _topModuleName = _moduleName, _reverse=True)
+                topcell_name = list(self._QTObj._qtProject._DesignParameter.keys())[0]
             except:
                 traceback.print_exc()
                 warnings.warn("Invalid Technology")
                 del originalModuleList
                 self._QTObj._qtProject._DesignParameter.clear()
+                topcell_name = list(self._QTObj._qtProject._DesignParameter.keys())[-1]
                 return
         print("****************************File Load From Legacy Complete")
+        print('Idential Cell number:', len(list(self._QTObj._qtProject._DesignParameter.keys())))
+        identical_cell_list = list(self._QTObj._qtProject._DesignParameter.keys())
+        import csv
+        with open('./identical_cell_list.csv', 'w', newline='') as f:
+            wr = csv.writer(f)
+            for identical_cell in identical_cell_list:
+                wr.writerow(['X',identical_cell])
 
         if self.progrseeBar_unstable == True:
             updateModuleList = set(self._QTObj._qtProject._DesignParameter)
             addedModuleList = list(updateModuleList-originalModuleList)
             idLength = 0
-            self.entireHierarchy = self._QTObj._qtProject._getEntireHierarchy()
+            self.entireHierarchy = self._QTObj._qtProject._getEntireHierarchy(top_module=topcell_name)
             for modules in addedModuleList:
                 idLength += len(self._QTObj._qtProject._DesignParameter[modules])
 
             if DEBUG:
                 print(f'DEBUGGING MODE, idLength= {idLength}')
 
-            self.create_dc_vi_from_top_dp(self.entireHierarchy, test=test)
+            self.create_dc_vi_from_top_dp(self.entireHierarchy, test=test, topCellName=topcell_name)
 
     def create_dc_vi_from_top_dp(self, hierarchy, test=None, topCellName=None):
         import time
         time_start = time.time()
-        self.fc = SetupWindow._FlatteningCell(hierarchy, self._QTObj._qtProject._DesignParameter, self._CurrentModuleName)
+        self.fc = SetupWindow._FlatteningCell(hierarchy, self._QTObj._qtProject._DesignParameter)
         self.fc.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.fc.show()
-        inf_time = time.time() - time_start
-        flattening_dict = self.fc.ok_button_accepted(test)
+
+        flattening_dict = self.fc.ok_button_accepted(test, False)
         if user_setup.exp_data:
             time_widget = QMessageBox(self)
-            time_widget.setText(f"Flattening Cell: {inf_time}")
+            time_widget.setText(f"Flattening Cell: {time.time()-time_start}")
             time_widget.show()
         self.fc.destroy()
-
-        # pip install opencv-python
-        # pip install imutils
-        self.model_verification = False
-        if self.model_verification:
-            import MS_test as verification
-            ver_obj = verification.parameterPrediction()
-            for key, value in flattening_dict.items():
-                if value == 'NMOSWithDummy':
-                    dp_name = key.split('/')[0]
-                    ver_obj.nmos_checker(self._QTObj._qtProject._DesignParameter[dp_name])
-                elif re.search("ViaMet", value):
-                    dp_name = key.split('/')[0]
-                    ver_obj.via_checker(self._QTObj._qtProject._DesignParameter[dp_name], value)
-
 
         print("############################ Cell DP, DC, VISUALITEM CREATION START ###############################")
         visual_item_list = []
@@ -2670,7 +2725,13 @@ class _MainWindow(QMainWindow):
                     findHint = _newCellName.find(key)
                     if findHint != -1:
                         topcell[parameter_id]._DesignParameter['library'] = value
-                        if value != 'MacroCell':    # case Sref
+                        if value == '': # empty place holder
+                            _className = ''
+                            topcell[parameter_id]._DesignParameter['className'] = ''
+                            calculate_fcn = []
+                            parameter_dict = dict()
+                            topcell[parameter_id]._DesignParameter['parameters'] = parameter_dict
+                        elif value != 'MacroCell':    # case Sref
                             _className = generator_model_api.class_name_dict[_element._DesignParameter['library']]
                             topcell[parameter_id]._DesignParameter['className'] =_className
                             calculate_fcn = list(generator_model_api.class_function_dict[value].keys())[0]
@@ -2894,7 +2955,7 @@ class _MainWindow(QMainWindow):
             # reference = inspector.inspect_group(dp_names)
 
 
-            self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items)
+            self.vw = variableWindow.VariableSetupWindow(variable_type=_type,vis_items=selected_vis_items, main_window=self)
             self.vw.typeChanged(_type)
             self.vw.send_variable_ast.connect(self.design_delegator.create_qt_constraint)
             # self.vw = variableWindow.VariableSetupWindow(variable_type=type,vis_items=selected_vis_items)
@@ -2902,6 +2963,8 @@ class _MainWindow(QMainWindow):
             self.vw.send_output_dict_signal.connect(self.create_variable)
             self.vw.send_variable_wo_post_ast.connect(
                 lambda target_ast: self.design_delegator.create_qt_constraint(target_ast, sender=self.vw))
+            self.vw.send_variable_wo_post_ast_for_array.connect(
+                lambda target_ast: self.design_delegator.create_qt_constraint(target_ast, sender=self.vw.variable_widget.ls))
 
             self.vw.send_DestroyTmpVisual_signal.connect(self.deleteDesignParameter)
             self.vw.send_clicked_item_signal.connect(self.highlightVI_by_hierarchy_list)
@@ -3695,6 +3758,8 @@ class _MainWindow(QMainWindow):
                         if type(_ast.parameters) == dict:
                             for parm_string in _ast.parameters.values():
                                 if type(parm_string) == str:
+                                    if (parm_string[0]=="'" and parm_string[-1]=="'") or (parm_string[0]=='"' and parm_string[-1]=='"'): ## string 입력은 variable로 취급하지 않음.
+                                        continue
                                     tmp_ast = ast.parse(str(parm_string))
                                     variable_visitor.visit(tmp_ast)
                     # elif _field == 'XY':
@@ -4246,7 +4311,7 @@ class _CustomScene(QGraphicsScene):
         if axis:
             pen = QPen()
             pen.setStyle(Qt.DashLine)
-            pen.setColor(Qt.GlobalColor.lightGray)
+            # pen.setColor(Qt.GlobalColor.lightGray)
             pen.setCapStyle(Qt.RoundCap)
             pen.setWidth(3)
 
@@ -4386,12 +4451,10 @@ class _CustomScene(QGraphicsScene):
                 self.fit_in_view_dict[key].append(item.bounding_rect_dict[key])
 
     def remove_bounding_rect_dict(self, item):
-        if 'bounding_rect_dict' in item.__dict__:
-            for key in item.bounding_rect_dict:
-                try:
-                    self.fit_in_view_dict[key].remove(item.bounding_rect_dict[key])
-                except:
-                    print('this code seems not work well')
+        pass
+        # if 'bounding_rect_dict' in item.__dict__:
+        #     for key in item.bounding_rect_dict:
+        #         self.fit_in_view_dict[key].remove(item.bounding_rect_dict[key])
 
     def removeItem(self, QGraphicsItem):
         super(_CustomScene, self).removeItem(QGraphicsItem)
