@@ -593,7 +593,7 @@ class DeMux1to4(StickDiagram._StickDiagram):
 ################################ DRC Check #################################
 import random
 if __name__ == '__main__':
-    for i in range(0,100):
+    #for i in range(0,100):
         TG1_Finger = random.randint(1, 5)
         TG2_Finger = random.randint(1, 5)
         TSI1_Finger = random.randint(1, 2)
@@ -806,8 +806,8 @@ if __name__ == '__main__':
         tmp.write_binary_gds_stream(testStreamFile)
         testStreamFile.close()
         print('#############################      Sending to FTP Server...      ##############################')
-        i = i + 1
-        print("itr = ", i)
+        # i = i + 1
+        # print("itr = ", i)
         import ftplib
 
         ftp = ftplib.FTP('141.223.24.53')

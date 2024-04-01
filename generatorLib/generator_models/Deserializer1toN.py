@@ -3546,41 +3546,6 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                         '_DesignObj'].CellXWidth+2*UnitPitch+totalwidth,self._DesignParameter['_NMOS1']['_XYCoordinates'][0][1]]]
 
 
-                # self._DesignParameter['dummy_Met2'] = self._PathElementDeclaration(
-                # _Layer=DesignParameters._LayerMapping['METAL2'][0],
-                # _Datatype=DesignParameters._LayerMapping['METAL2'][1],
-                # _Width=self.getYWidth('DeMux1to2_1', 'DFFQ', 'INV4', 'PbodyContact', '_Met2Layer')
-                # )
-                # self._DesignParameter['VSSRail_Met2']['_XYCoordinates'] = [
-                #     [[rightBoundary, YCoord[0]], [leftBoundary, YCoord[0]]],
-                #     [[rightBoundary, YCoord[1]], [leftBoundary, YCoord[1]]],
-                #     [[rightBoundary, YCoord[2]], [leftBoundary, YCoord[2]]]]
-
-            # _PMOSNumberofGate=self._Des   ignParameter['DeMux1to4_1'][
-            #         '_DesignObj'].CellXWidth - 2*self._DesignParameter['Clk_Driver_1'][
-            #         '_DesignObj'].CellXWidth,
-            #
-            # ParametersForDesignCalculation_PMOS_dummy = dict(
-            #     _PMOSNumberofGate=_PMOSNumberofGate,
-            #     _PMOSChannelWidth=TG1_PMWidth,
-            #     _PMOSChannellength=ChannelLength,
-            #     _PMOSDummy=dummy,
-            #     _GateSpacing=GateSpacing,
-            #     _SDWidth=SDWidth,
-            #     _XVT=XVT,
-            #     _PCCrit=True
-            # )
-            # self._DesignParameter['PMOS_dummy'] = self._SrefElementDeclaration(
-            #     _Reflect=[0, 0, 0], _Angle=0,
-            #     _DesignObj=PMOSWithDummy._PMOS(_Name='PMOS_dummyIn{}'.format(_Name)))[0]
-            #
-            # self._DesignParameter['PMOS_dummy']['_XYCoordinates'] = [[
-            #     self.getXY('Clk_Driver_1')[0][0] +2*self._DesignParameter['Clk_Driver_1'][
-            #         '_DesignObj'].CellXWidth+ (self._DesignParameter['DeMux1to4_1'][
-            #         '_DesignObj'].CellXWidth - 2*self._DesignParameter['Clk_Driver_1'][
-            #         '_DesignObj'].CellXWidth)/2,
-            #     self._DesignParameter['DeMux1to2_3']['_XYCoordinates'][0][1]]]
-
             tmpMet2Width = 66
             tmpDRC_Met2Spacing = 86
             tmpVia1YWidth = 100
@@ -3822,11 +3787,9 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                            self.getXY('DeMux1to2_3')[0][1] + 5 * CellHeight+tmpDSspace+3*clkrouting/2-tmpMet2Width/2]], \
 
                                                                       [[self.getXY('DeMux1to2_3')[0][0],
-                                                                        self.getXY('DeMux1to2_3')[0][
-                                                                            1] + 5 * CellHeight - tmpDSspace-3*clkrouting/2+tmpMet2Width/2],
+                                                                        self.getXY('DeMux1to2_3')[0][1] + 5 * CellHeight - tmpDSspace-3*clkrouting/2+tmpMet2Width/2],
                                                                        [self._DesignParameter['DeMux1to2_3']['_DesignObj'].clkb[0] - 4 * tmpDSspace+tmpViaMet2Width,
-                                                                           self.getXY('DeMux1to2_3')[0][
-                                                                               1] + 5 * CellHeight - tmpDSspace-3*clkrouting/2+tmpMet2Width/2]], \
+                                                                           self.getXY('DeMux1to2_3')[0][1] + 5 * CellHeight - tmpDSspace-3*clkrouting/2+tmpMet2Width/2]], \
                                                                       [[self.getXY('Clk_Driver_1')[0][0] +
                                                                         self._DesignParameter['Clk_Driver_1']['_DesignObj'].clkinput[0] + 4 * tmpDSspace+tmpViaMet2Width,
                                                                         self.getXY('Clk_Driver_1')[0][1] + 5 * CellHeight+ tmpDSspace+3*clkrouting/2-tmpMet2Width/2],
@@ -3845,61 +3808,71 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                 _Datatype=DesignParameters._LayerMapping['METAL4'][1],
                 _Width=clkrouting4
             )
-            self._DesignParameter['_Met4_clkin']['_XYCoordinates'] = [[[self._DesignParameter['DeMux1to2_3'][
-                                                                            '_DesignObj'].clk[0] + 4 * tmpDSspace,
-                                                                        self._DesignParameter['DeMux1to2_3'][
-                                                                            '_DesignObj'].clk[1]], [
-                                                                           self._DesignParameter['DeMux1to2_3'][
-                                                                               '_DesignObj'].clk[0] + 4 * tmpDSspace,
-                                                                           self.getXY('DeMux1to2_3')[0][
-                                                                               1] + 5 * CellHeight+ tmpDSspace+3*clkrouting/2-tmpMet2Width/2]], \
-                                                                      [[self._DesignParameter['DeMux1to2_3'][
-                                                                            '_DesignObj'].clkb[0] - 4 * tmpDSspace,
-                                                                        self._DesignParameter['DeMux1to2_3'][
-                                                                            '_DesignObj'].clkb[1]], [
-                                                                           self._DesignParameter['DeMux1to2_3'][
-                                                                               '_DesignObj'].clkb[0] - 4 * tmpDSspace,
-                                                                           self.getXY('DeMux1to2_3')[0][
-                                                                               1] + 5 * CellHeight - tmpDSspace-3*clkrouting/2+tmpMet2Width/2]], \
-                                                                      [[self.getXY('Clk_Driver_1')[0][0] +
-                                                                        self._DesignParameter['Clk_Driver_1'][
-                                                                            '_DesignObj'].clkinput[0] + 4 * tmpDSspace,
-                                                                        self.getXY('Clk_Driver_1')[0][
-                                                                            1] +5 * CellHeight+ tmpDSspace+3*clkrouting/2-tmpMet2Width/2], \
+            self._DesignParameter['_Met4_clkin']['_XYCoordinates'] = [[[self._DesignParameter['DeMux1to2_3']['_DesignObj'].clk[0] + 4 * tmpDSspace,
+                                                                        self._DesignParameter['DeMux1to2_3']['_DesignObj'].clk[1]], [
+                                                                           self._DesignParameter['DeMux1to2_3']['_DesignObj'].clk[0] + 4 * tmpDSspace,
+                                                                           self.getXY('DeMux1to2_3')[0][1] + 5 * CellHeight+ tmpDSspace+3*clkrouting/2-tmpMet2Width/2]], \
+                                                                      [[self._DesignParameter['DeMux1to2_3']['_DesignObj'].clkb[0] - 4 * tmpDSspace,
+                                                                        self._DesignParameter['DeMux1to2_3']['_DesignObj'].clkb[1]], [
+                                                                           self._DesignParameter['DeMux1to2_3']['_DesignObj'].clkb[0] - 4 * tmpDSspace,
+                                                                           self.getXY('DeMux1to2_3')[0][1] + 5 * CellHeight - tmpDSspace-3*clkrouting/2+tmpMet2Width/2]]]  # clk_dividier signal
+
+            self._DesignParameter['_Met4_clkin_2'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL4'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL4'][1],
+                _Width=clkrouting4
+            )
+            self._DesignParameter['_Met4_clkin_2']['_XYCoordinates']= [[[self.getXY('Clk_Driver_1')[0][0] +
+                                                                        self._DesignParameter['Clk_Driver_1']['_DesignObj'].clkinput[0] + 4 * tmpDSspace,
+                                                                        self.getXY('Clk_Driver_1')[0][1] +5 * CellHeight+ tmpDSspace+3*clkrouting/2-tmpMet2Width/2], \
                                                                        [self.getXY('Clk_Driver_1')[0][0] +
-                                                                        self._DesignParameter['Clk_Driver_1'][
-                                                                            '_DesignObj'].clkinput[0] + 4 * tmpDSspace,
+                                                                        self._DesignParameter['Clk_Driver_1']['_DesignObj'].clkinput[0] + 4 * tmpDSspace,
                                                                         self.getXY('Clk_Driver_1')[0][1] +
-                                                                        self._DesignParameter['Clk_Driver_1'][
-                                                                            '_DesignObj'].clkinput[
-                                                                            1]]]]  # clk_dividier signal
+                                                                        self._DesignParameter['Clk_Driver_1']['_DesignObj'].clkinput[1]]]]
 
             self._DesignParameter['_ViaMet32Met4_clkin'] = self._SrefElementDeclaration(
                 _DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clkinIn{}'.format(_Name)))[0]
             self._DesignParameter['_ViaMet32Met4_clkin']['_DesignObj']._CalculateDesignParameterSameEnclosure(
                 **dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=1))
-            self._DesignParameter['_ViaMet32Met4_clkin']['_DesignObj']._DesignParameter['_Met4Layer'][
-                '_XWidth'] = tmpViaMet2Width
-            self._DesignParameter['_ViaMet32Met4_clkin']['_DesignObj']._DesignParameter['_Met3Layer'][
-                '_XWidth'] = tmpViaMet2Width
-            self._DesignParameter['_ViaMet32Met4_clkin']['_DesignObj']._DesignParameter['_COLayer'][
-                '_XWidth'] = tmpVia1YWidth
+            self._DesignParameter['_ViaMet32Met4_clkin']['_DesignObj']._DesignParameter['_Met4Layer']['_XWidth'] = tmpViaMet2Width
+            self._DesignParameter['_ViaMet32Met4_clkin']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'] = tmpViaMet2Width
+            self._DesignParameter['_ViaMet32Met4_clkin']['_DesignObj']._DesignParameter['_COLayer']['_XWidth'] = tmpVia1YWidth
+
 
             self._DesignParameter['_ViaMet32Met4_clkin']['_XYCoordinates'] = [
                 [self._DesignParameter['DeMux1to2_3']['_DesignObj'].clk[0] + 4 * tmpDSspace,
                  self._DesignParameter['DeMux1to2_3']['_DesignObj'].clk[1]], \
-                [self._DesignParameter['DeMux1to2_3']['_DesignObj'].clk[0] + 4 * tmpDSspace,
-                 self.getXY('DeMux1to2_3')[0][1] + 5 * CellHeight+ tmpDSspace+3*clkrouting/2-tmpMet2Width/2], \
                 [self._DesignParameter['DeMux1to2_3']['_DesignObj'].clkb[0] - 4 * tmpDSspace,
-                 self._DesignParameter['DeMux1to2_3']['_DesignObj'].clkb[1]], \
-                [self._DesignParameter['DeMux1to2_3']['_DesignObj'].clkb[0] - 4 * tmpDSspace,
-                 self.getXY('DeMux1to2_3')[0][1] + 5 * CellHeight - tmpDSspace-3*clkrouting/2+tmpMet2Width/2], \
-                [self.getXY('Clk_Driver_1')[0][0] + self._DesignParameter['Clk_Driver_1']['_DesignObj'].clkinput[
-                    0] + 4 * tmpDSspace, self.getXY('Clk_Driver_1')[0][1] + 5 * CellHeight+ tmpDSspace+3*clkrouting/2-tmpMet2Width/2], \
-                [self.getXY('Clk_Driver_1')[0][0] + self._DesignParameter['Clk_Driver_1']['_DesignObj'].clkinput[
-                    0] + 4 * tmpDSspace,
-                 self.getXY('Clk_Driver_1')[0][1] + self._DesignParameter['Clk_Driver_1']['_DesignObj'].clkinput[1]]]
+                 self._DesignParameter['DeMux1to2_3']['_DesignObj'].clkb[1]]]
 
+            self._DesignParameter['_ViaMet32Met4_clkin2'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clkin2In{}'.format(_Name)))[0]
+            self._DesignParameter['_ViaMet32Met4_clkin2']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                **dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=1))
+            self._DesignParameter['_ViaMet32Met4_clkin2']['_DesignObj']._DesignParameter['_Met4Layer']['_XWidth'] = tmpViaMet2Width
+            self._DesignParameter['_ViaMet32Met4_clkin2']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'] = tmpViaMet2Width
+            self._DesignParameter['_ViaMet32Met4_clkin2']['_DesignObj']._DesignParameter['_COLayer']['_XWidth'] = tmpVia1YWidth
+
+            self._DesignParameter['_ViaMet32Met4_clkin2']['_XYCoordinates']=[[self._DesignParameter['DeMux1to2_3']['_DesignObj'].clk[0] + 4 * tmpDSspace,
+                 self.getXY('DeMux1to2_3')[0][1] + 5 * CellHeight+ tmpDSspace+3*clkrouting/2-tmpMet2Width/2],\
+                    [self.getXY('Clk_Driver_1')[0][0] + self._DesignParameter['Clk_Driver_1']['_DesignObj'].clkinput[0] + 4 * tmpDSspace,\
+                     self.getXY('Clk_Driver_1')[0][1] + 5 * CellHeight+ tmpDSspace+3*clkrouting/2-tmpMet2Width/2],\
+                [self._DesignParameter['DeMux1to2_3']['_DesignObj'].clkb[0] - 4 * tmpDSspace,
+                 self.getXY('DeMux1to2_3')[0][1] + 5 * CellHeight - tmpDSspace-3*clkrouting/2+tmpMet2Width/2]]
+
+            self._DesignParameter['_ViaMet32Met4_clkin_2'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clkin_2In{}'.format(_Name)))[0]
+            self._DesignParameter['_ViaMet32Met4_clkin_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                **dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=1))
+            self._DesignParameter['_ViaMet32Met4_clkin_2']['_DesignObj']._DesignParameter['_Met4Layer'][
+                '_XWidth'] = tmpViaMet2Width
+            self._DesignParameter['_ViaMet32Met4_clkin_2']['_DesignObj']._DesignParameter['_Met3Layer'][
+                '_XWidth'] = tmpViaMet2Width
+            self._DesignParameter['_ViaMet32Met4_clkin_2']['_DesignObj']._DesignParameter['_COLayer'][
+                '_XWidth'] = tmpVia1YWidth
+            self._DesignParameter['_ViaMet32Met4_clkin_2']['_XYCoordinates'] = \
+                [[self.getXY('Clk_Driver_1')[0][0] + self._DesignParameter['Clk_Driver_1']['_DesignObj'].clkinput[0] + 4 * tmpDSspace,
+                 self.getXY('Clk_Driver_1')[0][1] + self._DesignParameter['Clk_Driver_1']['_DesignObj'].clkinput[1]]]
             ####################### CLK input Routing end ##########################
 
             ####################### Clk_Driver 1 to 2 connection ##########################
@@ -4782,30 +4755,30 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             )
             self._DesignParameter['_Met3_clk1st_via2'] = self._PathElementDeclaration(
                 _Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1],
-                _Width=tmpMet2Width+16
+                _Width=tmpMet2Width
             )
-            self._DesignParameter['_ViaMet32Met4_clk1st'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clk1stIn{}'.format(_Name)))[0]
-            self._DesignParameter['_ViaMet32Met4_clk1st']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=1))
-            self._DesignParameter['_ViaMet32Met4_clk1st']['_DesignObj']._DesignParameter['_Met4Layer']['_YWidth'] = tmpViaMet2Width
-            self._DesignParameter['_ViaMet32Met4_clk1st']['_DesignObj']._DesignParameter['_Met3Layer']['_YWidth'] = tmpViaMet2Width
-            self._DesignParameter['_ViaMet32Met4_clk1st']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+            self._DesignParameter['_ViaMet32Met4_clk1st_del'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clk1st_delIn{}'.format(_Name)))[0]
+            self._DesignParameter['_ViaMet32Met4_clk1st_del']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=1))
+            self._DesignParameter['_ViaMet32Met4_clk1st_del']['_DesignObj']._DesignParameter['_Met4Layer']['_YWidth'] = tmpViaMet2Width
+            self._DesignParameter['_ViaMet32Met4_clk1st_del']['_DesignObj']._DesignParameter['_Met3Layer']['_YWidth'] = tmpViaMet2Width
+            self._DesignParameter['_ViaMet32Met4_clk1st_del']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
 
-            self._DesignParameter['_ViaMet32Met4_clk1st_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clk1st_2In{}'.format(_Name)))[0]
-            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=1))
-            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_DesignObj']._DesignParameter['_Met4Layer']['_XWidth'] = tmpViaminWidth
-            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'] = tmpViaminWidth
-            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_DesignObj']._DesignParameter['_COLayer']['_XWidth'] = tmpVia1YWidth
+            self._DesignParameter['_ViaMet32Met4_clk1st_2_del'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clk1st_2_delIn{}'.format(_Name)))[0]
+            self._DesignParameter['_ViaMet32Met4_clk1st_2_del']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=1))
+            self._DesignParameter['_ViaMet32Met4_clk1st_2_del']['_DesignObj']._DesignParameter['_Met4Layer']['_XWidth'] = tmpViaminWidth
+            self._DesignParameter['_ViaMet32Met4_clk1st_2_del']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'] = tmpViaminWidth
+            self._DesignParameter['_ViaMet32Met4_clk1st_2_del']['_DesignObj']._DesignParameter['_COLayer']['_XWidth'] = tmpVia1YWidth
 
 
 
-            self._DesignParameter['_ViaMet32Met4_clk1st']['_XYCoordinates']=[[self.getXY('Clk_Driver_1','DFFQb1','_qpin')[-1][0],self.getXY('Clk_Driver_1','DFFQb1','_qpin')[-1][1]]]
-            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'] =[[self.getXY('Clk_Driver_1','DFFQb1','_qbpin')[0][0]-tmpViaminWidth/2+tmpMet2Width/2,self._DesignParameter['Clk_Driver_1']['_DesignObj']._DesignParameter['DFFQb1']['_DesignObj'].iclk]]
+            self._DesignParameter['_ViaMet32Met4_clk1st_del']['_XYCoordinates']=[[self.getXY('Clk_Driver_1','DFFQb1','_qpin')[-1][0],self.getXY('Clk_Driver_1','DFFQb1','_qpin')[-1][1]]]
+            self._DesignParameter['_ViaMet32Met4_clk1st_2_del']['_XYCoordinates'] =[[self.getXY('Clk_Driver_1','DFFQb1','_qbpin')[0][0]-tmpViaminWidth/2+tmpMet2Width/2,self._DesignParameter['Clk_Driver_1']['_DesignObj']._DesignParameter['DFFQb1']['_DesignObj'].iclk]]
 
-            self._DesignParameter['_ViaMet32Met4_clk1st']['_XYCoordinates'].append([self.getXY('Clk_Driver_1','DFFQb2','_qpin')[-1][0],self.getXY('Clk_Driver_1','DFFQb2','_qpin')[-1][1]])
-            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'].append([self.getXY('Clk_Driver_1','DFFQb2','_qbpin')[0][0]-tmpViaminWidth/2+tmpMet2Width/2,self._DesignParameter['Clk_Driver_1']['_DesignObj']._DesignParameter['DFFQb2']['_DesignObj'].iclk])
+            self._DesignParameter['_ViaMet32Met4_clk1st_del']['_XYCoordinates'].append([self.getXY('Clk_Driver_1','DFFQb2','_qpin')[-1][0],self.getXY('Clk_Driver_1','DFFQb2','_qpin')[-1][1]])
+            self._DesignParameter['_ViaMet32Met4_clk1st_2_del']['_XYCoordinates'].append([self.getXY('Clk_Driver_1','DFFQb2','_qbpin')[0][0]-tmpViaminWidth/2+tmpMet2Width/2,self._DesignParameter['Clk_Driver_1']['_DesignObj']._DesignParameter['DFFQb2']['_DesignObj'].iclk])
 
             ### To fix minimum area M3 drc error
-            self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates']=[[[self.getXY('Clk_Driver_1','DFFQb2','_qpin')[-1][0],self.getXY('Clk_Driver_1','DFFQb2','_qpin')[-1][1]-tmpViaMet2Width/2],[self.getXY('Clk_Driver_1','DFFQb2','_qpin')[-1][0],self.getXY('Clk_Driver_1','DFFQb2','_qpin')[-1][1]+tmpViaminWidth-tmpViaMet2Width/2]]]
+            self._DesignParameter['_Met3_clk1st_via2']['_XYCoordinates']=[[[self.getXY('Clk_Driver_1','DFFQb2','_qpin')[-1][0],self.getXY('Clk_Driver_1','DFFQb2','_qpin')[-1][1]-tmpViaMet2Width/2],[self.getXY('Clk_Driver_1','DFFQb2','_qpin')[-1][0],self.getXY('Clk_Driver_1','DFFQb2','_qpin')[-1][1]+tmpViaminWidth-tmpViaMet2Width/2]]]
 
 
             #### DeMux1to2_1
@@ -4826,8 +4799,18 @@ class Deserializer1toN(StickDiagram._StickDiagram):
 
             self._DesignParameter['_Met3_clk1st']['_XYCoordinates'].append([[self.getXY('Clk_Driver_1','DFFQb1','_qbpin')[0][0],CellHeight-tmpDSspace-tmpDSspace],\
                                                                             [self._DesignParameter['DeMux1to2_1']['_DesignObj'].clkb[0],CellHeight-tmpDSspace-tmpDSspace]])#qb
+
+
+            self._DesignParameter['_ViaMet32Met4_clk1st_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clk1st_2In{}'.format(_Name)))[0]
+            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=1))
+            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_DesignObj']._DesignParameter['_Met4Layer']['_XWidth'] = tmpViaminWidth
+            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_DesignObj']._DesignParameter['_Met3Layer']['_XWidth'] = tmpViaminWidth
+            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_DesignObj']._DesignParameter['_COLayer']['_XWidth'] = tmpVia1YWidth
+
+
+
             #Demux1to2_1 via
-            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'].append([self._DesignParameter['DeMux1to2_1']['_DesignObj'].clk[0]-tmpViaminWidth/2+tmpMet2Width / 2,self.getXY('DeMux1to2_1')[0][1]+self._DesignParameter['DeMux1to2_1']['_DesignObj'].clk[1]])
+            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates']=[[self._DesignParameter['DeMux1to2_1']['_DesignObj'].clk[0]-tmpViaminWidth/2+tmpMet2Width / 2,self.getXY('DeMux1to2_1')[0][1]+self._DesignParameter['DeMux1to2_1']['_DesignObj'].clk[1]]]
             self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'].append([self._DesignParameter['DeMux1to2_1']['_DesignObj'].clkb[0]-tmpViaminWidth/2+tmpMet2Width / 2,self.getXY('DeMux1to2_1')[0][1]+self._DesignParameter['DeMux1to2_1']['_DesignObj'].clkb[1]])
             self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'].append([self._DesignParameter['DeMux1to2_1']['_DesignObj'].clk[0]+tmpViaminWidth/2-tmpMet2Width / 2,CellHeight+tmpDSspace+2*tmpDSspace])
             self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'].append([self.getXY('Clk_Driver_1','DFFQb1','_qpin')[-1][0]-tmpViaminWidth/2+tmpMet2Width / 2,CellHeight+tmpDSspace+2*tmpDSspace])
@@ -4957,10 +4940,32 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             self._DesignParameter['_ViaMet32Met4_clk2nd_2']['_DesignObj']._DesignParameter['_COLayer'][
                 '_XWidth'] = tmpVia1YWidth
 
-            self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'] = [
+            self._DesignParameter['_ViaMet32Met4_clk2nd_del'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clk2nd_delIn{}'.format(_Name)))[0]
+            self._DesignParameter['_ViaMet32Met4_clk2nd_del']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                **dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=1))
+            self._DesignParameter['_ViaMet32Met4_clk2nd_del']['_DesignObj']._DesignParameter['_Met4Layer'][
+                '_YWidth'] = tmpViaMet2Width
+            self._DesignParameter['_ViaMet32Met4_clk2nd_del']['_DesignObj']._DesignParameter['_Met3Layer'][
+                '_YWidth'] = tmpViaMet2Width
+            self._DesignParameter['_ViaMet32Met4_clk2nd_del']['_DesignObj']._DesignParameter['_COLayer'][
+                '_YWidth'] = tmpVia1YWidth
+
+            self._DesignParameter['_ViaMet32Met4_clk2nd_del_2'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clk2nd_del_2In{}'.format(_Name)))[0]
+            self._DesignParameter['_ViaMet32Met4_clk2nd_del_2']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                **dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=1))
+            self._DesignParameter['_ViaMet32Met4_clk2nd_del_2']['_DesignObj']._DesignParameter['_Met4Layer'][
+                '_XWidth'] = tmpViaminWidth
+            self._DesignParameter['_ViaMet32Met4_clk2nd_del_2']['_DesignObj']._DesignParameter['_Met3Layer'][
+                '_XWidth'] = tmpViaminWidth
+            self._DesignParameter['_ViaMet32Met4_clk2nd_del_2']['_DesignObj']._DesignParameter['_COLayer'][
+                '_XWidth'] = tmpVia1YWidth
+
+            self._DesignParameter['_ViaMet32Met4_clk2nd_del']['_XYCoordinates'] = [
                 [self.getXY('Clk_Driver_2', 'DFFQb1', '_qpin')[-1][0],
                  self.getXY('Clk_Driver_2', 'DFFQb1', '_qpin')[-1][1]]]
-            self._DesignParameter['_ViaMet32Met4_clk2nd_2']['_XYCoordinates'] = [
+            self._DesignParameter['_ViaMet32Met4_clk2nd_del_2']['_XYCoordinates'] = [
                 [self.getXY('Clk_Driver_2', 'DFFQb1', '_qbpin')[0][0] - tmpViaminWidth / 2 + tmpMet2Width / 2,
                  self._DesignParameter['Clk_Driver_2']['_DesignObj']._DesignParameter['DFFQb1']['_DesignObj'].iclk]]
 
@@ -4980,6 +4985,12 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                      [self._DesignParameter['DeMux1to4_1']['_XYCoordinates'][0][0] +
                       self._DesignParameter['DeMux1to4_1']['_DesignObj'].clkb[0] + 4 * tmpDSspace,
                       -2 * CellHeight - tmpDSspace-tmpDSspace]]]  # f16
+
+                self._DesignParameter['_Met4_clk2nd_del'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL4'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL4'][1],
+                _Width=tmpMet2Width
+                )
 
                 self._DesignParameter['_Met4_clk2nd']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb1',
                                                                                             '_qbpin')[0][0],
@@ -5028,7 +5039,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                  - CellHeight - 2 * tmpDSspace]])  # f16_90b
 
                 # added
-                self._DesignParameter['_Met4_clk2nd']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
+                self._DesignParameter['_Met4_clk2nd_del']['_XYCoordinates']=[[[self.getXY('Clk_Driver_2', 'DFFQb2',
                                                                                             '_qbpin')[0][
                                                                                      0] + 12 * tmpDSspace,
                                                                                  self._DesignParameter['Clk_Driver_2'][
@@ -5037,9 +5048,9 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                 [self.getXY('Clk_Driver_2', 'DFFQb2',
                                                                                             '_qbpin')[0][
                                                                                      0] + 12 * tmpDSspace,
-                                                                                 -tmpDSspace-tmpDSspace]])  # f16_90
+                                                                                 -tmpDSspace-tmpDSspace]]]  # f16_90
 
-                self._DesignParameter['_Met4_clk2nd']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
+                self._DesignParameter['_Met4_clk2nd_del']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
                                                                                             '_qbpin')[0][
                                                                                      0] + 10 * tmpDSspace,
                                                                                  self._DesignParameter['Clk_Driver_2'][
@@ -5115,7 +5126,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                  2 * CellHeight + 2 * tmpDSspace]])  # f16_90b
 
                 # added
-                self._DesignParameter['_Met4_clk2nd']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
+                self._DesignParameter['_Met4_clk2nd_del']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
                                                                                             '_qbpin')[0][
                                                                                      0] + 12 * tmpDSspace,
                                                                                  self._DesignParameter['Clk_Driver_2'][
@@ -5126,7 +5137,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                      0] + 12 * tmpDSspace,
                                                                                  1 * CellHeight+tmpDSspace+tmpDSspace]])  # f16_90
 
-                self._DesignParameter['_Met4_clk2nd']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
+                self._DesignParameter['_Met4_clk2nd_del']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
                                                                                             '_qbpin')[0][
                                                                                      0] + 10 * tmpDSspace,
                                                                                  self._DesignParameter['Clk_Driver_2'][
@@ -5136,26 +5147,38 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                             '_qbpin')[0][
                                                                                      0] + 10 * tmpDSspace,
                                                                                  1 * CellHeight - 2 * tmpDSspace]])  # f16_90b
+                self._DesignParameter['_ViaMet32Met4_clk2nd22'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clk2nd22In{}'.format(_Name)))[0]
+                self._DesignParameter['_ViaMet32Met4_clk2nd22']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                    **dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=1))
+                self._DesignParameter['_ViaMet32Met4_clk2nd22']['_DesignObj']._DesignParameter['_Met4Layer'][
+                    '_YWidth'] = tmpViaMet2Width
+                self._DesignParameter['_ViaMet32Met4_clk2nd22']['_DesignObj']._DesignParameter['_Met3Layer'][
+                    '_YWidth'] = tmpViaMet2Width
+                self._DesignParameter['_ViaMet32Met4_clk2nd22']['_DesignObj']._DesignParameter['_COLayer'][
+                    '_YWidth'] = tmpVia1YWidth
+
+
                 ## via added for added routing (f16_90 f16_90b)
 
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
+                self._DesignParameter['_ViaMet32Met4_clk2nd22']['_XYCoordinates']=[
                     [self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 12 * tmpDSspace,
                      self._DesignParameter['Clk_Driver_2']['_DesignObj']._DesignParameter['DFFQb2'][
-                         '_DesignObj'].iclkb])  # f16_90
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
+                         '_DesignObj'].iclkb]]  # f16_90
+                self._DesignParameter['_ViaMet32Met4_clk2nd22']['_XYCoordinates'].append(
                     [self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 10 * tmpDSspace,
                      self._DesignParameter['Clk_Driver_2']['_DesignObj']._DesignParameter['DFFQb2'][
                          '_DesignObj'].iclk])  # f16_90b
 
                 # upper
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
+                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates']=[[self._DesignParameter[
                                                                                             'DeMux1to4_1'][
                                                                                             '_XYCoordinates'][0][0] +
                                                                                         self._DesignParameter[
                                                                                             'DeMux1to4_1'][
                                                                                             '_DesignObj'].clk90[2][
                                                                                             0] + 4 * tmpDSspace,
-                                                                                        1 * CellHeight+tmpDSspace+tmpDSspace])  # f16_90
+                                                                                        1 * CellHeight+tmpDSspace+tmpDSspace+tmpViaMet2Width/2-tmpMet2Width/2]]  # f16_90
                 self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
                                                                                             'DeMux1to4_1'][
                                                                                             '_XYCoordinates'][0][0] +
@@ -5163,12 +5186,12 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                             'DeMux1to4_1'][
                                                                                             '_DesignObj'].clk90[2][
                                                                                             0] + 3 * tmpDSspace,
-                                                                                        1 * CellHeight - 2 * tmpDSspace])  # f16_90b
+                                                                                        1 * CellHeight - 2 * tmpDSspace-tmpViaMet2Width/2+tmpMet2Width/2])  # f16_90b
                 self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
-                    [self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 12 * tmpDSspace, 1 * CellHeight+tmpDSspace+tmpDSspace])  # f16_90
+                    [self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 12 * tmpDSspace, 1 * CellHeight+tmpDSspace+tmpDSspace+tmpViaMet2Width/2-tmpMet2Width/2])  # f16_90
                 self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
                     [self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 10 * tmpDSspace,
-                     1 * CellHeight - 2 * tmpDSspace])  # f16_90b
+                     1 * CellHeight - 2 * tmpDSspace-tmpViaMet2Width/2+tmpMet2Width/2])  # f16_90b
 
                 # lower
                 self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
@@ -5177,7 +5200,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                         self._DesignParameter[
                                                                                             'DeMux1to4_1'][
                                                                                             '_DesignObj'].clk90[2][
-                                                                                            0] + 4 * tmpDSspace, -2*tmpDSspace])
+                                                                                            0] + 4 * tmpDSspace, -2*tmpDSspace-tmpViaMet2Width/2+tmpMet2Width/2])
                 self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
                                                                                             'DeMux1to4_1'][
                                                                                             '_XYCoordinates'][0][0] +
@@ -5185,64 +5208,49 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                             'DeMux1to4_1'][
                                                                                             '_DesignObj'].clk90[2][
                                                                                             0] + 3 * tmpDSspace,
-                                                                                        2 * tmpDSspace])
+                                                                                        2 * tmpDSspace+tmpViaMet2Width/2-tmpMet2Width/2])
                 self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
-                    [self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 12 * tmpDSspace, -2*tmpDSspace])  # f16_90
+                    [self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 12 * tmpDSspace, -2*tmpDSspace-tmpViaMet2Width/2+tmpMet2Width/2])  # f16_90
                 self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
                     [self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 10 * tmpDSspace,
-                     +2 * tmpDSspace])  # f16_90b
+                     +2 * tmpDSspace+tmpViaMet2Width/2-tmpMet2Width/2])  # f16_90b
 
+                self._DesignParameter['_Met3_clk1st_via3'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1],
+                _Width=tmpMet2Width
+                )
                 ### rotue revise added met3
                 # Qb2 stage met3
-                self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates'].append(
-                    [[self.getXY('Clk_Driver_2', 'DFFQb2',
-                                 '_qbpin')[0][
-                          0] + 12 * tmpDSspace,
-                      self._DesignParameter['Clk_Driver_2'][
-                          '_DesignObj']._DesignParameter[
-                          'DFFQb2']['_DesignObj'].iclkb], \
-                     [self.getXY('Clk_Driver_2', 'DFFQb2',
-                                 '_qpin')[-1][0],
-                      self._DesignParameter['Clk_Driver_2'][
-                          '_DesignObj']._DesignParameter[
-                          'DFFQb2']['_DesignObj'].iclkb]])
-                self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates'].append(
-                    [[self.getXY('Clk_Driver_2', 'DFFQb2',
-                                 '_qbpin')[0][
-                          0] + 10 * tmpDSspace,
-                      self._DesignParameter['Clk_Driver_2'][
-                          '_DesignObj']._DesignParameter[
-                          'DFFQb2']['_DesignObj'].iclk], \
-                     [self.getXY('Clk_Driver_2', 'DFFQb2',
-                                 '_qbpin')[0][0],
-                      self._DesignParameter['Clk_Driver_2'][
-                          '_DesignObj']._DesignParameter[
-                          'DFFQb2']['_DesignObj'].iclk]])
+                self._DesignParameter['_Met3_clk1st_via3']['_XYCoordinates']=[
+                    [[self.getXY('Clk_Driver_2', 'DFFQb2','_qbpin')[0][0] + 12 * tmpDSspace,
+                      self._DesignParameter['Clk_Driver_2']['_DesignObj']._DesignParameter['DFFQb2']['_DesignObj'].iclkb], \
+                     [self.getXY('Clk_Driver_2', 'DFFQb2','_qpin')[-1][0],
+                      self._DesignParameter['Clk_Driver_2']['_DesignObj']._DesignParameter['DFFQb2']['_DesignObj'].iclkb]]]
+                self._DesignParameter['_Met3_clk1st_via3']['_XYCoordinates'].append(
+                    [[self.getXY('Clk_Driver_2', 'DFFQb2','_qbpin')[0][0] + 10 * tmpDSspace,
+                      self._DesignParameter['Clk_Driver_2']['_DesignObj']._DesignParameter['DFFQb2']['_DesignObj'].iclk], \
+                     [self.getXY('Clk_Driver_2', 'DFFQb2','_qbpin')[0][0],
+                      self._DesignParameter['Clk_Driver_2']['_DesignObj']._DesignParameter['DFFQb2']['_DesignObj'].iclk]])
                 # upper
-                self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates'].append(
-                    [[self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 12 * tmpDSspace, 1 * CellHeight+2*tmpDSspace], \
+                self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates']=[
+                    [[self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 12 * tmpDSspace, 1 * CellHeight+2*tmpDSspace+30], \
                      [self._DesignParameter['DeMux1to4_1']['_XYCoordinates'][0][0] +
-                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 4 * tmpDSspace, 1 * CellHeight+2*tmpDSspace]])
+                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 4 * tmpDSspace, 1 * CellHeight+2*tmpDSspace+30]]]
                 self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates'].append(
-                    [[self.getXY('Clk_Driver_2', 'DFFQb2',
-                                 '_qbpin')[0][
-                          0] + 10 * tmpDSspace,
-                      1 * CellHeight - 2 * tmpDSspace], \
-                     [self._DesignParameter['DeMux1to4_1'][
-                          '_XYCoordinates'][0][0] +
-                      self._DesignParameter['DeMux1to4_1'][
-                          '_DesignObj'].clk90[2][
-                          0] + 3 * tmpDSspace,
-                      1 * CellHeight - 2 * tmpDSspace]])
+                    [[self.getXY('Clk_Driver_2', 'DFFQb2','_qbpin')[0][0] + 10 * tmpDSspace,
+                      1 * CellHeight - 2 * tmpDSspace-30], \
+                     [self._DesignParameter['DeMux1to4_1']['_XYCoordinates'][0][0] +
+                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 3 * tmpDSspace,
+                      1 * CellHeight - 2 * tmpDSspace-30]])
                 # lower
                 self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates'].append(
-                    [[self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 12 * tmpDSspace, -2*tmpDSspace], \
+                    [[self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 12 * tmpDSspace, -2*tmpDSspace-30], \
                      [self._DesignParameter['DeMux1to4_1']['_XYCoordinates'][0][0] +
-                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 4 * tmpDSspace, -2*tmpDSspace]])
+                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 4 * tmpDSspace, -2*tmpDSspace-30]])
                 self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates'].append(
-                    [[self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 10 * tmpDSspace, +2 * tmpDSspace], \
+                    [[self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 10 * tmpDSspace, +2 * tmpDSspace+30], \
                      [self._DesignParameter['DeMux1to4_1']['_XYCoordinates'][0][0] +
-                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 3 * tmpDSspace, 2 * tmpDSspace]])
+                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 3 * tmpDSspace, 2 * tmpDSspace+30]])
 
             else:
                 #### clk driver to demux
@@ -5302,8 +5310,14 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                      0] + 3 * tmpDSspace,
                                                                                  - CellHeight - 2 * tmpDSspace]])  # f16_90b
 
+                self._DesignParameter['_Met4_clk2nd_del'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL4'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL4'][1],
+                _Width=tmpMet2Width
+                )
+
                 # added
-                self._DesignParameter['_Met4_clk2nd']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
+                self._DesignParameter['_Met4_clk2nd_del']['_XYCoordinates']=[[[self.getXY('Clk_Driver_2', 'DFFQb2',
                                                                                             '_qbpin')[0][
                                                                                      0] + 22 * tmpDSspace,
                                                                                  self._DesignParameter['Clk_Driver_2'][
@@ -5312,9 +5326,9 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                 [self.getXY('Clk_Driver_2', 'DFFQb2',
                                                                                             '_qbpin')[0][
                                                                                      0] + 22 * tmpDSspace,
-                                                                                 -2*tmpDSspace]])  # f16_90
+                                                                                 -2*tmpDSspace]]]  # f16_90
 
-                self._DesignParameter['_Met4_clk2nd']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
+                self._DesignParameter['_Met4_clk2nd_del']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
                                                                                             '_qbpin')[0][
                                                                                      0] + 20 * tmpDSspace,
                                                                                  self._DesignParameter['Clk_Driver_2'][
@@ -5390,7 +5404,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                  2 * CellHeight + 2 * tmpDSspace]])  # f16_90b
 
                 # added
-                self._DesignParameter['_Met4_clk2nd']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
+                self._DesignParameter['_Met4_clk2nd_del']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
                                                                                             '_qbpin')[0][
                                                                                      0] + 22 * tmpDSspace,
                                                                                  self._DesignParameter['Clk_Driver_2'][
@@ -5401,7 +5415,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                      0] + 22 * tmpDSspace,
                                                                                  1 * CellHeight+2*tmpDSspace]])  # f16_90
 
-                self._DesignParameter['_Met4_clk2nd']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
+                self._DesignParameter['_Met4_clk2nd_del']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb2',
                                                                                             '_qbpin')[0][
                                                                                      0] + 20 * tmpDSspace,
                                                                                  self._DesignParameter['Clk_Driver_2'][
@@ -5411,26 +5425,41 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                             '_qbpin')[0][
                                                                                      0] + 20 * tmpDSspace,
                                                                                  1 * CellHeight - 2 * tmpDSspace]])  # f16_90b
+
+
+                self._DesignParameter['_ViaMet32Met4_clk2nd22'] = self._SrefElementDeclaration(
+                _DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clk2nd22In{}'.format(_Name)))[0]
+                self._DesignParameter['_ViaMet32Met4_clk2nd22']['_DesignObj']._CalculateDesignParameterSameEnclosure(
+                    **dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=1))
+                self._DesignParameter['_ViaMet32Met4_clk2nd22']['_DesignObj']._DesignParameter['_Met4Layer'][
+                    '_YWidth'] = tmpViaMet2Width
+                self._DesignParameter['_ViaMet32Met4_clk2nd22']['_DesignObj']._DesignParameter['_Met3Layer'][
+                    '_YWidth'] = tmpViaMet2Width
+                self._DesignParameter['_ViaMet32Met4_clk2nd22']['_DesignObj']._DesignParameter['_COLayer'][
+                    '_YWidth'] = tmpVia1YWidth
+
+
+
                 ## via added for added routing (f16_90 f16_90b)
 
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
+                self._DesignParameter['_ViaMet32Met4_clk2nd22']['_XYCoordinates']=[
                     [self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 22 * tmpDSspace,
                      self._DesignParameter['Clk_Driver_2']['_DesignObj']._DesignParameter['DFFQb2'][
-                         '_DesignObj'].iclkb])  # f16_90
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
+                         '_DesignObj'].iclkb]] # f16_90
+                self._DesignParameter['_ViaMet32Met4_clk2nd22']['_XYCoordinates'].append(
                     [self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 20 * tmpDSspace,
                      self._DesignParameter['Clk_Driver_2']['_DesignObj']._DesignParameter['DFFQb2'][
                          '_DesignObj'].iclk])  # f16_90b
 
                 # upper
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
+                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates']=[[self._DesignParameter[
                                                                                             'DeMux1to4_1'][
                                                                                             '_XYCoordinates'][0][0] +
                                                                                         self._DesignParameter[
                                                                                             'DeMux1to4_1'][
                                                                                             '_DesignObj'].clk90[2][
                                                                                             0] + 4 * tmpDSspace,
-                                                                                        1 * CellHeight+tmpDSspace+tmpDSspace])  # f16_90
+                                                                                        1 * CellHeight+tmpDSspace+tmpDSspace]]  # f16_90
                 self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
                                                                                             'DeMux1to4_1'][
                                                                                             '_XYCoordinates'][0][0] +
@@ -5466,10 +5495,13 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                 self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
                     [self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 20 * tmpDSspace,
                      +2 * tmpDSspace])  # f16_90b
-
+                self._DesignParameter['_Met3_clk1st_via3'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL3'][0], _Datatype=DesignParameters._LayerMapping['METAL3'][1],
+                _Width=tmpMet2Width
+                )
                 ### rotue revise added met3
                 # Qb2 stage met3
-                self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates'].append(
+                self._DesignParameter['_Met3_clk1st_via3']['_XYCoordinates']=[
                     [[self.getXY('Clk_Driver_2', 'DFFQb2',
                                  '_qbpin')[0][
                           0] + 22 * tmpDSspace,
@@ -5480,8 +5512,8 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                  '_qpin')[-1][0],
                       self._DesignParameter['Clk_Driver_2'][
                           '_DesignObj']._DesignParameter[
-                          'DFFQb2']['_DesignObj'].iclkb]])
-                self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates'].append(
+                          'DFFQb2']['_DesignObj'].iclkb]]]
+                self._DesignParameter['_Met3_clk1st_via3']['_XYCoordinates'].append(
                     [[self.getXY('Clk_Driver_2', 'DFFQb2',
                                  '_qbpin')[0][
                           0] + 20 * tmpDSspace,
@@ -5494,30 +5526,25 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                           '_DesignObj']._DesignParameter[
                           'DFFQb2']['_DesignObj'].iclk]])
                 # upper
-                self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates'].append(
-                    [[self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 22 * tmpDSspace, 1 * CellHeight+tmpDSspace+tmpDSspace], \
+                self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates']=[
+                    [[self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 22 * tmpDSspace, 1 * CellHeight+tmpDSspace+tmpDSspace+30], \
                      [self._DesignParameter['DeMux1to4_1']['_XYCoordinates'][0][0] +
-                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 4 * tmpDSspace, 1 * CellHeight+tmpDSspace+tmpDSspace]])
+                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 4 * tmpDSspace, 1 * CellHeight+tmpDSspace+tmpDSspace+30]]]
                 self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates'].append(
-                    [[self.getXY('Clk_Driver_2', 'DFFQb2',
-                                 '_qbpin')[0][
-                          0] + 20 * tmpDSspace,
-                      1 * CellHeight - 2 * tmpDSspace], \
-                     [self._DesignParameter['DeMux1to4_1'][
-                          '_XYCoordinates'][0][0] +
-                      self._DesignParameter['DeMux1to4_1'][
-                          '_DesignObj'].clk90[2][
-                          0] + 3 * tmpDSspace,
-                      1 * CellHeight - 2 * tmpDSspace]])
+                    [[self.getXY('Clk_Driver_2', 'DFFQb2','_qbpin')[0][0] + 20 * tmpDSspace,
+                      1 * CellHeight - 2 * tmpDSspace-30], \
+                     [self._DesignParameter['DeMux1to4_1']['_XYCoordinates'][0][0] +
+                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 3 * tmpDSspace,
+                      1 * CellHeight - 2 * tmpDSspace-30]])
                 # lower
                 self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates'].append(
-                    [[self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 22 * tmpDSspace, -tmpDSspace-tmpDSspace], \
+                    [[self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 22 * tmpDSspace, -tmpDSspace-tmpDSspace-30], \
                      [self._DesignParameter['DeMux1to4_1']['_XYCoordinates'][0][0] +
-                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 4 * tmpDSspace, -tmpDSspace-tmpDSspace]])
+                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 4 * tmpDSspace, -tmpDSspace-tmpDSspace-30]])
                 self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates'].append(
-                    [[self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 20 * tmpDSspace, +2 * tmpDSspace], \
+                    [[self.getXY('Clk_Driver_2', 'DFFQb2', '_qbpin')[0][0] + 20 * tmpDSspace, +2 * tmpDSspace+30], \
                      [self._DesignParameter['DeMux1to4_1']['_XYCoordinates'][0][0] +
-                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 3 * tmpDSspace, 2 * tmpDSspace]])
+                      self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0] + 3 * tmpDSspace, 2 * tmpDSspace+30]])
 
             # #upper
             # self._DesignParameter['_Met3_clk1st_via']['_XYCoordinates'].append([[self._DesignParameter['DeMux1to4_1']['_XYCoordinates'][0][0]+self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk90[2][0]+3*tmpDSspace,1*CellHeight-tmpDSspace],\
@@ -5545,38 +5572,38 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                 '_XYCoordinates'][0][0] +
                                                                             self._DesignParameter['DeMux1to4_1'][
                                                                                 '_DesignObj'].clkb[0] + 3 * tmpDSspace,
-                                                                            1 * CellHeight - tmpDSspace-tmpDSspace + tmpViaMet2Width / 2 - tmpMet2Width / 2], \
+                                                                            1 * CellHeight - tmpDSspace-tmpDSspace -30], \
                                                                            [self.getXY('Clk_Driver_2', 'DFFQb1',
                                                                                        '_qbpin')[0][0],
-                                                                            1 * CellHeight - tmpDSspace-tmpDSspace + tmpViaMet2Width / 2 - tmpMet2Width / 2]]]  # f16b
+                                                                            1 * CellHeight - tmpDSspace-tmpDSspace -30]]]  # f16b
             self._DesignParameter['_Met3_clk2nd_Q1']['_XYCoordinates'].append([[self._DesignParameter['DeMux1to4_1'][
                                                                                     '_XYCoordinates'][0][0] +
                                                                                 self._DesignParameter['DeMux1to4_1'][
                                                                                     '_DesignObj'].clkb[
                                                                                     0] + 4 * tmpDSspace,
-                                                                                1 * CellHeight + tmpDSspace +tmpDSspace- tmpViaMet2Width / 2 + tmpMet2Width / 2], \
+                                                                                1 * CellHeight + tmpDSspace +tmpDSspace+30], \
                                                                                [self.getXY('Clk_Driver_2', 'DFFQb1',
                                                                                            '_qpin')[-1][0],
-                                                                                1 * CellHeight + tmpDSspace +tmpDSspace- tmpViaMet2Width / 2 + tmpMet2Width / 2]])  # f16
+                                                                                1 * CellHeight + tmpDSspace +tmpDSspace+30]])  # f16
             # lower
             self._DesignParameter['_Met3_clk2nd_Q1']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb1',
                                                                                            '_qpin')[-1][0],
-                                                                                -tmpDSspace -tmpDSspace+ tmpViaMet2Width / 2 - tmpMet2Width / 2], \
+                                                                                -tmpDSspace -tmpDSspace-30], \
                                                                                [self._DesignParameter['DeMux1to4_1'][
                                                                                     '_XYCoordinates'][0][0] +
                                                                                 self._DesignParameter['DeMux1to4_1'][
                                                                                     '_DesignObj'].clkb[
                                                                                     0] + 4 * tmpDSspace,
-                                                                                -tmpDSspace-tmpDSspace + tmpViaMet2Width / 2 - tmpMet2Width / 2]])  # f16
+                                                                                -tmpDSspace-tmpDSspace-30 ]])  # f16
             self._DesignParameter['_Met3_clk2nd_Q1']['_XYCoordinates'].append([[self.getXY('Clk_Driver_2', 'DFFQb1',
                                                                                            '_qbpin')[0][0],
-                                                                                +tmpDSspace +tmpDSspace- tmpViaMet2Width / 2 + tmpMet2Width / 2], \
+                                                                                +tmpDSspace +tmpDSspace+30], \
                                                                                [self._DesignParameter['DeMux1to4_1'][
                                                                                     '_XYCoordinates'][0][0] +
                                                                                 self._DesignParameter['DeMux1to4_1'][
                                                                                     '_DesignObj'].clkb[
                                                                                     0] + 3 * tmpDSspace,
-                                                                                tmpDSspace+tmpDSspace - tmpViaMet2Width / 2 + tmpMet2Width / 2]])  # f16b
+                                                                                tmpDSspace+tmpDSspace +30]])  # f16b
 
             #### demux to demux clk routing
             ### metal4
@@ -5922,14 +5949,9 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             ############ clk routing via
             # added via\
             # upper #f16 and f16b
-            self._DesignParameter['_ViaMet32Met4_clk2nd_2']['_XYCoordinates'].append([self._DesignParameter[
-                                                                                          'DeMux1to4_1'][
-                                                                                          '_XYCoordinates'][0][0] +
-                                                                                      self._DesignParameter[
-                                                                                          'DeMux1to4_1'][
-                                                                                          '_DesignObj'].clk[
-                                                                                          0] - tmpViaminWidth / 2 + tmpMet2Width / 2,
-                                                                                      3 * CellHeight + tmpDSspace+tmpDSspace])
+            self._DesignParameter['_ViaMet32Met4_clk2nd_2']['_XYCoordinates']=[[self._DesignParameter['DeMux1to4_1']['_XYCoordinates'][0][0] +
+                                                   self._DesignParameter['DeMux1to4_1']['_DesignObj'].clk[0] - tmpViaminWidth / 2 + tmpMet2Width / 2,
+                                                                                      3 * CellHeight + tmpDSspace+tmpDSspace]]
             self._DesignParameter['_ViaMet32Met4_clk2nd_2']['_XYCoordinates'].append([self._DesignParameter[
                                                                                           'DeMux1to4_1'][
                                                                                           '_XYCoordinates'][0][0] +
@@ -5958,32 +5980,32 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                  self._DesignParameter['DeMux1to4_1']['_DesignObj'].clkb[0] + 3 * tmpDSspace
             b1 = self.getXY('Clk_Driver_2', 'DFFQb1', '_qbpin')[0][0]
 
-            if 0 < b1 - a1 < tmpDSspace + 1:
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
-                                                                                            'DeMux1to4_1'][
-                                                                                            '_XYCoordinates'][0][0] +
-                                                                                        self._DesignParameter[
-                                                                                            'DeMux1to4_1'][
-                                                                                            '_DesignObj'].clkb[
-                                                                                            0] + 3 * tmpDSspace,
-                                                                                        1 * CellHeight -tmpDSspace- tmpDSspace + tmpViaMet2Width / 2])
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
-                    [self.getXY('Clk_Driver_2', 'DFFQb1', '_qpin')[-1][0],
-                     1 * CellHeight + tmpDSspace+tmpDSspace - tmpViaMet2Width / 2])
-            else:
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
-                                                                                            'DeMux1to4_1'][
-                                                                                            '_XYCoordinates'][0][0] +
-                                                                                        self._DesignParameter[
-                                                                                            'DeMux1to4_1'][
-                                                                                            '_DesignObj'].clkb[
-                                                                                            0] + 3 * tmpDSspace,
-                                                                                        1 * CellHeight - tmpDSspace-tmpDSspace])
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
-                    [self.getXY('Clk_Driver_2', 'DFFQb1', '_qpin')[-1][0], 1 * CellHeight + tmpDSspace+tmpDSspace])
+            # if 0 < b1 - a1 < tmpDSspace + 1:
+            self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
+                                                                                        'DeMux1to4_1'][
+                                                                                        '_XYCoordinates'][0][0] +
+                                                                                    self._DesignParameter[
+                                                                                        'DeMux1to4_1'][
+                                                                                        '_DesignObj'].clkb[
+                                                                                        0] + 3 * tmpDSspace,
+                                                                                    1 * CellHeight -tmpDSspace- tmpDSspace - tmpViaMet2Width / 2+tmpMet2Width/2])
+            self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
+                [self.getXY('Clk_Driver_2', 'DFFQb1', '_qpin')[-1][0],
+                 1 * CellHeight + tmpDSspace+tmpDSspace + tmpViaMet2Width / 2-tmpMet2Width/2])
+            # else:
+            #     self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
+            #                                                                                 'DeMux1to4_1'][
+            #                                                                                 '_XYCoordinates'][0][0] +
+            #                                                                             self._DesignParameter[
+            #                                                                                 'DeMux1to4_1'][
+            #                                                                                 '_DesignObj'].clkb[
+            #                                                                                 0] + 3 * tmpDSspace,
+            #                                                                             1 * CellHeight - tmpDSspace-tmpDSspace])
+            #     self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
+            #         [self.getXY('Clk_Driver_2', 'DFFQb1', '_qpin')[-1][0], 1 * CellHeight + tmpDSspace+tmpDSspace])
 
             self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
-                [self.getXY('Clk_Driver_2', 'DFFQb1', '_qbpin')[0][0], 1 * CellHeight - tmpDSspace-tmpDSspace])
+                [self.getXY('Clk_Driver_2', 'DFFQb1', '_qbpin')[0][0], 1 * CellHeight - tmpDSspace-tmpDSspace- tmpViaMet2Width / 2+tmpMet2Width/2])
             self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
                                                                                         'DeMux1to4_1'][
                                                                                         '_XYCoordinates'][0][0] +
@@ -5991,7 +6013,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                         'DeMux1to4_1'][
                                                                                         '_DesignObj'].clkb[
                                                                                         0] + 4 * tmpDSspace,
-                                                                                    1 * CellHeight + tmpDSspace+tmpDSspace])
+                                                                                    1 * CellHeight + tmpDSspace+tmpDSspace+ tmpViaMet2Width / 2-tmpMet2Width/2])
 
             self._DesignParameter['_ViaMet32Met4_clk2nd_2']['_XYCoordinates'].append([self._DesignParameter[
                                                                                           'DeMux1to4_1'][
@@ -6093,31 +6115,31 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                           0] + 3 * tmpDSspace - tmpViaminWidth / 2 + tmpMet2Width / 2,
                                                                                       -2 * CellHeight + tmpDSspace])
 
-            if 0 < b1 - a1 < tmpDSspace + 1:
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
-                                                                                            'DeMux1to4_1'][
-                                                                                            '_XYCoordinates'][0][0] +
-                                                                                        self._DesignParameter[
-                                                                                            'DeMux1to4_1'][
-                                                                                            '_DesignObj'].clkb[
-                                                                                            0] + 3 * tmpDSspace,
-                                                                                        tmpDSspace +tmpDSspace- tmpViaMet2Width / 2])
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
-                    [self.getXY('Clk_Driver_2', 'DFFQb1', '_qpin')[-1][0], -tmpDSspace-tmpDSspace + tmpViaMet2Width / 2])
-            else:
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
-                                                                                            'DeMux1to4_1'][
-                                                                                            '_XYCoordinates'][0][0] +
-                                                                                        self._DesignParameter[
-                                                                                            'DeMux1to4_1'][
-                                                                                            '_DesignObj'].clkb[
-                                                                                            0] + 3 * tmpDSspace,
-                                                                                        tmpDSspace+tmpDSspace])
-                self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
-                    [self.getXY('Clk_Driver_2', 'DFFQb1', '_qpin')[-1][0], -tmpDSspace-tmpDSspace])
+            #if 0 < b1 - a1 < tmpDSspace + 1:
+            self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
+                                                                                        'DeMux1to4_1'][
+                                                                                        '_XYCoordinates'][0][0] +
+                                                                                    self._DesignParameter[
+                                                                                        'DeMux1to4_1'][
+                                                                                        '_DesignObj'].clkb[
+                                                                                        0] + 3 * tmpDSspace,
+                                                                                    tmpDSspace +tmpDSspace+ tmpViaMet2Width / 2-tmpMet2Width/2])
+            self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
+                [self.getXY('Clk_Driver_2', 'DFFQb1', '_qpin')[-1][0], -tmpDSspace-tmpDSspace - tmpViaMet2Width / 2+tmpMet2Width/2])
+            # else:
+            #     self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
+            #                                                                                 'DeMux1to4_1'][
+            #                                                                                 '_XYCoordinates'][0][0] +
+            #                                                                             self._DesignParameter[
+            #                                                                                 'DeMux1to4_1'][
+            #                                                                                 '_DesignObj'].clkb[
+            #                                                                                 0] + 3 * tmpDSspace,
+            #                                                                             tmpDSspace+tmpDSspace])
+            #     self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
+            #         [self.getXY('Clk_Driver_2', 'DFFQb1', '_qpin')[-1][0], -tmpDSspace-tmpDSspace])
 
             self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append(
-                [self.getXY('Clk_Driver_2', 'DFFQb1', '_qbpin')[0][0], +tmpDSspace+tmpDSspace])
+                [self.getXY('Clk_Driver_2', 'DFFQb1', '_qbpin')[0][0], +tmpDSspace+tmpDSspace+ tmpViaMet2Width / 2-tmpMet2Width/2])
 
             self._DesignParameter['_ViaMet32Met4_clk2nd']['_XYCoordinates'].append([self._DesignParameter[
                                                                                         'DeMux1to4_1'][
@@ -6126,7 +6148,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                                                                         'DeMux1to4_1'][
                                                                                         '_DesignObj'].clkb[
                                                                                         0] + 4 * tmpDSspace,
-                                                                                    -tmpDSspace-tmpDSspace])
+                                                                                    -tmpDSspace-tmpDSspace- tmpViaMet2Width / 2+tmpMet2Width/2])
 
             self._DesignParameter['_ViaMet32Met4_clk2nd_2']['_XYCoordinates'].append([self._DesignParameter[
                                                                                           'DeMux1to4_1'][
@@ -8369,8 +8391,8 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             )
             self._DesignParameter['_ViaMet32Met4_clk1st'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clk1stIn{}'.format(_Name)))[0]
             self._DesignParameter['_ViaMet32Met4_clk1st']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet32Met4NumberOfCOX=1, _ViaMet32Met4NumberOfCOY=1))
-            self._DesignParameter['_ViaMet32Met4_clk1st']['_DesignObj']._DesignParameter['_Met4Layer']['_YWidth'] = tmpViaMet2Width
-            self._DesignParameter['_ViaMet32Met4_clk1st']['_DesignObj']._DesignParameter['_Met3Layer']['_YWidth'] = tmpViaMet2Width
+            self._DesignParameter['_ViaMet32Met4_clk1st']['_DesignObj']._DesignParameter['_Met4Layer']['_YWidth'] = tmpViaminWidth
+            self._DesignParameter['_ViaMet32Met4_clk1st']['_DesignObj']._DesignParameter['_Met3Layer']['_YWidth'] = tmpViaminWidth
             self._DesignParameter['_ViaMet32Met4_clk1st']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
 
             self._DesignParameter['_ViaMet32Met4_clk1st_2'] = self._SrefElementDeclaration(_DesignObj=ViaMet32Met4._ViaMet32Met4(_Name='_ViaMet32Met4_clk1st_2In{}'.format(_Name)))[0]
@@ -8421,27 +8443,27 @@ class Deserializer1toN(StickDiagram._StickDiagram):
 
             ###DeMux1to2_5
             self._DesignParameter['_Met4_clk1st']['_XYCoordinates'].append([self.getXY('DFFQb','_qpin')[-1],\
-                                                                           [self.getXY('DFFQb','_qpin')[-1][0],-tmpDSspace-2*tmpDSspace]])#q
+                                                                           [self.getXY('DFFQb','_qpin')[-1][0],-tmpDSspace-2*tmpDSspace+20]])#q
 
             self._DesignParameter['_Met4_clk1st']['_XYCoordinates'].append([[self.getXY('DFFQb','_qbpin')[0][0],self._DesignParameter['DFFQb']['_DesignObj'].iclk],\
                                                                            [self.getXY('DFFQb','_qbpin')[0][0],+tmpDSspace+tmpDSspace]])#qb
 
             self._DesignParameter['_Met4_clk1st']['_XYCoordinates'].append([[self._DesignParameter['DeMux1to2_5']['_DesignObj'].clk[0],self.getXY('DeMux1to2_5')[0][1]-self._DesignParameter['DeMux1to2_5']['_DesignObj'].clk[1]],\
-                                                                           [self._DesignParameter['DeMux1to2_5']['_DesignObj'].clk[0],-tmpDSspace-2*tmpDSspace]])#q
+                                                                           [self._DesignParameter['DeMux1to2_5']['_DesignObj'].clk[0],-tmpDSspace-2*tmpDSspace+20]])#q
 
             self._DesignParameter['_Met4_clk1st']['_XYCoordinates'].append([[self._DesignParameter['DeMux1to2_5']['_DesignObj'].clkb[0],self.getXY('DeMux1to2_5')[0][1]-self._DesignParameter['DeMux1to2_5']['_DesignObj'].clkb[1]],\
                                                                            [self._DesignParameter['DeMux1to2_5']['_DesignObj'].clkb[0],+tmpDSspace+tmpDSspace]])#qb
 
-            self._DesignParameter['_Met3_clk1st']['_XYCoordinates'].append([[self._DesignParameter['DeMux1to2_5']['_DesignObj'].clk[0],-tmpDSspace-2*tmpDSspace],\
-                                                                           [self.getXY('DFFQb','_qpin')[-1][0],-tmpDSspace-2*tmpDSspace]])#q
+            self._DesignParameter['_Met3_clk1st']['_XYCoordinates'].append([[self._DesignParameter['DeMux1to2_5']['_DesignObj'].clk[0],-tmpDSspace-2*tmpDSspace+20],\
+                                                                           [self.getXY('DFFQb','_qpin')[-1][0],-tmpDSspace-2*tmpDSspace+20]])#q
 
             self._DesignParameter['_Met3_clk1st']['_XYCoordinates'].append([[self.getXY('DFFQb','_qbpin')[0][0],+tmpDSspace+tmpDSspace],\
                                                                             [self._DesignParameter['DeMux1to2_5']['_DesignObj'].clkb[0],+tmpDSspace+tmpDSspace]])#qb
             #Demux1to2_5 via
             self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'].append([self._DesignParameter['DeMux1to2_5']['_DesignObj'].clk[0]-tmpViaminWidth/2+tmpMet2Width / 2,self.getXY('DeMux1to2_5')[0][1]-self._DesignParameter['DeMux1to2_5']['_DesignObj'].clk[1]])
             self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'].append([self._DesignParameter['DeMux1to2_5']['_DesignObj'].clkb[0]-tmpViaminWidth/2+tmpMet2Width / 2,self.getXY('DeMux1to2_5')[0][1]-self._DesignParameter['DeMux1to2_5']['_DesignObj'].clkb[1]])
-            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'].append([self._DesignParameter['DeMux1to2_5']['_DesignObj'].clk[0]+tmpViaminWidth/2-tmpMet2Width / 2,-tmpDSspace-2*tmpDSspace])
-            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'].append([self.getXY('DFFQb','_qpin')[-1][0]-tmpViaminWidth/2+tmpMet2Width / 2,-tmpDSspace-2*tmpDSspace])
+            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'].append([self._DesignParameter['DeMux1to2_5']['_DesignObj'].clk[0]+tmpViaminWidth/2-tmpMet2Width / 2,-tmpDSspace-2*tmpDSspace+20])
+            self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'].append([self.getXY('DFFQb','_qpin')[-1][0]-tmpViaminWidth/2+tmpMet2Width / 2,-tmpDSspace-2*tmpDSspace+20])
             self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'].append([self.getXY('DFFQb','_qbpin')[0][0]-tmpViaminWidth/2+tmpMet2Width / 2,tmpDSspace+tmpDSspace])
             self._DesignParameter['_ViaMet32Met4_clk1st_2']['_XYCoordinates'].append([self._DesignParameter['DeMux1to2_5']['_DesignObj'].clkb[0]+tmpViaminWidth/2-tmpMet2Width / 2,tmpDSspace+tmpDSspace])
 
@@ -8539,49 +8561,41 @@ class Deserializer1toN(StickDiagram._StickDiagram):
 ################################ DRC Check #################################
 import random
 if __name__ == '__main__':
-    #for i in range(0,100):
-        # list=[2,8,16,32]
-        # Deserialize1toN=random.choice(list)
-        # TG1_Finger = random.randint(1,5)
-        # TG2_Finger = random.randint(1, 5)
-        # TSI1_Finger = random.randint(1,2)
-        # TSI2_Finger = random.randint(1,2)
-        # INV1_Finger = random.randint(1,5)
-        # INV2_Finger = random.randint(1,5)
-        # INV3_Finger = random.randint(1,5)
-        # INV4_Finger = random.randint(1,5)
-        #
-        # TG3_Finger = random.randint(1, 5)
-        # TSI3_Finger = random.randint(1, 2)
-        # INV5_Finger = random.randint(1, 5)
-        # INV6_Finger = random.randint(1, 5)
-        #
-        # TG4_Finger = random.randint(1, 5)
-        # TSI4_Finger = random.randint(1, 2)
-        # INV7_Finger = random.randint(1, 5)
-        # INV8_Finger = random.randint(1, 5)
-        # INV9_Finger = random.randint(1, 5)
-        # INV10_Finger = random.randint(1, 5)
+    for i in range(0,100):
+        list=[2,8,16,32]
+        Deserialize1toN=random.choice(list)
+        TG1_Finger = random.randint(1,5)
+        TG2_Finger = random.randint(1, 5)
+        TSI1_Finger = random.randint(1,2)
+        TSI2_Finger = random.randint(1,2)
+        INV1_Finger = random.randint(1,5)
+        INV2_Finger = random.randint(1,5)
+        INV3_Finger = random.randint(1,5)
+        INV4_Finger = random.randint(1,5)
+
+        TG3_Finger = random.randint(1, 5)
+        TSI3_Finger = random.randint(1, 2)
+        INV5_Finger = random.randint(1, 5)
+        INV6_Finger = random.randint(1, 5)
+
+        TG4_Finger = random.randint(1, 5)
+        TSI4_Finger = random.randint(1, 2)
+        INV7_Finger = random.randint(1, 5)
+        INV8_Finger = random.randint(1, 5)
+        INV9_Finger = random.randint(1, 5)
+        INV10_Finger = random.randint(1, 5)
 
 
 
-        # TG1_Finger_clk = random.randint(1, 5)
-        # TG2_Finger_clk = random.randint(1, 5)
-        # TSI1_Finger_clk = random.randint(1, 2)
-        # TSI2_Finger_clk = random.randint(1, 2)
-        # INV1_Finger_clk = random.randint(1, 5)
-        # INV2_Finger_clk = random.randint(1, 5)
-        # INV3_Finger_clk = random.randint(1, 5)
-        # INV4_Finger_clk = random.randint(1, 5)
-        # INV5_Finger_clk = random.randint(1, 5)
 
-        Deserialize1toN=16
 
-        TSI1_Finger=TSI2_Finger=TSI3_Finger=TSI4_Finger=1
+        Deserialize1toN=2
+
+        #TSI1_Finger=TSI2_Finger=TSI3_Finger=TSI4_Finger=1
         #random.randrange(200, 250, 10)
 
         TG1_NMWidth =TG2_NMWidth=TG3_NMWidth= TG4_NMWidth=TSI1_NMWidth=TSI2_NMWidth=TSI3_NMWidth=TSI4_NMWidth=INV1_NMWidth=INV2_NMWidth=INV3_NMWidth\
-            =INV4_NMWidth=INV5_NMWidth=INV6_NMWidth=INV7_NMWidth=INV8_NMWidth=INV9_NMWidth=INV10_NMWidth=200        #random.randrange(200, 250, 10)
+            =INV4_NMWidth=INV5_NMWidth=INV6_NMWidth=INV7_NMWidth=INV8_NMWidth=INV9_NMWidth=INV10_NMWidth= 200      #random.randrange(200, 250, 10)
         TG1_PMWidth = TG2_PMWidth=TG3_PMWidth=TG4_PMWidth=TSI1_PMWidth=TSI2_PMWidth=TSI3_PMWidth=TSI4_PMWidth=INV1_PMWidth=INV2_PMWidth=INV3_PMWidth\
             =INV4_PMWidth=INV5_PMWidth=INV6_PMWidth=INV7_PMWidth=INV8_PMWidth=INV9_PMWidth=INV10_PMWidth=TG1_NMWidth*2
 
@@ -8601,44 +8615,44 @@ if __name__ == '__main__':
         CellHeight = 1800
         SupplyRailType = 2
 
-        # TG1_Finger_clk = TG1_Finger
-        # TG2_Finger_clk = TG2_Finger
-        # TSI1_Finger_clk = TSI1_Finger
-        # TSI2_Finger_clk = TSI2_Finger
-        # INV1_Finger_clk = INV1_Finger
-        # INV2_Finger_clk = INV2_Finger
-        # INV3_Finger_clk = INV3_Finger
-        # INV4_Finger_clk = INV5_Finger
-        # INV5_Finger_clk = INV6_Finger
+        TG1_Finger_clk = TG1_Finger
+        TG2_Finger_clk = TG2_Finger
+        TSI1_Finger_clk = TSI1_Finger
+        TSI2_Finger_clk = TSI2_Finger
+        INV1_Finger_clk = INV1_Finger
+        INV2_Finger_clk = INV2_Finger
+        INV3_Finger_clk = INV3_Finger
+        INV4_Finger_clk = INV5_Finger
+        INV5_Finger_clk = INV6_Finger
 
-        TG1_Finger = 1
-        TG2_Finger = 2
-        TSI1_Finger = 1
-        TSI2_Finger = 1
-        INV1_Finger = 3
-        INV2_Finger = 1
-        INV3_Finger = 1
-        INV4_Finger = 3
-        TG3_Finger = 2
-        TSI3_Finger = 1
-        INV5_Finger = 4
-        INV6_Finger = 4
-        TG4_Finger = 2
-        TSI4_Finger = 1
-        INV7_Finger = 4
-        INV8_Finger = 4
-        INV9_Finger = 1
-        INV10_Finger = 1
-
-        TG1_Finger_clk = 1
-        TG2_Finger_clk = 2
-        TSI1_Finger_clk = 1
-        TSI2_Finger_clk = 1
-        INV1_Finger_clk = 3
-        INV2_Finger_clk = 1
-        INV3_Finger_clk = 1
-        INV4_Finger_clk = 6
-        INV5_Finger_clk = 6
+        # TG1_Finger = 1
+        # TG2_Finger = 2
+        # TSI1_Finger = 1
+        # TSI2_Finger = 1
+        # INV1_Finger = 3
+        # INV2_Finger = 1
+        # INV3_Finger = 1
+        # INV4_Finger = 3
+        # TG3_Finger = 2
+        # TSI3_Finger = 1
+        # INV5_Finger = 4
+        # INV6_Finger = 4
+        # TG4_Finger = 2
+        # TSI4_Finger = 1
+        # INV7_Finger = 4
+        # INV8_Finger = 4
+        # INV9_Finger = 1
+        # INV10_Finger = 1
+        #
+        # TG1_Finger_clk = 1
+        # TG2_Finger_clk = 2
+        # TSI1_Finger_clk = 1
+        # TSI2_Finger_clk = 1
+        # INV1_Finger_clk = 3
+        # INV2_Finger_clk = 1
+        # INV3_Finger_clk = 1
+        # INV4_Finger_clk = 6
+        # INV5_Finger_clk = 6
 
         # print("itr = ", i)
         # print("TG1_Finger = ", TG1_Finger)
@@ -8749,8 +8763,8 @@ if __name__ == '__main__':
         tmp.write_binary_gds_stream(testStreamFile)
         testStreamFile.close()
         print('#############################      Sending to FTP Server...      ##############################')
-       # i=i+1
-        #print("itr = ", i)
+        i=i+1
+        print("itr = ", i)
         import ftplib
         import time
 
@@ -8761,12 +8775,12 @@ if __name__ == '__main__':
         ftp.storbinary('STOR Deserializer1toN.gds', myfile)
         myfile.close()
 
-        #import DRCchecker
+        import DRCchecker
 
-        #a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','Deserializer1toN','Deserializer1toN',None)
-        #a.DRCchecker()
+        a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','Deserializer1toN','Deserializer1toN',None)
+        a.DRCchecker()
 
-        #print ("DRC Clean!!!")
+        print ("DRC Clean!!!")
         #
         #
 
