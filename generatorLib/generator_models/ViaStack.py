@@ -62,7 +62,7 @@ class _ViaStack(StickDiagram._StickDiagram):
                 lib_name = f'ViaMet{layer}2Met{layer+1}'
             lib = __import__(lib_name)
             for name, obj in inspect.getmembers(lib):
-                if inspect.isclass(obj):
+                if inspect.isclass(obj) and 'Via' in name:
                     class_obj = obj
                     fcn_list = [[fcn_name, fcn_obj] for fcn_name, fcn_obj in inspect.getmembers(obj) if
                                 "Calculate" in fcn_name]

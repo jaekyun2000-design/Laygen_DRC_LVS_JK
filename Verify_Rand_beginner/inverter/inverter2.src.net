@@ -1,0 +1,6 @@
+.INCLUDE /home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp/.resources/devices.cdl
+.PARAM
+.SUBCKT inverter VDD VIN VOUT VSS
+MN0 VOUT VIN VSS VSS slvtnfet w=137.2u l=0.06u nf=196.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP0 VOUT VIN VDD VDD slvtpfet w=39.6u l=0.07u nf=40.0 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+.ENDS
