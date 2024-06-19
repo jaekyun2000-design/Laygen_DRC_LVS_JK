@@ -1,6 +1,6 @@
 import math
 import copy
-
+import time
 #
 from generatorLib import StickDiagram
 from generatorLib import DesignParameters
@@ -21,6 +21,9 @@ from generatorLib.generator_models import Clk_Driver
 from generatorLib.generator_models import DeMux1to4
 from generatorLib.generator_models import DeMux1to2
 from generatorLib.generator_models import DFFQb
+
+start = time.time()
+
 
 
 
@@ -113,6 +116,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                                   INV4_Finger_clk=4,
                                   INV5_Finger_clk=4,
 
+                                  np_ratio=2,
                                   dummy=True,
                                   ChannelLength=30,
                                   GateSpacing=100,
@@ -127,9 +131,27 @@ class Deserializer1toN(StickDiagram._StickDiagram):
         _Name = self._DesignParameter['_Name']['_Name']
 
         UnitPitch = ChannelLength + GateSpacing
+        if TG1_NMWidth is 200 :
 
-        if TG1_NMWidth>200 :
-            CellHeight=2000
+            CellHeight = 1800
+            if np_ratio is not 2:
+                CellHeight=2500
+            if ChannelLength is not 30:
+                CellHeight=2500
+
+        # elif 300>=TG1_NMWidth>200 :
+        #     CellHeight=2500
+        #
+        # elif TG1_NMWidth>300 :
+        #     CellHeight = 3000
+        #
+        # elif 400>=TG1_NMWidth>350 :
+        #     CellHeight = 3500
+        else :
+            CellHeight=TG1_NMWidth+TG1_PMWidth+2500
+
+
+        #if
         Parameters_DeMux1to2_1 = dict(
             TG1_Finger=TG1_Finger,
             TG1_NMWidth=TG1_NMWidth,
@@ -1669,12 +1691,13 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             tmpViaminWidth = 170
             tmpDSspace = 130
 
+
             ''' VDD Rail, VSS Rail, XVTLayer '''
             # VSS M2
             leftBoundary = self.getXYLeft('DeMux1to2_1','DFF_Latch','TG1', 'vss_supply_m2_y')[0][0]
 
             rightBoundary = self.getXYRight('DeMux1to2_2_3',  'DFFQ', 'INV4', 'PbodyContact', '_Met2Layer')[0][0]
-
+            rightBoundary2 = self.getXYRight('DFFQb', 'INV5', 'PbodyContact', '_Met2Layer')[0][0]
 
             YCoord = [self.getXY('DeMux1to2_1')[0][1],self.getXY('DeMux1to2_3')[0][1],self.getXY('DeMux1to2_5')[0][1]]
 
@@ -1682,7 +1705,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                 _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
                 _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4', 'PbodyContact', '_Met2Layer')
             )
-            self._DesignParameter['VSSRail_Met2']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]]]
+            self._DesignParameter['VSSRail_Met2']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary2,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]]]
 
 
 
@@ -1690,29 +1713,45 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             leftBoundary = self.getXYLeft('DeMux1to2_1','DFF_Latch','TG1', 'vss_odlayer')[0][0]
 
             rightBoundary = self.getXYRight('DeMux1to2_2_3',  'DFFQ', 'INV4', 'PbodyContact', '_ODLayer')[0][0]
-
+            rightBoundary2 = self.getXYRight('DFFQb', 'INV5', 'PbodyContact', '_ODLayer')[0][0]
             YCoord = [self.getXY('DeMux1to2_1')[0][1],self.getXY('DeMux1to2_3')[0][1],self.getXY('DeMux1to2_5')[0][1]]
 
             self._DesignParameter['VSSRail_OD'] = self._PathElementDeclaration(
                 _Layer=DesignParameters._LayerMapping['DIFF'][0], _Datatype=DesignParameters._LayerMapping['DIFF'][1],
                 _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4', 'PbodyContact', '_ODLayer')
             )
-            self._DesignParameter['VSSRail_OD']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]]]
+            self._DesignParameter['VSSRail_OD']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary2,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]]]
 
+            self._DesignParameter['_Met1_Power'] = self._PathElementDeclaration( ###Power metal1
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4', 'PbodyContact', '_ODLayer')
+            )
+
+            leftBoundary2=self.getXYLeft('Clk_Driver_1', 'DFFQb1', 'TG1', 'vss_odlayer')[0][0]
+
+            # self._DesignParameter['_Met1_Power']['_XYCoordinates'] = [
+            #     [[rightBoundary, YCoord[0]], [leftBoundary, YCoord[0]]],
+            #     [[rightBoundary, YCoord[1]], [leftBoundary, YCoord[1]]],
+            #     [[rightBoundary, YCoord[2]], [leftBoundary, YCoord[2]]],
+            #     [[rightBoundary, 5*CellHeight], [leftBoundary2, 5*CellHeight]],
+            #     [[rightBoundary, 4*CellHeight], [leftBoundary2, 4*CellHeight]],
+            #     [[rightBoundary, -3*CellHeight], [leftBoundary2, -3*CellHeight]],
+            #     [[rightBoundary, -4*CellHeight], [leftBoundary2, -4*CellHeight]],
+            # ]
 
 
             # VSS PP(BP)
             leftBoundary = self.getXYLeft('DeMux1to2_1','DFF_Latch','TG1', 'vss_pplayer')[0][0]
 
             rightBoundary = self.getXYRight('DeMux1to2_2_3',  'DFFQ', 'INV4', 'PbodyContact', '_PPLayer')[0][0]
-
+            rightBoundary2 = self.getXYRight('DFFQb', 'INV5', 'PbodyContact', '_PPLayer')[0][0]
             YCoord = [self.getXY('DeMux1to2_1')[0][1],self.getXY('DeMux1to2_3')[0][1],self.getXY('DeMux1to2_5')[0][1]]
 
             self._DesignParameter['VSSRail_PP'] = self._PathElementDeclaration(
                 _Layer=DesignParameters._LayerMapping['PIMP'][0], _Datatype=DesignParameters._LayerMapping['PIMP'][1],
                 _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4', 'PbodyContact', '_PPLayer')
             )
-            self._DesignParameter['VSSRail_PP']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]]]
+            self._DesignParameter['VSSRail_PP']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary2,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]]]
 
 
 
@@ -1721,14 +1760,14 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             leftBoundary = self.getXYLeft('DeMux1to2_1','DFF_Latch','TG1', 'vdd_supply_m2_y')[0][0]
 
             rightBoundary = self.getXYRight('DeMux1to2_2_3', 'DFFQ', 'INV4',  'NbodyContact', '_Met2Layer')[0][0]
-
+            rightBoundary2 = self.getXYRight('DFFQb', 'INV5', 'NbodyContact', '_Met2Layer')[0][0]
             YCoord = [self.getXY('DeMux1to2_1',  'DFF_Latch', 'TG1', 'vdd_supply_m2_y')[0][1],self.getXY('DeMux1to2_3',  'DFF_Latch', 'TG1', 'vdd_supply_m2_y')[0][1],self.getXY('DeMux1to2_5',  'DFF_Latch', 'TG1', 'vdd_supply_m2_y')[0][1]]
 
             self._DesignParameter['VDDRail_Met2'] = self._PathElementDeclaration(
                 _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
                 _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4',  'NbodyContact', '_Met2Layer')
             )
-            self._DesignParameter['VDDRail_Met2']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]]]
+            self._DesignParameter['VDDRail_Met2']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary2,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]]]
 
 
             # VDD OD(RX)
@@ -1736,14 +1775,19 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             leftBoundary = self.getXYLeft('DeMux1to2_1','DFF_Latch','TG1', 'vdd_odlayer')[0][0]
 
             rightBoundary = self.getXYRight('DeMux1to2_2_3', 'DFFQ', 'INV4',  'NbodyContact', '_ODLayer')[0][0]
-
+            rightBoundary2 = self.getXYRight('DFFQb', 'INV5', 'NbodyContact', '_ODLayer')[0][0]
             YCoord = [self.getXY('DeMux1to2_1',  'DFF_Latch', 'TG1', 'vdd_odlayer')[0][1],self.getXY('DeMux1to2_3',  'DFF_Latch', 'TG1', 'vdd_odlayer')[0][1],self.getXY('DeMux1to2_5',  'DFF_Latch', 'TG1', 'vdd_odlayer')[0][1]]
 
             self._DesignParameter['VDDRail_OD'] = self._PathElementDeclaration(
                 _Layer=DesignParameters._LayerMapping['DIFF'][0], _Datatype=DesignParameters._LayerMapping['DIFF'][1],
                 _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4',  'NbodyContact', '_ODLayer')
             )
-            self._DesignParameter['VDDRail_OD']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]]]
+            self._DesignParameter['VDDRail_OD']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary2,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]]]
+            self._DesignParameter['_Met1_Power2'] = self._PathElementDeclaration( ###Power metal1
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4', 'PbodyContact', '_ODLayer')
+            )
+            # self._DesignParameter['_Met1_Power2']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary2,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]]]
 
 
             # NWLayer
@@ -1751,6 +1795,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             leftBoundary = self.getXYLeft('DeMux1to2_1','DFF_Latch','TG1', 'NWELL_boundary_0')[0][0]
 
             rightBoundary = self.getXYRight('DeMux1to2_2_3',  'DFFQ', 'INV4',  '_NWLayerBoundary')[0][0]
+            rightBoundary2 = self.getXYRight('DFFQb', 'INV5', '_NWLayerBoundary')[0][0]
 
             YCoord = [(self.getXYTop('DeMux1to2_1',  'DFF_Latch', '_NWLayer')[0][1]-self.getXYBot('DeMux1to2_1',  'DFF_Latch', '_NWLayer')[0][1])/2+self.getXYBot('DeMux1to2_1',  'DFF_Latch', '_NWLayer')[0][1],\
                      (self.getXYTop('DeMux1to2_3',  'DFF_Latch', '_NWLayer')[0][1]-self.getXYBot('DeMux1to2_3',  'DFF_Latch', '_NWLayer')[0][1])/2+self.getXYBot('DeMux1to2_3',  'DFF_Latch', '_NWLayer')[0][1],\
@@ -1763,7 +1808,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                 _Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1],
                 _Width= self.getXYTop('DeMux1to2_1','DFF_Latch', '_NWLayer')[0][1]-self.getXYBot('DeMux1to2_1','DFF_Latch', '_NWLayer')[0][1]+NW_margin
             )
-            self._DesignParameter['_NWLayer']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]],[[rightBoundary,YCoord[3]],[leftBoundary,YCoord[3]]],[[rightBoundary,YCoord[4]],[leftBoundary,YCoord[4]]]]
+            self._DesignParameter['_NWLayer']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary2,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]],[[rightBoundary,YCoord[3]],[leftBoundary,YCoord[3]]],[[rightBoundary,YCoord[4]],[leftBoundary,YCoord[4]]]]
 
 
 
@@ -1772,7 +1817,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             leftBoundary = self.getXYLeft('DeMux1to2_1','DFF_Latch','TG1',  'pmos', '_PPLayer')[0][0]
 
             rightBoundary = self.getXYRight('DeMux1to2_2_3',  'DFFQ', 'INV4',   '_PMOS', '_PPLayer')[0][0]
-
+            rightBoundary2 = self.getXYRight('DFFQb', 'INV5', '_PMOS', '_PPLayer')[0][0]
             YCoord = [(self.getXYTop('DeMux1to2_1',  '_PPLayer')[0][1]-self.getXYBot('DeMux1to2_1',   '_PPLayer')[0][1])/2.0+ float(self.getXYBot('DeMux1to2_1',   '_PPLayer')[0][1]),\
                       (self.getXYTop('DeMux1to2_3',  '_PPLayer')[0][1]-self.getXYBot('DeMux1to2_3',   '_PPLayer')[0][1])/2.0+ float(self.getXYBot('DeMux1to2_3',  '_PPLayer')[0][1]),\
                       (self.getXYTop('DeMux1to2_5',   '_PPLayer')[0][1]-self.getXYBot('DeMux1to2_5',   '_PPLayer')[0][1])/2.0+ float(self.getXYBot('DeMux1to2_5',  '_PPLayer')[0][1]),\
@@ -1783,7 +1828,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                 _Layer=DesignParameters._LayerMapping['PIMP'][0], _Datatype=DesignParameters._LayerMapping['PIMP'][1],
                 _Width= float(self.getXYTop('DeMux1to2_2_4','_PPLayer')[0][1])-float(self.getXYBot('DeMux1to2_2_4', '_PPLayer')[0][1]) + PP_margin
             )
-            self._DesignParameter['_PPLayer']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]],[[rightBoundary,YCoord[3]],[leftBoundary,YCoord[3]]],[[rightBoundary,YCoord[4]],[leftBoundary,YCoord[4]]]]
+            self._DesignParameter['_PPLayer']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary2,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]],[[rightBoundary,YCoord[3]],[leftBoundary,YCoord[3]]],[[rightBoundary,YCoord[4]],[leftBoundary,YCoord[4]]]]
 
 
             # XVTLayer
@@ -1791,14 +1836,14 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             leftBoundary = self.getXYLeft('DeMux1to2_1','DFF_Latch','TG1',  'XVT_boundary_1')[0][0]
 
             rightBoundary = self.getXYRight('DeMux1to2_2_3',  'DFFQ', 'INV4',  'XVTLayer')[0][0]
-
+            rightBoundary2 = self.getXYRight('DFFQb', 'INV5', 'XVTLayer')[0][0]
             YCoord = [self.getXY('DeMux1to2_1',  'DFF_Latch', 'TG1', 'XVT_boundary_1')[0][1],self.getXY('DeMux1to2_3',  'DFF_Latch', 'TG1', 'XVT_boundary_1')[0][1],self.getXY('DeMux1to2_5',  'DFF_Latch',  'TG1', 'XVT_boundary_1')[0][1],self.getXY('DeMux1to2_2',  'DFF_Latch',  'TG1', 'XVT_boundary_1')[0][1],self.getXY('DeMux1to2_4',  'DFF_Latch',  'TG1', 'XVT_boundary_1')[0][1]]
 
             self._DesignParameter['XVTLayer'] = self._PathElementDeclaration(
                 _Layer=DesignParameters._LayerMapping[XVT][0], _Datatype=DesignParameters._LayerMapping[XVT][1],
                 _Width= self.getYWidth('DeMux1to2_1',  'DFF_Latch','INV5', 'XVTLayer')
             )
-            self._DesignParameter['XVTLayer']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]],[[rightBoundary,YCoord[3]],[leftBoundary,YCoord[3]]],[[rightBoundary,YCoord[4]],[leftBoundary,YCoord[4]]]]
+            self._DesignParameter['XVTLayer']['_XYCoordinates'] = [[[rightBoundary,YCoord[0]],[leftBoundary,YCoord[0]]],[[rightBoundary2,YCoord[1]],[leftBoundary,YCoord[1]]],[[rightBoundary,YCoord[2]],[leftBoundary,YCoord[2]]],[[rightBoundary,YCoord[3]],[leftBoundary,YCoord[3]]],[[rightBoundary,YCoord[4]],[leftBoundary,YCoord[4]]]]
 
 
             ####################### CLK input Routing ##########################
@@ -3599,6 +3644,21 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                 [[rightBoundary, YCoord[1]], [leftBoundary, YCoord[1]]],
                 [[rightBoundary, YCoord[2]], [leftBoundary, YCoord[2]]]]
 
+            self._DesignParameter['_Met1_Power'] = self._PathElementDeclaration( ###Power metal1
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4', 'PbodyContact', '_ODLayer')
+            )
+            leftBoundary2=self.getXYLeft('Clk_Driver_1', 'DFFQb1', 'TG1', 'vss_odlayer')[0][0]
+
+            # self._DesignParameter['_Met1_Power']['_XYCoordinates'] = [
+            #     [[rightBoundary, YCoord[0]], [leftBoundary, YCoord[0]]],
+            #     [[rightBoundary, YCoord[1]], [leftBoundary, YCoord[1]]],
+            #     [[rightBoundary, YCoord[2]], [leftBoundary, YCoord[2]]],
+            #     [[rightBoundary, 5*CellHeight], [leftBoundary2, 5*CellHeight]],
+            #     [[rightBoundary, 4*CellHeight], [leftBoundary2, 4*CellHeight]],
+            #     [[rightBoundary, -3*CellHeight], [leftBoundary2, -3*CellHeight]],
+            #     [[rightBoundary, -4*CellHeight], [leftBoundary2, -4*CellHeight]],
+            # ]
             # VSS PP(BP)
             leftBoundary = self.getXYLeft('DeMux1to2_1', 'DFF_Latch', 'TG1', 'vss_pplayer')[0][0]
 
@@ -3671,6 +3731,15 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                 [[rightBoundary, YCoord[0]], [leftBoundary, YCoord[0]]],
                 [[rightBoundary, YCoord[1]], [leftBoundary, YCoord[1]]],
                 [[rightBoundary, YCoord[2]], [leftBoundary, YCoord[2]]]]
+
+            self._DesignParameter['_Met1_Power2'] = self._PathElementDeclaration( ###Power metal1
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4', 'PbodyContact', '_ODLayer')
+            )
+            # self._DesignParameter['_Met1_Power2']['_XYCoordinates'] = [
+            #     [[rightBoundary, YCoord[0]], [leftBoundary, YCoord[0]]],
+            #     [[rightBoundary, YCoord[1]], [leftBoundary, YCoord[1]]],
+            #     [[rightBoundary, YCoord[2]], [leftBoundary, YCoord[2]]]]
 
             # NWLayer
             NW_margin = 10
@@ -4321,11 +4390,11 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                 [self.getXY('DeMux1to2_5', 'DFFQ', '_qpin')[0][0] - 4 * tmpDSspace,
                  self.getXY('DeMux1to2_4', 'DFF_Latch', '_qbpin')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
 
-            ####################### 2nd stage data ouput to 3rd stage data input end!!!!!!
+            ####################### 2nd stage data output to 3rd stage data input end!!!!!!
 
-            ####################### 3rd stage data ouput to next circuit ##########################
+            ####################### 3rd stage data output to next circuit ##########################
             Dataoutspacing = 200
-
+            tmpViaMet2Width = 170
             self._DesignParameter['_Met3_data3toend'] = self._PathElementDeclaration(
                 _Layer=DesignParameters._LayerMapping['METAL3'][0],
                 _Datatype=DesignParameters._LayerMapping['METAL3'][1],
@@ -4736,6 +4805,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             self._DesignParameter['_ViaMet32Met4_data3toend']['_XYCoordinates'].append(
                 [DeMux1to4x + D3x + tmpViaMet2Width / 2 - tmpMet2Width / 2, DeMux1to4y + D3y])
 
+            tmpViaMet2Width=134  #return to before value
             ####################### 3rd stage data ouput to next circuit end!!!!!!!!
 
             ####################### 1st to 2nd stage clk and clkb  ##########################
@@ -7270,7 +7340,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             # VSS OD(RX)
             leftBoundary = self.getXYLeft('DeMux1to2_1','DFF_Latch','TG1', 'vss_odlayer')[0][0]
             rightBoundary = self.getXYRight('Clk_Driver_1', 'DFFQb2', 'INV5', 'PbodyContact', '_ODLayer')[0][0]
-
+            rightBoundary2 = self.getXYRight('DeMux1to2_3', 'DFFQ', 'INV4', 'PbodyContact', '_ODLayer')[0][0]
             YCoord = [self.getXY('DeMux1to2_1')[0][1],self.getXY('DeMux1to2_3')[0][1],self.getXY('DeMux1to2_5')[0][1]]
 
             self._DesignParameter['VSSRail_OD'] = self._PathElementDeclaration(
@@ -7279,6 +7349,12 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             )
             self._DesignParameter['VSSRail_OD']['_XYCoordinates'] = [[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]]]
 
+            self._DesignParameter['_Met1_Power'] = self._PathElementDeclaration( ###Power metal1
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4', 'PbodyContact', '_ODLayer')
+            )
+
+            # self._DesignParameter['_Met1_Power']['_XYCoordinates'] = [[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]]]
 
             # VSS PP(BP)
             leftBoundary = self.getXYLeft('DeMux1to2_1','DFF_Latch','TG1', 'vss_pplayer')[0][0]
@@ -7316,6 +7392,12 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                 _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4',  'NbodyContact', '_ODLayer')
             )
             self._DesignParameter['VDDRail_OD']['_XYCoordinates'] = [[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]]]
+
+            self._DesignParameter['_Met1_Power2'] = self._PathElementDeclaration( ###Power metal1
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4', 'PbodyContact', '_ODLayer')
+            )
+            # self._DesignParameter['_Met1_Power2']['_XYCoordinates'] = [[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]]]
 
             # NWLayer
             NW_margin = 10
@@ -8102,6 +8184,11 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             )
             self._DesignParameter['VSSRail_OD']['_XYCoordinates'] = [[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]]]
 
+            self._DesignParameter['_Met1_Power'] = self._PathElementDeclaration( ###Power metal1
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4', 'PbodyContact', '_ODLayer')
+            )
+            # self._DesignParameter['_Met1_Power']['_XYCoordinates'] = [[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]]]
 
             # VSS PP(BP)
             leftBoundary = self.getXYLeft('DeMux1to2_1','DFF_Latch','TG1', 'vss_pplayer')[0][0]
@@ -8139,6 +8226,12 @@ class Deserializer1toN(StickDiagram._StickDiagram):
                 _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4',  'NbodyContact', '_ODLayer')
             )
             self._DesignParameter['VDDRail_OD']['_XYCoordinates'] = [[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]]]
+
+            self._DesignParameter['_Met1_Power2'] = self._PathElementDeclaration( ###Power metal1
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=self.getYWidth('DeMux1to2_1','DFFQ','INV4', 'PbodyContact', '_ODLayer')
+            )
+            # self._DesignParameter['_Met1_Power2']['_XYCoordinates'] = [[[rightBoundary,YCoord[1]],[leftBoundary,YCoord[1]]]]
 
             # NWLayer
             NW_margin = 10
@@ -8561,43 +8654,42 @@ class Deserializer1toN(StickDiagram._StickDiagram):
 ################################ DRC Check #################################
 import random
 if __name__ == '__main__':
-    for i in range(0,100):
-        list=[2,8,16,32]
+        i=0
+    #for i in range(0,100):
+        list=[2,4,8,16,32]
         Deserialize1toN=random.choice(list)
-        TG1_Finger = random.randint(1,5)
-        TG2_Finger = random.randint(1, 5)
-        TSI1_Finger = random.randint(1,2)
-        TSI2_Finger = random.randint(1,2)
-        INV1_Finger = random.randint(1,5)
-        INV2_Finger = random.randint(1,5)
-        INV3_Finger = random.randint(1,5)
-        INV4_Finger = random.randint(1,5)
+        TG1_Finger = random.randint(1,30)
+        TG2_Finger = random.randint(1, 30)
 
-        TG3_Finger = random.randint(1, 5)
-        TSI3_Finger = random.randint(1, 2)
-        INV5_Finger = random.randint(1, 5)
-        INV6_Finger = random.randint(1, 5)
+        INV1_Finger = random.randint(1,30)
+        INV2_Finger = random.randint(1,30)
+        INV3_Finger = random.randint(1,30)
+        INV4_Finger = random.randint(1,30)
 
-        TG4_Finger = random.randint(1, 5)
-        TSI4_Finger = random.randint(1, 2)
-        INV7_Finger = random.randint(1, 5)
-        INV8_Finger = random.randint(1, 5)
-        INV9_Finger = random.randint(1, 5)
-        INV10_Finger = random.randint(1, 5)
+        TG3_Finger = random.randint(1, 30)
+        INV5_Finger = random.randint(1, 30)
+        INV6_Finger = random.randint(1, 30)
+
+        TG4_Finger = random.randint(1, 30)
+
+        INV7_Finger = random.randint(1, 30)
+        INV8_Finger = random.randint(1, 30)
+        INV9_Finger = random.randint(1, 30)
+        INV10_Finger = random.randint(1, 30)
 
 
-
+        #random.randint(1, 2)
 
 
         Deserialize1toN=2
-
         #TSI1_Finger=TSI2_Finger=TSI3_Finger=TSI4_Finger=1
         #random.randrange(200, 250, 10)
 
+        np_ratio = 2#random.randint(2, 3)
         TG1_NMWidth =TG2_NMWidth=TG3_NMWidth= TG4_NMWidth=TSI1_NMWidth=TSI2_NMWidth=TSI3_NMWidth=TSI4_NMWidth=INV1_NMWidth=INV2_NMWidth=INV3_NMWidth\
-            =INV4_NMWidth=INV5_NMWidth=INV6_NMWidth=INV7_NMWidth=INV8_NMWidth=INV9_NMWidth=INV10_NMWidth= 200      #random.randrange(200, 250, 10)
+            =INV4_NMWidth=INV5_NMWidth=INV6_NMWidth=INV7_NMWidth=INV8_NMWidth=INV9_NMWidth=INV10_NMWidth= 200#random.randrange(200, 400, 50) # default 200~400
         TG1_PMWidth = TG2_PMWidth=TG3_PMWidth=TG4_PMWidth=TSI1_PMWidth=TSI2_PMWidth=TSI3_PMWidth=TSI4_PMWidth=INV1_PMWidth=INV2_PMWidth=INV3_PMWidth\
-            =INV4_PMWidth=INV5_PMWidth=INV6_PMWidth=INV7_PMWidth=INV8_PMWidth=INV9_PMWidth=INV10_PMWidth=TG1_NMWidth*2
+            =INV4_PMWidth=INV5_PMWidth=INV6_PMWidth=INV7_PMWidth=INV8_PMWidth=INV9_PMWidth=INV10_PMWidth= TG1_NMWidth * np_ratio #random.randint(2, 3)  ### np ratio = 2~3사이 가능
 
         # TSI1_NMWidth = TSI2_NMWidth = TSI3_NMWidth = TSI4_NMWidth=150
         # TSI1_PMWidth = TSI2_PMWidth = TSI3_PMWidth = TSI4_PMWidth=300
@@ -8607,14 +8699,19 @@ if __name__ == '__main__':
         # INV1_PMWidth=INV2_PMWidth=INV3_PMWidth\
         #     =INV4_PMWidth=INV5_PMWidth=INV6_PMWidth=INV7_PMWidth=INV8_PMWidth=INV9_PMWidth=INV10_PMWidth=400
 
-        dummy=False #only use 1:N archetecture
-        ChannelLength = 30
+
+
+
+        dummy=False #random.randint(0, 1) #only use 1:N archetecture
+        ChannelLength = 30#random.choice([30, 40])
         GateSpacing = 100
         SDWidth = 66
-        XVT = 'SLVT'
-        CellHeight = 1800
-        SupplyRailType = 2
-
+        list_XVT = ['SLVT', 'RVT', 'LVT', 'HVT']
+        XVT_random = random.choice(list_XVT)
+        XVT = 'SLVT'#XVT_random #XVT_random
+        CellHeight = 1800#3000
+        SupplyRailType =  1#random.randint(1, 2)
+        TSI1_Finger = TSI2_Finger = TSI3_Finger = TSI4_Finger = 1
         TG1_Finger_clk = TG1_Finger
         TG2_Finger_clk = TG2_Finger
         TSI1_Finger_clk = TSI1_Finger
@@ -8625,34 +8722,34 @@ if __name__ == '__main__':
         INV4_Finger_clk = INV5_Finger
         INV5_Finger_clk = INV6_Finger
 
-        # TG1_Finger = 1
-        # TG2_Finger = 2
-        # TSI1_Finger = 1
-        # TSI2_Finger = 1
-        # INV1_Finger = 3
-        # INV2_Finger = 1
-        # INV3_Finger = 1
-        # INV4_Finger = 3
-        # TG3_Finger = 2
-        # TSI3_Finger = 1
-        # INV5_Finger = 4
-        # INV6_Finger = 4
-        # TG4_Finger = 2
-        # TSI4_Finger = 1
-        # INV7_Finger = 4
-        # INV8_Finger = 4
-        # INV9_Finger = 1
-        # INV10_Finger = 1
-        #
-        # TG1_Finger_clk = 1
-        # TG2_Finger_clk = 2
-        # TSI1_Finger_clk = 1
-        # TSI2_Finger_clk = 1
-        # INV1_Finger_clk = 3
-        # INV2_Finger_clk = 1
-        # INV3_Finger_clk = 1
-        # INV4_Finger_clk = 6
-        # INV5_Finger_clk = 6
+        TG1_Finger = 1
+        TG2_Finger = 2
+        TSI1_Finger = 1
+        TSI2_Finger = 1
+        INV1_Finger = 3
+        INV2_Finger = 1
+        INV3_Finger = 1
+        INV4_Finger = 3
+        TG3_Finger = 2
+        TSI3_Finger = 1
+        INV5_Finger = 4
+        INV6_Finger = 4
+        TG4_Finger = 2
+        TSI4_Finger = 1
+        INV7_Finger = 4
+        INV8_Finger = 4
+        INV9_Finger = 1
+        INV10_Finger = 1
+
+        TG1_Finger_clk = 1
+        TG2_Finger_clk = 2
+        TSI1_Finger_clk = 1
+        TSI2_Finger_clk = 1
+        INV1_Finger_clk = 3
+        INV2_Finger_clk = 1
+        INV3_Finger_clk = 1
+        INV4_Finger_clk = 6
+        INV5_Finger_clk = 6
 
         # print("itr = ", i)
         # print("TG1_Finger = ", TG1_Finger)
@@ -8667,6 +8764,8 @@ if __name__ == '__main__':
         # print("INV4_Finger = ", INV4_Finger)
         # print("INV5_Finger = ", INV5_Finger)
         # print("INN6_Finger = ", INV6_Finger)
+
+
 
         DesignParameters._Technology = 'SS28nm'
         TopObj = Deserializer1toN(_DesignParameter=None, _Name='Deserializer1toN')
@@ -8749,6 +8848,7 @@ if __name__ == '__main__':
             INV4_Finger_clk=INV4_Finger_clk,
             INV5_Finger_clk=INV5_Finger_clk,
 
+            np_ratio=np_ratio,
             dummy=dummy,
             ChannelLength=ChannelLength,
             GateSpacing=GateSpacing,
@@ -8756,17 +8856,22 @@ if __name__ == '__main__':
             XVT=XVT,
             CellHeight=CellHeight,
             SupplyRailType=SupplyRailType)
+        end = time.time()
+
 
         TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
         testStreamFile = open('./Deserializer1toN.gds', 'wb')
         tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
         tmp.write_binary_gds_stream(testStreamFile)
         testStreamFile.close()
+
         print('#############################      Sending to FTP Server...      ##############################')
-        i=i+1
-        print("itr = ", i)
-        import ftplib
+        i = i + 1
         import time
+
+        print("itr = ", i)
+        #time.sleep(0.5)
+        import ftplib
 
         ftp = ftplib.FTP('141.223.24.53')
         ftp.login('ljw95', 'dlwodn123')
@@ -8775,14 +8880,60 @@ if __name__ == '__main__':
         ftp.storbinary('STOR Deserializer1toN.gds', myfile)
         myfile.close()
 
+
+
         import DRCchecker
 
-        a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','Deserializer1toN','Deserializer1toN',None)
-        a.DRCchecker()
+        print("itr = ", i)
+        # a = DRCchecker.DRCchecker('ljw95', 'dlwodn123', '/mnt/sdc/ljw95/OPUS/ss28',
+        #                            '/mnt/sdc/ljw95/OPUS/ss28/DRC/run',
+        #                            'Deserializer1toN', 'Deserializer1toN', None)
+        # a.DRCchecker()
+        print("itr = ", i)
+        print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
+        print("itr = ", i)
+        # a.Upload2FTP()
+        # a.StreamIn(tech='028nm')
+        # print("itr = ", i)
+        print("#################################### preparing ####################################")
+        print("#################################### preparing ####################################")
+        print("#################################### preparing ####################################")
+        print("#################################### preparing ####################################")
+        print("#################################### preparing ####################################")
+        print("#################################### preparing ####################################")
+        #time.sleep(0.5)
+        print("itr = ", i)
+        #time.sleep(5)
+        # a.DRCchecker()
+        print('      Finished       '.center(105, '#'))
+        print("DRC Clean!!!")
 
-        print ("DRC Clean!!!")
+        print(f"{end - start:.5f} sec")
+
+        # print('#############################      Sending to FTP Server...      ##############################')
+        # i=i+1
+        # print("itr = ", i)
+        # import ftplib
+        # import time
         #
+        # ftp = ftplib.FTP('141.223.24.53')
+        # ftp.login('ljw95', 'dlwodn123')
+        # ftp.cwd('/mnt/sdc/ljw95/OPUS/ss28')
+        # myfile = open('Deserializer1toN.gds', 'rb')
+        # ftp.storbinary('STOR Deserializer1toN.gds', myfile)
+        # myfile.close()
         #
+        # import DRCchecker
+        #
+        # a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','Deserializer1toN','Deserializer1toN',None)
+        # a.DRCchecker()
+        #
+        # print ("DRC Clean!!!")
+        # #
+        # #
+
+  ############################ DRC checking code #################################################
+
 
         # a = DRCchecker.DRCchecker('ljw95', 'dlwodn123', '/mnt/sdc/ljw95/OPUS/ss28', '/mnt/sdc/ljw95/OPUS/ss28/DRC/run',
         #                           'Deserializer1to32', 'Deserializer1to32', None)
