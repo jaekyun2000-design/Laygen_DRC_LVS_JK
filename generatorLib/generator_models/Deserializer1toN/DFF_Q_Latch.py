@@ -1,0 +1,1724 @@
+import math
+import copy
+
+#
+from generatorLib import StickDiagram
+from generatorLib import DesignParameters
+from generatorLib import DRC
+
+#
+from generatorLib.generator_models import TristateInverter
+from generatorLib.generator_models import Inverter_ljw
+from generatorLib.generator_models import Transmission_gate_ljw
+
+from generatorLib.generator_models import ViaMet12Met2
+from generatorLib.generator_models import ViaMet22Met3
+
+#
+from generatorLib import CoordinateCalc as CoordCalc
+
+
+class DFF(StickDiagram._StickDiagram):
+
+    def __init__(self, _DesignParameter=None, _Name='DFF'):
+        if _DesignParameter != None:
+            self._DesignParameter = _DesignParameter
+        else:
+            self._DesignParameter = dict(_Name=self._NameDeclaration(_Name=_Name),
+                                         _GDSFile=self._GDSObjDeclaration(_GDSFile=None))
+        self._DesignParameter['_Name']['Name'] = _Name
+
+
+    def _CalculateDesignParameter(self,
+                                  TG1_Finger=1,
+                                  TG1_NMWidth=200,
+                                  TG1_PMWidth=400,
+                                  TG2_Finger=2,
+                                  TG2_NMWidth=200,
+                                  TG2_PMWidth=400,
+
+                                  TSI1_Finger=1,
+                                  TSI1_NMWidth=200,
+                                  TSI1_PMWidth=400,
+                                  TSI2_Finger=1,
+                                  TSI2_NMWidth=200,
+                                  TSI2_PMWidth=400,
+
+                                  INV1_Finger=3,
+                                  INV1_NMWidth=200,
+                                  INV1_PMWidth=400,
+
+                                  INV2_Finger=1,
+                                  INV2_NMWidth=200,
+                                  INV2_PMWidth=400,
+                                  INV3_Finger=1,
+                                  INV3_NMWidth=200,
+                                  INV3_PMWidth=400,
+
+                                  INV4_Finger=4,
+                                  INV4_NMWidth=200,
+                                  INV4_PMWidth=400,
+
+
+                                  TG4_Finger=2,
+                                  TG4_NMWidth=200,
+                                  TG4_PMWidth=400,
+
+                                  TSI4_Finger=1,
+                                  TSI4_NMWidth=200,
+                                  TSI4_PMWidth=400,
+
+                                  INV7_Finger=4,
+                                  INV7_NMWidth=200,
+                                  INV7_PMWidth=400,
+                                  INV8_Finger=4,
+                                  INV8_NMWidth=200,
+                                  INV8_PMWidth=400,
+                                  INV9_Finger=1,
+                                  INV9_NMWidth=200,
+                                  INV9_PMWidth=400,
+                                  INV10_Finger=1,
+                                  INV10_NMWidth=200,
+                                  INV10_PMWidth=400,
+
+                                  ChannelLength=30,
+                                  GateSpacing=100,
+                                  SDWidth=66,
+                                  XVT='SLVT',
+                                  CellHeight=1800,
+                                  SupplyRailType=2
+
+                                  ):
+
+        drc = DRC.DRC()
+        _Name = self._DesignParameter['_Name']['_Name']
+
+        UnitPitch = ChannelLength + GateSpacing
+
+
+        # if max(TG1_NMWidth,TG2_NMWidth,TSI1_NMWidth,TSI2_NMWidth, INV1_NMWidth, INV2_NMWidth,INV3_NMWidth,INV4_NMWidth)>200:
+        #     CellHeight =2000
+
+
+        Parameters_TG1 = dict(
+            nmos_gate=TG1_Finger,
+            pmos_gate=TG1_Finger,
+            nmos_width=TG1_NMWidth,
+            pmos_width=TG1_PMWidth,
+            length=ChannelLength,
+            XVT=XVT,
+            vss2vdd_height=CellHeight,
+            gate_spacing=GateSpacing,
+            sdwidth=SDWidth,
+            power_xdistance=UnitPitch,
+            #out_even_up_mode=True
+        )
+        Parameters_TG2 = dict(
+            nmos_gate=TG2_Finger,
+            pmos_gate=TG2_Finger,
+            nmos_width=TG2_NMWidth,
+            pmos_width=TG2_PMWidth,
+            length=ChannelLength,
+            XVT=XVT,
+            vss2vdd_height=CellHeight,
+            gate_spacing=GateSpacing,
+            sdwidth=SDWidth,
+            power_xdistance=UnitPitch,
+            #out_even_up_mode=True
+        )
+
+        Parameters_TSI1 = dict(
+            NMOSWidth=TSI1_NMWidth,
+            PMOSWidth=TSI1_PMWidth,
+            ChannelLength=ChannelLength,
+            GateSpacing=GateSpacing,
+            XVT=XVT,
+            CellHeight=CellHeight,
+            SupplyRailType=SupplyRailType
+        )
+        Parameters_TSI1_f3 = dict(
+        NumFinger_NM1 = TSI1_Finger,
+        NumFinger_NM2 = TSI1_Finger,
+        Width_NM1 = TSI1_NMWidth,
+        Width_NM2 = TSI1_NMWidth,
+        Width_PM1 = TSI1_PMWidth,
+        Width_PM2 = TSI1_PMWidth,
+
+        ChannelLength = ChannelLength,
+        GateSpacing = GateSpacing,
+        XVT = XVT,
+
+        CellHeight = CellHeight,  # Option
+        SupplyRailType = SupplyRailType
+        )
+
+        Parameters_TSI2 = dict(
+            NMOSWidth=TSI2_NMWidth,
+            PMOSWidth=TSI2_PMWidth,
+            ChannelLength=ChannelLength,
+            GateSpacing=GateSpacing,
+            XVT=XVT,
+            CellHeight=CellHeight,
+            SupplyRailType=SupplyRailType
+        )
+        Parameters_TSI2_f3 = dict(
+            NumFinger_NM1=TSI2_Finger,
+            NumFinger_NM2=TSI2_Finger,
+            Width_NM1=TSI2_NMWidth,
+            Width_NM2=TSI2_NMWidth,
+            Width_PM1=TSI2_PMWidth,
+            Width_PM2=TSI2_PMWidth,
+
+            ChannelLength=ChannelLength,
+            GateSpacing=GateSpacing,
+            XVT=XVT,
+
+            CellHeight=CellHeight,  # Option
+            SupplyRailType=SupplyRailType
+        )
+
+        Parameters_INV1 = dict(
+            _Finger=INV1_Finger,
+            _ChannelWidth=INV1_NMWidth,
+            _ChannelLength=ChannelLength,
+            _NPRatio=INV1_PMWidth / INV1_NMWidth,
+
+            _VDD2VSSHeight=CellHeight,
+            _VDD2PMOSHeight=None,
+            _VSS2NMOSHeight=None,
+            _YCoordOfInput=None,
+
+            _Dummy=True,
+            _XVT=XVT,
+            _GateSpacing=GateSpacing,
+            _SDWidth=SDWidth,
+
+            _SupplyRailType=SupplyRailType,
+        )
+
+        Parameters_INV2 = dict(
+            _Finger=INV2_Finger,
+            _ChannelWidth=INV2_NMWidth,
+            _ChannelLength=ChannelLength,
+            _NPRatio=INV2_PMWidth / INV2_NMWidth,
+
+            _VDD2VSSHeight=CellHeight,
+            _VDD2PMOSHeight=None,
+            _VSS2NMOSHeight=None,
+            _YCoordOfInput=None,
+
+            _Dummy=True,
+            _XVT=XVT,
+            _GateSpacing=GateSpacing,
+            _SDWidth=SDWidth,
+
+            _SupplyRailType=SupplyRailType,
+        )
+
+        Parameters_INV3 = dict(
+            _Finger=INV3_Finger,
+            _ChannelWidth=INV3_NMWidth,
+            _ChannelLength=ChannelLength,
+            _NPRatio=INV3_PMWidth / INV3_NMWidth,
+
+            _VDD2VSSHeight=CellHeight,
+            _VDD2PMOSHeight=None,
+            _VSS2NMOSHeight=None,
+            _YCoordOfInput=None,
+
+            _Dummy=True,
+            _XVT=XVT,
+            _GateSpacing=GateSpacing,
+            _SDWidth=SDWidth,
+
+            _SupplyRailType=SupplyRailType,
+        )
+
+        Parameters_INV4 = dict(
+            _Finger=INV4_Finger,
+            _ChannelWidth=INV4_NMWidth,
+            _ChannelLength=ChannelLength,
+            _NPRatio=INV4_PMWidth / INV4_NMWidth,
+
+            _VDD2VSSHeight=CellHeight,
+            _VDD2PMOSHeight=None,
+            _VSS2NMOSHeight=None,
+            _YCoordOfInput=None,
+
+            _Dummy=True,
+            _XVT=XVT,
+            _GateSpacing=GateSpacing,
+            _SDWidth=SDWidth,
+
+            _SupplyRailType=SupplyRailType,
+        )
+        Parameters_TG4 = dict(
+            nmos_gate=TG4_Finger,
+            pmos_gate=TG4_Finger,
+            nmos_width=TG4_NMWidth,
+            pmos_width=TG4_PMWidth,
+            length=ChannelLength,
+            XVT=XVT,
+            vss2vdd_height=CellHeight,
+            gate_spacing=GateSpacing,
+            sdwidth=SDWidth,
+            power_xdistance=UnitPitch,
+            #out_even_up_mode=True
+        )
+
+        Parameters_TSI4 = dict(
+            NMOSWidth=TSI4_NMWidth,
+            PMOSWidth=TSI4_PMWidth,
+            ChannelLength=ChannelLength,
+            GateSpacing=GateSpacing,
+            XVT=XVT,
+            CellHeight=CellHeight,
+            SupplyRailType=SupplyRailType
+        )
+        Parameters_TSI4_f3 = dict(
+            NumFinger_NM1=TSI4_Finger,
+            NumFinger_NM2=TSI4_Finger,
+            Width_NM1=TSI4_NMWidth,
+            Width_NM2=TSI4_NMWidth,
+            Width_PM1=TSI4_PMWidth,
+            Width_PM2=TSI4_PMWidth,
+
+            ChannelLength=ChannelLength,
+            GateSpacing=GateSpacing,
+            XVT=XVT,
+
+            CellHeight=CellHeight,  # Option
+            SupplyRailType=SupplyRailType
+        )
+        Parameters_INV7 = dict(
+            _Finger=INV7_Finger,
+            _ChannelWidth=INV7_NMWidth,
+            _ChannelLength=ChannelLength,
+            _NPRatio=INV7_PMWidth / INV7_NMWidth,
+
+            _VDD2VSSHeight=CellHeight,
+            _VDD2PMOSHeight=None,
+            _VSS2NMOSHeight=None,
+            _YCoordOfInput=None,
+
+            _Dummy=True,
+            _XVT=XVT,
+            _GateSpacing=GateSpacing,
+            _SDWidth=SDWidth,
+
+            _SupplyRailType=SupplyRailType,
+        )
+        Parameters_INV8 = dict(
+            _Finger=INV8_Finger,
+            _ChannelWidth=INV8_NMWidth,
+            _ChannelLength=ChannelLength,
+            _NPRatio=INV8_PMWidth / INV8_NMWidth,
+
+            _VDD2VSSHeight=CellHeight,
+            _VDD2PMOSHeight=None,
+            _VSS2NMOSHeight=None,
+            _YCoordOfInput=None,
+
+            _Dummy=True,
+            _XVT=XVT,
+            _GateSpacing=GateSpacing,
+            _SDWidth=SDWidth,
+
+            _SupplyRailType=SupplyRailType,
+        )
+        Parameters_INV9 = dict(
+            _Finger=INV9_Finger,
+            _ChannelWidth=INV9_NMWidth,
+            _ChannelLength=ChannelLength,
+            _NPRatio=INV9_PMWidth / INV9_NMWidth,
+
+            _VDD2VSSHeight=CellHeight,
+            _VDD2PMOSHeight=None,
+            _VSS2NMOSHeight=None,
+            _YCoordOfInput=None,
+
+            _Dummy=True,
+            _XVT=XVT,
+            _GateSpacing=GateSpacing,
+            _SDWidth=SDWidth,
+
+            _SupplyRailType=SupplyRailType,
+        )
+        Parameters_INV10 = dict(
+            _Finger=INV10_Finger,
+            _ChannelWidth=INV10_NMWidth,
+            _ChannelLength=ChannelLength,
+            _NPRatio=INV10_PMWidth / INV10_NMWidth,
+
+            _VDD2VSSHeight=CellHeight,
+            _VDD2PMOSHeight=None,
+            _VSS2NMOSHeight=None,
+            _YCoordOfInput=None,
+
+            _Dummy=True,
+            _XVT=XVT,
+            _GateSpacing=GateSpacing,
+            _SDWidth=SDWidth,
+
+            _SupplyRailType=SupplyRailType,
+        )
+
+        self._DesignParameter['TG1'] = self._SrefElementDeclaration(
+            _Reflect=[0, 0, 0], _Angle=0,
+            _DesignObj=Transmission_gate_ljw.Transmission_gate(_Name='TG1In{}'.format(_Name)))[0]
+        self._DesignParameter['TG1']['_DesignObj']._CalculateDesignParameter(**Parameters_TG1)
+        self._DesignParameter['TG1']['_XYCoordinates'] = [[0, 0]]
+
+        self._DesignParameter['TG2'] = self._SrefElementDeclaration(
+            _Reflect=[0, 0, 0], _Angle=0,
+            _DesignObj=Transmission_gate_ljw.Transmission_gate(_Name='TG2In{}'.format(_Name)))[0]
+        self._DesignParameter['TG2']['_DesignObj']._CalculateDesignParameter(**Parameters_TG2)
+        self._DesignParameter['TG2']['_XYCoordinates'] = [[0, 0]]
+        self._DesignParameter['TG4'] = self._SrefElementDeclaration(
+            _Reflect=[0, 0, 0], _Angle=0,
+            _DesignObj=Transmission_gate_ljw.Transmission_gate(_Name='TG4In{}'.format(_Name)))[0]
+        self._DesignParameter['TG4']['_DesignObj']._CalculateDesignParameter(**Parameters_TG4)
+        self._DesignParameter['TG4']['_XYCoordinates'] = [[0, 0]]
+
+
+        if TSI1_Finger == 1:
+            self._DesignParameter['TSI1'] = self._SrefElementDeclaration(
+                _Reflect=[0, 0, 0], _Angle=0,
+                _DesignObj=TristateInverter.TristateInverter(_Name='TSI1In{}'.format(_Name)))[0]
+            self._DesignParameter['TSI1']['_DesignObj']._CalculateDesignParameterFinger1_v2(**Parameters_TSI1)
+            self._DesignParameter['TSI1']['_XYCoordinates'] = [[0, 0]]
+        elif TSI1_Finger == 2:
+            self._DesignParameter['TSI1'] = self._SrefElementDeclaration(
+                _Reflect=[0, 0, 0], _Angle=0,
+                _DesignObj=TristateInverter.TristateInverter(_Name='TSI1In{}'.format(_Name)))[0]
+            self._DesignParameter['TSI1']['_DesignObj']._CalculateDesignParameterFinger2_v2(**Parameters_TSI1)
+            self._DesignParameter['TSI1']['_XYCoordinates'] = [[0, 0]]
+        elif TSI1_Finger >= 3:
+            self._DesignParameter['TSI1'] = self._SrefElementDeclaration(
+                _Reflect=[0, 0, 0], _Angle=0,
+                _DesignObj=TristateInverter.TristateInverter(_Name='TSI1In{}'.format(_Name)))[0]
+            self._DesignParameter['TSI1']['_DesignObj']._CalculateDesignParameterF3(**Parameters_TSI1_f3)
+            self._DesignParameter['TSI1']['_XYCoordinates'] = [[0, 0]]
+
+        if TSI2_Finger == 1:
+            self._DesignParameter['TSI2'] = self._SrefElementDeclaration(
+                _Reflect=[0, 0, 0], _Angle=0,
+                _DesignObj=TristateInverter.TristateInverter(_Name='TSI2In{}'.format(_Name)))[0]
+            self._DesignParameter['TSI2']['_DesignObj']._CalculateDesignParameterFinger1_v2(**Parameters_TSI2)
+            self._DesignParameter['TSI2']['_XYCoordinates'] = [[0, 0]]
+        elif TSI2_Finger == 2:
+            self._DesignParameter['TSI2'] = self._SrefElementDeclaration(
+                _Reflect=[0, 0, 0], _Angle=0,
+                _DesignObj=TristateInverter.TristateInverter(_Name='TSI2In{}'.format(_Name)))[0]
+            self._DesignParameter['TSI2']['_DesignObj']._CalculateDesignParameterFinger2_v2(**Parameters_TSI2)
+            self._DesignParameter['TSI2']['_XYCoordinates'] = [[0, 0]]
+        elif TSI2_Finger >= 3:
+            self._DesignParameter['TSI2'] = self._SrefElementDeclaration(
+                _Reflect=[0, 0, 0], _Angle=0,
+                _DesignObj=TristateInverter.TristateInverter(_Name='TSI2In{}'.format(_Name)))[0]
+            self._DesignParameter['TSI2']['_DesignObj']._CalculateDesignParameterF3(**Parameters_TSI2_f3)
+            self._DesignParameter['TSI2']['_XYCoordinates'] = [[0, 0]]
+
+
+        if TSI4_Finger == 1:
+            self._DesignParameter['TSI4'] = self._SrefElementDeclaration(
+                _Reflect=[0, 0, 0], _Angle=0,
+                _DesignObj=TristateInverter.TristateInverter(_Name='TSI4In{}'.format(_Name)))[0]
+            self._DesignParameter['TSI4']['_DesignObj']._CalculateDesignParameterFinger1_v2(**Parameters_TSI4)
+            self._DesignParameter['TSI4']['_XYCoordinates'] = [[0, 0]]
+        elif TSI4_Finger == 2:
+            self._DesignParameter['TSI4'] = self._SrefElementDeclaration(
+                _Reflect=[0, 0, 0], _Angle=0,
+                _DesignObj=TristateInverter.TristateInverter(_Name='TSI4In{}'.format(_Name)))[0]
+            self._DesignParameter['TSI4']['_DesignObj']._CalculateDesignParameterFinger2_v2(**Parameters_TSI4)
+            self._DesignParameter['TSI4']['_XYCoordinates'] = [[0, 0]]
+        elif TSI4_Finger >= 3:
+            self._DesignParameter['TSI4'] = self._SrefElementDeclaration(
+                _Reflect=[0, 0, 0], _Angle=0,
+                _DesignObj=TristateInverter.TristateInverter(_Name='TSI4In{}'.format(_Name)))[0]
+            self._DesignParameter['TSI4']['_DesignObj']._CalculateDesignParameterF3(**Parameters_TSI4_f3)
+            self._DesignParameter['TSI4']['_XYCoordinates'] = [[0, 0]]
+
+
+
+
+
+        self._DesignParameter['INV1'] = self._SrefElementDeclaration(
+            _Reflect=[0, 0, 0], _Angle=0,
+            _DesignObj=Inverter_ljw._Inverter(_Name='INV1In{}'.format(_Name)))[0]
+        self._DesignParameter['INV1']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_INV1)
+        self._DesignParameter['INV1']['_XYCoordinates'] = [[0, 0]]
+        self._DesignParameter['INV2'] = self._SrefElementDeclaration(
+            _Reflect=[0, 0, 0], _Angle=0,
+            _DesignObj=Inverter_ljw._Inverter(_Name='INV2In{}'.format(_Name)))[0]
+        self._DesignParameter['INV2']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_INV2)
+        self._DesignParameter['INV2']['_XYCoordinates'] = [[0, 0]]
+        self._DesignParameter['INV3'] = self._SrefElementDeclaration(
+            _Reflect=[0, 0, 0], _Angle=0,
+            _DesignObj=Inverter_ljw._Inverter(_Name='INV3In{}'.format(_Name)))[0]
+        self._DesignParameter['INV3']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_INV3)
+        self._DesignParameter['INV3']['_XYCoordinates'] = [[0, 0]]
+        self._DesignParameter['INV4'] = self._SrefElementDeclaration(
+            _Reflect=[1, 0, 0], _Angle=180,
+            _DesignObj=Inverter_ljw._Inverter(_Name='INV4In{}'.format(_Name)))[0]
+        self._DesignParameter['INV4']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_INV4)
+        self._DesignParameter['INV4']['_XYCoordinates'] = [[0, 0]]
+
+
+        self._DesignParameter['INV7'] = self._SrefElementDeclaration(
+            _Reflect=[0, 0, 0], _Angle=0,
+            _DesignObj=Inverter_ljw._Inverter(_Name='INV7In{}'.format(_Name)))[0]
+        self._DesignParameter['INV7']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_INV7)
+        self._DesignParameter['INV7']['_XYCoordinates'] = [[0, 0]]
+        self._DesignParameter['INV8'] = self._SrefElementDeclaration(
+            _Reflect=[0, 0, 0], _Angle=0,
+            _DesignObj=Inverter_ljw._Inverter(_Name='INV8In{}'.format(_Name)))[0]
+        self._DesignParameter['INV8']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_INV8)
+        self._DesignParameter['INV8']['_XYCoordinates'] = [[0, 0]]
+
+        self._DesignParameter['INV9'] = self._SrefElementDeclaration(
+            _Reflect=[0, 0, 0], _Angle=0,
+            _DesignObj=Inverter_ljw._Inverter(_Name='INV9In{}'.format(_Name)))[0]
+        self._DesignParameter['INV9']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_INV9)
+        self._DesignParameter['INV9']['_XYCoordinates'] = [[0, 0]]
+        self._DesignParameter['INV10'] = self._SrefElementDeclaration(
+            _Reflect=[0, 0, 0], _Angle=0,
+            _DesignObj=Inverter_ljw._Inverter(_Name='INV10In{}'.format(_Name)))[0]
+        self._DesignParameter['INV10']['_DesignObj']._CalculateDesignParameter_v3(**Parameters_INV10)
+        self._DesignParameter['INV10']['_XYCoordinates'] = [[0, 0]]
+
+
+
+        self._DesignParameter['TG1']['_XYCoordinates'] = [[self._DesignParameter['TG1']['_DesignObj'].CellXWidth / 2, 0]]
+        if INV1_Finger >= 3:
+            self._DesignParameter['INV1']['_XYCoordinates'] = [
+                [self.getXY('TG1')[0][0] + self._DesignParameter['TG1']['_DesignObj'].CellXWidth / 2 + self._DesignParameter['INV1']['_DesignObj'].CellXWidth / 2, 0]
+            ]
+        else:
+            self._DesignParameter['INV1']['_XYCoordinates'] = [
+                [self.getXY('TG1')[0][0] + self._DesignParameter['TG1']['_DesignObj'].CellXWidth / 2 + 2 * UnitPitch + self._DesignParameter['INV1']['_DesignObj'].CellXWidth / 2, 0]
+            ]
+        self._DesignParameter['TSI1']['_XYCoordinates'] = [
+            [self.getXY('INV1')[0][0] + self._DesignParameter['INV1']['_DesignObj'].CellXWidth / 2 + 2 * UnitPitch + self._DesignParameter['TSI1']['_DesignObj'].CellXWidth / 2, 0]
+        ]
+        self._DesignParameter['TG2']['_XYCoordinates'] = [
+            [self.getXY('TSI1')[0][0] + self._DesignParameter['TSI1']['_DesignObj'].CellXWidth / 2 + 1 * UnitPitch + self._DesignParameter['TG2']['_DesignObj'].CellXWidth / 2, 0]
+        ]
+        self._DesignParameter['INV2']['_XYCoordinates'] = [
+            [self.getXY('TG2')[0][0] + self._DesignParameter['TG2']['_DesignObj'].CellXWidth / 2 + 1 * UnitPitch + self._DesignParameter['INV2']['_DesignObj'].CellXWidth / 2, 0]
+        ]
+        self._DesignParameter['INV3']['_XYCoordinates'] = [
+            [self.getXY('INV2')[0][0] + self._DesignParameter['INV2']['_DesignObj'].CellXWidth / 2 + self._DesignParameter['INV3']['_DesignObj'].CellXWidth / 2, 0]
+        ]
+        self._DesignParameter['TSI2']['_XYCoordinates'] = [
+            [self.getXY('INV3')[0][0] + self._DesignParameter['INV3']['_DesignObj'].CellXWidth / 2 + 2 * UnitPitch + self._DesignParameter['TSI2']['_DesignObj'].CellXWidth / 2, 0]
+        ]
+        self._DesignParameter['INV4']['_XYCoordinates'] = [
+            [self.getXY('TSI2')[0][0] + self._DesignParameter['TSI2']['_DesignObj'].CellXWidth / 2 + 1 * UnitPitch + self._DesignParameter['INV4']['_DesignObj'].CellXWidth / 2, 0]
+        ]
+
+
+        self._DesignParameter['TG4']['_XYCoordinates'] = [
+                [self.getXY('INV4')[0][0] + self._DesignParameter['INV4']['_DesignObj'].CellXWidth / 2 + 1 * UnitPitch + self._DesignParameter['TG4']['_DesignObj'].CellXWidth / 2, 0]
+            ]
+        if INV7_Finger >= 3:
+            self._DesignParameter['INV7']['_XYCoordinates'] = [
+                [self.getXY('TG4')[0][0] + self._DesignParameter['TG4']['_DesignObj'].CellXWidth / 2 + self._DesignParameter['INV7']['_DesignObj'].CellXWidth / 2, 0]
+            ]
+        else:
+            self._DesignParameter['INV7']['_XYCoordinates'] = [
+                [self.getXY('TG4')[0][0] + self._DesignParameter['TG4']['_DesignObj'].CellXWidth / 2 + 2 * UnitPitch + self._DesignParameter['INV7']['_DesignObj'].CellXWidth / 2, 0]
+            ]
+
+
+        self._DesignParameter['TSI4']['_XYCoordinates'] = [
+            [self.getXY('INV7')[0][0] + self._DesignParameter['INV7']['_DesignObj'].CellXWidth / 2 + 2 * UnitPitch + self._DesignParameter['TSI4']['_DesignObj'].CellXWidth / 2, 0]
+        ]
+        self._DesignParameter['INV8']['_XYCoordinates'] = [
+            [self.getXY('TSI4')[0][0] + self._DesignParameter['TSI4']['_DesignObj'].CellXWidth / 2  + 1 * UnitPitch + self._DesignParameter['INV8']['_DesignObj'].CellXWidth / 2, 0]
+        ]
+        self._DesignParameter['INV9']['_XYCoordinates'] = [
+            [self.getXY('INV8')[0][0] + self._DesignParameter['INV8']['_DesignObj'].CellXWidth / 2  + 2 * UnitPitch + self._DesignParameter['INV9']['_DesignObj'].CellXWidth / 2, 0]
+        ]
+        self._DesignParameter['INV10']['_XYCoordinates'] = [
+            [self.getXY('INV9')[0][0] + self._DesignParameter['INV9']['_DesignObj'].CellXWidth / 2  + self._DesignParameter['INV10']['_DesignObj'].CellXWidth / 2, 0]
+        ]
+
+
+        ''' VDD Rail, VSS Rail, XVTLayer '''
+        # VSS M2
+        leftBoundary = self.getXYLeft('TG1', 'vss_supply_m2_y')[0][0]
+        rightBoundary = self.getXYRight('INV10', 'PbodyContact', '_Met2Layer')[0][0]
+        self._DesignParameter['VSSRail_Met2'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=self.getYWidth('INV10', 'PbodyContact', '_Met2Layer'),
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, 0]]
+        )
+        # VSS OD(RX)
+        leftBoundary = self.getXYLeft('TG1', 'vss_odlayer')[0][0]
+        rightBoundary = self.getXYRight('INV10', 'PbodyContact', '_ODLayer')[0][0]
+        self._DesignParameter['VSSRail_OD'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['DIFF'][0], _Datatype=DesignParameters._LayerMapping['DIFF'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=self.getYWidth('INV10', 'PbodyContact', '_ODLayer'),
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, 0]]
+        )
+        # VSS PP(BP)
+        leftBoundary = self.getXYLeft('TG1', 'vss_pplayer')[0][0]
+        rightBoundary = self.getXYRight('INV10', 'PbodyContact', '_PPLayer')[0][0]
+        self._DesignParameter['VSSRail_PP'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['PIMP'][0], _Datatype=DesignParameters._LayerMapping['PIMP'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=self.getYWidth('INV10', 'PbodyContact', '_PPLayer'),
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, 0]]
+        )
+        ## VDD
+        # VDD M2
+        leftBoundary = self.getXYLeft('TG1', 'vdd_supply_m2_y')[0][0]
+        rightBoundary = self.getXYRight('INV10', 'NbodyContact', '_Met2Layer')[0][0]
+        self._DesignParameter['VDDRail_Met2'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=self.getYWidth('INV10', 'NbodyContact', '_Met2Layer'),
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, self.getXY('INV10', 'NbodyContact', '_Met2Layer')[0][1]]]
+        )
+        # VDD OD(RX)
+        leftBoundary = self.getXYLeft('TG1', 'vdd_odlayer')[0][0]
+        rightBoundary = self.getXYRight('INV10', 'NbodyContact', '_ODLayer')[0][0]
+        self._DesignParameter['VDDRail_OD'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['DIFF'][0], _Datatype=DesignParameters._LayerMapping['DIFF'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=self.getYWidth('INV10', 'NbodyContact', '_ODLayer'),
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, self.getXY('INV10', 'NbodyContact', '_ODLayer')[0][1]]]
+        )
+
+        # NWLayer
+        leftBoundary = self.getXYLeft('TG1', 'NWELL_boundary_0')[0][0]
+        rightBoundary = self.getXYRight('INV10', '_NWLayerBoundary')[0][0]
+        topBoundary = max(
+            self.getXYTop('TG1', 'NWELL_boundary_0')[0][1],
+            self.getXYTop('TG2', 'NWELL_boundary_0')[0][1],
+            self.getXYTop('TSI1', 'nwlayer')[0][1],
+            self.getXYTop('TSI2', 'nwlayer')[0][1],
+            self.getXYTop('INV1', '_NWLayerBoundary')[0][1],
+            self.getXYTop('INV2', '_NWLayerBoundary')[0][1],
+            self.getXYTop('INV3', '_NWLayerBoundary')[0][1],
+            self.getXYTop('INV4', '_NWLayerBoundary')[0][1]
+        )
+        botBoundary = min(
+            self.getXYBot('TG1', 'NWELL_boundary_0')[0][1],
+            self.getXYBot('TG2', 'NWELL_boundary_0')[0][1],
+            self.getXYBot('TSI1', 'nwlayer')[0][1],
+            self.getXYBot('TSI2', 'nwlayer')[0][1],
+            self.getXYBot('INV1', '_NWLayerBoundary')[0][1],
+            self.getXYBot('INV2', '_NWLayerBoundary')[0][1],
+            self.getXYBot('INV3', '_NWLayerBoundary')[0][1],
+            self.getXYBot('INV4', '_NWLayerBoundary')[0][1]
+        )
+        self._DesignParameter['_NWLayer'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['NWELL'][0], _Datatype=DesignParameters._LayerMapping['NWELL'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=topBoundary - botBoundary,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, (topBoundary + botBoundary) / 2]]
+        )
+
+        # PPLayer (ADDED by smlim)
+        leftBoundary = self.getXYLeft('TG1', 'pmos', '_PPLayer')[0][0]
+        rightBoundary = self.getXYRight('INV10', '_PMOS', '_PPLayer')[0][0]
+        if TSI1_Finger >= 3:
+            topboundary_TSI1 = self.getXYTop('TSI1', 'PM1', '_PPLayer')[0][1]
+            botboundary_TSI1 = self.getXYBot('TSI1', 'PM1', '_PPLayer')[0][1]
+        else:
+            topboundary_TSI1 = self.getXYTop('TSI1', 'PMOS', '_PPLayer')[0][1]
+            botboundary_TSI1 = self.getXYBot('TSI1', 'PMOS', '_PPLayer')[0][1]
+        if TSI2_Finger >= 3:
+            topboundary_TSI2 = self.getXYTop('TSI2', 'PM1', '_PPLayer')[0][1]
+            botboundary_TSI2 = self.getXYBot('TSI2', 'PM1', '_PPLayer')[0][1]
+        else:
+            topboundary_TSI2 = self.getXYTop('TSI2', 'PMOS', '_PPLayer')[0][1]
+            botboundary_TSI2 = self.getXYBot('TSI2', 'PMOS', '_PPLayer')[0][1]
+        topBoundary = max(
+            self.getXYTop('TG1', 'pmos', '_PPLayer')[0][1],
+            self.getXYTop('TG2', 'pmos', '_PPLayer')[0][1],
+            topboundary_TSI1,
+            topboundary_TSI2,
+            self.getXYTop('INV1', '_PMOS', '_PPLayer')[0][1],
+            self.getXYTop('INV2', '_PMOS', '_PPLayer')[0][1],
+            self.getXYTop('INV3', '_PMOS', '_PPLayer')[0][1],
+            self.getXYTop('INV4', '_PMOS', '_PPLayer')[0][1]
+        )
+        botBoundary = min(
+            self.getXYBot('TG1', 'pmos', '_PPLayer')[0][1],
+            self.getXYBot('TG2', 'pmos', '_PPLayer')[0][1],
+            botboundary_TSI1,
+            botboundary_TSI2,
+            self.getXYBot('INV1', '_PMOS', '_PPLayer')[0][1],
+            self.getXYBot('INV2', '_PMOS', '_PPLayer')[0][1],
+            self.getXYBot('INV3', '_PMOS', '_PPLayer')[0][1],
+            self.getXYBot('INV4', '_PMOS', '_PPLayer')[0][1]
+        )
+        self._DesignParameter['_PPLayer'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['PIMP'][0], _Datatype=DesignParameters._LayerMapping['PIMP'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=topBoundary - botBoundary,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, (topBoundary + botBoundary) / 2]]
+        )
+        self._DesignParameter['TG1']['_DesignObj']._DesignParameter['vss_pplayer']['_YWidth'] = self.getYWidth('INV1', 'PbodyContact', '_PPLayer')
+        self._DesignParameter['TG2']['_DesignObj']._DesignParameter['vss_pplayer']['_YWidth'] = self.getYWidth('INV1', 'PbodyContact', '_PPLayer')
+        self._DesignParameter['TG4']['_DesignObj']._DesignParameter['vss_pplayer']['_YWidth'] = self.getYWidth('INV1', 'PbodyContact', '_PPLayer')
+
+        # XVTLayer
+        assert XVT in ('SLVT', 'LVT', 'RVT', 'HVT')
+        leftBoundary = self.getXYLeft('TG1', 'XVT_boundary_1')[0][0]
+        rightBoundary = self.getXYRight('INV10', 'XVTLayer')[0][0]
+        self._DesignParameter['XVTLayer'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping[XVT][0], _Datatype=DesignParameters._LayerMapping[XVT][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=self.getYWidth('INV10', 'XVTLayer'),
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, self.getXY('INV10', 'XVTLayer')[0][1]]]
+        )
+
+        '''dib routing(ADDED by smlim)'''
+        tmpMet2Width = 66
+        tmpDRC_Met2Spacing = 86
+        tmpVia1YWidth = 100
+        tmpViaMet2Width = 134
+
+        leftBoundary = self.getXY('TG1')[0][0] + self._DesignParameter['TG1']['_DesignObj']._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][-1][0][0] - self.getWidth('TG1', 'm1_drain_routing_y') / 2
+        if INV1_Finger <= 2:
+            YCoord_dib2 = self.getXYTop('INV1', '_NMOS', '_Met1Layer')[0][1] + tmpDRC_Met2Spacing + tmpMet2Width / 2
+
+        elif INV1_Finger >= 3:
+            YCoord_dib2 = self.getXYTop('INV1', '_ViaMet12Met2OnNMOSOutput', '_Met2Layer')[0][1] + tmpDRC_Met2Spacing + tmpMet2Width / 2
+
+        if TSI1_Finger == 1:
+            rightBoundary2 = self.getXY('TSI1')[0][0] + self.getWidth('TSI1', 'OutputRouting') / 2
+        elif TSI1_Finger == 2:
+            rightBoundary2 = self.getXYRight('TSI1', 'met1_output_5')[0][0]
+            if INV1_Finger >= 3:
+                YCoord_dib2 = self.getXYTop('INV1', '_ViaMet12Met2OnNMOSOutput', '_Met2Layer')[0][1] + tmpDRC_Met2Spacing + tmpMet2Width / 2
+            else:
+                YCoord_dib2 = self.getXYBot('TSI1', 'met1_output_5')[0][1] + tmpViaMet2Width - tmpMet2Width / 2
+        elif TSI1_Finger >= 3:
+            rightBoundary2 = self.getXYRight('TSI1', 'Met1RouteY_Out')[0][0]
+            YCoord_dib2 = self.getXYTop('TSI1', 'via1ForNM2', '_Met2Layer')[0][1] + drc._Metal1MinSpace2 + tmpMet2Width / 2
+
+        if CellHeight >2000:
+            YCoord_dib_upper=YCoord_dib2+TG1_NMWidth/2
+            dib_margin =TG1_NMWidth/2
+        else :
+            YCoord_dib_upper=YCoord_dib2
+            dib_margin = 0
+        # TG1y to TSI1out
+        self._DesignParameter['_Met2_dib'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary2 - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary2 + leftBoundary) / 2, YCoord_dib_upper]]
+        )
+
+        # insert via
+        self._DesignParameter['_ViaMet12Met2dib'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2dibIn{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2dib']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2dib']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2dib']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2dib']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet12Met2dib']['_XYCoordinates'] = [[self.getXYLeft('_Met2_dib')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_dib')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2],
+                                                                       [self.getXYRight('_Met2_dib')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_dib')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
+
+        # Additional routing
+        if INV1_Finger <= 2:
+            self._DesignParameter['_Met1_dib_add'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=self.getXWidth('INV1', '_VIAPoly2Met1_F1', '_Met1Layer'),
+                _XYCoordinates=[[[self.getXY('INV1', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0], self.getXYBot('_Met2_dib')[0][1]],
+                                 [self.getXY('INV1', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0], self.getXYTop('INV1', '_VIAPoly2Met1_F1', '_Met1Layer')[0][1]]]]
+            )
+            self._DesignParameter['_ViaMet12Met2dib']['_XYCoordinates'].append([self.getXY('INV1', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0], self.getXY('_Met2_dib')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2])
+        else:
+            self._DesignParameter['_ViaMet12Met2dib']['_XYCoordinates'].append([self.getXY('INV1')[0][0] + self._DesignParameter['INV1']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0],dib_margin+ tmpViaMet2Width / 2 + (self.getXYTop('INV1', '_ViaMet12Met2OnNMOSOutput', '_Met2Layer')[0][1] - drc._MetalxMinEnclosureVia3 + drc._VIAzMinEnclosureByMetxOrMety + drc._VIAyMinSpace - (self.getXYBot('_ViaMet12Met2dib', '_COLayer')[0][1] - self.getXYBot('_ViaMet12Met2dib', '_Met2Layer')[0][1]))])
+
+        if TSI1_Finger == 2:
+            self._DesignParameter['_Met1_dib_add2'] = self._BoundaryElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _XWidth=tmpMet2Width,
+                _YWidth=self.getYWidth('TSI1', 'met1_output_5'),
+                _XYCoordinates=[[self.getXYRight('TSI1', 'met1_output_5')[0][0] - tmpMet2Width / 2, self.getXY('TSI1', 'met1_output_5')[0][1]]]
+            )
+
+        '''dib routing (added by jwlee) latch added'''
+        leftBoundary = self.getXY('TG4')[0][0] + self._DesignParameter['TG4']['_DesignObj']._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][-1][0][0] - self.getWidth('TG4', 'm1_drain_routing_y') / 2
+        if INV7_Finger <= 2:
+            YCoord_dib3 = self.getXYTop('INV7', '_NMOS', '_Met1Layer')[0][1] + tmpDRC_Met2Spacing + tmpMet2Width / 2
+
+        elif INV7_Finger >= 3:
+            YCoord_dib3 = self.getXYTop('INV7', '_ViaMet12Met2OnNMOSOutput', '_Met2Layer')[0][1] + tmpDRC_Met2Spacing + tmpMet2Width / 2
+
+        if TSI4_Finger == 1:
+            rightBoundary2 = self.getXY('TSI4')[0][0] + self.getWidth('TSI4', 'OutputRouting') / 2
+        elif TSI4_Finger == 2:
+            rightBoundary2 = self.getXYRight('TSI4', 'met1_output_5')[0][0]
+            if INV7_Finger >= 3:
+                YCoord_dib3 = self.getXYTop('INV7', '_ViaMet12Met2OnNMOSOutput', '_Met2Layer')[0][1] + tmpDRC_Met2Spacing + tmpMet2Width / 2
+            else:
+                YCoord_dib3 = self.getXYBot('TSI4', 'met1_output_5')[0][1] + tmpViaMet2Width - tmpMet2Width / 2
+        elif TSI4_Finger >= 3:
+            rightBoundary2 = self.getXYRight('TSI4', 'Met1RouteY_Out')[0][0]
+            YCoord_dib3 = self.getXYTop('TSI4', 'via1ForNM2', '_Met2Layer')[0][1] + drc._Metal1MinSpace2 + tmpMet2Width / 2
+
+        if CellHeight >2000:
+            YCoord_dib_upper2=YCoord_dib3+TG1_NMWidth/2
+
+        else :
+            YCoord_dib_upper2=YCoord_dib3
+
+        # TG4y to TSI4out
+        self._DesignParameter['_Met2_dib_latch_latch'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary2 - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary2 + leftBoundary) / 2, YCoord_dib_upper2]]
+        )
+
+        # insert via (latch)
+        self._DesignParameter['_ViaMet12Met2dib_latch_latch'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2dib_latch_latchIn{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2dib_latch_latch']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2dib_latch_latch']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2dib_latch_latch']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2dib_latch_latch']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet12Met2dib_latch_latch']['_XYCoordinates'] = [[self.getXYLeft('_Met2_dib_latch_latch')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_dib_latch_latch')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2],
+                                                                       [self.getXYRight('_Met2_dib_latch_latch')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_dib_latch_latch')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
+
+        # Additional routing(latch)
+        if INV7_Finger <= 2:
+            self._DesignParameter['_Met1_dib_add_latch_latch'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=self.getXWidth('INV7', '_VIAPoly2Met1_F1', '_Met1Layer'),
+                _XYCoordinates=[[[self.getXY('INV7', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0], self.getXYBot('_Met2_dib_latch_latch')[0][1]],
+                                 [self.getXY('INV7', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0], self.getXYTop('INV7', '_VIAPoly2Met1_F1', '_Met1Layer')[0][1]]]]
+            )
+            self._DesignParameter['_ViaMet12Met2dib_latch_latch']['_XYCoordinates'].append([self.getXY('INV7', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0],self.getXY('_Met2_dib_latch_latch')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2])
+        else:
+            self._DesignParameter['_ViaMet12Met2dib_latch_latch']['_XYCoordinates'].append([self.getXY('INV7')[0][0] + self._DesignParameter['INV7']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0],self.getXY('_Met2_dib_latch_latch')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2 ])
+
+            #self._DesignParameter['_ViaMet12Met2dib_latch_latch']['_XYCoordinates'].append([self.getXY('INV7')[0][0] + self._DesignParameter['INV7']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0], tmpViaMet2Width / 2 + (self.getXYTop('INV7', '_ViaMet12Met2OnNMOSOutput', '_Met2Layer')[0][1] - drc._MetalxMinEnclosureVia3 + drc._VIAzMinEnclosureByMetxOrMety + drc._VIAyMinSpace - (self.getXYBot('_ViaMet12Met2dib', '_COLayer')[0][1] - self.getXYBot('_ViaMet12Met2dib_latch_latch', '_Met2Layer')[0][1]))])
+
+        if TSI4_Finger == 2:
+            self._DesignParameter['_Met1_dib_add2_latch_latch'] = self._BoundaryElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _XWidth=tmpMet2Width,
+                _YWidth=self.getYWidth('TSI4', 'met1_output_5'),
+                _XYCoordinates=[[self.getXYRight('TSI4', 'met1_output_5')[0][0] - tmpMet2Width / 2, self.getXY('TSI4', 'met1_output_5')[0][1]]]
+            )
+
+
+        ''''dib Routing1 end'''
+
+
+
+        # '''iclkb routing(ADDED by smlim)'''
+        leftBoundary = self.getXYLeft('TG1', 'gate_output', '_Met1Layer')[0][0]
+        if TSI2_Finger == 1:
+            rightBoundary = self.getXYRight('TSI2', 'InputVia_EN', '_Met1Layer')[0][0]
+            YCoord_iclkb = self.getXYBot('TG2', 'gate_input', '_Met1Layer')[0][1]
+        elif TSI2_Finger == 2:
+            rightBoundary = self.getXYLeft('TSI2', 'InputVia_EN', '_Met1Layer')[0][0] + tmpMet2Width
+            YCoord_iclkb = self.getXYBot('TG2', 'gate_input', '_Met1Layer')[0][1]
+        elif TSI2_Finger >= 3:
+            rightBoundary = self.getXYLeft('TSI2', 'polyInputEN', '_Met1Layer')[0][0] + tmpMet2Width
+            YCoord_iclkb = self.getXYBot('TG2', 'gate_input', '_Met1Layer')[0][1] + tmpMet2Width / 2
+
+
+        # TG1en to TSI2en
+        self._DesignParameter['_Met2_iclkb'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_iclkb]]
+        )
+        self._DesignParameter['_Met1_iclkb'] = self._PathElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+            _Width=tmpMet2Width
+        )
+        self._DesignParameter['_Met1_iclkb']['_XYCoordinates'] = [[[self.getXYLeft('_Met2_iclkb')[0][0] + tmpMet2Width / 2, self.getXYBot('_Met2_iclkb')[0][1]], [self.getXYLeft('_Met2_iclkb')[0][0] + tmpMet2Width / 2, self.getXYTop('TG1', 'gate_output', '_Met1Layer')[0][1]]], # to TG1en
+                                                                  [[self.getXY('TG2', 'gate_input', '_Met1Layer')[0][0], self.getXYBot('_Met2_iclkb')[0][1]], [self.getXY('TG2', 'gate_input', '_Met1Layer')[0][0], self.getXYTop('TG2', 'gate_input', '_Met1Layer')[0][1]]]] # to TG2enb
+        if TSI1_Finger == 1:
+            xCoordOfInputViaENandENb = - self.getXWidth('TSI1', 'NMOS', '_Met1Layer') / 2 - drc._Metal1MinSpaceAtCorner - self.getXWidth('TSI1', 'InputVia_ENb', '_Met1Layer') / 2
+            self._DesignParameter['_Met1_iclkb']['_XYCoordinates'].append([[self.getXY('TSI1', 'InputVia_ENb', '_Met1Layer')[0][0] + xCoordOfInputViaENandENb, self.getXYBot('_Met2_iclkb')[0][1]],
+                                                                            [self.getXY('TSI1', 'InputVia_ENb', '_Met1Layer')[0][0] + xCoordOfInputViaENandENb, self.getXYBot('TSI1', 'InputVia_ENb', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                            [self.getXYRight('TSI1', 'InputVia_ENb', '_Met1Layer')[0][0] ,self.getXYBot('TSI1', 'InputVia_ENb', '_Met1Layer')[0][1] + tmpMet2Width / 2]]) # to TSI1enb
+        elif TSI1_Finger == 2:
+            self._DesignParameter['_Met1_iclkb']['_XYCoordinates'].append([[self.getXYRight('TSI1', 'InputVia_ENb', '_Met1Layer')[0][0] - tmpMet2Width / 2, self.getXYBot('_Met2_iclkb')[0][1]],
+                                                                            [self.getXYRight('TSI1', 'InputVia_ENb', '_Met1Layer')[0][0] - tmpMet2Width / 2, self.getXYTop('TSI1', 'InputVia_ENb', '_Met1Layer')[0][1]]])  # to TSI1enb
+        elif TSI1_Finger >= 3:
+            self._DesignParameter['_Met1_iclkb']['_XYCoordinates'].append([[self.getXYLeft('TSI1', 'polyInputA', '_Met1Layer')[0][0] - drc._Metal1MinSpace2 - tmpMet2Width / 2, self.getXYBot('_Met2_iclkb')[0][1]],
+                                                                           [self.getXYLeft('TSI1', 'polyInputA', '_Met1Layer')[0][0] - drc._Metal1MinSpace2 - tmpMet2Width / 2, self.getXYTop('_Met2_iclkb')[0][1] + tmpViaMet2Width + drc._Metal1MinSpace2 * 2 + tmpViaMet2Width - tmpMet2Width / 2],
+                                                                           [self.getXY('TSI1', 'polyInputA', '_Met1Layer')[0][0] + drc._Metal1MinSpace2 + tmpMet2Width / 2, self.getXYTop('_Met2_iclkb')[0][1] + tmpViaMet2Width + drc._Metal1MinSpace2 * 2 + tmpViaMet2Width - tmpMet2Width / 2],
+                                                                           [self.getXY('TSI1', 'polyInputA', '_Met1Layer')[0][0] + drc._Metal1MinSpace2 + tmpMet2Width / 2, self.getXYTop('TSI1', 'polyInputENb', '_Met1Layer')[0][1] - tmpMet2Width / 2],
+                                                                           [self.getXYRight('TSI1', 'polyInputENb', '_Met1Layer')[0][0], self.getXYTop('TSI1', 'polyInputENb', '_Met1Layer')[0][1] - tmpMet2Width / 2]])  # to TSI1enb
+
+        if TSI2_Finger == 1:
+            self._DesignParameter['_Met1_iclkb']['_XYCoordinates'].append([[self.getXY('TSI2', 'InputVia_EN', '_Met1Layer')[0][0], self.getXYTop('_Met2_iclkb')[0][1]],
+                                                                           [self.getXY('TSI2', 'InputVia_EN', '_Met1Layer')[0][0], self.getXYBot('TSI2', 'InputVia_EN', '_Met1Layer')[0][1]]])
+        elif TSI2_Finger == 2:
+            self._DesignParameter['_Met1_iclkb']['_XYCoordinates'].append([[self.getXYLeft('TSI2', 'InputVia_EN', '_Met1Layer')[0][0] + tmpMet2Width / 2, self.getXYTop('_Met2_iclkb')[0][1]],
+                                                                            [self.getXYLeft('TSI2', 'InputVia_EN', '_Met1Layer')[0][0] + tmpMet2Width / 2, self.getXYBot('TSI2', 'InputVia_EN', '_Met1Layer')[0][1]]])
+        elif TSI2_Finger >= 3:
+            self._DesignParameter['_Met1_iclkb']['_XYCoordinates'].append([[self.getXYLeft('TSI2', 'polyInputEN', '_Met1Layer')[0][0] + tmpMet2Width / 2, self.getXYTop('_Met2_iclkb')[0][1]],
+                                                                            [self.getXYLeft('TSI2', 'polyInputEN', '_Met1Layer')[0][0] + tmpMet2Width / 2, self.getXYBot('TSI2', 'polyInputEN', '_Met1Layer')[0][1]]])
+
+        if INV3_Finger >= 3:
+            self._DesignParameter['_Met1_iclkb']['_XYCoordinates'].append([[self.getXY('INV2')[0][0] + self._DesignParameter['INV2']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0] - self.getWidth('INV2', '_OutputRouting') / 2, self.getXY('INV3')[0][1] + (self._DesignParameter['INV3']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1] + self._DesignParameter['INV3']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]) / 2],
+                                                                           [self.getXYLeft('INV3', '_VIAMOSPoly2Met1LeftMost', '_Met1Layer')[0][0] + tmpMet2Width, self.getXY('INV3')[0][1] + (self._DesignParameter['INV3']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][1][1] + self._DesignParameter['INV3']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][1]) / 2]]) # inputrouting 잡아서 가운데 좌표로 y 좌표 세팅
+        else:
+            self._DesignParameter['_Met1_iclkb']['_XYCoordinates'].append([[self.getXYRight('INV3', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0], self.getXY('INV3', '_VIAPoly2Met1_F1', '_Met1Layer')[0][1]],
+                                                                           [self.getXY('INV2')[0][0] + self._DesignParameter['INV2']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0] - self.getWidth('INV2', '_OutputRouting') / 2, self.getXY('INV3', '_VIAPoly2Met1_F1', '_Met1Layer')[0][1]]])
+
+        # insert via
+        self._DesignParameter['_ViaMet12Met2iclkb'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclkbIn{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2iclkb']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2iclkb']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclkb']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclkb']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet12Met2iclkb']['_XYCoordinates'] = [[self.getXYLeft('_Met2_iclkb')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_iclkb')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2], # TG1 EN
+                                                                         [self._DesignParameter['_Met1_iclkb']['_XYCoordinates'][2][0][0], self.getXY('_Met2_iclkb')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2], # TSI1 ENb
+                                                                         [self._DesignParameter['_Met1_iclkb']['_XYCoordinates'][1][0][0], self.getXY('_Met2_iclkb')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2], # TG2 ENb
+                                                                         [self.getXY('INV2')[0][0] + self._DesignParameter['INV2']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][0][0][0], self.getXY('_Met2_iclkb')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2], # INV2 out
+                                                                         [self.getXYRight('_Met2_iclkb')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_iclkb')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]] # TSI2 EN
+
+        '''iclkb routing (ADDED by jw) latch added'''
+
+        self._DesignParameter['_Met2_iclkb_latch2_latch'] = self._PathElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _Width=tmpMet2Width
+        )
+        self._DesignParameter['_Met2_iclkb_latch2_latch']['_XYCoordinates'] = [[[self.getXYRight('TSI4', 'InputVia_EN', '_Met1Layer')[0][0], YCoord_iclkb],
+                                                                  [self.getXYRight('TG4', 'gate_output', '_Met1Layer')[0][0], YCoord_iclkb]]]
+
+        # TG4en to TSI4en
+        self._DesignParameter['_Met1_iclkb_latch_latch'] = self._PathElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+            _Width=tmpMet2Width
+        )
+
+        leftBoundary = self.getXYLeft('TG4', 'gate_output', '_Met1Layer')[0][0]
+        rightBoundary = self.getXYRight('TSI4', 'InputVia_EN', '_Met1Layer')[0][0]
+
+        self._DesignParameter['_Met2_iclkb_latch_latch'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_iclkb]]
+        )
+
+        self._DesignParameter['_Met1_iclkb_latch_latch']['_XYCoordinates'] = [[[self.getXYLeft('_Met2_iclkb_latch_latch')[0][0] + tmpMet2Width / 2, self.getXYBot('_Met2_iclkb_latch_latch')[0][1]], [self.getXYLeft('_Met2_iclkb_latch_latch')[0][0] + tmpMet2Width / 2, self.getXYTop('TG4', 'gate_output', '_Met1Layer')[0][1]]]] # to TG1en
+
+        if TSI4_Finger == 1:
+            xCoordOfInputViaENandENb = - self.getXWidth('TSI4', 'NMOS', '_Met1Layer') / 2 - drc._Metal1MinSpaceAtCorner - self.getXWidth('TSI4', 'InputVia_ENb', '_Met1Layer') / 2
+            self._DesignParameter['_Met1_iclkb_latch_latch']['_XYCoordinates'].append([[self.getXY('TSI4', 'InputVia_ENb', '_Met1Layer')[0][0] + xCoordOfInputViaENandENb, self.getXYBot('_Met2_iclkb')[0][1]],
+                                                                            [self.getXY('TSI4', 'InputVia_ENb', '_Met1Layer')[0][0] + xCoordOfInputViaENandENb, self.getXYBot('TSI4', 'InputVia_ENb', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                            [self.getXYRight('TSI4', 'InputVia_ENb', '_Met1Layer')[0][0] ,self.getXYBot('TSI4', 'InputVia_ENb', '_Met1Layer')[0][1] + tmpMet2Width / 2]]) # to TSI1enb
+        elif TSI4_Finger == 2:
+            self._DesignParameter['_Met1_iclkb_latch_latch']['_XYCoordinates'].append([[self.getXYRight('TSI4', 'InputVia_ENb', '_Met1Layer')[0][0] - tmpMet2Width / 2, self.getXYBot('_Met2_iclkb')[0][1]],
+                                                                            [self.getXYRight('TSI4', 'InputVia_ENb', '_Met1Layer')[0][0] - tmpMet2Width / 2, self.getXYTop('TSI4', 'InputVia_ENb', '_Met1Layer')[0][1]]])  # to TSI1enb
+        elif TSI4_Finger >= 3:
+            self._DesignParameter['_Met1_iclkb_latch_latch']['_XYCoordinates'].append([[self.getXYLeft('TSI4', 'polyInputA', '_Met1Layer')[0][0] - drc._Metal1MinSpace2 - tmpMet2Width / 2, self.getXYBot('_Met2_iclkb')[0][1]],
+                                                                           [self.getXYLeft('TSI4', 'polyInputA', '_Met1Layer')[0][0] - drc._Metal1MinSpace2 - tmpMet2Width / 2, self.getXYTop('_Met2_iclkb')[0][1] + tmpViaMet2Width + drc._Metal1MinSpace2 * 2 + tmpViaMet2Width - tmpMet2Width / 2],
+                                                                           [self.getXY('TSI4', 'polyInputA', '_Met1Layer')[0][0] + drc._Metal1MinSpace2 + tmpMet2Width / 2, self.getXYTop('_Met2_iclkb')[0][1] + tmpViaMet2Width + drc._Metal1MinSpace2 * 2 + tmpViaMet2Width - tmpMet2Width / 2],
+                                                                           [self.getXY('TSI4', 'polyInputA', '_Met1Layer')[0][0] + drc._Metal1MinSpace2 + tmpMet2Width / 2, self.getXYTop('TSI4', 'polyInputENb', '_Met1Layer')[0][1] - tmpMet2Width / 2],
+                                                                           [self.getXYRight('TSI4', 'polyInputENb', '_Met1Layer')[0][0], self.getXYTop('TSI4', 'polyInputENb', '_Met1Layer')[0][1] - tmpMet2Width / 2]])  # to TSI1enb
+
+
+
+        # insert via
+        self._DesignParameter['_ViaMet12Met2iclkb_latch_latch'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclkb_latch_latchIn{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2iclkb_latch_latch']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2iclkb_latch_latch']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclkb_latch_latch']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclkb_latch_latch']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet12Met2iclkb_latch_latch']['_XYCoordinates']=[[self.getXYLeft('_Met2_iclkb_latch_latch')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_iclkb_latch_latch')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2], # TG1 EN
+                                                                         [self._DesignParameter['_Met1_iclkb_latch_latch']['_XYCoordinates'][1][0][0], self.getXY('_Met2_iclkb_latch_latch')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2]] # TSI1 ENb
+
+        rightBoundary = self._DesignParameter['_ViaMet12Met2iclkb_latch_latch']['_XYCoordinates'][1][0]
+        self._DesignParameter['_Met2_iclkb_latch2_latch']['_XYCoordinates'] = [[]]
+
+        self._DesignParameter['_Met2_iclkb_latch_latch'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_iclkb]]
+        )
+
+        ###### CLK90 Routing clkb ##
+        leftBoundary = rightBoundary
+        rightBoundary =self.getXY('INV9', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0]
+        self._DesignParameter['_Met2_clk90b'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_iclkb]]
+        )
+        self._DesignParameter['_ViaMet12Met2iclk90b'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclk90bIn{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2iclk90b']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2iclk90b']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclk90b']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclk90b']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet12Met2iclk90b']['_XYCoordinates'] = [[rightBoundary, YCoord_iclkb - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
+
+
+        ''''iclkb Routing end'''
+
+
+        '''rib routing(ADDED by smlim)'''
+        rightBoundary = self.getXY('TG2')[0][0] + self._DesignParameter['TG2']['_DesignObj']._DesignParameter['m1_source_routing_y']['_XYCoordinates'][0][0][0] + self.getWidth('TG2', 'm1_source_routing_y') / 2 # only when INV Finger > 3
+        leftBoundary = self.getXY('INV1')[0][0] + self._DesignParameter['INV1']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][-1][0][0] - self.getWidth('INV1', '_OutputRouting') / 2
+        YCoord_rib = self.getXY('_Met2_iclkb')[0][1] + tmpViaMet2Width + drc._Metal1MinSpace2
+
+        # TG1y to TSI1out
+        self._DesignParameter['_Met2_rib'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_rib]]
+        )
+
+        # insert via
+        self._DesignParameter['_ViaMet12Met2rib'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2ribIn{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2rib']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2rib']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2rib']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2rib']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet12Met2rib']['_XYCoordinates'] = [[self.getXYLeft('_Met2_rib')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_rib')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2],
+                                                                       [self.getXYRight('_Met2_rib')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_rib')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
+        if TSI1_Finger >= 3:
+            self._DesignParameter['_ViaMet12Met2rib']['_XYCoordinates'].append([self.getXY('TSI1', 'polyInputA', '_Met1Layer')[0][0], self.getXY('_Met2_rib')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+        else:
+            self._DesignParameter['_ViaMet12Met2rib']['_XYCoordinates'].append([self.getXY('TSI1', 'InputVia_A', '_Met1Layer')[0][0], self.getXY('_Met2_rib')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+
+        # Additional Routing
+        if TSI1_Finger == 1:
+            self._DesignParameter['_Met1_rib_add'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=tmpMet2Width,
+                _XYCoordinates=[[[self.getXY('_ViaMet12Met2rib', '_Met2Layer')[-1][0], self.getXYTop('_ViaMet12Met2rib', '_Met2Layer')[-1][1]],
+                                 [self.getXY('_ViaMet12Met2rib', '_Met2Layer')[-1][0], self.getXYBot('TSI1', 'InputVia_A', '_Met1Layer')[0][1]]]]
+            )
+        elif TSI1_Finger == 2:
+            self._DesignParameter['_Met1_rib_add'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=tmpMet2Width,
+                _XYCoordinates=[[[self.getXY('_ViaMet12Met2rib', '_Met2Layer')[-1][0], self.getXYTop('_ViaMet12Met2rib', '_Met2Layer')[-1][1]],
+                                 [self.getXY('_ViaMet12Met2rib', '_Met2Layer')[-1][0], self.getXYBot('TSI1', 'InputVia_A', '_Met1Layer')[0][1]]]]
+            )
+        elif TSI1_Finger >= 3:
+            self._DesignParameter['_Met1_rib_add'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=tmpMet2Width,
+                _XYCoordinates=[[[self.getXY('_ViaMet12Met2rib', '_Met2Layer')[-1][0], self.getXYTop('_ViaMet12Met2rib', '_Met2Layer')[-1][1]],
+                                 [self.getXY('_ViaMet12Met2rib', '_Met2Layer')[-1][0], self.getXYBot('TSI1', 'polyInputA', '_Met1Layer')[0][1]]]]
+            )
+        ########### phase 90 latch ###########
+        if INV8_Finger <= 2:
+            rightBoundary=self.getXY('INV8', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0]+ tmpMet2Width/2
+        else:
+            rightBoundary=self.getXY('INV8')[0][0] + self._DesignParameter['INV8']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0]+ tmpMet2Width/2
+
+
+        leftBoundary = self.getXY('INV7', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0] + self.getWidth('INV7', '_OutputRouting') / 2- tmpMet2Width
+        YCoord_rib = self.getXY('_Met2_iclkb')[0][1] + tmpViaMet2Width + drc._Metal1MinSpace2
+
+        # TG4y to TSI4out
+        self._DesignParameter['_Met2_rib_latch_latch'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_rib]]
+        )
+
+        # insert via
+
+        self._DesignParameter['_ViaMet12Met2rib']['_XYCoordinates'].append([self.getXYLeft('_Met2_rib_latch_latch')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_rib_latch_latch')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+        self._DesignParameter['_ViaMet12Met2rib']['_XYCoordinates'].append([self.getXYRight('_Met2_rib_latch_latch')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_rib_latch_latch')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+        if TSI4_Finger >= 3:
+            self._DesignParameter['_ViaMet12Met2rib']['_XYCoordinates'].append([self.getXY('TSI4', 'polyInputA', '_Met1Layer')[0][0], self.getXY('_Met2_rib_latch_latch')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+        else:
+            self._DesignParameter['_ViaMet12Met2rib']['_XYCoordinates'].append([self.getXY('TSI4', 'InputVia_A', '_Met1Layer')[0][0], self.getXY('_Met2_rib_latch_latch')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+
+        '''rib_latch routing end'''
+
+
+        '''qb routing(ADDED by smlim)'''
+        leftBoundary = self.getXY('TG2')[0][0] + self._DesignParameter['TG2']['_DesignObj']._DesignParameter['m1_drain_routing_y']['_XYCoordinates'][-1][0][0] - self.getWidth('TG2', 'm1_drain_routing_y') / 2
+        YCoord_qb = YCoord_rib
+        if INV4_Finger <= 2:
+            rightBoundary = self.getXYRight('INV4', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0]
+        elif INV4_Finger >= 3:
+            rightBoundary = self.getXYRight('INV4', '_VIAMOSPoly2Met1LeftMost', '_Met1Layer')[-1][0]
+
+        # TSI2A to INV4out
+        self._DesignParameter['_Met1_qb'] = self._PathElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+            _Width=tmpMet2Width
+        )
+        if TSI2_Finger == 1:
+            self._DesignParameter['_Met1_qb']['_XYCoordinates'] = [[[self.getXYLeft('TSI2', 'InputVia_A', '_Met1Layer')[0][0], self.getXY('TSI2', 'InputVia_A', '_Met1Layer')[0][1]],
+                                                                    [self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0] + self.getWidth('INV4', '_OutputRouting') / 2, self.getXY('TSI2', 'InputVia_A', '_Met1Layer')[0][1]]]]
+        elif TSI2_Finger == 2:
+            self._DesignParameter['_Met1_qb']['_XYCoordinates'] = [[[self.getXYLeft('TSI2', 'InputVia_A', '_Met1Layer')[0][0] + tmpMet2Width / 2, self.getXYTop('TSI2', 'InputVia_A', '_Met1Layer')[0][1]],
+                                                                    [self.getXYLeft('TSI2', 'InputVia_A', '_Met1Layer')[0][0] + tmpMet2Width / 2, self.getXYTop('TSI2', 'NMOS', '_Met1Layer')[0][1] + drc._Metal1MinSpace2 + tmpMet2Width / 2]]] # y축 바꾸기
+        elif TSI2_Finger >= 3:
+            self._DesignParameter['_Met1_qb']['_XYCoordinates'] = [[[self.getXY('TSI2', 'ViaForVSS', 'METAL2_boundary_0')[1][0], self.getXYTop('TSI2', 'polyInputA', '_Met1Layer')[0][1]],
+                                                                    [self.getXY('TSI2', 'ViaForVSS', 'METAL2_boundary_0')[1][0], self.getXYTop('TSI2', 'Met1RouteX_NMOut')[0][1] - tmpMet2Width]]]
+
+        # TG2y to INV4in & TSI2out
+        self._DesignParameter['_Met2_qb'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_qb]]
+        )
+
+        # Additional Routing
+        if TSI2_Finger == 2:
+            self._DesignParameter['_Met1_qb_add'] = self._BoundaryElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _XWidth=tmpMet2Width,
+                _YWidth=self.getYWidth('TSI2', 'met1_output_5'),
+                _XYCoordinates=[[self.getXYRight('TSI2', 'met1_output_5')[0][0] - tmpMet2Width / 2, self.getXY('TSI2', 'met1_output_5')[0][1]]]
+            )
+            self._DesignParameter['_Met2_qb_add'] = self._BoundaryElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+                _XWidth=self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0] - self._DesignParameter['_Met1_qb']['_XYCoordinates'][0][0][0] + tmpMet2Width,
+                _YWidth=tmpMet2Width,
+                _XYCoordinates=[[(self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0] + self._DesignParameter['_Met1_qb']['_XYCoordinates'][0][0][0]) / 2,
+                                 self._DesignParameter['_Met1_qb']['_XYCoordinates'][0][1][1] + tmpMet2Width / 2]]
+            )
+            if INV4_Finger >= 3:
+                self._DesignParameter['_Met2_qb_add2'] = self._PathElementDeclaration(
+                    _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+                    _Width=tmpMet2Width,
+                    _XYCoordinates=[[[self.getXYRight('_Met2_qb_add')[0][0] - tmpMet2Width / 2, self.getXYTop('_Met2_qb_add')[0][1]],
+                                     [self.getXYRight('_Met2_qb_add')[0][0] - tmpMet2Width / 2, self.getXYBot('INV4', '_ViaMet12Met2OnNMOSOutput', '_Met2Layer')[-1][1]]]]
+                )
+        elif TSI2_Finger >= 3:
+            self._DesignParameter['_Met2_qb_add'] = self._BoundaryElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+                _XWidth=self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0] - self._DesignParameter['_Met1_qb']['_XYCoordinates'][0][0][0] + tmpMet2Width,
+                _YWidth=tmpMet2Width,
+                _XYCoordinates=[[(self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0] + self._DesignParameter['_Met1_qb']['_XYCoordinates'][0][0][0]) / 2,
+                                 self._DesignParameter['_Met1_qb']['_XYCoordinates'][0][1][1] + tmpMet2Width / 2]]
+            )
+            if INV4_Finger >= 3:
+                self._DesignParameter['_Met2_qb_add2'] = self._PathElementDeclaration(
+                    _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+                    _Width=tmpMet2Width,
+                    _XYCoordinates=[[[self.getXYRight('_Met2_qb_add')[0][0] - tmpMet2Width / 2, self.getXYTop('_Met2_qb_add')[0][1]],
+                                     [self.getXYRight('_Met2_qb_add')[0][0] - tmpMet2Width / 2, self.getXYBot('INV4', '_ViaMet12Met2OnNMOSOutput', '_Met2Layer')[-1][1]]]]
+                )
+
+        # insert via
+        self._DesignParameter['_ViaMet12Met2qb'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2qbIn{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2qb']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2qb']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2qb']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2qb']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'] = [[self.getXYLeft('_Met2_qb')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_qb')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2],
+                                                                       [self.getXYRight('_Met2_qb')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_qb')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
+        if TSI2_Finger == 1:
+            self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'].append([self.getXY('TSI2')[0][0], self.getXY('_Met2_qb')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+        elif TSI2_Finger == 2:
+            self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'].append([self.getXYRight('TSI2', 'met1_output_5')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_qb')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+            self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'].append([self.getXYLeft('_Met2_qb_add')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_qb_add')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2])
+            if INV4_Finger < 3:
+                self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'].append([self.getXYRight('_Met2_qb_add')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_qb_add')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2])
+        elif TSI2_Finger >= 3:
+            self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'].append([self.getXY('TSI2', 'Met1RouteY_Out')[0][0], self.getXY('_Met2_qb')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+            self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'].append([self.getXYLeft('_Met2_qb_add')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_qb_add')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2])
+            if INV4_Finger < 3:
+                self._DesignParameter['_ViaMet12Met2qb']['_XYCoordinates'].append([self.getXYRight('_Met2_qb_add')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_qb_add')[0][1] + tmpViaMet2Width / 2 - tmpMet2Width / 2])
+
+        ###### TG4in to inv4out (added by jwlee)
+
+
+        Boundary=self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0] + self.getWidth('INV4', '_OutputRouting') / 2
+
+
+
+        if INV4_Finger >= 3:
+            YCoord_dib4 = self.getXYTop('INV4', '_ViaMet12Met2OnNMOSOutput', '_Met2Layer')[0][1] + tmpDRC_Met2Spacing + tmpMet2Width / 2
+        elif INV4_Finger < 3:
+            YCoord_dib4 =YCoord_dib2
+
+        if CellHeight > 2000:
+            YCoord_dib_upper3 = YCoord_dib4 + 57
+        else:
+            YCoord_dib_upper3 = YCoord_dib4
+
+        TG4in = self.getXY('TG4')[0][0] +self._DesignParameter['TG4']['_DesignObj']._DesignParameter['m1_source_routing_y']['_XYCoordinates'][0][0][0]
+        self._DesignParameter['_Met2_inv4'] = self._PathElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _Width=tmpMet2Width
+        )
+
+        self._DesignParameter['_Met2_inv4']['_XYCoordinates']=[[[Boundary - tmpMet2Width, YCoord_dib_upper3],
+                                                             [TG4in + tmpMet2Width/2, YCoord_dib_upper3]]]
+
+        #YCoord_dib4
+        # insert via for q routing
+        self._DesignParameter['_ViaMet12Met2q_latch'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2q_latchIn{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2q_latch']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2q_latch']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2q_latch']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2q_latch']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        if TSI2_Finger ==1:
+            self._DesignParameter['_ViaMet12Met2q_latch']['_XYCoordinates'] = [[self.getXY('INV4', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0] + self.getWidth('INV4', '_OutputRouting') / 2- tmpMet2Width/2, YCoord_dib_upper3],[TG4in+ self.getWidth('INV4', '_OutputRouting') / 2- tmpMet2Width/2, YCoord_dib_upper3]]
+
+        elif TSI2_Finger==2:
+            self._DesignParameter['_ViaMet12Met2q_latch']['_XYCoordinates'] = [[TG4in+ self.getWidth('INV4', '_OutputRouting') / 2- tmpMet2Width/2, YCoord_dib_upper3]]
+
+
+
+        # '''clk routing(ADDED by smlim)'''
+        # leftBoundary = self.getXYLeft('TG2', 'gate_output', '_Met1Layer')[0][0]
+        # YCoord_clk = self.getXY('TG2', 'gate_output', '_Met1Layer')[0][1]
+        # if INV2_Finger <= 2:
+        #     rightBoundary = self.getXYRight('INV2', '_VIAPoly2Met1_F1', '_Met1Layer')[0][0]
+        # elif INV2_Finger >= 3:
+        #     rightBoundary = self.getXY('INV2')[0][0] + self._DesignParameter['INV2']['_DesignObj']._DesignParameter['_InputRouting']['_XYCoordinates'][0][0][0]
+        #
+        # # TG2y to INV4in & TSI2out
+        # self._DesignParameter['_Met1_clk'] = self._BoundaryElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+        #     _XWidth=rightBoundary - leftBoundary,
+        #     _YWidth=tmpMet2Width,
+        #     _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_clk]]
+        # )
+
+
+        # '''iclk routing(ADDED by smlim)'''
+        leftBoundary = self.getXYLeft('TG1', 'gate_input', '_Met1Layer')[0][0]
+        YCoord_iclk = self.getXYTop('_Met2_rib')[0][1] + drc._Metal1MinSpace2 + tmpViaMet2Width - tmpMet2Width / 2
+        if TSI2_Finger == 1:
+            rightBoundary = self.getXYRight('TSI2', 'InputVia_ENb', '_Met1Layer')[0][0]
+        elif TSI2_Finger == 2:
+            rightBoundary = self.getXYLeft('TSI2', 'InputVia_ENb', '_Met1Layer')[0][0] - tmpMet2Width /2 - drc._Metal1MinSpace2
+        elif TSI2_Finger >= 3:
+            rightBoundary = min(self.getXYLeft('TSI2', 'polyInputENb', '_Met1Layer')[0][0], self.getXYLeft('TSI2', 'Met1RouteX_PMOut')[0][0]) - tmpMet2Width /2 - drc._Metal1MinSpace2
+
+        # TG1enb to TSI2enb
+        self._DesignParameter['_Met2_iclk'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_iclk]]
+        )
+        self._DesignParameter['_Met1_iclk'] = self._PathElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+            _Width=tmpMet2Width
+        )
+        self._DesignParameter['_Met1_iclk']['_XYCoordinates'] = [[[self.getXYLeft('_Met2_iclk')[0][0] + tmpMet2Width / 2, self.getXYTop('_Met2_iclk')[0][1]],
+                                                                  [self.getXYLeft('_Met2_iclk')[0][0] + tmpMet2Width / 2, self.getXYBot('TG1', 'gate_input', '_Met1Layer')[0][1]]]] # to TG1 enb
+
+        # Additional Routing
+        if TSI1_Finger == 1:
+            self._DesignParameter['_Met1_iclk']['_XYCoordinates'].append([[self.getXYRight('TSI1', 'InputVia_EN', '_Met1Layer')[0][0], self.getXYBot('TSI1', 'InputVia_EN', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                      [self.getXY('TSI1', 'InputVia_ENb', '_Met1Layer')[0][0] + xCoordOfInputViaENandENb * 2, self.getXYBot('TSI1', 'InputVia_EN', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                      [self.getXY('TSI1', 'InputVia_ENb', '_Met1Layer')[0][0] + xCoordOfInputViaENandENb * 2, self.getXYTop('_Met2_iclk')[0][1]]]) # to TSI1en
+        elif TSI1_Finger == 2:
+            self._DesignParameter['_Met1_iclk']['_XYCoordinates'].append([[self.getXYRight('TSI1', 'InputVia_EN', '_Met1Layer')[0][0], self.getXYBot('TSI1', 'InputVia_EN', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                      [self.getXYLeft('TSI1', 'InputVia_A', '_Met1Layer')[0][0] - drc._Metal1MinSpace2 - tmpMet2Width / 2, self.getXYBot('TSI1', 'InputVia_EN', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                      [self.getXYLeft('TSI1', 'InputVia_A', '_Met1Layer')[0][0] - drc._Metal1MinSpace2 - tmpMet2Width / 2, self.getXYTop('_Met2_iclk')[0][1]]]) # to TSI1en
+            self._DesignParameter['_Met1_iclk_add1'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=self.getYWidth('TSI1', 'InputVia_EN', '_Met1Layer'),
+                _XYCoordinates=[[[self._DesignParameter['_Met1_iclk']['_XYCoordinates'][1][0][0], self.getXY('TSI1', 'InputVia_EN', '_Met1Layer')[0][1]],
+                                 [self._DesignParameter['_Met1_iclk']['_XYCoordinates'][1][1][0], self.getXY('TSI1', 'InputVia_EN', '_Met1Layer')[0][1]]]]
+            )
+        elif TSI1_Finger >= 3:
+            self._DesignParameter['_Met1_iclk']['_XYCoordinates'].append([[self.getXYRight('TSI1', 'polyInputEN', '_Met1Layer')[0][0], self.getXYBot('TSI1', 'polyInputEN', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                          [self.getXY('TSI1', 'polyInputA', '_Met1Layer')[0][0], self.getXYBot('TSI1', 'polyInputEN', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                          [self.getXY('TSI1', 'polyInputA', '_Met1Layer')[0][0], self.getXY('_Met2_dib')[0][1]],
+                                                                          [self.getXYLeft('TSI1', 'polyInputA', '_Met1Layer')[0][0] - drc._Metal1MinSpace2 * 2 - (tmpMet2Width * 3) / 2, self.getXY('_Met2_dib')[0][1]],
+                                                                          [self.getXYLeft('TSI1', 'polyInputA', '_Met1Layer')[0][0] - drc._Metal1MinSpace2 * 2 - (tmpMet2Width * 3) / 2, self.getXYTop('_Met2_iclk')[0][1]]]) # to TSI1en
+
+        if TSI2_Finger == 1:
+            self._DesignParameter['_Met1_iclk']['_XYCoordinates'].append([[self.getXYRight('_Met2_iclk')[0][0] - tmpMet2Width / 2, self.getXYTop('_Met2_iclk')[0][1]],
+                                                                          [self.getXYRight('_Met2_iclk')[0][0] - tmpMet2Width / 2, self.getXYBot('TSI2', 'InputVia_ENb', '_Met1Layer')[0][1]]])  # to TSI2 enb
+        elif TSI2_Finger == 2:
+            self._DesignParameter['_Met1_iclk']['_XYCoordinates'].append([[self.getXYRight('TSI2', 'InputVia_ENb', '_Met1Layer')[0][0], self.getXYBot('TSI2', 'InputVia_ENb', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                      [self.getXYRight('_Met2_iclk')[0][0] - tmpMet2Width / 2, self.getXYBot('TSI2', 'InputVia_ENb', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                      [self.getXYRight('_Met2_iclk')[0][0] - tmpMet2Width / 2, self.getXYTop('_Met2_iclk')[0][1]]])
+            self._DesignParameter['_Met1_iclk_add2'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=self.getYWidth('TSI2', 'InputVia_EN', '_Met1Layer'),
+                _XYCoordinates=[[[self.getXYRight('TSI2', 'InputVia_ENb', '_Met1Layer')[0][0], self.getXY('TSI2', 'InputVia_ENb', '_Met1Layer')[0][1]],
+                                 [self.getXYRight('_Met2_iclk')[0][0] - tmpMet2Width , self.getXY('TSI2', 'InputVia_ENb', '_Met1Layer')[0][1]]]]
+            )
+        elif TSI2_Finger >= 3:
+            self._DesignParameter['_Met1_iclk']['_XYCoordinates'].append([[self.getXYRight('TSI2', 'polyInputENb', '_Met1Layer')[0][0], self.getXYBot('TSI2', 'polyInputENb', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                      [self.getXYRight('_Met2_iclk')[0][0] - tmpMet2Width / 2, self.getXYBot('TSI2', 'polyInputENb', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                      [self.getXYRight('_Met2_iclk')[0][0] - tmpMet2Width / 2, self.getXYTop('_Met2_iclk')[0][1]]]) # to TSI2enb
+
+        # insert via
+        self._DesignParameter['_ViaMet12Met2iclk'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclkIn{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2iclk']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2iclk']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclk']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclk']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet12Met2iclk']['_XYCoordinates'] = [[self.getXYLeft('_Met2_iclk')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2],
+                                                                         [self.getXY('INV3')[0][0] + self._DesignParameter['INV3']['_DesignObj']._DesignParameter['_OutputRouting']['_XYCoordinates'][0][0][0], self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2],
+                                                                         [self.getXYRight('_Met2_iclk')[0][0] - tmpMet2Width / 2, self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
+        if TSI1_Finger == 1:
+            self._DesignParameter['_ViaMet12Met2iclk']['_XYCoordinates'].append([self._DesignParameter['_Met1_iclk']['_XYCoordinates'][1][1][0], self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+        elif TSI1_Finger == 2:
+            self._DesignParameter['_ViaMet12Met2iclk']['_XYCoordinates'].append([self._DesignParameter['_Met1_iclk']['_XYCoordinates'][1][1][0], self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+        elif TSI1_Finger >= 3:
+            self._DesignParameter['_ViaMet12Met2iclk']['_XYCoordinates'].append([self._DesignParameter['_Met1_iclk']['_XYCoordinates'][1][-1][0], self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+
+        '''' clk routing (added by jw) added latch'''''
+
+
+        # self._DesignParameter['_Met2_iclk_latch2_latch'] = self._PathElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+        #     _Width=tmpMet2Width
+        # )
+        # self._DesignParameter['_Met2_iclk_latch2_latch']['_XYCoordinates'] = [[[self.getXYRight('TG4', 'gate_input', '_Met1Layer')[0][0], YCoord_iclk],
+        #                                                           [rightBoundary, YCoord_iclk]]]
+
+        leftBoundary = self.getXYLeft('TG4', 'gate_input', '_Met1Layer')[0][0]
+        YCoord_iclk = self.getXYTop('_Met2_rib')[0][1] + drc._Metal1MinSpace2 + tmpViaMet2Width - tmpMet2Width / 2
+        rightBoundary = self.getXY('TSI4', 'InputVia_ENb', '_Met1Layer')[0][0]
+
+
+        # TG4enb to TSI4enb
+        self._DesignParameter['_Met2_iclk_latch_latch'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_iclk]]
+        )
+
+
+
+        self._DesignParameter['_Met1_iclk_latch_latch'] = self._PathElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+            _Width=tmpMet2Width
+        )
+        self._DesignParameter['_Met1_iclk_latch_latch']['_XYCoordinates'] = [[[self.getXYLeft('_Met2_iclk_latch_latch')[0][0] + tmpMet2Width / 2, self.getXYTop('_Met2_iclk_latch_latch')[0][1]],
+                                                                  [self.getXYLeft('_Met2_iclk_latch_latch')[0][0] + tmpMet2Width / 2, self.getXYBot('TG4', 'gate_input', '_Met1Layer')[0][1]]]] # to TG1 enb
+
+        # Additional Routing
+        if TSI4_Finger == 1:
+            self._DesignParameter['_Met1_iclk_latch_latch']['_XYCoordinates'].append([[self.getXYRight('TSI4', 'InputVia_EN', '_Met1Layer')[0][0], self.getXYBot('TSI4', 'InputVia_EN', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                      [self.getXY('TSI4', 'InputVia_ENb', '_Met1Layer')[0][0] + xCoordOfInputViaENandENb * 2, self.getXYBot('TSI4', 'InputVia_EN', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                      [self.getXY('TSI4', 'InputVia_ENb', '_Met1Layer')[0][0] + xCoordOfInputViaENandENb * 2, self.getXYTop('_Met2_iclk_latch_latch')[0][1]]]) # to TSI1en
+        elif TSI4_Finger == 2:
+            self._DesignParameter['_Met1_iclk_latch_latch']['_XYCoordinates'].append([[self.getXYRight('TSI4', 'InputVia_EN', '_Met1Layer')[0][0], self.getXYBot('TSI4', 'InputVia_EN', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                      [self.getXYLeft('TSI4', 'InputVia_A', '_Met1Layer')[0][0] - drc._Metal1MinSpace2 - tmpMet2Width / 2, self.getXYBot('TSI4', 'InputVia_EN', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+                                                                      [self.getXYLeft('TSI4', 'InputVia_A', '_Met1Layer')[0][0] - drc._Metal1MinSpace2 - tmpMet2Width / 2, self.getXYTop('_Met2_iclk_latch_latch')[0][1]]]) # to TSI1en
+            self._DesignParameter['_Met1_iclk_add1_latch_latch'] = self._PathElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+                _Width=self.getYWidth('TSI4', 'InputVia_EN', '_Met1Layer'),
+                _XYCoordinates=[[[self._DesignParameter['_Met1_iclk_latch_latch']['_XYCoordinates'][1][0][0], self.getXY('TSI4', 'InputVia_EN', '_Met1Layer')[0][1]],
+                                 [self._DesignParameter['_Met1_iclk_latch_latch']['_XYCoordinates'][1][1][0], self.getXY('TSI4', 'InputVia_EN', '_Met1Layer')[0][1]]]]
+            )
+        # elif TSI4_Finger >= 3:
+        #     self._DesignParameter['_Met1_iclk_latch_latch']['_XYCoordinates'].append([[self.getXYRight('TSI4', 'polyInputEN', '_Met1Layer')[0][0], self.getXYBot('TSI4', 'polyInputEN', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+        #                                                                   [self.getXY('TSI4', 'polyInputA', '_Met1Layer')[0][0], self.getXYBot('TSI4', 'polyInputEN', '_Met1Layer')[0][1] + tmpMet2Width / 2],
+        #                                                                   [self.getXY('TSI4', 'polyInputA', '_Met1Layer')[0][0], self.getXY('_Met2_dib')[0][1]],
+        #                                                                   [self.getXYLeft('TSI4', 'polyInputA', '_Met1Layer')[0][0] - drc._Metal1MinSpace2 * 2 - (tmpMet2Width * 3) / 2, self.getXY('_Met2_dib')[0][1]],
+        #                                                                   [self.getXYLeft('TSI4', 'polyInputA', '_Met1Layer')[0][0] - drc._Metal1MinSpace2 * 2 - (tmpMet2Width * 3) / 2, self.getXYTop('_Met2_iclk_latch_latch')[0][1]]]) # to TSI1en
+
+        self._DesignParameter['_ViaMet12Met2iclk_latch_latch'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclk_latch_latchIn{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2iclk_latch_latch']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2iclk_latch_latch']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclk_latch_latch']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclk_latch_latch']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet12Met2iclk_latch_latch']['_XYCoordinates'] = [[self.getXYLeft('_Met2_iclk_latch_latch')[0][0] + tmpMet2Width / 2, self.getXY('_Met2_iclk_latch_latch')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
+
+        if TSI4_Finger == 1:
+            self._DesignParameter['_ViaMet12Met2iclk_latch_latch']['_XYCoordinates'].append([self._DesignParameter['_Met1_iclk_latch_latch']['_XYCoordinates'][1][1][0], self.getXY('_Met2_iclk_latch_latch')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+        elif TSI4_Finger == 2:
+            self._DesignParameter['_ViaMet12Met2iclk_latch_latch']['_XYCoordinates'].append([self._DesignParameter['_Met1_iclk_latch_latch']['_XYCoordinates'][1][1][0], self.getXY('_Met2_iclk_latch_latch')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+        elif TSI4_Finger >= 3:
+            self._DesignParameter['_ViaMet12Met2iclk_latch_latch']['_XYCoordinates'].append([self._DesignParameter['_Met1_iclk_latch_latch']['_XYCoordinates'][1][-1][0], self.getXY('_Met2_iclk_latch_latch')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2])
+
+        rightBoundary = self._DesignParameter['_ViaMet12Met2iclk_latch_latch']['_XYCoordinates'][1][0]
+
+
+        # TG1enb to TSI2enb
+        self._DesignParameter['_Met2_iclk_latch_latch'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_iclk]]
+        )
+
+        ###### CLK90 Routing clk ##
+        leftBoundary = rightBoundary
+        rightBoundary = self.getXY('INV10', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0]
+        self._DesignParameter['_Met2_clk90'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2'][0], _Datatype=DesignParameters._LayerMapping['METAL2'][1],
+            _XWidth=rightBoundary - leftBoundary,
+            _YWidth=tmpMet2Width,
+            _XYCoordinates=[[(rightBoundary + leftBoundary) / 2, YCoord_iclk]]
+        )
+        self._DesignParameter['_ViaMet12Met2iclk90'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclk90In{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2iclk90']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2iclk90']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclk90']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclk90']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet12Met2iclk90']['_XYCoordinates'] = [[rightBoundary, YCoord_iclk - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
+
+
+
+
+        '''''clk routing end'''
+
+        ################# TG2 CLK routing revise (Added by jwlee)
+        self._DesignParameter['_Met1_iclk2'] = self._PathElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+            _Width=tmpMet2Width
+        )
+        self._DesignParameter['_Met1_iclk2']['_XYCoordinates']=[[[self.getXYRight('TG2', 'gate_output', '_Met1Layer')[0][0]-tmpMet2Width / 2, self.getXYTop('_Met2_iclk')[0][1]],
+                                                                  [self.getXYRight('TG2', 'gate_output', '_Met1Layer')[0][0]-tmpMet2Width / 2, self.getXYBot('TG2', 'gate_output', '_Met1Layer')[0][1]]]]
+        # insert via(Added by jwlee)
+        self._DesignParameter['_ViaMet12Met2iclk2'] = self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='_ViaMet12Met2iclk2In{}'.format(_Name)))[0]
+        self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._CalculateDesignParameterSameEnclosure(**dict(_ViaMet12Met2NumberOfCOX=1, _ViaMet12Met2NumberOfCOY=1))
+        self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_Met2Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_Met1Layer']['_YWidth'] = tmpViaMet2Width
+        self._DesignParameter['_ViaMet12Met2iclk2']['_DesignObj']._DesignParameter['_COLayer']['_YWidth'] = tmpVia1YWidth
+        self._DesignParameter['_ViaMet12Met2iclk2']['_XYCoordinates'] = [[self.getXYRight('TG2', 'gate_output', '_Met1Layer')[0][0]-tmpMet2Width / 2,  self.getXY('_Met2_iclk')[0][1] - tmpViaMet2Width / 2 + tmpMet2Width / 2]]
+
+        ########################### inv9,10 Routng ###########
+
+        self._DesignParameter['_Met1_clk90_buffer'] = self._PathElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1'][0], _Datatype=DesignParameters._LayerMapping['METAL1'][1],
+            _Width=tmpMet2Width
+        )
+        self._DesignParameter['_Met1_clk90_buffer']['_XYCoordinates']=[[[self.getXY('INV9', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0], self.getXY('INV10', 'InputMet1')[0][1]],
+                                                                  [self.getXY('INV10', 'InputMet1')[0][0], self.getXY('INV10', 'InputMet1')[0][1]]]]
+
+        ########################### inv2 revise ###########
+        if INV2_Finger>=3:
+            self._DesignParameter['INV2']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv2output']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv2outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv2output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**_ViaOnPMOSOutput)
+            self._DesignParameter['inv2output']['_XYCoordinates']= self.getXY('INV2', '_NMOS', '_XYCoordinateNMOSOutputRouting')
+
+
+        ########################### inv4 revise ###########
+        if INV4_Finger>=3:
+            self._DesignParameter['INV4']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv4output']=self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv4outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv4output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(**_ViaOnPMOSOutput)
+            self._DesignParameter['inv4output']['_XYCoordinates']= self.getXY('INV4', '_NMOS', '_XYCoordinateNMOSOutputRouting')
+
+        ########################### inv7 revise ###########
+        if INV7_Finger >= 3:
+            self._DesignParameter['INV7']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv7output'] = \
+            self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv7outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv7output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(
+                **_ViaOnPMOSOutput)
+            self._DesignParameter['inv7output']['_XYCoordinates'] = self.getXY('INV7', '_NMOS','_XYCoordinateNMOSOutputRouting')
+        ########################### inv8 revise ###########
+        if INV8_Finger >= 3:
+            self._DesignParameter['INV8']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv8output'] = \
+            self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv8outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv8output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(
+                **_ViaOnPMOSOutput)
+            self._DesignParameter['inv8output']['_XYCoordinates'] = self.getXY('INV8', '_NMOS','_XYCoordinateNMOSOutputRouting')
+
+        ########################### inv9 revise ###########
+        if INV9_Finger >= 3:
+            self._DesignParameter['INV9']['_DesignObj']._DesignParameter['_ViaMet12Met2OnNMOSOutput']['_XYCoordinates'] = []
+
+            _ViaOnPMOSOutput = copy.deepcopy(ViaMet12Met2._ViaMet12Met2._ParametersForDesignCalculation)
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOX'] = 1
+            _ViaOnPMOSOutput['_ViaMet12Met2NumberOfCOY'] = 1
+
+            self._DesignParameter['inv9output'] = \
+            self._SrefElementDeclaration(_DesignObj=ViaMet12Met2._ViaMet12Met2(_Name='inv9outputIn{}'.format(_Name)))[0]
+            self._DesignParameter['inv9output']['_DesignObj']._CalculateViaMet12Met2DesignParameterMinimumEnclosureX(
+                **_ViaOnPMOSOutput)
+            self._DesignParameter['inv9output']['_XYCoordinates'] = self.getXY('INV9', '_NMOS','_XYCoordinateNMOSOutputRouting')
+
+
+        ########################## cell width ##################
+        self.CellXWidth = self.getXY('INV10', '_PMOS','_POLayer')[-1][0] + UnitPitch
+        self.CellYWidth = CellHeight
+
+        ########################## YCoord ##################
+        self.rib = YCoord_rib
+        self.dib = YCoord_dib_upper
+        self.iclkb=YCoord_iclkb
+        self.iclk = YCoord_iclk
+
+        '''Pin generation'''
+        self._DesignParameter['_VDDpin'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
+            _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VDD')
+        self._DesignParameter['_VSSpin'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
+            _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='VSS')
+        self._DesignParameter['_dpin'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
+            _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='D')
+        self._DesignParameter['_qpin'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
+            _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='Q')
+        self._DesignParameter['_qbpin'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
+            _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='Qb')
+        self._DesignParameter['_clkpin'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
+            _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='clk')
+        self._DesignParameter['_clk90pin'] = self._TextElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
+            _XYCoordinates=[[0, 0]], _Mag=0.05, _Angle=0, _TEXT='clk90')
+
+
+        self._DesignParameter['_VDDpin']['_XYCoordinates'] = self.getXY('TG1', '_VDDpin')
+        self._DesignParameter['_VSSpin']['_XYCoordinates'] = self.getXY('TG1', '_VSSpin')
+        self._DesignParameter['_dpin']['_XYCoordinates'] = self.getXY('TG1', '_Apin')
+
+        self._DesignParameter['_qpin']['_XYCoordinates'] = self.getXY('_Met2_rib_latch_latch')
+        self._DesignParameter['_qbpin']['_XYCoordinates'] = [[self.getXY('INV8', '_PMOS', '_XYCoordinatePMOSOutputRouting')[-1][0],YCoord_iclkb]]
+        self._DesignParameter['_clkpin']['_XYCoordinates'] = self.getXY('INV2','InputMet1')
+        self._DesignParameter['_clk90pin']['_XYCoordinates'] = self.getXY('INV9', 'InputMet1')
+
+
+
+
+
+
+
+''' INV2&3 # of Fingers should be less than 7(6 max)
+    otherwise, INV inner routing and qb routing will be overlapped'''
+################################ DRC Check #################################
+import random
+if __name__ == '__main__':
+    # for i in range(0,100):
+        # TG1_Finger = random.randint(1,5)
+        # TG2_Finger = random.randint(1, 5)
+        # TSI1_Finger = random.randint(1,2)
+        # TSI2_Finger = random.randint(1,2)
+        # INV1_Finger = random.randint(1,5)
+        # INV2_Finger = random.randint(1,5)
+        # INV3_Finger = random.randint(1,5)
+        # INV4_Finger = random.randint(1,5)
+        #
+        # TG4_Finger = random.randint(1, 5)
+        # TSI4_Finger = random.randint(1, 2)
+        # INV7_Finger = random.randint(1, 5)
+        # INV8_Finger = random.randint(1, 5)
+        # INV9_Finger = random.randint(1, 5)
+        # INV10_Finger = random.randint(1, 5)
+        npratio =2
+
+        # TG1_NMWidth = random.randrange(200, 250, 2)
+        # TG1_PMWidth = TG1_NMWidth * npratio
+        # TG2_NMWidth = random.randrange(200, 250, 2)
+        # TG2_PMWidth = TG2_NMWidth * npratio
+        # TSI1_NMWidth = random.randrange(200, 250, 2)
+        # TSI1_PMWidth = TSI1_NMWidth * npratio
+        # TSI2_NMWidth = random.randrange(200, 250, 2)
+        # TSI2_PMWidth = TSI2_NMWidth * npratio
+        # INV1_NMWidth = random.randrange(200, 250, 2)
+        # INV1_PMWidth = INV1_NMWidth * npratio
+        # INV2_NMWidth = random.randrange(200, 250, 2)
+        # INV2_PMWidth = INV2_NMWidth * npratio
+        # INV3_NMWidth = random.randrange(200, 250, 2)
+        # INV3_PMWidth = INV3_NMWidth * npratio
+        # INV4_NMWidth = random.randrange(200, 250, 2)
+        # INV4_PMWidth = INV4_NMWidth * npratio
+
+
+
+        TG1_NMWidth = 200
+        TG1_PMWidth = 400
+
+        TG2_NMWidth = 200
+        TG2_PMWidth = 400
+
+        TSI1_NMWidth = 200
+        TSI1_PMWidth = 400
+
+        TSI2_NMWidth = 200
+        TSI2_PMWidth = 400
+
+        INV1_NMWidth = 200
+        INV1_PMWidth = 400
+
+        INV2_NMWidth = 200
+        INV2_PMWidth = 400
+
+        INV3_NMWidth = 200
+        INV3_PMWidth = 400
+
+        INV4_NMWidth = 200
+        INV4_PMWidth = 400
+
+        TG4_NMWidth = 200
+        TG4_PMWidth = 400
+
+        TSI4_NMWidth = 200
+        TSI4_PMWidth = 400
+
+        INV7_NMWidth = 200
+        INV7_PMWidth = 400
+
+        INV8_NMWidth = 200
+        INV8_PMWidth = 400
+
+        INV9_NMWidth = 200
+        INV9_PMWidth = 400
+
+        INV10_NMWidth = 200
+        INV10_PMWidth = 400
+
+
+        ChannelLength = 30
+        GateSpacing = 100
+        SDWidth = 66
+        XVT = 'SLVT'
+        CellHeight = 1800
+        SupplyRailType = 2
+
+        TG1_Finger = 1
+        TG2_Finger = 2
+        TSI1_Finger = 1
+        TSI2_Finger = 1
+        INV1_Finger = 3
+        INV2_Finger = 1
+        INV3_Finger = 1
+        INV4_Finger = 4
+
+        TG4_Finger = 2
+        TSI4_Finger = 1
+        INV7_Finger = 4
+        INV8_Finger = 4
+        INV9_Finger = 1
+        INV10_Finger = 1
+
+        # print("itr = ", i)
+        # print("TG1_Finger = ", TG1_Finger)
+        # print("TSI1_Finger = ", TSI1_Finger)
+        # print("TSI2_Finger = ", TSI2_Finger)
+        # print("INV1_Finger = ", INV1_Finger)
+        # print("INV2_Finger = ", INV2_Finger)
+        # print("INV3_Finger = ", INV3_Finger)
+        # print("INV4_Finger = ", INV4_Finger)
+
+        DesignParameters._Technology = 'SS28nm'
+        TopObj = DFF(_DesignParameter=None, _Name='DFF')
+        TopObj._CalculateDesignParameter(
+            TG1_Finger=TG1_Finger,
+            TG1_NMWidth=TG1_NMWidth,
+            TG1_PMWidth=TG1_PMWidth,
+            TG2_Finger=TG2_Finger,
+            TG2_NMWidth=TG2_NMWidth,
+            TG2_PMWidth=TG2_PMWidth,
+
+            TSI1_Finger=TSI1_Finger,
+            TSI1_NMWidth=TSI1_NMWidth,
+            TSI1_PMWidth=TSI1_PMWidth,
+            TSI2_Finger=TSI2_Finger,
+            TSI2_NMWidth=TSI2_NMWidth,
+            TSI2_PMWidth=TSI2_PMWidth,
+
+            INV1_Finger=INV1_Finger,
+            INV1_NMWidth=INV1_NMWidth,
+            INV1_PMWidth=INV1_PMWidth,
+
+            INV2_Finger=INV2_Finger,
+            INV2_NMWidth=INV2_NMWidth,
+            INV2_PMWidth=INV2_PMWidth,
+            INV3_Finger=INV3_Finger,
+            INV3_NMWidth=INV3_NMWidth,
+            INV3_PMWidth=INV3_PMWidth,
+
+            INV4_Finger=INV4_Finger,
+            INV4_NMWidth=INV4_NMWidth,
+            INV4_PMWidth=INV4_PMWidth,
+
+            TG4_Finger=TG4_Finger,
+            TG4_NMWidth=TG4_NMWidth,
+            TG4_PMWidth=TG4_PMWidth,
+
+            TSI4_Finger=TSI4_Finger,
+            TSI4_NMWidth=TSI4_NMWidth,
+            TSI4_PMWidth=TSI4_PMWidth,
+
+            INV7_Finger=INV7_Finger,
+            INV7_NMWidth=INV7_NMWidth,
+            INV7_PMWidth=INV7_PMWidth,
+            INV8_Finger=INV8_Finger,
+            INV8_NMWidth=INV8_NMWidth,
+            INV8_PMWidth=INV8_PMWidth,
+            INV9_Finger=INV9_Finger,
+            INV9_NMWidth=INV9_NMWidth,
+            INV9_PMWidth=INV9_PMWidth,
+            INV10_Finger=INV10_Finger,
+            INV10_NMWidth=INV10_NMWidth,
+            INV10_PMWidth=INV10_PMWidth,
+
+            ChannelLength=ChannelLength,
+            GateSpacing=GateSpacing,
+            SDWidth=SDWidth,
+            XVT=XVT,
+            CellHeight=CellHeight,
+            SupplyRailType=SupplyRailType)
+
+        TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
+        testStreamFile = open('./DFF.gds', 'wb')
+        tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
+        tmp.write_binary_gds_stream(testStreamFile)
+        testStreamFile.close()
+        print('#############################      Sending to FTP Server...      ##############################')
+
+        import ftplib
+
+        ftp = ftplib.FTP('141.223.24.53')
+        ftp.login('ljw95', 'dlwodn123')
+        ftp.cwd('/mnt/sdc/ljw95/OPUS/ss28')
+        myfile = open('DFF.gds', 'rb')
+        ftp.storbinary('STOR DFF.gds', myfile)
+        myfile.close()
+
+        # import DRCchecker
+        # a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','DFF','DFF',None)
+        # a.DRCchecker()
+        #
+        # print ("DRC Clean!!!")
