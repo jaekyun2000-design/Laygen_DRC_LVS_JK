@@ -150,7 +150,18 @@ class Deserializer1toN(StickDiagram._StickDiagram):
         else :
             CellHeight=TG1_NMWidth+TG1_PMWidth+2500
 
-
+        if TSI1_Finger is not 1:
+            TSI1_Finger=1
+        if TSI2_Finger is not 1:
+            TSI2_Finger=1
+        if TSI3_Finger is not 1:
+            TSI3_Finger=1
+        if TSI4_Finger is not 1:
+            TSI4_Finger=1
+        if TSI1_Finger_clk is not 1:
+            TSI1_Finger_clk = 1
+        if TSI2_Finger_clk is not 1:
+            TSI2_Finger_clk = 1
         #if
         Parameters_DeMux1to2_1 = dict(
             TG1_Finger=TG1_Finger,
@@ -622,6 +633,8 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             CellHeight=CellHeight,
             SupplyRailType=SupplyRailType
         )
+
+
         Parameters_DeMux1to2_2_5 = dict(
             TG1_Finger=TG1_Finger,
             TG1_NMWidth=TG1_NMWidth,
@@ -1538,6 +1551,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
             CellHeight=CellHeight,
             SupplyRailType=SupplyRailType
         )
+        ##################################################################################
 
         #####################################################################################
         #####################################################################################
@@ -8711,16 +8725,8 @@ if __name__ == '__main__':
         XVT = 'SLVT'#XVT_random #XVT_random
         CellHeight = 1800#3000
         SupplyRailType =  1#random.randint(1, 2)
-        TSI1_Finger = TSI2_Finger = TSI3_Finger = TSI4_Finger = 1
-        TG1_Finger_clk = TG1_Finger
-        TG2_Finger_clk = TG2_Finger
-        TSI1_Finger_clk = TSI1_Finger
-        TSI2_Finger_clk = TSI2_Finger
-        INV1_Finger_clk = INV1_Finger
-        INV2_Finger_clk = INV2_Finger
-        INV3_Finger_clk = INV3_Finger
-        INV4_Finger_clk = INV5_Finger
-        INV5_Finger_clk = INV6_Finger
+
+
 
         TG1_Finger = 1
         TG2_Finger = 2
@@ -8751,6 +8757,15 @@ if __name__ == '__main__':
         INV4_Finger_clk = 6
         INV5_Finger_clk = 6
 
+        TG1_Finger_clk = TG1_Finger
+        TG2_Finger_clk = TG2_Finger
+        TSI1_Finger_clk = TSI1_Finger
+        TSI2_Finger_clk = TSI2_Finger
+        INV1_Finger_clk = INV1_Finger
+        INV2_Finger_clk = INV2_Finger
+        INV3_Finger_clk = INV3_Finger
+        INV4_Finger_clk = INV5_Finger
+        INV5_Finger_clk = INV6_Finger
         # print("itr = ", i)
         # print("TG1_Finger = ", TG1_Finger)
         # print("TG2_Finger = ", TG2_Finger)

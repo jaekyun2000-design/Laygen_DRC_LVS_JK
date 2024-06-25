@@ -8709,7 +8709,7 @@ if __name__ == '__main__':
         list_XVT = ['SLVT', 'RVT', 'LVT', 'HVT']
         XVT_random = random.choice(list_XVT)
         XVT = 'SLVT'#XVT_random #XVT_random
-        CellHeight = 1800#3000
+        CellHeight = 3000#3000
         SupplyRailType =  1#random.randint(1, 2)
         TSI1_Finger = TSI2_Finger = TSI3_Finger = TSI4_Finger = 1
         TG1_Finger_clk = TG1_Finger
