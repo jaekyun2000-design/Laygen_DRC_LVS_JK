@@ -3,7 +3,7 @@ from generatorLib import DesignParameters
 from generatorLib import DRC
 from generatorLib.generator_models import ViaPoly2Met1
 #from generatorLib.generator_models import PSubRing
-from generatorLib.generator_models import SubRing_sm
+from generatorLib.generator_models.LDO_gen import SubRing
 
 class _NCap(StickDiagram._StickDiagram):
     _ParametersForDesignCalculation = dict(_XWidth=None, _YWidth=None, _NumofGates=None, NumOfCOX=None, NumOfCOY=None,
@@ -236,7 +236,7 @@ class _NCap(StickDiagram._StickDiagram):
 
         print('#############################     Guardring Calculation    ##############################################')
         if Guardring == True :
-            self._DesignParameter['guardring']=self._SrefElementDeclaration(_DesignObj=SubRing_sm._SubRing(_Name='PSubRingIn{}'.format(_Name)))[0]
+            self._DesignParameter['guardring']=self._SrefElementDeclaration(_DesignObj=SubRing._SubRing(_Name='PSubRingIn{}'.format(_Name)))[0]
             self._DesignParameter['guardring']['_DesignObj']._CalculateDesignParameter(**dict(_Psubtype=True, _MetalOpen=None, _Height=5000, _Width=3000, _Thickness=_Thickness, _COpitch=_COpitch, _Enclosure=_Enclosure))
 
             if guardring_width == None :

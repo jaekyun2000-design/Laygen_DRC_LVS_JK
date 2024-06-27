@@ -1,8 +1,8 @@
 from generatorLib import StickDiagram
 from generatorLib import DesignParameters
 from generatorLib import DRC
-from generatorLib.generator_models import NbodyContact_sm
-from generatorLib.generator_models import PbodyContact_sm
+from generatorLib.generator_models.LDO_gen import NbodyContact
+from generatorLib.generator_models.LDO_gen import PbodyContact
 
 
 class _SubRing(StickDiagram._StickDiagram):
@@ -243,76 +243,76 @@ class _SubRing(StickDiagram._StickDiagram):
 
         if _Psubtype == True:
             if _MetalOpen != 'top':
-                self._DesignParameter['topright'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact_sm._PbodyContact(_Name='toprightIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['topright'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact._PbodyContact(_Name='toprightIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['topright']['_DesignObj']._CalculatePbodyContactDesignParameter(**Parameters_TopRight_P)
                 self._DesignParameter['topright']['_XYCoordinates'] = [[_XCoord + _Width / 4, _YCoord + (_Height + _Thickness) / 2]]
-                self._DesignParameter['topleft'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact_sm._PbodyContact(_Name='topleftIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['topleft'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact._PbodyContact(_Name='topleftIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['topleft']['_DesignObj']._CalculatePbodyContactDesignParameter(**Parameters_TopLeft_P)
                 self._DesignParameter['topleft']['_XYCoordinates'] = [[_XCoord - _Width / 4, _YCoord + (_Height + _Thickness) / 2]]
 
             if _MetalOpen != 'bot':
-                self._DesignParameter['botright'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact_sm._PbodyContact(_Name='botrightIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['botright'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact._PbodyContact(_Name='botrightIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['botright']['_DesignObj']._CalculatePbodyContactDesignParameter(**Parameters_BotRight_P)
                 self._DesignParameter['botright']['_XYCoordinates'] = [[_XCoord + _Width / 4, _YCoord - (_Height + _Thickness) / 2]]
-                self._DesignParameter['botleft'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact_sm._PbodyContact(_Name='botleftIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['botleft'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact._PbodyContact(_Name='botleftIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['botleft']['_DesignObj']._CalculatePbodyContactDesignParameter(**Parameters_BotLeft_P)
                 self._DesignParameter['botleft']['_XYCoordinates'] = [[_XCoord - _Width / 4, _YCoord - (_Height + _Thickness) / 2]]
 
             if _MetalOpen != 'right':
-                self._DesignParameter['rightupper'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact_sm._PbodyContact(_Name='rightupperIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['rightupper'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact._PbodyContact(_Name='rightupperIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['rightupper']['_DesignObj']._CalculatePbodyContactDesignParameter(**Parameters_RightUpper_P)
                 self._DesignParameter['rightupper']['_XYCoordinates'] = [[_XCoord + (_Width + _Thickness) / 2, _YCoord + _Height / 4]]
-                self._DesignParameter['rightlower'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact_sm._PbodyContact(_Name='rightlowerIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['rightlower'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact._PbodyContact(_Name='rightlowerIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['rightlower']['_DesignObj']._CalculatePbodyContactDesignParameter(**Parameters_RightLower_P)
                 self._DesignParameter['rightlower']['_XYCoordinates'] = [[_XCoord + (_Width + _Thickness) / 2, _YCoord - _Height / 4]]
 
             if _MetalOpen != 'left':
-                self._DesignParameter['leftupper'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact_sm._PbodyContact(_Name='leftupperIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['leftupper'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact._PbodyContact(_Name='leftupperIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['leftupper']['_DesignObj']._CalculatePbodyContactDesignParameter(**Parameters_LeftUpper_P)
                 self._DesignParameter['leftupper']['_XYCoordinates'] = [[_XCoord - (_Width + _Thickness) / 2, _YCoord + _Height / 4]]
-                self._DesignParameter['leftlower'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact_sm._PbodyContact(_Name='leftlowerIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['leftlower'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact._PbodyContact(_Name='leftlowerIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['leftlower']['_DesignObj']._CalculatePbodyContactDesignParameter(**Parameters_LeftLower_P)
                 self._DesignParameter['leftlower']['_XYCoordinates'] = [[_XCoord - (_Width + _Thickness) / 2, _YCoord - _Height / 4]]
 
-            self._DesignParameter['corner'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact_sm._PbodyContact(_Name='cornerIn{}'.format(_Name)), _XYCoordinates=[])[0]
+            self._DesignParameter['corner'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=PbodyContact._PbodyContact(_Name='cornerIn{}'.format(_Name)), _XYCoordinates=[])[0]
             self._DesignParameter['corner']['_DesignObj']._CalculatePbodyContactDesignParameter(**Parameters_Corner_P)
             self._DesignParameter['corner']['_XYCoordinates'] = [[_XCoord - (_Width + _Thickness) / 2, _YCoord + (_Height + _Thickness) / 2], [_XCoord + (_Width + _Thickness) / 2, _YCoord + (_Height + _Thickness) / 2],
                                                                  [_XCoord - (_Width + _Thickness) / 2, _YCoord - (_Height + _Thickness) / 2], [_XCoord + (_Width + _Thickness) / 2, _YCoord - (_Height + _Thickness) / 2]]
 
         else:
             if _MetalOpen != 'top':
-                self._DesignParameter['topright'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact_sm._NbodyContact(_Name='toprightIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['topright'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact._NbodyContact(_Name='toprightIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['topright']['_DesignObj']._CalculateNbodyContactDesignParameter(**Parameters_TopRight_N)
                 self._DesignParameter['topright']['_XYCoordinates'] = [[_XCoord + _Width / 4, _YCoord + (_Height + _Thickness) / 2]]
-                self._DesignParameter['topleft'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact_sm._NbodyContact(_Name='topleftIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['topleft'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact._NbodyContact(_Name='topleftIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['topleft']['_DesignObj']._CalculateNbodyContactDesignParameter(**Parameters_TopLeft_N)
                 self._DesignParameter['topleft']['_XYCoordinates'] = [[_XCoord -_Width / 4, _YCoord + (_Height + _Thickness) / 2]]
 
             if _MetalOpen != 'bot':
-                self._DesignParameter['botright'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact_sm._NbodyContact(_Name='botrightIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['botright'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact._NbodyContact(_Name='botrightIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['botright']['_DesignObj']._CalculateNbodyContactDesignParameter(**Parameters_BotRight_N)
                 self._DesignParameter['botright']['_XYCoordinates'] = [[_XCoord + _Width / 4, _YCoord - (_Height + _Thickness) / 2]]
-                self._DesignParameter['botleft'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact_sm._NbodyContact(_Name='botleftIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['botleft'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact._NbodyContact(_Name='botleftIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['botleft']['_DesignObj']._CalculateNbodyContactDesignParameter(**Parameters_BotLeft_N)
                 self._DesignParameter['botleft']['_XYCoordinates'] = [[_XCoord - _Width / 4, _YCoord - (_Height + _Thickness) / 2]]
 
             if _MetalOpen != 'right':
-                self._DesignParameter['rightupper'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact_sm._NbodyContact(_Name='rightupperIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['rightupper'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact._NbodyContact(_Name='rightupperIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['rightupper']['_DesignObj']._CalculateNbodyContactDesignParameter(**Parameters_RightUpper_N)
                 self._DesignParameter['rightupper']['_XYCoordinates'] = [[_XCoord + (_Width + _Thickness) / 2, _YCoord + _Height / 4]]
-                self._DesignParameter['rightlower'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact_sm._NbodyContact(_Name='rightlowerIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['rightlower'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact._NbodyContact(_Name='rightlowerIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['rightlower']['_DesignObj']._CalculateNbodyContactDesignParameter(**Parameters_RightLower_N)
                 self._DesignParameter['rightlower']['_XYCoordinates'] = [[_XCoord + (_Width + _Thickness) / 2, _YCoord - _Height / 4]]
 
             if _MetalOpen != 'left':
-                self._DesignParameter['leftupper'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact_sm._NbodyContact(_Name='leftupperIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['leftupper'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact._NbodyContact(_Name='leftupperIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['leftupper']['_DesignObj']._CalculateNbodyContactDesignParameter(**Parameters_LeftUpper_N)
                 self._DesignParameter['leftupper']['_XYCoordinates'] = [[_XCoord - (_Width + _Thickness) / 2, _YCoord + _Height / 4]]
-                self._DesignParameter['leftlower'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact_sm._NbodyContact(_Name='leftlowerIn{}'.format(_Name)), _XYCoordinates=[])[0]
+                self._DesignParameter['leftlower'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact._NbodyContact(_Name='leftlowerIn{}'.format(_Name)), _XYCoordinates=[])[0]
                 self._DesignParameter['leftlower']['_DesignObj']._CalculateNbodyContactDesignParameter(**Parameters_LeftLower_N)
                 self._DesignParameter['leftlower']['_XYCoordinates'] = [[_XCoord - (_Width + _Thickness) / 2, _YCoord - _Height / 4]]
 
-            self._DesignParameter['corner'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact_sm._NbodyContact(_Name='cornerIn{}'.format(_Name)), _XYCoordinates=[])[0]
+            self._DesignParameter['corner'] = self._SrefElementDeclaration(_Reflect=[0, 0, 0], _Angle=0, _DesignObj=NbodyContact._NbodyContact(_Name='cornerIn{}'.format(_Name)), _XYCoordinates=[])[0]
             self._DesignParameter['corner']['_DesignObj']._CalculateNbodyContactDesignParameter(**Parameters_Corner_N)
             self._DesignParameter['corner']['_XYCoordinates'] = [[_XCoord - (_Width + _Thickness) / 2, _YCoord + (_Height + _Thickness) / 2], [_XCoord + (_Width + _Thickness) / 2, _YCoord + (_Height + _Thickness) / 2],
                                                                  [_XCoord - (_Width + _Thickness) / 2, _YCoord - (_Height + _Thickness) / 2], [_XCoord + (_Width + _Thickness) / 2, _YCoord - (_Height + _Thickness) / 2]]
