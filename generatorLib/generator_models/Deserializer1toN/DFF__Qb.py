@@ -7,9 +7,9 @@ from generatorLib import DesignParameters
 from generatorLib import DRC
 
 #
-from generatorLib.generator_models import TristateInverter
-from generatorLib.generator_models import Inverter
-from generatorLib.generator_models import Transmission_gate
+from generatorLib.generator_models import TristateInverter_ljw
+from generatorLib.generator_models import Inverter_ljw
+from generatorLib.generator_models import Transmission_gate_ljw
 
 from generatorLib.generator_models import ViaMet12Met2
 from generatorLib.generator_models import ViaMet22Met3

@@ -9001,7 +9001,7 @@ if __name__ == '__main__':
             XVT=XVT,
             CellHeight=CellHeight,
             SupplyRailType=SupplyRailType)
-        end = time.time()
+
 
 
         TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
@@ -9024,6 +9024,8 @@ if __name__ == '__main__':
         myfile = open('Deserializer1toN.gds', 'rb')
         ftp.storbinary('STOR Deserializer1toN.gds', myfile)
         myfile.close()
+
+        end = time.time()
 
         print("itr = ", i)
         print("TG1_Finger = ", TG1_Finger)
@@ -9083,10 +9085,10 @@ if __name__ == '__main__':
         #
         # import DRCchecker
         #
-        # a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','Deserializer1toN','Deserializer1toN',None)
-        # a.DRCchecker()
+        a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','Deserializer1toN','Deserializer1toN',None)
+        a.DRCchecker()
         #
-        # print ("DRC Clean!!!")
+        print ("DRC Clean!!!")
         # #
         # #
 

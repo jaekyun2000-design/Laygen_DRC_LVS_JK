@@ -7,7 +7,7 @@ from generatorLib import DesignParameters
 from generatorLib import DRC
 
 #
-from generatorLib.generator_models import TristateInverter
+from generatorLib.generator_models import TristateInverter_ljw
 from generatorLib.generator_models import Inverter_ljw
 from generatorLib.generator_models import Transmission_gate_ljw
 
@@ -384,38 +384,38 @@ class DFF(StickDiagram._StickDiagram):
         if TSI1_Finger == 1:
             self._DesignParameter['TSI1'] = self._SrefElementDeclaration(
                 _Reflect=[0, 0, 0], _Angle=0,
-                _DesignObj=TristateInverter.TristateInverter(_Name='TSI1In{}'.format(_Name)))[0]
+                _DesignObj=TristateInverter_ljw.TristateInverter(_Name='TSI1In{}'.format(_Name)))[0]
             self._DesignParameter['TSI1']['_DesignObj']._CalculateDesignParameterFinger1_v2(**Parameters_TSI1)
             self._DesignParameter['TSI1']['_XYCoordinates'] = [[0, 0]]
         elif TSI1_Finger == 2:
             self._DesignParameter['TSI1'] = self._SrefElementDeclaration(
                 _Reflect=[0, 0, 0], _Angle=0,
-                _DesignObj=TristateInverter.TristateInverter(_Name='TSI1In{}'.format(_Name)))[0]
+                _DesignObj=TristateInverter_ljw.TristateInverter(_Name='TSI1In{}'.format(_Name)))[0]
             self._DesignParameter['TSI1']['_DesignObj']._CalculateDesignParameterFinger2_v2(**Parameters_TSI1)
             self._DesignParameter['TSI1']['_XYCoordinates'] = [[0, 0]]
         elif TSI1_Finger >= 3:
             self._DesignParameter['TSI1'] = self._SrefElementDeclaration(
                 _Reflect=[0, 0, 0], _Angle=0,
-                _DesignObj=TristateInverter.TristateInverter(_Name='TSI1In{}'.format(_Name)))[0]
+                _DesignObj=TristateInverter_ljw.TristateInverter(_Name='TSI1In{}'.format(_Name)))[0]
             self._DesignParameter['TSI1']['_DesignObj']._CalculateDesignParameterF3(**Parameters_TSI1_f3)
             self._DesignParameter['TSI1']['_XYCoordinates'] = [[0, 0]]
 
         if TSI2_Finger == 1:
             self._DesignParameter['TSI2'] = self._SrefElementDeclaration(
                 _Reflect=[0, 0, 0], _Angle=0,
-                _DesignObj=TristateInverter.TristateInverter(_Name='TSI2In{}'.format(_Name)))[0]
+                _DesignObj=TristateInverter_ljw.TristateInverter(_Name='TSI2In{}'.format(_Name)))[0]
             self._DesignParameter['TSI2']['_DesignObj']._CalculateDesignParameterFinger1_v2(**Parameters_TSI2)
             self._DesignParameter['TSI2']['_XYCoordinates'] = [[0, 0]]
         elif TSI2_Finger == 2:
             self._DesignParameter['TSI2'] = self._SrefElementDeclaration(
                 _Reflect=[0, 0, 0], _Angle=0,
-                _DesignObj=TristateInverter.TristateInverter(_Name='TSI2In{}'.format(_Name)))[0]
+                _DesignObj=TristateInverter_ljw.TristateInverter(_Name='TSI2In{}'.format(_Name)))[0]
             self._DesignParameter['TSI2']['_DesignObj']._CalculateDesignParameterFinger2_v2(**Parameters_TSI2)
             self._DesignParameter['TSI2']['_XYCoordinates'] = [[0, 0]]
         elif TSI2_Finger >= 3:
             self._DesignParameter['TSI2'] = self._SrefElementDeclaration(
                 _Reflect=[0, 0, 0], _Angle=0,
-                _DesignObj=TristateInverter.TristateInverter(_Name='TSI2In{}'.format(_Name)))[0]
+                _DesignObj=TristateInverter_ljw.TristateInverter(_Name='TSI2In{}'.format(_Name)))[0]
             self._DesignParameter['TSI2']['_DesignObj']._CalculateDesignParameterF3(**Parameters_TSI2_f3)
             self._DesignParameter['TSI2']['_XYCoordinates'] = [[0, 0]]
 
@@ -423,19 +423,19 @@ class DFF(StickDiagram._StickDiagram):
         if TSI4_Finger == 1:
             self._DesignParameter['TSI4'] = self._SrefElementDeclaration(
                 _Reflect=[0, 0, 0], _Angle=0,
-                _DesignObj=TristateInverter.TristateInverter(_Name='TSI4In{}'.format(_Name)))[0]
+                _DesignObj=TristateInverter_ljw.TristateInverter(_Name='TSI4In{}'.format(_Name)))[0]
             self._DesignParameter['TSI4']['_DesignObj']._CalculateDesignParameterFinger1_v2(**Parameters_TSI4)
             self._DesignParameter['TSI4']['_XYCoordinates'] = [[0, 0]]
         elif TSI4_Finger == 2:
             self._DesignParameter['TSI4'] = self._SrefElementDeclaration(
                 _Reflect=[0, 0, 0], _Angle=0,
-                _DesignObj=TristateInverter.TristateInverter(_Name='TSI4In{}'.format(_Name)))[0]
+                _DesignObj=TristateInverter_ljw.TristateInverter(_Name='TSI4In{}'.format(_Name)))[0]
             self._DesignParameter['TSI4']['_DesignObj']._CalculateDesignParameterFinger2_v2(**Parameters_TSI4)
             self._DesignParameter['TSI4']['_XYCoordinates'] = [[0, 0]]
         elif TSI4_Finger >= 3:
             self._DesignParameter['TSI4'] = self._SrefElementDeclaration(
                 _Reflect=[0, 0, 0], _Angle=0,
-                _DesignObj=TristateInverter.TristateInverter(_Name='TSI4In{}'.format(_Name)))[0]
+                _DesignObj=TristateInverter_ljw.TristateInverter(_Name='TSI4In{}'.format(_Name)))[0]
             self._DesignParameter['TSI4']['_DesignObj']._CalculateDesignParameterF3(**Parameters_TSI4_f3)
             self._DesignParameter['TSI4']['_XYCoordinates'] = [[0, 0]]
 
