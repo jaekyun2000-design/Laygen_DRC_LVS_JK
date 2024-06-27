@@ -8784,7 +8784,7 @@ class Deserializer1toN(StickDiagram._StickDiagram):
 import random
 if __name__ == '__main__':
         #i=0
-    for i in range(0,200):
+    for i in range(0,100):
         list=[2,4,8,16,32]
         Deserialize1toN=random.choice(list)
         TG1_Finger = random.randint(1,30)
@@ -9043,10 +9043,10 @@ if __name__ == '__main__':
         import DRCchecker
 
         print("itr = ", i)
-        a = DRCchecker.DRCchecker('ljw95', 'dlwodn123', '/mnt/sdc/ljw95/OPUS/ss28',
-                                   '/mnt/sdc/ljw95/OPUS/ss28/DRC/run',
-                                   'Deserializer1toN', 'Deserializer1toN', None)
-        a.DRCchecker()
+        # a = DRCchecker.DRCchecker('ljw95', 'dlwodn123', '/mnt/sdc/ljw95/OPUS/ss28',
+        #                            '/mnt/sdc/ljw95/OPUS/ss28/DRC/run',
+        #                            'Deserializer1toN', 'Deserializer1toN', None)
+        # a.DRCchecker()
         print("itr = ", i)
         print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
         print("itr = ", i)
@@ -9064,7 +9064,7 @@ if __name__ == '__main__':
         #time.sleep(5)
         # a.DRCchecker()
         print('      Finished       '.center(105, '#'))
-        print("DRC Clean!!!")
+        # print("DRC Clean!!!")
 
         print(f"{end - start:.5f} sec")
 

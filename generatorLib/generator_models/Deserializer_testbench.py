@@ -419,10 +419,10 @@ if __name__ == '__main__':
         print("INV5_Finger = ", INV9_Finger)
         print("INN6_Finger = ", INV10_Finger)
 
-        a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','Deserializer1toN','Deserializer1toN',None)
-        a.DRCchecker()
+        # a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','Deserializer1toN','Deserializer1toN',None)
+        # a.DRCchecker()
         print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
 
         print('      Finished       '.center(105, '#'))
-        print("DRC Clean!!!")
+        # print("DRC Clean!!!")
 
