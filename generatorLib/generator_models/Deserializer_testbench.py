@@ -242,6 +242,7 @@ myfile = open('Deserializer1toN.gds', 'rb')              # gds file name and cho
 ftp.storbinary('STOR Deserializer1toN.gds', myfile)
 myfile.close()
 
+print('#############################      DRC verification...      ##############################')
 # import DRCchecker               # import DRCchecker.py
 # a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','Deserializer1toN','Deserializer1toN',None)
 #                                         # Describe Server ID, password, Directory Path, DRC run file Path, Libraray name, Cell name
