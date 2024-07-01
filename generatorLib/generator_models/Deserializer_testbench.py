@@ -28,52 +28,55 @@ Here is how it works:
 '''''
 
 '''''Generation Section'''''
-TG1_Finger = 1
-TG2_Finger = 2
-TSI1_Finger = 1
-TSI2_Finger = 1
-INV1_Finger = 3
-INV2_Finger = 1
-INV3_Finger = 1
-INV4_Finger = 3
+TG1_Finger = 1       # number of fingers of 1st Transmission Gate
+TG2_Finger = 2       # number of fingers of 2nd Transmission Gate
+TSI1_Finger = 1      # number of fingers of 1st Tristate Inverter
+TSI2_Finger = 1      # number of fingers of 2nd Tristate Inverter
+INV1_Finger = 3      # number of fingers of 1st Inverter
+INV2_Finger = 1       # number of fingers of 2nd Inverter
+INV3_Finger = 1       # number of fingers of 3rd Inverter
+INV4_Finger = 3       # number of fingers of 4th Inverter
 
-TG3_Finger = 2
-TSI3_Finger = 1
-INV5_Finger = 4
-INV6_Finger = 4
-TG4_Finger = 2
-TSI4_Finger = 1
-INV7_Finger = 4
-INV8_Finger = 4
-INV9_Finger = 1
-INV10_Finger = 1
+TG3_Finger = 2         # number of fingers of 4th Inverter
+TSI3_Finger = 1        # number of fingers of 3rd Tristate Inverter
+INV5_Finger = 4         # number of fingers of 5th Inverter
+INV6_Finger = 4         # number of fingers of 6th Inverter
+TG4_Finger = 2          # number of fingers of 4th Transmission Gate
+TSI4_Finger = 1         # number of fingers of 4th Tristate Inverter
+INV7_Finger = 4         # number of fingers of 7th Inverter
+INV8_Finger = 4         # number of fingers of 8th Inverter
+INV9_Finger = 1         # number of fingers of 9th Inverter
+INV10_Finger = 1        # number of fingers of 10th Inverter
 
-Deserialize1toN = 32
+Deserialize1toN = 32    # Deserializing ratio of Deserializer (2, 4, 8, 16, 32)
 
-np_ratio = 2
+np_ratio = 2            # Nmos and Pmos Width ratio (Nmos Width * np\_ratio = Pmos Width)
 
+dummy = False           # Added Dummy cells in empty space (True or False)
+ChannelLength = 30      # channel Length of mosfets
+GateSpacing = 100       # horizontal space distance between polys
+SDWidth = 66            # Source and Drain space in mosfets
+XVT = 'SLVT'            # Threshold Voltage of mosfets ('SLVT', 'RVT', 'LVT', 'HVT')
+CellHeight = 1800       # sum of height in total height of cells
+SupplyRailType = 2      # supply rail type (1. rectangle via 2. square via)
 TG1_NMWidth = TG2_NMWidth = TG3_NMWidth = TG4_NMWidth = TSI1_NMWidth = TSI2_NMWidth = TSI3_NMWidth = TSI4_NMWidth = INV1_NMWidth = INV2_NMWidth = INV3_NMWidth \
     = INV4_NMWidth = INV5_NMWidth = INV6_NMWidth = INV7_NMWidth = INV8_NMWidth = INV9_NMWidth = INV10_NMWidth = 200
+        ## nmos channel width of mosfets
 TG1_PMWidth = TG2_PMWidth = TG3_PMWidth = TG4_PMWidth = TSI1_PMWidth = TSI2_PMWidth = TSI3_PMWidth = TSI4_PMWidth = INV1_PMWidth = INV2_PMWidth = INV3_PMWidth \
     = INV4_PMWidth = INV5_PMWidth = INV6_PMWidth = INV7_PMWidth = INV8_PMWidth = INV9_PMWidth = INV10_PMWidth = TG1_NMWidth * np_ratio
+        ## pmos channel width of mosfets
 
-dummy = False
-ChannelLength = 30
-GateSpacing = 100
-SDWidth = 66
-XVT = 'SLVT'
-CellHeight = 1800
-SupplyRailType = 2
 
-TG1_Finger_clk = TG1_Finger
-TG2_Finger_clk = TG2_Finger
-TSI1_Finger_clk = TSI1_Finger = TSI2_Finger = TSI3_Finger = TSI4_Finger = 1
-TSI2_Finger_clk = TSI2_Finger
-INV1_Finger_clk = INV1_Finger
-INV2_Finger_clk = INV2_Finger
-INV3_Finger_clk = INV3_Finger
-INV4_Finger_clk = INV5_Finger
-INV5_Finger_clk = INV6_Finger
+
+TG1_Finger_clk = TG1_Finger         # number of fingers of 1st Transmission Gate in clk
+TG2_Finger_clk = TG2_Finger         # number of fingers of 2nd Transmission Gate in clk
+TSI1_Finger_clk = TSI1_Finger       # number of fingers of 1st Tristate Inverter in clk
+TSI2_Finger_clk = TSI2_Finger       # number of fingers of 2nd Tristate Inverter in clk
+INV1_Finger_clk = INV1_Finger       # number of fingers of 1st Inverter in clk
+INV2_Finger_clk = INV2_Finger       # number of fingers of 2nd Inverter in clk
+INV3_Finger_clk = INV3_Finger       # number of fingers of 3rd Inverter in clk
+INV4_Finger_clk = INV5_Finger       # number of fingers of 4th Inverter in clk
+INV5_Finger_clk = INV6_Finger       # number of fingers of 5th Inverter in clk
 
 '''''''Testing Section'''''''
 import random
@@ -130,9 +133,12 @@ import random
 
 
 print('#############################      Converting to GDS II File...      ##############################')
+
 DesignParameters._Technology = 'SS28nm'
-TopObj = Deserializer1toN.Deserializer1toN(_DesignParameter=None, _Name='Deserializer1toN')
+TopObj = Deserializer1toN.Deserializer1toN(_DesignParameter=None, _Name='Deserializer1toN') # Python code of converting to GDS II File
 TopObj._CalculateDesignParameter(
+
+
     Deserialize1toN=Deserialize1toN,
     TG1_Finger=TG1_Finger,
     TG1_NMWidth=TG1_NMWidth,
@@ -221,24 +227,26 @@ TopObj._CalculateDesignParameter(
     SupplyRailType=SupplyRailType)
 
 TopObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=TopObj._DesignParameter)
-testStreamFile = open('./Deserializer1toN.gds', 'wb')
-tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])
+testStreamFile = open('./Deserializer1toN.gds', 'wb')                               # gds file save in testStreamFile
+tmp = TopObj._CreateGDSStream(TopObj._DesignParameter['_GDSFile']['_GDSFile'])      # Converting to GDS II File finished
 tmp.write_binary_gds_stream(testStreamFile)
-testStreamFile.close()
+testStreamFile.close()                                                              # Streamfile close
 
 print('#############################      Sending to FTP Server...      ##############################')
 
-import ftplib
-ftp = ftplib.FTP('141.223.24.53')
-ftp.login('ljw95', 'dlwodn123')
-ftp.cwd('/mnt/sdc/ljw95/OPUS/ss28')
-myfile = open('Deserializer1toN.gds', 'rb')
+import ftplib                                            # import ftplib
+ftp = ftplib.FTP('141.223.24.53')                        # server ip address
+ftp.login('ljw95', 'dlwodn123')                          # server ID and password
+ftp.cwd('/mnt/sdc/ljw95/OPUS/ss28')                      # Directory Path to save the .gds file
+myfile = open('Deserializer1toN.gds', 'rb')              # gds file name and chosing read mode or write mode
 ftp.storbinary('STOR Deserializer1toN.gds', myfile)
 myfile.close()
 
-import DRCchecker
-a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','Deserializer1toN','Deserializer1toN',None)
-a.DRCchecker()
+# import DRCchecker               # import DRCchecker.py
+# a = DRCchecker.DRCchecker('ljw95','dlwodn123','/mnt/sdc/ljw95/OPUS/ss28','/mnt/sdc/ljw95/OPUS/ss28/DRC/run','Deserializer1toN','Deserializer1toN',None)
+#                                         # Describe Server ID, password, Directory Path, DRC run file Path, Libraray name, Cell name
+# a.DRCchecker()              ### DRC checker Code to verify a Design rule
+
 
 print('   Sending to FTP Server & StreamIn...   '.center(105, '#'))
 end = time.time()
