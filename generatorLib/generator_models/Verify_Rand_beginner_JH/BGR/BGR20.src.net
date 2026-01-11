@@ -1,0 +1,70 @@
+************************************************************************
+* auCdl Netlist:
+* 
+* Library Name:  Laygen_AMP
+* Top Cell Name: BGR
+* View Name:     schematic
+* Netlisted on:  Oct 22 20:32:50 2025
+************************************************************************
+
+.INCLUDE /home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp/.resources/devices.cdl
+*.EQUATION
+*.SCALE METER
+*.MEGA
+.PARAM
+
+
+************************************************************************
+* Library Name: Laygen_AMP
+* Cell Name:    opamp
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT opamp VDD VINn VINp VOUT VSS
+*.PININFO VDD:B VINn:B VINp:B VOUT:B VSS:B
+MN1 net6 net1 VSS VSS nfet w=16.8000u l=0.4100u nf=7.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN5 VOUT net1 VSS VSS nfet w=9.6000u l=0.4100u nf=4.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN3 net2 VINp net6 VSS nfet w=16.8000u l=0.4100u nf=7.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN2 net5 VINn net6 VSS nfet w=16.8000u l=0.4100u nf=7.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN_Dummy VSS VSS VSS VSS nfet w=72.0000u l=0.4100u nf=30.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN4 net1 net1 VSS VSS nfet w=9.6000u l=0.4100u nf=4.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP1 net5 net5 VDD VDD pfet w=10.4000u l=0.4100u nf=8.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP4 net1 net1 net3 VDD pfet w=13.0000u l=0.4100u nf=10.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP2 net2 net5 VDD VDD pfet w=10.4000u l=0.4100u nf=8.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP_Dummy VDD VDD VDD VDD pfet w=31.2000u l=0.4100u nf=24.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP3 net3 net3 VDD VDD pfet w=7.8000u l=0.4100u nf=6.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP5 VOUT net2 VDD VDD pfet w=2.6000u l=0.4100u nf=2.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+CC2 net2 net4 $[ncap] $SUB=VSS l=2.9000u w=2.0000u nf=10.0000 nrep=3.0000
+RR1 VOUT net4 $SUB=VSS $[opppcres] r=3.039k w=1.0000u l=1.0000u pbar=1 s=1.0000 bp=3 ncr=1
+.ENDS
+************************************************************************
+* Library Name: Laygen_BGR
+* Cell Name:    BGR
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT BGR VDD VSS Vref
+*.PININFO VDD:B VSS:B Vref:B
+XI40 VDD net1 net5 OUT VSS / opamp
+QQP0 VSS VSS net1 vpnp nf=1 nrep=1 w=2.0000u l=2.0000u
+QQP2 VSS VSS net2 vpnp nf=1 nrep=1 w=2.0000u l=2.0000u
+QQP1<0> VSS VSS net6 vpnp nf=1 nrep=1 w=2.0000u l=2.0000u
+QQP1<1> VSS VSS net6 vpnp nf=1 nrep=1 w=2.0000u l=2.0000u
+QQP1<2> VSS VSS net6 vpnp nf=1 nrep=1 w=2.0000u l=2.0000u
+QQP1<3> VSS VSS net6 vpnp nf=1 nrep=1 w=2.0000u l=2.0000u
+QQP1<4> VSS VSS net6 vpnp nf=1 nrep=1 w=2.0000u l=2.0000u
+QQP1<5> VSS VSS net6 vpnp nf=1 nrep=1 w=2.0000u l=2.0000u
+QQP1<6> VSS VSS net6 vpnp nf=1 nrep=1 w=2.0000u l=2.0000u
+QQP1<7> VSS VSS net6 vpnp nf=1 nrep=1 w=2.0000u l=2.0000u
+QQP1<8> VSS VSS net6 vpnp nf=1 nrep=1 w=2.0000u l=2.0000u
+QQP3 VSS VSS VSS vpnp nf=1 nrep=1 w=2.0000u l=2.0000u
+MP8 Vref OUT VDD VDD pfet w=2.1000u l=0.5600u nf=1.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP7 net5 OUT VDD VDD pfet w=2.1000u l=0.5600u nf=1.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP6 net1 OUT VDD VDD pfet w=6.3000u l=0.5600u nf=3.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP9 net4 net4 net3 VDD pfet w=4.4000u l=0.1700u nf=4.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP10 net3 net3 VDD VDD pfet w=8.8000u l=0.1700u nf=8.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+RR3 net5 net6 $SUB=VSS $[opppcres] r=10.052k w=1.5000u l=6.0000u pbar=1 s=1.0000 bp=3 ncr=1
+RR2 Vref net2 $SUB=VSS $[opppcres] r=88.819k w=0.5000u l=10.0000u pbar=1 s=3.0000 bp=3 ncr=1
+MN6 OUT net4 VSS VSS nfet w=8.8000u l=0.1700u nf=8.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN7 net4 Vref VSS VSS nfet w=1.1000u l=0.1700u nf=1.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+.ENDS

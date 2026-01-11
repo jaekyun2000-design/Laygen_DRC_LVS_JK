@@ -1,0 +1,127 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
+from PyQt5.QtWidgets import*
+from PyQt5.QtGui import QColor,QPen,QBrush,QTransform, QFont
+from PyQt5.QtCore import Qt
+import copy
+
+# from PyCodes import QTInterface
+
+from PyQTInterface import LayerInfo
+from PyQTInterface.layermap import LayerReader
+from PyQTInterface.layermap import DisplayReader
+import PyQt5
+
+from PyQTInterface import userDefineExceptions
+
+scaleValue = 1
+
+class VariableVisualItem(QGraphicsItemGroup):
+    def __init__(self, variable_traits=None):
+        super().__init__()
+        self.variable_id = None
+        self._DesignParametertype = None
+        self.setFlag(QGraphicsItemGroup.ItemIsSelectable,True)
+        self.sub_visual_item = []
+        self.variable_info = dict()
+    def set_variable_info(self,variable_info):
+        self.variable_info = variable_info
+
+    def addToGroupFromList(self,visual_item_list):
+        self.sub_visual_item.extend(visual_item_list)
+        # for vsitem in visual_item_list:
+        #     self.addToGroup(vsitem)
+        list(map(lambda vsitem: self.addToGroup(vsitem), visual_item_list))
+
+        #
+        # self._XYCoordinatesForDisplay = []
+        # self._clickFlag = True
+        # self._isInHierarchy = False
+        # self._NoShowFlag = False
+        # self._SimplifyFlag = False
+        # self._multipleBlockFlag = False
+        # if _ItemTraits is None:
+        #     self._ItemTraits = dict(
+        #         _DesignParameterName = None,
+        #         _Layer = None,
+        #
+        #         _DesignParametertype = None,
+        #         _XYCoordinates = None,
+        #         _Width = None,
+        #         _Height = None,
+        #         _Color = None,
+        #         _DesignParameterRef=None,   #Reference of Design Parameter
+        #         _VisualizationItems = []    #This is for SRef!!
+        #     )
+        #     self.block = []
+        #     # self._BlockGroup = None,
+        # else:
+        #     self._ItemTraits = _ItemTraits
+        #     self.block = []
+        #     self.blockGeneration()
+
+    def paint(self, painter, option, widget) -> None:
+        super().paint(painter,option,widget)
+        if self.isSelected():
+            if self._DesignParametertype == 'element array':
+                bounding_rect = self.boundingRect()
+                bounding_rect.setCoords(bounding_rect.topLeft().x(), -bounding_rect.topLeft().y(),
+                                        bounding_rect.bottomRight().x(),-bounding_rect.bottomRight().y())
+                print(bounding_rect.topLeft().x(), bounding_rect.topLeft().y(), bounding_rect.bottomRight().x(), bounding_rect.bottomRight().y())
+                painter.scale(1, -1)
+                painter.setPen(Qt.GlobalColor.red)
+                font = QFont()
+                font.setBold(True)
+                font.setPointSize(70)
+                painter.setFont(font)
+                painter.drawText(bounding_rect,Qt.AlignCenter,"x_space_distance: {"+str(self.variable_info['x_space_distance'])+"}")
+                # painter.setBackgroundMode(Qt.OpaqueMode)
+        else:
+            painter.beginNativePainting()
+
+
+    def toggleVariableVisualization(self, item):
+        # if item._type == 1:
+        #     for field in item._ItemTraits['variable_info']:
+        #         if field == 'XY':
+        #             self._ItemTraits['variable_info'][field]
+        #         elif field == 'width':
+        #             self._ItemTraits['variable_info'][field]
+        #         elif field == 'height':
+        #             self._ItemTraits['variable_info'][field]
+        if item._type == 1:
+            boolean = item.XYVariable.isVisible()
+            if boolean == False:
+                item.widthVariable.setVisible(True)
+                item.heightVariable.setVisible(True)
+                item.XYVariable.setVisible(True)
+            else:
+                item.widthVariable.setVisible(False)
+                item.heightVariable.setVisible(False)
+                item.XYVariable.setVisible(False)
+                item.setSelected(True)
+
+        elif item._type == 2:
+            boolean = item.XYVariable[0].isVisible()
+            if boolean == False:
+                for XY in item.XYVariable:
+                    XY.setVisible(True)
+            else:
+                for XY in item.XYVariable:
+                    XY.setVisible(False)
+                item.setSelected(True)
+
+        elif item._type == 3:
+            boolean = item.XYVariable.isVisible()
+            if boolean == False:
+                item.XYVariable.setVisible(True)
+                item.paramVariable.setVisible(True)
+            else:
+                item.XYVariable.setVisible(False)
+                item.paramVariable.setVisible(False)
+                item.setSelected(True)
+
+
+

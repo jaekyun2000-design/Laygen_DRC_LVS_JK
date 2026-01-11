@@ -199,8 +199,8 @@ class _NCap(StickDiagram._StickDiagram):
 
 
         print('#############################     LVS Layer Calculation    ##############################################')
-        self._DesignParameter['LVSLayer']=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['LVS_dr4'][0],
-                                                                    _Datatype=DesignParameters._LayerMapping['LVS_dr4'][1],
+        self._DesignParameter['LVSLayer']=self._BoundaryElementDeclaration(_Layer=DesignParameters._LayerMapping['LVS4'][0],
+                                                                    _Datatype=DesignParameters._LayerMapping['LVS4'][1],
                                                                     _XWidth=self._DesignParameter['_ODLayer']['_XYCoordinates'][-1][0] - self._DesignParameter['_ODLayer']['_XYCoordinates'][0][0] + self._DesignParameter['_ODLayer']['_XWidth'] + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide * 2,
                                                                     _YWidth=self._DesignParameter['_POLayer']['_XYCoordinates'][-1][1] - self._DesignParameter['_POLayer']['_XYCoordinates'][0][1] + self._DesignParameter['_POLayer']['_YWidth'] + _DRCObj._CoMinEnclosureByPOAtLeastTwoSide * 2)
         self._DesignParameter['LVSLayer']['_XYCoordinates'] = _XYCoordinatesofNcap

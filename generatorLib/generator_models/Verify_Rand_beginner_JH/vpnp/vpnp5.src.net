@@ -1,0 +1,26 @@
+************************************************************************
+* auCdl Netlist:
+* 
+* Library Name:  Proj_BGR_B01_KSH
+* Top Cell Name: vpnp
+* View Name:     schematic
+* Netlisted on:  May 07 11:01:19 2025
+************************************************************************
+
+.INCLUDE /home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp/.resources/devices.cdl
+*.EQUATION
+*.SCALE METER
+*.MEGA
+.PARAM
+
+
+************************************************************************
+* Library Name: Proj_BGR_B01_KSH
+* Cell Name:    vpnp
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT vpnp B C E
+*.PININFO B:B C:B E:B
+QQP0 C B E vpnp nf=1 nrep=1 w=19.1000u l=19.1000u
+.ENDS

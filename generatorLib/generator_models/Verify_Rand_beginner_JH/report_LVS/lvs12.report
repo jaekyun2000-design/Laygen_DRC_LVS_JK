@@ -1,0 +1,720 @@
+
+
+
+                  ##################################################
+                  ##                                              ##
+                  ##         C A L I B R E    S Y S T E M         ##
+                  ##                                              ##
+                  ##             L V S   R E P O R T              ##
+                  ##                                              ##
+                  ##################################################
+
+
+
+REPORT FILE NAME:         opamp.lvs.report
+LAYOUT NAME:              ./svdb/opamp.sp ('opamp')
+SOURCE NAME:              ./opamp.src.net ('opamp')
+RULE FILE:                _calibre.run_
+CREATION TIME:            Fri Jul 18 11:47:57 2025
+CURRENT DIRECTORY:        /mnt/sdd/hyoseok0503/OPUS/Samsung28/RandGen/12
+USER NAME:                hyoseok0503
+CALIBRE VERSION:          v2019.1_52.37    Tue May 14 16:09:56 PDT 2019
+
+
+
+                               OVERALL COMPARISON RESULTS
+
+
+
+                         #       ###################       _   _   
+                        #        #                 #       *   *   
+                   #   #         #     CORRECT     #         |     
+                    # #          #                 #       \___/  
+                     #           ###################               
+
+
+
+
+**************************************************************************************************************
+                                      CELL  SUMMARY
+**************************************************************************************************************
+
+  Result         Layout                        Source
+  -----------    -----------                   --------------
+  CORRECT        opamp                         opamp
+
+
+
+**************************************************************************************************************
+                                      LVS PARAMETERS
+**************************************************************************************************************
+
+
+o LVS Setup:
+
+   LVS COMPONENT TYPE PROPERTY            element
+   LVS COMPONENT SUBTYPE PROPERTY         model
+   LVS PIN NAME PROPERTY                  phy_pin
+   LVS POWER NAME                         "VDD"
+   LVS GROUND NAME                        "VSS"
+   LVS CELL SUPPLY                        NO
+   LVS RECOGNIZE GATES                    NONE
+   LVS IGNORE PORTS                       NO
+   LVS CHECK PORT NAMES                   YES
+   LVS IGNORE TRIVIAL NAMED PORTS         NO
+   LVS BUILTIN DEVICE PIN SWAP            NO
+   LVS ALL CAPACITOR PINS SWAPPABLE       NO
+   LVS DISCARD PINS BY DEVICE             NO
+   LVS SOFT SUBSTRATE PINS                NO
+   LVS INJECT LOGIC                       NO
+   LVS EXPAND UNBALANCED CELLS            YES
+   LVS FLATTEN INSIDE CELL                NO
+   LVS EXPAND SEED PROMOTIONS             NO
+   LVS PRESERVE PARAMETERIZED CELLS       NO
+   LVS GLOBALS ARE PORTS                  YES
+   LVS REVERSE WL                         NO
+   LVS SPICE PREFER PINS                  NO
+   LVS SPICE SLASH IS SPACE               YES
+   LVS SPICE ALLOW FLOATING PINS          YES
+   // LVS SPICE ALLOW INLINE PARAMETERS     
+   LVS SPICE ALLOW UNQUOTED STRINGS       NO
+   LVS SPICE CONDITIONAL LDD              NO
+   LVS SPICE CULL PRIMITIVE SUBCIRCUITS   NO
+   // LVS SPICE EXCLUDE CELL SOURCE
+   // LVS SPICE EXCLUDE CELL LAYOUT
+   LVS SPICE IMPLIED MOS AREA             NO
+   // LVS SPICE MULTIPLIER NAME
+   LVS SPICE OVERRIDE GLOBALS             NO
+   LVS SPICE REDEFINE PARAM               NO
+   LVS SPICE REPLICATE DEVICES            NO
+   LVS SPICE SCALE X PARAMETERS           NO
+   LVS SPICE STRICT WL                    YES
+   // LVS SPICE OPTION
+   LVS STRICT SUBTYPES                    NO
+   LVS EXACT SUBTYPES                     NO
+   LAYOUT CASE                            YES
+   SOURCE CASE                            YES
+   LVS COMPARE CASE                       NAMES TYPES SUBTYPES VALUES
+   LVS DOWNCASE DEVICE                    NO
+   LVS REPORT MAXIMUM                     ALL
+   LVS PROPERTY RESOLUTION MAXIMUM        32
+   // LVS SIGNATURE MAXIMUM
+   // LVS FILTER UNUSED OPTION
+   // LVS REPORT OPTION
+   LVS REPORT UNITS                       YES
+   // LVS NON USER NAME PORT
+   // LVS NON USER NAME NET
+   // LVS NON USER NAME INSTANCE
+   // LVS IGNORE DEVICE PIN
+   // LVS PREFER NETS FILTER SOURCE
+   // LVS PREFER NETS FILTER LAYOUT
+
+   // Reduction
+
+   LVS REDUCE SERIES MOS                  NO
+   LVS REDUCE PARALLEL MOS                NO
+   LVS REDUCE SEMI SERIES MOS             NO
+   LVS REDUCE SPLIT GATES                 NO
+   LVS REDUCE PARALLEL BIPOLAR            NO
+   LVS REDUCE SERIES CAPACITORS           NO
+   LVS REDUCE PARALLEL CAPACITORS         NO
+   LVS REDUCE SERIES RESISTORS            NO
+   LVS REDUCE PARALLEL RESISTORS          NO
+   LVS REDUCE PARALLEL DIODES             NO
+
+   LVS REDUCE  efuse  PARALLEL NO
+   LVS REDUCE  MN(nfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(lvtnfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(slvtnfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(hvtnfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  ME(egnfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  ME(egpsnfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  MP(pfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(lvtpfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(slvtpfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(hvtpfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  ME(egpfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  ME(egpspfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  ME(egvnfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(hparnfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(hpalnfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  ME(egvpfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(hparpfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(hpalpfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(zvtnfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  ME(egzvtnfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(lshnfetwl)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(lshnfetpd)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(lshpfetpu)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  MD(dswnfetwl)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  MD(dswnfetpd)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  MD(dswpfetpu)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  MD(dplnfetwl)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  MD(dplnfetpd)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  MD(dplpfetpu)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(lslnfetwl)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(lslnfetpd)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(lslpfetpu)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(lsrnfetwl)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(lsrnfetpd)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(lsrpfetpu)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  R(lvsres)  PARALLEL
+   LVS REDUCE  R(lvsres)  SERIES POS NEG
+   LVS REDUCE  R(PC_lvsres)  PARALLEL
+   LVS REDUCE  R(PC_lvsres)  SERIES POS NEG
+   LVS REDUCE  R(opppcres)  PARALLEL [ TOLERANCE W 0 L 0 BP 0 S 0 ncr 0 ]
+   LVS REDUCE  R(opppcres)  SERIES POS NEG [ TOLERANCE W 0 L 0 BP 0 PBAR 0 ncr 0 ]
+   LVS REDUCE  R(opndres)  PARALLEL [ TOLERANCE W 0 L 0 S 0 ncr 0 ]
+   LVS REDUCE  R(opndres)  SERIES POS NEG [ TOLERANCE W 0 L 0 PBAR 0 ncr 0 ]
+   LVS REDUCE  R(nwres)  PARALLEL [ TOLERANCE W 0 L 0 S 0 ncr 0 ]
+   LVS REDUCE  R(nwres)  SERIES POS NEG [ TOLERANCE W 0 L 0 PBAR 0 ncr 0 ]
+   LVS REDUCE  D(tdndsx)  PARALLEL
+   LVS REDUCE  D(tdpdnw)  PARALLEL
+   LVS REDUCE  D(diodenwx_lvs)  PARALLEL
+   LVS REDUCE  D(diodepwtw_lvs)  PARALLEL
+   LVS REDUCE  D(diodetwx_lvs)  PARALLEL
+   LVS REDUCE  D(egtdndsx)  PARALLEL
+   LVS REDUCE  D(egtdpdnw)  PARALLEL
+   LVS REDUCE  Q(esdvpnp)  PARALLEL [ TOLERANCE w 0 A 0 perim 0 sac 0 ]
+   LVS REDUCE  Q(esdvnpn)  PARALLEL [ TOLERANCE w 0 A 0 perim 0 sac 0 ]
+   LVS REDUCE  D(esdndsx)  PARALLEL [ TOLERANCE sac 0 ]
+   LVS REDUCE  Q(esdvpnp_eg)  PARALLEL [ TOLERANCE w 0 A 0 perim 0 sac 0 ]
+   LVS REDUCE  D(esdndsx_eg)  PARALLEL [ TOLERANCE w 0 A 0 perim 0 sac 0 ]
+   LVS REDUCE  Q(esdvnpn_eg)  PARALLEL [ TOLERANCE w 0 A 0 perim 0 sac 0 ]
+   LVS REDUCE  esdscr_dw  PARALLEL
+   LVS REDUCE  esdscr_tw  PARALLEL
+   LVS REDUCE  esdnsh  PARALLEL [ TOLERANCE lesd 0 wesd 0 esdoxide 0 gns 0 ]
+   LVS REDUCE  esdpsh  PARALLEL [ TOLERANCE lesd 0 wesd 0 esdoxide 0 gns 0 ]
+   LVS REDUCE  esdnsh_stk  PARALLEL [ TOLERANCE lesd 0 wesd 0 esdoxide 0 gns 0 ]
+   LVS REDUCE  esdpsh_stk  PARALLEL [ TOLERANCE lesd 0 wesd 0 esdoxide 0 gns 0 ]
+   LVS REDUCE  M(lslnfet)  PARALLEL [ TOLERANCE l 0 pccrit 0 ptwell 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(hl152nfetwl)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(hl152nfetpd)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  M(hl152pfetpu)  PARALLEL [ TOLERANCE l 0 pccrit 0 ngcon 0 p_la 0 ]
+   LVS REDUCE  esdnsh_3stk  PARALLEL [ TOLERANCE lesd 0 wesd 0 esdoxide 0 gns 0 ]
+   LVS REDUCE  esdpsh_3stk  PARALLEL [ TOLERANCE lesd 0 wesd 0 esdoxide 0 gns 0 ]
+   LVS REDUCE  R(M1_lvsres)  PARALLEL
+   LVS REDUCE  R(M1_lvsres)  SERIES POS NEG
+   LVS REDUCE  R(M2_lvsres)  PARALLEL
+   LVS REDUCE  R(M2_lvsres)  SERIES POS NEG
+   LVS REDUCE  R(M3_lvsres)  PARALLEL
+   LVS REDUCE  R(M3_lvsres)  SERIES POS NEG
+   LVS REDUCE  R(M4_lvsres)  PARALLEL
+   LVS REDUCE  R(M4_lvsres)  SERIES POS NEG
+   LVS REDUCE  R(M5_lvsres)  PARALLEL
+   LVS REDUCE  R(M5_lvsres)  SERIES POS NEG
+   LVS REDUCE  R(M6_lvsres)  PARALLEL
+   LVS REDUCE  R(M6_lvsres)  SERIES POS NEG
+   LVS REDUCE  R(M7_lvsres)  PARALLEL
+   LVS REDUCE  R(M7_lvsres)  SERIES POS NEG
+   LVS REDUCE  R(IA_lvsres)  PARALLEL
+   LVS REDUCE  R(IA_lvsres)  SERIES POS NEG
+   LVS REDUCE  R(IB_lvsres)  PARALLEL
+   LVS REDUCE  R(IB_lvsres)  SERIES POS NEG
+   LVS REDUCE  R(LB_lvsres)  PARALLEL
+   LVS REDUCE  R(LB_lvsres)  SERIES POS NEG
+   LVS REDUCTION PRIORITY                 PARALLEL
+   
+   LVS SHORT EQUIVALENT NODES             NO
+
+   // Filter
+
+   LVS FILTER  D(diodepwtw)  OPEN
+   LVS FILTER  D(diodetwx)  OPEN
+   LVS FILTER  D(diodenwx)  OPEN
+   LVS FILTER  D(diodenx)  OPEN
+   LVS FILTER  D(diodepnw)  OPEN
+   LVS FILTER  D(egdiodenx)  OPEN
+   LVS FILTER  D(egdiodepnw)  OPEN
+   LVS FILTER  R(wireRC)  SHORT SOURCE
+
+   // Trace Property
+
+   TRACE PROPERTY  mn(nfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  mn(nfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  mn(nfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  mn(nfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  mn(nfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  mn(nfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  mn(nfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lvtnfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lvtnfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lvtnfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lvtnfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lvtnfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lvtnfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lvtnfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(slvtnfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(slvtnfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(slvtnfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(slvtnfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(slvtnfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  m(slvtnfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(slvtnfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hvtnfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hvtnfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hvtnfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hvtnfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hvtnfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hvtnfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hvtnfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egnfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egnfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egnfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egnfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egnfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egnfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egnfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egpsnfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egpsnfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egpsnfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egpsnfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egpsnfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egpsnfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egpsnfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  mp(pfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  mp(pfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  mp(pfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  mp(pfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  mp(pfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  mp(pfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  mp(pfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lvtpfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lvtpfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lvtpfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lvtpfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lvtpfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lvtpfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lvtpfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(slvtpfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(slvtpfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(slvtpfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(slvtpfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(slvtpfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  m(slvtpfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(slvtpfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hvtpfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hvtpfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hvtpfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hvtpfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hvtpfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hvtpfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hvtpfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egpfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egpfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egpfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egpfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egpfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egpfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egpfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egpspfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egpspfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egpspfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egpspfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egpspfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egpspfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egpspfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egvnfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egvnfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egvnfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egvnfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egvnfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egvnfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egvnfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hparnfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hparnfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hparnfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hparnfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hparnfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hparnfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hparnfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hpalnfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hpalnfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hpalnfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hpalnfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hpalnfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hpalnfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hpalnfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egvpfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egvpfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egvpfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egvpfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egvpfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egvpfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egvpfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hparpfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hparpfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hparpfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hparpfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hparpfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hparpfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hparpfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hpalpfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hpalpfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hpalpfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hpalpfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hpalpfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hpalpfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hpalpfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(zvtnfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(zvtnfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(zvtnfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(zvtnfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(zvtnfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  m(zvtnfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(zvtnfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egzvtnfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egzvtnfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egzvtnfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egzvtnfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egzvtnfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  me(egzvtnfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  me(egzvtnfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lshnfetwl)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lshnfetwl)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lshnfetwl)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lshnfetwl)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lshnfetwl)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lshnfetwl)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lshnfetpd)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lshnfetpd)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lshnfetpd)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lshnfetpd)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lshnfetpd)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lshnfetpd)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lshpfetpu)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lshpfetpu)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lshpfetpu)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lshpfetpu)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lshpfetpu)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lshpfetpu)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dswnfetwl)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dswnfetwl)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dswnfetwl)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dswnfetwl)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dswnfetwl)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dswnfetwl)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dswnfetpd)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dswnfetpd)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dswnfetpd)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dswnfetpd)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dswnfetpd)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dswnfetpd)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dswpfetpu)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dswpfetpu)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dswpfetpu)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dswpfetpu)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dswpfetpu)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dswpfetpu)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dplnfetwl)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dplnfetwl)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dplnfetwl)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dplnfetwl)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dplnfetwl)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dplnfetwl)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dplnfetpd)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dplnfetpd)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dplnfetpd)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dplnfetpd)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dplnfetpd)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dplnfetpd)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dplpfetpu)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dplpfetpu)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dplpfetpu)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dplpfetpu)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  md(dplpfetpu)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  md(dplpfetpu)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lslnfetwl)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lslnfetwl)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lslnfetwl)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lslnfetwl)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lslnfetwl)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lslnfetwl)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lslnfetpd)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lslnfetpd)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lslnfetpd)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lslnfetpd)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lslnfetpd)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lslnfetpd)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lslpfetpu)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lslpfetpu)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lslpfetpu)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lslpfetpu)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lslpfetpu)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lslpfetpu)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lsrnfetwl)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lsrnfetwl)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lsrnfetwl)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lsrnfetwl)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lsrnfetwl)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lsrnfetwl)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lsrnfetpd)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lsrnfetpd)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lsrnfetpd)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lsrnfetpd)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lsrnfetpd)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lsrnfetpd)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lsrpfetpu)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lsrpfetpu)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lsrpfetpu)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lsrpfetpu)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lsrpfetpu)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lsrpfetpu)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  r(opppcres)  bp bp 0.5 ABSOLUTE
+   TRACE PROPERTY  r(opppcres)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  r(opppcres)  pbar pbar 0.5 ABSOLUTE
+   TRACE PROPERTY  r(opppcres)  s s 0.5 ABSOLUTE
+   TRACE PROPERTY  r(opppcres)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  r(opppcres)  ncr ncr 0.5 ABSOLUTE
+   TRACE PROPERTY  r(opndres)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  r(opndres)  pbar pbar 0.5 ABSOLUTE
+   TRACE PROPERTY  r(opndres)  s s 0.5 ABSOLUTE
+   TRACE PROPERTY  r(opndres)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  r(opndres)  ncr ncr 0.5 ABSOLUTE
+   TRACE PROPERTY  r(nwres)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  r(nwres)  pbar pbar 0.5 ABSOLUTE
+   TRACE PROPERTY  r(nwres)  s s 0.5 ABSOLUTE
+   TRACE PROPERTY  r(nwres)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  r(nwres)  ncr ncr 0.5 ABSOLUTE
+   TRACE PROPERTY  c(egncap)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  c(egncap)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  c(egncap)  nrep nrep 0.5 ABSOLUTE
+   TRACE PROPERTY  c(egncap)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  c(ncap)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  c(ncap)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  c(ncap)  nrep nrep 0.5 ABSOLUTE
+   TRACE PROPERTY  c(ncap)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  c(vncap)  botlev botlev 0.5 ABSOLUTE
+   TRACE PROPERTY  c(vncap)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  c(vncap)  toplev toplev 0.5 ABSOLUTE
+   TRACE PROPERTY  c(vncap)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  symindp  bp bp 0.5 ABSOLUTE
+   TRACE PROPERTY  symindp  n n 0.5 ABSOLUTE
+   TRACE PROPERTY  symindp  turnspc turnspc 5e-10 ABSOLUTE
+   TRACE PROPERTY  symindp  tleval tleval 0.5 ABSOLUTE
+   TRACE PROPERTY  symindp  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  symindp  wu wu 5e-10 ABSOLUTE
+   TRACE PROPERTY  symindp  od od 5e-10 ABSOLUTE
+   TRACE PROPERTY  d(tdndsx)  a a 1e-15 ABSOLUTE
+   TRACE PROPERTY  d(tdndsx)  perim perim 5e-10 ABSOLUTE
+   TRACE PROPERTY  d(tdpdnw)  a a 1e-15 ABSOLUTE
+   TRACE PROPERTY  d(tdpdnw)  perim perim 5e-10 ABSOLUTE
+   TRACE PROPERTY  d(egtdndsx)  a a 1e-15 ABSOLUTE
+   TRACE PROPERTY  d(egtdndsx)  perim perim 5e-10 ABSOLUTE
+   TRACE PROPERTY  d(egtdpdnw)  a a 1e-15 ABSOLUTE
+   TRACE PROPERTY  d(egtdpdnw)  perim perim 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(vpnp)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(vpnp)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  q(vpnp)  nrep nrep 0.5 ABSOLUTE
+   TRACE PROPERTY  q(vpnp)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(esdvpnp)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(esdvpnp)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  q(esdvpnp)  a a 1e-15 ABSOLUTE
+   TRACE PROPERTY  q(esdvpnp)  perim perim 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(esdvpnp)  sac sac 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(esdvnpn)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(esdvnpn)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  q(esdvnpn)  a a 1e-15 ABSOLUTE
+   TRACE PROPERTY  q(esdvnpn)  perim perim 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(esdvnpn)  sac sac 5e-10 ABSOLUTE
+   TRACE PROPERTY  d(esdndsx)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  d(esdndsx)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  d(esdndsx)  a a 1e-15 ABSOLUTE
+   TRACE PROPERTY  d(esdndsx)  perim perim 5e-10 ABSOLUTE
+   TRACE PROPERTY  d(esdndsx)  sac sac 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(esdvpnp_eg)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(esdvpnp_eg)  npc npc 0.5 ABSOLUTE
+   TRACE PROPERTY  q(esdvpnp_eg)  a a 1e-15 ABSOLUTE
+   TRACE PROPERTY  q(esdvpnp_eg)  perim perim 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(esdvpnp_eg)  sac sac 5e-10 ABSOLUTE
+   TRACE PROPERTY  d(esdndsx_eg)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  d(esdndsx_eg)  npc npc 0.5 ABSOLUTE
+   TRACE PROPERTY  d(esdndsx_eg)  a a 1e-15 ABSOLUTE
+   TRACE PROPERTY  d(esdndsx_eg)  perim perim 5e-10 ABSOLUTE
+   TRACE PROPERTY  d(esdndsx_eg)  sac sac 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(esdvnpn_eg)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(esdvnpn_eg)  npc npc 0.5 ABSOLUTE
+   TRACE PROPERTY  q(esdvnpn_eg)  a a 1e-15 ABSOLUTE
+   TRACE PROPERTY  q(esdvnpn_eg)  perim perim 5e-10 ABSOLUTE
+   TRACE PROPERTY  q(esdvnpn_eg)  sac sac 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdscr_dw  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  esdscr_dw  areapd areapd 1e-15 ABSOLUTE
+   TRACE PROPERTY  esdscr_dw  perimpd perimpd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdscr_dw  areand areand 1e-15 ABSOLUTE
+   TRACE PROPERTY  esdscr_dw  perimnd perimnd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdscr_tw  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  esdscr_tw  areapd areapd 1e-15 ABSOLUTE
+   TRACE PROPERTY  esdscr_tw  perimpd perimpd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdscr_tw  areand areand 1e-15 ABSOLUTE
+   TRACE PROPERTY  esdscr_tw  perimnd perimnd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdnsh  lesd lesd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdnsh  wesd wesd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdnsh  esdoxide esdoxide 0.5 ABSOLUTE
+   TRACE PROPERTY  esdnsh  ldop ldop 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdnsh  lsop lsop 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdnsh  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  esdnsh  gns gns 0.5 ABSOLUTE
+   TRACE PROPERTY  esdpsh  lesd lesd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdpsh  wesd wesd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdpsh  esdoxide esdoxide 0.5 ABSOLUTE
+   TRACE PROPERTY  esdpsh  ldop ldop 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdpsh  lsop lsop 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdpsh  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  esdpsh  gns gns 0.5 ABSOLUTE
+   TRACE PROPERTY  esdnsh_stk  lesd lesd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdnsh_stk  wesd wesd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdnsh_stk  esdoxide esdoxide 0.5 ABSOLUTE
+   TRACE PROPERTY  esdnsh_stk  ldop ldop 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdnsh_stk  lsop lsop 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdnsh_stk  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  esdnsh_stk  gns gns 0.5 ABSOLUTE
+   TRACE PROPERTY  esdpsh_stk  lesd lesd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdpsh_stk  wesd wesd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdpsh_stk  esdoxide esdoxide 0.5 ABSOLUTE
+   TRACE PROPERTY  esdpsh_stk  ldop ldop 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdpsh_stk  lsop lsop 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdpsh_stk  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  esdpsh_stk  gns gns 0.5 ABSOLUTE
+   TRACE PROPERTY  r(sblkndres)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  r(sblkndres)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  r(sblkpdres)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  r(sblkpdres)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lslnfet)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lslnfet)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lslnfet)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lslnfet)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lslnfet)  ptwell ptwell 0.5 ABSOLUTE
+   TRACE PROPERTY  m(lslnfet)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(lslnfet)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hl152nfetwl)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hl152nfetwl)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hl152nfetwl)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hl152nfetwl)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hl152nfetwl)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hl152nfetwl)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hl152nfetpd)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hl152nfetpd)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hl152nfetpd)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hl152nfetpd)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hl152nfetpd)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hl152nfetpd)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hl152pfetpu)  l l 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hl152pfetpu)  p_la p_la 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hl152pfetpu)  pccrit pccrit 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hl152pfetpu)  ngcon ngcon 0.5 ABSOLUTE
+   TRACE PROPERTY  m(hl152pfetpu)  w w 5e-10 ABSOLUTE
+   TRACE PROPERTY  m(hl152pfetpu)  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  esdnsh_3stk  lesd lesd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdnsh_3stk  wesd wesd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdnsh_3stk  esdoxide esdoxide 0.5 ABSOLUTE
+   TRACE PROPERTY  esdnsh_3stk  ldop ldop 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdnsh_3stk  lsop lsop 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdnsh_3stk  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  esdnsh_3stk  gns gns 0.5 ABSOLUTE
+   TRACE PROPERTY  esdpsh_3stk  lesd lesd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdpsh_3stk  wesd wesd 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdpsh_3stk  esdoxide esdoxide 0.5 ABSOLUTE
+   TRACE PROPERTY  esdpsh_3stk  ldop ldop 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdpsh_3stk  lsop lsop 5e-10 ABSOLUTE
+   TRACE PROPERTY  esdpsh_3stk  nf nf 0.5 ABSOLUTE
+   TRACE PROPERTY  esdpsh_3stk  gns gns 0.5 ABSOLUTE
+
+
+
+                   CELL COMPARISON RESULTS ( TOP LEVEL )
+
+
+
+                         #       ###################       _   _   
+                        #        #                 #       *   *   
+                   #   #         #     CORRECT     #         |     
+                    # #          #                 #       \___/  
+                     #           ###################               
+
+
+
+LAYOUT CELL NAME:         opamp
+SOURCE CELL NAME:         opamp
+
+--------------------------------------------------------------------------------------------------------------
+
+INITIAL NUMBERS OF OBJECTS
+--------------------------
+
+                Layout    Source         Component Type
+                ------    ------         --------------
+ Ports:              5         5
+
+ Nets:              12        11    *
+
+ Instances:        100         6    *    MN (4 pins)
+                    99         6    *    MP (4 pins)
+                     1         1         C (3 pins)
+                     2         1    *    R (3 pins)
+                     1         0    *    D (2 pins)
+                ------    ------
+ Total Inst:       203        14
+
+
+NUMBERS OF OBJECTS AFTER TRANSFORMATION
+---------------------------------------
+
+                Layout    Source         Component Type
+                ------    ------         --------------
+ Ports:              5         5
+
+ Nets:              11        11
+
+ Instances:          6         6         MN (4 pins)
+                     6         6         MP (4 pins)
+                     1         1         C (3 pins)
+                     1         1         R (3 pins)
+                ------    ------
+ Total Inst:        14        14
+
+
+       * = Number of objects in layout different from number in source.
+
+
+
+**************************************************************************************************************
+                               INFORMATION AND WARNINGS
+**************************************************************************************************************
+
+
+                  Matched    Matched    Unmatched    Unmatched    Component
+                   Layout     Source       Layout       Source    Type
+                  -------    -------    ---------    ---------    ---------
+   Ports:               5          5            0            0
+
+   Nets:               11         11            0            0
+
+   Instances:           6          6            0            0    MN(nfet)
+                        6          6            0            0    MP(pfet)
+                        1          1            0            0    C(ncap)
+                        1          1            0            0    R(opppcres)
+                  -------    -------    ---------    ---------
+   Total Inst:         14         14            0            0
+
+
+o Statistics:
+
+   1 layout instance was filtered and its pins removed from adjoining nets.
+
+   198 layout mos transistors were reduced to 11.
+     187 mos transistors were deleted by parallel reduction.
+
+   2 series layout resistors were reduced to 1.  1 connecting net was deleted.
+
+
+o Initial Correspondence Points:
+
+   Ports:        VDD VSS VINn VINp VOUT
+
+
+**************************************************************************************************************
+                                         SUMMARY
+**************************************************************************************************************
+
+Total CPU Time:      1 sec
+Total Elapsed Time:  1 sec

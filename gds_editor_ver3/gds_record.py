@@ -1,8 +1,8 @@
-from gds_editor_ver3 import gds_tags
+from KJH91_Projects.gds_editor_ver3 import gds_tags
 import struct
 import math
 from datetime import datetime, MINYEAR
-from gds_editor_ver3 import user_define_exceptions
+from KJH91_Projects.gds_editor_ver3 import user_define_exceptions
 import warnings
 class GDS_HEADER():
     def __init__(self, tag=gds_tags.DICT['HEADER'], gds_data=None):

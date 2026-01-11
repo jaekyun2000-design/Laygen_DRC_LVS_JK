@@ -1,0 +1,12 @@
+iteration 1-1
+RL_Width: 2500
+RL_Length: None
+W1_num_finger: None
+W1_finger_width: 666.6666666666666
+W2_num_finger: None
+W2_finger_width: 800.0
+RS_Width: None
+RS_Length: None
+CS_Width: None
+CS_Length: None
+

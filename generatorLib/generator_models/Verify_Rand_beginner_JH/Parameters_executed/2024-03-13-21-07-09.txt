@@ -1,0 +1,320 @@
+iteration 1-1
+n_gate: 12
+n_width: 590
+n_length: 90
+p_gate: 106
+p_width: 980
+p_length: 70
+supply_coy: 4
+
+iteration 1-2
+n_gate: 86
+n_width: 870
+n_length: 60
+p_gate: 6
+p_width: 710
+p_length: 40
+supply_coy: 3
+
+iteration 1-3
+n_gate: 152
+n_width: 810
+n_length: 80
+p_gate: 83
+p_width: 1030
+p_length: 90
+supply_coy: 4
+
+iteration 1-4
+n_gate: 65
+n_width: 510
+n_length: 30
+p_gate: 125
+p_width: 910
+p_length: 90
+supply_coy: 3
+
+iteration 1-5
+n_gate: 81
+n_width: 1120
+n_length: 50
+p_gate: 74
+p_width: 1130
+p_length: 80
+supply_coy: 3
+
+#1
+DC center = 0.54V
+t_rise = 2.5ps
+t_fall = 8.9ps
+t_prop_h2l = 5.1ps
+t_prop_l2h = 13.3ps
+
+#2
+DC center = 0.27V
+t_rise = 23.4ps
+t_fall = 1.9ps
+t_prop_h2l = 27.0ps
+t_prop_l2h = 1.9ps
+
+#3
+DC center = 0.37V
+t_rise = 4.7ps
+t_fall = 2.0ps
+t_prop_h2l = 8.6ps
+t_prop_l2h = 3.2ps
+
+#4
+DC center = 0.45V
+t_rise = 3.0ps
+t_fall = 2.5ps
+t_prop_h2l = 5.9ps
+t_prop_l2h = 4.8ps
+
+#5
+DC center = 0.38V
+t_rise = 3.8ps
+t_fall = 1.9ps
+t_prop_h2l = 6.9ps
+t_prop_l2h = 2.7ps
+
+iteration 2-1
+n_gate: 17
+n_width: 1020
+n_length: 60
+p_gate: 176
+p_width: 1010
+p_length: 40
+supply_coy: 2
+
+iteration 2-2
+n_gate: 149
+n_width: 820
+n_length: 70
+p_gate: 58
+p_width: 890
+p_length: 70
+supply_coy: 2
+
+iteration 2-3
+n_gate: 126
+n_width: 860
+n_length: 30
+p_gate: 194
+p_width: 850
+p_length: 50
+supply_coy: 3
+
+iteration 2-4
+n_gate: 82
+n_width: 600
+n_length: 80
+p_gate: 117
+p_width: 890
+p_length: 60
+supply_coy: 4
+
+iteration 2-5
+n_gate: 49
+n_width: 960
+n_length: 90
+p_gate: 15
+p_width: 930
+p_length: 40
+supply_coy: 1
+
+#1
+DC center = 0.55V
+t_rise = 2.5ps
+t_fall = 5.3ps
+t_prop_h2l = 3.6ps
+t_prop_l2h = 8.3ps
+
+#2
+DC center = 0.35V
+t_rise = 5.6ps
+t_fall = 1.9ps
+t_prop_h2l = 9.4ps
+t_prop_l2h = 2.6ps
+
+#3
+DC center = 0.42V
+t_rise = 2.9ps
+t_fall = 2.3ps
+t_prop_h2l = 5.1ps
+t_prop_l2h = 3.0ps
+
+#4
+DC center = 0.44V
+t_rise = 2.7ps
+t_fall = 2.5ps
+t_prop_h2l = 5.5ps
+t_prop_l2h = 4.4ps
+
+#5
+DC center = 0.36V
+t_rise = 6.0ps
+t_fall = 2.3ps
+t_prop_h2l = 9.4ps
+t_prop_l2h = 2.8ps
+
+iteration 3-1
+n_gate: 167
+n_width: 830
+n_length: 30
+p_gate: 139
+p_width: 1080
+p_length: 90
+supply_coy: 2
+
+iteration 3-2
+n_gate: 74
+n_width: 1100
+n_length: 60
+p_gate: 5
+p_width: 960
+p_length: 50
+supply_coy: 3
+
+iteration 3-3
+n_gate: 171
+n_width: 550
+n_length: 80
+p_gate: 179
+p_width: 940
+p_length: 90
+supply_coy: 4
+
+iteration 3-4
+n_gate: 131
+n_width: 520
+n_length: 40
+p_gate: 93
+p_width: 1010
+p_length: 70
+supply_coy: 3
+
+iteration 3-5
+n_gate: 170
+n_width: 940
+n_length: 60
+p_gate: 22
+p_width: 970
+p_length: 50
+supply_coy: 1
+
+#1
+DC center = 0.38V
+t_rise = 3.6ps
+t_fall = 1.8ps
+t_prop_h2l = 6.8ps
+t_prop_l2h = 2.7ps
+
+#2
+DC center = 0.26V
+t_rise = 25.5ps
+t_fall = 1.9ps
+t_prop_h2l = 29.6ps
+t_prop_l2h = 1.8ps
+
+#3
+DC center = 0.42V
+t_rise = 3.2ps
+t_fall = 2.2ps
+t_prop_h2l = 6.6ps
+t_prop_l2h = 4.5ps
+
+#4
+DC center = 0.41V
+t_rise = 3.1ps
+t_fall = 2.0ps
+t_prop_h2l = 6.0ps
+t_prop_l2h = 3.0ps
+
+#5
+DC center = 0.30V
+t_rise = 11.3ps
+t_fall = 1.8ps
+t_prop_h2l = 15.3ps
+t_prop_l2h = 1.9ps
+
+iteration 4-1
+n_gate: 142
+n_width: 500
+n_length: 40
+p_gate: 47
+p_width: 780
+p_length: 30
+supply_coy: 4
+
+iteration 4-2
+n_gate: 196
+n_width: 700
+n_length: 60
+p_gate: 40
+p_width: 990
+p_length: 70
+supply_coy: 4
+
+iteration 4-3
+n_gate: 179
+n_width: 590
+n_length: 70
+p_gate: 52
+p_width: 790
+p_length: 30
+supply_coy: 3
+
+iteration 4-4
+n_gate: 53
+n_width: 550
+n_length: 70
+p_gate: 179
+p_width: 530
+p_length: 90
+supply_coy: 3
+
+iteration 4-5
+n_gate: 136
+n_width: 680
+n_length: 60
+p_gate: 68
+p_width: 1170
+p_length: 60
+supply_coy: 4
+
+#1
+DC center = 0.40V
+t_rise = 3.6ps
+t_fall = 2.0ps
+t_prop_h2l = 5.6ps
+t_prop_l2h = 2.1ps
+
+#2
+DC center = 0.33V
+t_rise = 7.5ps
+t_fall = 1.9ps
+t_prop_h2l = 11.4ps
+t_prop_l2h = 2.3ps
+
+#3
+DC center = 0.39V
+t_rise = 3.9ps
+t_fall = 2.1ps
+t_prop_h2l = 6.9ps
+t_prop_l2h = 2.4ps
+
+#4
+DC center = 0.45V
+t_rise = 3.0ps
+t_fall = 2.8ps
+t_prop_h2l = 6.2ps
+t_prop_l2h = 5.9ps
+
+#5
+DC center = 0.39V
+t_rise = 3.4ps
+t_fall = 2.0ps
+t_prop_h2l = 6.6ps
+t_prop_l2h = 2.8ps
+

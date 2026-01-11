@@ -1,0 +1,180 @@
+iteration 1-1
+RL_Width: 2550
+RL_Length: 1880
+W1_num_finger: 6
+W1_finger_width: 660
+W2_num_finger: 18
+W2_finger_width: 870
+RS_Width: 996
+RS_Length: 2082
+CS_Width: 4174
+CS_Length: 2642
+
+iteration 1-2
+RL_Width: 2530
+RL_Length: 1870
+W1_num_finger: 14
+W1_finger_width: 690
+W2_num_finger: 18
+W2_finger_width: 830
+RS_Width: 1118
+RS_Length: 1996
+CS_Width: 3894
+CS_Length: 2712
+
+iteration 1-3
+RL_Width: 2560
+RL_Length: 1850
+W1_num_finger: 15
+W1_finger_width: 670
+W2_num_finger: 13
+W2_finger_width: 840
+RS_Width: 1014
+RS_Length: 2722
+CS_Width: 4174
+CS_Length: 7142
+
+iteration 1-4
+RL_Width: 2550
+RL_Length: 1820
+W1_num_finger: 8
+W1_finger_width: 670
+W2_num_finger: 12
+W2_finger_width: 880
+RS_Width: 404
+RS_Length: 1560
+CS_Width: 3334
+CS_Length: 4494
+
+iteration 1-5
+RL_Width: 2540
+RL_Length: 1850
+W1_num_finger: 3
+W1_finger_width: 670
+W2_num_finger: 4
+W2_finger_width: 860
+RS_Width: 1854
+RS_Length: 2154
+CS_Width: 3054
+CS_Length: 6310
+
+iteration 1-6
+RL_Width: 2560
+RL_Length: 1890
+W1_num_finger: 11
+W1_finger_width: 690
+W2_num_finger: 7
+W2_finger_width: 890
+RS_Width: 472
+RS_Length: 1452
+CS_Width: 3054
+CS_Length: 6458
+
+iteration 1-7
+RL_Width: 2520
+RL_Length: 1860
+W1_num_finger: 11
+W1_finger_width: 670
+W2_num_finger: 4
+W2_finger_width: 820
+RS_Width: 918
+RS_Length: 836
+CS_Width: 3334
+CS_Length: 6878
+
+iteration 1-8
+RL_Width: 2510
+RL_Length: 1810
+W1_num_finger: 12
+W1_finger_width: 670
+W2_num_finger: 7
+W2_finger_width: 830
+RS_Width: 802
+RS_Length: 470
+CS_Width: 2774
+CS_Length: 5762
+
+iteration 1-9
+RL_Width: 2570
+RL_Length: 1860
+W1_num_finger: 15
+W1_finger_width: 680
+W2_num_finger: 4
+W2_finger_width: 890
+RS_Width: 960
+RS_Length: 1224
+CS_Width: 3614
+CS_Length: 3080
+
+iteration 1-10
+RL_Width: 2510
+RL_Length: 1840
+W1_num_finger: 5
+W1_finger_width: 660
+W2_num_finger: 12
+W2_finger_width: 830
+RS_Width: 956
+RS_Length: 2798
+CS_Width: 3334
+CS_Length: 2508
+
+#1
+Peak Gain = -9.40847
+DC Gain = -9.42971
+Peak Frequency = 4.7G Hz
+Peak Frequency (dB scale) = 9.67 dB
+
+#2
+Peak Gain = -13.28844
+DC Gain = -13.28844
+Peak Frequency = 1.0 Hz
+Peak Frequency (dB scale) = 0.00 dB
+
+#3
+Peak Gain = -16.90003
+DC Gain = -22.65499
+Peak Frequency = 3.5G Hz
+Peak Frequency (dB scale) = 9.54 dB
+
+#4
+Peak Gain = -6.96647
+DC Gain = -6.96649
+Peak Frequency = 9.5M Hz
+Peak Frequency (dB scale) = 6.98 dB
+
+#5
+Peak Gain = -68.10994
+DC Gain = -75.34008
+Peak Frequency = 1.0T Hz
+Peak Frequency (dB scale) = 12.00 dB
+
+#6
+Peak Gain = -12.94119
+DC Gain = -12.94119
+Peak Frequency = 11.7M Hz
+Peak Frequency (dB scale) = 7.07 dB
+
+#7
+Peak Gain = -58.54031
+DC Gain = -66.55804
+Peak Frequency = 1.0T Hz
+Peak Frequency (dB scale) = 12.00 dB
+
+#8
+Peak Gain = -11.95439
+DC Gain = -11.95439
+Peak Frequency = 1.0 Hz
+Peak Frequency (dB scale) = 0.00 dB
+
+#9
+Peak Gain = -68.40433
+DC Gain = -68.40433
+Peak Frequency = 89.1M Hz
+Peak Frequency (dB scale) = 7.95 dB
+
+#10
+Peak Gain = -13.44625
+DC Gain = -13.44625
+Peak Frequency = 1.0 Hz
+Peak Frequency (dB scale) = 0.00 dB
+

@@ -1,0 +1,10 @@
+iteration 1-1
+finger_N1: 3
+finger_N2: 12
+finger_P1: 2
+finger_P5: 13
+finger_N5: 3
+finger_N4: 8
+finger_P3: 1
+finger_P4: 9
+

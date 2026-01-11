@@ -1,8 +1,11 @@
 import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from PyQTInterface import undo_frame
 dir_check=os.getcwd()
 if 'PyQTInterface' in dir_check:
     os.chdir('..')
+
 
 import tracemalloc
 snapshot = None

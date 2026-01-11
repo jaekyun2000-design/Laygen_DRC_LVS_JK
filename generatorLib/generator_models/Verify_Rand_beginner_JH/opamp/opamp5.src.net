@@ -1,0 +1,39 @@
+************************************************************************
+* auCdl Netlist:
+* 
+* Library Name:  Laygen_AMP
+* Top Cell Name: opamp
+* View Name:     schematic
+* Netlisted on:  Sep 30 15:10:09 2025
+************************************************************************
+
+.INCLUDE /home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp/.resources/devices.cdl
+*.EQUATION
+*.SCALE METER
+*.MEGA
+.PARAM
+
+
+************************************************************************
+* Library Name: Laygen_AMP
+* Cell Name:    opamp
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT opamp VDD VINn VINp VOUT VSS
+*.PININFO VDD:B VINn:B VINp:B VOUT:B VSS:B
+MN1 net6 net1 VSS VSS nfet w=3.5000u l=0.0300u nf=5.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN5 VOUT net1 VSS VSS nfet w=2.1000u l=0.0300u nf=3.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN3 net2 VINp net6 VSS nfet w=1.4000u l=0.0300u nf=2.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN2 net5 VINn net6 VSS nfet w=1.4000u l=0.0300u nf=2.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN_Dummy VSS VSS VSS VSS nfet w=88.2000u l=0.0300u nf=126.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN4 net1 net1 VSS VSS nfet w=6.3000u l=0.0300u nf=9.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP1 net5 net5 VDD VDD pfet w=7.0000u l=0.0300u nf=10.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP4 net1 net1 net3 VDD pfet w=1.4000u l=0.0300u nf=2.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP2 net2 net5 VDD VDD pfet w=7.0000u l=0.0300u nf=10.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP_Dummy VDD VDD VDD VDD pfet w=71.4000u l=0.0300u nf=102.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP3 net3 net3 VDD VDD pfet w=10.5000u l=0.0300u nf=15.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP5 VOUT net2 VDD VDD pfet w=4.9000u l=0.0300u nf=7.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+CC2 net2 net4 $[ncap] $SUB=VSS l=2.0000u w=2.6000u nf=7.0000 nrep=1.0000
+RR1 VOUT net4 $SUB=VSS $[opppcres] r=3.039k w=1.0000u l=1.5000u pbar=1 s=2.0000 bp=3 ncr=1
+.ENDS

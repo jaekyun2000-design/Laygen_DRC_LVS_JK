@@ -1,0 +1,11 @@
+iteration 1-1
+finger_N1: 2
+finger_N2: 17
+finger_P1: 16
+finger_P5: 6
+finger_N5: 11
+finger_N4: 16
+finger_P4: 4
+L: 260
+finger_P3: 8
+

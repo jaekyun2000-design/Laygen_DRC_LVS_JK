@@ -1,0 +1,82 @@
+{
+    "RL_Width": {
+        "step": 10,
+        "value_range": [
+            200,
+            3000
+        ],
+        "offset_param": null
+    },
+    "RL_Length": {
+        "step": 10,
+        "value_range": [
+            600,
+            2000
+        ],
+        "offset_param": null
+    },
+    "W1_num_finger": {
+        "step": 1,
+        "value_range": [
+            3,
+            20
+        ],
+        "offset_param": null
+    },
+    "W1_finger_width": {
+        "step": 10,
+        "value_range": [
+            500,
+            1200
+        ],
+        "offset_param": null
+    },
+    "W2_num_finger": {
+        "step": 1,
+        "value_range": [
+            3,
+            20
+        ],
+        "offset_param": null
+    },
+    "W2_finger_width": {
+        "step": 10,
+        "value_range": [
+            500,
+            1200
+        ],
+        "offset_param": null
+    },
+    "RS_Width": {
+        "step": 10,
+        "value_range": [
+            200,
+            2000
+        ],
+        "offset_param": null
+    },
+    "RS_Length": {
+        "step": 10,
+        "value_range": [
+            600,
+            3000
+        ],
+        "offset_param": null
+    },
+    "CS_Width": {
+        "step": 280,
+        "value_range": [
+            2774,
+            4500
+        ],
+        "offset_param": null
+    },
+    "CS_Length": {
+        "step": 10,
+        "value_range": [
+            2200,
+            8500
+        ],
+        "offset_param": null
+    }
+}

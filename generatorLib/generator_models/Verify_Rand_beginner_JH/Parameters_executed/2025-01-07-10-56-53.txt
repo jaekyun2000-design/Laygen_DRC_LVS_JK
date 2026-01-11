@@ -1,0 +1,9 @@
+iteration 1-1
+n_gate: 5
+n_width: 530
+n_length: 40
+p_gate: 3
+p_width: 1180
+p_length: 70
+supply_coy: 2
+

@@ -1,0 +1,45 @@
+iteration 1-1
+n_gate: 1
+n_width: 1130
+n_length: 70
+p_gate: 8
+p_width: 610
+p_length: 50
+supply_coy: 1
+
+iteration 1-2
+n_gate: 2
+n_width: 1130
+n_length: 30
+p_gate: 9
+p_width: 1190
+p_length: 70
+supply_coy: 2
+
+iteration 1-3
+n_gate: 7
+n_width: 630
+n_length: 70
+p_gate: 3
+p_width: 1120
+p_length: 90
+supply_coy: 3
+
+iteration 1-4
+n_gate: 5
+n_width: 800
+n_length: 50
+p_gate: 6
+p_width: 640
+p_length: 60
+supply_coy: 4
+
+iteration 1-5
+n_gate: 3
+n_width: 930
+n_length: 30
+p_gate: 4
+p_width: 580
+p_length: 40
+supply_coy: 4
+

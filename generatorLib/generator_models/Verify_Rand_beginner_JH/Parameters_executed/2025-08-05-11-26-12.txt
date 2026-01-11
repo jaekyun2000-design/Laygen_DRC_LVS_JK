@@ -1,0 +1,16 @@
+iteration 1-1
+finger_N1: 12
+finger_N2: 5
+finger_P1: 12
+finger_P5: 2
+finger_N5: 16
+finger_N4: 10
+finger_P4: 8
+L: 40
+finger_P3: 17
+NumofGate_res_com: 9
+NumofRX_res_com: 3
+res_compensation_series: 4
+L_cap: 1400
+W_cap: 1900
+

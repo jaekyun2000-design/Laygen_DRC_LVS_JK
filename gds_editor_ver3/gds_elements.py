@@ -1,7 +1,7 @@
-from gds_editor_ver3 import user_define_exceptions
+from KJH91_Projects.gds_editor_ver3 import user_define_exceptions
 import struct
-from gds_editor_ver3 import gds_tags
-from gds_editor_ver3 import gds_record
+from KJH91_Projects.gds_editor_ver3 import gds_tags
+from KJH91_Projects.gds_editor_ver3 import gds_record
 
 class GDS_ELEMENT():
     def __init__(self,gds_data=None, _GDS_ELEMENT_NAME=None):

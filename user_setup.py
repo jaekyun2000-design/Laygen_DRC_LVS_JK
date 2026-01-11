@@ -15,9 +15,10 @@ AUTO_IMPORT = True
 CALCULATOR_MODE = 'Arithmetic'  # or 'Calculator'
 
 generator_model_path = './generatorLib/generator_models' # If none, default path will be set.
+# generator_model_path = './generatorLib/generator_models' # If none, default path will be set.
 # generator_model_path = './generatorLib/generator_models/rx_project' # If none, default path will be set.
 
-project_file_path = None # If none, default path will be set.
+project_file_path = './PyQTInterface/Project/tsmc28_tmp' # If none, default path will be set.
 # project_file_path = './PyQTInterface/Project/rx_project' # If none, default path will be set.
 
 #########################################################

@@ -1,0 +1,18 @@
+iteration 1-1
+RL_Width: 660
+RL_Length: 1000
+W1_num_finger: 16
+W1_finger_width: 1000
+W2_num_finger: 6
+W2_finger_width: 530
+RS_Width: 1010
+RS_Length: 1970
+CS_Width: 3614
+CS_Length: 6540
+
+#1
+Peak Gain = -15.53112
+DC Gain = -15.53112
+Peak Frequency = 1.0 Hz
+Peak Frequency (dB scale) = 0.00 dB
+

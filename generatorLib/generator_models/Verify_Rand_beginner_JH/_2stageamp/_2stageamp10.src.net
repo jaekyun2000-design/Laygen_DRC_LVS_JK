@@ -1,0 +1,40 @@
+************************************************************************
+* auCdl Netlist:
+* 
+* Library Name:  _2stageamp_10
+* Top Cell Name: _2stageamp
+* View Name:     schematic
+* Netlisted on:  Jan 08 09:43:37 2026
+************************************************************************
+
+.INCLUDE  /tools/PDK/ss28lpp_rf/Device/LNR28LPP_CDS_S00-V1.4.6.1/CDS/oa/cmos28lp/.il/devices.cdl
+*.EQUATION
+*.SCALE METER
+*.MEGA
+.PARAM
+
+
+
+************************************************************************
+* Library Name: 2satgeamp_10
+* Cell Name:    _2stageamp
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT _2stageamp VBN VBP VDD VINN VINP VOUT VSS
+*.PININFO VBN:B VBP:B VDD:B VINN:B VINP:B VOUT:B VSS:B
+MN11 VBP VBP VBN VSS egnfet w=16.0000u l=0.15u nf=4.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN9 VBN VBN VSS VSS egnfet w=12.0000u l=0.15u nf=3.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN0 net6 net6 VSS VSS egnfet w=70.0000u l=0.15u nf=5.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN1 VOUT1 net6 VSS VSS egnfet w=70.0000u l=0.15u nf=5.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN33 VOUT VOUT1 VSS VSS egnfet w=112.0000u l=0.15u nf=8.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+RR0 net10 VOUT1 $SUB=VSS $[opppcres] r=0.926k w=0.7000u l=0.5000u pbar=1 s=1 bp=3 ncr=1
+RR6 net10 VOUT1 $SUB=VSS $[opppcres] r=0.926k w=0.7000u l=0.5000u pbar=1 s=1 bp=3 ncr=1
+CC0 VOUT net10 $[hdvncap] $SUB=VSS l=9.0000u w=6.1500u botlev=17 toplev=31
+CC2 VOUT net10 $[hdvncap] $SUB=VSS l=9.0000u w=6.1500u botlev=17 toplev=31
+MP2 net38 VBP VDD VDD egpfet w=56.0000u l=0.15u nf=14.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP7 VBP VBP VDD VDD egpfet w=16.0000u l=0.15u nf=4.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP0 net6 VINN net38 VDD egpfet w=323.0000u l=0.15u nf=19.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP1 VOUT1 VINP net38 VDD egpfet w=323.0000u l=0.15u nf=19.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP14 VOUT VBP VDD VDD egpfet w=306.0000u l=0.15u nf=18.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+.ENDS

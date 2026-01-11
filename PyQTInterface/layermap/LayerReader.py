@@ -66,6 +66,13 @@ def run_for_process_update():
         # _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
         _LayDatNameTmp = _ExtendLayDatNum2LayDatName(_ExtendLayerMappingTmp)
         _LayerNum2CommonName = _LayerNumber2CommonLayerName(_LayerMappingTmp)
+    elif _Technology == 'TSMC28nm':
+        _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/TSMC28nm/tsmcN28.layermap')
+        _LayerMappingTmp, _ExtendLayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
+        _LayerNameTmp = _LayerNumber2LayerName(_LayerMappingTmp)
+        # _LayDatNameTmp = _LayDatNum2LayDatName(_LayerMappingTmp)
+        _LayDatNameTmp = _ExtendLayDatNum2LayDatName(_ExtendLayerMappingTmp)
+        _LayerNum2CommonName = _LayerNumber2CommonLayerName(_LayerMappingTmp)
     elif _Technology == 'TSMC45nm':
         _LayerMapFile = open(_HomeDirectory + '/PyQTInterface/layermap/TSMC45nm/tsmcN45.layermap')
         _LayerMappingTmp, _ExtendLayerMappingTmp = _ReadLayerMapFile(_LayerMapFile, 'VIRTUOSO')
@@ -116,6 +123,8 @@ def run_for_process_update():
         _LayerMapping.update({'PIMP': _LayerMappingTmp[('PIMP', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'PIMP': _LayerMappingTmp[('PIMP', 'drawing')]})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'PIMP': _LayerMappingTmp[('PP', 'drawing')]})
 
     
     if _Technology == 'TSMC180nm':
@@ -135,8 +144,8 @@ def run_for_process_update():
         _LayerMapping.update({'PDK': (None, None)})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'PDK': (None, None)})
-
-    
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'PDK': _LayerMappingTmp[('PDK', 'drawing')]})
 
     if _Technology == 'TSMC180nm':
         _LayerMapping.update({'NIMP': _LayerMappingTmp[('NIMP', 'drawing')]})
@@ -144,6 +153,8 @@ def run_for_process_update():
         # _DataType = _LayerMappingTmp[('NIMP', 'drawing')][1]
     elif _Technology == 'SS28nm':
         _LayerMapping.update({'NIMP': (None, None)})
+    elif _Technology == 'SS65nm':
+        _LayerMapping.update({'NIMP': _LayerMappingTmp[('NPLUS', 'drawing')]})
     elif _Technology == 'TSMC65nm':
         _LayerMapping.update({'NIMP': _LayerMappingTmp[('NP', 'drawing')]})
         # _Layernumber = _LayerMappingTmp[('NP', 'drawing')][0]
@@ -156,8 +167,8 @@ def run_for_process_update():
         _LayerMapping.update({'NIMP': _LayerMappingTmp[('NIMP', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'NIMP': _LayerMappingTmp[('NIMP', 'drawing')]})
-
-    
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'NIMP': _LayerMappingTmp[('NP', 'drawing')]})
 
     if _Technology == 'TSMC180nm':
         _LayerMapping.update({'DIFF': _LayerMappingTmp[('DIFF', 'drawing')]})
@@ -166,6 +177,8 @@ def run_for_process_update():
     elif _Technology == 'SS28nm':
         _LayerMapping.update({'DIFF': _LayerMappingTmp[('RX', 'drawing')]})
         _LayerMapping.update({'DIFFPINDrawing': _LayerMappingTmp[('RX', 'pin')]})
+    elif _Technology == 'SS65nm':
+        _LayerMapping.update({'DIFF': _LayerMappingTmp[('ACTIVE', 'drawing')]})
     elif _Technology == 'TSMC65nm':
         _LayerMapping.update({'DIFF': _LayerMappingTmp[('OD', 'drawing')]})
         # _Layernumber = layermapping[('OD', 'drawing')][0]
@@ -178,7 +191,8 @@ def run_for_process_update():
         _LayerMapping.update({'DIFF': _LayerMappingTmp[('OD', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'DIFF': _LayerMappingTmp[('DIFF', 'drawing')]})
-    
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'DIFF': _LayerMappingTmp[('OD', 'drawing')]})
 
     if _Technology == 'TSMC180nm':
         _LayerMapping.update({'CONT': _LayerMappingTmp[('CONT', 'drawing')]})
@@ -186,6 +200,8 @@ def run_for_process_update():
         # _DataType = layermapping[('CONT', 'drawing')][1]
     elif _Technology == 'SS28nm':
         _LayerMapping.update({'CONT': _LayerMappingTmp[('CA', 'drawing')]})
+    elif _Technology == 'SS65nm':
+        _LayerMapping.update({'CONT': _LayerMappingTmp[('CNT', 'drawing')]})
     elif _Technology == 'TSMC65nm':
         _LayerMapping.update({'CONT': _LayerMappingTmp[('CO', 'drawing')]})
         # _Layernumber = layermapping[('CO', 'drawing')][0]
@@ -198,7 +214,8 @@ def run_for_process_update():
         _LayerMapping.update({'CONT': _LayerMappingTmp[('CONT', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'CONT': _LayerMappingTmp[('CONT', 'drawing')]})
-
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'CONT': _LayerMappingTmp[('CO', 'drawing')]})
     
 
     if _Technology == 'SS28nm':
@@ -228,7 +245,8 @@ def run_for_process_update():
         _LayerMapping.update({'METAL1': _LayerMappingTmp[('METAL1', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL1': _LayerMappingTmp[('METAL1', 'drawing')]})
-
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL1': _LayerMappingTmp[('M1', 'drawing')]})
     
     if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL1PIN': _LayerMappingTmp[('METAL1', 'pin')]})
@@ -249,8 +267,8 @@ def run_for_process_update():
         _LayerMapping.update({'METAL1PIN': _LayerMappingTmp[('METAL1', 'pin')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL1PIN': _LayerMappingTmp[('METAL1', 'pin')]})
-
-    
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL1PIN': _LayerMappingTmp[('M1', 'pin')]})
 
     if _Technology == 'TSMC180nm':
         _LayerMapping.update({'VIA12': _LayerMappingTmp[('VIA12', 'drawing')]})
@@ -270,7 +288,8 @@ def run_for_process_update():
         _LayerMapping.update({'VIA12': _LayerMappingTmp[('VIA12', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'VIA12': _LayerMappingTmp[('VIA12', 'drawing')]})
-
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'VIA12': _LayerMappingTmp[('VIA1', 'drawing')]})
     
 
     if _Technology == 'TSMC180nm':
@@ -291,8 +310,8 @@ def run_for_process_update():
         _LayerMapping.update({'VIA23': _LayerMappingTmp[('VIA23', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'VIA23': _LayerMappingTmp[('VIA23', 'drawing')]})
-
-    
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'VIA23': _LayerMappingTmp[('VIA2', 'drawing')]})
 
     if _Technology == 'TSMC180nm':
         _LayerMapping.update({'VIA34': _LayerMappingTmp[('VIA34', 'drawing')]})
@@ -319,8 +338,9 @@ def run_for_process_update():
         _LayerMapping.update({'VIA34': _LayerMappingTmp[('VIA34', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'VIA34': _LayerMappingTmp[('VIA34', 'drawing')]})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'VIA34': _LayerMappingTmp[('VIA3', 'drawing')]})
 
-    
 
     if _Technology == 'TSMC180nm':
         _LayerMapping.update({'VIA45': _LayerMappingTmp[('VIA45', 'drawing')]})
@@ -347,6 +367,8 @@ def run_for_process_update():
         _LayerMapping.update({'VIA45': _LayerMappingTmp[('VIA45', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'VIA45': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'VIA45': _LayerMappingTmp[('VIA4', 'drawing')]})
 
     
 
@@ -375,6 +397,8 @@ def run_for_process_update():
         _LayerMapping.update({'VIA56': _LayerMappingTmp[('VIA56', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'VIA56': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'VIA56': _LayerMappingTmp[('VIA5', 'drawing')]})
 
     
 
@@ -403,6 +427,8 @@ def run_for_process_update():
         _LayerMapping.update({'VIA67': _LayerMappingTmp[('VIA67', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'VIA67': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'VIA67': _LayerMappingTmp[('VIA6', 'drawing')]})
 
     
 
@@ -431,6 +457,9 @@ def run_for_process_update():
         _LayerMapping.update({'VIA78': _LayerMappingTmp[('VIA78', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'VIA78': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'VIA78': _LayerMappingTmp[('VIA7', 'drawing')]})
+
 
     
 
@@ -459,6 +488,8 @@ def run_for_process_update():
         _LayerMapping.update({'VIA89': _LayerMappingTmp[('VIA89', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'VIA89': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'VIA89': _LayerMappingTmp[('VIA8', 'drawing')]})
 
     
     if _Technology == 'TSMC180nm':
@@ -479,6 +510,8 @@ def run_for_process_update():
         _LayerMapping.update({'METAL2': _LayerMappingTmp[('METAL2', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL2': _LayerMappingTmp[('METAL2', 'drawing')]})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL2': _LayerMappingTmp[('M2', 'drawing')]})
 
     
     if _Technology == 'TSMC180nm':
@@ -499,6 +532,8 @@ def run_for_process_update():
         _LayerMapping.update({'METAL2PIN': _LayerMappingTmp[('METAL2', 'pin')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL2PIN': _LayerMappingTmp[('METAL2', 'pin')]})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL2PIN': _LayerMappingTmp[('M2', 'pin')]})
 
     
     if _Technology == 'TSMC180nm':
@@ -519,6 +554,8 @@ def run_for_process_update():
         _LayerMapping.update({'METAL3': _LayerMappingTmp[('METAL3', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL3': _LayerMappingTmp[('METAL3', 'drawing')]})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL3': _LayerMappingTmp[('M3', 'drawing')]})
 
     
     if _Technology == 'TSMC180nm':
@@ -539,6 +576,8 @@ def run_for_process_update():
         _LayerMapping.update({'METAL3PIN': _LayerMappingTmp[('METAL3', 'pin')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL3PIN': _LayerMappingTmp[('METAL3', 'pin')]})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL3PIN': _LayerMappingTmp[('M3', 'pin')]})
     
     if _Technology == 'TSMC180nm':
         _LayerMapping.update({'METAL4': _LayerMappingTmp[('METAL4', 'drawing')]})
@@ -558,6 +597,8 @@ def run_for_process_update():
         _LayerMapping.update({'METAL4': _LayerMappingTmp[('METAL4', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL4': _LayerMappingTmp[('METAL4', 'drawing')]})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL4': _LayerMappingTmp[('M4', 'drawing')]})
 
     
     if _Technology == 'TSMC180nm':
@@ -578,6 +619,9 @@ def run_for_process_update():
         _LayerMapping.update({'METAL4PIN': _LayerMappingTmp[('METAL4', 'pin')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL4PIN': _LayerMappingTmp[('METAL4', 'pin')]})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL4PIN': _LayerMappingTmp[('M4', 'pin')]})
+
 
     
     if _Technology == 'TSMC180nm':
@@ -598,6 +642,9 @@ def run_for_process_update():
         _LayerMapping.update({'METAL5': _LayerMappingTmp[('METAL5', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL5': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL5': _LayerMappingTmp[('M5', 'drawing')]})
+
 
     
     if _Technology == 'TSMC180nm':
@@ -618,6 +665,9 @@ def run_for_process_update():
         _LayerMapping.update({'METAL5PIN': _LayerMappingTmp[('METAL5', 'pin')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL5PIN': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL5PIN': _LayerMappingTmp[('M5', 'pin')]})
+
 
     
     if _Technology == 'TSMC180nm':
@@ -638,6 +688,9 @@ def run_for_process_update():
         _LayerMapping.update({'METAL6': _LayerMappingTmp[('METAL6', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL6': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL6': _LayerMappingTmp[('M6', 'drawing')]})
+
 
     
     if _Technology == 'TSMC180nm':
@@ -658,6 +711,8 @@ def run_for_process_update():
         _LayerMapping.update({'METAL6PIN': _LayerMappingTmp[('METAL6', 'pin')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL6PIN': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL6PIN': _LayerMappingTmp[('M6', 'pin')]})
 
     
     if _Technology == 'TSMC180nm':
@@ -678,6 +733,8 @@ def run_for_process_update():
         _LayerMapping.update({'METAL7': _LayerMappingTmp[('METAL7', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL7': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL7': _LayerMappingTmp[('M7', 'drawing')]})
 
     
     if _Technology == 'TSMC180nm':
@@ -698,6 +755,8 @@ def run_for_process_update():
         _LayerMapping.update({'METAL7PIN': _LayerMappingTmp[('METAL7', 'pin')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL7PIN': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL7PIN': _LayerMappingTmp[('M7', 'pin')]})
 
     
     if _Technology == 'TSMC180nm':
@@ -718,6 +777,9 @@ def run_for_process_update():
         _LayerMapping.update({'METAL8': _LayerMappingTmp[('METAL8', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL8': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL8': _LayerMappingTmp[('M8', 'drawing')]})
+
 
     
     if _Technology == 'TSMC180nm':
@@ -738,6 +800,8 @@ def run_for_process_update():
         _LayerMapping.update({'METAL8PIN': _LayerMappingTmp[('METAL8', 'pin')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL8PIN': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL8PIN': _LayerMappingTmp[('M8', 'pin')]})
 
     
     if _Technology == 'TSMC180nm':
@@ -758,6 +822,8 @@ def run_for_process_update():
         _LayerMapping.update({'METAL9': _LayerMappingTmp[('METAL9', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL9': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL9': _LayerMappingTmp[('M9', 'drawing')]})
 
     
     if _Technology == 'TSMC180nm':
@@ -778,6 +844,9 @@ def run_for_process_update():
         _LayerMapping.update({'METAL9PIN': _LayerMappingTmp[('METAL9', 'pin')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'METAL9PIN': None})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'METAL9PIN': _LayerMappingTmp[('M9', 'pin')]})
+
 
     
     if _Technology == 'TSMC180nm':
@@ -794,6 +863,8 @@ def run_for_process_update():
         _LayerMapping.update({'WELLBODY': (None, None)})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'WELLBODY': _LayerMappingTmp[('WELLBODY', 'drawing')]})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'WELLBODY': (None, None)})
 
     # print 'WELLBODY boundary generation'
     #         # _xycoordinatetmp = [[0, 0], [0, 100], [100, 100], [100, 0], [0, 0]]
@@ -821,7 +892,11 @@ def run_for_process_update():
         _LayerMapping.update({'POLY': _LayerMappingTmp[('POLYG', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'POLY': _LayerMappingTmp[('POLY1', 'drawing')]})
-    
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'POLY': _LayerMappingTmp[('PO', 'drawing')]})
+
+    if _Technology == 'TSMC28nm':
+        _LayerMapping.update({'POLYDUMMY': _LayerMappingTmp[('PO', 'dummy1')]})
 
     if _Technology == 'TSMC180nm':
         _LayerMapping.update({'NWELL': _LayerMappingTmp[('NWELL', 'drawing')]})
@@ -843,6 +918,8 @@ def run_for_process_update():
         _LayerMapping.update({'NWELL': _LayerMappingTmp[('NWELL', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'NWELL': _LayerMappingTmp[('NWELL', 'drawing')]})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'NWELL': _LayerMappingTmp[('NW', 'drawing')]})
 
     
 
@@ -866,6 +943,8 @@ def run_for_process_update():
         _LayerMapping.update({'N3V': (None, None)})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'N3V': _LayerMappingTmp[('N3V', 'drawing')]})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'N3V': (None, None)})
 
     
 
@@ -889,6 +968,8 @@ def run_for_process_update():
         _LayerMapping.update({'RPDMY': _LayerMappingTmp[('RPDMY', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'RPDMY': _LayerMappingTmp[('RPDUMMY', 'drawing')]})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'RPDMY': _LayerMappingTmp[('RPDMY', 'drawing')]})
     
 
     if _Technology == 'TSMC180nm':
@@ -911,6 +992,9 @@ def run_for_process_update():
         _LayerMapping.update({'RPO': _LayerMappingTmp[('RPO', 'drawing')]})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'RPO': _LayerMappingTmp[('RPO', 'drawing')]})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'RPO': _LayerMappingTmp[('RPO', 'drawing')]})
+
 
     
 
@@ -934,8 +1018,46 @@ def run_for_process_update():
         _LayerMapping.update({'RH': (None, None)})
     elif _Technology == 'TSMC350nm':
         _LayerMapping.update({'RH': (None, None)})
+    elif _Technology == 'TSMC28nm':
+        _LayerMapping.update({'RH': _LayerMappingTmp[('RH', 'drawing')]})
 
-    
+    if _Technology == 'TSMC28nm':
+        _LayerMapping.update({'PM':_LayerMappingTmp[('PM', 'drawing1')]})
+
+    if _Technology == 'TSMC28nm':
+        _LayerMapping.update({'LVT': (None, None)})
+        _LayerMapping.update({'NLVT': _LayerMappingTmp[('VTL_N', 'drawing')]})
+        _LayerMapping.update({'PLVT': _LayerMappingTmp[('VTL_P', 'drawing')]})
+
+    if _Technology == 'TSMC28nm':
+        _LayerMapping.update({'HVT': (None, None)})
+        _LayerMapping.update({'NHVT': _LayerMappingTmp[('VTH_N', 'drawing')]})
+        _LayerMapping.update({'PHVT': _LayerMappingTmp[('VTH_P', 'drawing')]})
+    if _Technology == 'TSMC28nm':
+        _LayerMapping.update({'SLVT': (None, None)})
+        _LayerMapping.update({'NSLVT': _LayerMappingTmp[('VTUL_N', 'drawing')]})
+        _LayerMapping.update({'PSLVT': _LayerMappingTmp[('VTUL_P', 'drawing')]})
+        _LayerMapping.update({'NLVT': _LayerMappingTmp[('VTL_N', 'drawing')]})
+        _LayerMapping.update({'PLVT': _LayerMappingTmp[('VTL_P', 'drawing')]})
+        _LayerMapping.update({'NHVT': _LayerMappingTmp[('VTH_N', 'drawing')]})
+        _LayerMapping.update({'PHVT': _LayerMappingTmp[('VTH_P', 'drawing')]})
+        _LayerMapping.update({'NSHVT': _LayerMappingTmp[('UHVT_N', 'drawing')]})
+        _LayerMapping.update({'PSHVT': _LayerMappingTmp[('UHVT_P', 'drawing')]})
+    if _Technology == 'TSMC28nm':
+        _LayerMapping.update({'RVT': (None, None)})
+    if _Technology == 'TSMC28nm':
+        _LayerMapping.update({'RXPIN': _LayerMappingTmp[('OD', 'pin')]})
+    if _Technology == 'TSMC28nm':
+        _LayerMapping.update({'PCPIN': _LayerMappingTmp[('PO', 'pin')]})
+    if _Technology == 'TSMC28nm':
+        _LayerMapping.update({'PCCRIT': (None, None)})
+    if _Technology == 'TSMC28nm':
+        _LayerMapping.update({'M1PIN': _LayerMappingTmp[('M1', 'pin')]})
+
+
+
+
+
 
     if _Technology == 'TSMC65nm':
         _LayerMapping.update({'NLVT': _LayerMappingTmp[('VTL_N', 'drawing')]})
@@ -967,6 +1089,56 @@ def run_for_process_update():
 
     if _Technology == 'SS28nm':
         _LayerMapping.update({'LVS': _LayerMappingTmp[('LVS', 'drawing')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS1': _LayerMappingTmp[('LVS', 'drawing1')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS2': _LayerMappingTmp[('LVS', 'drawing2')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS3': _LayerMappingTmp[('LVS', 'drawing3')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS4': _LayerMappingTmp[('LVS', 'drawing4')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS5': _LayerMappingTmp[('LVS', 'drawing5')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS6': _LayerMappingTmp[('LVS', 'drawing6')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS7': _LayerMappingTmp[('LVS', 'drawing7')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS8': _LayerMappingTmp[('LVS', 'drawing8')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS9': _LayerMappingTmp[('LVS', 'drawing9')]})
+
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS10': _LayerMappingTmp[('LVS1', 'drawing')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS11': _LayerMappingTmp[('LVS1', 'drawing1')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS12': _LayerMappingTmp[('LVS1', 'drawing2')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS13': _LayerMappingTmp[('LVS1', 'drawing3')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS14': _LayerMappingTmp[('LVS1', 'drawing4')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS15': _LayerMappingTmp[('LVS1', 'drawing5')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS16': _LayerMappingTmp[('LVS1', 'drawing6')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS17': _LayerMappingTmp[('LVS1', 'drawing7')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS18': _LayerMappingTmp[('LVS1', 'drawing8')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS19': _LayerMappingTmp[('LVS1', 'drawing9')]})
+
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS20': _LayerMappingTmp[('LVS2', 'drawing')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS21': _LayerMappingTmp[('LVS2', 'drawing1')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS22': _LayerMappingTmp[('LVS2', 'drawing2')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS23': _LayerMappingTmp[('LVS2', 'drawing3')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS24': _LayerMappingTmp[('LVS2', 'drawing4')]})
 
     if _Technology == 'SS28nm':
         _LayerMapping.update({'M1PIN': _LayerMappingTmp[('M1', 'pin')]})

@@ -1,0 +1,698 @@
+#*****************************************************************************
+# TSMC Layout Editor Layer Mapping File - virtuoso_018um_v28a.map, 07/21/2009
+# For TSMC 0.18UM CMOS LOGIC/MS/RF AND 0.16UM CMOS LOGIC/MS 1P6M PROCESS 
+#         (CL018G/LV/LP, CM018, CR018, CL016G, CM016)
+# Technology File Document: T-018-LO-LE-004 Ver 2.8a 
+# Design Rule Document:     T-018-LO-DR-001 v2.8
+#*****************************************************************************
+# DISCLAIMER
+#
+# The information contained herein is provided by TSMC on an "AS IS" basis
+# without any warranty, and TSMC has no obligation to support or otherwise
+# maintain the information.  TSMC disclaims any representation that the
+# information does not infringe any intellectual property rights or proprietary
+# rights of any third parties.  There are no other warranties given by TSMC,
+# whether express, implied or statutory, including, without limitation, implied
+# warranties of merchantability and fitness for a particular purpose.
+#
+# STATEMENT OF USE
+#
+# This information contains confidential and proprietary information of TSMC.
+# No part of this information may be reproduced, transmitted, transcribed,
+# stored in a retrieval system, or translated into any human or computer
+# language, in any form or by any means, electronic, mechanical, magnetic,
+# optical, chemical, manual, or otherwise, without the prior written permission
+# of TSMC.  This information was prepared for informational purpose and is for
+# use by TSMC's customers only.  TSMC reserves the right to make changes in the
+# information at any time and without notice.
+#*****************************************************************************
+#
+#  05/08/2000 Ver 1.0b T.C.Chiang
+#    1) Rename PH to P2V
+#    2) Add P3V(140), INDDUMMY(139), DMN2V(184), DMP2V(149), DMEXCL(150)
+#    3) Add metal slot layers
+#
+#  08/25/2000 Ver 1.0c T.C.Chiang
+#    1) Add EMBFLASH layers WLPO(92), WLSP(93), MPOL(95), FLGT(96), HVNW(99),
+#	HVPW(100), PSUB(116), FLASH(94), MW(122), CODEP(148), CODEC(185)
+#    2) Remove 0.18um process unused layers N5V, ESD5V, TRAN, RLDUMMY,
+#	CMOS image sensor used layers (171-178)
+#    3) Add POLY1 pin (47), ESD3DUMMY(234)
+#    4) Rename LPP to HRI
+#    5) Add FUSE(235), PMDMY(236)
+#
+#  02/01/2000 Ver 1.1a T.C.Chiang
+#    1) Remove unused layers WLPO, WLSP
+#    2) Add EMBFLASH layers MWLDMY(92), MSLDMY(93), HVII(97), FLG2(98)
+#    3) Add IP tagging layer IP(63;63)
+#    4) Add Bump and RDL layers VIAD(167), MD(168), CBD(169), UBM(170), MD pin(159)
+#    5) Add metal slot exclude layer SLTEXCL(158)
+#
+#  08/23/2001 Ver 1.1b Daniel Yan
+#    1) Add ODTRM(133) for trimming spacer besides array
+#    2) Add RFDUMMY(160) for RF devices
+#    3) Remove FUSE(235) and add FW(235) for fuse window when Mtop or (Mtop+1) = 3
+#    4) Add LMARK(63;1) for L target window dummy layer
+#    5) Add LW(63;2) for L target window
+#
+#  01/30/2002 Ver 2.1a by lwhung
+#    1) Add VARDUMMY(138;1), VARDUMMY(138;2), VARDUMMY(138;3) to define RF
+#	MOSCAP_G3, MOSCAP_G6, xjvar device
+#
+#  04/09/2002 Ver 2.3a by lwhung
+#    1) Add VTP1TC(90) for VTP lighter dosage in 1T SRAM cell
+#    2) Add DIFF drain(3;3) layer for RF MOS to recognize Drain
+#
+#  05/07/2002 Ver 2.3b by lwhung
+#    1) Add WLDM(91) for word line dummy pattern
+#    2) Add WELLBODY(103), RESDUMMY(104)
+#    3) Rename VTP1TC(90) to 1TDMY(90)
+#
+#  07/11/2002 Ver 2.3c by lwhung
+#    1) Rename WLDM(91) to HNVT, MWLDMY(92) to PO1, FLGT(96) to FGT,
+#	MW(122) to MCEL,
+#    2) Remove MSLDMY(93), MPOL(95), FLG2(98), HVPW(100), ODTRM(133)
+#    3) Remove METAL&VIA(net) and CONT(boundary) and boundary(drawing) in
+#	tfcDefineLayerProp
+#
+#  08/02/2002 Ver 2.3d by lwhung
+#    1) Rename from FLG to FGT
+#    2) Add INDDUMMY(139;1) for inductor 3 terminal.
+#    3) Add VARDUMMY(138;4) for RF moscap
+#
+#  11/25/2002 Ver 2.3e by ytpu
+#    1) Rename DNWELL(82) to DNW, VTN(24) to VTM_N, VTP(23) to VTM_P,
+#	POLY3(9) to EPLY, POLY4(10) to BPLY
+#    2) Add dummy layer: INDDUMMY(139;1) for inductor 3 terminals.
+#    3) Add dummy layer: VARDUMMY(138;4) for RF moscap.
+#    4) Add Image sensor layers as follow:
+#	IMSOR (128;0,CELLM): Define blocking region of Cell VT implantation
+#		for medium VT NMOS.
+#	IMSOR (128;1,CELLH): Define Cell High VT implantation
+#		(only for standard CIS).
+#	IMSOR (128;2,NPS): Define N type photo sensor implantation.
+#	IMSOR (128;3,PL): Planarization.
+#	IMSOR (128;4,GM): Green.
+#	IMSOR (128;5,RM): Red.
+#	IMSOR (128;6,BM): Blue.
+#	IMSOR (128;7,ML): Microlens.
+#	IMSOR (128;8,PPS): Define P type photo sensor implantation.
+#	IMSOR (128;9,NMOS_VT): For logic VT implant.
+#	IMSOR (128;10,CIDDD): Define Cell implant (only for enhanced CIS).
+#	IMSOR (128;11,CIRPO): Define od salicide protection in pixel.
+#	IMSOR (128;12,GM1): For green1 color filter.
+#    	IMSOR (128;13,GM2): For green2 color filter.
+#
+#  01/10/2003 Ver 2.3e.1 ytpu
+#    1) Add Image sensor layer IMSOR (128;14,CELLD) for 4T pixel layout.
+#    2) Rename IMSOR (128;10,CIDDD) to IMSOR (128;10,CI).
+#    3) Add MD's slot and dummy layers.
+#    4) Add RFDUMMY(160,1) to define "additional terminal".
+#    5) Modify IMSOR's gds numder from 128 to 133.
+#
+#  04/10/2003 Ver 2.5a ytpu
+#    1) Remove RESDUMMY(104) for PDK use only.
+#    2) Add HV_40V layers: HVTN(142), HVTP(143), HVOX(180),
+#	NBL(179) which has been defined in SiGe process.
+#    3) Add OVERLAP(110).
+#    4) Add IMSOR(133;15,MS) and IMSOR(133;16,LS)
+#    5) Add HVPSW(237) for HV_40V process.
+#    6) Modify the layer number of HVPSW from 237 to 241.
+#    7) Add IMSOR layers:
+#	IMSOR (133;17,YM): For yellow mask.
+#	IMSOR (133;18,CM): For cyan mask.
+#	IMSOR (133;19,MM): For magenta mask.
+#    8) Add the pin layer of two layers OD, NW at datatype 6.
+#    9) Add RWDUMMY(52;1,drawing1) & RPDUMMY(54;1,drawing1) for 3 terminal
+#	resistor device of NW, OD/POLY.
+#    10) Add layers for 0.18um CIS process.
+#	IMSOR (133;20,E_ML)
+#	IMSOR (133;21,BGP)
+#	IMSOR (133;22,BGN)
+#	IMSOR (133;23,CELL_TX)
+#	IMSOR (133;24,CELL_RS)
+#	IMSOR (133;25,CAP_IMP)
+#	IMSOR (133;26,CELL_TX2)
+#	IMSOR (133;27,MP)
+#    11) Disable ESEXCL(76) in techfile.
+#    12) Add WBDMY(183) for recognition of CUP pad region.
+#
+#  09/04/2005 Ver 2.5b by Chen-Chia Wang, C.T.Yao, Allen Tsai.
+#    1) Add POLY1(47;1,lvs) for LVS.
+#    2) Change HV layer number from 102 to 141 to be consistent with 0.25um HV process.
+#       Add HV 40V process layers:
+#	HV (141;1,SH_P): PWELL shielding.
+#	HV (141;2,SH_N): NWELL shielding.
+#	HV (141;3,SH_PO): poly for HV shielding (reserved layer).
+#	HV (141;4,HVIO): DRC dummy layer for HV IO guard ring.
+#	HV (141;5,OW): OD wing that connects HV symmetric NMOS and poly ring.
+#    3) Add IMSOR(133;28,DPW), IMSOR(133;29,CF3D) for Color Filter 3D process.
+#       Add IMSOR(133;30,SEL) for Dummy Layer for Row Select NMOS Trainsistor definition.
+#    4) Add legal header.
+#    5) Merge 0.18um SiGe BiCMOS layout layer mapping file Ver 1.1b_09/23/2002
+#	Add SiGe process layers: DT(171), NEPI(172), LC(174), HS(175),
+#		VARJIMP(176). # DNW(82) has been defined in DRAM process.
+#	Add BiCMOS process layers: EM(147), SINKER(181), BJTW(182), EMW(186).
+#		# NBL(179) has been defined in HV_40V process.
+#    6) Add embedded flash low leakage device layers (SWTSAO, automotive):
+#	FLASH(100;0,LLNW): definition of LLPMOS
+#	FLASH(101;0,ODLL): definition of LLdevice
+#    7) Add metal resistor dummy layers RMDUMMY(69;1~6,drawing1~6) for PDK
+#	LVS deck (metal fuse).
+#    8) Remove unused commodity 4T SRAM process layers: BC1(71),BC2(72),BTC(73),VCC(74),CPDUMMY(77)
+#    9) Add OTP(237) for One Time Program process
+#   10) Remove VARJIMP(176). Add MR(176), Metal Resistor layer for TSMC
+#	internal use only (DCYEH).##For SiGe
+#   11) Add LVS dummy layer RMDUMMY(69;9,MR) to recognize special MR(176)
+#	metal resistor device (DCYEH).##For SiGe
+#   12) Change IMSOR(133;0,CELLM) to IMSOR(133;0,CELLMV)
+#   13) Add MTPCELL(115) to define MTPCELL area.
+#  12/01/2005 Ver 2.6a.pre by Allen Tsai
+#    1) Add RFDUMMY(160;2,drawing2) to recognize asymmetry RF MOS for LVS .##Requested by YTPU
+#    2) Add MICO(106) for Metal PPI Etch for special TiN top metal.
+#    3) Add VICO(107) for Via Cavity Etch for special TiN via
+#    4) Add DIFF dummy (3;1), POLY dummy (13;1).
+#    5) Add VIAEXCL(146) Dummy layer for blockage in VIA insertion.
+#    6) Add HV(NDD;141;50) HV(DPW;141;51) for HV process.
+#    7) Add PV_P(71) PV_N(72) for pmos varactor.##Requested by CCWUT
+#  05/06/2008 Ver 2.7a Y.J Chuang
+#    1) Add CL(BASE_N;250;1) for customer special layer demand;
+#    2) Add ZERO_VTP(196;0)
+#    3) Add HV(DMYLD;141;31), HV(LDPW;141;32)
+#    4) Add LOGO(178;0)
+#    5) Add PPI(189;0)
+#    6) Add MOMDMY(145;0), MOMDMY(145;1~6/drawing1~6).
+#    7) Add LVS dummy layer CTMDUMMY(131; 10, 15, 20, 21) to recognize MIM capacitor
+#       with 1.0fF, 1.5fF, 2.0fF per unit area and three terminal MIM capacitor
+#    8) Add TSV(251;0), TSV_CB(252;0), TSV_PPI(253;0).
+#	TSV(pin,251;1), TSV_PPI(pin,253;1).
+#    9) Add HV(PDD;141;49).
+#   10) Add SEALRING(126;0).
+#   11) Add ULLNW(128;0), ULLNLDD(128;1).
+#   12) Add HVPRDMY(54;2).
+#   13) Add LDDMY(127;0), CASDMY(127;1).
+#   14) Add CB2(177;0), RV(188;0), AP(189;1), and AP(pin,189;101).
+#   15) Add PSDMY(187;0).
+#   16) Add LVGDMY(209;1).
+#   17) Add UBM(pin) (207;1).
+#   18) Add SRAM(dummy1~dummy3) (231;1~3).
+#   19) Add SGDUMMY(SBDDMY,144;1).
+#   20) Add TSV(dummy,251;2), METAL1(BSL,16;100), METAL1(BSD,16;101), METAL1(BSP,40,100), RV(BSL,188;100),
+#           AP(BSL,189;100), AP(BSP,189,102), PAD(BSL,19;100), CBD(BSL,169;100), UBM(BSL,170;100),
+#           CB2(BSL,177;100), FFCDMY(255;2) for TSV Back-Side purpose.
+#   21) Add LEVEL(200;1), PBL(200;2), PPLG(200;3), NDN(200;4), NLV(200;5), BSOX(200;6), PXBA(200;7),
+#           NXBA(200;8), PEMO(200;9), PSIC(200;10), PLV(200;11), NEM(200;12), PEM(200;13).
+#   22) Add IMSOR(NPS2,133;32).
+#   23) Add SBDDMY(144;0).
+#   24) Add LUPWDMY(255;1).
+#  07/29/2008 Ver 2.7b Y.T Huang
+#    1) Add HVDMY(141;52), PA24DMY(141;60), NLD24DMY(141;61), RS3TDMY(141;62), NLVT(141;63)
+#    2) Add RP4TDUMMY(54;3)
+#  09/08/2008 Ver 2.7b Y.T. Huang
+#    1) Add ESD(250;4, drawing2) as ESD-implant drawing layer for ESD device
+#  10/02/2008 Ver 2.7c.pre Y.T. Huang
+#    1) Add MACRODMY(182;1, drawing) to define HV MACRO device pattern for 0.18um BCD HV process
+#  10/03/2008 Ver 2.7c.pre Y.T. Huang
+#    1) Add HVPB(202;0, drawing) for HV P-body purpose
+#    2) Add LVSDMY(208;1, dummy1) to LVS for recognizing mismatch device
+#    3) Add IP_MIG(63;180, drawing) to keep the poly CD ub the blowing-up IP
+#    4) Add MR(176;0, drawing) to define metal resistor inserted between normal metal layers
+#  10/16/2008 Ver 2.7c.pre C.R.Hsu
+#    1) Add HV(141;64, drawing1)
+#    2) Add HV(141;65, drawing2)
+#    3) Add HV(141;66, drawing3)
+#  10/30/2008 Ver 2.7c.pre C.R.Hsu
+#    1) Add HV(141;67, drawing4) to define HV 12V device part  
+#    2) Add HV(141;68, drawing5) to define HV 18V device part
+#    3) Add HV(141;69, drawing6) to define HV 32V device part
+#    4) Add HV(141;70, drawing7) to define HV 60V device part
+#  12/26/2008 Ver 2.7c.pre M.Feng
+#    1) Add METAL1(HV60V)(16;200) for the tag of metal1 with operation voltage of 60V
+#
+#  01/19/2009 Ver2.7c.pre M.Feng
+#    1) Add layers PDN(200;14);N8V(200;15) NHV(200;16);BJW(200;17);COPE(200;18) for the SiGe
+#    2) Add layers EM(147;0);DT(171;0);NEPI(172;0);LC(174;0);HS(175;0);SINKER(181;0);BJTW(182;0);EMW(186;0).
+#    3) Add laye CTM(67;0)
+#
+#  04/01/2009 Ver2.7c.pre S.Q.Zhang
+#    1) Add layers PLMIDE(5:1,drawing1);PLMIDE(5:2,drawing2);PPI(42:10,drawing1)
+#    2) Add layers SOI(204:0,drawing);SOI(204:1,drawing1);SOI(204:2,drawing2);SOI(204:3,drawing3);
+#                  SOI(204:4,drawing4);SOI(204:5,drawing5)
+#
+#
+#  05/05/2009 Ver2.7c S.Q.Zhang
+#     Official release, version update only
+#
+#  07/08/2009 Ver2.8a_pre S.Q.Zhang
+#    1) Add CTMDUMMY(drawing5)(131;50), RFDUMMY(drawing3)(160;50) for LVS.
+#    2) Add LUPWDMY(dummy1)(255;4), LUPWDMY(dummy2)(255;5).
+#
+#  07/21/2009 Ver2.8a S.Q.Zhang
+#    Official release, version update only
+#
+#*****************************************************************************
+# IMPORTANT NOTICE
+#*****************************************************************************
+# Though PDIFF(11;0) & NDIFF(12;0) are tape out layers, it's strongly suggested
+# to use DIFF(3;0) instead, which is the standard "Gate Oxide and Diffusion"
+# (OD) layer. Be sure to check carefully the related mask logic operation if
+# PDIFF/NDIFF layers are used.
+#*****************************************************************************
+
+#  Layer	Layer		Stream	Datatype
+#  Name		Purpose
+#--------------------------------------------------------------------
+   ref		drawing		0	0
+   PWELL	drawing		1	0
+   NWELL	drawing		2	0
+   DIFF		drawing		3	0
+   DIFF		boundary	3	2
+   DIFF		net		3	4
+   PDIFF	drawing		11	0
+   NDIFF	drawing		12	0
+   OD2		drawing		4	0
+   POLY1	drawing		13	0
+   POLY1	boundary	13	2
+   POLY1	net		13	3
+   POLY2	drawing		14	0
+   EPLY		drawing		9	0
+   BPLY		drawing		10	0
+   N2V		drawing		61	0
+   N3V		drawing		5	0
+   PIMP		drawing		7	0
+   NIMP		drawing		8	0
+   P2V		drawing		35	0
+   P3V		drawing		140	0
+   ESD		drawing		30	0
+   RPO		drawing		34	0
+   CONT		drawing		15	0
+   CONT		pin		15	1
+   METAL1	drawing		16	0
+   VIA12	drawing		17	0
+   VIA12	pin		17	1
+   METAL2	drawing		18	0
+   VIA23	drawing		27	0
+   VIA23	pin		27	1
+   METAL3	drawing		28	0
+   VIA34	drawing		29	0
+   VIA34	pin		29	1
+   METAL4	drawing		31	0
+   VIA45	drawing		32	0
+   VIA45	pin		32	1
+   METAL5	drawing		33	0
+   VIA56	drawing		39	0
+   METAL6	drawing		38	0
+   VIA67	drawing		21	0
+   METAL7	drawing		22	0
+   PAD		drawing		19	0
+   WBDMY	drawing		183	0
+   FW		drawing		235	0
+   LW		drawing		63	2
+   OVERLAP	drawing		110	0
+#--------------------------------------------------------------------
+#  For MIXED-MODE purpose
+   BPI		drawing		20	0
+   VTM_P	drawing		23	0
+   VTM_N	drawing		24	0
+   VTDP		drawing		25	0
+   VTDN		drawing		26	0
+   HRI		drawing		48	0
+   CTM2		drawing		67	2
+   CTM3		drawing		67	3
+   CTM4		drawing		67	4
+   CTM5		drawing		67	5
+   NTN		drawing		129	0
+   DIFF	 	drain		3	3
+#--------------------------------------------------------------------
+#  For P&R purpose
+   prBoundary   drawing		62	0
+#--------------------------------------------------------------------
+# For Text layer
+   METAL1	pin		40	0
+   METAL2	pin		41	0
+   METAL3	pin		42	0
+   METAL4	pin		43	0
+   METAL5	pin		44	0
+   METAL6	pin		45	0
+   METAL7	pin		46	0
+   DIFF		pin		3	6
+   NWELL	pin		2	6
+   POLY1	pin		47	0
+   POLY1	lvs		47	1
+   MD		pin		159	0
+   TSV		pin		251	1
+   TSV_PPI	pin		253	1
+   AP		pin		189	101
+   UBM		pin		207	1
+#--------------------------------------------------------------------
+# Dummy layer for LVS/DRC checking, logic operation, IP tagging
+   BJTDUMMY	drawing		49	0
+   PSUB2	drawing		50	0
+   HOTWL	drawing		51	0
+   RWDUMMY	drawing		52	0
+   RWDUMMY	drawing1	52	1
+   RPDUMMY	drawing		54	0
+   RPDUMMY	drawing1	54	1
+   HVPRDMY	drawing		54	2
+   RP4TDUMMY	drawing		54	3
+   RMDUMMY	drawing		69	0
+   RMDUMMY	drawing1	69	1
+   RMDUMMY	drawing2	69	2
+   RMDUMMY	drawing3	69	3
+   RMDUMMY	drawing4	69	4
+   RMDUMMY	drawing5	69	5
+   RMDUMMY	drawing6	69	6
+#  RMDUMMY	MR		69	9
+   VCDUMMY	drawing		53	0
+   CDUMMY	drawing		68	0
+   DIODUMMY	drawing		56	0
+   PTDIODE	drawing		37	0
+   EXCL		drawing		55	0
+   SDI		drawing		58	0
+   TEXT		drawing		59	0
+   DRCDUMMY	drawing		60	0
+   LMARK	drawing		63	1
+   DPDUMMY	drawing		65	0
+   PLDUMMY	drawing		66	0
+   MTPCELL	drawing		115	0
+   LDDMY	drawing		127	0
+   CASDMY	drawing		127	1
+   DRC2DUMMY	drawing		130	0
+   CTMDUMMY	drawing		131	0
+   CTMDUMMY	drawing2	131	10
+   CTMDUMMY	drawing3	131	15
+   CTMDUMMY	drawing4	131	20
+   CTMDUMMY	drawing1	131	21
+   RHDUMMY	drawing		132	0
+   RLPPDUMMY	drawing		134	0
+   NOOPC	drawing		135	0
+   ESD1DUMMY	drawing		136	0
+   ESD2DUMMY	drawing		137	0
+   ESD3DUMMY	drawing		234	0
+   VARDUMMY	drawing		138	0
+   VARDUMMY	drawing1	138	1
+   VARDUMMY	drawing2	138	2
+   VARDUMMY	drawing3	138	3
+   VARDUMMY	drawing4	138	4
+   INDDUMMY	drawing		139	0
+   INDDUMMY	drawing1	139	1
+   DMN2V	drawing		184	0
+   DMP2V	drawing		149	0
+   PMDMY	drawing		236	0
+   IP		drawing		63	63
+   RFDUMMY	drawing		160	0
+   RFDUMMY	drawing1	160	1
+   RFDUMMY	drawing2	160	2
+   WELLBODY	drawing		103	0
+   SEALRING	drawing		126	0
+   LOGO		drawing		178	0
+   PSDMY	drawing		187	0
+   LVSDMY	dummy1		208	1
+   LVGDMY	drawing		209	1
+   SBDDMY	drawing		144	0
+   SGDUMMY	SBDDMY		144	1
+   LUPWDMY	drawing		255	1
+   SRAM 	dummy1		231	1
+   SRAM 	dummy2		231	2
+   SRAM 	dummy3		231	3
+   CTMDUMMY	drawing5	131	50
+   RFDUMMY	drawing3	160	50
+   LUPWDMY      dummy1		255	4
+   LUPWDMY	dummy2		255	5
+#--------------------------------------------------------------------
+# DRC error report
+   marker	error		63	0
+   marker	warning		64	0
+#--------------------------------------------------------------------
+# For SRAM process
+   CELLIMP	drawing		70	0
+   PV_P		drawing		71	0
+   PV_N		drawing		72	0
+#   BTC		drawing		73	0
+#   VCC		drawing		74	0
+   RODUMMY	drawing		75	0
+#   ESEXCL	drawing		76	0
+#   CPDUMMY	drawing		77	0
+   PDIMP	drawing		78	0
+   PUIMP	drawing		79	0
+#--------------------------------------------------------------------
+# For DRAM process
+   CELLBRC1	drawing		80	0
+   BLBRC2	drawing		81	0
+#   DNW		drawing		82	0 # Also used for SiGe process
+   P1W		drawing		83	0
+   P1R		drawing		84	0
+   SAC		drawing		85	0
+   C1		drawing		86	0
+   C2		drawing		87	0
+   DPITCH	drawing		88	0
+   PLMIDE	drawing		89	0
+   1TDMY	drawing		90	0
+#--------------------------------------------------------------------
+# For HV_40V
+   HVTP		drawing		143	0
+   HVTN		drawing		142	0
+#   NBL		drawing		179	0 # Also used for SiGe process
+   HVOX		drawing		180	0
+   HVPSW	drawing		241	0
+   HV		SH_P		141	1
+   HV		SH_N		141	2
+   HV		SH_PO		141	3
+   HV		HVIO		141	4
+   HV		OW		141	5
+   HV		DMYLD		141	31
+   HV		LDPW		141	32
+   HV		PDD		141	49
+   HV		NDD		141	50
+   HV		DPW		141	51
+   HVDMY	drawing		141	52
+   PA24DMY	drawing		141	60
+   NLD24DMY	drawing		141	61
+   RS3TDMY	drawing		141	62
+   NLVT 	drawing		141	63
+   HV           drawing1        141     64
+   HV           drawing2        141     65
+   HV           drawing3        141     66
+   HV           drawing4        141     67
+   HV           drawing5        141     68
+   HV           drawing6        141     69
+   HV           drawing7        141     70
+   HVPB 	drawing		202	0
+#--------------------------------------------------------------------
+# For EMBFLASH
+   FLASH	drawing		94	0
+   HNVT		drawing		91	0
+   PO1		drawing		92	0
+   FGT		drawing		96	0
+   HVII		drawing		97	0
+   HVNW		drawing		99	0
+   FLASH	LLNW		100	0
+   FLASH	ODLL		101	0
+   PSUB		drawing		116	0
+   MCEL		drawing		122	0
+   CODEP	drawing		148	0
+   CODEC	drawing		185	0
+   OTP		drawing		237	0
+   ULLNW	drawing		128	0
+   ULLNLDD	drawing		128	1
+#--------------------------------------------------------------------
+# For Image process
+   IMSOR	CELLMV		133	0
+   IMSOR	CELLH		133	1
+   IMSOR	NPS		133	2
+   IMSOR	PL		133	3
+   IMSOR	GM		133	4
+   IMSOR	RM		133	5
+   IMSOR	BM		133	6
+   IMSOR	ML		133	7
+   IMSOR	PPS		133	8
+   IMSOR	NMOS_VT		133	9
+   IMSOR	CI		133	10
+   IMSOR	CIRPO		133	11
+   IMSOR	GM1		133	12
+   IMSOR	GM2		133	13
+   IMSOR	CELLD		133	14
+   IMSOR	MS		133	15
+   IMSOR	LS		133	16
+   IMSOR	YM		133	17
+   IMSOR	CM		133	18
+   IMSOR	MM		133	19
+   IMSOR	E_ML		133	20
+   IMSOR	BGP		133	21
+   IMSOR	BGN		133	22
+   IMSOR	CELL_TX		133	23
+   IMSOR	CELL_RS		133	24
+   IMSOR	CAP_IMP		133	25
+   IMSOR	CELL_TX2	133	26
+   IMSOR	MP		133	27
+   IMSOR	DPW		133	28
+   IMSOR	CF3D		133	29
+   IMSOR	SEL		133	30
+   IMSOR	FLD		133	31
+   IMSOR	NPS2		133	32
+#--------------------------------------------------------------------
+# For solder Bump and RDL layer
+   VIAD		drawing		167	0
+   VIAD		boundary	167	1
+   VIAD		pin		167	2
+   VIAD		net		167	3
+   MD		drawing		168	0
+   MD		boundary	168	3
+   MD		net		168	4
+   CBD		drawing		169	0
+   UBM		drawing		170	0
+   CB2		drawing		177	0
+   RV		drawing		188	0
+   PPI	 	drawing		189	0
+   AP		drawing		189	1
+   TSV		drawing		251	0
+   TSV		dummy		251	2
+   TSV_CB	drawing		252	0
+   TSV_PPI	drawing		253	0
+#--------------------------------------------------------------------
+# For iTSV Back-Side process
+   METAL1	BSL		16	100
+   METAL1	BSD		16	101
+   METAL1	BSP		40	100
+   METAL1	HV60		16	200
+   RV		BSL		188	100
+   AP		BSL		189	100
+   AP		BSP		189	102
+   PAD		BSL		19	100
+   CBD		BSL		169	100
+   UBM		BSL		170	100
+   CB2		BSL		177	100
+   FFCDMY	drawing		255	2
+#--------------------------------------------------------------------
+# For Blockage layer
+   METAL1	boundary	151	0
+   METAL2	boundary	152	0
+   METAL3	boundary	153	0
+   METAL4	boundary	154	0
+   METAL5	boundary	155	0
+   METAL6	boundary	156	0
+   METAL7	boundary	157	0
+   VIA12	boundary	161	0
+   VIA23	boundary	162	0
+   VIA34	boundary	163	0
+   VIA45	boundary	164	0
+   VIA56	boundary	165	0
+   VIA67	boundary	166	0
+#--------------------------------------------------------------------
+# For dummy metal
+   DIFF 	dummy		3	1
+   POLY1 	dummy		13	1
+   METAL1	dummy		16	1
+   METAL2	dummy		18	1
+   METAL3	dummy		28	1
+   METAL4	dummy		31	1
+   METAL5	dummy		33	1
+   METAL6	dummy		38	1
+   METAL7	dummy		22	1
+   MD		dummy		168	1
+   ODBLK	dummy		150	20
+   POBLK	dummy		150	21
+
+   VIAEXCL      dummy1          146     1
+   VIAEXCL      dummy2          146     2
+   VIAEXCL      dummy3          146     3
+   VIAEXCL      dummy4          146     4
+   VIAEXCL      dummy5          146     5
+   VIAEXCL      dummy6          146     6
+   VIAEXCL      dummy7          146     7
+   VIAEXCL      dummyf          146     15
+   DMEXCL	dummy1		150	1
+   DMEXCL	dummy2		150	2
+   DMEXCL	dummy3		150	3
+   DMEXCL	dummy4		150	4
+   DMEXCL	dummy5		150	5
+   DMEXCL	dummy6		150	6
+   DMEXCL	dummy7		150	7
+   DMEXCL	dummyf		150	15
+#--------------------------------------------------------------------
+# For metal slot
+   METAL1	slot		16	2
+   METAL2	slot		18	2
+   METAL3	slot		28	2
+   METAL4	slot		31	2
+   METAL5	slot		33	2
+   METAL6	slot		38	2
+   METAL7	slot		22	2
+   MD		slot		168	2
+   SLTEXCL	dummy1		158	1
+   SLTEXCL	dummy2		158	2
+   SLTEXCL	dummy3		158	3
+   SLTEXCL	dummy4		158	4
+   SLTEXCL	dummy5		158	5
+   SLTEXCL	dummy6		158	6
+   SLTEXCL	dummy7		158	7
+#--------------------------------------------------------------------
+# Dummy Layer for Interdigitated Capacitor (IDMOM)
+   MOMDMY	drawing  	145	0
+   MOMDMY	drawing1 	145	1
+   MOMDMY	drawing2 	145	2
+   MOMDMY	drawing3 	145	3
+   MOMDMY	drawing4 	145	4
+   MOMDMY	drawing5 	145	5
+   MOMDMY	drawing6 	145	6
+#--------------------------------------------------------------------
+# For SiGe process
+   DNW		drawing		82	0
+   CTM          drawing         67 	0
+   ZERO_VTP	drawing 	196	0
+#-------------------------------------------------------------------
+# For BiCMOS process
+   NBL		drawing		179	0
+   MACRODMY	drawing		182	1
+#--------------------------------------------------------------------
+# For SiGe process
+   SiGe		EM		147	0
+   SiGe		DT		171	0
+   SiGe		NEPI		172	0
+   SiGe		LC		174	0
+   SiGe		HS		175	0
+   SiGe		SINKER		181	0
+   SiGe		BJTW		182	0
+   SiGe		EMW		186	0
+   LEVEL	drawing		200	1
+   PBL		drawing		200	2
+   PPLG		drawing		200	3
+   NDN		drawing		200	4
+   NLV		drawing		200	5
+   BSOX		drawing		200	6
+   PXBA		drawing		200	7
+   NXBA		drawing		200	8
+   PEMO		drawing		200	9
+   PSIC		drawing		200	10
+   PLV		drawing		200	11
+   NEM		drawing		200	12
+   PEM		drawing		200	13
+   SiGe		PDN		200	14
+   SiGe		N8V		200	15
+   SiGe		NHV		200	16
+   SiGe		BJW		200	17
+   SiGe		COPE		200	18
+#-------------------------------------------------------------------
+# For top metal TiN process
+   MICO         drawing         106     0
+   MICO         boundary        106     1
+   MICO         pin             106     2
+   MICO         net             106     3
+   VICO         drawing         107     0
+   VICO         boundary        107     1
+   VICO         pin             107     2
+   VICO         net             107     3
+#-------------------------------------------------------------------
+   BASE_N	drawing		250	1
+   ESD  	drawing2	250	4
+   MR		drawing		176	0
+   IP_MIG	drawing		63	180
+   PLMIDE	drawing1        5	1
+   PLMIDE	drawing2        5	2
+   PPI		drawing1	42	10
+   SOI		drawing		204	0
+   SOI		drawing1	204	1
+   SOI		drawing2	204	2
+   SOI		drawing3	204	3
+   SOI		drawing4	204	4 
+   SOI		drawing5	204	5

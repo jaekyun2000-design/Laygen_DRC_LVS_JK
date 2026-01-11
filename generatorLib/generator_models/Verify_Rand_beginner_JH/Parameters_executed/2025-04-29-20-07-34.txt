@@ -1,0 +1,300 @@
+iteration 1-1
+W: 21800
+
+iteration 1-2
+W: 18200
+
+iteration 1-3
+W: 11400
+
+iteration 1-4
+W: 16300
+
+iteration 1-5
+W: 15200
+
+iteration 1-6
+W: 18000
+
+iteration 1-7
+W: 3500
+
+iteration 1-8
+W: 10900
+
+iteration 1-9
+W: 16700
+
+iteration 1-10
+W: 13000
+
+iteration 1-11
+W: 13300
+
+iteration 1-12
+W: 10400
+
+iteration 1-13
+W: 16300
+
+iteration 1-14
+W: 17100
+
+iteration 1-15
+W: 19300
+
+iteration 1-16
+W: 8600
+
+iteration 1-17
+W: 2100
+
+iteration 1-18
+W: 9100
+
+iteration 1-19
+W: 21200
+
+iteration 1-20
+W: 19300
+
+iteration 1-21
+W: 5300
+
+iteration 1-22
+W: 2600
+
+iteration 1-23
+W: 5100
+
+iteration 1-24
+W: 3500
+
+iteration 1-25
+W: 21400
+
+iteration 1-26
+W: 19000
+
+iteration 1-27
+W: 8100
+
+iteration 1-28
+W: 11000
+
+iteration 1-29
+W: 17100
+
+iteration 1-30
+W: 12200
+
+iteration 1-31
+W: 9200
+
+iteration 1-32
+W: 9200
+
+iteration 1-33
+W: 15900
+
+iteration 1-34
+W: 13000
+
+iteration 1-35
+W: 4100
+
+iteration 1-36
+W: 6200
+
+iteration 1-37
+W: 18400
+
+iteration 1-38
+W: 17700
+
+iteration 1-39
+W: 3800
+
+iteration 1-40
+W: 19200
+
+iteration 1-41
+W: 20700
+
+iteration 1-42
+W: 7100
+
+iteration 1-43
+W: 4400
+
+iteration 1-44
+W: 3400
+
+iteration 1-45
+W: 18500
+
+iteration 1-46
+W: 20800
+
+iteration 1-47
+W: 18400
+
+iteration 1-48
+W: 11200
+
+iteration 1-49
+W: 13200
+
+iteration 1-50
+W: 1300
+
+iteration 1-51
+W: 6500
+
+iteration 1-52
+W: 6700
+
+iteration 1-53
+W: 8000
+
+iteration 1-54
+W: 11900
+
+iteration 1-55
+W: 13500
+
+iteration 1-56
+W: 6400
+
+iteration 1-57
+W: 5700
+
+iteration 1-58
+W: 3800
+
+iteration 1-59
+W: 20600
+
+iteration 1-60
+W: 6000
+
+iteration 1-61
+W: 5400
+
+iteration 1-62
+W: 2700
+
+iteration 1-63
+W: 6700
+
+iteration 1-64
+W: 18600
+
+iteration 1-65
+W: 12100
+
+iteration 1-66
+W: 4800
+
+iteration 1-67
+W: 21400
+
+iteration 1-68
+W: 14900
+
+iteration 1-69
+W: 10500
+
+iteration 1-70
+W: 4000
+
+iteration 1-71
+W: 14900
+
+iteration 1-72
+W: 7200
+
+iteration 1-73
+W: 4800
+
+iteration 1-74
+W: 18100
+
+iteration 1-75
+W: 1300
+
+iteration 1-76
+W: 3800
+
+iteration 1-77
+W: 4200
+
+iteration 1-78
+W: 4600
+
+iteration 1-79
+W: 14500
+
+iteration 1-80
+W: 5300
+
+iteration 1-81
+W: 2300
+
+iteration 1-82
+W: 10700
+
+iteration 1-83
+W: 18100
+
+iteration 1-84
+W: 2700
+
+iteration 1-85
+W: 19000
+
+iteration 1-86
+W: 21500
+
+iteration 1-87
+W: 17800
+
+iteration 1-88
+W: 14300
+
+iteration 1-89
+W: 18400
+
+iteration 1-90
+W: 20900
+
+iteration 1-91
+W: 9600
+
+iteration 1-92
+W: 11900
+
+iteration 1-93
+W: 12700
+
+iteration 1-94
+W: 1500
+
+iteration 1-95
+W: 7900
+
+iteration 1-96
+W: 4000
+
+iteration 1-97
+W: 17800
+
+iteration 1-98
+W: 1500
+
+iteration 1-99
+W: 4800
+
+iteration 1-100
+W: 13500
+

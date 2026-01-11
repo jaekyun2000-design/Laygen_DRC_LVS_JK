@@ -1,0 +1,36 @@
+iteration 1-1
+RL_Width: 2580
+RL_Length: 1850
+W1_num_finger: 12
+W1_finger_width: 690
+W2_num_finger: 11
+W2_finger_width: 800
+RS_Width: 1780
+RS_Length: 2520
+CS_Width: 4174
+CS_Length: 8080
+
+iteration 1-2
+RL_Width: 2590
+RL_Length: 1840
+W1_num_finger: 14
+W1_finger_width: 660
+W2_num_finger: 10
+W2_finger_width: 840
+RS_Width: 1750
+RS_Length: 2540
+CS_Width: 4174
+CS_Length: 8030
+
+iteration 1-3
+RL_Width: 2550
+RL_Length: 1880
+W1_num_finger: 13
+W1_finger_width: 670
+W2_num_finger: 10
+W2_finger_width: 890
+RS_Width: 1760
+RS_Length: 2580
+CS_Width: 4174
+CS_Length: 8080
+

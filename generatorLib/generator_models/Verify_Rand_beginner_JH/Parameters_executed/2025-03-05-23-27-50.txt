@@ -1,0 +1,36 @@
+iteration 1-1
+RL_Width: 2200
+RL_Length: 1700
+W1_num_finger: 17
+W1_finger_width: 600
+W2_num_finger: 9
+W2_finger_width: 900
+RS_Width: 1950
+RS_Length: 2500
+CS_Width: 4170
+CS_Length: 7800
+
+iteration 1-2
+RL_Width: 2600
+RL_Length: 1600
+W1_num_finger: 13
+W1_finger_width: 700
+W2_num_finger: 7
+W2_finger_width: 700
+RS_Width: 1950
+RS_Length: 2500
+CS_Width: 4170
+CS_Length: 7900
+
+#1
+Peak Gain = 1.6
+DC Gain = 827.9m
+Peak Frequency = 5.6G Hz
+Peak Frequency (dB scale) = 9.8 Hz
+
+#2
+Peak Gain = 1.6
+DC Gain = 827.9m
+Peak Frequency = 5.6G Hz
+Peak Frequency (dB scale) = 9.8 Hz
+

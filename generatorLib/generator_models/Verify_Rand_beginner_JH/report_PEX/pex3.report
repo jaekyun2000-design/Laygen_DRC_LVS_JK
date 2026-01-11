@@ -1,0 +1,76 @@
+                  ##################################################
+                  ##                                              ##
+                  ##                 Calibre xACT                 ##
+                  ##                                              ##
+                  ##          Export Lumped Parameters            ##
+                  ##                                              ##
+                  ##################################################
+ 
+ 
+ 
+LAYOUT NAME:              vpnp
+RULE FILE NAME:           rules
+CREATION TIME:            Wed Apr 30 19:59:46 2025
+ 
+UNITS:                    Resistance  = ohm
+                          Capacitance = farad
+                          Time        = ns
+ 
+ 
+---------------------------------------------------------------------------------
+CELL NAME:                vpnp
+ 
+Netid      R(UpperBound)      Cvalue      %Coupled    RC(UpperBound)   Netname
+---------+---------------+-------------+-------------+--------------+------------
+1                     0.0   6.14818e-15       8.53538            0.0  E
+            - Coupled nets
+               B,N_B_c_10_n,N_B_c_11_n,N_B_c_12_n,N_C_c_20_n,N_C_c_21_n,N_C_QQP0_c
+            - Intrinsic Capacitance
+               5.62341e-15
+            - Coupled capacitance
+               2.54447e-16   netid: B
+                1.3201e-16   netid: N_B_c_10_n
+               1.08217e-18   netid: N_B_c_11_n
+               1.09357e-18   netid: N_B_c_12_n
+               1.00678e-18   netid: N_C_c_20_n
+                 4.297e-17   netid: N_C_c_21_n
+               9.21612e-17   netid: N_C_QQP0_c
+
+
+2                     0.0   2.69865e-15       35.9288            0.0  B
+            - Coupled nets
+               E,E,E,E,N_C_c_20_n,N_C_c_21_n,N_C_c_21_n,N_C_c_21_n,N_C_QQP0_c,N_C_QQP0_c,N_C_QQP0_c
+            - Intrinsic Capacitance
+               1.72906e-15
+            - Coupled capacitance
+               2.54447e-16   netid: E
+                1.3201e-16   netid: E
+               1.08217e-18   netid: E
+               1.09357e-18   netid: E
+               7.51644e-19   netid: N_C_c_20_n
+                1.9391e-16   netid: N_C_c_21_n
+               2.74673e-18   netid: N_C_c_21_n
+               3.49849e-18   netid: N_C_c_21_n
+               3.72827e-16   netid: N_C_QQP0_c
+               3.56778e-18   netid: N_C_QQP0_c
+               3.65774e-18   netid: N_C_QQP0_c
+
+
+3                     0.0   3.77238e-15       19.0092            0.0  C
+            - Coupled nets
+               E,E,E,N_B_c_11_n,N_B_c_10_n,N_B_c_11_n,N_B_c_12_n,B,N_B_c_11_n,N_B_c_12_n
+            - Intrinsic Capacitance
+               3.05528e-15
+            - Coupled capacitance
+               1.00678e-18   netid: E
+                 4.297e-17   netid: E
+               9.21612e-17   netid: E
+               7.51644e-19   netid: N_B_c_11_n
+                1.9391e-16   netid: N_B_c_10_n
+               2.74673e-18   netid: N_B_c_11_n
+               3.49849e-18   netid: N_B_c_12_n
+               3.72827e-16   netid: B
+               3.56778e-18   netid: N_B_c_11_n
+               3.65774e-18   netid: N_B_c_12_n
+
+

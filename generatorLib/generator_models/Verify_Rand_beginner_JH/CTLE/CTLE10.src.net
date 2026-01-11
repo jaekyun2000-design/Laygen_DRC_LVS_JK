@@ -1,0 +1,33 @@
+************************************************************************
+* auCdl Netlist:
+* 
+* Library Name:  song
+* Top Cell Name: 2023_12_CTLE_Schematic_Layout
+* View Name:     schematic
+* Netlisted on:  Mar  4 12:00:39 2025
+************************************************************************
+
+.INCLUDE /home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp/.resources/devices.cdl
+*.EQUATION
+*.SCALE METER
+*.MEGA
+.PARAM
+************************************************************************
+* Library Name: song
+* Cell Name:    2023_12_CTLE_Schematic_Layout
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT CTLE IDS VDD VSS Vinn Vinp Voutn Voutp
+*.PININFO IDS:B VDD:B VSS:B Vinn:B Vinp:B Voutn:B Voutp:B
+MN5 net1 IDS VSS VSS slvtnfet w=8.71u l=0.03u nf=13.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN9 Voutp Vinn net6 VSS slvtnfet w=6.6u l=0.03u nf=11.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN6 net6 IDS VSS VSS slvtnfet w=8.71u l=0.03u nf=13.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN7 IDS IDS VSS VSS slvtnfet w=8.71u l=0.03u nf=13.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN8 Voutn Vinp net1 VSS slvtnfet w=6.6u l=0.03u nf=11.0 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+RR5 Voutn VDD $SUB=VSS $[opppcres] w=0.43u l=1.46u pbar=1 s=1 bp=3 ncr=2
+RR4 Voutp VDD $SUB=VSS $[opppcres] w=0.43u l=1.46u pbar=1 s=1 bp=3 ncr=2
+RR3 net6 net1 $SUB=VSS $[opppcres] w=1.89u l=2.75u pbar=1 s=1 bp=3 ncr=2
+CC1 net6 net1 $[vncap] $SUB=VSS l=3.93u w=3.614u botlev=19 toplev=44 sizedup=1
+CC0 net1 net6 $[vncap] $SUB=VSS l=3.93u w=3.614u botlev=19 toplev=44 sizedup=1
+.ENDS

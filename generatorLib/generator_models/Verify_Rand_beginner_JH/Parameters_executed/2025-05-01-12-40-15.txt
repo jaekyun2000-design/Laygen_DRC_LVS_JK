@@ -1,0 +1,300 @@
+iteration 1-1
+W: 13700
+
+iteration 1-2
+W: 9900
+
+iteration 1-3
+W: 15900
+
+iteration 1-4
+W: 7900
+
+iteration 1-5
+W: 5600
+
+iteration 1-6
+W: 12000
+
+iteration 1-7
+W: 3800
+
+iteration 1-8
+W: 5500
+
+iteration 1-9
+W: 17000
+
+iteration 1-10
+W: 11700
+
+iteration 2-1
+W: 10500
+
+iteration 2-2
+W: 1300
+
+iteration 2-3
+W: 14300
+
+iteration 2-4
+W: 13900
+
+iteration 2-5
+W: 12600
+
+iteration 2-6
+W: 19400
+
+iteration 2-7
+W: 19200
+
+iteration 2-8
+W: 17600
+
+iteration 2-9
+W: 21200
+
+iteration 2-10
+W: 10900
+
+iteration 3-1
+W: 20700
+
+iteration 3-2
+W: 7600
+
+iteration 3-3
+W: 8300
+
+iteration 3-4
+W: 8900
+
+iteration 3-5
+W: 19700
+
+iteration 3-6
+W: 6100
+
+iteration 3-7
+W: 15500
+
+iteration 3-8
+W: 8000
+
+iteration 3-9
+W: 19700
+
+iteration 3-10
+W: 3400
+
+iteration 4-1
+W: 5600
+
+iteration 4-2
+W: 14600
+
+iteration 4-3
+W: 13600
+
+iteration 4-4
+W: 2100
+
+iteration 4-5
+W: 21000
+
+iteration 4-6
+W: 6200
+
+iteration 4-7
+W: 12900
+
+iteration 4-8
+W: 2400
+
+iteration 4-9
+W: 11200
+
+iteration 4-10
+W: 21200
+
+iteration 5-1
+W: 16200
+
+iteration 5-2
+W: 17100
+
+iteration 5-3
+W: 2800
+
+iteration 5-4
+W: 19700
+
+iteration 5-5
+W: 15200
+
+iteration 5-6
+W: 9600
+
+iteration 5-7
+W: 1200
+
+iteration 5-8
+W: 12200
+
+iteration 5-9
+W: 10200
+
+iteration 5-10
+W: 18000
+
+iteration 6-1
+W: 1500
+
+iteration 6-2
+W: 10500
+
+iteration 6-3
+W: 2500
+
+iteration 6-4
+W: 3700
+
+iteration 6-5
+W: 13200
+
+iteration 6-6
+W: 2500
+
+iteration 6-7
+W: 10400
+
+iteration 6-8
+W: 7900
+
+iteration 6-9
+W: 1900
+
+iteration 6-10
+W: 16800
+
+iteration 7-1
+W: 16800
+
+iteration 7-2
+W: 8500
+
+iteration 7-3
+W: 16000
+
+iteration 7-4
+W: 14100
+
+iteration 7-5
+W: 3300
+
+iteration 7-6
+W: 10100
+
+iteration 7-7
+W: 3300
+
+iteration 7-8
+W: 2600
+
+iteration 7-9
+W: 7500
+
+iteration 7-10
+W: 19700
+
+iteration 8-1
+W: 4400
+
+iteration 8-2
+W: 8900
+
+iteration 8-3
+W: 5800
+
+iteration 8-4
+W: 2500
+
+iteration 8-5
+W: 5200
+
+iteration 8-6
+W: 12100
+
+iteration 8-7
+W: 19100
+
+iteration 8-8
+W: 5800
+
+iteration 8-9
+W: 10800
+
+iteration 8-10
+W: 9200
+
+iteration 9-1
+W: 15000
+
+iteration 9-2
+W: 12700
+
+iteration 9-3
+W: 12800
+
+iteration 9-4
+W: 9800
+
+iteration 9-5
+W: 11000
+
+iteration 9-6
+W: 1800
+
+iteration 9-7
+W: 21600
+
+iteration 9-8
+W: 20900
+
+iteration 9-9
+W: 9800
+
+iteration 9-10
+W: 7400
+
+iteration 10-1
+W: 11100
+
+iteration 10-2
+W: 14200
+
+iteration 10-3
+W: 13100
+
+iteration 10-4
+W: 3100
+
+iteration 10-5
+W: 3600
+
+iteration 10-6
+W: 3700
+
+iteration 10-7
+W: 7100
+
+iteration 10-8
+W: 2500
+
+iteration 10-9
+W: 6800
+
+iteration 10-10
+W: 12100
+

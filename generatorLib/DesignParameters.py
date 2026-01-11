@@ -1,5 +1,5 @@
 import re
-from gds_editor_ver3 import user_define_exceptions
+from KJH91_Projects.gds_editor_ver3 import user_define_exceptions
 import sys
 import os
 import user_setup
@@ -1067,11 +1067,69 @@ def run_for_process_update():
     if _Technology == 'SS28nm':
         _LayerMapping.update({'NCAP': _LayerMappingTmp[('NCAP', 'drawing')]})
 
+    # if _Technology == 'SS28nm':
+    #     _LayerMapping.update({'LVS_dr1': _LayerMappingTmp[('LVS', 'drawing1')]})
+    #     _LayerMapping.update({'LVS_dr2': _LayerMappingTmp[('LVS', 'drawing2')]})
+    #     _LayerMapping.update({'LVS_dr2': _LayerMappingTmp[('LVS', 'drawing2')]})
+    #     _LayerMapping.update({'LVS_dr4': _LayerMappingTmp[('LVS', 'drawing4')]})
     if _Technology == 'SS28nm':
-        _LayerMapping.update({'LVS_dr1': _LayerMappingTmp[('LVS', 'drawing1')]})
-        _LayerMapping.update({'LVS_dr2': _LayerMappingTmp[('LVS', 'drawing2')]})
-        _LayerMapping.update({'LVS_dr2': _LayerMappingTmp[('LVS', 'drawing2')]})
-        _LayerMapping.update({'LVS_dr4': _LayerMappingTmp[('LVS', 'drawing4')]})
+        _LayerMapping.update({'LVS': _LayerMappingTmp[('LVS', 'drawing')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS1': _LayerMappingTmp[('LVS', 'drawing1')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS2': _LayerMappingTmp[('LVS', 'drawing2')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS3': _LayerMappingTmp[('LVS', 'drawing3')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS4': _LayerMappingTmp[('LVS', 'drawing4')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS5': _LayerMappingTmp[('LVS', 'drawing5')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS6': _LayerMappingTmp[('LVS', 'drawing6')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS7': _LayerMappingTmp[('LVS', 'drawing7')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS8': _LayerMappingTmp[('LVS', 'drawing8')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS9': _LayerMappingTmp[('LVS', 'drawing9')]})
+
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS10': _LayerMappingTmp[('LVS1', 'drawing')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS11': _LayerMappingTmp[('LVS1', 'drawing1')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS12': _LayerMappingTmp[('LVS1', 'drawing2')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS13': _LayerMappingTmp[('LVS1', 'drawing3')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS14': _LayerMappingTmp[('LVS1', 'drawing4')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS15': _LayerMappingTmp[('LVS1', 'drawing5')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS16': _LayerMappingTmp[('LVS1', 'drawing6')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS17': _LayerMappingTmp[('LVS1', 'drawing7')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS18': _LayerMappingTmp[('LVS1', 'drawing8')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS19': _LayerMappingTmp[('LVS1', 'drawing9')]})
+
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS20': _LayerMappingTmp[('LVS2', 'drawing')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS21': _LayerMappingTmp[('LVS2', 'drawing1')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS22': _LayerMappingTmp[('LVS2', 'drawing2')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS23': _LayerMappingTmp[('LVS2', 'drawing3')]})
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'LVS24': _LayerMappingTmp[('LVS2', 'drawing4')]})
+
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'BIPOLAR': _LayerMappingTmp[('BIPOLAR', 'drawing')]})
+
+    if _Technology == 'SS28nm':
+        _LayerMapping.update({'SBLK': _LayerMappingTmp[('SBLK', 'drawing')]})
 
     _LayerMapFile.close()
     ########################################################################################

@@ -1,0 +1,19 @@
+iteration 1-1
+RL_Width: 2300
+RL_Length: 1800
+W1_num_finger: 12
+W1_finger_width: 600
+W2_num_finger: 8
+W2_finger_width: 800
+RS_Width: 1850
+RS_Length: 2400
+CS_Width: 4160
+CS_Length: 7800
+
+#1
+DC center = 0.33V
+t_rise = 18.5ps
+t_fall = 3.1ps
+t_prop_h2l = 19.8ps
+t_prop_l2h = 3.9ps
+

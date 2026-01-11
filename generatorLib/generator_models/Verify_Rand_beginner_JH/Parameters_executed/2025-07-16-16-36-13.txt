@@ -1,0 +1,110 @@
+iteration 1-1
+finger_N1: 18
+finger_N2: 2
+finger_P1: 13
+finger_P5: 2
+finger_N5: 15
+finger_N4: 3
+finger_P4: 1
+L: 30
+finger_P3: 20
+
+iteration 1-2
+finger_N1: 8
+finger_N2: 6
+finger_P1: 14
+finger_P5: 10
+finger_N5: 5
+finger_N4: 10
+finger_P4: 1
+L: 30
+finger_P3: 16
+
+iteration 1-3
+finger_N1: 12
+finger_N2: 1
+finger_P1: 12
+finger_P5: 10
+finger_N5: 6
+finger_N4: 6
+finger_P4: 14
+L: 30
+finger_P3: 7
+
+iteration 1-4
+finger_N1: 20
+finger_N2: 18
+finger_P1: 8
+finger_P5: 18
+finger_N5: 11
+finger_N4: 18
+finger_P4: 1
+L: 30
+finger_P3: 17
+
+iteration 1-5
+finger_N1: 20
+finger_N2: 2
+finger_P1: 10
+finger_P5: 18
+finger_N5: 7
+finger_N4: 20
+finger_P4: 8
+L: 30
+finger_P3: 7
+
+iteration 1-6
+finger_N1: 14
+finger_N2: 7
+finger_P1: 5
+finger_P5: 18
+finger_N5: 20
+finger_N4: 18
+finger_P4: 3
+L: 30
+finger_P3: 9
+
+iteration 1-7
+finger_N1: 16
+finger_N2: 5
+finger_P1: 5
+finger_P5: 7
+finger_N5: 7
+finger_N4: 12
+finger_P4: 2
+L: 30
+finger_P3: 9
+
+iteration 1-8
+finger_N1: 20
+finger_N2: 7
+finger_P1: 16
+finger_P5: 9
+finger_N5: 3
+finger_N4: 11
+finger_P4: 8
+L: 30
+finger_P3: 9
+
+iteration 1-9
+finger_N1: 6
+finger_N2: 20
+finger_P1: 11
+finger_P5: 5
+finger_N5: 15
+finger_N4: 13
+finger_P4: 6
+L: 30
+finger_P3: 16
+
+iteration 1-10
+finger_N1: 4
+finger_N2: 15
+finger_P1: 11
+finger_P5: 9
+finger_N5: 4
+finger_N4: 6
+finger_P4: 14
+L: 30
+finger_P3: 7
+

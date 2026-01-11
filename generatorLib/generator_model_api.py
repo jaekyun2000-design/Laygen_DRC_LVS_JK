@@ -7,7 +7,8 @@ dir_check=os.getcwd()
 if 'generator_model_path' in user_setup.__dict__ and user_setup.generator_model_path:
     generator_model_path = user_setup.generator_model_path
 else:
-    generator_model_path = './generatorLib/generator_models'
+    generator_model_path = '.generatorLib/generator_models'
+    generator_model_path = '.generatorLib/generator_models'
 
 if 'generatorLib' in dir_check or 'PyQTInterface' in dir_check:
     os.chdir('..')

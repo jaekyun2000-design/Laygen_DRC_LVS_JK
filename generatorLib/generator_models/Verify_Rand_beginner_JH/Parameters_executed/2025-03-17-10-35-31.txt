@@ -1,0 +1,12 @@
+iteration 1-1
+RL_Width: 1180
+RL_Length: 1210
+W1_num_finger: 11
+W1_finger_width: 980
+W2_num_finger: 12
+W2_finger_width: 1170
+RS_Width: 1180
+RS_Length: 1950
+CS_Width: 2774
+CS_Length: 6010
+
