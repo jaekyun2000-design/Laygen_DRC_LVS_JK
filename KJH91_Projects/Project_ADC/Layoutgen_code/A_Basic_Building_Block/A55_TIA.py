@@ -3452,7 +3452,8 @@ class _TIA_YCH(StickDiagram_KJH1._StickDiagram_KJH):
         ## LVS correction 01/12
         tmp1 = self.get_param_KJH4('BND_Met7Layer_amp1inn_1stFB')
         tmp2 = self.get_param_KJH4('SRF_1stFB', 'BND_Met4Layer_PortX_Conn')
-        if ((tmp2[0][0][0]['_XY_left'][0] - 100 < tmp1[0][0]['_XY_right'][0] < tmp2[0][0][0]['_XY_right'][0]) or (tmp2[0][0][0]['_XY_left'][0] < tmp1[0][0]['_XY_left'][0] < tmp2[0][0][0]['_XY_right'][0] + 100)):
+        if ((tmp2[0][0][0]['_XY_left'][0] - 100 < tmp1[0][0]['_XY_right'][0] < tmp2[0][0][0]['_XY_right'][0]) or (tmp2[0][0][0]['_XY_left'][0] < tmp1[0][0]['_XY_left'][0] < tmp2[0][0][0]['_XY_right'][0] + 100) or
+        tmp1[0][0]['_XY_left'][0] < tmp2[0][0][0]['_XY_cent'][0] < tmp1[0][0]['_XY_right'][0]):
             # Define ViaX Parameter
             _Caculation_Parameters = copy.deepcopy(A02_ViaStack_KJH2_YCH._ViaStack_KJH2._ParametersForDesignCalculation)
             _Caculation_Parameters['_Layer1'] = 3
