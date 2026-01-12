@@ -14,7 +14,14 @@
 
 hostname = '141.223.24.54'
 port = '1450'
-username = 'jkim00'
-password = 'icandoit'
-TECHDIR = '/mnt/sdc/jkim00/OPUS/ss28lpp_rf'
-RUNDIR = '/mnt/sdc/jkim00/OPUS/ss28lpp_rf/RandGen'
+username = 'ych0130'
+password = 'ych0130'
+TECHDIR = '/mnt/sdb/ych0130/OPUS/CAD_S28nm_Workspace'
+RUNDIR = '/mnt/sdb/ych0130/OPUS/CAD_S28nm_Workspace/RandGen'
+
+# hostname = '141.223.24.54'
+# port = '1450'
+# username = 'jkim00'
+# password = 'icandoit'
+# TECHDIR = '/mnt/sdc/jkim00/OPUS/ss28lpp_rf'
+# RUNDIR = '/mnt/sdc/jkim00/OPUS/ss28lpp_rf/RandGen'

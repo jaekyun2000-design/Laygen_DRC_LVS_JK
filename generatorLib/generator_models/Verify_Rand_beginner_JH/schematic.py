@@ -930,12 +930,12 @@ def makeTIASche(word, param):
 
     now_str = datetime.now().strftime("%b %d %H:%M:%S %Y")
     if not os.path.exists(
-            rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\TIA'):
+            rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\TIA'):
         os.makedirs(
-            rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\TIA')
+            rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\TIA')
 
     with open(
-            rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\TIA\TIA{word}.src.net',
+            rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\TIA\TIA{word}.src.net',
             'w') as f:
         f.write("************************************************************************\n")
         f.write("* auCdl Netlist:\n")

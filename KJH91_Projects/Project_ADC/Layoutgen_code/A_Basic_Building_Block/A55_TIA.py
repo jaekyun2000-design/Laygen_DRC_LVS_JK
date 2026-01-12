@@ -2992,39 +2992,39 @@ class _TIA_YCH(StickDiagram_KJH1._StickDiagram_KJH):
         tmp1 = self.get_param_KJH4('SRF_2ndFB', 'BND_MetLayer_CBotConn_3')
         tmp2 = self.get_param_KJH4('SRF_amp2inn_2ndFB_ViaM5M7', 'SRF_ViaM5M6', 'BND_Met5Layer')
 
-        if (tmp1[0][0][0]['_XY_right'][0] < tmp2[0][0][0][0]['_XY_left'][0]):
-            self._DesignParameter['BND_Metal5Layer_amp2inn_2ndFB_extension_2'] = self._BoundaryElementDeclaration(
-                _Layer=DesignParameters._LayerMapping['METAL5'][0],
-                _Datatype=DesignParameters._LayerMapping['METAL5'][1],
-                _XWidth=None,
-                _YWidth=None,
-                _XYCoordinates=[],
-            )
-
-            tmp1 = self.get_param_KJH4('SRF_2ndFB', 'BND_MetLayer_CBotConn_3')
-            tmp2 = self.get_param_KJH4('SRF_amp2inn_2ndFB_ViaM5M7', 'SRF_ViaM5M6', 'BND_Met5Layer')
-
-            self._DesignParameter['BND_Metal5Layer_amp2inn_2ndFB_extension_2']['_XWidth'] = abs(
-                tmp2[0][0][0][0]['_XY_left'][0] - tmp1[0][0][0]['_XY_left'][0])
-            self._DesignParameter['BND_Metal5Layer_amp2inn_2ndFB_extension_2']['_YWidth'] = tmp1[0][0][0]['_Ywidth']
-
-            # Calculate Sref XYcoord
-            # initialize coordinate
-            self._DesignParameter['BND_Metal5Layer_amp2inn_2ndFB_extension_2']['_XYCoordinates'] = [[0, 0]]
-            tmpXY = []
-            target_coord = tmp1[0][0][0]['_XY_up_left']
-
-            tmp3 = self.get_param_KJH4('BND_Metal5Layer_amp2inn_2ndFB_extension_2')
-            approaching_coord = tmp3[0][0]['_XY_up_right']
-
-            # Sref coord
-            Scoord = tmp3[0][0]['_XY_origin']
-            # Cal
-            New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
-            tmpXY.append(New_Scoord)
-
-            ## Define Coordinates
-            self._DesignParameter['BND_Metal5Layer_amp2inn_2ndFB_extension_2']['_XYCoordinates'] = tmpXY
+        # if (tmp1[0][0][0]['_XY_right'][0] < tmp2[0][0][0][0]['_XY_left'][0]):
+        #     self._DesignParameter['BND_Metal5Layer_amp2inn_2ndFB_extension_2'] = self._BoundaryElementDeclaration(
+        #         _Layer=DesignParameters._LayerMapping['METAL5'][0],
+        #         _Datatype=DesignParameters._LayerMapping['METAL5'][1],
+        #         _XWidth=None,
+        #         _YWidth=None,
+        #         _XYCoordinates=[],
+        #     )
+        #
+        #     tmp1 = self.get_param_KJH4('SRF_2ndFB', 'BND_MetLayer_CBotConn_3')
+        #     tmp2 = self.get_param_KJH4('SRF_amp2inn_2ndFB_ViaM5M7', 'SRF_ViaM5M6', 'BND_Met5Layer')
+        #
+        #     self._DesignParameter['BND_Metal5Layer_amp2inn_2ndFB_extension_2']['_XWidth'] = abs(
+        #         tmp2[0][0][0][0]['_XY_left'][0] - tmp1[0][0][0]['_XY_left'][0])
+        #     self._DesignParameter['BND_Metal5Layer_amp2inn_2ndFB_extension_2']['_YWidth'] = tmp1[0][0][0]['_Ywidth']
+        #
+        #     # Calculate Sref XYcoord
+        #     # initialize coordinate
+        #     self._DesignParameter['BND_Metal5Layer_amp2inn_2ndFB_extension_2']['_XYCoordinates'] = [[0, 0]]
+        #     tmpXY = []
+        #     target_coord = tmp1[0][0][0]['_XY_up_left']
+        #
+        #     tmp3 = self.get_param_KJH4('BND_Metal5Layer_amp2inn_2ndFB_extension_2')
+        #     approaching_coord = tmp3[0][0]['_XY_up_right']
+        #
+        #     # Sref coord
+        #     Scoord = tmp3[0][0]['_XY_origin']
+        #     # Cal
+        #     New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+        #     tmpXY.append(New_Scoord)
+        #
+        #     ## Define Coordinates
+        #     self._DesignParameter['BND_Metal5Layer_amp2inn_2ndFB_extension_2']['_XYCoordinates'] = tmpXY
 
         ### amp2 output - RC feedback connection
         self._DesignParameter['BND_MetalLayer_amp2out_2ndFB'] = self._BoundaryElementDeclaration(
@@ -3448,6 +3448,105 @@ class _TIA_YCH(StickDiagram_KJH1._StickDiagram_KJH):
         tmpXY.append(New_Scoord)
         # Define
         self._DesignParameter['SRF_amp1inn_1stFB_ViaM3M7']['_XYCoordinates'] = tmpXY
+
+        ## LVS correction 01/12
+        tmp1 = self.get_param_KJH4('BND_Met7Layer_amp1inn_1stFB')
+        tmp2 = self.get_param_KJH4('SRF_1stFB', 'BND_Met4Layer_PortX_Conn')
+        if ((tmp2[0][0][0]['_XY_left'][0] - 100 < tmp1[0][0]['_XY_right'][0] < tmp2[0][0][0]['_XY_right'][0]) or (tmp2[0][0][0]['_XY_left'][0] < tmp1[0][0]['_XY_left'][0] < tmp2[0][0][0]['_XY_right'][0] + 100)):
+            # Define ViaX Parameter
+            _Caculation_Parameters = copy.deepcopy(A02_ViaStack_KJH2_YCH._ViaStack_KJH2._ParametersForDesignCalculation)
+            _Caculation_Parameters['_Layer1'] = 3
+            _Caculation_Parameters['_Layer2'] = 7
+            _Caculation_Parameters['_COX'] = None
+            _Caculation_Parameters['_COY'] = None
+
+            # Sref ViaX declaration
+            self._DesignParameter['SRF_amp1inn_1stFB_ViaM3M7'] = self._SrefElementDeclaration(
+                _DesignObj=A02_ViaStack_KJH2_YCH._ViaStack_KJH2(_DesignParameter=None,
+                                                                _Name='{}:SRF_amp1inn_1stFB_ViaM3M7'.format(_Name)))[0]
+
+            # Define Sref Relection
+            self._DesignParameter['SRF_amp1inn_1stFB_ViaM3M7']['_Reflect'] = [0, 0, 0]
+
+            # Define Sref Angle
+            self._DesignParameter['SRF_amp1inn_1stFB_ViaM3M7']['_Angle'] = 0
+
+            # Calcuate _COX
+            tmp1 = self.get_param_KJH4('BND_Met7Layer_amp1inn_1stFB')
+            tmpWidth = tmp1[0][0]['_Xwidth']
+            _Caculation_Parameters['_COX'] = int(max(2,
+                                                     (
+                                                                 tmpWidth - 2 * _DRCObj._Metal1MinEnclosureVia3 - _DRCObj._VIAxMinWidth) / (
+                                                                 _DRCObj._VIAxMinWidth + _DRCObj._VIAxMinSpace2) + 1
+                                                     ))
+
+            # Calcuate _COY
+            tmp2 = self.get_param_KJH4('SRF_1stFB', 'SRF_Res_Series', 'SRF_TG_Switch', 'BND_Metal3Layer_Hrz_PortAB')
+            tmpWidth = tmp2[0][0][0][0][0]['_Ywidth']
+            _Caculation_Parameters['_COY'] = int(max(2,
+                                                     (
+                                                                 tmpWidth - 2 * _DRCObj._Metal1MinEnclosureVia3 - _DRCObj._VIAxMinWidth) / (
+                                                                 _DRCObj._VIAxMinWidth + _DRCObj._VIAxMinSpace2) + 1
+                                                     ))
+
+            # Generate Metal(x), Metal(x+1) and C0(Viax) layer
+            self._DesignParameter['SRF_amp1inn_1stFB_ViaM3M7']['_DesignObj']._CalculateDesignParameterXmin(
+                **_Caculation_Parameters)  ## Option: Xmin, Ymin
+
+            # Calculate Sref XYcoord
+            tmpXY = []
+            # initialized Sref coordinate
+            self._DesignParameter['SRF_amp1inn_1stFB_ViaM3M7']['_XYCoordinates'] = [[0, 0]]
+
+            # Calculate
+            # Target_coord
+            tmp1 = self.get_param_KJH4('SRF_1stFB', 'BND_Met4Layer_PortX_Conn')
+            target_coord = [tmp1[0][0][0]['_XY_left'][0] - 200, tmp2[0][0][0][0][0]['_XY_right'][1]]
+            # Approaching_coord
+            tmp2 = self.get_param_KJH4('SRF_amp1inn_1stFB_ViaM3M7', 'SRF_ViaM3M4', 'BND_Met4Layer')
+            approaching_coord = tmp2[0][0][0][0]['_XY_right']
+            # Sref coord
+            tmp3 = self.get_param_KJH4('SRF_amp1inn_1stFB_ViaM3M7')
+            Scoord = tmp3[0][0]['_XY_origin']
+            # Cal
+            New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+            tmpXY.append(New_Scoord)
+            # Define
+            self._DesignParameter['SRF_amp1inn_1stFB_ViaM3M7']['_XYCoordinates'] = tmpXY
+
+            ### amp1 inn - 1st RC feedback connection
+            self._DesignParameter['BND_Met7Layer_amp1inn_1stFB_extension'] = self._BoundaryElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL7'][0],
+                _Datatype=DesignParameters._LayerMapping['METAL7'][1],
+                _XWidth=None,
+                _YWidth=None,
+                _XYCoordinates=[],
+            )
+
+            tmp1 = self.get_param_KJH4('SRF_amp1inn_1stFB_ViaM3M7', 'SRF_ViaM3M4', 'BND_Met4Layer')
+            tmp2 = self.get_param_KJH4('BND_Met7Layer_amp1inn_1stFB')
+            tmp3 = self.get_param_KJH4('SRF_1stFB', 'SRF_Res_Series', 'SRF_TG_Switch', 'BND_Metal3Layer_Hrz_PortAB')
+
+            self._DesignParameter['BND_Met7Layer_amp1inn_1stFB_extension']['_XWidth'] = abs(tmp2[0][0]['_XY_right'][0] - tmp1[0][0][0][0]['_XY_left'][0])
+            self._DesignParameter['BND_Met7Layer_amp1inn_1stFB_extension']['_YWidth'] = tmp3[0][0][0][0][0]['_Ywidth']
+
+            # Calculate Sref XYcoord
+            # initialize coordinate
+            self._DesignParameter['BND_Met7Layer_amp1inn_1stFB_extension']['_XYCoordinates'] = [[0, 0]]
+            tmpXY = []
+            target_coord = tmp2[0][0]['_XY_down_right']
+
+            tmp3 = self.get_param_KJH4('BND_Met7Layer_amp1inn_1stFB_extension')
+            approaching_coord = tmp3[0][0]['_XY_down_right']
+
+            # Sref coord
+            Scoord = tmp3[0][0]['_XY_origin']
+            # Cal
+            New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+            tmpXY.append(New_Scoord)
+
+            ## Define Coordinates
+            self._DesignParameter['BND_Met7Layer_amp1inn_1stFB_extension']['_XYCoordinates'] = tmpXY
 
 
         #

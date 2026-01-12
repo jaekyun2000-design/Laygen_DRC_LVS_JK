@@ -3527,7 +3527,7 @@ if __name__ == '__main__':
     from KJH91_Projects.Project_ADC.Library_and_Engine import DRCchecker_KJH0
     import random
 
-    for _iter in range(10):
+    for _iter in range(1):
 
         # libname = 'Proj_A55_TIA_v{}'.format(_iter + 1)
         cellname = 'A55_TIA_v{}'.format(_iter + 1)
@@ -3712,18 +3712,18 @@ if __name__ == '__main__':
             # ResA
             _ResWidth_resA=random.randrange(1000,2000,100),
             _ResLength_resA=random.randrange(2000,3000,100), # 원래는 2800 고정 사용
-            _SeriesStripes_resA=random.randrange(3,12,2),
+            _SeriesStripes_resA=random.randrange(3,8,2),
             _ParallelStripes_resA=1,
 
             ### 2nd Stage FB
             # Res_2nd
             _ResWidth_2nd=random.randrange(1000, 2000, 100),
             _ResLength_2nd=random.randrange(2000,10000,1000),
-            _SeriesStripes_2nd=random.randrange(1,20,2),
+            _SeriesStripes_2nd=random.randrange(3,20,2),
             _ParallelStripes_2nd=1,
 
             # Cap_2nd
-            _Length_2nd=random.randrange(6000, 10000, 1000),
+            _Length_2nd=random.randrange(8000, 11000, 1000),
             _LayoutOption_2nd=[2, 3, 4],
             _NumFigPair_2nd=random.randrange(10,101,1),
             _Array_2nd_row=2,

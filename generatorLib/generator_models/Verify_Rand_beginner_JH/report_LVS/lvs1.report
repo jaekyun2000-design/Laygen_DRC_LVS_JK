@@ -15,7 +15,7 @@ REPORT FILE NAME:         TIA.lvs.report
 LAYOUT NAME:              ./svdb/TIA.sp ('TIA')
 SOURCE NAME:              ./TIA.src.net ('TIA')
 RULE FILE:                _calibre.run_
-CREATION TIME:            Sat Jan 10 11:27:54 2026
+CREATION TIME:            Sun Jan 11 16:38:32 2026
 CURRENT DIRECTORY:        /mnt/sdc/jkim00/OPUS/ss28lpp_rf/RandGen/1
 USER NAME:                jkim00
 CALIBRE VERSION:          v2021.2_28.15    Tue May 4 15:24:23 PDT 2021
@@ -26,13 +26,16 @@ CALIBRE VERSION:          v2021.2_28.15    Tue May 4 15:24:23 PDT 2021
 
 
 
-                         #       ###################       _   _   
-                        #        #                 #       *   *   
-                   #   #         #     CORRECT     #         |     
-                    # #          #                 #       \___/  
-                     #           ###################               
+                  #   #         #####################  
+                   # #          #                   #  
+                    #           #     INCORRECT     #  
+                   # #          #                   #  
+                  #   #         #####################  
 
 
+  Error:    Different numbers of nets.
+  Error:    Connectivity errors.
+  Error:    Property errors.
   Warning:  Ambiguity points were found and resolved arbitrarily.
 
 
@@ -42,7 +45,7 @@ CALIBRE VERSION:          v2021.2_28.15    Tue May 4 15:24:23 PDT 2021
 
   Result         Layout                        Source
   -----------    -----------                   --------------
-  CORRECT        TIA                           TIA
+  INCORRECT      TIA                           TIA
 
 
 
@@ -807,13 +810,16 @@ o LVS Setup:
 
 
 
-                         #       ###################       _   _   
-                        #        #                 #       *   *   
-                   #   #         #     CORRECT     #         |     
-                    # #          #                 #       \___/  
-                     #           ###################               
+                  #   #         #####################  
+                   # #          #                   #  
+                    #           #     INCORRECT     #  
+                   # #          #                   #  
+                  #   #         #####################  
 
 
+  Error:    Different numbers of nets (see below).
+  Error:    Connectivity errors.
+  Error:    Property errors.
   Warning:  Ambiguity points were found and resolved arbitrarily.
 
 LAYOUT CELL NAME:         TIA
@@ -826,14 +832,14 @@ INITIAL NUMBERS OF OBJECTS
 
                 Layout    Source         Component Type
                 ------    ------         --------------
- Nets:             510        53    *
+ Nets:             299        32    *
 
- Instances:       1762        64    *    ME (4 pins)
+ Instances:        926        36    *    ME (4 pins)
                     14        14         C (3 pins)
-                   473        16    *    R (3 pins)
-                     8         0    *    D (2 pins)
+                   279         9    *    R (3 pins)
+                     5         0    *    D (2 pins)
                 ------    ------
- Total Inst:      2257        94
+ Total Inst:      1224        59
 
 
 NUMBERS OF OBJECTS AFTER TRANSFORMATION
@@ -841,16 +847,139 @@ NUMBERS OF OBJECTS AFTER TRANSFORMATION
 
                 Layout    Source         Component Type
                 ------    ------         --------------
- Nets:              53        53
+ Nets:              29        32    *
 
- Instances:         64        64         ME (4 pins)
+ Instances:         36        36         ME (4 pins)
                     14        14         C (3 pins)
-                    14        14         R (3 pins)
+                     7         7         R (3 pins)
                 ------    ------
- Total Inst:        92        92
+ Total Inst:        57        57
 
 
        * = Number of objects in layout different from number in source.
+
+
+
+**************************************************************************************************************
+                                 INCORRECT OBJECTS
+**************************************************************************************************************
+
+
+LEGEND:
+-------
+
+  ne  = Naming Error (same layout name found in source
+        circuit, but object was matched otherwise).
+
+
+**************************************************************************************************************
+                                   INCORRECT NETS
+
+DISC#  LAYOUT NAME                                               SOURCE NAME
+**************************************************************************************************************
+
+  1    Net IIN                                                   IIN
+       --- 19 Connections On This Net ---                        --- 8 Connections On This Net ---
+       --------------------------                                --------------------------
+       
+       M902(4.9217,0.1050):d                                     ** missing connection **
+       M737(-3.9623,-36.9110):d                                  ** missing connection **
+       M736(-3.9623,-41.6740):d                                  ** missing connection **
+       M736(-3.9623,-41.6740):s                                  ** missing connection **
+       M435(3.9067,-19.1950):d                                   ** missing connection **
+       M386(1.0067,-19.1950):g                                   ** missing connection **
+       M303(-3.9623,-33.4010):d                                  ** missing connection **
+       M302(-3.9623,-38.0810):d                                  ** missing connection **
+       M301(-3.9623,-40.0040):d                                  ** missing connection **
+       R51(-44.9077,-41.2350):neg                                ** missing connection **
+       R51(-44.9077,-41.2350):pos                                ** missing connection **
+       
+
+--------------------------------------------------------------------------------------------------------------
+
+  2    Net 607                                                   XI66/XI21/net4
+       --- 3 Connections On This Net ---                         --- 3 Connections On This Net ---
+       --------------------------                                --------------------------
+       
+       M737(-3.9623,-36.9110):s                                  ** missing connection **
+       M302(-3.9623,-38.0810):s                                  ** missing connection **
+       
+       ** missing connection **                                  XI66/XI21/XI2/MN2:d
+       ** missing connection **                                  XI66/XI21/XI2/MP0:d
+       
+
+--------------------------------------------------------------------------------------------------------------
+
+  3    Net 611                                                   XI12/net37
+       --- 3 Connections On This Net ---                         --- 3 Connections On This Net ---
+       --------------------------                                --------------------------
+       
+       R265(7.7433,-11.0950):pos                                 ** missing connection **
+       
+       ** missing connection **                                  XI12/RR9:pos
+       
+
+--------------------------------------------------------------------------------------------------------------
+
+  4    Net 322                                                   net28
+                                                                 XI77/VOUT1
+       --- 13 Connections On This Net ---                        --- 13 Connections On This Net ---
+
+--------------------------------------------------------------------------------------------------------------
+
+  5    Net 272                                                   XI66/XI21/XI2/PASSB
+       --- 3 Connections On This Net ---                         --- 3 Connections On This Net ---
+       --------------------------                                --------------------------
+       
+       M1154(22.5917,-41.6740):d                                 ** missing connection **
+       M691(22.5917,-40.0040):d                                  ** missing connection **
+       
+       ** missing connection **                                  XI66/XI21/XI2/XI3<0>/MP0:d
+       ** missing connection **                                  XI66/XI21/XI2/XI3<0>/MN2:d
+       
+
+--------------------------------------------------------------------------------------------------------------
+
+  6    Net 276                                                   XI66/XI17/PASSB
+       --- 3 Connections On This Net ---                         --- 3 Connections On This Net ---
+       --------------------------                                --------------------------
+       
+       M1156(22.5917,-35.0710):d                                 ** missing connection **
+       M693(22.5917,-33.4010):d                                  ** missing connection **
+       
+       ** missing connection **                                  XI66/XI17/XI3<0>/MP0:d
+       ** missing connection **                                  XI66/XI17/XI3<0>/MN2:d
+       
+
+--------------------------------------------------------------------------------------------------------------
+
+  7    Net 608                                                   ** no similar net **
+
+--------------------------------------------------------------------------------------------------------------
+
+  8    ** no similar net **                                      XI66/rdac
+
+--------------------------------------------------------------------------------------------------------------
+
+  9    ** no similar net **                                      XI12/VOUT1
+
+--------------------------------------------------------------------------------------------------------------
+
+ 10    ** no similar net **                                      XI66/XI20/net4
+
+
+
+**************************************************************************************************************
+                                      PROPERTY ERRORS
+
+DISC#  LAYOUT                                                    SOURCE                      ERROR
+**************************************************************************************************************
+
+ 11    R265(7.7433,-11.0950)  R(opppcres)                        XI66/RR17  R(opppcres)
+       l: 0.8 u                                                  l: 1.292 u                 0.492 u
+       w: 0.7 u                                                  w: 0.48 u                   0.22 u
+       pbar: 2                                                   pbar: 1                        1 
+       s: 1                                                      s: 67                         66 
 
 
 
@@ -862,24 +991,24 @@ NUMBERS OF OBJECTS AFTER TRANSFORMATION
                   Matched    Matched    Unmatched    Unmatched    Component
                    Layout     Source       Layout       Source    Type
                   -------    -------    ---------    ---------    ---------
-   Nets:               53         53            0            0
+   Nets:               28         29            1            3
 
-   Instances:          32         32            0            0    ME(egnfet)
-                       32         32            0            0    ME(egpfet)
+   Instances:          18         18            0            0    ME(egnfet)
+                       18         18            0            0    ME(egpfet)
                        14         14            0            0    C(hdvncap)
-                       14         14            0            0    R(opppcres)
+                        6          6            1            1    R(opppcres)
                   -------    -------    ---------    ---------
-   Total Inst:         92         92            0            0
+   Total Inst:         56         56            1            1
 
 
 o Statistics:
 
-   8 layout instances were filtered and their pins removed from adjoining nets.
+   5 layout instances were filtered and their pins removed from adjoining nets.
 
-   1762 layout mos transistors were reduced to 64.
-     1698 mos transistors were deleted by parallel reduction.
+   926 layout mos transistors were reduced to 36.
+     890 mos transistors were deleted by parallel reduction.
 
-   473 series/parallel layout resistors were reduced to 14.  457 connecting nets were deleted.
+   279 series/parallel layout resistors were reduced to 7.  270 connecting nets were deleted.
    4 parallel source resistors were reduced to 2.
 
    9 instances were matched arbitrarily.
@@ -887,9 +1016,8 @@ o Statistics:
 
 o Initial Correspondence Points:
 
-   Nets:         VDD VSS VREF_TIA Ctrl_TIGainA Ctrl_TIGainP<0> Ctrl_TIGainP<1> Ctrl_TIGainP<2>
-                 Ctrl_TIGainP<3> Ctrl_TIGainP<4> Ctrl_TIGainP<5> Ctrl_TIGainP<6> Ctrl_TIGainP<7>
-                 Ctrl_TIGainP<8> Ctrl_CFB IIN VOCM VOUT
+   Nets:         VDD VSS VREF_TIA Ctrl_TIGainA Ctrl_TIGainP<0> Ctrl_TIGainP<1> Ctrl_CFB IIN VOCM
+                 VOUT
 
 
 o Ambiguity Resolution Points:
@@ -904,16 +1032,157 @@ o Ambiguity Resolution Points:
                                    Instances
                                    ---------
 
-       C491(-7.6800,-17.9450)  C(hdvncap)                        XI12/CC2  C(hdvncap)
-       C493(25.7800,-17.9450)  C(hdvncap)                        XI77/CC2  C(hdvncap)
-       C483(-30.9960,-49.2060)  C(hdvncap)                       XI66/CC32  C(hdvncap)
-       C481(-39.5960,-49.2060)  C(hdvncap)                       XI66/CC26  C(hdvncap)
-       C485(27.7090,-42.8370)  C(hdvncap)                        CC32  C(hdvncap)
-       C486(27.7090,-33.0870)  C(hdvncap)                        CC31  C(hdvncap)
-       C487(34.4090,-42.8370)  C(hdvncap)                        CC30  C(hdvncap)
-       C488(34.4090,-33.0870)  C(hdvncap)                        CC29  C(hdvncap)
-       C489(41.1090,-42.8370)  C(hdvncap)                        CC28  C(hdvncap)
+       C287(-65.4020,-34.3120)  C(hdvncap)                       XI66/CC33  C(hdvncap)
+       C285(-72.7020,-34.3120)  C(hdvncap)                       XI66/CC31  C(hdvncap)
+       R6(-57.3337,-34.6320)  R(opppcres)                        XI66/XI20/RR8  R(opppcres)
+       C296(27.5300,-27.9450)  C(hdvncap)                        XI77/CC2  C(hdvncap)
+       C288(24.6590,-55.4370)  C(hdvncap)                        CC20  C(hdvncap)
+       C289(24.6590,-43.8870)  C(hdvncap)                        CC28  C(hdvncap)
+       C290(31.3590,-55.4370)  C(hdvncap)                        CC29  C(hdvncap)
+       C291(31.3590,-43.8870)  C(hdvncap)                        CC30  C(hdvncap)
+       C292(38.0590,-55.4370)  C(hdvncap)                        CC31  C(hdvncap)
 
+
+
+**************************************************************************************************************
+                             DETAILED INSTANCE CONNECTIONS
+
+       LAYOUT NAME                                               SOURCE NAME
+**************************************************************************************************************
+
+          (This section contains detailed information about connections of
+           matched instances that are involved in net discrepancies).
+
+--------------------------------------------------------------------------------------------------------------
+
+       R265(7.7433,-11.0950)  R(opppcres)                        XI66/RR17  R(opppcres)
+         neg: IIN                                                  neg: IIN
+         sub: VSS                                                  sub: VSS
+         pos: 611                                                  ** XI12/net37 **
+         ** no similar net **                                      pos: XI66/rdac
+
+--------------------------------------------------------------------------------------------------------------
+
+       M301(-3.9623,-40.0040)  ME(egnfet)                        XI66/XI17/MN2  ME(egnfet)
+         g: Ctrl_TIGainA                                           g: Ctrl_TIGainA
+         s: IIN                                                    d: IIN
+         b: VSS                                                    b: VSS
+         d: IIN                                                    ** IIN **
+         ** no similar net **                                      s: XI66/rdac
+
+--------------------------------------------------------------------------------------------------------------
+
+       M302(-3.9623,-38.0810)  ME(egnfet)                        XI66/XI20/XI2/MN2  ME(egnfet)
+         g: Ctrl_TIGainP<0>                                        g: Ctrl_TIGainP<0>
+         b: VSS                                                    b: VSS
+         s: 607                                                    ** XI66/XI21/net4 **
+         d: IIN                                                    ** IIN **
+         ** no similar net **                                      s: XI66/rdac
+         ** no similar net **                                      d: XI66/XI20/net4
+
+--------------------------------------------------------------------------------------------------------------
+
+       M303(-3.9623,-33.4010)  ME(egnfet)                        XI66/XI21/XI2/MN2  ME(egnfet)
+         g: Ctrl_TIGainP<1>                                        g: Ctrl_TIGainP<1>
+         b: VSS                                                    b: VSS
+         s: 608                                                    ** no similar net **
+         d: IIN                                                    ** IIN **
+         ** no similar net **                                      s: XI66/rdac
+         ** 607 **                                                 d: XI66/XI21/net4
+
+--------------------------------------------------------------------------------------------------------------
+
+       M386(1.0067,-19.1950)  ME(egnfet)                         XI12/MN33  ME(egnfet)
+         s: VSS                                                    s: VSS
+         d: 351                                                    d: TIStageOutput
+         b: VSS                                                    b: VSS
+         g: IIN                                                    ** IIN **
+         ** no similar net **                                      g: XI12/VOUT1
+
+--------------------------------------------------------------------------------------------------------------
+
+       M435(3.9067,-19.1950)  ME(egnfet)                         XI12/MN1  ME(egnfet)
+         g: 285                                                    g: XI12/net36
+         s: VSS                                                    s: VSS
+         b: VSS                                                    b: VSS
+         d: IIN                                                    ** IIN **
+         ** no similar net **                                      d: XI12/VOUT1
+
+--------------------------------------------------------------------------------------------------------------
+
+       M691(22.5917,-40.0040)  ME(egnfet)                        XI66/XI17/XI3<0>/MN2  ME(egnfet)
+         g: Ctrl_TIGainA                                           g: Ctrl_TIGainA
+         s: VSS                                                    s: VSS
+         b: VSS                                                    b: VSS
+         d: 272                                                    ** XI66/XI21/XI2/PASSB **
+         ** 276 **                                                 d: XI66/XI17/PASSB
+
+--------------------------------------------------------------------------------------------------------------
+
+       M693(22.5917,-33.4010)  ME(egnfet)                        XI66/XI21/XI2/XI3<0>/MN2  ME(egnfet)
+         g: Ctrl_TIGainP<1>                                        g: Ctrl_TIGainP<1>
+         s: VSS                                                    s: VSS
+         b: VSS                                                    b: VSS
+         d: 276                                                    ** XI66/XI17/PASSB **
+         ** 272 **                                                 d: XI66/XI21/XI2/PASSB
+
+--------------------------------------------------------------------------------------------------------------
+
+       M736(-3.9623,-41.6740)  ME(egpfet)                        XI66/XI21/XI2/MP0  ME(egpfet)
+         g: 272                                                    g: XI66/XI21/XI2/PASSB
+         b: VDD                                                    b: VDD
+         s: IIN                                                    ** IIN **
+         d: IIN                                                    ** IIN **
+         ** no similar net **                                      s: XI66/rdac
+         ** 607 **                                                 d: XI66/XI21/net4
+
+--------------------------------------------------------------------------------------------------------------
+
+       M737(-3.9623,-36.9110)  ME(egpfet)                        XI66/XI20/XI2/MP0  ME(egpfet)
+         g: 275                                                    g: XI66/XI20/XI2/PASSB
+         b: VDD                                                    b: VDD
+         s: 607                                                    ** XI66/XI21/net4 **
+         d: IIN                                                    ** IIN **
+         ** no similar net **                                      s: XI66/rdac
+         ** no similar net **                                      d: XI66/XI20/net4
+
+--------------------------------------------------------------------------------------------------------------
+
+       M902(4.9217,0.1050)  ME(egpfet)                           XI12/MP1  ME(egpfet)
+         g: IIN                                                    g: IIN
+         s: 609                                                    s: XI12/net38
+         b: VDD                                                    b: VDD
+         d: IIN                                                    ** IIN **
+         ** no similar net **                                      d: XI12/VOUT1
+
+--------------------------------------------------------------------------------------------------------------
+
+       M1154(22.5917,-41.6740)  ME(egpfet)                       XI66/XI17/XI3<0>/MP0  ME(egpfet)
+         g: Ctrl_TIGainA                                           g: Ctrl_TIGainA
+         s: VDD                                                    s: VDD
+         b: VDD                                                    b: VDD
+         d: 272                                                    ** XI66/XI21/XI2/PASSB **
+         ** 276 **                                                 d: XI66/XI17/PASSB
+
+--------------------------------------------------------------------------------------------------------------
+
+       M1156(22.5917,-35.0710)  ME(egpfet)                       XI66/XI21/XI2/XI3<0>/MP0  ME(egpfet)
+         g: Ctrl_TIGainP<1>                                        g: Ctrl_TIGainP<1>
+         s: VDD                                                    s: VDD
+         b: VDD                                                    b: VDD
+         d: 276                                                    ** XI66/XI17/PASSB **
+         ** 272 **                                                 d: XI66/XI21/XI2/PASSB
+
+
+
+**************************************************************************************************************
+                                  UNMATCHED OBJECTS
+       LAYOUT                                                    SOURCE
+**************************************************************************************************************
+
+       R51(-44.9077,-41.2350)  R(opppcres)                       ** unmatched instance **
+
+       ** unmatched instance **                                  XI12/RR9  R(opppcres)
 
 
 **************************************************************************************************************
@@ -921,4 +1190,4 @@ o Ambiguity Resolution Points:
 **************************************************************************************************************
 
 Total CPU Time:      1 sec
-Total Elapsed Time:  2 sec
+Total Elapsed Time:  27 sec

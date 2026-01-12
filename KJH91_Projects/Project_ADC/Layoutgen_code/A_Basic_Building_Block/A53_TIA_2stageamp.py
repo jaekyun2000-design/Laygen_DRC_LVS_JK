@@ -5267,54 +5267,54 @@ class _TIA_2stageamp(StickDiagram_KJH1._StickDiagram_KJH):
         # 4/8 초안 완성 / DRC, LVS 검증 완료
         # 12/31 clear
 
-
-        ############################################################################### add pin
-        self._DesignParameter['VDD'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[(+ (self._DesignParameter['SRF_NbodyLeft_P0P3']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['SRF_NbodyLeft_P0P3']['_XYCoordinates'][0][1] ))]], _Mag=0.3, _Angle=0, _TEXT='VDD')
-        self._DesignParameter['VSS'] = self._TextElementDeclaration(
-            _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
-            _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
-            _XYCoordinates=[[(+ (self._DesignParameter['SRF_Pbodyring']['_XYCoordinates'][0][0])),
-                             (+ (self._DesignParameter['SRF_Pbodyring']['_XYCoordinates'][0][1]))]], _Mag=0.3,
-            _Angle=0, _TEXT='VSS')
-        self._DesignParameter['VBP'] = self._TextElementDeclaration(
-            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
-            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
-            _XYCoordinates=[[(+ (self._DesignParameter['BND_Metal2Layer_Connect_P0_P3_Gate']['_XYCoordinates'][0][0])),
-                             (+ (self._DesignParameter['BND_Metal2Layer_Connect_P0_P3_Gate']['_XYCoordinates'][0][1]))]], _Mag=0.3,
-            _Angle=0, _TEXT='VBP')
-        tmp1 = self.get_param_KJH4('SRF_Nmos2_Drain_NMOS3_Source_ViaM1M2', 'SRF_ViaM1M2', 'BND_Met2Layer')
-        self._DesignParameter['VBN'] = self._TextElementDeclaration(
-            _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
-            _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
-            _XYCoordinates=[[(+ (tmp1[0][0][0][0]['_XY_cent'][0])),
-                             (+ (tmp1[0][0][0][0]['_XY_cent'][1]))]], _Mag=0.3,
-            _Angle=0, _TEXT='VBN')
-
-        tmp1 = self.get_param_KJH4('SRF_Pmos_Tr1Tr2Tr4_Nbodyring', 'SRF_Pmos_Tr1Tr2Tr4', 'SRF_Pmos_Tr1','BND_Metal4Layer_Hrz_Gate')
-        self._DesignParameter['VINN'] = self._TextElementDeclaration(
-            _Layer=DesignParameters._LayerMapping['METAL4PIN'][0],
-            _Datatype=DesignParameters._LayerMapping['METAL4PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
-            _XYCoordinates=[[(+ (tmp1[0][0][0][0][0]['_XY_cent'][0])),
-                             (+ (tmp1[0][0][0][0][0]['_XY_cent'][1]))]], _Mag=0.3,
-            _Angle=0, _TEXT='VINN')
-
-        tmp1 = self.get_param_KJH4('SRF_Pmos_Tr1Tr2Tr4_Nbodyring', 'SRF_Pmos_Tr1Tr2Tr4', 'SRF_Pmos_Tr2','BND_Metal4Layer_Hrz_Gate')
-        self._DesignParameter['VINP'] = self._TextElementDeclaration(
-            _Layer=DesignParameters._LayerMapping['METAL4PIN'][0],
-            _Datatype=DesignParameters._LayerMapping['METAL4PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
-            _XYCoordinates=[[(+ (tmp1[0][0][0][0][0]['_XY_cent'][0])),
-                             (+ (tmp1[0][0][0][0][0]['_XY_cent'][1]))]], _Mag=0.3,
-            _Angle=0, _TEXT='VINP')
-
-        tmp1 = self.get_param_KJH4('BND_Metal6Layer_Connect_C0_C1_PortA_P4_N4_Drain')
-        self._DesignParameter['VOUT'] = self._TextElementDeclaration(
-            _Layer=DesignParameters._LayerMapping['METAL6PIN'][0],
-            _Datatype=DesignParameters._LayerMapping['METAL6PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
-            _XYCoordinates=[[(+ (
-            tmp1[0][0]['_XY_cent'][0])),
-                             (+ (tmp1[0][0]['_XY_cent'][1]))]],
-            _Mag=0.3,
-            _Angle=0, _TEXT='VOUT')
+        #
+        # ############################################################################### add pin
+        # self._DesignParameter['VDD'] = self._TextElementDeclaration(_Layer=DesignParameters._LayerMapping['METAL1PIN'][0], _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0], _XYCoordinates=[[(+ (self._DesignParameter['SRF_NbodyLeft_P0P3']['_XYCoordinates'][0][0])), (+ (self._DesignParameter['SRF_NbodyLeft_P0P3']['_XYCoordinates'][0][1] ))]], _Mag=0.3, _Angle=0, _TEXT='VDD')
+        # self._DesignParameter['VSS'] = self._TextElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL1PIN'][0],
+        #     _Datatype=DesignParameters._LayerMapping['METAL1PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
+        #     _XYCoordinates=[[(+ (self._DesignParameter['SRF_Pbodyring']['_XYCoordinates'][0][0])),
+        #                      (+ (self._DesignParameter['SRF_Pbodyring']['_XYCoordinates'][0][1]))]], _Mag=0.3,
+        #     _Angle=0, _TEXT='VSS')
+        # self._DesignParameter['VBP'] = self._TextElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+        #     _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
+        #     _XYCoordinates=[[(+ (self._DesignParameter['BND_Metal2Layer_Connect_P0_P3_Gate']['_XYCoordinates'][0][0])),
+        #                      (+ (self._DesignParameter['BND_Metal2Layer_Connect_P0_P3_Gate']['_XYCoordinates'][0][1]))]], _Mag=0.3,
+        #     _Angle=0, _TEXT='VBP')
+        # tmp1 = self.get_param_KJH4('SRF_Nmos2_Drain_NMOS3_Source_ViaM1M2', 'SRF_ViaM1M2', 'BND_Met2Layer')
+        # self._DesignParameter['VBN'] = self._TextElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL2PIN'][0],
+        #     _Datatype=DesignParameters._LayerMapping['METAL2PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
+        #     _XYCoordinates=[[(+ (tmp1[0][0][0][0]['_XY_cent'][0])),
+        #                      (+ (tmp1[0][0][0][0]['_XY_cent'][1]))]], _Mag=0.3,
+        #     _Angle=0, _TEXT='VBN')
+        #
+        # tmp1 = self.get_param_KJH4('SRF_Pmos_Tr1Tr2Tr4_Nbodyring', 'SRF_Pmos_Tr1Tr2Tr4', 'SRF_Pmos_Tr1','BND_Metal4Layer_Hrz_Gate')
+        # self._DesignParameter['VINN'] = self._TextElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL4PIN'][0],
+        #     _Datatype=DesignParameters._LayerMapping['METAL4PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
+        #     _XYCoordinates=[[(+ (tmp1[0][0][0][0][0]['_XY_cent'][0])),
+        #                      (+ (tmp1[0][0][0][0][0]['_XY_cent'][1]))]], _Mag=0.3,
+        #     _Angle=0, _TEXT='VINN')
+        #
+        # tmp1 = self.get_param_KJH4('SRF_Pmos_Tr1Tr2Tr4_Nbodyring', 'SRF_Pmos_Tr1Tr2Tr4', 'SRF_Pmos_Tr2','BND_Metal4Layer_Hrz_Gate')
+        # self._DesignParameter['VINP'] = self._TextElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL4PIN'][0],
+        #     _Datatype=DesignParameters._LayerMapping['METAL4PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
+        #     _XYCoordinates=[[(+ (tmp1[0][0][0][0][0]['_XY_cent'][0])),
+        #                      (+ (tmp1[0][0][0][0][0]['_XY_cent'][1]))]], _Mag=0.3,
+        #     _Angle=0, _TEXT='VINP')
+        #
+        # tmp1 = self.get_param_KJH4('BND_Metal6Layer_Connect_C0_C1_PortA_P4_N4_Drain')
+        # self._DesignParameter['VOUT'] = self._TextElementDeclaration(
+        #     _Layer=DesignParameters._LayerMapping['METAL6PIN'][0],
+        #     _Datatype=DesignParameters._LayerMapping['METAL6PIN'][1], _Presentation=[0, 1, 2], _Reflect=[0, 0, 0],
+        #     _XYCoordinates=[[(+ (
+        #     tmp1[0][0]['_XY_cent'][0])),
+        #                      (+ (tmp1[0][0]['_XY_cent'][1]))]],
+        #     _Mag=0.3,
+        #     _Angle=0, _TEXT='VOUT')
 
         print('##############################')
         print('##     Calculation_End    ##')

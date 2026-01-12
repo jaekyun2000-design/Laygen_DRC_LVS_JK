@@ -228,7 +228,7 @@ class RandGen:
             self.params[key] = param
 
         self.current_time = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-        with open(rf"C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\Parameters_executed\{self.current_time}.txt", "w") as f:
+        with open(rf"C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\Parameters_executed\{self.current_time}.txt", "w") as f:
             pass
 
     def execute_command(self, command, debug=False):
@@ -278,13 +278,13 @@ class RandGen:
         lvs_results = [False] * iteration
         # pex_results = [False] * iteration
         # posim_results = [False] * iteration
-        worker = 9
+        worker = 5
         step = iteration // worker + 1
 
         # Modify DRC runfile
         # with open(rf"C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\calibre_drc.run", 'r', encoding='utf-8') as f:
         #     lines = f.readlines()
-        with open(rf"C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\_cmos28lp.drc.cal_", 'r', encoding='utf-8') as f:
+        with open(rf"C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\_cmos28lp.drc.cal_", 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
         lines[2] = f"LAYOUT PATH \"./{self.cell_name}.calibre.db\"\n"
@@ -292,11 +292,11 @@ class RandGen:
         # lines[20] = f'INCLUDE "{personal.TECHDIR}/DRC/invx1_lvt_cdk/cmos28lp.drc.cal"'
         lines.append(f"\n")
 
-        with open(rf"C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\_cmos28lp.drc.cal_", 'w', encoding='utf-8') as f:
+        with open(rf"C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\_cmos28lp.drc.cal_", 'w', encoding='utf-8') as f:
             f.writelines(lines)
 
         # LVS & PEX runfile
-        with open(rf"C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\_calibre.run_", "r", encoding='utf-8') as f:
+        with open(rf"C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\_calibre.run_", "r", encoding='utf-8') as f:
             lines = f.readlines()
         # with open(rf"C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\calibre_drc.run", 'w', encoding='utf-8') as f:
         #     f.writelines(lines)
@@ -320,7 +320,7 @@ class RandGen:
         #     f.writelines(lines)
         # with open("_calibre.run_", "w", encoding='utf-8') as f:
         #     f.writelines(lines)
-        calibre_run_local = rf"C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\_calibre.run_"
+        calibre_run_local = rf"C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\_calibre.run_"
         with open(calibre_run_local, "w", encoding="utf-8") as f:
             f.writelines(lines)
 
@@ -559,7 +559,7 @@ class RandGen:
         for key, value in rand_values.items():
             text_data += f"{key}: {value}\n"
 
-        with open(rf"C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\Parameters_executed\{self.current_time}.txt", "a") as f:
+        with open(rf"C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\Parameters_executed\{self.current_time}.txt", "a") as f:
             f.write(text_data + "\n")
 
         with HiddenConsole():
@@ -1211,7 +1211,7 @@ class RandGen:
             # with open(rf'C:\Users\KJB\PycharmProjects\LayGenGUI\Verify_Rand_beginner_JH\_2stageamp\_2stageamp{word}.gds', 'wb') as f:
             #     gds_stream = _2stageamp._CreateGDSStream(_2stageamp._DesignParameter['_GDSFile']['_GDSFile'])
             #     gds_stream.write_binary_gds_stream(f)
-            out_gds = rf"C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\{self.cell_name}\{self.cell_name}{word}.gds"
+            out_gds = rf"C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\{self.cell_name}\{self.cell_name}{word}.gds"
             os.makedirs(os.path.dirname(out_gds), exist_ok=True)
 
             TIA._UpdateDesignParameter2GDSStructure(
@@ -1259,19 +1259,19 @@ class RandGen:
                 file.writelines(lines)
 
         # self.ssh.send_file(f'./Verify_Rand_beginner_JH/calibre.run', f'{personal.RUNDIR}/{word}/calibre.run')
-        self.ssh.send_file(rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\_cmos28lp.drc.cal_', f'{personal.RUNDIR}/{word}/_cmos28lp.drc.cal_')
-        self.ssh.send_file(rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\_calibre.run_', f'{personal.RUNDIR}/{word}/_calibre.run_')
+        self.ssh.send_file(rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\_cmos28lp.drc.cal_', f'{personal.RUNDIR}/{word}/_cmos28lp.drc.cal_')
+        self.ssh.send_file(rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\_calibre.run_', f'{personal.RUNDIR}/{word}/_calibre.run_')
 
-        self.ssh.send_file(rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\{self.cell_name}\{self.cell_name}{word}.src.net', f'{personal.RUNDIR}/{word}/{self.cell_name}.src.net')
-        self.ssh.send_file(rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\{self.cell_name}\{self.cell_name}{word}.gds', f'{personal.RUNDIR}/{word}/{self.cell_name}.gds')
+        self.ssh.send_file(rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\{self.cell_name}\{self.cell_name}{word}.src.net', f'{personal.RUNDIR}/{word}/{self.cell_name}.src.net')
+        self.ssh.send_file(rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\{self.cell_name}\{self.cell_name}{word}.gds', f'{personal.RUNDIR}/{word}/{self.cell_name}.gds')
 
 
     def retrieve_drc(self, word='1'):
         test = False
 
         with SCPClient(self.ssh.ssh.get_transport()) as scp:
-            scp.get(f'{personal.RUNDIR}/{word}/drc_summary.rpt', rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\report_DRC\drc{word}.report')
-        with open(rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\report_DRC\drc{word}.report', 'r') as f:
+            scp.get(f'{personal.RUNDIR}/{word}/drc_summary.rpt', rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\report_DRC\drc{word}.report')
+        with open(rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\report_DRC\drc{word}.report', 'r') as f:
             for line in f.readlines()[-2:-1]:
                 if line.split()[4] != '0': # TOTAL DRC Results Generated: 0 (0)\n
                     print(f"DRC{word} FAILED. {line.split()[4]} errors occurred")
@@ -1358,8 +1358,8 @@ class RandGen:
         test = False
 
         with SCPClient(self.ssh.ssh.get_transport()) as scp:
-            scp.get(f'{personal.RUNDIR}/{word}/{self.cell_name}.lvs.report', rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\report_LVS\lvs{word}.report')
-        with open(rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\report_LVS\lvs{word}.report', 'r') as f:
+            scp.get(f'{personal.RUNDIR}/{word}/{self.cell_name}.lvs.report', rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\report_LVS\lvs{word}.report')
+        with open(rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\report_LVS\lvs{word}.report', 'r') as f:
             for i in f.readlines():
                 if "INCORRECT" in i:
                     print(f"LVS{word} FAILED. errors occurred")
@@ -2180,25 +2180,25 @@ if __name__=="__main__":
 
                       # ResA
                       _ResWidth_resA=(100,[1000,2000]),
-                      _ResLength_resA=(100,[1000,2000]),
+                      _ResLength_resA=(100,[2000,3000]),
                       _CONUMX_resA=None,
                       _CONUMY_resA=None,
-                      _SeriesStripes_resA=(2,[3,12]),
+                      _SeriesStripes_resA=(2,[3,8]),
                       _ParallelStripes_resA=1,
 
                       ### 2nd Feedback
                       # Res_2nd
                       _ResWidth_2nd=(100,[1000,2000]),
-                      _ResLength_2nd=(1000,[1000,10000]),
+                      _ResLength_2nd=(1000,[2000,10000]),
                       _CONUMX_2nd=None,
                       _CONUMY_2nd=None,
-                      _SeriesStripes_2nd=(2,[1,20]),
+                      _SeriesStripes_2nd=(2,[3,10]),
                       _ParallelStripes_2nd=1,
                       _Res_Port1Layer=5,
                       _Res_Port2Layer=5,
 
                       # Cap_2nd
-                      _Length_2nd=(1000,[6000,10000]),
+                      _Length_2nd=(1000,[8000,11000]),
                       _LayoutOption_2nd=[2,3,4],
                       _NumFigPair_2nd=(1,[10,101]),
                       _Array_2nd_row=2,
@@ -2215,7 +2215,7 @@ if __name__=="__main__":
                       # Series Res
                       _Ser_ResWidth=(10,[160,500]),
                       _Ser_ResLength=1292,
-                      _Ser_SeriesStripes=(1,[21,101]),
+                      _Ser_SeriesStripes=(2,[20,101]),
                       _Ser_ParallelStripes=1,
 
                       ### TG NMOS PMOS
@@ -2231,7 +2231,7 @@ if __name__=="__main__":
                       _Parallel_Stack=(1,[2,10]),
 
                       # Cap_1st
-                      _Length_1st=(100,[6000,11000]),
+                      _Length_1st=(1000,[6000,10000]),
                       _LayoutOption_1st=[2,3,4],
                       _NumFigPair_1st=(2,[10,30]),
                       _Array_1st_row=2,
@@ -2260,7 +2260,7 @@ if __name__=="__main__":
 
     #drc_result, lvs_result, pex_result, posim_result = randgen.run(10)
     #drc_result, lvs_result, pex_result = randgen.run(10)
-    drc_result, lvs_result = randgen.run(9)
+    drc_result, lvs_result = randgen.run(5)
     #drc_result= randgen.run(1)
     print(drc_result.count(False), "DRC errors")
     print(lvs_result.count(False), "LVS errors")
