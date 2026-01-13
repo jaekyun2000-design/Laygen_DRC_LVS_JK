@@ -1669,7 +1669,6 @@ if __name__=="__main__":
                       _op1_Tr0_PMOSSDWidth=None,
                       _op1_Tr0_PMOSXVT	= 'EG',
                       _op1_Tr0_PMOSPCCrit		= None,
-
                       # Source_node_ViaM1M2
                       _op1_Tr0_PMOSSource_Via_TF= True,
 
