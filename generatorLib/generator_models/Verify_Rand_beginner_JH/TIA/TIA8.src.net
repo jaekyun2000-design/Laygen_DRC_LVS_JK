@@ -1,0 +1,139 @@
+************************************************************************
+* auCdl Netlist:
+* 
+* Library Name:  Generator_test2
+* Top Cell Name: A01_TIA_Core_YJH_02
+* View Name:     schematic
+* Netlisted on:  Jan 12 16:57:08 2026
+************************************************************************
+
+.INCLUDE  /tools/PDK/ss28lpp_rf/Device/LNR28LPP_CDS_S00-V1.4.6.1/CDS/oa/cmos28lp/.il/devices.cdl
+*.EQUATION
+*.SCALE METER
+*.MEGA
+.PARAM
+
+
+
+************************************************************************
+* Library Name: Proj_ADC2024_00_2stageTIA_YJH
+* Cell Name:    A06_INV_Size1_YJH_01_fin2
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT A06_INV_Size1_YJH_01_fin2 IN OUT VDD VSS
+*.PININFO IN:B OUT:B VDD:B VSS:B
+MN2 OUT IN VSS VSS egnfet w=1u l=0.15u nf=2.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP0 OUT IN VDD VDD egpfet w=2u l=0.15u nf=2.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+.ENDS
+
+************************************************************************
+* Library Name: Generator_test
+* Cell Name:    A06_TG_Ron20ohm_YJH
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT A06_TG_Ron20ohm_YJH PASS PortA PortB VDD VSS
+*.PININFO PASS:B PortA:B PortB:B VDD:B VSS:B
+MP0 PortA PASSB PortB VDD egpfet w=50.0000u l=0.1500u nf=50.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN2 PortA PASS PortB VSS egnfet w=25.0000u l=0.1500u nf=50.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+XI3<0> PASS PASSB VDD VSS / A06_INV_Size1_YJH_01_fin2
+.ENDS
+
+************************************************************************
+* Library Name: Generator_test2
+* Cell Name:    A05_RParallel_RUnit
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT A05_RParallel_RUnit PASS PortA PortB VDD VSS
+*.PININFO PASS:B PortA:B PortB:B VDD:B VSS:B
+XI2 PASS net4 PortB VDD VSS / A06_TG_Ron20ohm_YJH
+RR8 net4 PortA $SUB=VSS $[opppcres] r=0.926k w=0.4300u l=1.2920u pbar=1 s=77.0000 bp=3 ncr=1
+.ENDS
+
+************************************************************************
+* Library Name: Generator_test2
+* Cell Name:    A06_TG_Ron20ohm_YJH_schematic
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT A06_TG_Ron20ohm_YJH_schematic PASS PortA PortB VDD VSS
+*.PININFO PASS:B PortA:B PortB:B VDD:B VSS:B
+MN2 PortA PASS PortB VSS egnfet w=25.0000u l=0.1500u nf=50.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP0 PortA PASSB PortB VDD egpfet w=50.0000u l=0.1500u nf=50.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+XI3<0> PASS PASSB VDD VSS / A06_INV_Size1_YJH_01_fin2
+.ENDS
+
+************************************************************************
+* Library Name: Generator_test2
+* Cell Name:    A03_FBNetwork
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT A03_FBNetwork Ctrl_CFB Ctrl_TIGainA Ctrl_TIGainP<0> Ctrl_TIGainP<1> Ctrl_TIGainP<2> Ctrl_TIGainP<3> Ctrl_TIGainP<4> Ctrl_TIGainP<5> Ctrl_TIGainP<6> Ctrl_TIGainP<7> PortA PortB VDD VSS
+*.PININFO Ctrl_CFB:B Ctrl_TIGainA:B Ctrl_TIGainP<0>:B Ctrl_TIGainP<1>:B
+*.PININFO Ctrl_TIGainP<2>:B Ctrl_TIGainP<3>:B PortA:B PortB:B VDD:B VSS:B
+CC26 net73 PortA $[hdvncap] $SUB=VSS l=7.0000u w=5.7500u botlev=17 toplev=21
+CC31 net73 PortA $[hdvncap] $SUB=VSS l=7.0000u w=5.7500u botlev=17 toplev=21
+CC32 PortB PortA $[hdvncap] $SUB=VSS l=7.0000u w=5.7500u botlev=17 toplev=21
+CC33 PortB PortA $[hdvncap] $SUB=VSS l=7.0000u w=5.7500u botlev=17 toplev=21
+XI20 Ctrl_TIGainP<0> PortB rdac VDD VSS / A05_RParallel_RUnit
+XI21 Ctrl_TIGainP<1> PortB rdac VDD VSS / A05_RParallel_RUnit
+XI22 Ctrl_TIGainP<2> PortB rdac VDD VSS / A05_RParallel_RUnit
+XI23 Ctrl_TIGainP<3> PortB rdac VDD VSS / A05_RParallel_RUnit
+XI24 Ctrl_TIGainP<4> PortB rdac VDD VSS / A05_RParallel_RUnit
+XI25 Ctrl_TIGainP<5> PortB rdac VDD VSS / A05_RParallel_RUnit
+XI26 Ctrl_TIGainP<6> PortB rdac VDD VSS / A05_RParallel_RUnit
+XI27 Ctrl_TIGainP<7> PortB rdac VDD VSS / A05_RParallel_RUnit
+RR17 rdac PortA $SUB=VSS $[opppcres] r=0.926k w=0.4000u l=1.2920u pbar=1 s=76.0000 bp=3 ncr=1
+XI17 Ctrl_TIGainA PortA rdac VDD VSS / A06_TG_Ron20ohm_YJH_schematic
+XI16 Ctrl_CFB net73 PortB VDD VSS / A06_TG_Ron20ohm_YJH_schematic
+.ENDS
+
+************************************************************************
+* Library Name: Generator_test2
+* Cell Name:    A02_TwoStageAmp
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT A02_TwoStageAmp VBN VBP VDD VINN VINP VOUT VSS
+*.PININFO VBN:B VBP:B VDD:B VINN:B VINP:B VOUT:B VSS:B
+MN33 VOUT VOUT1 VSS VSS egnfet w=78.0000u l=0.15u nf=6.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN1 VOUT1 net36 VSS VSS egnfet w=65.0000u l=0.15u nf=5.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN0 net36 net36 VSS VSS egnfet w=65.0000u l=0.15u nf=5.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN9 VBN VBN VSS VSS egnfet w=30.0000u l=0.15u nf=2.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN11 VBP VBP VBN VSS egnfet w=30.0000u l=0.15u nf=2.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+RR1 net37 VOUT1 $SUB=VSS $[opppcres] r=0.926k w=1.0000u l=1.0000u pbar=1 s=1 bp=3 ncr=1
+RR9 net37 VOUT1 $SUB=VSS $[opppcres] r=0.926k w=1.0000u l=1.0000u pbar=1 s=1 bp=3 ncr=1
+CC2 VOUT net37 $[hdvncap] $SUB=VSS l=5.0000u w=8.5500u botlev=17 toplev=31
+CC1 VOUT net37 $[hdvncap] $SUB=VSS l=5.0000u w=8.5500u botlev=17 toplev=31
+MP14 VOUT VBP VDD VDD egpfet w=60.0000u l=0.15u nf=20.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP1 VOUT1 VINP net38 VDD egpfet w=69.0000u l=0.15u nf=23.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP0 net36 VINN net38 VDD egpfet w=69.0000u l=0.15u nf=23.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP7 VBP VBP VDD VDD egpfet w=45.0000u l=0.15u nf=3.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP2 net38 VBP VDD VDD egpfet w=165.0000u l=0.15u nf=11.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+.ENDS
+
+************************************************************************
+* Library Name: Generator_test2
+* Cell Name:    TIA
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT TIA Ctrl_CFB Ctrl_TIGainA Ctrl_TIGainP<0> Ctrl_TIGainP<1> Ctrl_TIGainP<2> Ctrl_TIGainP<3> Ctrl_TIGainP<4> Ctrl_TIGainP<5> Ctrl_TIGainP<6> Ctrl_TIGainP<7> IIN VDD VOCM VOUT VREF_TIA VSS
+*.PININFO Ctrl_CFB:B Ctrl_TIGainA:B Ctrl_TIGainP<3>:B Ctrl_TIGainP<2>:B
+*.PININFO Ctrl_TIGainP<1>:B Ctrl_TIGainP<0>:B IIN:B VDD:B VOCM:B VOUT:B
+*.PININFO VREF_TIA:B VSS:B
+RR13 VOUT net28 $SUB=VSS $[opppcres] r=0.926k w=1.4000u l=9.0000u pbar=1.0000 s=7.0000 bp=3 ncr=1
+RR0 net28 TIStageOutput $SUB=VSS $[opppcres] r=0.926k w=1.4000u l=2.5000u pbar=1.0000 s=7.0000 bp=3 ncr=1
+XI66 Ctrl_CFB Ctrl_TIGainA Ctrl_TIGainP<0> Ctrl_TIGainP<1> Ctrl_TIGainP<2> Ctrl_TIGainP<3> Ctrl_TIGainP<4> Ctrl_TIGainP<5> Ctrl_TIGainP<6> Ctrl_TIGainP<7> IIN TIStageOutput VDD VSS / A03_FBNetwork
+CC32 VOUT net28 $[hdvncap] $SUB=VSS l=9.0000u w=17.3500u botlev=17 toplev=21
+CC31 VOUT net28 $[hdvncap] $SUB=VSS l=9.0000u w=17.3500u botlev=17 toplev=21
+CC30 VOUT net28 $[hdvncap] $SUB=VSS l=9.0000u w=17.3500u botlev=17 toplev=21
+CC29 VOUT net28 $[hdvncap] $SUB=VSS l=9.0000u w=17.3500u botlev=17 toplev=21
+CC28 VOUT net28 $[hdvncap] $SUB=VSS l=9.0000u w=17.3500u botlev=17 toplev=21
+CC20 VOUT net28 $[hdvncap] $SUB=VSS l=9.0000u w=17.3500u botlev=17 toplev=21
+XI77 net26 net11 VDD net28 VOCM VOUT VSS / A02_TwoStageAmp
+XI12 net6 net1 VDD VREF_TIA IIN TIStageOutput VSS / A02_TwoStageAmp
+.ENDS

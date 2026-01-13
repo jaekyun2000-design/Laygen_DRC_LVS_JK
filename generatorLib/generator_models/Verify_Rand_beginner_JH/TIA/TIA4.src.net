@@ -4,7 +4,7 @@
 * Library Name:  Generator_test2
 * Top Cell Name: A01_TIA_Core_YJH_02
 * View Name:     schematic
-* Netlisted on:  Jan 12 15:27:44 2026
+* Netlisted on:  Jan 12 16:38:49 2026
 ************************************************************************
 
 .INCLUDE  /tools/PDK/ss28lpp_rf/Device/LNR28LPP_CDS_S00-V1.4.6.1/CDS/oa/cmos28lp/.il/devices.cdl
@@ -35,8 +35,8 @@ MP0 OUT IN VDD VDD egpfet w=2u l=0.15u nf=2.0000 pccrit=0 plorient=1 ngcon=1 p_l
 
 .SUBCKT A06_TG_Ron20ohm_YJH PASS PortA PortB VDD VSS
 *.PININFO PASS:B PortA:B PortB:B VDD:B VSS:B
-MP0 PortA PASSB PortB VDD egpfet w=60.0000u l=0.1500u nf=60.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
-MN2 PortA PASS PortB VSS egnfet w=30.0000u l=0.1500u nf=60.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP0 PortA PASSB PortB VDD egpfet w=70.0000u l=0.1500u nf=70.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN2 PortA PASS PortB VSS egnfet w=35.0000u l=0.1500u nf=70.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
 XI3<0> PASS PASSB VDD VSS / A06_INV_Size1_YJH_01_fin2
 .ENDS
 
@@ -49,7 +49,7 @@ XI3<0> PASS PASSB VDD VSS / A06_INV_Size1_YJH_01_fin2
 .SUBCKT A05_RParallel_RUnit PASS PortA PortB VDD VSS
 *.PININFO PASS:B PortA:B PortB:B VDD:B VSS:B
 XI2 PASS net4 PortB VDD VSS / A06_TG_Ron20ohm_YJH
-RR8 net4 PortA $SUB=VSS $[opppcres] r=0.926k w=0.3700u l=1.2920u pbar=1 s=60.0000 bp=3 ncr=1
+RR8 net4 PortA $SUB=VSS $[opppcres] r=0.926k w=0.3100u l=1.2920u pbar=1 s=21.0000 bp=3 ncr=1
 .ENDS
 
 ************************************************************************
@@ -60,8 +60,8 @@ RR8 net4 PortA $SUB=VSS $[opppcres] r=0.926k w=0.3700u l=1.2920u pbar=1 s=60.000
 
 .SUBCKT A06_TG_Ron20ohm_YJH_schematic PASS PortA PortB VDD VSS
 *.PININFO PASS:B PortA:B PortB:B VDD:B VSS:B
-MN2 PortA PASS PortB VSS egnfet w=30.0000u l=0.1500u nf=60.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
-MP0 PortA PASSB PortB VDD egpfet w=60.0000u l=0.1500u nf=60.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN2 PortA PASS PortB VSS egnfet w=35.0000u l=0.1500u nf=70.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP0 PortA PASSB PortB VDD egpfet w=70.0000u l=0.1500u nf=70.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
 XI3<0> PASS PASSB VDD VSS / A06_INV_Size1_YJH_01_fin2
 .ENDS
 
@@ -71,7 +71,7 @@ XI3<0> PASS PASSB VDD VSS / A06_INV_Size1_YJH_01_fin2
 * View Name:    schematic
 ************************************************************************
 
-.SUBCKT A03_FBNetwork Ctrl_CFB Ctrl_TIGainA Ctrl_TIGainP<0> Ctrl_TIGainP<1> Ctrl_TIGainP<2> Ctrl_TIGainP<3> Ctrl_TIGainP<4> Ctrl_TIGainP<5> Ctrl_TIGainP<6> PortA PortB VDD VSS
+.SUBCKT A03_FBNetwork Ctrl_CFB Ctrl_TIGainA Ctrl_TIGainP<0> Ctrl_TIGainP<1> Ctrl_TIGainP<2> Ctrl_TIGainP<3> Ctrl_TIGainP<4> Ctrl_TIGainP<5> Ctrl_TIGainP<6> Ctrl_TIGainP<7> Ctrl_TIGainP<8> PortA PortB VDD VSS
 *.PININFO Ctrl_CFB:B Ctrl_TIGainA:B Ctrl_TIGainP<0>:B Ctrl_TIGainP<1>:B
 *.PININFO Ctrl_TIGainP<2>:B Ctrl_TIGainP<3>:B PortA:B PortB:B VDD:B VSS:B
 CC26 net73 PortA $[hdvncap] $SUB=VSS l=8.0000u w=2.9500u botlev=17 toplev=21
@@ -85,7 +85,9 @@ XI23 Ctrl_TIGainP<3> PortB rdac VDD VSS / A05_RParallel_RUnit
 XI24 Ctrl_TIGainP<4> PortB rdac VDD VSS / A05_RParallel_RUnit
 XI25 Ctrl_TIGainP<5> PortB rdac VDD VSS / A05_RParallel_RUnit
 XI26 Ctrl_TIGainP<6> PortB rdac VDD VSS / A05_RParallel_RUnit
-RR17 rdac PortA $SUB=VSS $[opppcres] r=0.926k w=0.3000u l=1.2920u pbar=1 s=38.0000 bp=3 ncr=1
+XI27 Ctrl_TIGainP<7> PortB rdac VDD VSS / A05_RParallel_RUnit
+XI28 Ctrl_TIGainP<8> PortB rdac VDD VSS / A05_RParallel_RUnit
+RR17 rdac PortA $SUB=VSS $[opppcres] r=0.926k w=0.2000u l=1.2920u pbar=1 s=68.0000 bp=3 ncr=1
 XI17 Ctrl_TIGainA PortA rdac VDD VSS / A06_TG_Ron20ohm_YJH_schematic
 XI16 Ctrl_CFB net73 PortB VDD VSS / A06_TG_Ron20ohm_YJH_schematic
 .ENDS
@@ -98,20 +100,20 @@ XI16 Ctrl_CFB net73 PortB VDD VSS / A06_TG_Ron20ohm_YJH_schematic
 
 .SUBCKT A02_TwoStageAmp VBN VBP VDD VINN VINP VOUT VSS
 *.PININFO VBN:B VBP:B VDD:B VINN:B VINP:B VOUT:B VSS:B
-MN33 VOUT VOUT1 VSS VSS egnfet w=36.0000u l=0.15u nf=3.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
-MN1 VOUT1 net36 VSS VSS egnfet w=48.0000u l=0.15u nf=4.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
-MN0 net36 net36 VSS VSS egnfet w=48.0000u l=0.15u nf=4.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
-MN9 VBN VBN VSS VSS egnfet w=36.0000u l=0.15u nf=4.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
-MN11 VBP VBP VBN VSS egnfet w=36.0000u l=0.15u nf=4.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
-RR1 net37 VOUT1 $SUB=VSS $[opppcres] r=0.926k w=0.9000u l=1.3000u pbar=1 s=1 bp=3 ncr=1
-RR9 net37 VOUT1 $SUB=VSS $[opppcres] r=0.926k w=0.9000u l=1.3000u pbar=1 s=1 bp=3 ncr=1
-CC2 VOUT net37 $[hdvncap] $SUB=VSS l=6.0000u w=6.9500u botlev=17 toplev=31
-CC1 VOUT net37 $[hdvncap] $SUB=VSS l=6.0000u w=6.9500u botlev=17 toplev=31
-MP14 VOUT VBP VDD VDD egpfet w=128.0000u l=0.15u nf=16.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
-MP1 VOUT1 VINP net38 VDD egpfet w=160.0000u l=0.15u nf=20.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
-MP0 net36 VINN net38 VDD egpfet w=160.0000u l=0.15u nf=20.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
-MP7 VBP VBP VDD VDD egpfet w=27.0000u l=0.15u nf=3.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
-MP2 net38 VBP VDD VDD egpfet w=27.0000u l=0.15u nf=3.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN33 VOUT VOUT1 VSS VSS egnfet w=91.0000u l=0.15u nf=7.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN1 VOUT1 net36 VSS VSS egnfet w=91.0000u l=0.15u nf=7.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN0 net36 net36 VSS VSS egnfet w=91.0000u l=0.15u nf=7.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN9 VBN VBN VSS VSS egnfet w=24.0000u l=0.15u nf=3.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MN11 VBP VBP VBN VSS egnfet w=24.0000u l=0.15u nf=3.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+RR1 net37 VOUT1 $SUB=VSS $[opppcres] r=0.926k w=0.5000u l=1.2000u pbar=1 s=1 bp=3 ncr=1
+RR9 net37 VOUT1 $SUB=VSS $[opppcres] r=0.926k w=0.5000u l=1.2000u pbar=1 s=1 bp=3 ncr=1
+CC2 VOUT net37 $[hdvncap] $SUB=VSS l=6.0000u w=7.7500u botlev=17 toplev=31
+CC1 VOUT net37 $[hdvncap] $SUB=VSS l=6.0000u w=7.7500u botlev=17 toplev=31
+MP14 VOUT VBP VDD VDD egpfet w=228.0000u l=0.15u nf=19.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP1 VOUT1 VINP net38 VDD egpfet w=204.0000u l=0.15u nf=17.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP0 net36 VINN net38 VDD egpfet w=204.0000u l=0.15u nf=17.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP7 VBP VBP VDD VDD egpfet w=16.0000u l=0.15u nf=2.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP2 net38 VBP VDD VDD egpfet w=96.0000u l=0.15u nf=12.0000 pccrit=0 plorient=1 ngcon=1 p_la=0u ptwell=0
 .ENDS
 
 ************************************************************************
@@ -120,19 +122,19 @@ MP2 net38 VBP VDD VDD egpfet w=27.0000u l=0.15u nf=3.0000 pccrit=0 plorient=1 ng
 * View Name:    schematic
 ************************************************************************
 
-.SUBCKT TIA Ctrl_CFB Ctrl_TIGainA Ctrl_TIGainP<0> Ctrl_TIGainP<1> Ctrl_TIGainP<2> Ctrl_TIGainP<3> Ctrl_TIGainP<4> Ctrl_TIGainP<5> Ctrl_TIGainP<6> IIN VDD VOCM VOUT VREF_TIA VSS
+.SUBCKT TIA Ctrl_CFB Ctrl_TIGainA Ctrl_TIGainP<0> Ctrl_TIGainP<1> Ctrl_TIGainP<2> Ctrl_TIGainP<3> Ctrl_TIGainP<4> Ctrl_TIGainP<5> Ctrl_TIGainP<6> Ctrl_TIGainP<7> Ctrl_TIGainP<8> IIN VDD VOCM VOUT VREF_TIA VSS
 *.PININFO Ctrl_CFB:B Ctrl_TIGainA:B Ctrl_TIGainP<3>:B Ctrl_TIGainP<2>:B
 *.PININFO Ctrl_TIGainP<1>:B Ctrl_TIGainP<0>:B IIN:B VDD:B VOCM:B VOUT:B
 *.PININFO VREF_TIA:B VSS:B
-RR13 VOUT net28 $SUB=VSS $[opppcres] r=0.926k w=1.1000u l=3.0000u pbar=1.0000 s=3.0000 bp=3 ncr=1
-RR0 net28 TIStageOutput $SUB=VSS $[opppcres] r=0.926k w=1.9000u l=2.3000u pbar=1.0000 s=5.0000 bp=3 ncr=1
-XI66 Ctrl_CFB Ctrl_TIGainA Ctrl_TIGainP<0> Ctrl_TIGainP<1> Ctrl_TIGainP<2> Ctrl_TIGainP<3> Ctrl_TIGainP<4> Ctrl_TIGainP<5> Ctrl_TIGainP<6> IIN TIStageOutput VDD VSS / A03_FBNetwork
-CC32 VOUT net28 $[hdvncap] $SUB=VSS l=8.0000u w=7.5500u botlev=17 toplev=21
-CC31 VOUT net28 $[hdvncap] $SUB=VSS l=8.0000u w=7.5500u botlev=17 toplev=21
-CC30 VOUT net28 $[hdvncap] $SUB=VSS l=8.0000u w=7.5500u botlev=17 toplev=21
-CC29 VOUT net28 $[hdvncap] $SUB=VSS l=8.0000u w=7.5500u botlev=17 toplev=21
-CC28 VOUT net28 $[hdvncap] $SUB=VSS l=8.0000u w=7.5500u botlev=17 toplev=21
-CC20 VOUT net28 $[hdvncap] $SUB=VSS l=8.0000u w=7.5500u botlev=17 toplev=21
+RR13 VOUT net28 $SUB=VSS $[opppcres] r=0.926k w=1.1000u l=2.0000u pbar=1.0000 s=5.0000 bp=3 ncr=1
+RR0 net28 TIStageOutput $SUB=VSS $[opppcres] r=0.926k w=1.4000u l=2.6000u pbar=1.0000 s=7.0000 bp=3 ncr=1
+XI66 Ctrl_CFB Ctrl_TIGainA Ctrl_TIGainP<0> Ctrl_TIGainP<1> Ctrl_TIGainP<2> Ctrl_TIGainP<3> Ctrl_TIGainP<4> Ctrl_TIGainP<5> Ctrl_TIGainP<6> Ctrl_TIGainP<7> Ctrl_TIGainP<8> IIN TIStageOutput VDD VSS / A03_FBNetwork
+CC32 VOUT net28 $[hdvncap] $SUB=VSS l=10.0000u w=20.1500u botlev=17 toplev=21
+CC31 VOUT net28 $[hdvncap] $SUB=VSS l=10.0000u w=20.1500u botlev=17 toplev=21
+CC30 VOUT net28 $[hdvncap] $SUB=VSS l=10.0000u w=20.1500u botlev=17 toplev=21
+CC29 VOUT net28 $[hdvncap] $SUB=VSS l=10.0000u w=20.1500u botlev=17 toplev=21
+CC28 VOUT net28 $[hdvncap] $SUB=VSS l=10.0000u w=20.1500u botlev=17 toplev=21
+CC20 VOUT net28 $[hdvncap] $SUB=VSS l=10.0000u w=20.1500u botlev=17 toplev=21
 XI77 net26 net11 VDD net28 VOCM VOUT VSS / A02_TwoStageAmp
 XI12 net6 net1 VDD VREF_TIA IIN TIStageOutput VSS / A02_TwoStageAmp
 .ENDS

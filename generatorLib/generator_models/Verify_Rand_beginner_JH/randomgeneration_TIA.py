@@ -278,7 +278,7 @@ class RandGen:
         lvs_results = [False] * iteration
         # pex_results = [False] * iteration
         # posim_results = [False] * iteration
-        worker = 5
+        worker = 10
         step = iteration // worker + 1
 
         # Modify DRC runfile
@@ -309,7 +309,8 @@ class RandGen:
         lines[11] = f'LAYOUT PRIMARY "{self.cell_name}"\n'
         lines[14] = f'SOURCE PATH "./{self.cell_name}.src.net"\n'
         lines[15] = f'SOURCE PRIMARY "{self.cell_name}"\n'
-        lines[18] = f'MASK SVDB DIRECTORY "svdb" QUERY XRC\n' # IXF NXF SLPH 추가?
+        # lines[18] = f'MASK SVDB DIRECTORY "svdb" QUERY XRC\n' # IXF NXF SLPH 추가?
+        lines[18] = f'MASK SVDB DIRECTORY "svdb" QUERY XRC REPLACE\n'  # 01/12 ych 수정
         lines[20] = f'LVS REPORT "{self.cell_name}.lvs.report"\n'
         lines[22] = f'PEX NETLIST "{self.cell_name}.pex.netlist" ELDO 1 SOURCENAMES \n' # HSPICE 1 SOURCENAMES RCNAMED
         lines[23] = f'PEX REPORT "{self.cell_name}.pex.report" SOURCENAMES\n'
@@ -399,6 +400,7 @@ class RandGen:
 
             # 사용하던 것
             commands = [(f"source {personal.TECHDIR}/setup.cshrc; cd {personal.RUNDIR}/{word}; "
+                         # f"rm -rf svdb; " ### 1/12 추가한 부분(YCH)
                          f"calibre -lvs -hier -spice ./svdb/{self.cell_name}.sp -nowait -turbo _calibre.run_; ") for word in range(1, worker+1)]
 
             # commands = [(f"source {personal.TECHDIR}/setup.cshrc; cd {personal.RUNDIR}/{word}; "
@@ -2192,7 +2194,7 @@ if __name__=="__main__":
                       _ResLength_2nd=(1000,[2000,10000]),
                       _CONUMX_2nd=None,
                       _CONUMY_2nd=None,
-                      _SeriesStripes_2nd=(2,[3,10]),
+                      _SeriesStripes_2nd=(2,[5,10]),
                       _ParallelStripes_2nd=1,
                       _Res_Port1Layer=5,
                       _Res_Port2Layer=5,
@@ -2260,7 +2262,7 @@ if __name__=="__main__":
 
     #drc_result, lvs_result, pex_result, posim_result = randgen.run(10)
     #drc_result, lvs_result, pex_result = randgen.run(10)
-    drc_result, lvs_result = randgen.run(5)
+    drc_result, lvs_result = randgen.run(1)
     #drc_result= randgen.run(1)
     print(drc_result.count(False), "DRC errors")
     print(lvs_result.count(False), "LVS errors")
