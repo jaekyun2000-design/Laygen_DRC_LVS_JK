@@ -3319,7 +3319,7 @@ class _TIA_YCH(StickDiagram_KJH1._StickDiagram_KJH):
         self._DesignParameter['SRF_Amp1_Vinp_ViaM4M7']['_Angle'] = 0
 
         # Calcuate _COY
-        _Caculation_Parameters['_COY'] = 4
+        _Caculation_Parameters['_COY'] = 3
 
         # Calcuate _COX
         # tmp1 = self.get_param_KJH4('BND_Metal7Layer_RA_PortB')
@@ -3332,7 +3332,7 @@ class _TIA_YCH(StickDiagram_KJH1._StickDiagram_KJH):
         #     _Caculation_Parameters['_COX'] = 2
         # else:
         #     _Caculation_Parameters['_COX'] = Num_V1
-        _Caculation_Parameters['_COX'] = 8
+        _Caculation_Parameters['_COX'] = 3 # 1/13
 
         # Generate Metal(x), Metal(x+1) and C0(Viax) layer
         self._DesignParameter['SRF_Amp1_Vinp_ViaM4M7']['_DesignObj']._CalculateDesignParameterXmin(
@@ -3346,10 +3346,10 @@ class _TIA_YCH(StickDiagram_KJH1._StickDiagram_KJH):
         # Calculate
         # Target_coord
         tmp1 = self.get_param_KJH4('BND_Metal7Layer_Amp1_Vinp')
-        target_coord = tmp1[0][0]['_XY_cent']
+        target_coord = tmp1[0][0]['_XY_right']
         # Approaching_coord
         tmp2 = self.get_param_KJH4('SRF_Amp1_Vinp_ViaM4M7', 'SRF_ViaM6M7', 'BND_Met7Layer')
-        approaching_coord = tmp2[0][0][0][0]['_XY_cent']
+        approaching_coord = tmp2[0][0][0][0]['_XY_right']
         # Sref coord
         tmp3 = self.get_param_KJH4('SRF_Amp1_Vinp_ViaM4M7')
         Scoord = tmp3[0][0]['_XY_origin']
@@ -3951,8 +3951,8 @@ if __name__ == '__main__':
 
     for _iter in range(1):
 
-        # libname = 'Proj_A55_TIA_v{}'.format(_iter + 1)
-        cellname = 'A55_TIA_addpin_v{}'.format(_iter + 8)
+        libname = 'Proj_A55_TIA_v{}'.format(_iter + 2)
+        cellname = 'A55_TIA_addpin'
         _fileName = cellname + '.gds'
 
         _TRP0_P3_N2_N3_ChannelWidth = random.randrange(3000, 20000, 1000)
@@ -4201,21 +4201,21 @@ if __name__ == '__main__':
         tmp.write_binary_gds_stream(testStreamFile)
         testStreamFile.close()
 
-        # print('###############      Sending to FTP Server...      ##################')
-        # My = MyInfo_YCH.USER(DesignParameters._Technology)
-        # Checker = DRCchecker_KJH0.DRCchecker_KJH0(
-        #     username=My.ID,
-        #     password=My.PW,
-        #     WorkDir=My.Dir_Work,
-        #     DRCrunDir=My.Dir_DRCrun,
-        #     libname=libname,
-        #     cellname=cellname,
-        #     GDSDir=My.Dir_GDS
-        # )
-        # # Checker.lib_deletion()
-        # # Checker.cell_deletion()
-        # Checker.Upload2FTP()
-        # Checker.StreamIn(tech=DesignParameters._Technology)
-        # # Checker_KJH0.DRCchecker()
+        print('###############      Sending to FTP Server...      ##################')
+        My = MyInfo_YCH.USER(DesignParameters._Technology)
+        Checker = DRCchecker_KJH0.DRCchecker_KJH0(
+            username=My.ID,
+            password=My.PW,
+            WorkDir=My.Dir_Work,
+            DRCrunDir=My.Dir_DRCrun,
+            libname=libname,
+            cellname=cellname,
+            GDSDir=My.Dir_GDS
+        )
+        # Checker.lib_deletion()
+        # Checker.cell_deletion()
+        Checker.Upload2FTP()
+        Checker.StreamIn(tech=DesignParameters._Technology)
+        # Checker_KJH0.DRCchecker()
         print('#############################      Finished      ################################')
     # end of 'main():' ---------------------------------------------------------------------------------------------
