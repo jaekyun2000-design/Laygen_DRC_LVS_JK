@@ -2627,7 +2627,7 @@ class _TIA_YCH(StickDiagram_KJH1._StickDiagram_KJH):
         self._DesignParameter['SRF_Amp2_Vinn_ViaM4M7']['_Angle'] = 0
 
         # Calcuate _COY
-        _Caculation_Parameters['_COY'] = 4
+        _Caculation_Parameters['_COY'] = 3 # 1/13 pm 02:00
 
         # Calcuate _COX
         # tmp1 = self.get_param_KJH4('BND_Metal7Layer_RA_PortB')
@@ -2640,7 +2640,7 @@ class _TIA_YCH(StickDiagram_KJH1._StickDiagram_KJH):
         #     _Caculation_Parameters['_COX'] = 2
         # else:
         #     _Caculation_Parameters['_COX'] = Num_V1
-        _Caculation_Parameters['_COX'] = 8
+        _Caculation_Parameters['_COX'] = 3
 
         # Generate Metal(x), Metal(x+1) and C0(Viax) layer
         self._DesignParameter['SRF_Amp2_Vinn_ViaM4M7']['_DesignObj']._CalculateDesignParameterXmin(
@@ -2654,10 +2654,10 @@ class _TIA_YCH(StickDiagram_KJH1._StickDiagram_KJH):
         # Calculate
         # Target_coord
         tmp1 = self.get_param_KJH4('BND_Metal7Layer_Amp2_Vinn')
-        target_coord = tmp1[0][0]['_XY_cent']
+        target_coord = tmp1[0][0]['_XY_left']
         # Approaching_coord
         tmp2 = self.get_param_KJH4('SRF_Amp2_Vinn_ViaM4M7', 'SRF_ViaM6M7', 'BND_Met7Layer')
-        approaching_coord = tmp2[0][0][0][0]['_XY_cent']
+        approaching_coord = tmp2[0][0][0][0]['_XY_left']
         # Sref coord
         tmp3 = self.get_param_KJH4('SRF_Amp2_Vinn_ViaM4M7')
         Scoord = tmp3[0][0]['_XY_origin']
