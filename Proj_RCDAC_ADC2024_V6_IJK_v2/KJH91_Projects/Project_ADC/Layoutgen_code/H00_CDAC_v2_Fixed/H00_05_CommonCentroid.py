@@ -1,0 +1,848 @@
+## Import Basic Modules
+    ## Engine
+from KJH91_Projects.Project_ADC.Library_and_Engine import StickDiagram_KJH1
+from KJH91_Projects.Project_ADC.Library_and_Engine import DesignParameters
+from KJH91_Projects.Project_ADC.Library_and_Engine import DRC
+
+    ## Library
+import copy
+import time
+
+    ## KJH91 Basic Building Blocks
+from KJH91_Projects.Project_ADC.Layoutgen_code.A_Basic_Building_Block import A02_ViaStack_KJH3
+from KJH91_Projects.Project_ADC.Layoutgen_code.H00_CDAC_v2_Fixed import H00_04_CommonArray
+from KJH91_Projects.Project_ADC.Layoutgen_code.H00_CDAC_v2_Fixed import H00_02_CapWithShield
+from KJH91_Projects.Project_ADC.Layoutgen_code.H00_CDAC_v2_Fixed import H00_03_DummyCapUnit
+
+
+############################################################################################################################################################ Class_HEADER
+class _CommonCentroid(StickDiagram_KJH1._StickDiagram_KJH):
+    # Initially Defined design_parameter
+    _ParametersForDesignCalculation = dict(
+        # # Element CDAC
+        _LayoutOption=None,
+        _ShieldingLayer=None,  # Poly:0, M1:1, M2:2 ...
+        _BotNodeVtcExtensionMetalLayer=None,
+        _MetalWidth=None,
+        _MetalLength=None,
+        _MetalSpacing=None,
+
+        # #Unit Cap
+        _NumOfElement=None,
+
+        # # Shielding & Top Connect node
+        _ConnectLength=None,
+        _ExtendLength=None,
+
+        # # CommonCentroid
+        _Bitsize=None,
+
+        # # Dummy Cap Option
+        _DummyCap_TopBottomShort=None,
+        _NumOfDummyCaps=None,  # Number of dummy cap(one side)
+
+        # # CommonCentroid With Driving node
+        _CapArrayWDrivingNodeDistance=None,  # DRC Rule
+        _DriveNodeDistance=None,  #
+        #_MetalWidth=None,
+        _YWidth_Bottom_Hrz=None,
+    )
+
+    def __init__(self, _DesignParameter=None, _Name=None):
+        if _DesignParameter != None:
+            self._DesignParameter = _DesignParameter
+        else:
+            self._DesignParameter = dict(
+                _Name=self._NameDeclaration(_Name=_Name),
+                _GDSFile=self._GDSObjDeclaration(_GDSFile=None),
+                _XYcoordAsCent=dict(_XYcoordAsCent=0),
+            )
+
+
+    ##########################################################################################################################################################################################
+    ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ###
+    def _CalculateDesignParameterFold1(self,
+                                       _LayoutOption=None,
+                                       _ShieldingLayer=None,  # Poly:0, M1:1, M2:2 ...
+                                       _BotNodeVtcExtensionMetalLayer=None,
+                                       _MetalWidth=None,
+                                       _MetalLength=None,
+                                       _MetalSpacing=None,
+
+                                       # #Unit Cap
+                                       _NumOfElement=None,
+
+                                       # # Shielding & Top Connect node
+                                       _ConnectLength=None,
+                                       _ExtendLength=None,
+
+                                       # # CommonCentroid Array
+                                       _Bitsize=None,
+
+                                       # # Dummy Cap Option
+                                       _DummyCap_TopBottomShort=True,
+                                       _NumOfDummyCaps=3,  # Number of dummy cap(one side)
+
+                                       # # CommonCentroid With Driving node
+                                       _CapArrayWDrivingNodeDistance=None,  # DRC Rule
+                                       _DriveNodeDistance=None,  #
+                                       # _MetalWidth=None,
+                                       _YWidth_Bottom_Hrz=None,
+                                  ):
+
+        ################################################################################################################################################## Class_HEADER: Pre Defined Parameter Before Calculation
+        CDACBotVtcExtMetalType = _BotNodeVtcExtensionMetalLayer
+        CDACBotHrzMetalType = 3
+        # Load DRC library
+        _DRCobj = DRC.DRC()
+
+        # Define _name
+        _Name = self._DesignParameter['_Name']['_Name']
+
+        ## CALCULATION START
+        CommonCentroid_start_time = time.time()
+
+        print('##############################')
+        print('##     Calculation_Start    ##')
+        print('##############################')
+
+        if _LayoutOption[0] <= _ShieldingLayer:
+            raise Exception(f" '쉴딩 메탈 < 캡 메탈'을 만족해야 합니다.")
+
+        ############################################################################################################################################################ CALCULATION START
+
+        ## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## Sref Gen: CommonArrary
+        ## SREF Generation
+        ## Copy Calculation_Parameters from low-level-block ex)copy.deepcopy(B16_nmos_power_v2._NMOS_POWER._ParametersForDesignCalculation)
+        _Caculation_Parameters = copy.deepcopy(H00_04_CommonArray._CommonArray._ParametersForDesignCalculation)
+        ## Define Calculation_Parameters ex) _Caculation_Parameters['_NMOSPOWER_PbodyContact_1_Length']  = _NMOSPOWER_PbodyContact_1_Length
+        _Caculation_Parameters['_LayoutOption'] = _LayoutOption
+        _Caculation_Parameters['_ShieldingLayer'] = _ShieldingLayer
+        _Caculation_Parameters['_MetalWidth'] = _MetalWidth
+        _Caculation_Parameters['_MetalLength'] = _MetalLength
+        _Caculation_Parameters['_MetalSpacing'] = _MetalSpacing
+        _Caculation_Parameters['_NumOfElement'] = _NumOfElement
+        _Caculation_Parameters['_ConnectLength'] = _ConnectLength
+        _Caculation_Parameters['_ExtendLength'] = _ExtendLength
+        _Caculation_Parameters['_Bitsize'] = _Bitsize
+        _Caculation_Parameters['_DummyCap_TopBottomShort'] = _DummyCap_TopBottomShort
+        _Caculation_Parameters['_NumOfDummyCaps'] = _NumOfDummyCaps
+
+        ## Generate Sref: ex)self._DesignParameter['_NMOS_POWER'] = self._SrefElementDeclaration(_DesignObj=B16_nmos_power_v2._NMOS_POWER( _DesignParameter=None, _Name='{}:NMOS_POWER'.format(_Name)))[0]
+        self._DesignParameter['SRF_CommonArray'] = self._SrefElementDeclaration(_DesignObj=H00_04_CommonArray._CommonArray(_DesignParameter=None,_Name='{}:SRF_CommonArray'.format(_Name)))[0]
+
+        ## Define Sref Reflection: ex)self._DesignParameter['_NMOS_POWER']['_Reflect'] = [0, 0, 0]
+        self._DesignParameter['SRF_CommonArray']['_Reflect'] = [0, 0, 0]
+
+        ## Define Sref Angle: ex)'_NMOS_POWER'
+        self._DesignParameter['SRF_CommonArray']['_Angle'] = 0
+
+        ## Calculate Sref Layer by using Calculation_Parameter: ex)'_NMOS_POWER'
+        self._DesignParameter['SRF_CommonArray']['_DesignObj']._CalculateDesignParameter(**_Caculation_Parameters)
+
+        ## Define Sref _XYcoordinate: ex)'_NMOS_POWER'
+        self._DesignParameter['SRF_CommonArray']['_XYCoordinates'] = [[0, 0]]
+
+        for i in range(0, _Bitsize):
+            ## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## BND Gen: VtcExten
+            ## Boundary_element Generation
+            ## Generate Boundary_element: ex)LayerName: METAL1 / DIFF (_ODLayer) / POLY / PIMP (_PPLayer) / NWELL / SLVT LVT RVT HVT / OP(OPpress) / CONT (CA) / PCCRIT
+            self._DesignParameter['BND_B{}_BotExten_VTC'.format(_Bitsize - i - 1)] = self._BoundaryElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL{}'.format(CDACBotVtcExtMetalType)][0],
+                _Datatype=DesignParameters._LayerMapping['METAL{}'.format(CDACBotVtcExtMetalType)][1],
+                _XWidth=None,
+                _YWidth=None,
+                _XYCoordinates=[],
+            )
+            ## Define Boundary_element _YWidth
+            if i == 0:
+                tmp1 = self.get_param_KJH4('SRF_CommonArray', 'SRF_CDAC_B{}'.format(0), 'SRF_UCAP',
+                                           'SRF_ECAP', 'BND_ECAP_Bot_VTC_M{}'.format(_LayoutOption[0]))
+                tmp2 = self.get_param_KJH4('SRF_CommonArray', 'SRF_CDAC_B{}'.format(0), 'SRF_UCAP',
+                                           'SRF_ECAP', 'BND_ECAP_Top_VTC_M{}'.format(_LayoutOption[0]))
+                BotExtension = abs(tmp2[0][0][0][0][0][0]['_XY_down'][1] - tmp1[0][0][0][0][0][0]['_XY_down'][1])
+                tmp = _CapArrayWDrivingNodeDistance - BotExtension
+                if tmp < 0:
+                    raise Exception("Via, MSB Hrz Metal 간 거리 겹침; Cap Metal아래 끝 위치 <-> 비아 간 거리: {}, Cap Metal아래 끝 위치 <-> MSB Hrz Metal Line: {}".format(BotExtension, _CapArrayWDrivingNodeDistance))
+                self._DesignParameter['BND_B{}_BotExten_VTC'.format(_Bitsize - i - 1)]['_YWidth'] = tmp + _YWidth_Bottom_Hrz
+            else:
+                tmp4 = self.get_param_KJH4('SRF_CommonArray', 'SRF_CDAC_B{}'.format(_Bitsize - i - 1), 'SRF_UCAP',
+                                           'SRF_ECAP', 'BND_ECAP_Bot_VTC_M{}'.format(_LayoutOption[0]))
+                tmp5 = self.get_param_KJH4('BND_B{}_BotExten_VTC'.format(_Bitsize - i))
+                tmp = abs(tmp4[0][0][0][0][0][0]['_XY_down'][1] - tmp5[0][0]['_XY_down'][1])
+                # self._DesignParameter['BND_B{}_BotExten_VTC'.format(_Bitsize - i - 1)]['_YWidth'] = tmp - _YWidth_Bottom_Hrz  - _DriveNodeDistance
+                self._DesignParameter['BND_B{}_BotExten_VTC'.format(_Bitsize - i - 1)]['_YWidth'] = tmp + _YWidth_Bottom_Hrz  + _DriveNodeDistance
+
+            ## Define Boundary_element _XWidth
+            self._DesignParameter['BND_B{}_BotExten_VTC'.format(_Bitsize - i - 1)]['_XWidth'] = _MetalWidth
+
+            ## Define Boundary_element _XYCoordinates
+            self._DesignParameter['BND_B{}_BotExten_VTC'.format(_Bitsize - i - 1)]['_XYCoordinates'] = [[0, 0]]
+
+            ## Calculate Sref XYcoord 1.5 originl
+            # start_time = time.time()
+            tmpXY = []
+            tmp1 = self.get_param_KJH4('SRF_CommonArray', 'SRF_CDAC_B{}'.format(_Bitsize - i - 1),
+                                       'SRF_UCAP', 'SRF_ECAP', 'BND_ECAP_Bot_VTC_M{}'.format(_LayoutOption[0]))
+            for k in range(0, 2 ** (_Bitsize - i - 1)):
+                for j in range(_NumOfElement):
+                    ## Calculate
+                    ## Target_coord: _XY_type1
+                    target_coord = tmp1[0][k][0][j][0][0]['_XY_down_left']
+                    ## Approaching_coord: _XY_type2
+                    tmp2 = self.get_param_KJH4('BND_B{}_BotExten_VTC'.format(_Bitsize - i - 1))
+                    approaching_coord = tmp2[0][0]['_XY_up_left']
+                    ## Sref coord
+                    tmp3 = self.get_param_KJH4('BND_B{}_BotExten_VTC'.format(_Bitsize - i - 1))
+                    Scoord = tmp3[0][0]['_XY_origin']
+                    ## Cal
+                    New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+                    tmpXY.append(New_Scoord)
+            # elapsed_time = time.time() - start_time
+                    ## Define coordinates
+            self._DesignParameter['BND_B{}_BotExten_VTC'.format(_Bitsize - i - 1)]['_XYCoordinates'] = tmpXY
+
+
+            ## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## ##########
+            # [SRF ECAP Bot Via(Cap Metal Via) -> BND_B{}_BotExten_VTC] Via
+            ## Sref generation: ViaX
+            ## Define ViaX Parameter
+            _Caculation_Parameters = copy.deepcopy(A02_ViaStack_KJH3._ViaStack._ParametersForDesignCalculation)
+            _Layer1 = min(CDACBotVtcExtMetalType, _LayoutOption[0])
+            _Layer2 = max(CDACBotVtcExtMetalType, _LayoutOption[0])
+            _Caculation_Parameters['_Layer1'] = _Layer1
+            _Caculation_Parameters['_Layer2'] = _Layer2
+            _Caculation_Parameters['_COX'] = 1
+            _Caculation_Parameters['_COY'] = 2
+
+            ## Sref ViaX declaration
+            self._DesignParameter['SRF_B{}_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Bitsize - i - 1, _Layer1, _Layer2)] = \
+                self._SrefElementDeclaration(_DesignObj=A02_ViaStack_KJH3._ViaStack(_DesignParameter=None,
+                                                                                    _Name='{}:SRF_B{}_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Name, _Bitsize - i - 1, _Layer1, _Layer2)))[0]
+
+            ## Define Sref Relection
+            self._DesignParameter['SRF_B{}_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Bitsize - i - 1, _Layer1, _Layer2)]['_Reflect'] = [0, 0, 0]
+
+            ## Define Sref Angle
+            self._DesignParameter['SRF_B{}_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Bitsize - i - 1, _Layer1, _Layer2)]['_Angle'] = 0
+
+            self._DesignParameter['SRF_B{}_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Bitsize - i - 1, _Layer1, _Layer2)]['_DesignObj']._CalculateDesignParameterXmin(**_Caculation_Parameters)
+
+            ## Calculate Sref XYcoord
+            ## initialized Sref coordinate
+            self._DesignParameter['SRF_B{}_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Bitsize - i - 1, _Layer1, _Layer2)]['_XYCoordinates'] = [[0, 0]]
+
+            ## Calculate Sref XYcoord
+            tmpXY1 = []
+            ## Approaching_coord: _XY_type2
+            tmp2 = self.get_param_KJH4('SRF_B{}_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Bitsize - i - 1, _Layer1, _Layer2), 'SRF_ViaM{}M{}'.format(_Layer1, _Layer1 + 1), 'BND_Met{}Layer'.format(_Layer1))
+            approaching_coord = tmp2[0][0][0][0]['_XY_up']
+            tmp1 = self.get_param_KJH4('SRF_CommonArray', 'SRF_CDAC_B{}'.format(_Bitsize - i - 1),
+                                       'SRF_UCAP', 'SRF_ECAP', 'BND_ECAP_Bot_VTC_M{}'.format(_LayoutOption[0]))
+            for k in range(0, 2 ** (_Bitsize - i - 1)):
+                for j in range(_NumOfElement):
+                    ## Calculate
+                    ## Target_coord: _XY_type1
+                    target_coord = tmp1[0][k][0][j][0][0]['_XY_down']
+                    ## Sref coord
+                    tmp3 = self.get_param_KJH4('SRF_B{}_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Bitsize - i - 1, _Layer1, _Layer2))
+                    Scoord = tmp3[0][0]['_XY_origin']
+                    ## Cal
+                    New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+                    tmpXY1.append(New_Scoord)
+
+            ## Define coordinates
+            self._DesignParameter['SRF_B{}_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Bitsize - i - 1, _Layer1, _Layer2)]['_XYCoordinates'] = tmpXY1
+
+
+            ## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## BND Gen: Hrz
+            ## Boundary_element Generation
+            ## Generate Boundary_element: ex)LayerName: METAL1 / DIFF (_ODLayer) / POLY / PIMP (_PPLayer) / NWELL / SLVT LVT RVT HVT / OP(OPpress) / CONT (CA) / PCCRIT
+            self._DesignParameter['BND_B{}_Bottom_Hrz'.format(_Bitsize - i - 1)] = self._BoundaryElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL{}'.format(CDACBotHrzMetalType)][0],
+                _Datatype=DesignParameters._LayerMapping['METAL{}'.format(CDACBotHrzMetalType)][1],
+                _XWidth=None,
+                _YWidth=None,
+                _XYCoordinates=[],
+            )
+            ## Define Boundary_element _YWidth
+            self._DesignParameter['BND_B{}_Bottom_Hrz'.format(_Bitsize - i - 1)]['_YWidth'] = _YWidth_Bottom_Hrz
+
+            ## Define Boundary_element _XWidth
+            tmp = self.get_param_KJH4('BND_B{}_BotExten_VTC'.format(_Bitsize - i - 1))
+            self._DesignParameter['BND_B{}_Bottom_Hrz'.format(_Bitsize - i - 1)]['_XWidth'] = abs(tmp[0][0]['_XY_left'][0] - tmp[-1][0]['_XY_right'][0])
+            #
+            ## Define Boundary_element _XYCoordinates
+            self._DesignParameter['BND_B{}_Bottom_Hrz'.format(_Bitsize - i - 1)]['_XYCoordinates'] = [[0, 0]]
+
+            ## Calculate Sref XYcoord
+            tmpXY = []
+            ## initialized Sref coordinate
+            self._DesignParameter['BND_B{}_Bottom_Hrz'.format(_Bitsize - i - 1)]['_XYCoordinates'] = [[0, 0]]
+            ## Calculate
+            ## Target_coord: _XY_type1
+            tmp1 = self.get_param_KJH4('BND_B{}_BotExten_VTC'.format(_Bitsize - i - 1))
+            target_coord = tmp1[0][0]['_XY_down_left']
+            ## Approaching_coord: _XY_type2
+            tmp2 = self.get_param_KJH4('BND_B{}_Bottom_Hrz'.format(_Bitsize - i - 1))
+            approaching_coord = tmp2[0][0]['_XY_down_left']
+            ## Sref coord
+            tmp3 = self.get_param_KJH4('BND_B{}_Bottom_Hrz'.format(_Bitsize - i - 1))
+            Scoord = tmp3[0][0]['_XY_origin']
+            ## Cal
+            New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+            tmpXY.append(New_Scoord)
+            ## Define coordinates
+            self._DesignParameter['BND_B{}_Bottom_Hrz'.format(_Bitsize - i - 1)]['_XYCoordinates'] = tmpXY
+
+        for i in range(0,_Bitsize):
+        # for i in range(_Bitsize-1,-1,-1):
+            ## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## Bottom node Via Gen:
+            if _NumOfElement != 1:
+                ## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## ########## Bottom node Via Gen:
+                ## Sref generation: ViaX
+                ## Define ViaX Parameter
+                _Caculation_Parameters = copy.deepcopy(A02_ViaStack_KJH3._ViaStack._ParametersForDesignCalculation)
+                _Layer1 = min(CDACBotHrzMetalType,CDACBotVtcExtMetalType)
+                _Layer2 = max(CDACBotHrzMetalType,CDACBotVtcExtMetalType)
+                _Caculation_Parameters['_Layer1'] = _Layer1
+                _Caculation_Parameters['_Layer2'] = _Layer2
+                _Caculation_Parameters['_COX'] = None
+                _Caculation_Parameters['_COY'] = None
+
+                ## Sref ViaX declaration
+                self._DesignParameter[
+                    'SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-i-1,_Layer1,_Layer2)] = \
+                self._SrefElementDeclaration(_DesignObj=A02_ViaStack_KJH3._ViaStack(_DesignParameter=None,
+                                                                                         _Name='{}:SRF_B{}_Bottom_ViaM{}M{}'.format(
+                                                                                             _Name, _Bitsize - i - 1,
+                                                                                             CDACBotHrzMetalType,
+                                                                                             CDACBotVtcExtMetalType)))[0]
+
+                ## Define Sref Relection
+                self._DesignParameter['SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-i-1,_Layer1,_Layer2)]['_Reflect'] = [0, 0, 0]
+
+                ## Define Sref Angle
+                self._DesignParameter['SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-i-1,_Layer1,_Layer2)]['_Angle'] = 0
+
+                tmp1 = self.get_param_KJH4('BND_B{}_BotExten_VTC'.format(_Bitsize-i-1))
+                ViaXwidth = abs(tmp1[0][0]['_XY_left'][0] - tmp1[_NumOfElement - 1][0]['_XY_right'][0])
+
+                ## Calcuate _COX and _COY:  None or 'MinEnclosureX' or 'MinEnclosureY'
+                _COX, _COY = self._CalculateNumViaByXYWidth(ViaXwidth, _YWidth_Bottom_Hrz, 'MinEnclosureY')
+                _Caculation_Parameters['_COX'] = max(_COX, 2)
+                _Caculation_Parameters['_COY'] = _COY
+                ## Generate Metal(x), Metal(x+1) and C0(Viax) layer:  Option: _CalculateDesignParameter, _CalculateDesignParameterXmin, _CalculateDesignParameterYmin, _CalculateDesignParameterXYsame
+                self._DesignParameter['SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-i-1,_Layer1,_Layer2)]['_DesignObj']._CalculateDesignParameterYmin(**_Caculation_Parameters)
+
+                ## Calculate Sref XYcoord
+                ## initialized Sref coordinate
+                self._DesignParameter['SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-i-1,_Layer1,_Layer2)]['_XYCoordinates'] = [[0, 0]]
+
+            elif _NumOfElement == 1:
+                _Caculation_Parameters = copy.deepcopy(A02_ViaStack_KJH3._ViaStack._ParametersForDesignCalculation)
+                _Layer1 = min(CDACBotHrzMetalType,CDACBotVtcExtMetalType)
+                _Layer2 = max(CDACBotHrzMetalType,CDACBotVtcExtMetalType)
+                _Caculation_Parameters['_Layer1'] = _Layer1
+                _Caculation_Parameters['_Layer2'] = _Layer2
+                _Caculation_Parameters['_COX'] = 1
+                _Caculation_Parameters['_COY'] = 2
+
+                    ## Sref ViaX declaration
+                self._DesignParameter['SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-i-1,_Layer1,_Layer2)] = self._SrefElementDeclaration(_DesignObj=A02_ViaStack_KJH3._ViaStack(_DesignParameter=None, _Name='{}:SRF_B{}_Bottom_ViaM{}M{}'.format(_Name,_Bitsize-i-1,_Layer1,_Layer2)))[0]
+
+                    ## Define Sref Relection
+                self._DesignParameter['SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-i-1,_Layer1,_Layer2)]['_Reflect'] = [0, 0, 0]
+
+                    ## Define Sref Angle
+                self._DesignParameter['SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-i-1,_Layer1,_Layer2)]['_Angle'] = 0
+
+                    ## Generate Metal(x), Metal(x+1) and C0(Viax) layer:  Option: _CalculateDesignParameter, _CalculateDesignParameterXmin, _CalculateDesignParameterYmin, _CalculateDesignParameterXYsame
+                self._DesignParameter['SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-i-1,_Layer1,_Layer2)]['_DesignObj']._CalculateDesignParameterXmin(**_Caculation_Parameters)
+
+                    ## Calculate Sref XYcoord
+                        ## initialized Sref coordinate
+                self._DesignParameter['SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-i-1,_Layer1,_Layer2)]['_XYCoordinates'] = [[0, 0]]
+
+            tmpXY = []
+            for j in range(2 ** (_Bitsize - i - 1)):
+                        ## Calculate
+                            ## Target_coord
+                tmp1 = self.get_param_KJH4('BND_B{}_Bottom_Hrz'.format(_Bitsize-i-1))
+                tmp2 = self.get_param_KJH4('BND_B{}_BotExten_VTC'.format(_Bitsize-i-1))
+                BotExtenCentX = int((abs(tmp2[j*_NumOfElement][0]['_XY_cent'][0] + tmp2[(j+1)*_NumOfElement-1][0]['_XY_cent'][0]))/2)
+                            ## Approaching_coord
+                tmp2 = self.get_param_KJH4('SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-i-1,_Layer1,_Layer2),'SRF_ViaM{}M{}'.format(_Layer1,_Layer1+1),'BND_Met{}Layer'.format(_Layer1))
+                if _NumOfElement != 1:
+                    target_coord = [BotExtenCentX, tmp1[0][0]['_XY_cent'][1]]
+                    approaching_coord = tmp2[0][0][0][0]['_XY_cent']
+                elif _NumOfElement == 1:
+                    target_coord = [BotExtenCentX, tmp1[0][0]['_XY_down'][1]]
+                    approaching_coord = tmp2[0][0][0][0]['_XY_down']
+                            ## Sref coord
+                tmp3 = self.get_param_KJH4('SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-i-1,_Layer1,_Layer2))
+                Scoord = tmp3[0][0]['_XY_origin']
+                            ## Calculate
+                New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+                tmpXY.append(New_Scoord)
+                ## Define
+            self._DesignParameter['SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-i-1,_Layer1,_Layer2)]['_XYCoordinates'] = tmpXY
+
+
+        ## Dummy UCAP SRF Generation
+        _Caculation_Parameters = copy.deepcopy(H00_02_CapWithShield._CapWithShield._ParametersForDesignCalculation)
+        ## Define Calculation_Parameters ex) _Caculation_Parameters['_NMOSPOWER_PbodyContact_1_Length']  = _NMOSPOWER_PbodyContact_1_Length
+        _Caculation_Parameters['_LayoutOption'] = _LayoutOption
+        _Caculation_Parameters['_ShieldingLayer'] = _ShieldingLayer
+        _Caculation_Parameters['_MetalWidth'] = _MetalWidth
+        _Caculation_Parameters['_MetalLength'] = _MetalLength
+        _Caculation_Parameters['_MetalSpacing'] = _MetalSpacing
+        _Caculation_Parameters['_NumOfElement'] = _NumOfElement
+        _Caculation_Parameters['_ConnectLength'] = _ConnectLength
+        _Caculation_Parameters['_ExtendLength'] = _ExtendLength
+
+        ## Generate Sref: ex)self._DesignParameter['_NMOS_POWER'] = self._SrefElementDeclaration(_DesignObj=B16_nmos_power_v2._NMOS_POWER( _DesignParameter=None, _Name='{}:NMOS_POWER'.format(_Name)))[0]
+        self._DesignParameter['SRF_Dummy_UCAP'] = self._SrefElementDeclaration(
+            _DesignObj=H00_02_CapWithShield._CapWithShield(_DesignParameter=None,
+                                                       _Name='{}:SRF_Dummy_UCAP'.format(_Name)))[0]
+
+        ## Define Sref Reflection: ex)self._DesignParameter['_NMOS_POWER']['_Reflect'] = [0, 0, 0]
+        self._DesignParameter['SRF_Dummy_UCAP']['_Reflect'] = [0, 0, 0]
+
+        ## Define Sref Angle: ex)'_NMOS_POWER'
+        self._DesignParameter['SRF_Dummy_UCAP']['_Angle'] = 0
+
+        ## Calculate Sref Layer by using Calculation_Parameter: ex)'_NMOS_POWER'
+        self._DesignParameter['SRF_Dummy_UCAP']['_DesignObj']._CalculateDesignParameter(**_Caculation_Parameters)
+
+        ## Define Sref _XYcoordinate: ex)'_NMOS_POWER'
+        self._DesignParameter['SRF_Dummy_UCAP']['_XYCoordinates'] = [[0, 0]]
+
+        ## Calculate
+        ## Target_coord
+        tmpXY = []
+        tmp1 = self.get_param_KJH4('SRF_CommonArray', 'SRF_CDAC_B{}'.format(_Bitsize - 1), 'SRF_Shield_ViaM{}M{}'.format(_ShieldingLayer,7), 'SRF_ViaM{}M{}'.format(_ShieldingLayer,_ShieldingLayer+1), 'BND_Met{}Layer'.format(_ShieldingLayer))
+        tmp2 = self.get_param_KJH4('SRF_CommonArray', 'SRF_CDAC_B{}'.format(_Bitsize - 1), 'BND_Shield_Extend_VTC_M5')
+        target_coord = [tmp1[0][-1][-1][0][0][0]['_XY_left'][0], tmp2[0][0][0][0]['_XY_up'][1]]
+
+        ## Approaching_coord
+        tmp3 = self.get_param_KJH4('SRF_Dummy_UCAP', 'BND_Shield_Extend_VTC_M5')
+        approaching_coord = tmp3[0][0][0]['_XY_up_left']
+
+        ## Sref coord
+        tmp4 = self.get_param_KJH4('SRF_Dummy_UCAP')
+        Scoord = tmp4[0][0]['_XY_origin']
+
+        ## Calculate
+        New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+        tmpXY.append(New_Scoord)
+
+        ## Define
+        self._DesignParameter['SRF_Dummy_UCAP']['_XYCoordinates'] = tmpXY
+
+
+        ####################################### Dummy UCAP Bottom Node Extension
+        ## Boundary_element Generation
+        ## Generate Boundary_element: ex)LayerName: METAL1 / DIFF (_ODLayer) / POLY / PIMP (_PPLayer) / NWELL / SLVT LVT RVT HVT / OP(OPpress) / CONT (CA) / PCCRIT
+        self._DesignParameter['BND_DummyUCAP_BotExten_VTC'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL{}'.format(CDACBotVtcExtMetalType)][0],
+            _Datatype=DesignParameters._LayerMapping['METAL{}'.format(CDACBotVtcExtMetalType)][1],
+            _XWidth=None,
+            _YWidth=None,
+            _XYCoordinates=[],
+        )
+        ## Define Boundary_element _YWidth
+        tmp = self.get_param_KJH4('BND_B{}_BotExten_VTC'.format(0))
+        self._DesignParameter['BND_DummyUCAP_BotExten_VTC']['_YWidth'] = tmp[0][0]['_Ywidth'] + _DriveNodeDistance + _YWidth_Bottom_Hrz
+
+        ## Define Boundary_element _XWidth
+        self._DesignParameter['BND_DummyUCAP_BotExten_VTC']['_XWidth'] = _MetalWidth
+
+        ## Define Boundary_element _XYCoordinates
+        self._DesignParameter['BND_DummyUCAP_BotExten_VTC']['_XYCoordinates'] = [[0, 0]]
+
+        ## Calculate Sref XYcoord
+        tmpXY = []
+        for i in range(_NumOfElement):
+            ## Calculate
+            ## Target_coord: _XY_type1
+            tmp1 = self.get_param_KJH4('SRF_Dummy_UCAP','SRF_UCAP', 'SRF_ECAP', 'BND_ECAP_Bot_VTC_M{}'.format(_LayoutOption[0]))
+            target_coord = tmp1[0][0][i][0][0]['_XY_down_left']
+            ## Approaching_coord: _XY_type2
+            tmp2 = self.get_param_KJH4('BND_DummyUCAP_BotExten_VTC')
+            approaching_coord = tmp2[0][0]['_XY_up_left']
+            ## Sref coord
+            Scoord = tmp2[0][0]['_XY_origin']
+            ## Cal
+            New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+            tmpXY.append(New_Scoord)
+        ## Define coordinates
+        self._DesignParameter['BND_DummyUCAP_BotExten_VTC']['_XYCoordinates'] = tmpXY
+
+
+        ####################################### Dummy UCAP Bottom Node Hrz
+        ## Boundary_element Generation
+        ## Generate Boundary_element: ex)LayerName: METAL1 / DIFF (_ODLayer) / POLY / PIMP (_PPLayer) / NWELL / SLVT LVT RVT HVT / OP(OPpress) / CONT (CA) / PCCRIT
+        self._DesignParameter['BND_DummyUCAP_Bot_Hrz'] = self._BoundaryElementDeclaration(
+            _Layer=DesignParameters._LayerMapping['METAL{}'.format(CDACBotHrzMetalType)][0],
+            _Datatype=DesignParameters._LayerMapping['METAL{}'.format(CDACBotHrzMetalType)][1],
+            _XWidth=None,
+            _YWidth=None,
+            _XYCoordinates=[],
+        )
+        ## Define Boundary_element _YWidth
+        self._DesignParameter['BND_DummyUCAP_Bot_Hrz']['_YWidth'] = _YWidth_Bottom_Hrz
+
+        ## Define Boundary_element _XWidth
+        tmp = self.get_param_KJH4('BND_DummyUCAP_BotExten_VTC')
+        self._DesignParameter['BND_DummyUCAP_Bot_Hrz']['_XWidth'] = abs(tmp[-1][0]['_XY_cent'][0] - tmp[0][0]['_XY_cent'][0])
+
+        ## Define Boundary_element _XYCoordinates
+        self._DesignParameter['BND_DummyUCAP_Bot_Hrz']['_XYCoordinates'] = [[0, 0]]
+
+        ## Calculate Sref XYcoord
+        tmpXY = []
+        ## Calculate
+        ## Target_coord: _XY_type1
+        target_coord = tmp[0][0]['_XY_down']
+        ## Approaching_coord: _XY_type2
+        tmp2 = self.get_param_KJH4('BND_DummyUCAP_Bot_Hrz')
+        approaching_coord = tmp2[0][0]['_XY_down_left']
+        ## Sref coord
+        Scoord = tmp2[0][0]['_XY_origin']
+        ## Cal
+        New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+        tmpXY.append(New_Scoord)
+        ## Define coordinates
+        self._DesignParameter['BND_DummyUCAP_Bot_Hrz']['_XYCoordinates'] = tmpXY
+
+
+        ## ########## Dummy Cap Bottom Node Via
+        ## Sref generation: ViaX
+        ## Define ViaX Parameter
+        _Caculation_Parameters = copy.deepcopy(A02_ViaStack_KJH3._ViaStack._ParametersForDesignCalculation)
+        _Layer1 = min(CDACBotHrzMetalType, CDACBotVtcExtMetalType)
+        _Layer2 = max(CDACBotHrzMetalType, CDACBotVtcExtMetalType)
+        _Caculation_Parameters['_Layer1'] = _Layer1
+        _Caculation_Parameters['_Layer2'] = _Layer2
+        _Caculation_Parameters['_COX'] = None
+        _Caculation_Parameters['_COY'] = None
+
+        ## Sref ViaX declaration
+        self._DesignParameter['SRF_DummyUCAP_Bottom_ViaM{}M{}'.format(_Layer1, _Layer2)] = \
+            self._SrefElementDeclaration(_DesignObj=A02_ViaStack_KJH3._ViaStack(_DesignParameter=None,
+                                                                                     _Name='{}:SRF_DummyUCAP_Bottom_ViaM{}M{}'.format(
+                                                                                         _Name, _Layer1,
+                                                                                         _Layer2)))[0]
+        ## Define Sref Relection
+        self._DesignParameter['SRF_DummyUCAP_Bottom_ViaM{}M{}'.format(_Layer1, _Layer2)]['_Reflect'] = [0, 0, 0]
+
+        ## Define Sref Angle
+        self._DesignParameter['SRF_DummyUCAP_Bottom_ViaM{}M{}'.format(_Layer1, _Layer2)]['_Angle'] = 0
+
+        ## Define _COX and _COY
+        tmp1 = self.get_param_KJH4('BND_B{}_BotExten_VTC'.format(_Bitsize - 1))
+        ViaXwidth = abs(tmp1[0][0]['_XY_left'][0] - tmp1[_NumOfElement - 1][0]['_XY_right'][0])
+
+        _COX, _COY = self._CalculateNumViaByXYWidth(ViaXwidth, _YWidth_Bottom_Hrz, 'MinEnclosureY')
+        _Caculation_Parameters['_COX'] = max(_COX, 2)
+        _Caculation_Parameters['_COY'] = _COY
+
+        ## initialized Sref coordinate
+        self._DesignParameter['SRF_DummyUCAP_Bottom_ViaM{}M{}'.format(_Layer1, _Layer2)]['_XYCoordinates'] = [[0, 0]]
+
+        ## Generate Metal(x), Metal(x+1) and C0(Viax) layer:  Option: _CalculateDesignParameter, _CalculateDesignParameterXmin, _CalculateDesignParameterYmin, _CalculateDesignParameterXYsame
+        self._DesignParameter['SRF_DummyUCAP_Bottom_ViaM{}M{}'.format(_Layer1, _Layer2)]['_DesignObj']._CalculateDesignParameterYmin(**_Caculation_Parameters)
+
+        ## Calculate Sref XYcoord
+        tmpXY = []
+        for i in range(_NumOfElement):
+            ## Calculate
+            ## Target_coord
+            tmp1 = self.get_param_KJH4('BND_DummyUCAP_Bot_Hrz')
+            tmp2 = self.get_param_KJH4('BND_DummyUCAP_BotExten_VTC')
+            BotExtenCentX = int((abs(tmp2[0][0]['_XY_cent'][0] + tmp2[-1][0]['_XY_cent'][0])) / 2)
+            target_coord = [BotExtenCentX, tmp1[0][0]['_XY_cent'][1]]
+            ## Approaching_coord
+            tmp2 = self.get_param_KJH4('SRF_DummyUCAP_Bottom_ViaM{}M{}'.format(_Layer1, _Layer2),
+                                       'SRF_ViaM{}M{}'.format(_Layer1, _Layer1 + 1),
+                                       'BND_Met{}Layer'.format(_Layer1))
+            approaching_coord = tmp2[0][0][0][0]['_XY_cent']
+            ## Sref coord
+            tmp3 = self.get_param_KJH4('SRF_DummyUCAP_Bottom_ViaM{}M{}'.format(_Layer1, _Layer2))
+            Scoord = tmp3[0][0]['_XY_origin']
+            ## Calculate
+            New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+            tmpXY.append(New_Scoord)
+            ## Define
+        self._DesignParameter['SRF_DummyUCAP_Bottom_ViaM{}M{}'.format(_Layer1, _Layer2)]['_XYCoordinates'] = tmpXY
+
+
+        # [SRF Dummy ECAP Bot Via(Cap Metal Via) -> BND_B{}_BotExten_VTC] Via
+        ## Sref generation: ViaX
+        ## Define ViaX Parameter
+        _Caculation_Parameters = copy.deepcopy(A02_ViaStack_KJH3._ViaStack._ParametersForDesignCalculation)
+        _Layer1 = min(CDACBotVtcExtMetalType, _LayoutOption[0])
+        _Layer2 = max(CDACBotVtcExtMetalType, _LayoutOption[0])
+        _Caculation_Parameters['_Layer1'] = _Layer1
+        _Caculation_Parameters['_Layer2'] = _Layer2
+        _Caculation_Parameters['_COX'] = 1
+        _Caculation_Parameters['_COY'] = 2
+
+        ## Sref ViaX declaration
+        self._DesignParameter['SRF_Dummy_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Layer1, _Layer2)] = \
+            self._SrefElementDeclaration(_DesignObj=A02_ViaStack_KJH3._ViaStack(_DesignParameter=None,
+                                                                                _Name='{}:SRF_Dummy_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Name, _Layer1, _Layer2)))[0]
+
+        ## Define Sref Relection
+        self._DesignParameter['SRF_Dummy_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Layer1, _Layer2)]['_Reflect'] = [0, 0, 0]
+
+        ## Define Sref Angle
+        self._DesignParameter['SRF_Dummy_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Layer1, _Layer2)]['_Angle'] = 0
+
+        self._DesignParameter['SRF_Dummy_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Layer1, _Layer2)]['_DesignObj']._CalculateDesignParameterXmin(**_Caculation_Parameters)
+
+        ## Calculate Sref XYcoord
+        ## initialized Sref coordinate
+        self._DesignParameter['SRF_Dummy_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Layer1, _Layer2)]['_XYCoordinates'] = [[0, 0]]
+
+        ## Calculate Sref XYcoord
+        tmpXY1 = []
+        ## Approaching_coord: _XY_type2
+        tmp2 = self.get_param_KJH4('SRF_Dummy_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Layer1, _Layer2), 'SRF_ViaM{}M{}'.format(_Layer1, _Layer1 + 1), 'BND_Met{}Layer'.format(_Layer1))
+        approaching_coord = tmp2[0][0][0][0]['_XY_up']
+        for j in range(_NumOfElement):
+            ## Calculate
+            ## Target_coord: _XY_type1
+            tmp1 = self.get_param_KJH4('SRF_Dummy_UCAP','SRF_UCAP', 'SRF_ECAP', 'BND_ECAP_Bot_VTC_M{}'.format(_LayoutOption[0]))
+            target_coord = tmp1[0][0][j][0][0]['_XY_down']
+            ## Sref coord
+            tmp3 = self.get_param_KJH4('SRF_Dummy_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Layer1, _Layer2))
+            Scoord = tmp3[0][0]['_XY_origin']
+            ## Cal
+            New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+            tmpXY1.append(New_Scoord)
+
+        ## Define coordinates
+        self._DesignParameter['SRF_Dummy_ECAP2VtcExtenPath_ViaM{}M{}'.format(_Layer1, _Layer2)]['_XYCoordinates'] = tmpXY1
+
+
+        ##################### Generate Sref: Dummy Capacitor Array (Generate once more)
+        _Caculation_Parameters = copy.deepcopy(H00_03_DummyCapUnit._DummyCapUnit._ParametersForDesignCalculation)
+        _Caculation_Parameters['_LayoutOption'] = _LayoutOption
+        _Caculation_Parameters['_ShieldingLayer'] = _ShieldingLayer
+        _Caculation_Parameters['_MetalWidth'] = _MetalWidth
+        _Caculation_Parameters['_MetalLength'] = _MetalLength
+        _Caculation_Parameters['_MetalSpacing'] = _MetalSpacing
+
+        _Caculation_Parameters['_NumOfElement'] = _NumOfElement
+
+        _Caculation_Parameters['_ConnectLength'] = _ConnectLength
+        _Caculation_Parameters['_ExtendLength'] = _ExtendLength
+        _Caculation_Parameters['_DummyCap_TopBottomShort'] = _DummyCap_TopBottomShort
+
+        self._DesignParameter['SRF_DummyCaps'] = self._SrefElementDeclaration(_DesignObj=H00_03_DummyCapUnit._DummyCapUnit(_DesignParameter=None,_Name='{}:SRF_DummyCaps'.format(_Name)))[0]
+
+        ## Define Sref Reflection: ex)self._DesignParameter['_NMOS_POWER']['_Reflect'] = [0, 0, 0]
+        self._DesignParameter['SRF_DummyCaps']['_Reflect'] = [0, 0, 0]
+
+        ## Define Sref Angle: ex)'_NMOS_POWER'
+        self._DesignParameter['SRF_DummyCaps']['_Angle'] = 0
+
+        ## Calculate Sref Layer by using Calculation_Parameter: ex)'_NMOS_POWER'
+        self._DesignParameter['SRF_DummyCaps']['_DesignObj']._CalculateDesignParameter(
+            **_Caculation_Parameters)
+
+        ## Define Sref _XYcoordinate: ex)'_NMOS_POWER'
+        self._DesignParameter['SRF_DummyCaps']['_XYCoordinates'] = [[0, 0]]
+
+        tmpXY = []
+        ## Calculate left side dummy caps
+        ## Target_coord: _XY_type1
+        tmp1 = self.get_param_KJH4('SRF_CommonArray', 'SRF_CDAC_B{}'.format(_Bitsize - 1), 'SRF_UCAP', 'SRF_ECAP',
+                                   'BND_ECAP_Top_VTC_M{}'.format(_LayoutOption[0]))
+        target_coord = tmp1[0][0][0][0][0][0]['_XY_down_left']
+        ## Approaching_coord: _XY_type2
+        tmp2 = self.get_param_KJH4('SRF_DummyCaps', 'SRF_CapWtShield4DCAP', 'SRF_UCAP', 'SRF_ECAP',
+                                   'BND_ECAP_Top_VTC_M{}'.format(_LayoutOption[0]))
+        approaching_coord = tmp2[0][0][0][0][0][0]['_XY_down_left']
+        ## Sref coord
+        tmp3 = self.get_param_KJH4('SRF_DummyCaps')
+        Scoord = tmp3[0][0]['_XY_origin']
+
+        tmp1 = self.get_param_KJH4('SRF_CommonArray', 'SRF_CDAC_B{}'.format(_Bitsize - 1), 'SRF_UCAP', 'SRF_ECAP',
+                                   'BND_ECAP_Top_VTC_M{}'.format(_LayoutOption[0]))
+        _CapLength = abs(tmp1[0][0][0][-1][-1][0]['_XY_right'][0] - tmp1[0][0][0][0][0][0]['_XY_right'][0])
+        Scoord[0] = Scoord[0] - _CapLength * _NumOfDummyCaps
+        ## Cal
+        New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+        tmpXY.append(New_Scoord)
+        ## Define coordinates
+        self._DesignParameter['SRF_DummyCaps']['_XYCoordinates'] = tmpXY
+        for i in range(1, _NumOfDummyCaps):
+            # 시작점 : ((2 ** i) * DistanceBtwTr)
+            tmp = tmpXY[0] + [_CapLength * (i), 0]
+            tmpXY.append(tmp)
+        ## Calculate right side dummy caps
+        ## Target_coord: _XY_type1
+        tmp1 = self.get_param_KJH4('SRF_Dummy_UCAP', 'SRF_UCAP', 'SRF_ECAP',
+                                   'BND_ECAP_Top_VTC_M{}'.format(_LayoutOption[0]))
+        target_coord = tmp1[0][0][-1][-1][0]['_XY_down_left']
+        ## Approaching_coord: _XY_type2
+        tmp2 = self.get_param_KJH4('SRF_DummyCaps', 'SRF_CapWtShield4DCAP', 'SRF_UCAP', 'SRF_ECAP',
+                                   'BND_ECAP_Top_VTC_M{}'.format(_LayoutOption[0]))
+        approaching_coord = tmp2[0][0][0][0][0][0]['_XY_down_left']
+        ## Sref coord
+        tmp3 = self.get_param_KJH4('SRF_DummyCaps')
+        Scoord = tmp3[0][0]['_XY_origin']
+        # Scoord[0] = Scoord[0] - _CapLength * _NumOfDummyCaps
+        ## Cal
+        New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+        tmpXY.append(New_Scoord)
+        for i in range(1, _NumOfDummyCaps):
+            tmp = tmpXY[_NumOfDummyCaps] + [_CapLength * (i), 0]
+            tmpXY.append(tmp)
+        ## Define Sref _XYcoordinate: ex)'_NMOS_POWER'
+        self._DesignParameter['SRF_DummyCaps']['_XYCoordinates'] = tmpXY
+
+
+        if (_NumOfElement == 1):
+            ## MSB Bottom Node M5 Vtc Extension for satisfying Design Rule (M5 Minimum Space)
+            ## Boundary Element Generation
+            ## Generate Boundary_element: ex)LayerName: METAL1 / DIFF (_ODLayer) / POLY / PIMP (_PPLayer) / NWELL / SLVT LVT RVT HVT / OP(OPpress) / CONT (CA) / PCCRIT
+            self._DesignParameter['BND_MSBBotExtension_Vtc_M{}'.format(CDACBotVtcExtMetalType)] = self._BoundaryElementDeclaration(
+                _Layer=DesignParameters._LayerMapping['METAL{}'.format(CDACBotVtcExtMetalType)][0],
+                _Datatype=DesignParameters._LayerMapping['METAL{}'.format(CDACBotVtcExtMetalType)][1],
+                _XWidth=None,
+                _YWidth=None,
+                _XYCoordinates=[],
+            )
+            ## Define Boundary_element _YWidth
+            ViaUpperMetal = max(CDACBotHrzMetalType, CDACBotVtcExtMetalType)
+            ViaLowerMetal = min(CDACBotHrzMetalType, CDACBotVtcExtMetalType)
+            tmp1 = self.get_param_KJH4('SRF_B{}_Bottom_ViaM{}M{}'.format(_Bitsize-1,ViaLowerMetal,ViaUpperMetal),'SRF_ViaM{}M{}'.format(ViaLowerMetal,ViaLowerMetal+1),'BND_Met{}Layer'.format(ViaLowerMetal))
+            tmp2 = self.get_param_KJH4('SRF_CommonArray','SRF_CDAC_B{}'.format(_Bitsize-1),'SRF_UCAP','SRF_ECAP','SRF_Bot_Vtc_ViaM{}M{}'.format(_LayoutOption[0],6),'SRF_ViaM{}M{}'.format(_LayoutOption[0],_LayoutOption[0]+1),'BND_Met{}Layer'.format(_LayoutOption[0]))
+            self._DesignParameter['BND_MSBBotExtension_Vtc_M{}'.format(CDACBotVtcExtMetalType)]['_YWidth'] = abs(tmp1[0][0][0][0]['_XY_down'][1] - tmp2[0][0][0][0][0][0][0][0]['_XY_up'][1])
+
+            ## Define Boundary_element _XWidth
+            self._DesignParameter['BND_MSBBotExtension_Vtc_M{}'.format(CDACBotVtcExtMetalType)]['_XWidth'] = tmp2[0][0][0][0][0][0][0][0]['_Xwidth']
+
+            ## Define Boundary_element _XYCoordinates
+            self._DesignParameter['BND_MSBBotExtension_Vtc_M{}'.format(CDACBotVtcExtMetalType)]['_XYCoordinates'] = [[0, 0]]
+            ## Calculate Sref XYcoord
+            tmpXY = []
+            ## Calculate
+            ## Approaching_coord: _XY_type2
+            tmp3 = self.get_param_KJH4('BND_MSBBotExtension_Vtc_M{}'.format(CDACBotVtcExtMetalType))
+            approaching_coord = tmp3[0][0]['_XY_up']
+            ## Sref coord
+            tmp4 = self.get_param_KJH4('BND_MSBBotExtension_Vtc_M{}'.format(CDACBotVtcExtMetalType))
+            Scoord = tmp4[0][0]['_XY_origin']
+            for i in range(2 ** (_Bitsize-1)):
+            ## Target_coord: _XY_type1
+                target_coord = tmp2[0][i][0][0][0][0][0][0]['_XY_up']
+                ## Cal
+                New_Scoord = self.get_Scoord_KJH4(target_coord, approaching_coord, Scoord)
+                tmpXY.append(New_Scoord)
+            ## Define coordinates
+            self._DesignParameter['BND_MSBBotExtension_Vtc_M{}'.format(CDACBotVtcExtMetalType)]['_XYCoordinates'] = tmpXY
+
+        print('##############################')
+        print('##     Calculation_End      ##')
+        print('##############################')
+        CommonCentroid_end_time = time.time()
+        self.CommonCentroid_elapsed_time = CommonCentroid_end_time - CommonCentroid_start_time
+
+
+############################################################################################################################################################ START MAIN
+if __name__ == '__main__':
+
+    ''' Check Time'''
+    start_time = time.time()
+
+    from KJH91_Projects.Project_ADC.Library_and_Engine.Private import MyInfo
+    from KJH91_Projects.Project_ADC.Library_and_Engine import DRCchecker_KJH0
+
+    libname = 'Proj_ZZ01_H00_05_CommonCentroid_Fixed'
+    cellname = 'H00_00_CommonCentroid_99'
+    _fileName = cellname + '.gds'
+
+    ''' Input Parameters for Layout Object ''' ############################################################### ^^^^^^^^^^^^^^^^^^^^^
+    InputParams = dict(
+
+## CDAC
+    ## CommonCentroid Array
+    _Bitsize=3,  # Total bit size of CDAC
+
+    ## Element CDAC
+    _LayoutOption = [3], #Vector, Consecutive Number [3,4,5]
+    _MetalWidth=50,     # Number
+    _MetalLength=1410,  # Number (8bit size: 1414/ 10bit size: 2800/ 12bit size: 4200)
+    _MetalSpacing=50,   # Number
+
+    ## Unit Cap
+    _NumOfElement=1,  # Number
+
+    ## Shield
+    _ShieldingLayer = 1,  # Poly:0, M1:1, M2:2 ...
+    _ConnectLength=411, # Number
+    _ExtendLength=400,  # Number
+
+    ## Dummy Cap Option
+    _NumOfDummyCaps=3,  # Number, Number of dummy cap(one side)
+    _DummyCap_TopBottomShort=None, # True => Top - Bottom Short, False -> Bottom = GND, None => Floating Bottom Node
+
+    ## CommonCentroid With Driving node
+    _CapArrayWDrivingNodeDistance=1611, #Number
+    _DriveNodeDistance=279,  #Number
+    _YWidth_Bottom_Hrz=55,   #Number
+    _BotNodeVtcExtensionMetalLayer=1,
+
+                        )
+
+    '''Mode_DRCCHECK '''
+
+    Mode_DRCCheck = False
+    Num_DRCCheck =1
+
+    for ii in range(0, Num_DRCCheck if Mode_DRCCheck else 1):
+        if Mode_DRCCheck:
+            ''' Input Parameters for Layout Object '''
+        else:
+            pass
+
+    ''' Generate Layout Object '''
+    LayoutObj = _CommonCentroid(_DesignParameter=None, _Name=cellname)
+    # LayoutObj._CalculateDesignParameter(**InputParams)
+    LayoutObj._CalculateDesignParameterFold1(**InputParams)
+    LayoutObj._UpdateDesignParameter2GDSStructure(_DesignParameterInDictionary=LayoutObj._DesignParameter)
+    testStreamFile = open('./{}'.format(_fileName), 'wb')
+    tmp = LayoutObj._CreateGDSStream(LayoutObj._DesignParameter['_GDSFile']['_GDSFile'])
+    tmp.write_binary_gds_stream(testStreamFile)
+    testStreamFile.close()
+
+    ''' Check Time'''
+    elapsed_time = time.time() - start_time
+    m, s = divmod(elapsed_time,60)
+    h, m = divmod(m, 60)
+
+    print('###############      Sending to FTP Server...      ##################')
+    My = MyInfo.USER(DesignParameters._Technology)
+    Checker = DRCchecker_KJH0.DRCchecker_KJH0(
+        username=My.ID,
+        password=My.PW,
+        WorkDir=My.Dir_Work,
+        DRCrunDir=My.Dir_DRCrun,
+        libname=libname,
+        cellname=cellname,
+        GDSDir=My.Dir_GDS
+    )
+    Checker.lib_deletion()
+    #Checker.cell_deletion()
+    Checker.Upload2FTP()
+    Checker.StreamIn(tech=DesignParameters._Technology)
+    #Checker_KJH0.DRCchecker()
+
+    print ('#############################      Finished      ################################')
+    print('{} Hours   {} minutes   {} seconds'.format(h, m, s))
+    # end of 'main():' ---------------------------------------------------------------------------------------------
