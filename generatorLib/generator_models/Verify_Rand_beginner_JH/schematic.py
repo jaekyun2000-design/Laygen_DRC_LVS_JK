@@ -930,12 +930,12 @@ def makeTIASche(word, param):
 
     now_str = datetime.now().strftime("%b %d %H:%M:%S %Y")
     if not os.path.exists(
-            rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\TIA'):
+            rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\TIA'):
         os.makedirs(
-            rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\TIA')
+            rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\TIA')
 
     with open(
-            rf'C:\Users\ych\PycharmProjects\Laygen_DRC_LVS_JK\generatorLib\generator_models\Verify_Rand_beginner_JH\TIA\TIA{word}.src.net',
+            rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\TIA\TIA{word}.src.net',
             'w') as f:
         f.write("************************************************************************\n")
         f.write("* auCdl Netlist:\n")
@@ -1128,6 +1128,386 @@ def makeTIASche(word, param):
             f"XI12 net6 net1 VDD VREF_TIA IIN TIStageOutput VSS / A02_TwoStageAmp\n")
         f.write(".ENDS")
     return None
+
+def makeBSTSche(word, param):
+    XVT_to_nfet={
+        'SLVT': 'slvtnfet',
+        'RVT': 'nfet',
+        'LVT': 'lvtnfet',
+        'HVT': 'hvtnfet',
+    }
+    XVT_to_pfet = {
+        'SLVT': 'slvtpfet',
+        'RVT': 'pfet',
+        'LVT': 'lvtpfet',
+        'HVT': 'hvtpfet',
+    }
+    _Tr1_finger = param.get('_Sampler_Tr1_NumberofGate')
+    _Tr1_width = param.get('_Sampler_Tr1_ChannelWidth')
+    _Tr1_Selected_XVT = param.get('_Sampler_Tr1_XVT')
+    _Tr1_XVT = XVT_to_nfet.get(_Tr1_Selected_XVT)
+
+    _Tr2_finger = param.get('_Sampler_Tr2_NumberofGate')
+    _Tr2_width = param.get('_Sampler_Tr2_ChannelWidth')
+    _Tr2_Selected_XVT = param.get('_Sampler_Tr2_XVT')
+    _Tr2_XVT = XVT_to_nfet.get(_Tr2_Selected_XVT)
+
+    _Tr3_finger = param.get('_Sampler_Tr3_NumberofGate')
+    _Tr3_width = param.get('_Sampler_Tr3_ChannelWidth')
+    _Tr3_Selected_XVT = param.get('_Sampler_Tr3_XVT')
+    _Tr3_XVT = XVT_to_nfet.get(_Tr3_Selected_XVT)
+
+    _Tr4_finger = param.get('_Sampler_Tr4_NumberofGate')
+    _Tr4_width = param.get('_Sampler_Tr4_ChannelWidth')
+    _Tr4_Selected_XVT = param.get('_Sampler_Tr4_XVT')
+    _Tr4_XVT = XVT_to_nfet.get(_Tr4_Selected_XVT)
+
+    _Tr5_finger = param.get('_Sampler_Tr5_NumberofGate')
+    _Tr5_width = param.get('_Sampler_Tr5_ChannelWidth')
+    _Tr5_Selected_XVT = param.get('_Sampler_Tr5_XVT')
+    _Tr5_XVT = XVT_to_pfet.get(_Tr5_Selected_XVT)
+
+    _Tr6_finger = param.get('_Sampler_Tr6_NumberofGate')
+    _Tr6_width = param.get('_Sampler_Tr6_ChannelWidth')
+    _Tr6_Selected_XVT = param.get('_Sampler_Tr6_XVT')
+    _Tr6_XVT = XVT_to_nfet.get(_Tr6_Selected_XVT)
+
+    _Tr7_finger = param.get('_Sampler_Tr7_NumberofGate')
+    _Tr7_width = param.get('_Sampler_Tr7_ChannelWidth')
+    _Tr7_Selected_XVT = param.get('_Sampler_Tr7_XVT')
+    _Tr7_XVT = XVT_to_pfet.get(_Tr7_Selected_XVT)
+
+    _Tr8_finger = param.get('_Sampler_Tr8_NumberofGate')
+    _Tr8_width = param.get('_Sampler_Tr8_ChannelWidth')
+    _Tr8_Selected_XVT = param.get('_Sampler_Tr8_XVT')
+    _Tr8_XVT = XVT_to_nfet.get(_Tr8_Selected_XVT)
+
+    _Tr9_finger = param.get('_Sampler_Tr9_NumberofGate')
+    _Tr9_width = param.get('_Sampler_Tr9_ChannelWidth')
+    _Tr9_Selected_XVT = param.get('_Sampler_Tr9_XVT')
+    _Tr9_XVT = XVT_to_pfet.get(_Tr9_Selected_XVT)
+
+    _Tr10_finger = param.get('_Sampler_Tr10_NumberofGate')
+    _Tr10_width = param.get('_Sampler_Tr10_ChannelWidth')
+    _Tr10_Selected_XVT = param.get('_Sampler_Tr10_XVT')
+    _Tr10_XVT = XVT_to_nfet.get(_Tr10_Selected_XVT)
+
+    _Tr11_finger = param.get('_Sampler_Tr11_NumberofGate')
+    _Tr11_width = param.get('_Sampler_Tr11_ChannelWidth')
+    _Tr11_Selected_XVT = param.get('_Sampler_Tr11_XVT')
+    _Tr11_XVT = XVT_to_pfet.get(_Tr11_Selected_XVT)
+
+    _Tr12_finger = param.get('_Sampler_Tr12_NumberofGate')
+    _Tr12_width = param.get('_Sampler_Tr12_ChannelWidth')
+    _Tr12_Selected_XVT = param.get('_Sampler_Tr12_XVT')
+    _Tr12_XVT = XVT_to_nfet.get(_Tr12_Selected_XVT)
+
+    _Tie4N_finger = param.get('_Sampler_Tie4N_NumberofGate')
+    _Tie4N_width = param.get('_Sampler_Tie4N_ChannelWidth')
+    _Tie8N_finger = param.get('_Sampler_Tie8N_NumberofGate')
+    _Tie8N_width = param.get('_Sampler_Tie8N_ChannelWidth')
+    _Tie4P_finger = param.get('_Sampler_Tie4P_NumberofGate')
+    _Tie4P_width = param.get('_Sampler_Tie4P_ChannelWidth')
+    _Tie8P_finger = param.get('_Sampler_Tie8P_NumberofGate')
+    _Tie8P_width = param.get('_Sampler_Tie8P_ChannelWidth')
+
+
+    lev_mapping = {  # cmos28lp Spectre manual
+        1: 15,
+        2: 17,
+        3: 19,
+        4: 21,
+        5: 31,
+        6: 44,
+        7: 46
+    }
+    _cap_layeroption = param.get('_Sampler_HDVNCAP_LayoutOption')
+    _cap_min_num = min(_cap_layeroption)
+    _cap_max_num = max(_cap_layeroption)
+    _cap_botlev = lev_mapping.get(_cap_min_num, None)  # 낮은 메탈 값 매핑
+    _cap_toplev = lev_mapping.get(_cap_max_num, None)  # 높은 메탈 값 매핑
+    _cap_length = param.get('_Sampler_HDVNCAP_Length')
+    _cap_finger = param.get('_Sampler_HDVNCAP_NumFigPair')
+    _cap_array = param.get('_Sampler_HDVNCAP_Array')
+
+
+
+    now_str = datetime.now().strftime("%b %d %H:%M:%S %Y")
+    if not os.path.exists(
+            rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\BST'):
+        os.makedirs(
+            rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\BST')
+
+    with open(
+            rf'C:\Users\KJB\PycharmProjects\LayGenGUI\generatorLib\generator_models\Verify_Rand_beginner_JH\BST\BST{word}.src.net',
+            'w') as f:
+        f.write("************************************************************************\n")
+        f.write("* auCdl Netlist:\n")
+        f.write("* \n")
+        f.write(f"* Library Name:  Generator_test2\n")
+        f.write(f"* Top Cell Name: BST\n")
+        f.write("* View Name:     schematic\n")
+        f.write(f"* Netlisted on:  {now_str}\n")
+        f.write("************************************************************************\n\n")
+
+        f.write(".INCLUDE  /tools/PDK/ss28lpp_rf/Device/LNR28LPP_CDS_S00-V1.4.6.1/CDS/oa/cmos28lp/.il/devices.cdl\n")
+        # f.write('.INCLUDE /home/PDK/ss28nm/SEC_CDS/ln28lppdk/S00-V1.1.0.1_SEC2.0.6.2/oa/cmos28lp/.resources/devices.cdl\n')
+        f.write("*.EQUATION\n")
+        f.write("*.SCALE METER\n")
+        f.write("*.MEGA\n")
+        f.write(".PARAM\n\n\n\n")
+
+        # pfetnp
+        f.write("************************************************************************\n")
+        f.write(f"* Library Name: cmos28lp\n")
+        f.write(f"* Cell Name:    pfetnp\n")
+        f.write("* View Name:    schematic\n")
+        f.write("************************************************************************\n\n")
+
+        f.write(f".SUBCKT pfetnp b d g s sx\n")
+        f.write("*.PININFO g:I b:B d:B s:B sx:B\n")
+        f.write(
+            f"DD0 sx b diodenwx_lvs \n")
+        f.write(
+            f"+ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)*(w/n+2*geo_nw_yoffset) \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))\n")
+        f.write(
+            f"MP0 d g s b pfet w=w l=l nf=n*gateSplitStripes pccrit=pccrit plorient=plorient \n")
+        f.write(
+            f"+ ngcon=ngcon p_la=p_la ptwell=ptwell\n")
+        f.write(".ENDS\n\n")
+
+        f.write("************************************************************************\n")
+        f.write(f"* Library Name: cmos28lp\n")
+        f.write(f"* Cell Name:    hvtpfetnp\n")
+        f.write("* View Name:    schematic\n")
+        f.write("************************************************************************\n\n")
+
+        f.write(f".SUBCKT hvtpfetnp b d g s sx\n")
+        f.write("*.PININFO g:I b:B d:B s:B sx:B\n")
+        f.write(
+            f"DD0 sx b diodenwx_lvs \n")
+        f.write(
+            f"+ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)*(w/n+2*geo_nw_yoffset) \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))\n")
+        f.write(
+            f"MP0 d g s b hvtpfet w=w l=l nf=n*gateSplitStripes pccrit=pccrit \n")
+        f.write(
+            f"+ plorient=plorient ngcon=ngcon p_la=p_la ptwell=ptwell\n")
+        f.write(".ENDS\n\n")
+
+        f.write("************************************************************************\n")
+        f.write(f"* Library Name: cmos28lp\n")
+        f.write(f"* Cell Name:    lvtpfetnp\n")
+        f.write("* View Name:    schematic\n")
+        f.write("************************************************************************\n\n")
+
+        f.write(f".SUBCKT lvtpfetnp b d g s sx\n")
+        f.write("*.PININFO g:I b:B d:B s:B sx:B\n")
+        f.write(
+            f"DD0 sx b diodenwx_lvs \n")
+        f.write(
+            f"+ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)*(w/n+2*geo_nw_yoffset) \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))\n")
+        f.write(
+            f"MP0 d g s b lvtpfet w=w l=l nf=n*gateSplitStripes pccrit=pccrit \n")
+        f.write(
+            f"+ plorient=plorient ngcon=ngcon p_la=p_la ptwell=ptwell\n")
+        f.write(".ENDS\n\n")
+
+        f.write("************************************************************************\n")
+        f.write(f"* Library Name: cmos28lp\n")
+        f.write(f"* Cell Name:    slvtpfetnp\n")
+        f.write("* View Name:    schematic\n")
+        f.write("************************************************************************\n\n")
+
+        f.write(f".SUBCKT slvtpfetnp b d g s sx\n")
+        f.write("*.PININFO g:I b:B d:B s:B sx:B\n")
+        f.write(
+            f"DD0 sx b diodenwx_lvs \n")
+        f.write(
+            f"+ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)*(w/n+2*geo_nw_yoffset) \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))\n")
+        f.write(
+            f"MP0 d g s b slvtpfet w=w l=l nf=n*gateSplitStripes pccrit=pccrit \n")
+        f.write(
+            f"+ plorient=plorient ngcon=ngcon p_la=p_la ptwell=ptwell\n")
+        f.write(".ENDS\n\n")
+
+        #nfettw
+        f.write("************************************************************************\n")
+        f.write(f"* Library Name: cmos28lp\n")
+        f.write(f"* Cell Name:    hvtnfettw\n")
+        f.write("* View Name:    schematic\n")
+        f.write("************************************************************************\n\n")
+
+        f.write(f".SUBCKT hvtnfettw b d g s sx tw\n")
+        f.write("*.PININFO g:I b:B d:B s:B sx:B tw:B\n")
+        f.write(
+            f"DD0 b tw diodepwtw_lvs \n")
+        f.write(
+            f"+ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_pw_xoffset)*(w/n+2*geo_pw_yoffset) \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_pw_xoffset)+(w/n+2*geo_pw_yoffset))\n")
+        f.write(
+            f"DD1 sx tw diodetwx_lvs \n")
+        f.write(
+            f"+ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)*(w/n+2*geo_nw_yoffset) \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))\n")
+        f.write(
+            f"DD2 sx tw diodenwx_lvs 0 \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))\n")
+        f.write(
+            f"MN0 d g s b hvtnfet w=w l=l nf=n*gateSplitStripes pccrit=pccrit \n")
+        f.write(
+            f"+ plorient=plorient ngcon=ngcon p_la=p_la ptwell=ptwell\n")
+        f.write(".ENDS\n\n")
+
+        f.write("************************************************************************\n")
+        f.write(f"* Library Name: cmos28lp\n")
+        f.write(f"* Cell Name:    slvtnfettw\n")
+        f.write("* View Name:    schematic\n")
+        f.write("************************************************************************\n\n")
+
+        f.write(f".SUBCKT slvtnfettw b d g s sx tw\n")
+        f.write("*.PININFO g:I b:B d:B s:B sx:B tw:B\n")
+        f.write(
+            f"DD0 b tw diodepwtw_lvs \n")
+        f.write(
+            f"+ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_pw_xoffset)*(w/n+2*geo_pw_yoffset) \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_pw_xoffset)+(w/n+2*geo_pw_yoffset))\n")
+        f.write(
+            f"DD1 sx tw diodetwx_lvs \n")
+        f.write(
+            f"+ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)*(w/n+2*geo_nw_yoffset) \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))\n")
+        f.write(
+            f"DD2 sx tw diodenwx_lvs 0 \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))\n")
+        f.write(
+            f"MN0 d g s b slvtnfet w=w l=l nf=n*gateSplitStripes pccrit=pccrit \n")
+        f.write(
+            f"+ plorient=plorient ngcon=ngcon p_la=p_la ptwell=ptwell\n")
+        f.write(".ENDS\n\n")
+
+        f.write("************************************************************************\n")
+        f.write(f"* Library Name: cmos28lp\n")
+        f.write(f"* Cell Name:    lvtnfettw\n")
+        f.write("* View Name:    schematic\n")
+        f.write("************************************************************************\n\n")
+
+        f.write(f".SUBCKT lvtnfettw b d g s sx tw\n")
+        f.write("*.PININFO g:I b:B d:B s:B sx:B tw:B\n")
+        f.write(
+            f"DD0 b tw diodepwtw_lvs \n")
+        f.write(
+            f"+ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_pw_xoffset)*(w/n+2*geo_pw_yoffset) \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_pw_xoffset)+(w/n+2*geo_pw_yoffset))\n")
+        f.write(
+            f"DD1 sx tw diodetwx_lvs \n")
+        f.write(
+            f"+ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)*(w/n+2*geo_nw_yoffset) \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))\n")
+        f.write(
+            f"DD2 sx tw diodenwx_lvs 0 \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))\n")
+        f.write(
+            f"MN0 d g s b lvtnfet w=w l=l nf=n*gateSplitStripes pccrit=pccrit \n")
+        f.write(
+            f"+ plorient=plorient ngcon=ngcon p_la=p_la ptwell=ptwell\n")
+        f.write(".ENDS\n\n")
+
+        f.write("************************************************************************\n")
+        f.write(f"* Library Name: cmos28lp\n")
+        f.write(f"* Cell Name:    nfettw\n")
+        f.write("* View Name:    schematic\n")
+        f.write("************************************************************************\n\n")
+
+        f.write(f".SUBCKT nfettw b d g s sx tw\n")
+        f.write("*.PININFO g:I b:B d:B s:B sx:B tw:B\n")
+        f.write(
+            f"DD0 b tw diodepwtw_lvs \n")
+        f.write(
+            f"+ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_pw_xoffset)*(w/n+2*geo_pw_yoffset) \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_pw_xoffset)+(w/n+2*geo_pw_yoffset))\n")
+        f.write(
+            f"DD1 sx tw diodetwx_lvs \n")
+        f.write(
+            f"+ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)*(w/n+2*geo_nw_yoffset) \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))\n")
+        f.write(
+            f"DD2 sx tw diodenwx_lvs 0 \n")
+        f.write(
+            f"+ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))\n")
+        f.write(
+            f"MN0 d g s b nfet w=w l=l nf=n*gateSplitStripes pccrit=pccrit \n")
+        f.write(
+            f"+ plorient=plorient ngcon=ngcon p_la=p_la ptwell=ptwell\n")
+        f.write(".ENDS\n\n")
+
+
+        # Top netlist
+        f.write("************************************************************************\n")
+        f.write(f"* Library Name: Generator_test2\n")
+        f.write(f"* Cell Name:    BST\n")
+        f.write("* View Name:    schematic\n")
+        f.write("************************************************************************\n")
+
+        f.write(f".SUBCKT BST CLKB CLK_Samp VDD VOUT VSS VIN\n")
+        f.write("*.PININFO CLKB:I CLK_Samp:I VDD:I VOUT:I VSS:I VIN:I\n")
+
+        f.write(
+            f"MN4 net10 CLKB VSS VSS {_Tr12_XVT} w={(_Tr12_width * _Tr12_finger) / 1000:.4f}u l=0.03u nf={_Tr12_finger:.4f} pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0\n")
+        f.write(
+            f"MM3 net7 CLKB VSS VSS {_Tr3_XVT} w={(_Tr3_width * _Tr3_finger) / 1000:.4f}u l=0.03u nf={_Tr3_finger:.4f} pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0\n")
+        f.write(
+            f"MM10 net5 CLKB VSS VSS {_Tr10_XVT} w={(_Tr10_width * _Tr10_finger) / 1000:.4f}u l=0.03u nf={_Tr10_finger:.4f} pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0\n")
+        f.write(
+            f"XP0 net2 net2 net4 VDD VSS / {_Tr9_XVT}np ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 l=0.03u sa=76e-9 sb=76e-9 sd=96e-9 geo_nw_xoffset=167.000n w={(_Tr9_width * _Tr9_finger) / 1000:.4f}u n={_Tr9_finger:.4f} geo_nw_yoffset=167.000n\n")
+        f.write(
+            f"XN1 net10 VOUT net4 VIN VSS VDD / {_Tr1_XVT}tw ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 geo_nw_xoffset=493.000n geo_nw_yoffset=512.000n l=0.03u sa=76e-9 sb=76e-9 sd=96e-9 geo_pw_xoffset=93.000n w={(_Tr1_width * _Tr1_finger) / 1000:.4f}u n={_Tr1_finger:.4f} geo_pw_yoffset=112.000n\n")
+        f.write(
+            f"XM2 net10 net10 net1 VIN VSS VDD / {_Tr2_XVT}tw ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 geo_nw_xoffset=493.000n geo_nw_yoffset=512.000n l=0.03u sa=76e-9 sb=76e-9 sd=96e-9 geo_pw_xoffset=93.000n w={(_Tr2_width * _Tr2_finger) / 1000:.4f}u n={_Tr2_finger:.4f} geo_pw_yoffset=112.000n\n")
+        f.write(
+            f"XM7 net2 net4 VP net2 VSS / {_Tr7_XVT}np ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 l=0.03u sa=76e-9 sb=76e-9 sd=100e-9 geo_nw_xoffset=167.000n w={(_Tr7_width * _Tr7_finger) / 1000:.4f}u n={_Tr7_finger:.4f} geo_nw_yoffset=167.000n\n")
+        f.write(
+            f"XM5 net2 net1 VP net2 VSS / {_Tr5_XVT}np ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 l=0.03u sa=76e-9 sb=76e-9 sd=100e-9 geo_nw_xoffset=167.000n w={(_Tr5_width * _Tr5_finger) / 1000:.4f}u n={_Tr5_finger:.4f} geo_nw_yoffset=167.000n\n")
+        f.write(
+            f"XM8 net5 net4 VDD_Tie8 net5 VSS VDD / {_Tr8_XVT}tw ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 geo_nw_xoffset=493.000n geo_nw_yoffset=512.000n l=0.03u sa=76e-9 sb=76e-9 sd=96e-9 geo_pw_xoffset=93.000n w={(_Tr8_width * _Tr8_finger) / 1000:.4f}u n={_Tr8_finger:.4f} geo_pw_yoffset=112.000n\n")
+        f.write(
+            f"XM4 net7 net1 VDD_Tie4 net7 VSS VDD / {_Tr4_XVT}tw ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 geo_nw_xoffset=493.000n geo_nw_yoffset=512.000n l=0.03u sa=76e-9 sb=76e-9 sd=96e-9 geo_pw_xoffset=93.000n w={(_Tr4_width * _Tr4_finger) / 1000:.4f}u n={_Tr4_finger:.4f} geo_pw_yoffset=112.000n\n")
+        f.write(
+            f"XN5 net10 VP CLK_Samp net10 VSS VDD / {_Tr6_XVT}tw ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 geo_nw_xoffset=493.000n geo_nw_yoffset=512.000n l=0.03u sa=76e-9 sb=76e-9 sd=96e-9 geo_pw_xoffset=93.000n w={(_Tr6_width * _Tr6_finger) / 1000:.4f}u n={_Tr6_finger:.4f} geo_pw_yoffset=112.000n\n")
+        for i in range(0,_cap_array):
+            f.write(
+                f"CC{i} net2 net10 $[hdvncap] $SUB=VSS l={_cap_length / 1000:.4f}u w={(_cap_finger - 1) * 0.2 + 0.35:.4f}u botlev={_cap_botlev:.4f} toplev={_cap_toplev:.4f}\n")
+
+        f.write(
+            f"MTP8 VDD_Tie8 net9 VDD VDD slvtpfet w={(_Tie8P_width * _Tie8P_finger) / 1000:.4f}u l=0.03u nf={_Tie8P_finger:.4f} pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0\n")
+        f.write(
+            f"MTP4 VDD_Tie4 net8 VDD VDD slvtpfet w={(_Tie4P_width * _Tie4P_finger) / 1000:.4f}u l=0.03u nf={_Tie4P_finger:.4f} pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0\n")
+        f.write(
+            f"MTN8 net9 net9 VSS VSS slvtnfet w={(_Tie8N_width * _Tie8N_finger) / 1000:.4f}u l=0.03u nf={_Tie8N_finger:.4f} pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0\n")
+        f.write(
+            f"MTN4 net8 net8 VSS VSS slvtnfet w={(_Tie4N_width * _Tie4N_finger) / 1000:.4f}u l=0.03u nf={_Tie4N_finger:.4f} pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0\n")
+        f.write(
+            f"MP1 VP CLK_Samp VDD VDD {_Tr11_XVT} w={(_Tr11_width * _Tr11_finger) / 1000:.4f}u l=0.03u nf={_Tr11_finger:.4f} pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0\n")
+        f.write(".ENDS")
+        return None
 
 
 
