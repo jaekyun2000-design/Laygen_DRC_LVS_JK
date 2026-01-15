@@ -1,7 +1,7 @@
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.SthPack import CoordCalc
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer import StickDiagram
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer import DesignParameters
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer import DRC
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.SthPack import CoordCalc
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer import StickDiagram
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer import DesignParameters
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer import DRC
 
 #
 #from Private import MyInfo

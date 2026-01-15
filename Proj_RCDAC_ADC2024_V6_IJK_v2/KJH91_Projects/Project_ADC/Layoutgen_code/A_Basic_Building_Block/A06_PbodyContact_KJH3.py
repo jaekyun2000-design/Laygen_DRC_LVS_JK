@@ -1,6 +1,6 @@
-from KJH91_Projects.Project_ADC.Library_and_Engine import StickDiagram_KJH1
-from KJH91_Projects.Project_ADC.Library_and_Engine import DesignParameters
-from KJH91_Projects.Project_ADC.Library_and_Engine import DRC
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Library_and_Engine import StickDiagram_KJH1
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Library_and_Engine import DesignParameters
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Library_and_Engine import DRC
 
 import numpy as np
 import copy

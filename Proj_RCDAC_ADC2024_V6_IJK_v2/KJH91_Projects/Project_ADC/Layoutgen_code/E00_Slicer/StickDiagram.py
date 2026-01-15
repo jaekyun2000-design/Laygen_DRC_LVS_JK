@@ -1,13 +1,13 @@
 import types
 
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_stream
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_structures
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_tags
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_record
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_elements
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_stream
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_structures
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_tags
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_record
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_elements
 from datetime import datetime, MINYEAR
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import user_define_exceptions
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer import gds_editor_ver3
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import user_define_exceptions
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer import gds_editor_ver3
 #
 # import gds_editor_ver3.gds_stream
 # import gds_editor_ver3.gds_structures
@@ -17,10 +17,10 @@ from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer import gds_editor_ver3
 # from datetime import datetime, MINYEAR
 # import gds_editor_ver3.user_define_exceptions
 
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer import DesignParameters
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer import DesignParameters
 import copy
 import math
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer import DRC
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer import DRC
 
 class _StickDiagram:
     def __init__(self):

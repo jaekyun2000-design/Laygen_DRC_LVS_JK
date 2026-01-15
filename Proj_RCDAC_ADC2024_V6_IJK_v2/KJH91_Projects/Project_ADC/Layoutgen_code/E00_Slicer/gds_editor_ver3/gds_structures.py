@@ -1,8 +1,8 @@
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import user_define_exceptions
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import user_define_exceptions
 import struct
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_tags
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_record
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_elements
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_tags
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_record
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_elements
 
 class GDS_STRUCTURE():
     def __init__(self,gds_data=None):

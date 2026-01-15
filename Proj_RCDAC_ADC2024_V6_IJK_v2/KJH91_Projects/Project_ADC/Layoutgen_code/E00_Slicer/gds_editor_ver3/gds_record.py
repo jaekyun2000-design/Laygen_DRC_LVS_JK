@@ -1,8 +1,8 @@
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_tags
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import gds_tags
 import struct
 import math
 from datetime import datetime, MINYEAR
-from KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import user_define_exceptions
+from Proj_RCDAC_ADC2024_V6_IJK_v2.KJH91_Projects.Project_ADC.Layoutgen_code.E00_Slicer.gds_editor_ver3 import user_define_exceptions
 class GDS_HEADER():
     def __init__(self, tag=gds_tags.DICT['HEADER'], gds_data=None):
         self.tag=tag
