@@ -1,0 +1,114 @@
+************************************************************************
+* auCdl Netlist:
+* 
+* Library Name:  test_inverter
+* Top Cell Name: C08_01_Guardring_v1
+* View Name:     schematic
+* Netlisted on:  Jan 14 22:59:13 2026
+************************************************************************
+
+.INCLUDE  /tools/PDK/ss28lpp_rf/Device/LNR28LPP_CDS_S00-V1.4.6.1/CDS/oa/cmos28lp/.il/devices.cdl
+*.EQUATION
+*.SCALE METER
+*.MEGA
+.PARAM
+
+
+
+************************************************************************
+* Library Name: cmos28lp
+* Cell Name:    lvtpfetnp
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT lvtpfetnp b d g s sx
+*.PININFO g:I b:B d:B s:B sx:B
+DD0 sx b diodenwx_lvs 
++ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)*(w/n+2*geo_nw_yoffset) 
++ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))
+MP0 d g s b lvtpfet w=w l=l nf=n*gateSplitStripes pccrit=pccrit 
++ plorient=plorient ngcon=ngcon p_la=p_la ptwell=ptwell
+.ENDS
+
+************************************************************************
+* Library Name: cmos28lp
+* Cell Name:    slvtnfettw
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT slvtnfettw b d g s sx tw
+*.PININFO g:I b:B d:B s:B sx:B tw:B
+DD0 b tw diodepwtw_lvs 
++ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_pw_xoffset)*(w/n+2*geo_pw_yoffset) 
++ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_pw_xoffset)+(w/n+2*geo_pw_yoffset))
+DD1 sx tw diodetwx_lvs 
++ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)*(w/n+2*geo_nw_yoffset) 
++ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))
+DD2 sx tw diodenwx_lvs 0 
++ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))
+MN0 d g s b slvtnfet w=w l=l nf=n*gateSplitStripes pccrit=pccrit 
++ plorient=plorient ngcon=ngcon p_la=p_la ptwell=ptwell
+.ENDS
+
+************************************************************************
+* Library Name: cmos28lp
+* Cell Name:    slvtpfetnp
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT slvtpfetnp b d g s sx
+*.PININFO g:I b:B d:B s:B sx:B
+DD0 sx b diodenwx_lvs 
++ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)*(w/n+2*geo_nw_yoffset) 
+MP0 d g s b slvtpfet w=w l=l nf=n*gateSplitStripes pccrit=pccrit 
++ plorient=plorient ngcon=ngcon p_la=p_la ptwell=ptwell
+.ENDS
+
+************************************************************************
+* Library Name: cmos28lp
+* Cell Name:    nfettw
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT nfettw b d g s sx tw
+*.PININFO g:I b:B d:B s:B sx:B tw:B
+DD0 b tw diodepwtw_lvs 
++ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_pw_xoffset)*(w/n+2*geo_pw_yoffset) 
++ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_pw_xoffset)+(w/n+2*geo_pw_yoffset))
+DD1 sx tw diodetwx_lvs 
++ ((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)*(w/n+2*geo_nw_yoffset) 
++ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))
+DD2 sx tw diodenwx_lvs 0 
++ perim=2*(((((l*n+sa)+sb)+sd*(n-1))+2*geo_nw_xoffset)+(w/n+2*geo_nw_yoffset))
+MN0 d g s b nfet w=w l=l nf=n*gateSplitStripes pccrit=pccrit plorient=plorient 
++ ngcon=ngcon p_la=p_la ptwell=ptwell
+.ENDS
+
+************************************************************************
+* Library Name: test_inverter
+* Cell Name:    BST
+* View Name:    schematic
+************************************************************************
+
+.SUBCKT BST CLKB CLK_Samp VDD VOUT VSS VIN
+*.PININFO CLKB:I CLK_Samp:I VDD:I VOUT:I VSS:I VIN:I
+MN4 net10 CLKB VSS VSS nfet w=1.2000u l=0.03u nf=3.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MM3 net7 CLKB VSS VSS nfet w=0.8000u l=0.03u nf=2.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MM10 net5 CLKB VSS VSS nfet w=1.2000u l=0.03u nf=3.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+XP0 net2 net2 net4 VDD VSS / lvtpfetnp ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 l=0.03u sa=76e-9 sb=76e-9 sd=96e-9 geo_nw_xoffset=167.000n w=2.7500u n=5.0000 geo_nw_yoffset=167.000n
+XN1 net10 VOUT net4 VIN VSS VDD / slvtnfettw ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 geo_nw_xoffset=493.000n geo_nw_yoffset=512.000n l=0.03u sa=76e-9 sb=76e-9 sd=96e-9 geo_pw_xoffset=93.000n w=4.5000u n=5.0000 geo_pw_yoffset=112.000n
+XM2 net10 net10 net1 VIN VSS VDD / slvtnfettw ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 geo_nw_xoffset=493.000n geo_nw_yoffset=512.000n l=0.03u sa=76e-9 sb=76e-9 sd=96e-9 geo_pw_xoffset=93.000n w=3.2000u n=8.0000 geo_pw_yoffset=112.000n
+XM7 net2 net4 VP net2 VSS / slvtpfetnp ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 l=0.03u sa=76e-9 sb=76e-9 sd=100e-9 geo_nw_xoffset=167.000n w=2.2000u n=4.0000 geo_nw_yoffset=167.000n
+XM5 net2 net1 VP net2 VSS / slvtpfetnp ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 l=0.03u sa=76e-9 sb=76e-9 sd=100e-9 geo_nw_xoffset=167.000n w=2.2000u n=4.0000 geo_nw_yoffset=167.000n
+XM8 net5 net4 VDD_Tie8 net5 VSS VDD / nfettw ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 geo_nw_xoffset=493.000n geo_nw_yoffset=512.000n l=0.03u sa=76e-9 sb=76e-9 sd=96e-9 geo_pw_xoffset=93.000n w=4.4000u n=8.0000 geo_pw_yoffset=112.000n
+XM4 net7 net1 VDD_Tie4 net7 VSS VDD / nfettw ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 geo_nw_xoffset=493.000n geo_nw_yoffset=512.000n l=0.03u sa=76e-9 sb=76e-9 sd=96e-9 geo_pw_xoffset=93.000n w=4.9500u n=9.0000 geo_pw_yoffset=112.000n
+XN5 net10 VP CLK_Samp net10 VSS VDD / nfettw ptwell=1 p_la=0u ngcon=1 plorient=1 pccrit=1 gateSplitStripes=1 geo_nw_xoffset=493.000n geo_nw_yoffset=512.000n l=0.03u sa=76e-9 sb=76e-9 sd=96e-9 geo_pw_xoffset=93.000n w=0.8000u n=1.0000 geo_pw_yoffset=112.000n
+CC0 net2 net10 $[hdvncap] $SUB=VSS l=7.0000u w=6.1500u botlev=19 toplev=44
+CC1 net2 net10 $[hdvncap] $SUB=VSS l=7.0000u w=6.1500u botlev=19 toplev=44
+CC2 net2 net10 $[hdvncap] $SUB=VSS l=7.0000u w=6.1500u botlev=19 toplev=44
+MTP8 VDD_Tie8 net9 VDD VDD slvtpfet w=2.7000u l=0.03u nf=3.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MTP4 VDD_Tie4 net8 VDD VDD slvtpfet w=2.7000u l=0.03u nf=3.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MTN8 net9 net9 VSS VSS slvtnfet w=2.7000u l=0.03u nf=3.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MTN4 net8 net8 VSS VSS slvtnfet w=2.7000u l=0.03u nf=3.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+MP1 VP CLK_Samp VDD VDD pfet w=1.8000u l=0.03u nf=3.0000 pccrit=1 plorient=1 ngcon=1 p_la=0u ptwell=0
+.ENDS
