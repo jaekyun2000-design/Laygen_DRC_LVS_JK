@@ -1,0 +1,12 @@
+#############################      Runtime       ################################
+M00_00_CDACWtSARLogic_fold10_Newsampler
+0.0h 2.0m 33.114683866500854s
+0.0h 7.0m 40.3607292175293s
+0.0h 10.0m 14.508934259414673s
+0.0h 10.0m 27.39959168434143s
+#############################      Sys Info       ################################
+OS                   :	 Windows
+OS Version           :	 10.0.19045
+Process information  :	 Intel64 Family 6 Model 165 Stepping 5, GenuineIntel
+Process Architecture :	 AMD64
+RAM Size             :	 32(GB)

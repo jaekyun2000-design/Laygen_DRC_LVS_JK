@@ -1,0 +1,12 @@
+#############################      Runtime       ################################
+M00_00_CDACWtSARLogic_unfold8_original
+0.0h 2.0m 29.127469539642334s
+0.0h 3.0m 22.644822597503662s
+0.0h 5.0m 58.61110210418701s
+0.0h 6.0m 13.689818620681763s
+#############################      Sys Info       ################################
+OS                   :	 Windows
+OS Version           :	 10.0.19045
+Process information  :	 Intel64 Family 6 Model 165 Stepping 5, GenuineIntel
+Process Architecture :	 AMD64
+RAM Size             :	 32(GB)

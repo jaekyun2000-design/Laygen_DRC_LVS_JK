@@ -1,0 +1,12 @@
+#############################      Runtime       ################################
+M00_00_CDACWtSARLogic_fold10_Renameversion2
+0.0h 2.0m 34.261855363845825s
+0.0h 5.0m 58.29504680633545s
+0.0h 6.0m 57.24936556816101s
+0.0h 7.0m 11.455312490463257s
+#############################      Sys Info       ################################
+OS                   :	 Windows
+OS Version           :	 10.0.19045
+Process information  :	 Intel64 Family 6 Model 165 Stepping 5, GenuineIntel
+Process Architecture :	 AMD64
+RAM Size             :	 32(GB)
